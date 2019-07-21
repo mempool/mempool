@@ -1,0 +1,18 @@
+<footer class="footer">
+  <div class="container">
+    <div class="my-2 my-md-0 mr-md-3">
+      <div *ngIf="memPoolInfo" class="info-block">
+        <span class="unconfirmedTx">Unconfirmed transactions:</span>&nbsp;<b>{{ memPoolInfo?.memPoolInfo?.size | number }} ({{ mempoolBlocks }} block<span [hidden]="mempoolBlocks <= 1">s</span>)</b>
+        <br />
+        <span class="mempoolSize">Tx per second:</span>&nbsp;<b>{{ memPoolInfo?.txPerSecond | number : '1.2-2' }} tx/s</b>
+        <br />
+        <span class="txPerSecond">Tx weight per second:</span>&nbsp;
+        
+        <div class="progress">
+          <div class="progress-bar {{ progressClass }}" role="progressbar" [ngStyle]="{'width': progressWidth}">{{ memPoolInfo?.vBytesPerSecond | ceil | number }} vBytes/s</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,65 @@
+.txBubble {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted #000000;
+  z-index: 99;
+}
+
+.txBubble .txBubbleText {
+  width: 300px;
+  background-color: #ffffff;
+  color: #000;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  top: 150%;
+  left: 50%;
+  margin-left: -100px;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.txBubble .txBubbleText::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -10px;
+  border-width: 10px;
+  border-style: solid;
+  border-color: transparent transparent white transparent;
+}
+
+.txBubble .arrow-right.txBubbleText::after {
+  top: calc(50% - 10px);
+  border-color: transparent transparent transparent white;
+  right: -20px;
+  left: auto;
+}
+
+.txBubble .arrow-left.txBubbleText::after {
+  top: calc(50% - 10px);
+  left: 0;
+  margin-left: -20px;
+  border-width: 10px;
+  border-color: transparent white transparent transparent;
+}
+
+.txBubble .arrow-bottom.txBubbleText::after {
+  bottom: -20px;
+  left: 50%;
+  margin-left: -10px;
+  border-width: 10px;
+  border-style: solid;
+  border-color: white transparent transparent transparent;
+}
+
+.txBubble .arrow-top-right.txBubbleText::after {
+  left: 80%;
+}
+
+.txBubble .arrow-top-left.txBubbleText::after {
+  left: 20%;
+}
