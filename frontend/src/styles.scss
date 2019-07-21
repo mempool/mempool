@@ -1,0 +1,131 @@
+/* You can add global styles to this file, and also import other style files */
+
+$ct-series-names: (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z);
+$ct-series-colors: (
+  #D81B60,
+  #8E24AA,
+  #5E35B1,
+  #3949AB,
+  #1E88E5,
+  #039BE5,
+  #00ACC1,
+  #00897B,
+  #43A047,
+  #7CB342,
+  #C0CA33,
+  #FDD835,
+  #FFB300,
+  #FB8C00,
+  #F4511E,
+  #6D4C41,
+  #757575,
+  #546E7A,
+  #b71c1c,
+  #880E4F,
+  #4A148C,
+  #311B92,
+  #1A237E,
+  #0D47A1,
+  #01579B,
+  #006064,
+  #004D40,
+  #1B5E20,
+  #33691E,
+  #827717,
+  #F57F17,
+  #FF6F00,
+  #E65100,
+  #BF360C,
+  #3E2723,
+  #212121,
+  #263238,
+  #a748ca,
+  #6188e2,
+  #a748ca,
+  #6188e2,
+
+);
+
+
+$body-bg: #11131f;
+$body-color: #fff;
+$gray-800: #1d1f31;
+
+$primary: #2b89c7;
+
+$link-color:                #1bd8f4;
+$link-decoration:           none !default;
+$link-hover-color:          darken($link-color, 15%) !default;
+$link-hover-decoration:     underline !default;
+
+// Required
+@import "../node_modules/bootstrap/scss/bootstrap";
+@import "../node_modules/chartist/dist/scss/chartist.scss";
+
+body {
+  margin-bottom: 60px;
+}
+
+@media (min-width: 768px) {
+  body.disable-scroll {
+    overflow: hidden;
+  }
+}
+
+.ng-invalid.ng-dirty {
+  border-color: #dc3545;
+}
+
+.modal-content {
+  background-color: #11131f;
+}
+
+.close {
+  color: #fff;
+}
+
+.close:hover {
+  color: #fff;
+}
+
+
+.chartist-tooltip {
+  position: absolute;
+  display: inline-block;
+  opacity: 0;
+  min-width: 5em;
+  padding: .5em;
+  background: #F4C63D;
+  color: #453D3F;
+  font-family: Oxygen,Helvetica,Arial,sans-serif;
+  font-weight: 700;
+  text-align: center;
+  pointer-events: none;
+  z-index: 1;
+  -webkit-transition: opacity .2s linear;
+  -moz-transition: opacity .2s linear;
+  -o-transition: opacity .2s linear;
+  transition: opacity .2s linear; }
+  .chartist-tooltip:before {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    margin-left: -15px;
+    border: 15px solid transparent;
+    border-top-color: #F4C63D; }
+  .chartist-tooltip.tooltip-show {
+    opacity: 1; }
+
+.ct-area, .ct-line {
+  pointer-events: none; }
+
+.ct-bar {
+  stroke-width: 1px;
+}
+
+hr {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}

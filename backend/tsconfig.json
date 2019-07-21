@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es2015",
+        "strict": true,
+        "noImplicitAny": false,
+        "sourceMap": false,
+        "outDir": "dist",
+        "moduleResolution": "node",
+        "typeRoots": [
+            "node_modules/@types"
+        ]
+    },
+    "include": [
+        "src/**/*.ts",
+    ],
+    "exclude": [
+        "dist/**"
+    ]
+}

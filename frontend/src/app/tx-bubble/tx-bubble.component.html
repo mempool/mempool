@@ -1,0 +1,26 @@
+<div class="txBubble" *ngIf="tx">
+  <span class="txBubbleText" ngClass="arrow-{{ arrowPosition }}">
+      <table style="width: 100%;">
+        <tr>
+            <td class="text-left"><b>Transaction hash</b></td>
+            <td class="text-right"><a href="https://www.blockstream.info/tx/{{ tx?.txid }}" target="_blank">{{ txIdShort }}</a></td>
+        </tr>
+        <tr>
+            <td class="text-left"><b>Fees:</b></td>
+            <td class="text-right">{{ tx?.fee }} BTC</td>
+        </tr>
+        <tr>
+          <td class="text-left"><b>Fee per vByte:</b></td>
+          <td class="text-right">{{ tx?.feePerVsize | number : '1.2-2' }} sat/vB</td>
+        </tr>
+      </table>
+      <br />
+
+      <span *ngIf="txTrackingBlockHeight === 0">
+        <button type="button" class="btn btn-danger">Unconfirmed</button>
+      </span>
+      <span *ngIf="txTrackingBlockHeight > 0">
+        <button type="button" class="btn btn-success">{{ confirmations }} confirmation<span *ngIf="confirmations > 1">s</span></button>
+      </span>
+  </span>
+</div>

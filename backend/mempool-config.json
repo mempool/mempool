@@ -1,0 +1,22 @@
+{
+  "ENV": "dev",
+  "DB_HOST": "localhost",
+  "DB_PORT": 8889,
+  "DB_USER": "",
+  "DB_PASSWORD": "",
+  "DB_DATABASE": "",
+  "HTTP_PORT": 3000,
+  "API_ENDPOINT": "/api/v1/",
+  "CHAT_SSL_ENABLED": false,
+  "CHAT_SSL_PRIVKEY": "",
+  "CHAT_SSL_CERT": "",
+  "CHAT_SSL_CHAIN": "",
+  "MEMPOOL_REFRESH_RATE_MS": 500,
+  "INITIAL_BLOCK_AMOUNT": 8,
+  "KEEP_BLOCK_AMOUNT": 24,
+  "BITCOIN_NODE_HOST": "localhost",
+  "BITCOIN_NODE_PORT": 18332,
+  "BITCOIN_NODE_USER": "",
+  "BITCOIN_NODE_PASS": "",
+  "TX_PER_SECOND_SPAN_SECONDS": 150
+}
