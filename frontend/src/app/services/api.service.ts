@@ -5,14 +5,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { IMempoolDefaultResponse, IMempoolStats, IBlockTransaction } from '../blockchain/interfaces';
 import { Observable } from 'rxjs';
 
-
-let WEB_SOCKET_URL = 'wss://mempool.space:8999';
-let API_BASE_URL = 'https://mempool.space:8999/api/v1';
-
-if (!environment.production) {
-  WEB_SOCKET_URL = 'ws://localhost:8999';
-  API_BASE_URL = '/api/v1';
-}
+const WEB_SOCKET_URL = 'ws://localhost:8999';
+const API_BASE_URL = '/api/v1';
 
 @Injectable({
   providedIn: 'root'
