@@ -1,0 +1,100 @@
+<div *ngIf="blocks.length === 0" class="text-center">
+  <h3>Loading blocks...</h3>
+  <br>
+  <div class="spinner-border text-light"></div>
+</div>
+<div *ngIf="blocks.length !== 0 && txTrackingLoading" class="text-center black-background">
+  <h3>Locating transaction...</h3>
+</div>
+<div *ngIf="txShowTxNotFound" class="text-center black-background">
+  <h3>Transaction not found!</h3>
+</div>
+<div class="text-center" class="television-wrapper">
+  <div class="container-logo">
+	<img src="/assets/mempool-space-logo.png" class="logo"> <span class="badge badge-warning" style="margin-left: 10px;" *ngIf="isOffline">Offline</span>
+  </div>
+  <div class="container-top">
+
+  <div class="row">
+    <div class="col-lg-12" *ngIf="loading">
+      <div class="text-center">
+        <h3>Loading graphs...</h3>
+        <br>
+        <div class="spinner-border text-light"></div>
+      </div>
+    </div>
+
+    <div class="col-lg-12">
+
+      <div class="card mb-3" *ngIf="mempoolVsizeFeesData">
+        <div class="card-body">
+          <div style="height: 680px">
+            <app-chartist
+              [data]="mempoolVsizeFeesData"
+              [type]="'Line'"
+              [options]="mempoolVsizeFeesOptions">
+            </app-chartist>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <div class="container-bottom">
+
+  <div class="projected-blocks-container">
+    <div *ngFor="let projectedBlock of projectedBlocks; let i = index; trackBy: trackByProjectedFn">
+      <div (click)="openProjectedBlockModal(projectedBlock, i);" class="bitcoin-block text-center projected-block" id="projected-block-{{ i }}" [ngStyle]="getStyleForProjectedBlockAtIndex(i)">
+        <div class="block-body" *ngIf="projectedBlocks?.length">
+          <div class="fees">
+            ~{{ projectedBlock.medianFee | ceil }} sat/vB
+            <br/>
+            <span class="yellow-color">{{ projectedBlock.minFee | ceil }} - {{ projectedBlock.maxFee | ceil }} sat/vB</span>
+          </div>
+          <div class="block-size">{{ projectedBlock.blockSize | bytes: 2 }}</div>
+          <div class="transaction-count">{{ projectedBlock.nTx }} transactions</div>
+          <div class="time-difference" *ngIf="i !== 3">In ~{{ 10 * i + 10 }} minutes</div>
+          <ng-template [ngIf]="i === 3 && projectedBlocks?.length >= 4 && (projectedBlock.blockWeight / 4000000 | ceil) > 1">
+            <div class="time-difference">+{{ projectedBlock.blockWeight / 4000000 | ceil }} blocks</div>
+          </ng-template>
+        </div>
+        <span class="animated-border"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="blocks-container" *ngIf="blocks.length">
+
+    <div *ngFor="let block of blocks; let i = index; trackBy: trackByBlocksFn" >
+      <div (click)="openBlockModal(block);" class="text-center bitcoin-block mined-block" id="bitcoin-block-{{ block.height }}" [ngStyle]="getStyleForBlock(block)">
+
+        <div class="block-height">
+          <a href="https://www.blockstream.info/block-height/{{ block.height }}" target="_blank">#{{ block.height }}</a>
+        </div>
+
+        <div class="block-body">
+          <div class="fees">
+            ~{{ block.medianFee | ceil }} sat/vB
+            <br/>
+            <span class="yellow-color">{{ block.minFee | ceil }} - {{ block.maxFee | ceil }} sat/vB</span>
+          </div>
+
+          <div class="block-size">{{ block.size | bytes: 2 }}</div>
+          <div class="transaction-count">{{ block.nTx }} transactions</div>
+          <br /><br />
+          <div class="time-difference">{{ getTimeSinceMined(block) }} ago</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div id="divider" *ngIf="blocks.length"></div>
+
+  </div>
+</div>
+
+<app-tx-bubble *ngIf="blocks?.length && txTrackingTx" [tx]="txTrackingTx" [arrowPosition]="txBubbleArrowPosition" [ngStyle]="txBubbleStyle" [latestBlockHeight]="blocks[0].height" [txTrackingBlockHeight]="txTrackingBlockHeight"></app-tx-bubble>
+
+<app-footer></app-footer>

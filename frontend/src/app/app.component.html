@@ -1,5 +1,5 @@
 <header>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark" *ngIf="showHeader">
     <a class="navbar-brand" routerLink="/"><img src="/assets/mempool-space-logo.png" width="180" class="logo"> <span class="badge badge-warning" style="margin-left: 10px;" *ngIf="isOffline">Offline</span></a>
     
     <button class="navbar-toggler" type="button" (click)="collapse()" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">

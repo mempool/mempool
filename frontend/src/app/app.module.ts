@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { BlockchainComponent } from './blockchain/blockchain.component';
+import { TelevisionComponent } from './television/television.component';
 import { AppRoutingModule } from './app-routing.module';
 import { SharedModule } from './shared/shared.module';
 import { MemPoolService } from './services/mem-pool.service';
@@ -18,6 +19,7 @@ import { ProjectedBlockModalComponent } from './projected-block-modal/projected-
 @NgModule({
   declarations: [
     AppComponent,
+    TelevisionComponent,
     BlockchainComponent,
     FooterComponent,
     StatisticsComponent,

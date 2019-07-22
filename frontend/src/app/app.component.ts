@@ -10,6 +10,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class AppComponent implements OnInit {
   navCollapsed = false;
+  showHeader = true;
   isOffline = false;
   searchForm: FormGroup;
 
@@ -20,6 +21,9 @@ export class AppComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    if (window.location.pathname === '/tv')
+      this.showHeader = false;
+
     this.searchForm = this.formBuilder.group({
       txId: ['', Validators.pattern('^[a-fA-F0-9]{64}$')],
     });

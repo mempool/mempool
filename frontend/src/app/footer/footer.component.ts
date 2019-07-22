@@ -11,12 +11,16 @@ export class FooterComponent implements OnInit {
   mempoolBlocks = 0;
   progressWidth = '';
   progressClass: string;
+  showFooter = true;
 
   constructor(
     private memPoolService: MemPoolService
   ) { }
 
   ngOnInit() {
+    if (window.location.pathname === '/tv')
+      this.showFooter = false;
+
     this.memPoolService.loaderSubject
       .subscribe((mempoolState) => {
         this.memPoolInfo = mempoolState;
