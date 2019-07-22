@@ -5,7 +5,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { IMempoolDefaultResponse, IMempoolStats, IBlockTransaction } from '../blockchain/interfaces';
 import { Observable } from 'rxjs';
 
-const WEB_SOCKET_URL = 'ws://localhost:8999';
+const WEB_SOCKET_URL = 'ws://' + document.location.hostname + ':8999';
 const API_BASE_URL = '/api/v1';
 
 @Injectable({
