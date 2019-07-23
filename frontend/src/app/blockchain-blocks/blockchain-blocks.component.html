@@ -1,26 +1,20 @@
 <div class="blocks-container" *ngIf="blocks.length">
-  
   <div *ngFor="let block of blocks; let i = index; trackBy: trackByBlocksFn" >
     <div (click)="openBlockModal(block);" class="text-center bitcoin-block mined-block" id="bitcoin-block-{{ block.height }}" [ngStyle]="getStyleForBlock(block)">
-      
       <div class="block-height">
         <a href="https://www.blockstream.info/block-height/{{ block.height }}" target="_blank">#{{ block.height }}</a>
       </div>
-
       <div class="block-body">
         <div class="fees">
           ~{{ block.medianFee | ceil }} sat/vB
           <br/>
           <span class="yellow-color">{{ block.minFee | ceil }} - {{ block.maxFee | ceil }} sat/vB</span>
         </div>
-
         <div class="block-size">{{ block.size | bytes: 2 }}</div>
         <div class="transaction-count">{{ block.nTx }} transactions</div>
         <br /><br />
         <div class="time-difference">{{ getTimeSinceMined(block) }} ago</div>
       </div>
-
     </div>
   </div>
-
 </div>
