@@ -1,0 +1,128 @@
+.bitcoin-block {
+  width: 125px;
+  height: 125px;
+  cursor: pointer;
+}
+
+.mined-block {
+  position: absolute;
+  top: 0px;
+  transition: 1s;
+}
+
+.block-size {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.blocks-container {
+  position: absolute;
+  top: 0px;
+  left: 40px;
+}
+
+.projected-block {
+  position: absolute;
+  top: 0;
+}
+
+.block-body {
+  text-align: center;
+}
+
+@keyframes opacityPulse {
+  0% {opacity: 0.7;}
+  50% {opacity: 1.0;}
+  100% {opacity: 0.7;}
+}
+
+.time-difference {
+  position: absolute;
+  bottom: 10px;
+  text-align: center;
+  width: 100%;
+  font-size: 14px;
+}
+
+.fees {
+  font-size: 10px;
+  margin-top: 10px;
+  margin-bottom: 2px;
+}
+
+.btcblockmiddle {
+  height: 18px;
+}
+
+.breakRow {
+  height: 30px;
+  margin-top: 20px;
+}
+
+.yellow-color { 
+  color: #ffd800;
+}
+
+.transaction-count {
+  font-size: 12px;
+}
+
+.block-height {
+  position: absolute;
+  font-size: 12px;
+  bottom: 160px;
+  width: 100%;
+  left: -12px;
+  text-shadow: 0px 32px 3px #111;
+  z-index: 100;
+}
+
+@media (max-width: 767.98px) {
+  .block-height {
+    bottom: 125px;
+    left: inherit;
+    text-shadow: inherit;
+    z-index: inherit;
+  }
+}
+
+@media (min-width: 768px) {
+  .bitcoin-block::after {
+    content: '';   
+    width: 125px;
+    height: 24px;
+    position:absolute;
+    top: -24px;
+    left: -20px;
+    background-color: #232838;
+    transform:skew(40deg);
+    transform-origin:top;    
+  }
+
+  .bitcoin-block::before {
+    content: '';
+    width: 20px;
+    height: 125px;
+    position: absolute;
+    top: -12px;
+    left: -20px;
+    background-color: #191c27; 
+    
+    transform: skewY(50deg);
+    transform-origin: top;     
+  }
+
+  .projected-block.bitcoin-block::after {
+    background-color: #403834; 
+  }
+
+  .projected-block.bitcoin-block::before {
+    background-color: #2d2825; 
+  }
+}
+
+.black-background {
+  background-color: #11131f;
+  z-index: 100;
+  position: relative;
+}

@@ -1,0 +1,128 @@
+.bitcoin-block {
+  width: 125px;
+  height: 125px;
+  cursor: pointer;
+}
+
+.block-size {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.blocks-container {
+  position: absolute;
+  top: 0px;
+  left: 40px;
+}
+
+.projected-blocks-container {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  left: 0px;
+
+  animation: opacityPulse 2s ease-out;
+  animation-iteration-count: infinite; 
+  opacity: 1;
+}
+
+.projected-block {
+  position: absolute;
+  top: 0;
+}
+
+.block-body {
+  text-align: center;
+}
+
+@keyframes opacityPulse {
+  0% {opacity: 0.7;}
+  50% {opacity: 1.0;}
+  100% {opacity: 0.7;}
+}
+
+.time-difference {
+  position: absolute;
+  bottom: 10px;
+  text-align: center;
+  width: 100%;
+  font-size: 14px;
+}
+
+.fees {
+  font-size: 10px;
+  margin-top: 10px;
+  margin-bottom: 2px;
+}
+
+.btcblockmiddle {
+  height: 18px;
+}
+
+.breakRow {
+  height: 30px;
+  margin-top: 20px;
+}
+
+.yellow-color { 
+  color: #ffd800;
+}
+
+.transaction-count {
+  font-size: 12px;
+}
+
+@media (max-width: 767.98px) {
+  .projected-blocks-container {
+    position: absolute;
+    left: -165px;
+    top: -40px;
+  }
+  .block-height {
+    bottom: 125px;
+    left: inherit;
+    text-shadow: inherit;
+    z-index: inherit;
+  }
+}
+
+@media (min-width: 768px) {
+  .bitcoin-block::after {
+    content: '';   
+    width: 125px;
+    height: 24px;
+    position:absolute;
+    top: -24px;
+    left: -20px;
+    background-color: #232838;
+    transform:skew(40deg);
+    transform-origin:top;    
+  }
+
+  .bitcoin-block::before {
+    content: '';
+    width: 20px;
+    height: 125px;
+    position: absolute;
+    top: -12px;
+    left: -20px;
+    background-color: #191c27; 
+    
+    transform: skewY(50deg);
+    transform-origin: top;     
+  }
+
+  .projected-block.bitcoin-block::after {
+    background-color: #403834; 
+  }
+
+  .projected-block.bitcoin-block::before {
+    background-color: #2d2825; 
+  }
+}
+
+.black-background {
+  background-color: #11131f;
+  z-index: 100;
+  position: relative;
+}

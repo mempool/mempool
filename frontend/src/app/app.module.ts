@@ -11,9 +11,11 @@ import { FooterComponent } from './footer/footer.component';
 import { AboutComponent } from './about/about.component';
 import { TxBubbleComponent } from './tx-bubble/tx-bubble.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { BlockModalComponent } from './block-modal/block-modal.component';
+import { BlockModalComponent } from './blockchain-blocks/block-modal/block-modal.component';
 import { StatisticsComponent } from './statistics/statistics.component';
-import { ProjectedBlockModalComponent } from './projected-block-modal/projected-block-modal.component';
+import { ProjectedBlockModalComponent } from './blockchain-projected-blocks/projected-block-modal/projected-block-modal.component';
+import { BlockchainBlocksComponent } from './blockchain-blocks/blockchain-blocks.component';
+import { BlockchainProjectedBlocksComponent } from './blockchain-projected-blocks/blockchain-projected-blocks.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +27,8 @@ import { ProjectedBlockModalComponent } from './projected-block-modal/projected-
     TxBubbleComponent,
     BlockModalComponent,
     ProjectedBlockModalComponent,
+    BlockchainBlocksComponent,
+    BlockchainProjectedBlocksComponent,
   ],
   imports: [
     ReactiveFormsModule,
