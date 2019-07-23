@@ -1,8 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ApiService } from '../services/api.service';
-import { IBlock } from '../blockchain/interfaces';
-import { MemPoolService } from '../services/mem-pool.service';
+import { ApiService } from '../../services/api.service';
+import { IBlock } from '../../blockchain/interfaces';
+import { MemPoolService } from '../../services/mem-pool.service';
 import * as Chartist from 'chartist';
 
 @Component({

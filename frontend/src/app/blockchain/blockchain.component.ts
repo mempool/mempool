@@ -5,8 +5,8 @@ import { MemPoolService } from '../services/mem-pool.service';
 import { ApiService } from '../services/api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { BlockModalComponent } from '../block-modal/block-modal.component';
-import { ProjectedBlockModalComponent } from '../projected-block-modal/projected-block-modal.component';
+import { BlockModalComponent } from '../blockchain-blocks/block-modal/block-modal.component';
+import { ProjectedBlockModalComponent } from '../blockchain-projected-blocks/projected-block-modal/projected-block-modal.component';
 
 @Component({
   selector: 'app-blockchain',
@@ -18,7 +18,6 @@ export class BlockchainComponent implements OnInit, OnDestroy {
   projectedBlocks: IProjectedBlock[] = [];
   subscription: any;
   socket: any;
-  innerWidth: any;
   txBubbleStyle: any = {};
 
   txTrackingLoading = false;
@@ -30,7 +29,6 @@ export class BlockchainComponent implements OnInit, OnDestroy {
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
-    this.innerWidth = window.innerWidth;
     this.moveTxBubbleToPosition();
   }
 
@@ -39,7 +37,6 @@ export class BlockchainComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private renderer: Renderer2,
     private route: ActivatedRoute,
-    private modalService: NgbModal,
   ) {}
 
   ngOnInit() {
@@ -49,8 +46,6 @@ export class BlockchainComponent implements OnInit, OnDestroy {
       'top': '425px',
       'visibility': 'hidden',
     };
-
-    this.innerWidth = window.innerWidth;
     this.socket = this.apiService.websocketSubject;
     this.subscription = this.socket
       .pipe(
@@ -149,7 +144,7 @@ export class BlockchainComponent implements OnInit, OnDestroy {
     this.txBubbleStyle['position'] = 'absolute';
 
     if (!element) {
-      if (this.innerWidth <= 768) {
+      if (window.innerWidth <= 768) {
         this.txBubbleArrowPosition = 'bottom';
         this.txBubbleStyle['left'] = window.innerWidth / 2 - 50 + 'px';
         this.txBubbleStyle['bottom'] = '270px';
@@ -183,90 +178,10 @@ export class BlockchainComponent implements OnInit, OnDestroy {
     }
   }
 
-  getTimeSinceMined(block: IBlock): string {
-    const minutes = ((new Date().getTime()) - (new Date(block.time * 1000).getTime())) / 1000 / 60;
-    if (minutes >= 120) {
-      return Math.floor(minutes / 60) + ' hours';
-    }
-    if (minutes >= 60) {
-      return Math.floor(minutes / 60) + ' hour';
-    }
-    if (minutes <= 1) {
-      return '< 1 minute';
-    }
-    if (minutes === 1) {
-      return '1 minute';
-    }
-    return Math.round(minutes) + ' minutes';
-  }
-
-  getStyleForBlock(block: IBlock) {
-    const greenBackgroundHeight = 100 - (block.weight / 4000000) * 100;
-    if (this.innerWidth <= 768) {
-      return {
-        'top': 155 * this.blocks.indexOf(block) + 'px',
-        'background': `repeating-linear-gradient(#2d3348, #2d3348 ${greenBackgroundHeight}%,
-          #9339f4 ${Math.max(greenBackgroundHeight, 0)}%, #105fb0 100%)`,
-      };
-    } else {
-      return {
-        'left': 155 * this.blocks.indexOf(block) + 'px',
-        'background': `repeating-linear-gradient(#2d3348, #2d3348 ${greenBackgroundHeight}%,
-          #9339f4 ${Math.max(greenBackgroundHeight, 0)}%, #105fb0 100%)`,
-      };
-    }
-  }
-
-  getStyleForProjectedBlockAtIndex(index: number) {
-    const greenBackgroundHeight = 100 - (this.projectedBlocks[index].blockWeight / 4000000) * 100;
-    if (this.innerWidth <= 768) {
-      if (index === 3) {
-        return {
-          'top': 40 + index * 155 + 'px'
-        };
-      }
-      return {
-        'top': 40 + index * 155 + 'px',
-        'background': `repeating-linear-gradient(#554b45, #554b45 ${greenBackgroundHeight}%,
-          #bd7c13 ${Math.max(greenBackgroundHeight, 0)}%, #c5345a 100%)`,
-      };
-    } else {
-      if (index === 3) {
-        return {
-          'right': 40 + index * 155 + 'px'
-        };
-      }
-      return {
-        'right': 40 + index * 155 + 'px',
-        'background': `repeating-linear-gradient(#554b45, #554b45 ${greenBackgroundHeight}%,
-          #bd7c13 ${Math.max(greenBackgroundHeight, 0)}%, #c5345a 100%)`,
-      };
-    }
-  }
-
-  trackByProjectedFn(index: number) {
-    return index;
-  }
-
-  trackByBlocksFn(index: number, item: IBlock) {
-    return item.height;
-  }
-
   ngOnDestroy() {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
     this.renderer.removeClass(document.body, 'disable-scroll');
-  }
-
-  openBlockModal(block: IBlock) {
-    const modalRef = this.modalService.open(BlockModalComponent, { size: 'lg' });
-    modalRef.componentInstance.block = block;
-  }
-
-  openProjectedBlockModal(block: IBlock, index: number) {
-    const modalRef = this.modalService.open(ProjectedBlockModalComponent, { size: 'lg' });
-    modalRef.componentInstance.block = block;
-    modalRef.componentInstance.index = index;
   }
 }
