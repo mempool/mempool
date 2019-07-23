@@ -4,9 +4,6 @@ import { retryWhen, tap } from 'rxjs/operators';
 import { MemPoolService } from '../services/mem-pool.service';
 import { ApiService } from '../services/api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { BlockModalComponent } from '../blockchain-blocks/block-modal/block-modal.component';
-import { ProjectedBlockModalComponent } from '../blockchain-projected-blocks/projected-block-modal/projected-block-modal.component';
 
 @Component({
   selector: 'app-blockchain',

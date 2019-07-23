@@ -21,19 +21,8 @@
   left: 40px;
 }
 
-.projected-block {
-  position: absolute;
-  top: 0;
-}
-
 .block-body {
   text-align: center;
-}
-
-@keyframes opacityPulse {
-  0% {opacity: 0.7;}
-  50% {opacity: 1.0;}
-  100% {opacity: 0.7;}
 }
 
 .time-difference {
@@ -48,15 +37,6 @@
   font-size: 10px;
   margin-top: 10px;
   margin-bottom: 2px;
-}
-
-.btcblockmiddle {
-  height: 18px;
-}
-
-.breakRow {
-  height: 30px;
-  margin-top: 20px;
 }
 
 .yellow-color { 
@@ -110,14 +90,6 @@
     
     transform: skewY(50deg);
     transform-origin: top;     
-  }
-
-  .projected-block.bitcoin-block::after {
-    background-color: #403834; 
-  }
-
-  .projected-block.bitcoin-block::before {
-    background-color: #2d2825; 
   }
 }
 
