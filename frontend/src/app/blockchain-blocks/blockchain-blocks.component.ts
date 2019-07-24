@@ -1,20 +1,32 @@
-import { Component, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IBlock } from '../blockchain/interfaces';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BlockModalComponent } from './block-modal/block-modal.component';
+import { MemPoolService } from '../services/mem-pool.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-blockchain-blocks',
   templateUrl: './blockchain-blocks.component.html',
   styleUrls: ['./blockchain-blocks.component.scss']
 })
-export class BlockchainBlocksComponent {
-
-  @Input() blocks: IBlock[];
+export class BlockchainBlocksComponent implements OnInit, OnDestroy {
+  blocks: IBlock[] = [];
+  blocksSubscription: Subscription;
 
   constructor(
     private modalService: NgbModal,
+    private memPoolService: MemPoolService,
   ) { }
+
+  ngOnInit() {
+    this.blocksSubscription = this.memPoolService.blocks$
+      .subscribe((block) => this.blocks.unshift(block));
+  }
+
+  ngOnDestroy() {
+    this.blocksSubscription.unsubscribe();
+  }
 
   getTimeSinceMined(block: IBlock): string {
     const minutes = ((new Date().getTime()) - (new Date(block.time * 1000).getTime())) / 1000 / 60;

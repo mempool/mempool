@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MemPoolService, MemPoolState } from '../services/mem-pool.service';
+import { MemPoolService, IMemPoolState } from '../services/mem-pool.service';
 
 @Component({
   selector: 'app-footer',
@@ -7,7 +7,7 @@ import { MemPoolService, MemPoolState } from '../services/mem-pool.service';
   styleUrls: ['./footer.component.scss']
 })
 export class FooterComponent implements OnInit {
-  memPoolInfo: MemPoolState | undefined;
+  memPoolInfo: IMemPoolState | undefined;
   mempoolBlocks = 0;
   progressWidth = '';
   progressClass: string;
@@ -17,12 +17,12 @@ export class FooterComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.memPoolService.loaderSubject
+    this.memPoolService.mempoolStats$
       .subscribe((mempoolState) => {
         this.memPoolInfo = mempoolState;
         this.updateProgress();
       });
-    this.memPoolService.mempoolWeight
+    this.memPoolService.mempoolWeight$
       .subscribe((mempoolWeight) => {
         this.mempoolBlocks = Math.ceil(mempoolWeight / 4000000);
       });
