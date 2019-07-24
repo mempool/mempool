@@ -1,20 +1,32 @@
-import { Component, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IProjectedBlock, IBlock } from '../blockchain/interfaces';
 import { ProjectedBlockModalComponent } from './projected-block-modal/projected-block-modal.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { MemPoolService } from '../services/mem-pool.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-blockchain-projected-blocks',
   templateUrl: './blockchain-projected-blocks.component.html',
   styleUrls: ['./blockchain-projected-blocks.component.scss']
 })
-export class BlockchainProjectedBlocksComponent {
-
-  @Input() projectedBlocks: IProjectedBlock[];
+export class BlockchainProjectedBlocksComponent implements OnInit, OnDestroy {
+  projectedBlocks: IProjectedBlock[];
+  subscription: Subscription;
 
   constructor(
     private modalService: NgbModal,
+    private memPoolService: MemPoolService,
   ) { }
+
+  ngOnInit() {
+    this.subscription = this.memPoolService.projectedBlocks$
+      .subscribe((projectedblocks) => this.projectedBlocks = projectedblocks);
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
 
   trackByProjectedFn(index: number) {
     return index;

@@ -56,7 +56,7 @@ export class BlockModalComponent implements OnInit {
       ]
     };
 
-    this.memPoolService.conversions
+    this.memPoolService.conversions$
       .subscribe((conversions) => {
         this.conversions = conversions;
       });

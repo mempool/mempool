@@ -1,9 +1,9 @@
-<div *ngIf="blocks.length === 0" class="text-center">
+<div *ngIf="isLoading" class="text-center">
   <h3>Loading blocks...</h3>
   <br>
   <div class="spinner-border text-light"></div>
 </div>
-<div *ngIf="blocks.length !== 0 && txTrackingLoading" class="text-center black-background">
+<div *ngIf="!isLoading && txTrackingLoading" class="text-center black-background">
   <h3>Locating transaction...</h3>
 </div>
 <div *ngIf="txShowTxNotFound" class="text-center black-background">
@@ -11,15 +11,14 @@
 </div>
 <div class="text-center" class="blockchain-wrapper">
   <div class="position-container">
+    <app-blockchain-projected-blocks></app-blockchain-projected-blocks>
+    <app-blockchain-blocks></app-blockchain-blocks>
 
-  <app-blockchain-projected-blocks [projectedBlocks]="projectedBlocks"></app-blockchain-projected-blocks>
-  <app-blockchain-blocks [blocks]="blocks"></app-blockchain-blocks>
-
-  <div id="divider" *ngIf="blocks.length"></div>
+    <div id="divider" *ngIf="!isLoading"></div>
   </div>
 
 </div>
 
-<app-tx-bubble *ngIf="blocks?.length && txTrackingTx" [tx]="txTrackingTx" [arrowPosition]="txBubbleArrowPosition" [ngStyle]="txBubbleStyle" [latestBlockHeight]="blocks[0].height" [txTrackingBlockHeight]="txTrackingBlockHeight"></app-tx-bubble>
+<app-tx-bubble></app-tx-bubble>
 
 <app-footer></app-footer>

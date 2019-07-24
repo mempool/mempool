@@ -1,4 +1,4 @@
-<div class="txBubble" *ngIf="tx">
+<div class="txBubble" [ngStyle]="txBubbleStyle" *ngIf="txTrackingEnabled && tx">
   <span class="txBubbleText" ngClass="arrow-{{ arrowPosition }}">
       <table style="width: 100%;">
         <tr>
@@ -6,8 +6,8 @@
             <td class="text-right"><a href="https://www.blockstream.info/tx/{{ tx?.txid }}" target="_blank">{{ txIdShort }}</a></td>
         </tr>
         <tr>
-            <td class="text-left"><b>Fees:</b></td>
-            <td class="text-right">{{ tx?.fee }} BTC</td>
+            <td class="text-left"><b>Fee:</b></td>
+            <td class="text-right">{{ tx?.fee * 100000000 | number }} sats <span *ngIf="conversions">(<span class="green-color">{{ conversions.USD * tx?.fee | currency:'USD':'symbol':'1.2-2' }}</span>)</span></td>
         </tr>
         <tr>
           <td class="text-left"><b>Fee per vByte:</b></td>

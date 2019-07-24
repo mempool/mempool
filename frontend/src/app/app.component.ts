@@ -24,7 +24,7 @@ export class AppComponent implements OnInit {
       txId: ['', Validators.pattern('^[a-fA-F0-9]{64}$')],
     });
 
-    this.memPoolService.isOffline
+    this.memPoolService.isOffline$
       .subscribe((state) => {
         this.isOffline = state;
       });
@@ -42,7 +42,7 @@ export class AppComponent implements OnInit {
       } else {
         this.router.navigate(['/tx/', txId]);
       }
-      this.memPoolService.txIdSearch.next(txId);
+      this.memPoolService.txIdSearch$.next(txId);
       this.searchForm.setValue({
         txId: '',
       });
