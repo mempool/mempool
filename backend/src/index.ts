@@ -127,6 +127,9 @@ class MempoolSpace {
               }));
             } else {
               console.log('TX NOT FOUND, NOT TRACKING');
+              client['trackingTx'] = false;
+              client['blockHeight'] = 0;
+              client['tx'] = null;
               client.send(JSON.stringify({
                 'track-tx': {
                   tracking: false,

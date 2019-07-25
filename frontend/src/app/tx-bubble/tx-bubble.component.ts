@@ -12,7 +12,7 @@ export class TxBubbleComponent implements OnInit, OnDestroy {
   tx: ITransaction | null = null;
   txTrackingBlockHeight = 0;
   latestBlockHeight = 0;
-  arrowPosition: 'top' | 'right' | 'bottom' | 'top-right' | 'top-left' = 'top';
+  txBubbleArrowPosition: 'top' | 'right' | 'bottom' | 'top-right' | 'top-left' = 'top';
 
   txTrackingSubscription: Subscription;
   projectedBlocksSubscription: Subscription;
@@ -34,8 +34,6 @@ export class TxBubbleComponent implements OnInit, OnDestroy {
   txTrackingEnabled = false;
   txTrackingTx: ITransaction | null = null;
   txShowTxNotFound = false;
-
-  txBubbleArrowPosition = 'top';
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
@@ -77,6 +75,7 @@ export class TxBubbleComponent implements OnInit, OnDestroy {
         if (this.txTrackingBlockHeight) {
           this.confirmations = (this.latestBlockHeight - this.txTrackingBlockHeight) + 1;
         }
+        setTimeout(() => this.moveTxBubbleToPosition(), 1000);
       });
 
     this.memPoolService.conversions$
@@ -117,7 +116,7 @@ export class TxBubbleComponent implements OnInit, OnDestroy {
       } else {
         this.txBubbleStyle['left'] = window.innerWidth - 220 + 'px';
         this.txBubbleArrowPosition = 'right';
-        this.txBubbleStyle['top'] = '425px';
+        this.txBubbleStyle['top'] = '460px';
       }
     } else {
       this.txBubbleArrowPosition = 'top';
