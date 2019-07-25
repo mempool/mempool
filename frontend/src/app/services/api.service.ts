@@ -4,7 +4,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { IMempoolDefaultResponse, IMempoolStats, IBlockTransaction, IBlock } from '../blockchain/interfaces';
 import { Observable } from 'rxjs';
 import { MemPoolService } from './mem-pool.service';
-import { tap, retryWhen } from 'rxjs/operators';
+import { tap, retryWhen, delay } from 'rxjs/operators';
 
 const WEB_SOCKET_URL = 'ws://' + document.location.hostname + ':8999';
 const API_BASE_URL = '/api/v1';
@@ -27,7 +27,8 @@ export class ApiService {
       .pipe(
         retryWhen((errors: any) => errors
           .pipe(
-            tap(() => this.memPoolService.isOffline$.next(true))
+            tap(() => this.memPoolService.isOffline$.next(true)),
+            delay(5000),
           )
         ),
       )
