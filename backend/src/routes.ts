@@ -53,6 +53,19 @@ class Routes {
       res.status(500).send(e.message);
     }
   }
+
+  public async getProjectedBlocks(req, res) {
+    try {
+      let txId: string | undefined;
+      if (req.params.txId && /^[a-fA-F0-9]{64}$/.test(req.param.txId)) {
+        txId = req.params.txId;
+      }
+      const result = await projectedBlocks.getProjectedBlocks(txId, 6);
+      res.send(result);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
+  }
 }
 
 export default new Routes();

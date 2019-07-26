@@ -251,6 +251,7 @@ class MempoolSpace {
       .get(config.API_ENDPOINT + 'transactions/height/:id', routes.$getgetTransactionsForBlock)
       .get(config.API_ENDPOINT + 'transactions/projected/:id', routes.getgetTransactionsForProjectedBlock)
       .get(config.API_ENDPOINT + 'fees/recommended', routes.getRecommendedFees)
+      .get(config.API_ENDPOINT + 'fees/projected-blocks', routes.getProjectedBlocks)
       .get(config.API_ENDPOINT + 'statistics/2h', routes.get2HStatistics)
       .get(config.API_ENDPOINT + 'statistics/24h', routes.get24HStatistics)
       .get(config.API_ENDPOINT + 'statistics/1w', routes.get1WHStatistics)
