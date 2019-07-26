@@ -9,6 +9,7 @@ import { IMempoolStats } from '../blockchain/interfaces';
 import { Subject, of, merge} from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
+import { MemPoolService } from '../services/mem-pool.service';
 
 @Component({
   selector: 'app-statistics',
@@ -32,14 +33,13 @@ export class StatisticsComponent implements OnInit {
 
   radioGroupForm: FormGroup;
 
-  reloadData$: Subject<any> = new Subject();
-
   constructor(
     private apiService: ApiService,
     @Inject(LOCALE_ID) private locale: string,
     private bytesPipe: BytesPipe,
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
+    private memPoolService: MemPoolService,
   ) {
     this.radioGroupForm = this.formBuilder.group({
       'dateSpan': '2h'
@@ -47,19 +47,6 @@ export class StatisticsComponent implements OnInit {
    }
 
   ngOnInit() {
-    const now = new Date();
-    const nextInterval = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(),
-      Math.floor(now.getMinutes() / 1) * 1 + 1, 0, 0);
-    const difference = nextInterval.getTime() - now.getTime();
-
-    setTimeout(() => {
-      setInterval(() => {
-        if (this.radioGroupForm.controls['dateSpan'].value === '2h') {
-          this.reloadData$.next();
-        }
-      }, 60 * 1000);
-    }, difference + 1000); // Next whole minute + 1 second
-
     const labelInterpolationFnc = (value: any, index: any) => {
       const nr = 6;
 
@@ -156,7 +143,6 @@ export class StatisticsComponent implements OnInit {
 
     merge(
       of(''),
-      this.reloadData$,
       this.radioGroupForm.controls['dateSpan'].valueChanges
         .pipe(
           tap(() => {
@@ -167,46 +153,39 @@ export class StatisticsComponent implements OnInit {
     .pipe(
       switchMap(() => {
         this.spinnerLoading = true;
-        if (this.radioGroupForm.controls['dateSpan'].value === '6m') {
-          return this.apiService.list6MStatistics$();
+        if (this.radioGroupForm.controls['dateSpan'].value === '2h') {
+          this.apiService.sendWebSocket({'action': 'want', data: ['live-2h-chart']});
+          return this.apiService.list2HStatistics$();
         }
-        if (this.radioGroupForm.controls['dateSpan'].value === '3m') {
-          return this.apiService.list3MStatistics$();
-        }
-        if (this.radioGroupForm.controls['dateSpan'].value === '1m') {
-          return this.apiService.list1MStatistics$();
+        this.apiService.sendWebSocket({'action': 'want', data: ['']});
+        if (this.radioGroupForm.controls['dateSpan'].value === '24h') {
+          return this.apiService.list24HStatistics$();
         }
         if (this.radioGroupForm.controls['dateSpan'].value === '1w') {
           return this.apiService.list1WStatistics$();
         }
-        if (this.radioGroupForm.controls['dateSpan'].value === '24h') {
-          return this.apiService.list24HStatistics$();
+        if (this.radioGroupForm.controls['dateSpan'].value === '1m') {
+          return this.apiService.list1MStatistics$();
         }
-        if (this.radioGroupForm.controls['dateSpan'].value === '2h' && !this.mempoolStats.length) {
-          return this.apiService.list2HStatistics$();
+        if (this.radioGroupForm.controls['dateSpan'].value === '3m') {
+          return this.apiService.list3MStatistics$();
         }
-        const lastId = this.mempoolStats[0].id;
-        return this.apiService.listLiveStatistics$(lastId);
+        return this.apiService.list6MStatistics$();
       })
     )
     .subscribe((mempoolStats) => {
-      let hasChange = false;
-      if (this.radioGroupForm.controls['dateSpan'].value === '2h' && this.mempoolStats.length) {
-        if (mempoolStats.length) {
-          this.mempoolStats = mempoolStats.concat(this.mempoolStats);
-          this.mempoolStats = this.mempoolStats.slice(0, this.mempoolStats.length - mempoolStats.length);
-          hasChange = true;
-        }
-      } else {
-        this.mempoolStats = mempoolStats;
-        hasChange = true;
-      }
-      if (hasChange) {
-        this.handleNewMempoolData(this.mempoolStats.concat([]));
-      }
+      this.mempoolStats = mempoolStats;
+      this.handleNewMempoolData(this.mempoolStats.concat([]));
       this.loading = false;
       this.spinnerLoading = false;
     });
+
+    this.memPoolService.live2Chart$
+      .subscribe((mempoolStats) => {
+        this.mempoolStats.unshift(mempoolStats);
+        this.mempoolStats = this.mempoolStats.slice(0, this.mempoolStats.length - 1);
+        this.handleNewMempoolData(this.mempoolStats.concat([]));
+      });
   }
 
   handleNewMempoolData(mempoolStats: IMempoolStats[]) {

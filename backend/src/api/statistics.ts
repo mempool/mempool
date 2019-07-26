@@ -5,6 +5,11 @@ import { ITransaction, IMempoolStats } from '../interfaces';
 
 class Statistics {
   protected intervalTimer: NodeJS.Timer | undefined;
+  protected newStatisticsEntryCallback: Function | undefined;
+
+  public setNewStatisticsEntryCallback(fn: Function) {
+    this.newStatisticsEntryCallback = fn;
+  }
 
   constructor() {
   }
@@ -21,7 +26,7 @@ class Statistics {
     }, difference);
   }
 
-  private runStatistics(): void {
+  private async runStatistics(): Promise<void> {
     const currentMempool = memPool.getMempool();
     const txPerSecond = memPool.getTxPerSecond();
     const vBytesPerSecond = memPool.getVBytesPerSecond();
@@ -81,7 +86,7 @@ class Statistics {
       }
     });
 
-    this.$create({
+    const insertId = await this.$create({
       added: 'NOW()',
       unconfirmed_transactions: memPoolArray.length,
       tx_per_second: txPerSecond,
@@ -131,9 +136,14 @@ class Statistics {
       vsize_1800: weightVsizeFees['1800'] || 0,
       vsize_2000: weightVsizeFees['2000'] || 0,
     });
+
+    if (this.newStatisticsEntryCallback && insertId) {
+      const newStats = await this.$get(insertId);
+      this.newStatisticsEntryCallback(newStats);
+    }
   }
 
-  private async $create(statistics: IMempoolStats): Promise<void> {
+  private async $create(statistics: IMempoolStats): Promise<number | undefined> {
     try {
       const connection = await DB.pool.getConnection();
       const query = `INSERT INTO statistics(
@@ -232,23 +242,11 @@ class Statistics {
         statistics.vsize_1800,
         statistics.vsize_2000,
       ];
-      await connection.query(query, params);
+      const [result]: any = await connection.query(query, params);
       connection.release();
+      return result.insertId;
     } catch (e) {
       console.log('$create() error', e);
-    }
-  }
-
-  public async $listLatestFromId(fromId: number): Promise<IMempoolStats[]> {
-    try {
-      const connection = await DB.pool.getConnection();
-      const query = `SELECT * FROM statistics WHERE id > ? ORDER BY id DESC`;
-      const [rows] = await connection.query<any>(query, [fromId]);
-      connection.release();
-      return rows;
-    } catch (e) {
-      console.log('$listLatestFromId() error', e);
-      return [];
     }
   }
 
@@ -295,6 +293,18 @@ class Statistics {
             AVG(vsize_1600) AS vsize_1600,
             AVG(vsize_1800) AS vsize_1800,
             AVG(vsize_2000) AS vsize_2000 FROM statistics GROUP BY UNIX_TIMESTAMP(added) DIV ${groupBy} ORDER BY id DESC LIMIT ${days}`;
+  }
+
+  public async $get(id: number): Promise<IMempoolStats | undefined> {
+    try {
+      const connection = await DB.pool.getConnection();
+      const query = `SELECT * FROM statistics WHERE id = ?`;
+      const [rows] = await connection.query<any>(query, [id]);
+      connection.release();
+      return rows[0];
+    } catch (e) {
+      console.log('$list2H() error', e);
+    }
   }
 
   public async $list2H(): Promise<IMempoolStats[]> {

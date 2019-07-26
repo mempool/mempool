@@ -12,7 +12,7 @@ import memPool from './api/mempool';
 import blocks from './api/blocks';
 import projectedBlocks from './api/projected-blocks';
 import statistics from './api/statistics';
-import { IBlock, IMempool } from './interfaces';
+import { IBlock, IMempool, ITransaction, IMempoolStats } from './interfaces';
 
 import routes from './routes';
 import fiatConversion from './api/fiat-conversion';
@@ -57,7 +57,7 @@ class MempoolSpace {
 
   private async runMempoolIntervalFunctions() {
     await blocks.updateBlocks();
-    await memPool.getMemPoolInfo();
+    await memPool.updateMemPoolInfo();
     await memPool.updateMempool();
     setTimeout(this.runMempoolIntervalFunctions.bind(this), config.MEMPOOL_REFRESH_RATE_MS);
   }
@@ -79,7 +79,6 @@ class MempoolSpace {
     this.wss.on('connection', (client: WebSocket) => {
       let theBlocks = blocks.getBlocks();
       theBlocks = theBlocks.concat([]).splice(theBlocks.length - config.INITIAL_BLOCK_AMOUNT);
-
       const formatedBlocks = theBlocks.map((b) => blocks.formatBlock(b));
 
       client.send(JSON.stringify({
@@ -94,6 +93,14 @@ class MempoolSpace {
       client.on('message', async (message: any) => {
         try {
           const parsedMessage = JSON.parse(message);
+
+          if (parsedMessage.action === 'want') {
+            client['want-stats'] = parsedMessage.data.indexOf('stats') > -1;
+            client['want-blocks'] = parsedMessage.data.indexOf('blocks') > -1;
+            client['want-projected-blocks'] = parsedMessage.data.indexOf('projected-blocks') > -1;
+            client['want-live-2h-chart'] = parsedMessage.data.indexOf('live-2h-chart') > -1;
+          }
+
           if (parsedMessage.action === 'track-tx' && parsedMessage.txId && /^[a-fA-F0-9]{64}$/.test(parsedMessage.txId)) {
             const tx = await memPool.getRawTransaction(parsedMessage.txId);
             if (tx) {
@@ -168,26 +175,29 @@ class MempoolSpace {
           return;
         }
 
+        const response = {};
+
         if (client['trackingTx'] === true && client['blockHeight'] === 0) {
-          if (block.tx.some((tx) => tx === client['txId'])) {
+          if (block.tx.some((tx: ITransaction) => tx === client['txId'])) {
             client['blockHeight'] = block.height;
           }
         }
 
-        client.send(JSON.stringify({
-          'block': formattedBlocks,
-          'track-tx': {
-            tracking: client['trackingTx'] || false,
-            blockHeight: client['blockHeight'],
-          }
-        }));
+        response['track-tx'] = {
+          tracking: client['trackingTx'] || false,
+          blockHeight: client['blockHeight'],
+        };
+
+        response['block'] = formattedBlocks;
+
+        client.send(JSON.stringify(response));
       });
     });
 
     memPool.setMempoolChangedCallback((newMempool: IMempool) => {
       projectedBlocks.updateProjectedBlocks(newMempool);
 
-      let pBlocks = projectedBlocks.getProjectedBlocks();
+      const pBlocks = projectedBlocks.getProjectedBlocks();
       const mempoolInfo = memPool.getMempoolInfo();
       const txPerSecond = memPool.getTxPerSecond();
       const vBytesPerSecond = memPool.getVBytesPerSecond();
@@ -197,20 +207,41 @@ class MempoolSpace {
           return;
         }
 
-        if (client['trackingTx'] && client['blockHeight'] === 0) {
-          pBlocks = projectedBlocks.getProjectedBlocks(client['txId']);
-        }
+        const response = {};
 
-        client.send(JSON.stringify({
-          'projectedBlocks': pBlocks,
-          'mempoolInfo': mempoolInfo,
-          'txPerSecond': txPerSecond,
-          'vBytesPerSecond': vBytesPerSecond,
-          'track-tx': {
+        if (client['want-stats']) {
+          response['mempoolInfo'] = mempoolInfo;
+          response['txPerSecond'] = txPerSecond;
+          response['vBytesPerSecond'] = vBytesPerSecond;
+          response['track-tx'] = {
             tracking: client['trackingTx'] || false,
             blockHeight: client['blockHeight'],
-          }
-        }));
+          };
+        }
+
+        if (client['want-projected-blocks'] && client['trackingTx'] && client['blockHeight'] === 0) {
+          response['projectedBlocks'] = projectedBlocks.getProjectedBlocks(client['txId']);
+        } else if (client['want-projected-blocks']) {
+          response['projectedBlocks'] = pBlocks;
+        }
+
+        if (Object.keys(response).length) {
+          client.send(JSON.stringify(response));
+        }
+      });
+    });
+
+    statistics.setNewStatisticsEntryCallback((stats: IMempoolStats) => {
+      this.wss.clients.forEach((client: WebSocket) => {
+        if (client.readyState !== WebSocket.OPEN) {
+          return;
+        }
+
+        if (client['want-live-2h-chart']) {
+          client.send(JSON.stringify({
+            'live-2h-chart': stats
+          }));
+        }
       });
     });
   }
@@ -220,7 +251,6 @@ class MempoolSpace {
       .get(config.API_ENDPOINT + 'transactions/height/:id', routes.$getgetTransactionsForBlock)
       .get(config.API_ENDPOINT + 'transactions/projected/:id', routes.getgetTransactionsForProjectedBlock)
       .get(config.API_ENDPOINT + 'fees/recommended', routes.getRecommendedFees)
-      .get(config.API_ENDPOINT + 'statistics/live', routes.getLiveResult)
       .get(config.API_ENDPOINT + 'statistics/2h', routes.get2HStatistics)
       .get(config.API_ENDPOINT + 'statistics/24h', routes.get24HStatistics)
       .get(config.API_ENDPOINT + 'statistics/1w', routes.get1WHStatistics)

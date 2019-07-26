@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ReplaySubject, BehaviorSubject } from 'rxjs';
-import { IMempoolInfo, IBlock, IProjectedBlock, ITransaction } from '../blockchain/interfaces';
+import { ReplaySubject, BehaviorSubject, Subject } from 'rxjs';
+import { IMempoolInfo, IBlock, IProjectedBlock, ITransaction, IMempoolStats } from '../blockchain/interfaces';
 
 export interface IMemPoolState {
   memPoolInfo: IMempoolInfo;
@@ -24,6 +24,7 @@ export class MemPoolService {
   txIdSearch$ = new ReplaySubject<string>();
   conversions$ = new ReplaySubject<any>();
   mempoolWeight$ = new ReplaySubject<number>();
+  live2Chart$ = new Subject<IMempoolStats>();
   txTracking$ = new BehaviorSubject<ITxTracking>({
     enabled: false,
     tx: null,

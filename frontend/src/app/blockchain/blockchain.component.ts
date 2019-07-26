@@ -26,6 +26,8 @@ export class BlockchainComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.apiService.sendWebSocket({'action': 'want', data: ['stats', 'blocks', 'projected-blocks']});
+
     this.txTrackingSubscription = this.memPoolService.txTracking$
       .subscribe((response: ITxTracking) => {
         this.txTrackingLoading = false;

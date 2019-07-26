@@ -5,11 +5,6 @@ import projectedBlocks from './api/projected-blocks';
 class Routes {
   constructor() {}
 
-  public async getLiveResult(req, res) {
-    const result = await statistics.$listLatestFromId(req.query.lastId);
-    res.send(result);
-  }
-
   public async get2HStatistics(req, res) {
     const result = await statistics.$list2H();
     res.send(result);

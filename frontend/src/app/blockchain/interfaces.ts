@@ -12,6 +12,7 @@ export interface IMempoolDefaultResponse {
   blocks?: IBlock[];
   block?: IBlock;
   projectedBlocks?: IProjectedBlock[];
+  'live-2h-chart'?: IMempoolStats;
   txPerSecond?: number;
   vBytesPerSecond: number;
   'track-tx'?: ITrackTx;
