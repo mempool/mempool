@@ -44,7 +44,9 @@ export class ApiService {
             this.memPoolService.blocks$.next(response.block);
           }
 
-          if (response.projectedBlocks) {
+          if (response.projectedBlocks && response.projectedBlocks.length) {
+            const mempoolWeight = response.projectedBlocks.map((block: any) => block.blockWeight).reduce((a: any, b: any) => a + b);
+            this.memPoolService.mempoolWeight$.next(mempoolWeight);
             this.memPoolService.projectedBlocks$.next(response.projectedBlocks);
           }
 
@@ -58,11 +60,6 @@ export class ApiService {
 
           if (response.conversions) {
             this.memPoolService.conversions$.next(response.conversions);
-          }
-
-          if (response.projectedBlocks) {
-            const mempoolWeight = response.projectedBlocks.map((block: any) => block.blockWeight).reduce((a: any, b: any) => a + b);
-            this.memPoolService.mempoolWeight$.next(mempoolWeight);
           }
 
           if (response['track-tx']) {
