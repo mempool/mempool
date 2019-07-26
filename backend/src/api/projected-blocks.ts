@@ -1,29 +1,13 @@
+const config = require('../../mempool-config.json');
 import { ITransaction, IProjectedBlock, IMempool, IProjectedBlockInternal } from '../interfaces';
 
 class ProjectedBlocks {
-  private projectedBlocks: IProjectedBlockInternal[] = [];
+  private transactionsSorted: ITransaction[] = [];
 
   constructor() {}
 
-  public getProjectedBlocks(txId?: string): IProjectedBlock[] {
-    return this.projectedBlocks.map((projectedBlock) => {
-      return {
-        blockSize: projectedBlock.blockSize,
-        blockWeight: projectedBlock.blockWeight,
-        nTx: projectedBlock.nTx,
-        minFee: projectedBlock.minFee,
-        maxFee: projectedBlock.maxFee,
-        minWeightFee: projectedBlock.minWeightFee,
-        maxWeightFee: projectedBlock.maxWeightFee,
-        medianFee: projectedBlock.medianFee,
-        fees: projectedBlock.fees,
-        hasMytx: txId ? projectedBlock.txIds.some((tx) => tx === txId) : false
-      };
-    });
-  }
-
   public getProjectedBlockFeesForBlock(index: number) {
-    const projectedBlock = this.projectedBlocks[index];
+    const projectedBlock = this.getProjectedBlocksInternal()[index];
 
     if (!projectedBlock) {
       throw new Error('No projected block for that index');
@@ -42,20 +26,34 @@ class ProjectedBlocks {
         memPoolArray.push(latestMempool[i]);
       }
     }
-
-    if (!memPoolArray.length) {
-      this.projectedBlocks = [];
-    }
-
     memPoolArray.sort((a, b) => b.feePerWeightUnit - a.feePerWeightUnit);
-    const memPoolArrayFiltered = memPoolArray.filter((tx) => tx.feePerWeightUnit);
-    const projectedBlocks: any = [];
+    this.transactionsSorted = memPoolArray.filter((tx) => tx.feePerWeightUnit);
+  }
 
+  public getProjectedBlocks(txId?: string, numberOfBlocks: number = config.DEFAULT_PROJECTED_BLOCKS_AMOUNT): IProjectedBlock[] {
+    return this.getProjectedBlocksInternal(numberOfBlocks).map((projectedBlock) => {
+      return {
+        blockSize: projectedBlock.blockSize,
+        blockWeight: projectedBlock.blockWeight,
+        nTx: projectedBlock.nTx,
+        minFee: projectedBlock.minFee,
+        maxFee: projectedBlock.maxFee,
+        minWeightFee: projectedBlock.minWeightFee,
+        maxWeightFee: projectedBlock.maxWeightFee,
+        medianFee: projectedBlock.medianFee,
+        fees: projectedBlock.fees,
+        hasMytx: txId ? projectedBlock.txIds.some((tx) => tx === txId) : false
+      };
+    });
+  }
+
+  private getProjectedBlocksInternal(numberOfBlocks: number = config.DEFAULT_PROJECTED_BLOCKS_AMOUNT): IProjectedBlockInternal[] {
+    const projectedBlocks: IProjectedBlockInternal[] = [];
     let blockWeight = 0;
     let blockSize = 0;
     let transactions: ITransaction[] = [];
-    memPoolArrayFiltered.forEach((tx) => {
-      if (blockWeight + tx.vsize * 4 < 4000000 || projectedBlocks.length === 3) {
+    this.transactionsSorted.forEach((tx) => {
+      if (blockWeight + tx.vsize * 4 < 4000000 || projectedBlocks.length === numberOfBlocks) {
         blockWeight += tx.vsize * 4;
         blockSize += tx.size;
         transactions.push(tx);
@@ -69,7 +67,7 @@ class ProjectedBlocks {
     if (transactions.length) {
       projectedBlocks.push(this.dataToProjectedBlock(transactions, blockSize, blockWeight));
     }
-    this.projectedBlocks = projectedBlocks;
+    return projectedBlocks;
   }
 
   private dataToProjectedBlock(transactions: ITransaction[], blockSize: number, blockWeight: number): IProjectedBlockInternal {
