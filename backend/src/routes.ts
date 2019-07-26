@@ -57,8 +57,8 @@ class Routes {
   public async getProjectedBlocks(req, res) {
     try {
       let txId: string | undefined;
-      if (req.params.txId && /^[a-fA-F0-9]{64}$/.test(req.param.txId)) {
-        txId = req.params.txId;
+      if (req.query.txId && /^[a-fA-F0-9]{64}$/.test(req.query.txId)) {
+        txId = req.query.txId;
       }
       const result = await projectedBlocks.getProjectedBlocks(txId, 6);
       res.send(result);
