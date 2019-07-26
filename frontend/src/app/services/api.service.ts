@@ -13,7 +13,7 @@ const API_BASE_URL = '/api/v1';
   providedIn: 'root'
 })
 export class ApiService {
-  private websocketSubject: Observable<IMempoolDefaultResponse> = webSocket<IMempoolDefaultResponse | any>(WEB_SOCKET_URL)
+  private websocketSubject: Observable<IMempoolDefaultResponse> = webSocket<IMempoolDefaultResponse | any>(WEB_SOCKET_URL);
 
   constructor(
     private httpClient: HttpClient,
@@ -91,12 +91,16 @@ export class ApiService {
               notFound: txShowTxNotFound,
             });
           }
-        }),
+
+          if (response['live-2h-chart']) {
+            this.memPoolService.live2Chart$.next(response['live-2h-chart']);
+          }
+        },
         (err: Error) => {
           console.log(err);
           console.log('Error, retrying in 10 sec');
           setTimeout(() => this.startSubscription(), 10000);
-        };
+        });
   }
 
   sendWebSocket(data: any) {
@@ -110,15 +114,6 @@ export class ApiService {
 
   listTransactionsForProjectedBlock$(index: number): Observable<IBlockTransaction[]> {
     return this.httpClient.get<IBlockTransaction[]>(API_BASE_URL + '/transactions/projected/' + index);
-  }
-
-  listLiveStatistics$(lastId: number): Observable<IMempoolStats[]> {
-    const params = new HttpParams()
-      .set('lastId', lastId.toString());
-
-    return this.httpClient.get<IMempoolStats[]>(API_BASE_URL + '/statistics/live', {
-      params: params
-    });
   }
 
   list2HStatistics$(): Observable<IMempoolStats[]> {

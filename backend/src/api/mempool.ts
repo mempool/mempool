@@ -41,7 +41,7 @@ class Mempool {
     return this.vBytesPerSecond;
   }
 
-  public async getMemPoolInfo() {
+  public async updateMemPoolInfo() {
     try {
       this.mempoolInfo = await bitcoinApi.getMempoolInfo();
     } catch (err) {

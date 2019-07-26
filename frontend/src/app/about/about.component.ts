@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ApiService } from '../services/api.service';
 
 @Component({
   selector: 'app-about',
@@ -7,9 +8,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AboutComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private apiService: ApiService,
+  ) { }
 
   ngOnInit() {
+    this.apiService.sendWebSocket({'action': 'want', data: []});
   }
 
 }
