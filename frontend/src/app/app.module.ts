@@ -14,8 +14,11 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BlockModalComponent } from './blockchain-blocks/block-modal/block-modal.component';
 import { StatisticsComponent } from './statistics/statistics.component';
 import { ProjectedBlockModalComponent } from './blockchain-projected-blocks/projected-block-modal/projected-block-modal.component';
+import { TelevisionComponent } from './television/television.component';
 import { BlockchainBlocksComponent } from './blockchain-blocks/blockchain-blocks.component';
 import { BlockchainProjectedBlocksComponent } from './blockchain-projected-blocks/blockchain-projected-blocks.component';
+import { ApiService } from './services/api.service';
+import { MasterPageComponent } from './master-page/master-page.component';
 
 @NgModule({
   declarations: [
@@ -27,8 +30,10 @@ import { BlockchainProjectedBlocksComponent } from './blockchain-projected-block
     TxBubbleComponent,
     BlockModalComponent,
     ProjectedBlockModalComponent,
+    TelevisionComponent,
     BlockchainBlocksComponent,
     BlockchainProjectedBlocksComponent,
+    MasterPageComponent,
   ],
   imports: [
     ReactiveFormsModule,
@@ -38,6 +43,7 @@ import { BlockchainProjectedBlocksComponent } from './blockchain-projected-block
     SharedModule,
   ],
   providers: [
+    ApiService,
     MemPoolService,
   ],
   entryComponents: [

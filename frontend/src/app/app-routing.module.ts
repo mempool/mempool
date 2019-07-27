@@ -3,30 +3,42 @@ import { Routes, RouterModule } from '@angular/router';
 import { BlockchainComponent } from './blockchain/blockchain.component';
 import { AboutComponent } from './about/about.component';
 import { StatisticsComponent } from './statistics/statistics.component';
+import { TelevisionComponent } from './television/television.component';
+import { MasterPageComponent } from './master-page/master-page.component';
 
 const routes: Routes = [
   {
     path: '',
-    children: [],
-    component: BlockchainComponent
+    component: MasterPageComponent,
+    children: [
+      {
+        path: '',
+        children: [],
+        component: BlockchainComponent
+      },
+      {
+        path: 'tx/:id',
+        children: [],
+        component: BlockchainComponent
+      },
+      {
+        path: 'about',
+        children: [],
+        component: AboutComponent
+      },
+      {
+        path: 'statistics',
+        component: StatisticsComponent,
+      },
+      {
+        path: 'graphs',
+        component: StatisticsComponent,
+      },
+    ],
   },
   {
-    path: 'tx/:id',
-    children: [],
-    component: BlockchainComponent
-  },
-  {
-    path: 'about',
-    children: [],
-    component: AboutComponent
-  },
-  {
-    path: 'statistics',
-    component: StatisticsComponent,
-  },
-  {
-    path: 'graphs',
-    component: StatisticsComponent,
+    path: 'tv',
+    component: TelevisionComponent,
   },
   {
     path: '**',

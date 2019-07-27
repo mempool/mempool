@@ -66,6 +66,10 @@ body {
   margin-bottom: 60px;
 }
 
+html, body {
+  height: 100%;
+}
+
 @media (min-width: 768px) {
   body.disable-scroll {
     overflow: hidden;

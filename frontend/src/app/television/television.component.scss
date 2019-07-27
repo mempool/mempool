@@ -1,0 +1,35 @@
+#tv-wrapper {
+  height: 100%;
+  margin: 10px;
+  margin-top: 20px;
+}
+
+.blockchain-wrapper {
+  overflow: hidden;
+}
+
+.position-container {
+  position: absolute;
+  left: 50%;
+  bottom: 150px;
+}
+
+#divider {
+  width: 3px;
+  height: 175px;
+  left: 0;
+  top: -40px;
+  background-image: url('/assets/divider-new.png');
+  background-repeat: repeat-y;
+  position: absolute;
+}
+
+#divider > img {
+  position: absolute;
+  left: -100px;
+  top: -28px;
+}
+
+.chart-holder {
+  height: calc(100% - 220px);
+}
