@@ -27,7 +27,7 @@ export class TelevisionComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.apiService.sendWebSocket({'action': 'want', data: ['projected-blocks', 'live-2h-chart']});
+    this.apiService.webSocketWant(['projected-blocks', 'live-2h-chart']);
 
     const labelInterpolationFnc = (value: any, index: any) => {
       return index % 6  === 0 ? formatDate(value, 'HH:mm', this.locale) : null;

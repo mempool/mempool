@@ -154,10 +154,10 @@ export class StatisticsComponent implements OnInit {
       switchMap(() => {
         this.spinnerLoading = true;
         if (this.radioGroupForm.controls['dateSpan'].value === '2h') {
-          this.apiService.sendWebSocket({'action': 'want', data: ['live-2h-chart']});
+          this.apiService.webSocketWant(['live-2h-chart']);
           return this.apiService.list2HStatistics$();
         }
-        this.apiService.sendWebSocket({'action': 'want', data: ['']});
+        this.apiService.webSocketWant([]);
         if (this.radioGroupForm.controls['dateSpan'].value === '24h') {
           return this.apiService.list24HStatistics$();
         }
