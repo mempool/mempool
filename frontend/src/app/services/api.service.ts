@@ -14,6 +14,8 @@ const API_BASE_URL = '/api/v1';
 })
 export class ApiService {
   private websocketSubject: Observable<IMempoolDefaultResponse> = webSocket<IMempoolDefaultResponse | any>(WEB_SOCKET_URL);
+  private lastWant: string[] | null = null;
+  private goneOffline = false;
 
   constructor(
     private httpClient: HttpClient,
@@ -27,7 +29,10 @@ export class ApiService {
       .pipe(
         retryWhen((errors: any) => errors
           .pipe(
-            tap(() => this.memPoolService.isOffline$.next(true)),
+            tap(() => {
+              this.goneOffline = true;
+              this.memPoolService.isOffline$.next(true);
+            }),
             delay(5000),
           )
         ),
@@ -92,17 +97,31 @@ export class ApiService {
           if (response['live-2h-chart']) {
             this.memPoolService.live2Chart$.next(response['live-2h-chart']);
           }
+
+          if (this.goneOffline === true) {
+            this.goneOffline = false;
+            if (this.lastWant) {
+              this.webSocketWant(this.lastWant);
+            }
+          }
         },
         (err: Error) => {
           console.log(err);
+          this.goneOffline = true;
           console.log('Error, retrying in 10 sec');
           setTimeout(() => this.startSubscription(), 10000);
         });
   }
 
-  sendWebSocket(data: any) {
+  webSocketStartTrackTx(txId: string) {
     // @ts-ignore
-    this.websocketSubject.next(data);
+    this.websocketSubject.next({'action': 'track-tx', 'txId': txId});
+  }
+
+  webSocketWant(data: string[]) {
+    // @ts-ignore
+    this.websocketSubject.next({'action': 'want', data: data});
+    this.lastWant = data;
   }
 
   listTransactionsForBlock$(height: number): Observable<IBlockTransaction[]> {

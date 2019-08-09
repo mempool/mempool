@@ -26,7 +26,7 @@ export class BlockchainComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.apiService.sendWebSocket({'action': 'want', data: ['stats', 'blocks', 'projected-blocks']});
+    this.apiService.webSocketWant(['stats', 'blocks', 'projected-blocks']);
 
     this.txTrackingSubscription = this.memPoolService.txTracking$
       .subscribe((response: ITxTracking) => {
@@ -46,14 +46,14 @@ export class BlockchainComponent implements OnInit, OnDestroy {
           return;
         }
         this.txTrackingLoading = true;
-        this.apiService.sendWebSocket({'action': 'track-tx', 'txId': txId});
+        this.apiService.webSocketStartTrackTx(txId);
       });
 
     this.memPoolService.txIdSearch$
       .subscribe((txId) => {
         if (txId) {
           this.txTrackingLoading = true;
-          this.apiService.sendWebSocket({'action': 'track-tx', 'txId': txId});
+          this.apiService.webSocketStartTrackTx(txId);
         }
       });
 

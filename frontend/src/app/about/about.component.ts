@@ -13,7 +13,7 @@ export class AboutComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.apiService.sendWebSocket({'action': 'want', data: []});
+    this.apiService.webSocketWant([]);
   }
 
 }
