@@ -253,11 +253,11 @@ class MempoolSpace {
       .get(config.API_ENDPOINT + 'fees/recommended', routes.getRecommendedFees)
       .get(config.API_ENDPOINT + 'fees/projected-blocks', routes.getProjectedBlocks)
       .get(config.API_ENDPOINT + 'statistics/2h', routes.get2HStatistics)
-      .get(config.API_ENDPOINT + 'statistics/24h', routes.get24HStatistics)
-      .get(config.API_ENDPOINT + 'statistics/1w', routes.get1WHStatistics)
-      .get(config.API_ENDPOINT + 'statistics/1m', routes.get1MStatistics)
-      .get(config.API_ENDPOINT + 'statistics/3m', routes.get3MStatistics)
-      .get(config.API_ENDPOINT + 'statistics/6m', routes.get6MStatistics)
+      .get(config.API_ENDPOINT + 'statistics/24h', routes.get24HStatistics.bind(routes))
+      .get(config.API_ENDPOINT + 'statistics/1w', routes.get1WHStatistics.bind(routes))
+      .get(config.API_ENDPOINT + 'statistics/1m', routes.get1MStatistics.bind(routes))
+      .get(config.API_ENDPOINT + 'statistics/3m', routes.get3MStatistics.bind(routes))
+      .get(config.API_ENDPOINT + 'statistics/6m', routes.get6MStatistics.bind(routes))
       ;
   }
 }

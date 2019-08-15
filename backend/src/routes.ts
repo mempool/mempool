@@ -3,36 +3,45 @@ import feeApi from './api/fee-api';
 import projectedBlocks from './api/projected-blocks';
 
 class Routes {
-  constructor() {}
+  private cache = {};
+
+  constructor() {
+    this.createCache();
+    setTimeout(this.createCache.bind(this), 600000);
+  }
+
+  private async createCache() {
+    this.cache['24h'] = await statistics.$list24H();
+    this.cache['1w'] = await statistics.$list1W();
+    this.cache['1m'] = await statistics.$list1M();
+    this.cache['3m'] = await statistics.$list3M();
+    this.cache['6m'] = await statistics.$list6M();
+    console.log('Statistics cache created');
+  }
 
   public async get2HStatistics(req, res) {
     const result = await statistics.$list2H();
     res.send(result);
   }
 
-  public async get24HStatistics(req, res) {
-    const result = await statistics.$list24H();
-    res.send(result);
+  public get24HStatistics(req, res) {
+    res.send(this.cache['24h']);
   }
 
-  public async get1WHStatistics(req, res) {
-    const result = await statistics.$list1W();
-    res.send(result);
+  public get1WHStatistics(req, res) {
+    res.send(this.cache['1w']);
   }
 
-  public async get1MStatistics(req, res) {
-    const result = await statistics.$list1M();
-    res.send(result);
+  public get1MStatistics(req, res) {
+    res.send(this.cache['1m']);
   }
 
-  public async get3MStatistics(req, res) {
-    const result = await statistics.$list3M();
-    res.send(result);
+  public get3MStatistics(req, res) {
+    res.send(this.cache['3m']);
   }
 
-  public async get6MStatistics(req, res) {
-    const result = await statistics.$list6M();
-    res.send(result);
+  public get6MStatistics(req, res) {
+    res.send(this.cache['6m']);
   }
 
   public async getRecommendedFees(req, res) {
