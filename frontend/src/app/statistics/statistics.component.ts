@@ -24,11 +24,9 @@ export class StatisticsComponent implements OnInit {
 
   mempoolVsizeFeesData: any;
   mempoolUnconfirmedTransactionsData: any;
-  mempoolTransactionsPerSecondData: any;
   mempoolTransactionsWeightPerSecondData: any;
 
   mempoolVsizeFeesOptions: any;
-  transactionsPerSecondOptions: any;
   transactionsWeightPerSecondOptions: any;
 
   radioGroupForm: FormGroup;
@@ -120,19 +118,6 @@ export class StatisticsComponent implements OnInit {
       ]
     };
 
-    this.transactionsPerSecondOptions = {
-      showArea: false,
-      showLine: true,
-      showPoint: false,
-      low: 0,
-      axisY: {
-        offset: 40
-      },
-      axisX: {
-        labelInterpolationFnc: labelInterpolationFnc
-      },
-    };
-
     this.route
       .fragment
       .subscribe((fragment) => {
@@ -191,13 +176,6 @@ export class StatisticsComponent implements OnInit {
   handleNewMempoolData(mempoolStats: IMempoolStats[]) {
     mempoolStats.reverse();
     const labels = mempoolStats.map(stats => stats.added);
-
-    /** Active admins summed up */
-
-    this.mempoolTransactionsPerSecondData = {
-      labels: labels,
-      series: [mempoolStats.map((stats) => stats.tx_per_second)],
-    };
 
     this.mempoolTransactionsWeightPerSecondData = {
       labels: labels,

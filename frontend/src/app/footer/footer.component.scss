@@ -23,12 +23,14 @@
 }
 
 .info-block {
-  float:left;
+  float: left;
+  width: 350px;
+  line-height: 25px;
 }
 
 .progress {
   display: inline-flex;
-  width: 150px;
+  width: 160px;
   background-color: #2d3348;
   height: 1.1rem;
 }

@@ -11,6 +11,7 @@ export class FooterComponent implements OnInit {
   mempoolBlocks = 0;
   progressWidth = '';
   progressClass: string;
+  mempoolSize = 0;
 
   constructor(
     private memPoolService: MemPoolService
@@ -22,9 +23,14 @@ export class FooterComponent implements OnInit {
         this.memPoolInfo = mempoolState;
         this.updateProgress();
       });
-    this.memPoolService.mempoolWeight$
-      .subscribe((mempoolWeight) => {
-        this.mempoolBlocks = Math.ceil(mempoolWeight / 4000000);
+
+    this.memPoolService.projectedBlocks$
+      .subscribe((projectedblocks) => {
+        if (!projectedblocks.length) { return; }
+        const size = projectedblocks.map((m) => m.blockSize).reduce((a, b) => a + b);
+        const weight = projectedblocks.map((m) => m.blockWeight).reduce((a, b) => a + b);
+        this.mempoolSize = size;
+        this.mempoolBlocks = Math.ceil(weight / 4000000);
       });
   }
 
