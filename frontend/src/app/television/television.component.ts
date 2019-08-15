@@ -1,4 +1,4 @@
-import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
+import { Component, OnInit, LOCALE_ID, Inject, Renderer2 } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { formatDate } from '@angular/common';
 import { BytesPipe } from '../shared/pipes/bytes-pipe/bytes.pipe';
@@ -24,10 +24,13 @@ export class TelevisionComponent implements OnInit {
     @Inject(LOCALE_ID) private locale: string,
     private bytesPipe: BytesPipe,
     private memPoolService: MemPoolService,
+    private renderer: Renderer2,
   ) { }
 
   ngOnInit() {
     this.apiService.webSocketWant(['projected-blocks', 'live-2h-chart']);
+
+    this.renderer.addClass(document.body, 'disable-scroll');
 
     const labelInterpolationFnc = (value: any, index: any) => {
       return index % 6  === 0 ? formatDate(value, 'HH:mm', this.locale) : null;
