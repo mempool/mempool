@@ -26,16 +26,5 @@
 
   <hr>
 
-  <div style="height: 400px;" *ngIf="mempoolVsizeFeesData; else loadingFees">
-    <app-chartist 
-      [data]="mempoolVsizeFeesData"
-      [type]="'Bar'"
-      [options]="mempoolVsizeFeesOptions">
-    </app-chartist>
-  </div>
-  <ng-template #loadingFees>
-    <div class="text-center">
-      <div class="spinner-border text-light"></div>
-    </div>
-  </ng-template>
+  <app-fee-distribution-graph [projectedBlockIndex]="index"></app-fee-distribution-graph>
 </div>

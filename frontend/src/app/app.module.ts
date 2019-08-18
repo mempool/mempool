@@ -19,6 +19,7 @@ import { BlockchainBlocksComponent } from './blockchain-blocks/blockchain-blocks
 import { BlockchainProjectedBlocksComponent } from './blockchain-projected-blocks/blockchain-projected-blocks.component';
 import { ApiService } from './services/api.service';
 import { MasterPageComponent } from './master-page/master-page.component';
+import { FeeDistributionGraphComponent } from './fee-distribution-graph/fee-distribution-graph.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { MasterPageComponent } from './master-page/master-page.component';
     BlockchainBlocksComponent,
     BlockchainProjectedBlocksComponent,
     MasterPageComponent,
+    FeeDistributionGraphComponent,
   ],
   imports: [
     ReactiveFormsModule,
