@@ -7,7 +7,7 @@ class Routes {
 
   constructor() {
     this.createCache();
-    setTimeout(this.createCache.bind(this), 600000);
+    setInterval(this.createCache.bind(this), 600000);
   }
 
   private async createCache() {
