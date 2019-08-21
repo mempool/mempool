@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { MemPoolService } from './mem-pool.service';
 import { tap, retryWhen, delay } from 'rxjs/operators';
 
-const WEB_SOCKET_URL = 'ws://' + document.location.hostname + ':8999';
+const WEB_SOCKET_URL = 'ws://' + document.location.hostname + '/ws';
 const API_BASE_URL = '/api/v1';
 
 @Injectable({

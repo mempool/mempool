@@ -8,6 +8,7 @@ Mempool visualizer for the Bitcoin blockchain. Live demo: https://mempool.space/
 * Bitcoin (full node required, no pruning)
 * NodeJS (official stable LTS)
 * MariaDB (default config)
+* Nginx (use supplied nginx.conf)
 
 ## NodeJS setup
 
@@ -133,8 +134,10 @@ Then in another terminal:
 
 ```
 cd ../frontend/
-npm run start
+npm run build
 ```
+
+Start nginx using the supplied nginx.conf and copy the resulting dist/ into /var/www/html
 
 ## Open Browser
 
