@@ -43,3 +43,7 @@
     height: calc(100% - 280px);
   }
 }
+
+:host ::ng-deep .ct-legend {
+  top: 25px;
+}
