@@ -50,12 +50,24 @@ export class TelevisionComponent implements OnInit {
         labelInterpolationFnc: (value: number): any => {
           return this.bytesPipe.transform(value);
         },
-        offset: 50
+        offset: 160
       },
       plugins: [
         Chartist.plugins.ctTargetLine({
           value: 1000000
         }),
+        Chartist.plugins.legend({
+          legendNames: [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
+            250, 300, 350, 400].map((sats, i, arr) => {
+              if (sats === 400) {
+               return '350+';
+              }
+              if (i === 0) {
+                return '1 sat/vbyte';
+              }
+              return arr[i - 1] + ' - ' + sats;
+            })
+        })
       ]
     };
 
