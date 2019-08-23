@@ -35,6 +35,12 @@ rpcpassword=71b61986da5b03a5694d7c7d5165ece5
 txindex=1
 ```
 
+## mempool config
+Make a copy of the sample config and edit it
+```
+cp mempool-config.sample.json mempool-config.json
+```
+
 Edit mempool-config.json to add your Bitcoin node RPC credentials:
 ```
   "BITCOIN_NODE_HOST": "192.168.1.5",
@@ -65,16 +71,6 @@ Query OK, 0 rows affected (0.00 sec)
 Initialize database structure:
 ```
 mysql -u mempool -p mempool < mariadb-structure.sql
-```
-
-Edit mempool-config.json to add your MySQL/MariaDB credentials:
-
-```
-  "DB_HOST": "127.0.0.1",
-  "DB_PORT": 3306,
-  "DB_USER": "mempool",
-  "DB_PASSWORD": "mempool",
-  "DB_DATABASE": "mempool",
 ```
 
 ## mempool backend
