@@ -1,16 +1,19 @@
 # mempool.space
+🚨This is beta software, and may have issues!🚨  
+Please help us test and report bugs to our GitHub issue tracker.
+
 Mempool visualizer for the Bitcoin blockchain. Live demo: https://mempool.space/
 ![blockchain](https://pbs.twimg.com/media/EAETXWAU8AAj4IP?format=jpg&name=4096x4096)
 ![mempool](https://pbs.twimg.com/media/EAETXWCU4AAv2v-?format=jpg&name=4096x4096)
 
-## Prerequisites
+## deps
 
-* Bitcoin (full node required, no pruning)
+* Bitcoin (full node required, no pruning, txindex=1)
 * NodeJS (official stable LTS)
-* MariaDB (default config)
+* MySQL or MariaDB (default config)
 * Nginx (use supplied nginx.conf)
 
-## NodeJS setup
+## nodejs
 
 Install dependencies and build code:
 ```
@@ -23,7 +26,7 @@ npm install
 tsc
 ```
 
-## Bitcoin Setup
+## bitcoind
 
 Enable RPC and txindex in bitcoin.conf
 ```
@@ -32,7 +35,7 @@ rpcpassword=71b61986da5b03a5694d7c7d5165ece5
 txindex=1
 ```
 
-Edit mempool-config.json for your Bitcoin:
+Edit mempool-config.json to add your Bitcoin node RPC credentials:
 ```
   "BITCOIN_NODE_HOST": "192.168.1.5",
   "BITCOIN_NODE_PORT": 8332,
@@ -40,7 +43,7 @@ Edit mempool-config.json for your Bitcoin:
   "BITCOIN_NODE_PASS": "71b61986da5b03a5694d7c7d5165ece5",
 ```
 
-## Database Setup
+## mysql
 
 Install MariaDB:
 ```
@@ -64,7 +67,7 @@ Initialize database structure:
 mysql -u mempool -p mempool < mariadb-structure.sql
 ```
 
-Edit mempool-config.json for your MariaDB:
+Edit mempool-config.json to add your MySQL/MariaDB credentials:
 
 ```
   "DB_HOST": "127.0.0.1",
@@ -74,7 +77,7 @@ Edit mempool-config.json for your MariaDB:
   "DB_DATABASE": "mempool",
 ```
 
-## Start backend
+## mempool backend
 
 Create an initial empty cache and start the app:
 ```
@@ -105,7 +108,9 @@ Calculated fee for transaction 8 / 3257
 Calculated fee for transaction 9 / 3257
 ```
 
-Now go make coffee for like 10 minutes while the backend indexes transactions, fees, etc. and builds the initial cache. When it's ready you will see output like this:
+You need to wait for 8 blocks to be mined, so please wait ~80 minutes.
+The backend also needs to index transactions, calculate fees, etc.
+When it's ready you will see output like this:
 
 ```
 Mempool updated in 0.189 seconds
@@ -128,22 +133,29 @@ Mempool updated in 0.243 seconds
 Updating mempool
 ```
 
-## Start frontend
+## nginx + certbot (let's encrypt)
+Setup nginx using the supplied nginx.conf, replacing example.com with your domain name.
+```
+apt-get install -y nginx python-certbot-nginx
+cp nginx.conf /etc/nginx/nginx.conf
+certbot -d example.com # replace with your domain name
+```
+Make sure you can access https://example.com/ in browser before proceeding
 
-Then in another terminal:
+
+## mempool frontend
+
+Build the frontend static HTML/CSS/JS, copy output into nginx folder:
 
 ```
-cd ../frontend/
+cd frontend/
 npm run build
+cp -r dist/mempool/* /var/www/html/
 ```
 
-Start nginx using the supplied nginx.conf and copy the resulting dist/ into /var/www/html
+## try it out
 
-## Open Browser
+If everything went okay you should see the beautiful mempool :grin:
 
-```
-firefox http://127.0.0.1:4200/
-```
-
-And if everything went okay you should see beautiful mempool :grin:
-
+If you get stuck on "loading blocks", this means the websocket can't connect.
+Check your nginx proxy setup, firewalls, etc. and open an issue if you need help.
