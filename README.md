@@ -145,12 +145,12 @@ Make sure you can access https://example.com/ in browser before proceeding
 
 ## mempool frontend
 
-Build the frontend static HTML/CSS/JS, copy output into nginx folder:
+Build the frontend static HTML/CSS/JS, rsync the output into nginx folder:
 
 ```
 cd frontend/
 npm run build
-cp -r dist/mempool/* /var/www/html/
+sudo rsync -av --delete dist/mempool/ /var/www/html/
 ```
 
 ## try it out
