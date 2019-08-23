@@ -1,5 +1,5 @@
 const config = require('../../mempool-config.json');
-import * as bitcoin from 'bitcoin';
+import * as bitcoin from 'bitcoin-core';
 import { ITransaction, IMempoolInfo, IBlock } from '../interfaces';
 
 class BitcoinApi {

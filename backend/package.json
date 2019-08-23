@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bitcoin": "^3.0.1",
+    "bitcoin-core": "^2.2.0",
     "compression": "^1.7.3",
     "express": "^4.16.3",
     "mysql2": "^1.6.1",
