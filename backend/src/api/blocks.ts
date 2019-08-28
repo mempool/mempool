@@ -7,6 +7,11 @@ import memPool from './mempool';
 class Blocks {
   private blocks: IBlock[] = [];
   private newBlockCallback: Function | undefined;
+  private currentBlockHeight = 0;
+
+  constructor() {
+    setInterval(this.$clearOldTransactionsAndBlocksFromDatabase.bind(this), 86400000);
+  }
 
   public setNewBlockCallback(fn: Function) {
     this.newBlockCallback = fn;
@@ -35,23 +40,22 @@ class Blocks {
     try {
       const blockCount = await bitcoinApi.getBlockCount();
 
-      let currentBlockHeight = 0;
       if (this.blocks.length === 0) {
-        currentBlockHeight = blockCount - config.INITIAL_BLOCK_AMOUNT;
+        this.currentBlockHeight = blockCount - config.INITIAL_BLOCK_AMOUNT;
       } else {
-        currentBlockHeight = this.blocks[this.blocks.length - 1].height;
+        this.currentBlockHeight = this.blocks[this.blocks.length - 1].height;
       }
 
-      while (currentBlockHeight < blockCount) {
-        currentBlockHeight++;
+      while (this.currentBlockHeight < blockCount) {
+        this.currentBlockHeight++;
 
         let block: IBlock | undefined;
 
-        const storedBlock = await this.$getBlockFromDatabase(currentBlockHeight);
+        const storedBlock = await this.$getBlockFromDatabase(this.currentBlockHeight);
         if (storedBlock) {
           block = storedBlock;
         } else {
-          const blockHash = await bitcoinApi.getBlockHash(currentBlockHeight);
+          const blockHash = await bitcoinApi.getBlockHash(this.currentBlockHeight);
           block = await bitcoinApi.getBlock(blockHash, 1);
 
           const coinbase = await memPool.getRawTransaction(block.tx[0], true);
@@ -85,13 +89,15 @@ class Blocks {
           block.maxFee = transactions[0] ? transactions[0].feePerVsize : 0;
           block.medianFee = this.median(transactions.map((tx) => tx.feePerVsize));
 
-          if (this.newBlockCallback) {
+          console.log(`New block found (#${this.currentBlockHeight})! `
+           + `${found} of ${block.tx.length} found in mempool. ${notFound} not found.`);
+
+           if (this.newBlockCallback) {
             this.newBlockCallback(block);
           }
 
-          await this.$saveBlockToDatabase(block);
-          await this.$saveTransactionsToDatabase(block.height, transactions);
-          console.log(`New block found (#${currentBlockHeight})! ${found} of ${block.tx.length} found in mempool. ${notFound} not found.`);
+          this.$saveBlockToDatabase(block);
+          this.$saveTransactionsToDatabase(block.height, transactions);
         }
 
         this.blocks.push(block);
@@ -173,10 +179,22 @@ class Blocks {
         await connection.query(query, params);
       }
 
-
       connection.release();
     } catch (e) {
       console.log('$create() transaction error', e);
+    }
+  }
+
+  private async $clearOldTransactionsAndBlocksFromDatabase() {
+    try {
+      const connection = await DB.pool.getConnection();
+      let query = `DELETE FROM blocks WHERE height < ?`;
+      await connection.query<any>(query, [this.currentBlockHeight - config.KEEP_BLOCK_AMOUNT]);
+      query = `DELETE FROM transactions WHERE blockheight < ?`;
+      await connection.query<any>(query, [this.currentBlockHeight - config.KEEP_BLOCK_AMOUNT]);
+      connection.release();
+    } catch (e) {
+      console.log('$clearOldTransactionsFromDatabase() error', e);
     }
   }
 
