@@ -50,8 +50,8 @@ class MempoolSpace {
     statistics.startStatistics();
     fiatConversion.startService();
 
-    let opts = {
-        host: "127.0.0.1",
+    const opts = {
+        host: '127.0.0.1',
         port: 8999
     };
     this.server.listen(opts, () => {
