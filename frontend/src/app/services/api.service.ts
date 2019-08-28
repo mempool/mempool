@@ -6,8 +6,8 @@ import { Observable } from 'rxjs';
 import { MemPoolService } from './mem-pool.service';
 import { tap, retryWhen, delay } from 'rxjs/operators';
 
-const WEB_SOCKET_PROTOCOL = (document.location.protocol == 'https:') ? 'wss:' : 'ws:';
-const WEB_SOCKET_URL = WEB_SOCKET_PROTOCOL + '//' + document.location.hostname + '/ws';
+const WEB_SOCKET_PROTOCOL = (document.location.protocol === 'https:') ? 'wss:' : 'ws:';
+const WEB_SOCKET_URL = WEB_SOCKET_PROTOCOL + '//' + document.location.hostname + ':' + document.location.port + '/ws';
 const API_BASE_URL = '/api/v1';
 
 @Injectable({
