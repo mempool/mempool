@@ -122,7 +122,7 @@ export class StatisticsComponent implements OnInit {
       .fragment
       .subscribe((fragment) => {
         if (['2h', '24h', '1w', '1m', '3m', '6m'].indexOf(fragment) > -1) {
-          this.radioGroupForm.controls['dateSpan'].setValue(fragment);
+          this.radioGroupForm.controls['dateSpan'].setValue(fragment, { emitEvent: false });
         }
       });
 
