@@ -61,7 +61,7 @@ Edit `mempool-config.json` to add your Bitcoin Core node RPC credentials:
 
 ## MySQL
 
-#Install MariaDB:
+Install MariaDB:
 
 ```bash
   # Linux
