@@ -22,6 +22,9 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.blocksSubscription = this.memPoolService.blocks$
       .subscribe((block) => {
+        if (this.blocks.some((b) => b.height === block.height)) {
+          return;
+        }
         this.blocks.unshift(block);
         this.blocks = this.blocks.slice(0, 8);
       });

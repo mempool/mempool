@@ -1,5 +1,5 @@
 const config = require('../../mempool-config.json');
-import bitcoinApi from './bitcoin-api-wrapper';
+import bitcoinApi from './bitcoin/bitcoin-api-factory';
 import { DB } from '../database';
 import { IBlock, ITransaction } from '../interfaces';
 import memPool from './mempool';
@@ -56,7 +56,7 @@ class Blocks {
           block = storedBlock;
         } else {
           const blockHash = await bitcoinApi.getBlockHash(this.currentBlockHeight);
-          block = await bitcoinApi.getBlock(blockHash, 1);
+          block = await bitcoinApi.getBlock(blockHash);
 
           const coinbase = await memPool.getRawTransaction(block.tx[0], true);
           if (coinbase && coinbase.totalOut) {
@@ -74,6 +74,7 @@ class Blocks {
               transactions.push(mempool[block.tx[i]]);
               found++;
             } else {
+              console.log(`Fetching block tx ${i} of ${block.tx.length}`);
               const tx = await memPool.getRawTransaction(block.tx[i]);
               if (tx) {
                 transactions.push(tx);
