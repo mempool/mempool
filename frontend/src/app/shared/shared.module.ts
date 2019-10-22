@@ -10,8 +10,8 @@ import { ChartistComponent } from '../statistics/chartist.component';
 @NgModule({
   imports: [
     CommonModule,
-    NgbButtonsModule.forRoot(),
-    NgbModalModule.forRoot(),
+    NgbButtonsModule,
+    NgbModalModule,
   ],
   declarations: [
     ChartistComponent,
