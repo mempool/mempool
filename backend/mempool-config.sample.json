@@ -19,5 +19,7 @@
   "BITCOIN_NODE_PORT": 8332,
   "BITCOIN_NODE_USER": "",
   "BITCOIN_NODE_PASS": "",
+  "BACKEND_API": "bitcoind",
+  "ESPLORA_API_URL": "https://www.blockstream.info/api",
   "TX_PER_SECOND_SPAN_SECONDS": 150
 }

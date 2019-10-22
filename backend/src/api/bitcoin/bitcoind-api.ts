@@ -1,8 +1,9 @@
-const config = require('../../mempool-config.json');
+const config = require('../../../mempool-config.json');
 import * as bitcoin from 'bitcoin';
-import { ITransaction, IMempoolInfo, IBlock } from '../interfaces';
+import { ITransaction, IMempoolInfo, IBlock } from '../../interfaces';
+import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
 
-class BitcoinApi {
+class BitcoindApi implements AbstractBitcoinApi {
   client: any;
 
   constructor() {
@@ -81,4 +82,4 @@ class BitcoinApi {
   }
 }
 
-export default new BitcoinApi();
+export default BitcoindApi;
