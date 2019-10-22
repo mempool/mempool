@@ -1,10 +1,10 @@
 export interface IMempoolInfo {
   size: number;
   bytes: number;
-  usage: number;
-  maxmempool: number;
-  mempoolminfee: number;
-  minrelaytxfee: number;
+  usage?: number;
+  maxmempool?: number;
+  mempoolminfee?: number;
+  minrelaytxfee?: number;
 }
 
 export interface ITransaction {

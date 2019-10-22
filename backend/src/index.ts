@@ -6,7 +6,7 @@ import * as http from 'http';
 import * as https from 'https';
 import * as WebSocket from 'ws';
 
-import bitcoinApi from './api/bitcoin-api-wrapper';
+import bitcoinApi from './api/bitcoin/bitcoin-api-factory';
 import diskCache from './api/disk-cache';
 import memPool from './api/mempool';
 import blocks from './api/blocks';
@@ -55,7 +55,7 @@ class MempoolSpace {
         port: 8999
     };
     this.server.listen(opts, () => {
-      console.log(`Server started on ${opts.host}:${opts.port})`);
+      console.log(`Server started on ${opts.host}:${opts.port}`);
     });
   }
 

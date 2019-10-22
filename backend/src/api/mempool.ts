@@ -1,5 +1,5 @@
 const config = require('../../mempool-config.json');
-import bitcoinApi from './bitcoin-api-wrapper';
+import bitcoinApi from './bitcoin/bitcoin-api-factory';
 import { ITransaction, IMempoolInfo, IMempool } from '../interfaces';
 
 class Mempool {
@@ -52,32 +52,40 @@ class Mempool {
   public async getRawTransaction(txId: string, isCoinbase = false): Promise<ITransaction | false> {
     try {
       const transaction = await bitcoinApi.getRawTransaction(txId);
-      let totalIn = 0;
-      if (!isCoinbase) {
-        for (let i = 0; i < transaction.vin.length; i++) {
-          try {
-            const result = await bitcoinApi.getRawTransaction(transaction.vin[i].txid);
-            transaction.vin[i]['value'] = result.vout[transaction.vin[i].vout].value;
-            totalIn += result.vout[transaction.vin[i].vout].value;
-          } catch (err) {
-            console.log('Locating historical tx error');
-          }
-        }
-      }
+
       let totalOut = 0;
       transaction.vout.forEach((output) => totalOut += output.value);
 
-      if (totalIn > totalOut) {
-        transaction.fee = parseFloat((totalIn - totalOut).toFixed(8));
+      if (config.BACKEND_API === 'esplora') {
         transaction.feePerWeightUnit = (transaction.fee * 100000000) / (transaction.vsize * 4) || 0;
         transaction.feePerVsize = (transaction.fee * 100000000) / (transaction.vsize) || 0;
-      } else if (!isCoinbase) {
-        transaction.fee = 0;
-        transaction.feePerVsize = 0;
-        transaction.feePerWeightUnit = 0;
-        console.log('Minus fee error!');
+        transaction.totalOut = totalOut / 100000000;
+      } else {
+        let totalIn = 0;
+        if (!isCoinbase) {
+          for (let i = 0; i < transaction.vin.length; i++) {
+            try {
+              const result = await bitcoinApi.getRawTransaction(transaction.vin[i].txid);
+              transaction.vin[i]['value'] = result.vout[transaction.vin[i].vout].value;
+              totalIn += result.vout[transaction.vin[i].vout].value;
+            } catch (err) {
+              console.log('Locating historical tx error');
+            }
+          }
+        }
+
+        if (totalIn > totalOut) {
+          transaction.fee = parseFloat((totalIn - totalOut).toFixed(8));
+          transaction.feePerWeightUnit = (transaction.fee * 100000000) / (transaction.vsize * 4) || 0;
+          transaction.feePerVsize = (transaction.fee * 100000000) / (transaction.vsize) || 0;
+        } else if (!isCoinbase) {
+          transaction.fee = 0;
+          transaction.feePerVsize = 0;
+          transaction.feePerWeightUnit = 0;
+          console.log('Minus fee error!');
+        }
+        transaction.totalOut = totalOut;
       }
-      transaction.totalOut = totalOut;
       return transaction;
     } catch (e) {
       console.log(txId + ' not found');
