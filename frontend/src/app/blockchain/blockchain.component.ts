@@ -41,6 +41,10 @@ export class BlockchainComponent implements OnInit, OnDestroy {
 
     this.route.paramMap
       .subscribe((params: ParamMap) => {
+        if (this.memPoolService.txTracking$.value.enabled) {
+          return;
+        }
+
         const txId: string | null = params.get('id');
         if (!txId) {
           return;
@@ -52,6 +56,13 @@ export class BlockchainComponent implements OnInit, OnDestroy {
     this.memPoolService.txIdSearch$
       .subscribe((txId) => {
         if (txId) {
+
+          if (this.memPoolService.txTracking$.value.enabled
+            && this.memPoolService.txTracking$.value.tx
+            && this.memPoolService.txTracking$.value.tx.txid === txId) {
+            return;
+          }
+          console.log('enabling tracking loading from idSearch!');
           this.txTrackingLoading = true;
           this.apiService.webSocketStartTrackTx(txId);
         }
