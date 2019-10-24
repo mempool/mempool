@@ -46,6 +46,7 @@ class EsploraApi implements AbstractBitcoinApi {
         response.data.vsize = response.data.size;
         response.data.size = response.data.weight;
         response.data.fee = response.data.fee / 100000000;
+        response.data.blockhash = response.data.status.block_hash;
 
         resolve(response.data);
       } catch (error) {
