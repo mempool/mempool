@@ -17,6 +17,7 @@ export class ApiService {
   private websocketSubject: Observable<IMempoolDefaultResponse> = webSocket<IMempoolDefaultResponse | any>(WEB_SOCKET_URL);
   private lastWant: string[] | null = null;
   private goneOffline = false;
+  private lastTrackedTxId = '';
 
   constructor(
     private httpClient: HttpClient,
@@ -68,7 +69,7 @@ export class ApiService {
             this.memPoolService.conversions$.next(response.conversions);
           }
 
-          if (response['track-tx']) {
+          if (response['track-tx'] && !this.goneOffline) {
             let txTrackingEnabled;
             let txTrackingBlockHeight;
             let txTrackingTx = null;
@@ -104,6 +105,9 @@ export class ApiService {
             if (this.lastWant) {
               this.webSocketWant(this.lastWant);
             }
+            if (this.memPoolService.txTracking$.value.enabled) {
+              this.webSocketStartTrackTx(this.lastTrackedTxId);
+            }
           }
         },
         (err: Error) => {
@@ -117,6 +121,7 @@ export class ApiService {
   webSocketStartTrackTx(txId: string) {
     // @ts-ignore
     this.websocketSubject.next({'action': 'track-tx', 'txId': txId});
+    this.lastTrackedTxId = txId;
   }
 
   webSocketWant(data: string[]) {

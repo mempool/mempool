@@ -74,7 +74,7 @@ class ProjectedBlocks {
     return {
       blockSize: blockSize,
       blockWeight: blockWeight,
-      nTx: transactions.length - 1,
+      nTx: transactions.length,
       minFee: transactions[transactions.length - 1].feePerVsize,
       maxFee: transactions[0].feePerVsize,
       minWeightFee: transactions[transactions.length - 1].feePerWeightUnit,
