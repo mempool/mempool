@@ -1,6 +1,7 @@
 {
-  "name": "mempool",
-  "version": "0.0.0",
+  "name": "mempool-frontend",
+  "version": "1.0.0",
+  "description": "Bitcoin Mempool Visualizer",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --aot --proxy-config proxy.conf.json",
@@ -9,7 +10,11 @@
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
-  "private": true,
+  "author": {
+    "name": "Simon Lindh",
+    "url": "https://github.com/mempool-space/mempool.space"
+  },
+  "license": "MIT",
   "dependencies": {
     "@angular/animations": "^8.2.11",
     "@angular/common": "^8.2.11",
