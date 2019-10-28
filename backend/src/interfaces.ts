@@ -13,6 +13,7 @@ export interface ITransaction {
   version: number;
   size: number;
   vsize: number;
+  weight: number;
   locktime: number;
   vin: Vin[];
   vout: Vout[];

@@ -43,8 +43,7 @@ class EsploraApi implements AbstractBitcoinApi {
       try {
         const response: AxiosResponse = await this.client.get('/tx/' + txId);
 
-        response.data.vsize = response.data.size;
-        response.data.size = response.data.weight;
+        response.data.vsize = Math.round(response.data.weight / 4);
         response.data.fee = response.data.fee / 100000000;
         response.data.blockhash = response.data.status.block_hash;
 

@@ -54,7 +54,7 @@ class ProjectedBlocks {
     let transactions: ITransaction[] = [];
     this.transactionsSorted.forEach((tx) => {
       if (blockWeight + tx.vsize * 4 < 4000000 || projectedBlocks.length === numberOfBlocks) {
-        blockWeight += tx.vsize * 4;
+        blockWeight += tx.weight || tx.vsize * 4;
         blockSize += tx.size;
         transactions.push(tx);
       } else {
