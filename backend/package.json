@@ -1,13 +1,17 @@
 {
   "name": "mempool-backend",
   "version": "1.0.0",
-  "description": "Bitcoin mempool visualizer",
+  "description": "Bitcoin Mempool Visualizer",
   "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "start": "npm run build && node dist/index.js"
   },
-  "author": "",
-  "license": "ISC",
+  "author": {
+    "name": "Simon Lindh",
+    "url": "https://github.com/mempool-space/mempool.space"
+  },
+  "license": "MIT",
   "dependencies": {
     "axios": "^0.19.0",
     "bitcoin": "^3.0.1",
