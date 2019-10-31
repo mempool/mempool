@@ -1,12 +1,12 @@
 import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { formatDate } from '@angular/common';
-import { BytesPipe } from '../shared/pipes/bytes-pipe/bytes.pipe';
+import { VbytesPipe } from '../shared/pipes/bytes-pipe/vbytes.pipe';
 
 import * as Chartist from 'chartist';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { IMempoolStats } from '../blockchain/interfaces';
-import { Subject, of, merge} from 'rxjs';
+import { of, merge} from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 import { MemPoolService } from '../services/mem-pool.service';
@@ -34,7 +34,7 @@ export class StatisticsComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     @Inject(LOCALE_ID) private locale: string,
-    private bytesPipe: BytesPipe,
+    private vbytesPipe: VbytesPipe,
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private memPoolService: MemPoolService,
@@ -77,7 +77,7 @@ export class StatisticsComponent implements OnInit {
       },
       axisY: {
         labelInterpolationFnc: (value: number): any => {
-          return this.bytesPipe.transform(value);
+          return this.vbytesPipe.transform(value, 2);
         },
         offset: 160
       },
