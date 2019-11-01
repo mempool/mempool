@@ -21,7 +21,7 @@
       </tr>
       <tr>
         <th>Total fees:</th>
-        <td>{{ (block.fees - 12.5) | number: '1.2-2' }} BTC <span *ngIf="conversions">(<span class="green-color">{{ conversions.USD * (block.fees - 12.5) | currency:'USD':'symbol':'1.0-0' }}</span>)</span></td>
+        <td>{{ (block.fees - blockSubsidy) | number: '1.2-2' }} BTC <span *ngIf="conversions">(<span class="green-color">{{ conversions.USD * (block.fees - blockSubsidy) | currency:'USD':'symbol':'1.0-0' }}</span>)</span></td>
         <th>Block reward + fees:</th>
         <td>{{ block.fees | number: '1.2-2' }} BTC <span *ngIf="conversions">(<span class="green-color">{{ conversions.USD * block.fees | currency:'USD':'symbol':'1.0-0' }}</span>)</span></td>
       </tr>

@@ -10,6 +10,7 @@ import { MemPoolService } from '../../services/mem-pool.service';
 })
 export class BlockModalComponent implements OnInit {
   @Input() block: IBlock;
+  blockSubsidy = 50;
 
   conversions: any;
 
@@ -23,5 +24,11 @@ export class BlockModalComponent implements OnInit {
       .subscribe((conversions) => {
         this.conversions = conversions;
       });
+
+    let halvenings = Math.floor(this.block.height / 210000);
+    while (halvenings > 0) {
+      this.blockSubsidy = this.blockSubsidy / 2;
+      halvenings--;
+    }
   }
 }
