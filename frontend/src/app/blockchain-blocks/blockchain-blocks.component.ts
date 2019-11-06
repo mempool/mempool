@@ -34,23 +34,6 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
     this.blocksSubscription.unsubscribe();
   }
 
-  getTimeSinceMined(block: IBlock): string {
-    const minutes = ((new Date().getTime()) - (new Date(block.time * 1000).getTime())) / 1000 / 60;
-    if (minutes >= 120) {
-      return Math.floor(minutes / 60) + ' hours';
-    }
-    if (minutes >= 60) {
-      return Math.floor(minutes / 60) + ' hour';
-    }
-    if (minutes <= 1) {
-      return '< 1 minute';
-    }
-    if (minutes === 1) {
-      return '1 minute';
-    }
-    return Math.round(minutes) + ' minutes';
-  }
-
   trackByBlocksFn(index: number, item: IBlock) {
     return item.height;
   }

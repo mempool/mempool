@@ -34,6 +34,10 @@ const routes: Routes = [
         path: 'graphs',
         component: StatisticsComponent,
       },
+      {
+        path: 'explorer',
+        loadChildren: './explorer/explorer.module#ExplorerModule',
+      },
     ],
   },
   {

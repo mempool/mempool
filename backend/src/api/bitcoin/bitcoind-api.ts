@@ -80,6 +80,14 @@ class BitcoindApi implements AbstractBitcoinApi {
       });
     });
   }
+
+  getBlocks(): Promise<string> {
+    throw new Error('Method not implemented.');
+  }
+
+  getBlocksFromHeight(height: number): Promise<string> {
+    throw new Error('Method not implemented.');
+  }
 }
 
 export default BitcoindApi;

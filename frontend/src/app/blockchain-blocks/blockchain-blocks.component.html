@@ -13,7 +13,7 @@
         <div class="block-size">{{ block.size | bytes: 2 }}</div>
         <div class="transaction-count">{{ block.nTx }} transactions</div>
         <br /><br />
-        <div class="time-difference">{{ getTimeSinceMined(block) }} ago</div>
+        <div class="time-difference">{{ block.time | timeSince }} ago</div>
       </div>
     </div>
   </div>

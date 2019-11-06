@@ -7,6 +7,7 @@ import { VbytesPipe } from './pipes/bytes-pipe/vbytes.pipe';
 import { RoundPipe } from './pipes/math-round-pipe/math-round.pipe';
 import { CeilPipe } from './pipes/math-ceil/math-ceil.pipe';
 import { ChartistComponent } from '../statistics/chartist.component';
+import { TimeSincePipe } from './pipes/time-since/time-since.pipe';
 
 @NgModule({
   imports: [
@@ -20,12 +21,14 @@ import { ChartistComponent } from '../statistics/chartist.component';
     CeilPipe,
     BytesPipe,
     VbytesPipe,
+    TimeSincePipe,
   ],
   exports: [
     RoundPipe,
     CeilPipe,
     BytesPipe,
     VbytesPipe,
+    TimeSincePipe,
     NgbButtonsModule,
     NgbModalModule,
     ChartistComponent,

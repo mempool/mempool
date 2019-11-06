@@ -7,4 +7,7 @@ export interface AbstractBitcoinApi {
   getBlockCount(): Promise<number>;
   getBlock(hash: string): Promise<IBlock>;
   getBlockHash(height: number): Promise<string>;
+
+  getBlocks(): Promise<string>;
+  getBlocksFromHeight(height: number): Promise<string>;
 }

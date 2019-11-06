@@ -263,7 +263,15 @@ class MempoolSpace {
       .get(config.API_ENDPOINT + 'statistics/3m', routes.get3MStatistics.bind(routes))
       .get(config.API_ENDPOINT + 'statistics/6m', routes.get6MStatistics.bind(routes))
       ;
+
+    if (config.BACKEND_API === 'esplora') {
+      this.app
+        .get(config.API_ENDPOINT + 'explorer/blocks', routes.getBlocks)
+        .get(config.API_ENDPOINT + 'explorer/blocks/:height', routes.getBlocks)
+        ;
+    }
+
+    }
   }
-}
 
 const mempoolSpace = new MempoolSpace();
