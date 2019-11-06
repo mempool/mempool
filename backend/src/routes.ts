@@ -1,6 +1,7 @@
 import statistics from './api/statistics';
 import feeApi from './api/fee-api';
 import projectedBlocks from './api/projected-blocks';
+import bitcoinApi from './api/bitcoin/bitcoin-api-factory';
 
 class Routes {
   private cache = {};
@@ -70,6 +71,20 @@ class Routes {
         txId = req.query.txId;
       }
       const result = await projectedBlocks.getProjectedBlocks(txId, 6);
+      res.send(result);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
+  }
+
+  public async getBlocks(req, res) {
+    try {
+      let result: string;
+      if (req.params.height) {
+        result = await bitcoinApi.getBlocksFromHeight(req.params.height);
+      } else {
+        result = await bitcoinApi.getBlocks();
+      }
       res.send(result);
     } catch (e) {
       res.status(500).send(e.message);

@@ -94,6 +94,28 @@ class EsploraApi implements AbstractBitcoinApi {
       }
     });
   }
+
+  getBlocks(): Promise<string> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: AxiosResponse = await this.client.get('/blocks');
+        resolve(response.data);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  getBlocksFromHeight(height: number): Promise<string> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: AxiosResponse = await this.client.get('/blocks/' + height);
+        resolve(response.data);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
 }
 
 export default EsploraApi;

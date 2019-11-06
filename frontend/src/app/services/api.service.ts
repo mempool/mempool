@@ -162,4 +162,8 @@ export class ApiService {
     return this.httpClient.get<IMempoolStats[]>(API_BASE_URL + '/statistics/6m');
   }
 
+  listBlocks$(height?: number): Observable<IBlockTransaction[]> {
+    return this.httpClient.get<IBlockTransaction[]>(API_BASE_URL + '/explorer/blocks/' + (height || ''));
+  }
+
 }
