@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { ITransaction, IProjectedBlock } from '../blockchain/interfaces';
 import { Subscription } from 'rxjs';
 import { ITxTracking, MemPoolService } from '../services/mem-pool.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-tx-bubble',
@@ -34,6 +35,8 @@ export class TxBubbleComponent implements OnInit, OnDestroy {
   txTrackingEnabled = false;
   txTrackingTx: ITransaction | null = null;
   txShowTxNotFound = false;
+
+  isEsploraEnabled = !!environment.esplora;
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {

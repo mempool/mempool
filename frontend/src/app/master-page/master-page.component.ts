@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MemPoolService } from '../services/mem-pool.service';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-master-page',
@@ -13,6 +14,7 @@ export class MasterPageComponent implements OnInit {
   navCollapsed = false;
   isOffline = false;
   searchForm: FormGroup;
+  isEsploraEnabled = !!environment.esplora;
 
   constructor(
     private memPoolService: MemPoolService,

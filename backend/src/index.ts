@@ -268,6 +268,7 @@ class MempoolSpace {
       this.app
         .get(config.API_ENDPOINT + 'explorer/blocks', routes.getBlocks)
         .get(config.API_ENDPOINT + 'explorer/blocks/:height', routes.getBlocks)
+        .get(config.API_ENDPOINT + 'explorer/tx/:id', routes.getRawTransaction)
         ;
     }
 

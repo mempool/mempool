@@ -3,7 +3,10 @@
       <table style="width: 100%;">
         <tr>
             <td class="text-left"><b>Transaction hash</b></td>
-            <td class="text-right"><a href="https://www.blockstream.info/tx/{{ tx?.txid }}" target="_blank">{{ txIdShort }}</a></td>
+            <td class="text-right">
+              <a *ngIf="!isEsploraEnabled" href="https://www.blockstream.info/tx/{{ tx?.txid }}" target="_blank">{{ txIdShort }}</a>
+              <a *ngIf="isEsploraEnabled" [routerLink]="['/explorer/tx/', tx?.txid]">{{ txIdShort }}</a>
+            </td>
         </tr>
         <tr>
             <td class="text-left"><b>Fee:</b></td>
