@@ -90,6 +90,15 @@ class Routes {
       res.status(500).send(e.message);
     }
   }
+
+  public async getRawTransaction(req, res) {
+    try {
+      const result = await bitcoinApi.getRawTransaction(req.params.id);
+      res.send(result);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
+  }
 }
 
 export default new Routes();

@@ -4,6 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BlockModalComponent } from './block-modal/block-modal.component';
 import { MemPoolService } from '../services/mem-pool.service';
 import { Subscription } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-blockchain-blocks',
@@ -13,6 +14,9 @@ import { Subscription } from 'rxjs';
 export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   blocks: IBlock[] = [];
   blocksSubscription: Subscription;
+  interval: any;
+  trigger = 0;
+  isEsploraEnabled = !!environment.esplora;
 
   constructor(
     private modalService: NgbModal,
@@ -28,10 +32,13 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
         this.blocks.unshift(block);
         this.blocks = this.blocks.slice(0, 8);
       });
+
+    this.interval = setInterval(() => this.trigger++, 10 * 1000);
   }
 
   ngOnDestroy() {
     this.blocksSubscription.unsubscribe();
+    clearInterval(this.interval);
   }
 
   trackByBlocksFn(index: number, item: IBlock) {

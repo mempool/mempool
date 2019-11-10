@@ -133,3 +133,27 @@ html, body {
 hr {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
+
+.green-color {
+  color: #3bcc49;
+}
+
+.yellow-color { 
+  color: #ffd800;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #181b2d !important;
+}
+
+.header-bg {
+  background-color: #653b9c;
+}
+
+.bordertop {
+  border-top: 1px solid #4c4c4c;
+}
+
+.smaller-text {
+  font-size: 14px;
+}

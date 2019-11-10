@@ -18,7 +18,7 @@
       <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" routerLink="/tv" (click)="collapse()">TV view &nbsp;<img src="./assets/expand.png" width="15"/></a>
       </li>
-      <li class="nav-item" routerLinkActive="active">
+      <li class="nav-item" routerLinkActive="active" *ngIf="isEsploraEnabled">
         <a class="nav-link" routerLink="/explorer" (click)="collapse()">Explorer</a>
       </li>
       <li class="nav-item" routerLinkActive="active">

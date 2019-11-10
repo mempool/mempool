@@ -166,4 +166,7 @@ export class ApiService {
     return this.httpClient.get<IBlockTransaction[]>(API_BASE_URL + '/explorer/blocks/' + (height || ''));
   }
 
+  getTransaction$(txId: string): Observable<IBlockTransaction[]> {
+    return this.httpClient.get<IBlockTransaction[]>(API_BASE_URL + '/explorer/tx/' + txId);
+  }
 }

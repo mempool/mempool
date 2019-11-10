@@ -5,6 +5,7 @@ import { TransactionComponent } from './transaction/transaction.component';
 import { RouterModule, Routes } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
 import { BlockComponent } from './block/block.component';
+import { AddressComponent } from './address/address.component';
 
 const routes: Routes = [
   {
@@ -19,10 +20,14 @@ const routes: Routes = [
     path: 'tx/:id',
     component: TransactionComponent,
   },
+  {
+    path: 'address/:id',
+    component: AddressComponent,
+  },
 ];
 
 @NgModule({
-  declarations: [ExplorerComponent, TransactionComponent, BlockComponent],
+  declarations: [ExplorerComponent, TransactionComponent, BlockComponent, AddressComponent],
   imports: [
     SharedModule,
     CommonModule,
