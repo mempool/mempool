@@ -6,6 +6,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
 import { BlockComponent } from './block/block.component';
 import { AddressComponent } from './address/address.component';
+import { TransactionsListComponent } from './transactions-list/transactions-list.component';
 
 const routes: Routes = [
   {
@@ -27,7 +28,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [ExplorerComponent, TransactionComponent, BlockComponent, AddressComponent],
+  declarations: [ExplorerComponent, TransactionComponent, BlockComponent, AddressComponent, TransactionsListComponent],
   imports: [
     SharedModule,
     CommonModule,

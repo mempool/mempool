@@ -13,10 +13,6 @@ export class TransactionComponent implements OnInit {
   tx: any;
   isLoadingTx = true;
   conversions: any;
-  totalOutput: number;
-
-  viewFiat = false;
-  latestBlockHeight: number;
 
   constructor(
     private route: ActivatedRoute,
@@ -33,18 +29,12 @@ export class TransactionComponent implements OnInit {
     )
     .subscribe((tx) => {
       this.tx = tx;
-      this.totalOutput = this.tx.vout.map((v: any) => v.value || 0).reduce((a: number, b: number) => a + b);
       this.isLoadingTx = false;
     });
 
     this.memPoolService.conversions$
       .subscribe((conversions) => {
         this.conversions = conversions;
-      });
-
-    this.memPoolService.blocks$
-      .subscribe((block) => {
-        this.latestBlockHeight = block.height;
       });
   }
 }

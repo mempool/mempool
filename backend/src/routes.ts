@@ -99,6 +99,33 @@ class Routes {
       res.status(500).send(e.message);
     }
   }
+
+  public async getBlock(req, res) {
+    try {
+      const result = await bitcoinApi.getBlock(req.params.hash);
+      res.send(result);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
+  }
+
+  public async getBlockTransactions(req, res) {
+    try {
+      const result = await bitcoinApi.getBlockTransactions(req.params.hash);
+      res.send(result);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
+  }
+
+  public async getBlockTransactionsFromIndex(req, res) {
+    try {
+      const result = await bitcoinApi.getBlockTransactionsFromIndex(req.params.hash, req.params.index);
+      res.send(result);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
+  }
 }
 
 export default new Routes();

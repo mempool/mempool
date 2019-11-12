@@ -65,7 +65,7 @@ class EsploraApi implements AbstractBitcoinApi {
     });
   }
 
-  getBlock(hash: string): Promise<IBlock> {
+  getBlockAndTransactions(hash: string): Promise<IBlock> {
     return new Promise(async (resolve, reject) => {
       try {
         const blockInfo: AxiosResponse = await this.client.get('/block/' + hash);
@@ -111,6 +111,39 @@ class EsploraApi implements AbstractBitcoinApi {
       try {
         const response: AxiosResponse = await this.client.get('/blocks/' + height);
         resolve(response.data);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  getBlock(hash: string): Promise<IBlock> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const blockInfo: AxiosResponse = await this.client.get('/block/' + hash);
+        resolve(blockInfo.data);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  getBlockTransactions(hash: string): Promise<IBlock> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const blockInfo: AxiosResponse = await this.client.get('/block/' + hash + '/txs');
+        resolve(blockInfo.data);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  getBlockTransactionsFromIndex(hash: string, index: number): Promise<IBlock> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const blockInfo: AxiosResponse = await this.client.get('/block/' + hash + '/txs/' + index);
+        resolve(blockInfo.data);
       } catch (error) {
         reject(error);
       }

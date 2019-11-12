@@ -120,7 +120,7 @@ class MempoolSpace {
                   console.log('Found block by looking in local cache');
                   client['blockHeight'] = foundBlock.height;
                 } else {
-                  const theBlock = await bitcoinApi.getBlock(tx.blockhash);
+                  const theBlock = await bitcoinApi.getBlockAndTransactions(tx.blockhash);
                   if (theBlock) {
                     client['blockHeight'] = theBlock.height;
                   }
@@ -269,6 +269,9 @@ class MempoolSpace {
         .get(config.API_ENDPOINT + 'explorer/blocks', routes.getBlocks)
         .get(config.API_ENDPOINT + 'explorer/blocks/:height', routes.getBlocks)
         .get(config.API_ENDPOINT + 'explorer/tx/:id', routes.getRawTransaction)
+        .get(config.API_ENDPOINT + 'explorer/block/:hash', routes.getBlock)
+        .get(config.API_ENDPOINT + 'explorer/block/:hash/tx', routes.getBlockTransactions)
+        .get(config.API_ENDPOINT + 'explorer/block/:hash/tx/:index', routes.getBlockTransactionsFromIndex)
         ;
     }
 

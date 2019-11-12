@@ -1,5 +1,8 @@
 <div class="modal-header">
-  <h4 class="modal-title">Fee distribution for block <a href="https://www.blockstream.info/block-height/{{ block.height }}" target="_blank">#{{ block.height }}</a></h4>
+  <h4 class="modal-title">Fee distribution for block 
+    <a *ngIf="!isEsploraEnabled" href="https://www.blockstream.info/block-height/{{ block.height }}" target="_blank">#{{ block.height }}</a>
+    <a *ngIf="isEsploraEnabled" (click)="activeModal.dismiss()" [routerLink]="['/explorer/block/', block.hash]">#{{ block.height }}</a>
+  </h4>
   <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
     <span aria-hidden="true">&times;</span>
   </button>

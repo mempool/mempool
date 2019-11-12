@@ -56,7 +56,7 @@ class Blocks {
           block = storedBlock;
         } else {
           const blockHash = await bitcoinApi.getBlockHash(this.currentBlockHeight);
-          block = await bitcoinApi.getBlock(blockHash);
+          block = await bitcoinApi.getBlockAndTransactions(blockHash);
 
           const coinbase = await memPool.getRawTransaction(block.tx[0], true);
           if (coinbase && coinbase.totalOut) {
