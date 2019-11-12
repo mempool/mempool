@@ -162,11 +162,19 @@ export class ApiService {
     return this.httpClient.get<IMempoolStats[]>(API_BASE_URL + '/statistics/6m');
   }
 
-  listBlocks$(height?: number): Observable<IBlockTransaction[]> {
-    return this.httpClient.get<IBlockTransaction[]>(API_BASE_URL + '/explorer/blocks/' + (height || ''));
+  listBlocks$(height?: number): Observable<any[]> {
+    return this.httpClient.get<any[]>(API_BASE_URL + '/explorer/blocks/' + (height || ''));
   }
 
-  getTransaction$(txId: string): Observable<IBlockTransaction[]> {
-    return this.httpClient.get<IBlockTransaction[]>(API_BASE_URL + '/explorer/tx/' + txId);
+  getTransaction$(txId: string): Observable<any[]> {
+    return this.httpClient.get<any[]>(API_BASE_URL + '/explorer/tx/' + txId);
+  }
+
+  getBlock$(hash: string): Observable<any[]> {
+    return this.httpClient.get<any[]>(API_BASE_URL + '/explorer/block/' + hash);
+  }
+
+  getBlockTransactions$(hash: string, index?: number): Observable<any[]> {
+    return this.httpClient.get<any[]>(API_BASE_URL + '/explorer/block/' + hash + '/tx/' + (index || ''));
   }
 }

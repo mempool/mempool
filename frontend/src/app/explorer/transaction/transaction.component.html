@@ -1,96 +1,12 @@
 <div class="container">
   <h1>Transaction</h1>
 
+  <br>
+
   <ng-template [ngIf]="!isLoadingTx" [ngIfElse]="loadingTx">
 
-    <table class="table table-borderless">
-      <thead>
-        <tr class="header-bg">
-          <th>
-            {{ tx.txid }}
-          </th>
-        </tr>
-      </thead>
-    </table>
+    <app-transactions-list [transactions]="[tx]" [showConfirmations]="true"></app-transactions-list>
 
-    <div class="row">
-        <div class="col">
-
-          <table class="table table-borderless smaller-text">
-            <tbody>
-              <tr>
-                <td>
-                  <div *ngFor="let vin of tx.vin">
-                    <ng-template [ngIf]="vin.is_coinbase" [ngIfElse]="regularVin">
-                      Coinbase
-                    </ng-template>
-                    <ng-template #regularVin>
-                      <a [routerLink]="['/explorer/address/', vin.prevout.scriptpubkey_address]">{{ vin.prevout.scriptpubkey_address }}</a>
-                      (<a [routerLink]="['/explorer/tx/', vin.txid]">tx</a>)
-                    </ng-template>
-                  </div>
-                </td>
-                <td class="text-right">
-                  <div *ngFor="let vin of tx.vin">
-                    <ng-template [ngIf]="vin.prevout">
-                      <ng-template [ngIf]="viewFiat" [ngIfElse]="viewFiatVin">
-                        <span class="green-color">{{ conversions.USD * (vin.prevout.value / 100000000) | currency:'USD':'symbol':'1.2-2' }}</span>
-                      </ng-template>
-                      <ng-template #viewFiatVin>
-                        {{ vin.prevout.value / 100000000 }} BTC
-                      </ng-template>
-                    </ng-template>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-        </div>
-        <div class="col">
-          <table class="table table-borderless smaller-text">
-            <tbody>
-              <tr>
-              <td>
-                <div *ngFor="let vout of tx.vout">
-                  <a *ngIf="vout.scriptpubkey_address; else scriptpubkey_type" [routerLink]="['/explorer/address/', vout.scriptpubkey_address]">{{ vout.scriptpubkey_address }}</a>
-                  <ng-template #scriptpubkey_type>
-                    {{ vout.scriptpubkey_type | uppercase }}
-                  </ng-template>
-                </div>
-              </td>
-              <td class="text-right">
-                <div *ngFor="let vout of tx.vout">
-                  <ng-template [ngIf]="viewFiat" [ngIfElse]="viewFiatVout">
-                    <span class="green-color">{{ conversions.USD * (vout.value / 100000000) | currency:'USD':'symbol':'1.2-2' }}</span>
-                  </ng-template>
-                  <ng-template #viewFiatVout>
-                    {{ vout.value / 100000000 }} BTC
-                  </ng-template>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td class="text-right" colspan="4">
-                <button *ngIf="tx.status.confirmed" type="button" class="btn btn-success">{{ latestBlockHeight - tx.status.block_height + 1 }} confirmations</button>
-                <ng-template #unconfirmedButton>
-                  <button type="button" class="btn btn-danger">Unconfirmed</button>
-                </ng-template>
-                &nbsp;
-                <button type="button" class="btn btn-primary" (click)="viewFiat = !viewFiat">
-                  <ng-template [ngIf]="viewFiat" [ngIfElse]="viewFiatButton">
-                    <span *ngIf="conversions">{{ conversions.USD * (totalOutput / 100000000) | currency:'USD':'symbol':'1.2-2' }}</span>
-                  </ng-template>
-                  <ng-template #viewFiatButton>
-                    {{ totalOutput / 100000000 }} BTC
-                  </ng-template>
-                </button>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-    </div>
     <br>
 
     <h2>Details</h2>
@@ -103,11 +19,11 @@
           <tbody>
             <tr>
               <td>Size</td>
-              <td>{{ tx.size | bytes }}</td>
+              <td>{{ tx.size | bytes: 2 }}</td>
             </tr>
             <tr>
               <td>Weight</td>
-              <td>{{ tx.weight }} WU</td>
+              <td>{{ tx.weight | wuBytes: 2 }}</td>
             </tr>
             <tr *ngIf="tx.status.confirmed">
               <td>Included in block</td>
@@ -117,7 +33,7 @@
         </table>
       </div>
       <div class="col">
-        <table class="table table-borderless table-striped"  *ngIf="tx.fee">
+        <table class="table table-borderless table-striped" *ngIf="tx.fee">
           <tbody>
             <tr>
               <td>Fees</td>

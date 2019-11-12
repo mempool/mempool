@@ -61,9 +61,6 @@ export class TxBubbleComponent implements OnInit, OnDestroy {
         if (this.txShowTxNotFound) {
           setTimeout(() => { this.txShowTxNotFound = false; }, 2000);
         }
-        if (this.tx) {
-          this.txIdShort = this.tx.txid.substring(0, 6) + '...' + this.tx.txid.substring(this.tx.txid.length - 6);
-        }
         if (this.latestBlockHeight) {
           this.confirmations = (this.latestBlockHeight - this.txTrackingBlockHeight) + 1;
         }

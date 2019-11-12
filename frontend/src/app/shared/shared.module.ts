@@ -8,6 +8,8 @@ import { RoundPipe } from './pipes/math-round-pipe/math-round.pipe';
 import { CeilPipe } from './pipes/math-ceil/math-ceil.pipe';
 import { ChartistComponent } from '../statistics/chartist.component';
 import { TimeSincePipe } from './pipes/time-since/time-since.pipe';
+import { WuBytesPipe } from './pipes/bytes-pipe/wubytes.pipe';
+import { ShortenStringPipe } from './pipes/shorten-string-pipe/shorten-string.pipe';
 
 @NgModule({
   imports: [
@@ -21,6 +23,8 @@ import { TimeSincePipe } from './pipes/time-since/time-since.pipe';
     CeilPipe,
     BytesPipe,
     VbytesPipe,
+    WuBytesPipe,
+    ShortenStringPipe,
     TimeSincePipe,
   ],
   exports: [
@@ -28,7 +32,9 @@ import { TimeSincePipe } from './pipes/time-since/time-since.pipe';
     CeilPipe,
     BytesPipe,
     VbytesPipe,
+    WuBytesPipe,
     TimeSincePipe,
+    ShortenStringPipe,
     NgbButtonsModule,
     NgbModalModule,
     ChartistComponent,
@@ -36,6 +42,8 @@ import { TimeSincePipe } from './pipes/time-since/time-since.pipe';
   providers: [
     BytesPipe,
     VbytesPipe,
+    WuBytesPipe,
+    ShortenStringPipe,
   ]
 })
 export class SharedModule { }

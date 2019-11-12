@@ -4,8 +4,8 @@
         <tr>
             <td class="text-left"><b>Transaction hash</b></td>
             <td class="text-right">
-              <a *ngIf="!isEsploraEnabled" href="https://www.blockstream.info/tx/{{ tx?.txid }}" target="_blank">{{ txIdShort }}</a>
-              <a *ngIf="isEsploraEnabled" [routerLink]="['/explorer/tx/', tx?.txid]">{{ txIdShort }}</a>
+              <a *ngIf="!isEsploraEnabled" href="https://www.blockstream.info/tx/{{ tx?.txid }}" target="_blank">{{ tx?.txid | shortenString }}</a>
+              <a *ngIf="isEsploraEnabled" [routerLink]="['/explorer/tx/', tx?.txid]">{{ tx?.txid | shortenString }}</a>
             </td>
         </tr>
         <tr>

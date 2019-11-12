@@ -59,7 +59,7 @@ class BitcoindApi implements AbstractBitcoinApi {
     });
   }
 
-  getBlock(hash: string, verbosity:  1 | 2 = 1): Promise<IBlock> {
+  getBlockAndTransactions(hash: string, verbosity:  1 | 2 = 1): Promise<IBlock> {
     return new Promise((resolve, reject) => {
       this.client.getBlock(hash, verbosity, (err: Error, block: IBlock) => {
         if (err) {
@@ -81,11 +81,23 @@ class BitcoindApi implements AbstractBitcoinApi {
     });
   }
 
+  getBlock(hash: string): Promise<IBlock> {
+    throw new Error('Method not implemented.');
+  }
+
   getBlocks(): Promise<string> {
     throw new Error('Method not implemented.');
   }
 
   getBlocksFromHeight(height: number): Promise<string> {
+    throw new Error('Method not implemented.');
+  }
+
+  getBlockTransactions(hash: string): Promise<IBlock> {
+    throw new Error('Method not implemented.');
+  }
+
+  getBlockTransactionsFromIndex(hash: string, index: number): Promise<IBlock> {
     throw new Error('Method not implemented.');
   }
 }
