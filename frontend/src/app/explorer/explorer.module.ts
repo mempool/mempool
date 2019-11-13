@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { QRCodeModule } from 'angularx-qrcode';
 import { ExplorerComponent } from './explorer/explorer.component';
 import { TransactionComponent } from './transaction/transaction.component';
 import { RouterModule, Routes } from '@angular/router';
@@ -33,6 +34,7 @@ const routes: Routes = [
     SharedModule,
     CommonModule,
     RouterModule.forChild(routes),
+    QRCodeModule,
   ]
 })
 export class ExplorerModule { }

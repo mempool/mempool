@@ -126,6 +126,33 @@ class Routes {
       res.status(500).send(e.message);
     }
   }
+
+  public async getAddress(req, res) {
+    try {
+      const result = await bitcoinApi.getAddress(req.params.address);
+      res.send(result);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
+  }
+
+  public async getAddressTransactions(req, res) {
+    try {
+      const result = await bitcoinApi.getAddressTransactions(req.params.address);
+      res.send(result);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
+  }
+
+  public async getAddressTransactionsFromTxid(req, res) {
+    try {
+      const result = await bitcoinApi.getAddressTransactionsFromLastSeenTxid(req.params.address, req.params.txid);
+      res.send(result);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
+  }
 }
 
 export default new Routes();

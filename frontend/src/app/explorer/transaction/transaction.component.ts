@@ -13,6 +13,7 @@ export class TransactionComponent implements OnInit {
   tx: any;
   isLoadingTx = true;
   conversions: any;
+  error: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -23,12 +24,17 @@ export class TransactionComponent implements OnInit {
   ngOnInit() {
     this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
+        this.error = undefined;
         const txId: string = params.get('id') || '';
         return this.apiService.getTransaction$(txId);
       })
     )
     .subscribe((tx) => {
       this.tx = tx;
+      this.isLoadingTx = false;
+    },
+    (error) => {
+      this.error = error;
       this.isLoadingTx = false;
     });
 

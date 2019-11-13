@@ -3,7 +3,7 @@
 
   <br>
 
-  <ng-template [ngIf]="!isLoadingTx" [ngIfElse]="loadingTx">
+  <ng-template [ngIf]="!isLoadingTx && !error">
 
     <app-transactions-list [transactions]="[tx]" [showConfirmations]="true"></app-transactions-list>
 
@@ -49,11 +49,21 @@
     </div>
 
   </ng-template>
-  <ng-template #loadingTx>
+
+  <ng-template [ngIf="isLoadingTx && !error">
     <div class="text-center">
       <div class="spinner-border text-light"></div>
       <br><br>
     </div>
   </ng-template>
+
+  <ng-template [ngIf]="error">
+    <div class="text-center">
+      Error loading transaction data.
+      <br>
+      <i>{{ error.message }}</i>
+    </div>
+  </ng-template>
 </div>
-  
+
+<br>

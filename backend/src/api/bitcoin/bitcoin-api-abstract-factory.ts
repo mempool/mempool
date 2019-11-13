@@ -13,4 +13,7 @@ export interface AbstractBitcoinApi {
   getBlockTransactionsFromIndex(hash: string, index: number): Promise<IBlock>;
   getBlocks(): Promise<string>;
   getBlocksFromHeight(height: number): Promise<string>;
+  getAddress(address: string): Promise<IBlock>;
+  getAddressTransactions(address: string): Promise<IBlock>;
+  getAddressTransactionsFromLastSeenTxid(address: string, lastSeenTxid: string): Promise<IBlock>;
 }
