@@ -170,11 +170,23 @@ export class ApiService {
     return this.httpClient.get<any[]>(API_BASE_URL + '/explorer/tx/' + txId);
   }
 
-  getBlock$(hash: string): Observable<any[]> {
-    return this.httpClient.get<any[]>(API_BASE_URL + '/explorer/block/' + hash);
+  getBlock$(hash: string): Observable<any> {
+    return this.httpClient.get<any>(API_BASE_URL + '/explorer/block/' + hash);
   }
 
   getBlockTransactions$(hash: string, index?: number): Observable<any[]> {
     return this.httpClient.get<any[]>(API_BASE_URL + '/explorer/block/' + hash + '/tx/' + (index || ''));
+  }
+
+  getAddress$(address: string): Observable<any> {
+    return this.httpClient.get<any>(API_BASE_URL + '/explorer/address/' + address);
+  }
+
+  getAddressTransactions$(address: string): Observable<any[]> {
+    return this.httpClient.get<any[]>(API_BASE_URL + '/explorer/address/' + address+ '/tx/');
+  }
+
+  getAddressTransactionsFromHash$(address: string, txid: string): Observable<any[]> {
+    return this.httpClient.get<any[]>(API_BASE_URL + '/explorer/address/' + address + '/tx/chain/' + txid);
   }
 }

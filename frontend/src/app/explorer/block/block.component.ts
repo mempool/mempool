@@ -16,6 +16,7 @@ export class BlockComponent implements OnInit {
   latestBlockHeight: number;
   transactions: any[];
   isLoadingTransactions = true;
+  error: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -27,16 +28,21 @@ export class BlockComponent implements OnInit {
   ngOnInit() {
     this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
+        this.error = undefined;
         this.isLoadingBlock = true;
         const blockHash: string = params.get('id') || '';
-        this.getBlockTransactions(blockHash);
         return this.apiService.getBlock$(blockHash);
       })
     )
     .subscribe((block) => {
       this.block = block;
       this.isLoadingBlock = false;
+      this.getBlockTransactions(block.id);
       this.ref.markForCheck();
+    },
+    (error) => {
+      this.error = error;
+      this.isLoadingBlock = false;
     });
 
     this.memPoolService.blocks$

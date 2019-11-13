@@ -272,6 +272,9 @@ class MempoolSpace {
         .get(config.API_ENDPOINT + 'explorer/block/:hash', routes.getBlock)
         .get(config.API_ENDPOINT + 'explorer/block/:hash/tx', routes.getBlockTransactions)
         .get(config.API_ENDPOINT + 'explorer/block/:hash/tx/:index', routes.getBlockTransactionsFromIndex)
+        .get(config.API_ENDPOINT + 'explorer/address/:address', routes.getAddress)
+        .get(config.API_ENDPOINT + 'explorer/address/:address/tx', routes.getAddressTransactions)
+        .get(config.API_ENDPOINT + 'explorer/address/:address/tx/chain/:txid', routes.getAddressTransactionsFromTxid)
         ;
     }
 

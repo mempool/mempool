@@ -1,7 +1,7 @@
 <div class="container">
     <h1>Block <ng-template [ngIf]="!isLoadingBlock"><a [routerLink]="['/explorer/block/', block.id]">#{{ block.height }}</a></ng-template></h1>
   
-    <ng-template [ngIf]="!isLoadingBlock" [ngIfElse]="loadingBlock">
+    <ng-template [ngIf]="!isLoadingBlock && !error">
 
       <br>
   
@@ -27,7 +27,7 @@
               </tr>
               <tr>
                 <td>Status</td>
-                <td>{{ latestBlockHeight - block.height + 1 }} confirmations</td>
+                <td>{{ (latestBlockHeight - block.height + 1) }} confirmation{{ (latestBlockHeight - block.height + 1) === 1 ? '' : 's' }}</td>
               </tr>
             </tbody>
           </table>
@@ -61,14 +61,23 @@
           <div class="spinner-border text-light"></div>
           <br><br>
         </ng-template>
-        <button  *ngIf="transactions?.length" type="button" class="btn btn-primary" (click)="loadMore()">Load more</button>
+        <button *ngIf="transactions?.length && transactions?.length !== block.tx_count" type="button" class="btn btn-primary" (click)="loadMore()">Load more</button>
       </div>
   
     </ng-template>
-    <ng-template #loadingBlock>
+
+    <ng-template [ngIf]="isLoadingBlock && !error">
       <div class="text-center">
         <div class="spinner-border text-light"></div>
         <br><br>
+      </div>
+    </ng-template>
+
+    <ng-template [ngIf]="error">
+      <div class="text-center">
+        Error loading block data.
+        <br>
+        <i>{{ error.message }}</i>
       </div>
     </ng-template>
 

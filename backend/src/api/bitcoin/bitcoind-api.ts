@@ -84,20 +84,25 @@ class BitcoindApi implements AbstractBitcoinApi {
   getBlock(hash: string): Promise<IBlock> {
     throw new Error('Method not implemented.');
   }
-
   getBlocks(): Promise<string> {
     throw new Error('Method not implemented.');
   }
-
   getBlocksFromHeight(height: number): Promise<string> {
     throw new Error('Method not implemented.');
   }
-
   getBlockTransactions(hash: string): Promise<IBlock> {
     throw new Error('Method not implemented.');
   }
-
   getBlockTransactionsFromIndex(hash: string, index: number): Promise<IBlock> {
+    throw new Error('Method not implemented.');
+  }
+  getAddress(address: string): Promise<IBlock> {
+    throw new Error('Method not implemented.');
+  }
+  getAddressTransactions(address: string): Promise<IBlock> {
+    throw new Error('Method not implemented.');
+  }
+  getAddressTransactionsFromLastSeenTxid(address: string, lastSeenTxid: string): Promise<IBlock> {
     throw new Error('Method not implemented.');
   }
 }

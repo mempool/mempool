@@ -1,1 +1,81 @@
-<p>address works!</p>
+<div class="container">
+    <h1>Address</h1>
+
+    <br>
+  
+    <ng-template [ngIf]="!isLoadingAddress && !error">
+
+      <table class="table table-borderless">
+        <thead>
+          <tr class="header-bg">
+            <th>
+              <a [routerLink]="['/explorer/address/', address.address]">{{ address.address }}</a>
+            </th>
+          </tr>
+        </thead>
+      </table>
+
+      <br>
+  
+      <div class="row">
+        <div class="col">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td>Number of transactions</td>
+                <td>{{ address.chain_stats.tx_count + address.mempool_stats.tx_count }}</td>
+              </tr>
+              <tr>
+                <td>Total received</td>
+                <td>{{ (address.chain_stats.funded_txo_sum + address.mempool_stats.funded_txo_sum) / 100000000 | number: '1.2-2' }} BTC</td>
+              </tr>
+              <tr>
+                <td>Total sent</td>
+                <td>{{ (address.chain_stats.spent_txo_sum + address.mempool_stats.spent_txo_sum) / 100000000 | number: '1.2-2' }} BTC</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col text-center">
+          <div class="qr-wrapper">
+            <qrcode id="qrCode" [qrdata]="address.address" [size]="128" [level]="'M'"></qrcode>
+          </div>
+        </div>
+      </div>
+
+      <br>
+
+      <h2>{{ transactions?.length || '?' }} of {{ address.chain_stats.tx_count + address.mempool_stats.tx_count }} transactions</h2>
+
+      <br>
+
+      <app-transactions-list [transactions]="transactions" [showConfirmations]="true"></app-transactions-list>
+
+      <div class="text-center">
+        <ng-template [ngIf]="isLoadingTransactions">
+          <div class="spinner-border text-light"></div>
+          <br><br>
+        </ng-template>
+        <button *ngIf="transactions?.length && transactions?.length !== (address.chain_stats.tx_count + address.mempool_stats.tx_count)" type="button" class="btn btn-primary" (click)="loadMore()">Load more</button>
+      </div>
+  
+    </ng-template>
+
+    <ng-template [ngIf]="isLoadingAddress && !error">
+      <div class="text-center">
+        <div class="spinner-border text-light"></div>
+        <br><br>
+      </div>
+    </ng-template>
+
+    <ng-template [ngIf]="error">
+      <div class="text-center">
+        Error loading address data.
+        <br>
+        <i>{{ error.message }}</i>
+      </div>
+    </ng-template>
+
+  </div>
+  
+  <br>
