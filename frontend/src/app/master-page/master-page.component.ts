@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MemPoolService } from '../services/mem-pool.service';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { environment } from '../../environments/environment';
 
@@ -10,11 +10,13 @@ import { environment } from '../../environments/environment';
   styleUrls: ['./master-page.component.scss']
 })
 export class MasterPageComponent implements OnInit {
-
   navCollapsed = false;
   isOffline = false;
   searchForm: FormGroup;
   isEsploraEnabled = !!environment.esplora;
+  currentBaseRoot = '';
+
+  regexAddr = /^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,87})$/;
 
   constructor(
     private memPoolService: MemPoolService,
@@ -24,13 +26,20 @@ export class MasterPageComponent implements OnInit {
 
   ngOnInit() {
     this.searchForm = this.formBuilder.group({
-      txId: ['', Validators.pattern('^[a-fA-F0-9]{64}$')],
+      txId: [''],
     });
 
     this.memPoolService.isOffline$
       .subscribe((state) => {
         this.isOffline = state;
       });
+
+      this.currentBaseRoot = this.router.url.split('/')[1];
+      this.router.events.subscribe((event) => {
+        if (event instanceof NavigationEnd ) {
+          this.currentBaseRoot = event.url.split('/')[1];
+        }
+    });
   }
 
   collapse(): void {
@@ -38,14 +47,22 @@ export class MasterPageComponent implements OnInit {
   }
 
   search() {
-    const txId = this.searchForm.value.txId;
-    if (txId) {
-      if (window.location.pathname === '/' || window.location.pathname.substr(0, 4) === '/tx/') {
-        window.history.pushState({}, '', `/tx/${txId}`);
+    const searchText = this.searchForm.value.txId;
+    if (searchText) {
+      if (this.currentBaseRoot === 'explorer') {
+        if (this.regexAddr.test(searchText)) {
+          this.router.navigate(['/explorer/address/', searchText]);
+        } else {
+          this.router.navigate(['/explorer/tx/', searchText]);
+        }
       } else {
-        this.router.navigate(['/tx/', txId]);
+        if (window.location.pathname === '/' || window.location.pathname.substr(0, 4) === '/tx/') {
+          window.history.pushState({}, '', `/tx/${searchText}`);
+        } else {
+          this.router.navigate(['/tx/', searchText]);
+        }
+        this.memPoolService.txIdSearch$.next(searchText);
       }
-      this.memPoolService.txIdSearch$.next(txId);
       this.searchForm.setValue({
         txId: '',
       });
