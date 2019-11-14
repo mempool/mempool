@@ -99,7 +99,7 @@ class Routes {
       if (e.response) {
         res.status(e.response.status).send(e.response.data);
       } else {
-        e.status(500, e.message);
+        res.status(500, e.message);
       }
     }
   }
@@ -112,7 +112,7 @@ class Routes {
       if (e.response) {
         res.status(e.response.status).send(e.response.data);
       } else {
-        e.status(500, e.message);
+        res.status(500, e.message);
       }
     }
   }
@@ -128,7 +128,7 @@ class Routes {
         if (e.response) {
           res.status(e.response.status).send(e.response.data);
         } else {
-          e.status(500, e.message);
+          res.status(500, e.message);
         }
       }
     }
@@ -145,7 +145,7 @@ class Routes {
         if (e.response) {
           res.status(e.response.status).send(e.response.data);
         } else {
-          e.status(500, e.message);
+          res.status(500, e.message);
         }
       }
     }
@@ -162,7 +162,7 @@ class Routes {
         if (e.response) {
           res.status(e.response.status).send(e.response.data);
         } else {
-          e.status(500, e.message);
+          res.status(500, e.message);
         }
       }
     }
@@ -176,7 +176,7 @@ class Routes {
       if (e.response) {
         res.status(e.response.status).send(e.response.data);
       } else {
-        e.status(500, e.message);
+        res.status(500, e.message);
       }
     }
   }
@@ -189,7 +189,7 @@ class Routes {
       if (e.response) {
         res.status(e.response.status).send(e.response.data);
       } else {
-        e.status(500, e.message);
+        res.status(500, e.message);
       }
     }
   }
