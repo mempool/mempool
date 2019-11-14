@@ -38,6 +38,7 @@ export class AddressComponent implements OnInit {
       this.ref.markForCheck();
     },
     (error) => {
+      console.log(error);
       this.error = error;
       this.isLoadingAddress = false;
     });
