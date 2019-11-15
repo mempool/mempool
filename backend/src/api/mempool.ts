@@ -122,6 +122,10 @@ class Mempool {
             console.log('Error finding transaction in mempool.');
           }
         }
+
+        if ((new Date().getTime()) - start > config.MEMPOOL_REFRESH_RATE_MS * 10) {
+          break;
+        }
       }
 
       const newMempool: IMempool = {};
