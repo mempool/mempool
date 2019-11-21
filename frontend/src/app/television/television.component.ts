@@ -1,7 +1,7 @@
 import { Component, OnInit, LOCALE_ID, Inject, Renderer2 } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { formatDate } from '@angular/common';
-import { BytesPipe } from '../shared/pipes/bytes-pipe/bytes.pipe';
+import { VbytesPipe } from '../shared/pipes/bytes-pipe/vbytes.pipe';
 
 import * as Chartist from 'chartist';
 import { IMempoolStats } from '../blockchain/interfaces';
@@ -22,7 +22,7 @@ export class TelevisionComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     @Inject(LOCALE_ID) private locale: string,
-    private bytesPipe: BytesPipe,
+    private vbytesPipe: VbytesPipe,
     private memPoolService: MemPoolService,
     private renderer: Renderer2,
   ) { }
@@ -48,7 +48,7 @@ export class TelevisionComponent implements OnInit {
       },
       axisY: {
         labelInterpolationFnc: (value: number): any => {
-          return this.bytesPipe.transform(value);
+          return this.vbytesPipe.transform(value, 2);
         },
         offset: 160
       },
