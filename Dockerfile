@@ -10,7 +10,7 @@ RUN apk add mariadb mariadb-client jq git nginx npm rsync
 
 RUN mysql_install_db --user=mysql --datadir=/var/lib/mysql/
 RUN /usr/bin/mysqld_safe --datadir='/var/lib/mysql/'& \
-    sleep 5 && \
+    sleep 60 && \
     mysql -e "create database mempool" && \
     mysql -e "grant all privileges on mempool.* to 'mempool'@'localhost' identified by 'mempool'" && \
     mysql mempool < /mempool.space/mariadb-structure.sql
@@ -32,7 +32,7 @@ ENV DB_PORT 3306
 ENV DB_USER mempool
 ENV DB_PASSWORD mempool
 ENV DB_DATABASE mempool
-ENV HTTP_PORT 3000
+ENV HTTP_PORT 80
 ENV API_ENDPOINT /api/v1/
 ENV CHAT_SSL_ENABLED false
 #ENV CHAT_SSL_PRIVKEY
@@ -42,10 +42,10 @@ ENV MEMPOOL_REFRESH_RATE_MS 500
 ENV INITIAL_BLOCK_AMOUNT 8
 ENV DEFAULT_PROJECTED_BLOCKS_AMOUNT 3
 ENV KEEP_BLOCK_AMOUNT 24
-ENV BITCOIN_NODE_HOST bitcoin
+ENV BITCOIN_NODE_HOST bitcoinhost
 ENV BITCOIN_NODE_PORT 8332
-ENV BITCOIN_NODE_USER bitcoin
-ENV BITCOIN_NODE_PASS bitcoin
+ENV BITCOIN_NODE_USER bitcoinuser
+ENV BITCOIN_NODE_PASS bitcoinpass
 ENV TX_PER_SECOND_SPAN_SECONDS 150
 
 #RUN echo "mysqld_safe& sleep 20 && cd /mempool.space/backend && rm -f mempool-config.json && rm -f cache.json && touch cache.json && jq -n env > mempool-config.json && node dist/index.js" > /entrypoint.sh
