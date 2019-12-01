@@ -148,14 +148,22 @@ When it's ready you will see output like this:
 ```
 
 ## nginx + CertBot (LetsEncrypt)
-Setup nginx using the supplied nginx.conf, replacing `example.com` with your domain name.
+Setup nginx using the supplied nginx.conf
 
 ```bash
+  # install nginx and certbot
   apt-get install -y nginx python-certbot-nginx
+
+  # replace example.com with your domain name
+  certbot --nginx -d example.com
+
+  # install the mempool configuration for nginx
   cp nginx.conf /etc/nginx/nginx.conf
-  certbot -d example.com # replace with your domain name
+
+  # edit the installed nginx.conf, and replace all
+  # instances of example.com with your domain name
 ```
-Make sure you can access https://example.com/ in browser before proceeding
+Make sure you can access https://<your-domain-name>/ in browser before proceeding
 
 
 ## Running (Frontend)
