@@ -12,7 +12,7 @@ import { environment } from '../../../environments/environment';
 export class BlockModalComponent implements OnInit {
   @Input() block: IBlock;
   blockSubsidy = 50;
-  isEsploraEnabled = !!environment.esplora;
+  isElectrsEnabled = !!environment.electrs;
   conversions: any;
 
   constructor(

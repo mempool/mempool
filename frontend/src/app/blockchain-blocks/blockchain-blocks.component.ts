@@ -16,7 +16,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   blocksSubscription: Subscription;
   interval: any;
   trigger = 0;
-  isEsploraEnabled = !!environment.esplora;
+  isElectrsEnabled = !!environment.electrs;
 
   constructor(
     private modalService: NgbModal,

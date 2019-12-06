@@ -264,7 +264,7 @@ class MempoolSpace {
       .get(config.API_ENDPOINT + 'statistics/6m', routes.get6MStatistics.bind(routes))
       ;
 
-    if (config.BACKEND_API === 'esplora') {
+    if (config.BACKEND_API === 'electrs') {
       this.app
         .get(config.API_ENDPOINT + 'explorer/blocks', routes.getBlocks)
         .get(config.API_ENDPOINT + 'explorer/blocks/:height', routes.getBlocks)

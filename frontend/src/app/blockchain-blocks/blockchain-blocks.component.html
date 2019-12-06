@@ -2,8 +2,8 @@
   <div *ngFor="let block of blocks; let i = index; trackBy: trackByBlocksFn" >
     <div (click)="openBlockModal(block);" class="text-center bitcoin-block mined-block" id="bitcoin-block-{{ block.height }}" [ngStyle]="getStyleForBlock(block)">
       <div class="block-height">
-        <a *ngIf="!isEsploraEnabled" href="https://www.blockstream.info/block-height/{{ block.height }}" target="_blank">#{{ block.height }}</a>
-        <a *ngIf="isEsploraEnabled" [routerLink]="['/explorer/block/', block.hash]">#{{ block.height }}</a>
+        <a *ngIf="!isElectrsEnabled" href="https://www.blockstream.info/block-height/{{ block.height }}" target="_blank">#{{ block.height }}</a>
+        <a *ngIf="isElectrsEnabled" [routerLink]="['/explorer/block/', block.hash]">#{{ block.height }}</a>
       </div>
       <div class="block-body">
         <div class="fees">
