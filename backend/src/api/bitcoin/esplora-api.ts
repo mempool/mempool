@@ -1,185 +1,182 @@
 const config = require('../../../mempool-config.json');
 import { ITransaction, IMempoolInfo, IBlock } from '../../interfaces';
 import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
-import axios, { AxiosResponse } from 'axios';
+import * as request from 'request';
 
 class EsploraApi implements AbstractBitcoinApi {
-  client: any;
 
   constructor() {
-    this.client = axios.create({
-      baseURL: config.ESPLORA_API_URL,
-      timeout: 15000,
-    });
   }
 
   getMempoolInfo(): Promise<IMempoolInfo> {
     return new Promise(async (resolve, reject) => {
-      try {
-        const response: AxiosResponse = await this.client.get('/mempool');
+      request(config.ESPLORA_API_URL + '/mempool', { json: true }, (err, res, response) => {
+        if (err) {
+          reject(err);
+        }
         resolve({
-          size: response.data.count,
-          bytes: response.data.vsize,
+          size: response.count,
+          bytes: response.vsize,
         });
-      } catch (error) {
-        reject(error);
-      }
+      });
     });
   }
 
   getRawMempool(): Promise<ITransaction['txid'][]> {
     return new Promise(async (resolve, reject) => {
-      try {
-        const response: AxiosResponse = await this.client.get('/mempool/txids');
-        resolve(response.data);
-      } catch (error) {
-        reject(error);
-      }
+      request(config.ESPLORA_API_URL + '/mempool/txids', { json: true }, (err, res, response) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(response);
+      });
     });
   }
 
   getRawTransaction(txId: string): Promise<ITransaction> {
     return new Promise(async (resolve, reject) => {
-      try {
-        const response: AxiosResponse = await this.client.get('/tx/' + txId);
+      request(config.ESPLORA_API_URL + '/tx/' + txId, { json: true }, (err, res, response) => {
+        if (err) {
+          reject(err);
+        }
+        response.vsize = Math.round(response.weight / 4);
+        response.fee = response.fee / 100000000;
+        response.blockhash = response.status.block_hash;
 
-        response.data.vsize = Math.round(response.data.weight / 4);
-        response.data.fee = response.data.fee / 100000000;
-        response.data.blockhash = response.data.status.block_hash;
-
-        resolve(response.data);
-      } catch (error) {
-        reject(error);
-      }
+        resolve(response);
+      });
     });
   }
 
   getBlockCount(): Promise<number> {
     return new Promise(async (resolve, reject) => {
-      try {
-        const response: AxiosResponse = await this.client.get('/blocks/tip/height');
-        resolve(response.data);
-      } catch (error) {
-        reject(error);
-      }
+      request(config.ESPLORA_API_URL + '/blocks/tip/height', { json: true }, (err, res, response) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(response);
+      });
     });
   }
 
   getBlockAndTransactions(hash: string): Promise<IBlock> {
     return new Promise(async (resolve, reject) => {
-      try {
-        const blockInfo: AxiosResponse = await this.client.get('/block/' + hash);
-        const blockTxs: AxiosResponse = await this.client.get('/block/' + hash + '/txids');
+      request(config.ESPLORA_API_URL + '/block/' + hash, { json: true }, (err, res, response) => {
+        if (err) {
+          reject(err);
+        }
+        request(config.ESPLORA_API_URL + '/block/' + hash + '/txids', { json: true }, (err2, res2, response2) => {
+          if (err2) {
+            reject(err2);
+          }
+          const block = response;
+          block.hash = hash;
+          block.nTx = block.tx_count;
+          block.time = block.timestamp;
+          block.tx = response2;
 
-        const block = blockInfo.data;
-        block.hash = hash;
-        block.nTx = block.tx_count;
-        block.time = block.timestamp;
-        block.tx = blockTxs.data;
-
-        resolve(block);
-      } catch (error) {
-        reject(error);
-      }
+          resolve(block);
+        });
+      });
     });
   }
 
   getBlockHash(height: number): Promise<string> {
     return new Promise(async (resolve, reject) => {
-      try {
-        const response: AxiosResponse = await this.client.get('/block-height/' + height);
-        resolve(response.data);
-      } catch (error) {
-        reject(error);
-      }
+      request(config.ESPLORA_API_URL + '/block-height/' + height, { json: true }, (err, res, response) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(response);
+      });
     });
   }
 
   getBlocks(): Promise<string> {
     return new Promise(async (resolve, reject) => {
-      try {
-        const response: AxiosResponse = await this.client.get('/blocks');
-        resolve(response.data);
-      } catch (error) {
-        reject(error);
-      }
+      request(config.ESPLORA_API_URL + '/blocks', { json: true }, (err, res, response) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(response);
+      });
     });
   }
 
   getBlocksFromHeight(height: number): Promise<string> {
     return new Promise(async (resolve, reject) => {
-      try {
-        const response: AxiosResponse = await this.client.get('/blocks/' + height);
-        resolve(response.data);
-      } catch (error) {
-        reject(error);
-      }
+      request(config.ESPLORA_API_URL + '/blocks/' + height, { json: true }, (err, res, response) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(response);
+      });
     });
   }
 
   getBlock(hash: string): Promise<IBlock> {
     return new Promise(async (resolve, reject) => {
-      try {
-        const blockInfo: AxiosResponse = await this.client.get('/block/' + hash);
-        resolve(blockInfo.data);
-      } catch (error) {
-        reject(error);
-      }
+      request(config.ESPLORA_API_URL + '/block/' + hash, { json: true }, (err, res, response) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(response);
+      });
     });
   }
 
   getBlockTransactions(hash: string): Promise<IBlock> {
     return new Promise(async (resolve, reject) => {
-      try {
-        const blockInfo: AxiosResponse = await this.client.get('/block/' + hash + '/txs');
-        resolve(blockInfo.data);
-      } catch (error) {
-        reject(error);
-      }
+      request(config.ESPLORA_API_URL + '/block/' + hash + '/txs', { json: true }, (err, res, response) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(response);
+      });
     });
   }
 
   getBlockTransactionsFromIndex(hash: string, index: number): Promise<IBlock> {
     return new Promise(async (resolve, reject) => {
-      try {
-        const blockInfo: AxiosResponse = await this.client.get('/block/' + hash + '/txs/' + index);
-        resolve(blockInfo.data);
-      } catch (error) {
-        reject(error);
-      }
+      request(config.ESPLORA_API_URL + '/block/' + hash + '/txs/' + index, { json: true }, (err, res, response) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(response);
+      });
     });
   }
 
   getAddress(address: string): Promise<IBlock> {
     return new Promise(async (resolve, reject) => {
-      try {
-        const blockInfo: AxiosResponse = await this.client.get('/address/' + address);
-        resolve(blockInfo.data);
-      } catch (error) {
-        reject(error);
-      }
+      request(config.ESPLORA_API_URL + '/address/' + address, { json: true }, (err, res, response) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(response);
+      });
     });
   }
 
   getAddressTransactions(address: string): Promise<IBlock> {
     return new Promise(async (resolve, reject) => {
-      try {
-        const blockInfo: AxiosResponse = await this.client.get('/address/' + address + '/txs');
-        resolve(blockInfo.data);
-      } catch (error) {
-        reject(error);
-      }
+      request(config.ESPLORA_API_URL + '/address/' + address + '/txs', { json: true }, (err, res, response) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(response);
+      });
     });
   }
 
   getAddressTransactionsFromLastSeenTxid(address: string, lastSeenTxid: string): Promise<IBlock> {
     return new Promise(async (resolve, reject) => {
-      try {
-        const blockInfo: AxiosResponse = await this.client.get('/address/' + address + '/txs/chain/' + lastSeenTxid);
-        resolve(blockInfo.data);
-      } catch (error) {
-        reject(error);
-      }
+      request(config.ESPLORA_API_URL + '/address/' + address + '/txs/chain/' + lastSeenTxid, { json: true }, (err, res, response) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(response);
+      });
     });
   }
 }
