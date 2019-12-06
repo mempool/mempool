@@ -3,14 +3,14 @@ import { ITransaction, IMempoolInfo, IBlock } from '../../interfaces';
 import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
 import * as request from 'request';
 
-class EsploraApi implements AbstractBitcoinApi {
+class ElectrsApi implements AbstractBitcoinApi {
 
   constructor() {
   }
 
   getMempoolInfo(): Promise<IMempoolInfo> {
     return new Promise(async (resolve, reject) => {
-      request(config.ESPLORA_API_URL + '/mempool', { json: true }, (err, res, response) => {
+      request(config.ELECTRS_API_URL + '/mempool', { json: true }, (err, res, response) => {
         if (err) {
           reject(err);
         }
@@ -24,7 +24,7 @@ class EsploraApi implements AbstractBitcoinApi {
 
   getRawMempool(): Promise<ITransaction['txid'][]> {
     return new Promise(async (resolve, reject) => {
-      request(config.ESPLORA_API_URL + '/mempool/txids', { json: true }, (err, res, response) => {
+      request(config.ELECTRS_API_URL + '/mempool/txids', { json: true }, (err, res, response) => {
         if (err) {
           reject(err);
         }
@@ -35,7 +35,7 @@ class EsploraApi implements AbstractBitcoinApi {
 
   getRawTransaction(txId: string): Promise<ITransaction> {
     return new Promise(async (resolve, reject) => {
-      request(config.ESPLORA_API_URL + '/tx/' + txId, { json: true }, (err, res, response) => {
+      request(config.ELECTRS_API_URL + '/tx/' + txId, { json: true }, (err, res, response) => {
         if (err) {
           reject(err);
         }
@@ -50,7 +50,7 @@ class EsploraApi implements AbstractBitcoinApi {
 
   getBlockCount(): Promise<number> {
     return new Promise(async (resolve, reject) => {
-      request(config.ESPLORA_API_URL + '/blocks/tip/height', { json: true }, (err, res, response) => {
+      request(config.ELECTRS_API_URL + '/blocks/tip/height', { json: true }, (err, res, response) => {
         if (err) {
           reject(err);
         }
@@ -61,11 +61,11 @@ class EsploraApi implements AbstractBitcoinApi {
 
   getBlockAndTransactions(hash: string): Promise<IBlock> {
     return new Promise(async (resolve, reject) => {
-      request(config.ESPLORA_API_URL + '/block/' + hash, { json: true }, (err, res, response) => {
+      request(config.ELECTRS_API_URL + '/block/' + hash, { json: true }, (err, res, response) => {
         if (err) {
           reject(err);
         }
-        request(config.ESPLORA_API_URL + '/block/' + hash + '/txids', { json: true }, (err2, res2, response2) => {
+        request(config.ELECTRS_API_URL + '/block/' + hash + '/txids', { json: true }, (err2, res2, response2) => {
           if (err2) {
             reject(err2);
           }
@@ -83,7 +83,7 @@ class EsploraApi implements AbstractBitcoinApi {
 
   getBlockHash(height: number): Promise<string> {
     return new Promise(async (resolve, reject) => {
-      request(config.ESPLORA_API_URL + '/block-height/' + height, { json: true }, (err, res, response) => {
+      request(config.ELECTRS_API_URL + '/block-height/' + height, { json: true }, (err, res, response) => {
         if (err) {
           reject(err);
         }
@@ -94,7 +94,7 @@ class EsploraApi implements AbstractBitcoinApi {
 
   getBlocks(): Promise<string> {
     return new Promise(async (resolve, reject) => {
-      request(config.ESPLORA_API_URL + '/blocks', { json: true }, (err, res, response) => {
+      request(config.ELECTRS_API_URL + '/blocks', { json: true }, (err, res, response) => {
         if (err) {
           reject(err);
         }
@@ -105,7 +105,7 @@ class EsploraApi implements AbstractBitcoinApi {
 
   getBlocksFromHeight(height: number): Promise<string> {
     return new Promise(async (resolve, reject) => {
-      request(config.ESPLORA_API_URL + '/blocks/' + height, { json: true }, (err, res, response) => {
+      request(config.ELECTRS_API_URL + '/blocks/' + height, { json: true }, (err, res, response) => {
         if (err) {
           reject(err);
         }
@@ -116,7 +116,7 @@ class EsploraApi implements AbstractBitcoinApi {
 
   getBlock(hash: string): Promise<IBlock> {
     return new Promise(async (resolve, reject) => {
-      request(config.ESPLORA_API_URL + '/block/' + hash, { json: true }, (err, res, response) => {
+      request(config.ELECTRS_API_URL + '/block/' + hash, { json: true }, (err, res, response) => {
         if (err) {
           reject(err);
         }
@@ -127,7 +127,7 @@ class EsploraApi implements AbstractBitcoinApi {
 
   getBlockTransactions(hash: string): Promise<IBlock> {
     return new Promise(async (resolve, reject) => {
-      request(config.ESPLORA_API_URL + '/block/' + hash + '/txs', { json: true }, (err, res, response) => {
+      request(config.ELECTRS_API_URL + '/block/' + hash + '/txs', { json: true }, (err, res, response) => {
         if (err) {
           reject(err);
         }
@@ -138,7 +138,7 @@ class EsploraApi implements AbstractBitcoinApi {
 
   getBlockTransactionsFromIndex(hash: string, index: number): Promise<IBlock> {
     return new Promise(async (resolve, reject) => {
-      request(config.ESPLORA_API_URL + '/block/' + hash + '/txs/' + index, { json: true }, (err, res, response) => {
+      request(config.ELECTRS_API_URL + '/block/' + hash + '/txs/' + index, { json: true }, (err, res, response) => {
         if (err) {
           reject(err);
         }
@@ -149,7 +149,7 @@ class EsploraApi implements AbstractBitcoinApi {
 
   getAddress(address: string): Promise<IBlock> {
     return new Promise(async (resolve, reject) => {
-      request(config.ESPLORA_API_URL + '/address/' + address, { json: true }, (err, res, response) => {
+      request(config.ELECTRS_API_URL + '/address/' + address, { json: true }, (err, res, response) => {
         if (err) {
           reject(err);
         }
@@ -160,7 +160,7 @@ class EsploraApi implements AbstractBitcoinApi {
 
   getAddressTransactions(address: string): Promise<IBlock> {
     return new Promise(async (resolve, reject) => {
-      request(config.ESPLORA_API_URL + '/address/' + address + '/txs', { json: true }, (err, res, response) => {
+      request(config.ELECTRS_API_URL + '/address/' + address + '/txs', { json: true }, (err, res, response) => {
         if (err) {
           reject(err);
         }
@@ -171,7 +171,7 @@ class EsploraApi implements AbstractBitcoinApi {
 
   getAddressTransactionsFromLastSeenTxid(address: string, lastSeenTxid: string): Promise<IBlock> {
     return new Promise(async (resolve, reject) => {
-      request(config.ESPLORA_API_URL + '/address/' + address + '/txs/chain/' + lastSeenTxid, { json: true }, (err, res, response) => {
+      request(config.ELECTRS_API_URL + '/address/' + address + '/txs/chain/' + lastSeenTxid, { json: true }, (err, res, response) => {
         if (err) {
           reject(err);
         }
@@ -181,4 +181,4 @@ class EsploraApi implements AbstractBitcoinApi {
   }
 }
 
-export default EsploraApi;
+export default ElectrsApi;

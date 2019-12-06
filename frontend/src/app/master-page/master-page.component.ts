@@ -13,7 +13,7 @@ export class MasterPageComponent implements OnInit {
   navCollapsed = false;
   isOffline = false;
   searchForm: FormGroup;
-  isEsploraEnabled = !!environment.esplora;
+  isElectrsEnabled = !!environment.electrs;
   currentBaseRoot = '';
 
   regexAddr = /^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,87})$/;

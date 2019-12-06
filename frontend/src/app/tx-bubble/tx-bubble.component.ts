@@ -36,7 +36,7 @@ export class TxBubbleComponent implements OnInit, OnDestroy {
   txTrackingTx: ITransaction | null = null;
   txShowTxNotFound = false;
 
-  isEsploraEnabled = !!environment.esplora;
+  isElectrsEnabled = !!environment.electrs;
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {

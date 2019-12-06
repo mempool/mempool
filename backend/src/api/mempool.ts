@@ -56,7 +56,7 @@ class Mempool {
       let totalOut = 0;
       transaction.vout.forEach((output) => totalOut += output.value);
 
-      if (config.BACKEND_API === 'esplora') {
+      if (config.BACKEND_API === 'electrs') {
         transaction.feePerWeightUnit = (transaction.fee * 100000000) / transaction.weight || 0;
         transaction.feePerVsize = (transaction.fee * 100000000) / (transaction.vsize) || 0;
         transaction.totalOut = totalOut / 100000000;

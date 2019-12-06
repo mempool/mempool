@@ -6,7 +6,7 @@
     "ng": "ng",
     "start": "ng serve --aot --proxy-config proxy.conf.json",
     "build": "ng build --prod",
-    "build-esplora": "ng build --prod --configuration=esplora",
+    "build-electrs": "ng build --prod --configuration=electrs",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
