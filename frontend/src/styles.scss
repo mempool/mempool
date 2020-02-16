@@ -1,5 +1,150 @@
-/* You can add global styles to this file, and also import other style files */
+/* Bootstrap */
 
+$body-bg: #1d1f31;
+$body-color: #fff;
+$gray-800: #1d1f31;
+$gray-700: #fff;
+$gray-200: #10131f;
+
+$nav-tabs-link-active-bg: #24273e;
+
+$primary: #2b89c7;
+
+$link-color:                #1bd8f4;
+$link-decoration:           none !default;
+$link-hover-color:          darken($link-color, 15%) !default;
+$link-hover-decoration:     underline !default;
+
+@import "~bootstrap/scss/bootstrap";
+@import '~tlite/tlite.css';
+
+body {
+  background-color: #11131f;
+}
+
+:focus {
+  outline: none !important;
+}
+
+.box {
+  min-height: 1px;
+  padding: 1.25rem;
+  position: relative;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  min-width: 0;
+  word-wrap: break-word;
+  background-color: #24273e;
+  background-clip: border-box;
+  border: 1px solid rgba(0,0,0,.125);
+  box-shadow: 0.125rem 0.125rem 0.25rem rgba(0,0,0,0.075);
+}
+
+.form-control {
+  color: #495057;
+}
+.form-control:focus {
+  color: #000;
+}
+
+.h2-match-table {
+  padding-left: .65rem;
+}
+
+.skeleton-loader {
+  box-sizing: border-box;
+  /**
+  * `overflow` and `position` are required steps to make sure
+  * the component respects the specified dimensions
+  * given via `theme` object @Input attribute
+  */
+  overflow: hidden;
+  position: relative;
+
+  animation: progress 2s ease-in-out infinite;
+  background: #2e324e no-repeat;
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0),
+    #5d6182,
+    rgba(255, 255, 255, 0)
+  );
+  background-size: 200px 100%;
+  border-radius: 4px;
+  width: 100%;
+  height: 14px;
+  display: inline-block;
+
+  &:after,
+  &:before {
+    box-sizing: border-box;
+  }
+
+  &.circle {
+    width: 40px;
+    height: 40px;
+    margin: 5px;
+    border-radius: 50%;
+  }
+}
+
+@keyframes progress {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.smaller-text {
+  font-size: 14px;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.table-xs th, .table-xs td {
+  padding: 0.1rem;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+
+.close {
+  color: #fff;
+}
+
+.close:hover {
+  color: #fff;
+}
+
+.green-color {
+  color: #3bcc49;
+}
+
+.yellow-color { 
+  color: #ffd800;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #181b2d !important;
+}
+
+.bordertop {
+  border-top: 1px solid #4c4c4c;
+}
+
+.smaller-text {
+  font-size: 14px;
+}
+
+
+/* Chartist */
 $ct-series-names: (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z);
 $ct-series-colors: (
   #D81B60,
@@ -43,53 +188,79 @@ $ct-series-colors: (
   #6188e2,
   #a748ca,
   #6188e2,
-
 );
 
-
-$body-bg: #11131f;
-$body-color: #fff;
-$gray-800: #1d1f31;
-
-$primary: #2b89c7;
-
-$link-color:                #1bd8f4;
-$link-decoration:           none !default;
-$link-hover-color:          darken($link-color, 15%) !default;
-$link-hover-decoration:     underline !default;
-
-// Required
-@import "../node_modules/bootstrap/scss/bootstrap";
 @import "../node_modules/chartist/dist/scss/chartist.scss";
 
-body {
-  margin-bottom: 60px;
+.ct-bar-label {
+  font-size: 20px;
+  font-weight: bold;
+  fill: #fff;
 }
 
-html, body {
-  height: 100%;
+.ct-target-line {
+  stroke: #f5f5f5;
+  stroke-width: 3px;
+  stroke-dasharray: 7px;
 }
 
-@media (min-width: 768px) {
-  body.disable-scroll {
-    overflow: hidden;
+.ct-area {
+  stroke: none;
+  fill-opacity: 0.9;
+}
+
+.ct-label {
+    fill: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.ct-grid {
+    stroke: rgba(255, 255, 255, 0.2);
+}
+
+/* LEGEND */
+
+.ct-legend {
+  position: absolute;
+  z-index: 10;
+  left: 0px;
+  list-style: none;
+  font-size: 13px;
+  padding: 0px 0px 0px 30px;
+  top: 90px;
+
+  li {
+      position: relative;
+      padding-left: 23px;
+      margin-bottom: 0px;
+    }
+
+  li:before {
+      width: 12px;
+      height: 12px;
+      position: absolute;
+      left: 0;
+      content: '';
+      border: 3px solid transparent;
+      border-radius: 2px;
   }
-}
 
-.ng-invalid.ng-dirty {
-  border-color: #dc3545;
-}
+  li.inactive:before {
+      background: transparent;
+  }
 
-.modal-content {
-  background-color: #11131f;
-}
+  &.ct-legend-inside {
+      position: absolute;
+      top: 0;
+      right: 0;
+  }
 
-.close {
-  color: #fff;
-}
-
-.close:hover {
-  color: #fff;
+  @for $i from 0 to length($ct-series-colors) {
+      .ct-series-#{$i}:before {
+          background-color: nth($ct-series-colors, $i + 1);
+          border-color: nth($ct-series-colors, $i + 1);
+      }
+  }
 }
 
 
@@ -134,22 +305,3 @@ hr {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.green-color {
-  color: #3bcc49;
-}
-
-.yellow-color { 
-  color: #ffd800;
-}
-
-.table-striped tbody tr:nth-of-type(odd) {
-  background-color: #181b2d !important;
-}
-
-.bordertop {
-  border-top: 1px solid #4c4c4c;
-}
-
-.smaller-text {
-  font-size: 14px;
-}

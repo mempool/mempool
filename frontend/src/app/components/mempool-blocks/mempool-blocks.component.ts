@@ -1,0 +1,83 @@
+import { Component, OnInit, OnDestroy, Input, EventEmitter, Output } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
+import { StateService } from 'src/app/services/state.service';
+
+@Component({
+  selector: 'app-mempool-blocks',
+  templateUrl: './mempool-blocks.component.html',
+  styleUrls: ['./mempool-blocks.component.scss']
+})
+export class MempoolBlocksComponent implements OnInit, OnDestroy {
+  mempoolBlocks: MempoolBlock[];
+  mempoolBlocksSubscription: Subscription;
+
+  blockWidth = 125;
+  blockMarginLeft = 20;
+
+  @Input() txFeePerVSize: number;
+  @Output() rightPosition: EventEmitter<number> = new EventEmitter<number>(true);
+  @Output() blockDepth: EventEmitter<number> = new EventEmitter<number>(true);
+
+  constructor(
+    private stateService: StateService,
+  ) { }
+
+  ngOnInit() {
+    this.mempoolBlocksSubscription = this.stateService.mempoolBlocks$
+      .subscribe((blocks) => {
+        this.mempoolBlocks = blocks;
+        this.calculateTransactionPosition();
+      });
+  }
+
+  ngOnDestroy() {
+    this.mempoolBlocksSubscription.unsubscribe();
+  }
+
+  trackByFn(index: number) {
+    return index;
+  }
+
+  getStyleForMempoolBlockAtIndex(index: number) {
+    const greenBackgroundHeight = 100 - this.mempoolBlocks[index].blockVSize / 1000000 * 100;
+    return {
+      'right': 40 + index * 155 + 'px',
+      'background': `repeating-linear-gradient(to right,  #554b45, #554b45 ${greenBackgroundHeight}%,
+        #bd7c13 ${Math.max(greenBackgroundHeight, 0)}%, #c5345a 100%)`,
+    };
+  }
+
+  calculateTransactionPosition() {
+    if (!this.txFeePerVSize) {
+      return;
+    }
+
+    for (const block of this.mempoolBlocks) {
+      for (let i = 0; i < block.feeRange.length - 1; i++) {
+        if (this.txFeePerVSize < block.feeRange[i + 1] && this.txFeePerVSize >= block.feeRange[i]) {
+          const txInBlockIndex = this.mempoolBlocks.indexOf(block);
+          const feeRangeIndex = block.feeRange.findIndex((val, index) => this.txFeePerVSize < block.feeRange[index + 1]);
+          const feeRangeChunkSize = 1 / (block.feeRange.length - 1);
+
+          const txFee = this.txFeePerVSize - block.feeRange[i];
+          const max = block.feeRange[i + 1] - block.feeRange[i];
+          const blockLocation = txFee / max;
+
+          const chunkPositionOffset = blockLocation * feeRangeChunkSize;
+          const feePosition = feeRangeChunkSize * feeRangeIndex + chunkPositionOffset;
+
+          const blockedFilledPercentage = (block.blockVSize > 1000000 ? 1000000 : block.blockVSize) / 1000000;
+
+          const arrowRightPosition = txInBlockIndex * (this.blockMarginLeft + this.blockWidth)
+            + ((1 - feePosition) * blockedFilledPercentage * this.blockWidth);
+
+          this.rightPosition.next(arrowRightPosition);
+          this.blockDepth.next(txInBlockIndex);
+          break;
+        }
+      }
+    }
+  }
+
+}

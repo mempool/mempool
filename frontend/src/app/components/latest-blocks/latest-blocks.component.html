@@ -1,0 +1,43 @@
+<table class="table table-borderless">
+  <thead>
+    <th style="width: 120px;">Height</th>
+    <th class="d-none d-md-block" style="width: 300px;">Timestamp</th>
+    <th style="width: 200px;">Mined</th>
+    <th style="width: 150px;">Transactions</th>
+    <th style="width: 175px;">Size</th>
+    <th class="d-none d-md-block">Filled</th>
+  </thead>
+  <tbody>
+    <tr *ngFor="let block of blocks; let i= index; trackBy: trackByBlock">
+      <td><a [routerLink]="['./block', block.id]" [state]="{ data: { block: block } }">#{{ block.height }}</a></td>
+      <td class="d-none d-md-block">{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}</td>
+      <td>{{ block.timestamp | timeSince : trigger }} ago</td>
+      <td>{{ block.tx_count }}</td>
+      <td>{{ block.size | bytes: 2 }}</td>
+      <td class="d-none d-md-block">
+        <div class="progress position-relative">
+          <div class="progress-bar bg-success" role="progressbar" [ngStyle]="{'width': (block.weight / 4000000)*100 + '%' }"></div>
+        </div>
+      </td>
+    </tr>
+    <ng-template [ngIf]="isLoading">
+      <tr *ngFor="let item of [1,2,3,4,5,6,7,8,9,10]">
+        <td><span class="skeleton-loader"></span></td>
+        <td><span class="skeleton-loader"></span></td>
+        <td><span class="skeleton-loader"></span></td>
+        <td><span class="skeleton-loader"></span></td>
+        <td><span class="skeleton-loader"></span></td>
+        <td><span class="skeleton-loader"></span></td>
+      </tr>
+    </ng-template>
+  </tbody>
+</table>
+
+<div class="text-center">
+  <ng-template [ngIf]="isLoading">
+    <div class="spinner-border"></div>
+    <br><br>
+  </ng-template>
+  <br>
+  <button *ngIf="blocks.length" [disabled]="isLoading" type="button" class="btn btn-primary" (click)="loadMore()">Load more</button>
+</div>

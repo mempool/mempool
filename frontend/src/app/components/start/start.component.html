@@ -1,0 +1,20 @@
+<app-blockchain></app-blockchain>
+
+<div class="box">
+  <div class="container">
+
+    <ul class="nav nav-tabs mb-2">
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="view === 'blocks'" href="#" (click)="view = 'blocks'">Blocks</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="view === 'transactions'" href="#" (click)="view = 'transactions'">Transactions</a>
+      </li>
+    </ul>
+
+    <app-latest-blocks *ngIf="view === 'blocks'; else latestTransactions"></app-latest-blocks>
+    <ng-template #latestTransactions>
+      <app-latest-transactions></app-latest-transactions>
+    </ng-template>
+  </div>
+</div>

@@ -1,0 +1,134 @@
+<div class="container">
+
+  <app-blockchain></app-blockchain>
+
+  <h1>Block <ng-template [ngIf]="blockHeight"><a [routerLink]="['/block/', blockHash]">#{{ blockHeight }}</a></ng-template></h1>
+  
+    <ng-template [ngIf]="!isLoadingBlock && !error">
+
+      <br>
+  
+      <div class="box">
+        <div class="row">
+          <div class="col">
+            <table class="table table-borderless table-striped">
+              <tbody>
+                <tr>
+                  <td>Timestamp</td>
+                  <td>{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }} <i>(<app-time-since [time]="block.timestamp"></app-time-since> ago)</i></td>
+                </tr>
+                <tr>
+                  <td>Number of transactions</td>
+                  <td>{{ block.tx_count }}</td>
+                </tr>
+                <tr>
+                  <td>Size</td>
+                  <td>{{ block.size | bytes: 2 }}</td>
+                </tr>
+                <tr>
+                  <td>Weight</td>
+                  <td>{{ block.weight | wuBytes: 2 }}</td>
+                </tr>
+                <tr>
+                  <td>Status</td>
+                  <td><button *ngIf="latestBlock" class="btn btn-sm btn-success">{{ (latestBlock.height - block.height + 1) }} confirmation{{ (latestBlock.height - block.height + 1) === 1 ? '' : 's' }}</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col">
+            <table class="table table-borderless table-striped">
+              <tbody>
+                <tr>
+                  <td>Hash</td>
+                  <td><a [routerLink]="['/block/', block.id]" title="{{ block.id }}" >{{ block.id | shortenString : 32 }}</a></td>
+                </tr>
+                <tr>
+                  <td>Previous Block</td>
+                  <td><a [routerLink]="['/block/', block.previousblockhash]" [state]="{ data: { blockHeight: blockHeight - 1 } }" title="{{ block.previousblockhash }}">{{ block.previousblockhash | shortenString : 32 }}</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <br>
+
+      <h2><ng-template [ngIf]="transactions?.length">{{ transactions?.length || '?' }} of </ng-template>{{ block.tx_count }} transactions</h2>
+
+      <br>
+
+      <app-transactions-list [transactions]="transactions"></app-transactions-list>
+
+      <div class="text-center">
+        <ng-template [ngIf]="isLoadingTransactions">
+          <div class="spinner-border"></div>
+          <br><br>
+        </ng-template>
+        <button *ngIf="transactions?.length && transactions?.length !== block.tx_count" type="button" class="btn btn-primary" (click)="loadMore()">Load more</button>
+      </div>
+  
+    </ng-template>
+
+    <ng-template [ngIf]="isLoadingBlock && !error">
+      
+      <br>
+
+      <div class="box">
+        <div class="row">
+          <div class="col">
+            <table class="table table-borderless table-striped">
+              <tbody>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col">
+            <table class="table table-borderless table-striped">
+              <tbody>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <br>
+      
+      <div class="text-center">
+        <div class="spinner-border"></div>
+        <br><br>
+      </div>
+    </ng-template>
+
+    <ng-template [ngIf]="error">
+      <div class="text-center">
+        Error loading block data.
+        <br>
+        <i>{{ error.error }}</i>
+      </div>
+    </ng-template>
+
+  </div>
+  
+  <br>

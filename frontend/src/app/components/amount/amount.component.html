@@ -1,0 +1,6 @@
+<ng-container *ngIf="(viewFiat$ | async) && (conversions$ | async) as conversions; else viewFiatVin">
+  <span>{{ conversions.USD * (satoshis / 100000000) | currency:'USD':'symbol':'1.2-2' }}</span>
+</ng-container>
+<ng-template #viewFiatVin>
+  {{ satoshis / 100000000 }} BTC
+</ng-template>
