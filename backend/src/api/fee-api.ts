@@ -1,11 +1,11 @@
-import projectedBlocks from './projected-blocks';
+import projectedBlocks from './mempool-blocks';
 import { DB } from '../database';
 
 class FeeApi {
   constructor() { }
 
   public getRecommendedFee() {
-    const pBlocks = projectedBlocks.getProjectedBlocks();
+    const pBlocks = projectedBlocks.getMempoolBlocks();
     if (!pBlocks.length) {
       return {
         'fastestFee': 0,
@@ -15,7 +15,7 @@ class FeeApi {
     }
     let firstMedianFee = Math.ceil(pBlocks[0].medianFee);
 
-    if (pBlocks.length === 1 && pBlocks[0].blockWeight <= 2000000) {
+    if (pBlocks.length === 1 && pBlocks[0].blockVSize <= 500000) {
       firstMedianFee = 1;
     }
 

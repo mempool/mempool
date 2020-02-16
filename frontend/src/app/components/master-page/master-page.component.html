@@ -1,0 +1,31 @@
+<header>
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+  <a class="navbar-brand" routerLink="/"><img src="./assets/mempool-space-logo.png" width="180" class="logo"> <span class="badge badge-warning" style="margin-left: 10px;" *ngIf="isOffline">Offline</span></a>
+  
+  <button class="navbar-toggler" type="button" (click)="collapse()" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  
+  <div class="navbar-collapse collapse" id="navbarCollapse" [ngClass]="{'show': navCollapsed}">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        <a class="nav-link" routerLink="/" (click)="collapse()">Explorer</a>
+      </li>
+      <li class="nav-item" routerLinkActive="active">
+        <a class="nav-link" routerLink="/graphs" (click)="collapse()">Graphs</a>
+      </li>
+      <li class="nav-item" routerLinkActive="active">
+        <a class="nav-link" routerLink="/tv" (click)="collapse()">TV view &nbsp;<img src="./assets/expand.png" width="15"/></a>
+      </li>
+      <li class="nav-item" routerLinkActive="active">
+        <a class="nav-link" routerLink="/about" (click)="collapse()">About</a>
+      </li>
+    </ul>
+    <app-search-form location="top"></app-search-form>
+  </div>
+</nav>
+</header>
+
+<br />
+
+<router-outlet></router-outlet>

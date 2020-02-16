@@ -1,7 +1,7 @@
 import memPool from './mempool';
 import { DB } from '../database';
 
-import { ITransaction, IMempoolStats } from '../interfaces';
+import { Statistic, SimpleTransaction } from '../interfaces';
 
 class Statistics {
   protected intervalTimer: NodeJS.Timer | undefined;
@@ -37,41 +37,27 @@ class Statistics {
 
     console.log('Running statistics');
 
-    let memPoolArray: ITransaction[] = [];
+    let memPoolArray: SimpleTransaction[] = [];
     for (const i in currentMempool) {
       if (currentMempool.hasOwnProperty(i)) {
         memPoolArray.push(currentMempool[i]);
       }
     }
     // Remove 0 and undefined
-    memPoolArray = memPoolArray.filter((tx) => tx.feePerWeightUnit);
+    memPoolArray = memPoolArray.filter((tx) => tx.feePerVsize);
 
     if (!memPoolArray.length) {
       return;
     }
 
-    memPoolArray.sort((a, b) => a.feePerWeightUnit - b.feePerWeightUnit);
+    memPoolArray.sort((a, b) => a.feePerVsize - b.feePerVsize);
     const totalWeight = memPoolArray.map((tx) => tx.vsize).reduce((acc, curr) => acc + curr) * 4;
     const totalFee = memPoolArray.map((tx) => tx.fee).reduce((acc, curr) => acc + curr);
 
     const logFees = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
       250, 300, 350, 400, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000];
 
-    const weightUnitFees: { [feePerWU: number]: number } = {};
     const weightVsizeFees: { [feePerWU: number]: number } = {};
-
-    memPoolArray.forEach((transaction) => {
-      for (let i = 0; i < logFees.length; i++) {
-        if ((logFees[i] === 2000 && transaction.feePerWeightUnit >= 2000) || transaction.feePerWeightUnit <= logFees[i]) {
-          if (weightUnitFees[logFees[i]]) {
-            weightUnitFees[logFees[i]] += transaction.vsize * 4;
-          } else {
-            weightUnitFees[logFees[i]] = transaction.vsize * 4;
-          }
-          break;
-        }
-      }
-    });
 
     memPoolArray.forEach((transaction) => {
       for (let i = 0; i < logFees.length; i++) {
@@ -93,10 +79,7 @@ class Statistics {
       vbytes_per_second: Math.round(vBytesPerSecond),
       mempool_byte_weight: totalWeight,
       total_fee: totalFee,
-      fee_data: JSON.stringify({
-        'wu': weightUnitFees,
-        'vsize': weightVsizeFees
-      }),
+      fee_data: '',
       vsize_1: weightVsizeFees['1'] || 0,
       vsize_2: weightVsizeFees['2'] || 0,
       vsize_3: weightVsizeFees['3'] || 0,
@@ -143,7 +126,7 @@ class Statistics {
     }
   }
 
-  private async $create(statistics: IMempoolStats): Promise<number | undefined> {
+  private async $create(statistics: Statistic): Promise<number | undefined> {
     try {
       const connection = await DB.pool.getConnection();
       const query = `INSERT INTO statistics(
@@ -295,7 +278,7 @@ class Statistics {
             AVG(vsize_2000) AS vsize_2000 FROM statistics GROUP BY UNIX_TIMESTAMP(added) DIV ${groupBy} ORDER BY id DESC LIMIT ${days}`;
   }
 
-  public async $get(id: number): Promise<IMempoolStats | undefined> {
+  public async $get(id: number): Promise<Statistic | undefined> {
     try {
       const connection = await DB.pool.getConnection();
       const query = `SELECT * FROM statistics WHERE id = ?`;
@@ -307,7 +290,7 @@ class Statistics {
     }
   }
 
-  public async $list2H(): Promise<IMempoolStats[]> {
+  public async $list2H(): Promise<Statistic[]> {
     try {
       const connection = await DB.pool.getConnection();
       const query = `SELECT * FROM statistics ORDER BY id DESC LIMIT 120`;
@@ -320,7 +303,7 @@ class Statistics {
     }
   }
 
-  public async $list24H(): Promise<IMempoolStats[]> {
+  public async $list24H(): Promise<Statistic[]> {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(120, 720);
@@ -332,7 +315,7 @@ class Statistics {
     }
   }
 
-  public async $list1W(): Promise<IMempoolStats[]> {
+  public async $list1W(): Promise<Statistic[]> {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(120, 5040);
@@ -345,7 +328,7 @@ class Statistics {
     }
   }
 
-  public async $list1M(): Promise<IMempoolStats[]> {
+  public async $list1M(): Promise<Statistic[]> {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(120, 20160);
@@ -358,7 +341,7 @@ class Statistics {
     }
   }
 
-  public async $list3M(): Promise<IMempoolStats[]> {
+  public async $list3M(): Promise<Statistic[]> {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(120, 60480);
@@ -371,7 +354,7 @@ class Statistics {
     }
   }
 
-  public async $list6M(): Promise<IMempoolStats[]> {
+  public async $list6M(): Promise<Statistic[]> {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(120, 120960);

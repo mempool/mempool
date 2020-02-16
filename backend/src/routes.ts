@@ -1,7 +1,6 @@
 import statistics from './api/statistics';
 import feeApi from './api/fee-api';
-import projectedBlocks from './api/projected-blocks';
-import bitcoinApi from './api/bitcoin/bitcoin-api-factory';
+import mempoolBlocks from './api/mempool-blocks';
 
 class Routes {
   private cache = {};
@@ -50,147 +49,12 @@ class Routes {
     res.send(result);
   }
 
-  public async $getgetTransactionsForBlock(req, res) {
-    const result = await feeApi.$getTransactionsForBlock(req.params.id);
-    res.send(result);
-  }
-
-  public async getgetTransactionsForProjectedBlock(req, res) {
+  public async getMempoolBlocks(req, res) {
     try {
-      const result = await projectedBlocks.getProjectedBlockFeesForBlock(req.params.id);
+      const result = await mempoolBlocks.getMempoolBlocks();
       res.send(result);
     } catch (e) {
       res.status(500).send(e.message);
-    }
-  }
-
-  public async getProjectedBlocks(req, res) {
-    try {
-      let txId: string | undefined;
-      if (req.query.txId && /^[a-fA-F0-9]{64}$/.test(req.query.txId)) {
-        txId = req.query.txId;
-      }
-      const result = await projectedBlocks.getProjectedBlocks(txId, 6);
-      res.send(result);
-    } catch (e) {
-      res.status(500).send(e.message);
-    }
-  }
-
-  public async getBlocks(req, res) {
-    try {
-      let result: string;
-      if (req.params.height) {
-        result = await bitcoinApi.getBlocksFromHeight(req.params.height);
-      } else {
-        result = await bitcoinApi.getBlocks();
-      }
-      res.send(result);
-    } catch (e) {
-      res.status(500).send(e.message);
-    }
-  }
-
-  public async getRawTransaction(req, res) {
-    try {
-      const result = await bitcoinApi.getRawTransaction(req.params.id);
-      res.send(result);
-    } catch (e) {
-      if (e.response) {
-        res.status(e.response.status).send(e.response.data);
-      } else {
-        res.status(500, e.message);
-      }
-    }
-  }
-
-  public async getBlock(req, res) {
-    try {
-      const result = await bitcoinApi.getBlock(req.params.hash);
-      res.send(result);
-    } catch (e) {
-      if (e.response) {
-        res.status(e.response.status).send(e.response.data);
-      } else {
-        res.status(500, e.message);
-      }
-    }
-  }
-
-  public async getBlockTransactions(req, res) {
-    try {
-      const result = await bitcoinApi.getBlockTransactions(req.params.hash);
-      res.send(result);
-    } catch (e) {
-      if (e.response) {
-        res.status(e.response.status).send(e.response.data);
-      } else {
-        if (e.response) {
-          res.status(e.response.status).send(e.response.data);
-        } else {
-          res.status(500, e.message);
-        }
-      }
-    }
-  }
-
-  public async getBlockTransactionsFromIndex(req, res) {
-    try {
-      const result = await bitcoinApi.getBlockTransactionsFromIndex(req.params.hash, req.params.index);
-      res.send(result);
-    } catch (e) {
-      if (e.response) {
-        res.status(e.response.status).send(e.response.data);
-      } else {
-        if (e.response) {
-          res.status(e.response.status).send(e.response.data);
-        } else {
-          res.status(500, e.message);
-        }
-      }
-    }
-  }
-
-  public async getAddress(req, res) {
-    try {
-      const result = await bitcoinApi.getAddress(req.params.address);
-      res.send(result);
-    } catch (e) {
-      if (e.response) {
-        res.status(e.response.status).send(e.response.data);
-      } else {
-        if (e.response) {
-          res.status(e.response.status).send(e.response.data);
-        } else {
-          res.status(500, e.message);
-        }
-      }
-    }
-  }
-
-  public async getAddressTransactions(req, res) {
-    try {
-      const result = await bitcoinApi.getAddressTransactions(req.params.address);
-      res.send(result);
-    } catch (e) {
-      if (e.response) {
-        res.status(e.response.status).send(e.response.data);
-      } else {
-        res.status(500, e.message);
-      }
-    }
-  }
-
-  public async getAddressTransactionsFromTxid(req, res) {
-    try {
-      const result = await bitcoinApi.getAddressTransactionsFromLastSeenTxid(req.params.address, req.params.txid);
-      res.send(result);
-    } catch (e) {
-      if (e.response) {
-        res.status(e.response.status).send(e.response.data);
-      } else {
-        res.status(500, e.message);
-      }
     }
   }
 }

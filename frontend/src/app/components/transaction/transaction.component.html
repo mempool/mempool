@@ -1,0 +1,137 @@
+<div class="container">
+
+  <app-blockchain></app-blockchain>
+
+  <div class="clearfix"></div>
+
+  <h1>Transaction</h1>
+
+  <ng-template [ngIf]="!isLoadingTx && !error">
+
+    <ng-template [ngIf]="tx.status.confirmed" [ngIfElse]="unconfirmedTemplate">
+    
+      <div class="box">
+        
+        <table class="table table-borderless table-striped">
+          <tbody>
+            <tr>
+              <td>Status</td>
+              <td class="adjust-btn-padding">
+                <ng-template [ngIf]="latestBlock">
+                  <button type="button" class="btn btn-sm btn-success">{{ latestBlock.height - tx.status.block_height + 1 }} confirmation<ng-container *ngIf="latestBlock.height - tx.status.block_height + 1 > 1">s</ng-container></button>
+                </ng-template>
+              </td>
+            </tr>
+            <tr>
+              <td>Included in block</td>
+              <td><a [routerLink]="['/block/', tx.status.block_hash]" [state]="{ data: { blockHeight: tx.status.block_height } }">#{{ tx.status.block_height }}</a> at {{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }} <i>(<app-time-since [time]="tx.status.block_time"></app-time-since> ago)</i></td>
+            </tr>
+            <tr>
+              <td>Fees</td>
+              <td>{{ tx.fee | number }} sats <span *ngIf="conversions">(<span class="green-color">{{ conversions.USD * tx.fee / 100000000 | currency:'USD':'symbol':'1.2-2' }}</span>)</span></td>
+            </tr>
+            <tr>
+              <td>Fees per vByte</td>
+              <td>{{ tx.fee / (tx.weight / 4) | number : '1.2-2' }} sat/vB</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <br>
+
+    </ng-template>
+
+    <ng-template #unconfirmedTemplate>
+
+      <div class="box">
+
+        <table class="table table-borderless table-striped">
+          <tbody>
+            <tr>
+              <td>Transaction</td>
+              <td>
+                <a [routerLink]="['/tx/', txId]">{{ txId | shortenString }}</a>
+                <app-clipboard [text]="txId"></app-clipboard>
+              </td>
+              <td class="adjust-btn-padding">
+                <button type="button" class="btn btn-sm btn-danger">Unconfirmed</button>
+              </td>
+            </tr>
+            <tr>
+              <td>Fees</td>
+              <td>{{ tx.fee | number }} sats <span *ngIf="conversions">(<span class="green-color">{{ conversions.USD * tx.fee / 100000000 | currency:'USD':'symbol':'1.2-2' }}</span>)</span></td>
+              <td>{{ tx.fee / (tx.weight / 4) | number : '1.2-2' }} sat/vB</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <br>
+<!--
+      <div>
+        <app-mempool-blocks style="right: 20px; position: relative;" *ngIf="!tx.status.confirmed" [txFeePerVSize]="tx.fee / (tx.weight / 4)" (rightPosition)="rightPosition = $event" (blockDepth)="blockDepth = $event"></app-mempool-blocks>
+      </div>
+    -->
+      <div class="clearfix"></div>
+    </ng-template>
+
+    <h2>Inputs & Outputs</h2>
+
+    <app-transactions-list [transactions]="[tx]" [transactionPage]="true"></app-transactions-list>
+
+    <h2>Details</h2>
+    <div class="box">
+      <div class="row">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td>Size</td>
+                <td>{{ tx.size | bytes: 2 }}</td>
+              </tr>
+              <tr>
+                <td>Weight</td>
+                <td>{{ tx.weight | wuBytes: 2 }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+  </ng-template>
+
+  <ng-template [ngIf]="isLoadingTx && !error">
+
+    <div class="box">
+      <table class="table table-borderless table-striped">
+        <tbody>
+          <tr>
+            <td><span class="skeleton-loader"></span></td>
+            <td><span class="skeleton-loader"></span></td>
+          </tr>
+          <tr>
+            <td><span class="skeleton-loader"></span></td>
+            <td><span class="skeleton-loader"></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <br>
+
+    <div class="text-center">
+      <div class="spinner-border"></div>
+      <br><br>
+    </div>
+  </ng-template>
+
+  <ng-template [ngIf]="error">
+    <div class="text-center">
+      Error loading transaction data.
+      <br>
+      <i>{{ error.error }}</i>
+    </div>
+  </ng-template>
+</div>
+
+<br>
