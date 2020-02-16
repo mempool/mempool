@@ -1,7 +1,7 @@
 import memPool from './mempool';
 import { DB } from '../database';
 
-import { Statistic, SimpleTransaction } from '../interfaces';
+import { Statistic, SimpleTransaction, OptimizedStatistic } from '../interfaces';
 
 class Statistics {
   protected intervalTimer: NodeJS.Timer | undefined;
@@ -278,93 +278,161 @@ class Statistics {
             AVG(vsize_2000) AS vsize_2000 FROM statistics GROUP BY UNIX_TIMESTAMP(added) DIV ${groupBy} ORDER BY id DESC LIMIT ${days}`;
   }
 
-  public async $get(id: number): Promise<Statistic | undefined> {
+  public async $get(id: number): Promise<OptimizedStatistic | undefined> {
     try {
       const connection = await DB.pool.getConnection();
       const query = `SELECT * FROM statistics WHERE id = ?`;
       const [rows] = await connection.query<any>(query, [id]);
       connection.release();
-      return rows[0];
+      if (rows[0]) {
+        return this.mapStatisticToOptimizedStatistic([rows[0]])[0];
+      }
     } catch (e) {
       console.log('$list2H() error', e);
     }
   }
 
-  public async $list2H(): Promise<Statistic[]> {
+  public async $list2H(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
       const query = `SELECT * FROM statistics ORDER BY id DESC LIMIT 120`;
       const [rows] = await connection.query<any>(query);
       connection.release();
-      return rows;
+      return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
       console.log('$list2H() error', e);
       return [];
     }
   }
 
-  public async $list24H(): Promise<Statistic[]> {
+  public async $list24H(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(120, 720);
       const [rows] = await connection.query<any>(query);
       connection.release();
-      return rows;
+      return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
       return [];
     }
   }
 
-  public async $list1W(): Promise<Statistic[]> {
+  public async $list1W(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(120, 5040);
       const [rows] = await connection.query<any>(query);
       connection.release();
-      return rows;
+      return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
       console.log('$list1W() error', e);
       return [];
     }
   }
 
-  public async $list1M(): Promise<Statistic[]> {
+  public async $list1M(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(120, 20160);
       const [rows] = await connection.query<any>(query);
       connection.release();
-      return rows;
+      return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
       console.log('$list1M() error', e);
       return [];
     }
   }
 
-  public async $list3M(): Promise<Statistic[]> {
+  public async $list3M(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(120, 60480);
       const [rows] = await connection.query<any>(query);
       connection.release();
-      return rows;
+      return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
       console.log('$list3M() error', e);
       return [];
     }
   }
 
-  public async $list6M(): Promise<Statistic[]> {
+  public async $list6M(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(120, 120960);
       const [rows] = await connection.query<any>(query);
       connection.release();
-      return rows;
+      return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
       console.log('$list6M() error', e);
       return [];
     }
+  }
+
+  public async $list1Y(): Promise<OptimizedStatistic[]> {
+    try {
+      const connection = await DB.pool.getConnection();
+      const query = this.getQueryForDays(120, 241920);
+      const [rows] = await connection.query<any>(query);
+      connection.release();
+      return this.mapStatisticToOptimizedStatistic(rows);
+    } catch (e) {
+      console.log('$list6M() error', e);
+      return [];
+    }
+  }
+  private mapStatisticToOptimizedStatistic(statistic: Statistic[]): OptimizedStatistic[] {
+    return statistic.map((s) => {
+      return {
+        id: s.id || 0,
+        added: s.added,
+        unconfirmed_transactions: s.unconfirmed_transactions,
+        tx_per_second: s.tx_per_second,
+        vbytes_per_second: s.vbytes_per_second,
+        mempool_byte_weight: s.mempool_byte_weight,
+        total_fee: s.total_fee,
+        vsizes: [
+          s.vsize_1,
+          s.vsize_2,
+          s.vsize_3,
+          s.vsize_4,
+          s.vsize_5,
+          s.vsize_6,
+          s.vsize_8,
+          s.vsize_10,
+          s.vsize_12,
+          s.vsize_15,
+          s.vsize_20,
+          s.vsize_30,
+          s.vsize_40,
+          s.vsize_50,
+          s.vsize_60,
+          s.vsize_70,
+          s.vsize_80,
+          s.vsize_90,
+          s.vsize_100,
+          s.vsize_125,
+          s.vsize_150,
+          s.vsize_175,
+          s.vsize_200,
+          s.vsize_250,
+          s.vsize_300,
+          s.vsize_350,
+          s.vsize_400,
+          s.vsize_500,
+          s.vsize_600,
+          s.vsize_700,
+          s.vsize_800,
+          s.vsize_900,
+          s.vsize_1000,
+          s.vsize_1200,
+          s.vsize_1400,
+          s.vsize_1600,
+          s.vsize_1800,
+          s.vsize_2000,
+        ]
+      };
+    });
   }
 
 }

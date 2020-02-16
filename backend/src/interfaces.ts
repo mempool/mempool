@@ -160,6 +160,17 @@ export interface Statistic {
   vsize_2000: number;
 }
 
+export interface OptimizedStatistic {
+  id: number;
+  added: string;
+  unconfirmed_transactions: number;
+  tx_per_second: number;
+  vbytes_per_second: number;
+  total_fee: number;
+  mempool_byte_weight: number;
+  vsizes: number[];
+}
+
 export interface Outspend {
   spent: boolean;
   txid: string;

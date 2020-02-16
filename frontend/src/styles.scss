@@ -18,6 +18,10 @@ $link-hover-decoration:     underline !default;
 @import "~bootstrap/scss/bootstrap";
 @import '~tlite/tlite.css';
 
+html, body {
+  height: 100%;
+}
+
 body {
   background-color: #11131f;
 }
