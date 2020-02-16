@@ -16,6 +16,7 @@ class Routes {
     this.cache['1m'] = await statistics.$list1M();
     this.cache['3m'] = await statistics.$list3M();
     this.cache['6m'] = await statistics.$list6M();
+    this.cache['1y'] = await statistics.$list1Y();
     console.log('Statistics cache created');
   }
 
@@ -42,6 +43,10 @@ class Routes {
 
   public get6MStatistics(req, res) {
     res.send(this.cache['6m']);
+  }
+
+  public get1YStatistics(req, res) {
+    res.send(this.cache['1y']);
   }
 
   public async getRecommendedFees(req, res) {

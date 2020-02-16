@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject } from 'rxjs';
 import { Block } from '../interfaces/electrs.interface';
 import { MempoolBlock } from '../interfaces/websocket.interface';
-import { MempoolStats } from '../interfaces/node-api.interface';
+import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ export class StateService {
   conversions$ = new ReplaySubject<any>(1);
   mempoolBlocks$ = new ReplaySubject<MempoolBlock[]>(1);
   txConfirmed = new Subject<Block>();
-  live2Chart$ = new Subject<MempoolStats>();
+  live2Chart$ = new Subject<OptimizedMempoolStats>();
 
   viewFiat$ = new BehaviorSubject<boolean>(false);
   isOffline$ = new BehaviorSubject<boolean>(false);

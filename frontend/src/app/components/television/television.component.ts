@@ -4,7 +4,7 @@ import { VbytesPipe } from '../../pipes/bytes-pipe/vbytes.pipe';
 
 import * as Chartist from 'chartist';
 import { WebsocketService } from 'src/app/services/websocket.service';
-import { MempoolStats } from '../../interfaces/node-api.interface';
+import { OptimizedMempoolStats } from '../../interfaces/node-api.interface';
 import { StateService } from 'src/app/services/state.service';
 import { ApiService } from 'src/app/services/api.service';
 
@@ -16,7 +16,7 @@ import { ApiService } from 'src/app/services/api.service';
 export class TelevisionComponent implements OnInit {
   loading = true;
 
-  mempoolStats: MempoolStats[] = [];
+  mempoolStats: OptimizedMempoolStats[] = [];
   mempoolVsizeFeesData: any;
   mempoolVsizeFeesOptions: any;
 
@@ -88,7 +88,7 @@ export class TelevisionComponent implements OnInit {
       });
   }
 
-  handleNewMempoolData(mempoolStats: MempoolStats[]) {
+  handleNewMempoolData(mempoolStats: OptimizedMempoolStats[]) {
     mempoolStats.reverse();
     const labels = mempoolStats.map(stats => stats.added);
 
@@ -103,20 +103,14 @@ export class TelevisionComponent implements OnInit {
     };
   }
 
-  generateArray(mempoolStats: MempoolStats[]) {
-    const logFees = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
-      250, 300, 350, 400, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000];
-
-    logFees.reverse();
-
+  generateArray(mempoolStats: OptimizedMempoolStats[]) {
     const finalArray: number[][] = [];
     let feesArray: number[] = [];
 
-    logFees.forEach((fee) => {
+    for (let index = 37; index > -1; index--) {
       feesArray = [];
       mempoolStats.forEach((stats) => {
-        // @ts-ignore
-        const theFee = stats['vsize_' + fee];
+        const theFee = stats.vsizes[index].toString();
         if (theFee) {
           feesArray.push(parseInt(theFee, 10));
         } else {
@@ -127,7 +121,7 @@ export class TelevisionComponent implements OnInit {
         feesArray = feesArray.map((value, i) => value + finalArray[finalArray.length - 1][i]);
       }
       finalArray.push(feesArray);
-    });
+    }
     finalArray.reverse();
     return finalArray;
   }

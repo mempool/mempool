@@ -6,7 +6,7 @@ import { of, merge} from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 
 import { VbytesPipe } from '../../pipes/bytes-pipe/vbytes.pipe';
-import { MempoolStats } from '../../interfaces/node-api.interface';
+import { OptimizedMempoolStats } from '../../interfaces/node-api.interface';
 import { WebsocketService } from '../../services/websocket.service';
 import { ApiService } from '../../services/api.service';
 
@@ -22,7 +22,7 @@ export class StatisticsComponent implements OnInit {
   loading = true;
   spinnerLoading = false;
 
-  mempoolStats: MempoolStats[] = [];
+  mempoolStats: OptimizedMempoolStats[] = [];
 
   mempoolVsizeFeesData: any;
   mempoolUnconfirmedTransactionsData: any;
@@ -62,6 +62,7 @@ export class StatisticsComponent implements OnInit {
         case '1m':
         case '3m':
         case '6m':
+        case '1y':
           value = formatDate(value, 'dd/MM', this.locale);
       }
 
@@ -124,7 +125,7 @@ export class StatisticsComponent implements OnInit {
     this.route
       .fragment
       .subscribe((fragment) => {
-        if (['2h', '24h', '1w', '1m', '3m', '6m'].indexOf(fragment) > -1) {
+        if (['2h', '24h', '1w', '1m', '3m', '6m', '1y'].indexOf(fragment) > -1) {
           this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
         }
       });
@@ -158,7 +159,10 @@ export class StatisticsComponent implements OnInit {
         if (this.radioGroupForm.controls.dateSpan.value === '3m') {
           return this.apiService.list3MStatistics$();
         }
-        return this.apiService.list6MStatistics$();
+        if (this.radioGroupForm.controls.dateSpan.value === '6m') {
+          return this.apiService.list6MStatistics$();
+        }
+        return this.apiService.list1YStatistics$();
       })
     )
     .subscribe((mempoolStats: any) => {
@@ -176,7 +180,7 @@ export class StatisticsComponent implements OnInit {
       });
   }
 
-  handleNewMempoolData(mempoolStats: MempoolStats[]) {
+  handleNewMempoolData(mempoolStats: OptimizedMempoolStats[]) {
     mempoolStats.reverse();
     const labels = mempoolStats.map(stats => stats.added);
 
@@ -196,20 +200,14 @@ export class StatisticsComponent implements OnInit {
     };
   }
 
-  generateArray(mempoolStats: MempoolStats[]) {
-    const logFees = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
-      250, 300, 350, 400, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000];
-
-    logFees.reverse();
-
+  generateArray(mempoolStats: OptimizedMempoolStats[]) {
     const finalArray: number[][] = [];
     let feesArray: number[] = [];
 
-    logFees.forEach((fee) => {
+    for (let index = 37; index > -1; index--) {
       feesArray = [];
       mempoolStats.forEach((stats) => {
-        // @ts-ignore
-        const theFee = stats['vsize_' + fee];
+        const theFee = stats.vsizes[index].toString();
         if (theFee) {
           feesArray.push(parseInt(theFee, 10));
         } else {
@@ -220,7 +218,7 @@ export class StatisticsComponent implements OnInit {
         feesArray = feesArray.map((value, i) => value + finalArray[finalArray.length - 1][i]);
       }
       finalArray.push(feesArray);
-    });
+    }
     finalArray.reverse();
     return finalArray;
   }
