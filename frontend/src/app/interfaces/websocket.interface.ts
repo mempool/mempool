@@ -7,6 +7,10 @@ export interface WebsocketResponse {
   txId?: string;
   txConfirmed?: boolean;
   historicalDate?: string;
+  mempoolInfo?: MempoolInfo;
+  vBytesPerSecond?: number;
+  action?: string;
+  data?: string[];
 }
 
 export interface MempoolBlock {
@@ -15,4 +19,18 @@ export interface MempoolBlock {
   nTx: number;
   medianFee: number;
   feeRange: number[];
+}
+
+export interface MemPoolState {
+  memPoolInfo: MempoolInfo;
+  vBytesPerSecond: number;
+}
+
+export interface MempoolInfo {
+  size: number;
+  bytes: number;
+  usage?: number;
+  maxmempool?: number;
+  mempoolminfee?: number;
+  minrelaytxfee?: number;
 }

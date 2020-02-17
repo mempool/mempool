@@ -1,7 +1,14 @@
 .bitcoin-block {
   width: 125px;
   height: 125px;
-  cursor: pointer;
+}
+
+.blockLink {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  z-index: 10;
 }
 
 .mined-block {

@@ -1,10 +1,31 @@
 const config = require('../../../mempool-config.json');
-import { Transaction, Block } from '../../interfaces';
+import { Transaction, Block, MempoolInfo } from '../../interfaces';
 import * as request from 'request';
 
 class ElectrsApi {
 
   constructor() {
+  }
+
+  getMempoolInfo(): Promise<MempoolInfo> {
+    return new Promise((resolve, reject) => {
+      request(config.ELECTRS_API_URL + '/mempool', { json: true, timeout: 10000 }, (err, res, response) => {
+        if (err) {
+          reject(err);
+        } else if (res.statusCode !== 200) {
+          reject(response);
+        } else {
+          if (!response.count) {
+            reject('Empty data');
+            return;
+          }
+          resolve({
+            size: response.count,
+            bytes: response.vsize,
+          });
+        }
+      });
+    });
   }
 
   getRawMempool(): Promise<Transaction['txid'][]> {

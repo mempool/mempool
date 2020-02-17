@@ -1,34 +1,54 @@
-<div class="text-center">
-  <img src="./assets/mempool-tube.png" width="63" height="63" />
-  <br /><br />
+<div class="container">
+  <div class="text-center">
+    <img src="./assets/mempool-tube.png" width="63" height="63" />
+    <br /><br />
 
-  <h2>About</h2>
+    <h1>About</h1>
 
-  <p>Mempool.Space is a realtime Bitcoin blockchain explorer and mempool visualizer.</p>
-  <p>Created by <a href="https://twitter.com/softbtc">@softbtc</a>
-  <br />Hosted by <a href="https://twitter.com/wiz">@wiz</a>
-  <br />Designed by <a href="https://instagram.com/markjborg">@markjborg</a>
-
-
-  <h2>Fee API</h2>
-
-  <div class="col-4 mx-auto">
-    <input class="form-control" type="text" value="https://mempool.space/api/v1/fees/recommended" readonly>
+    <p>Mempool.Space is a realtime Bitcoin blockchain explorer and mempool visualizer.</p>
+    <p>Created by <a href="https://twitter.com/softbtc">@softbtc</a>
+    <br />Hosted by <a href="https://twitter.com/wiz">@wiz</a>
+    <br />Designed by <a href="https://instagram.com/markjborg">@markjborg</a>
   </div>
 
-  <br />
+  <h2>HTTP API</h2>
 
-  <h1>Donate</h1>
-  <img src="./assets/btc-qr-code-segwit.png" width="200" height="200" />
-  <br />
-  bc1qqrmgr60uetlmrpylhtllawyha9z5gw6hwdmk2t
+  <table class="table">
+    <tr>
+      <td style="width: 50%;">Fee API</td>
+      <td>
+        <div class="mx-auto">
+          <input class="form-control" type="text" value="https://mempool.space/api/v1/fees/recommended" readonly>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>Mempool blocks</td>
+      <td>
+        <div class="mx-auto">
+          <input class="form-control" type="text" value="https://mempool.space/api/v1/fees/mempool-blocks" readonly>
+        </div>
+      </td>
+    </tr>
+  </table>
 
-  <br /><br />
+  <h2>WebSocket API</h2>
 
-  <h3>PayNym</h3>
-  <img src="./assets/paynym-code.png" width="200" height="200" />
-  <br />
-  <p style="word-wrap: break-word; overflow-wrap: break-word;max-width: 300px; text-align: center; margin: auto;">
-    PM8TJZWDn1XbYmVVMR3RP9Kt1BW69VCSLTC12UB8iWUiKcEBJsxB4UUKBMJxc3LVaxtU5d524sLFrTy9kFuyPQ73QkEagGcMfCE6M38E5C67EF8KAqvS
-  </p>
+  <table class="table">
+    <tr>
+      <td style="width: 50%;">
+        <span class="text-small">
+          Upon connection, send object <span class="code">{{ '{' }} action: 'want', data: ['blocks', ...] {{ '}' }}</span>
+          to express what you want pushed. Available: 'blocks', 'mempool-blocks', 'live-2h-chart' and 'stats'.
+        </span>
+      </td>
+      <td>
+        <div class="mx-auto">
+          <input class="form-control" type="text" value="wss://mempool.space/ws" readonly>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+
 </div>

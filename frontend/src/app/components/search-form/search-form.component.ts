@@ -9,7 +9,6 @@ import { Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchFormComponent implements OnInit {
-  @Input() location: string;
   searchForm: FormGroup;
 
   searchButtonText = 'Search';

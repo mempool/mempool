@@ -5,6 +5,7 @@ import { switchMap } from 'rxjs/operators';
 import { Block, Transaction } from '../../interfaces/electrs.interface';
 import { of } from 'rxjs';
 import { StateService } from '../../services/state.service';
+import { WebsocketService } from 'src/app/services/websocket.service';
 
 @Component({
   selector: 'app-block',
@@ -25,9 +26,12 @@ export class BlockComponent implements OnInit {
     private route: ActivatedRoute,
     private electrsApiService: ElectrsApiService,
     private stateService: StateService,
+    private websocketService: WebsocketService,
   ) { }
 
   ngOnInit() {
+    this.websocketService.want(['blocks', 'mempool-blocks']);
+
     this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         const blockHash: string = params.get('id') || '';
@@ -40,6 +44,7 @@ export class BlockComponent implements OnInit {
         this.blockHash = blockHash;
 
         if (history.state.data && history.state.data.block) {
+          this.blockHeight = history.state.data.block.height;
           return of(history.state.data.block);
         } else {
           this.isLoadingBlock = true;

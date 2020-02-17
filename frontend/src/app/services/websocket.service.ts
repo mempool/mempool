@@ -24,12 +24,14 @@ export class WebsocketService {
   }
 
   startSubscription() {
+    this.websocketSubject.next({'action': 'init'});
     this.websocketSubject
       .pipe(
         retryWhen((errors: any) => errors
           .pipe(
             tap(() => {
               this.goneOffline = true;
+              this.websocketSubject.next({'action': 'init'});
               this.stateService.isOffline$.next(true);
             }),
             delay(5000),
@@ -39,11 +41,17 @@ export class WebsocketService {
       .subscribe((response: WebsocketResponse) => {
         if (response.blocks && response.blocks.length) {
           const blocks = response.blocks;
-          blocks.forEach((block: Block) => this.stateService.blocks$.next(block));
+          blocks.forEach((block: Block) => {
+            if (block.height > this.stateService.latestBlockHeight) {
+              this.stateService.latestBlockHeight = block.height;
+              this.stateService.blocks$.next(block);
+            }
+          });
         }
 
         if (response.block) {
-          if (this.stateService.latestBlockHeight < response.block.height) {
+          if (response.block.height > this.stateService.latestBlockHeight) {
+            this.stateService.latestBlockHeight = response.block.height;
             this.stateService.blocks$.next(response.block);
           }
 
@@ -59,6 +67,17 @@ export class WebsocketService {
 
         if (response['mempool-blocks']) {
           this.stateService.mempoolBlocks$.next(response['mempool-blocks']);
+        }
+
+        if (response['live-2h-chart']) {
+          this.stateService.live2Chart$.next(response['live-2h-chart']);
+        }
+
+        if (response.mempoolInfo) {
+          this.stateService.mempoolStats$.next({
+            memPoolInfo: response.mempoolInfo,
+            vBytesPerSecond: response.vBytesPerSecond,
+          });
         }
 
         if (this.goneOffline === true) {
@@ -90,8 +109,7 @@ export class WebsocketService {
   }
 
   want(data: string[]) {
-    // @ts-ignore
-    this.websocketSubject.next({action: 'want', data});
+    this.websocketSubject.next({action: 'want', data: data});
     this.lastWant = data;
   }
 }

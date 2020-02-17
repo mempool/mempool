@@ -9,7 +9,7 @@
   </thead>
   <tbody>
     <tr *ngFor="let block of blocks; let i= index; trackBy: trackByBlock">
-      <td><a [routerLink]="['./block', block.id]" [state]="{ data: { block: block } }">#{{ block.height }}</a></td>
+      <td><a [routerLink]="['/block', block.id]" [state]="{ data: { block: block } }">#{{ block.height }}</a></td>
       <td class="d-none d-md-block">{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}</td>
       <td>{{ block.timestamp | timeSince : trigger }} ago</td>
       <td>{{ block.tx_count }}</td>
@@ -34,10 +34,6 @@
 </table>
 
 <div class="text-center">
-  <ng-template [ngIf]="isLoading">
-    <div class="spinner-border"></div>
-    <br><br>
-  </ng-template>
   <br>
   <button *ngIf="blocks.length" [disabled]="isLoading" type="button" class="btn btn-primary" (click)="loadMore()">Load more</button>
 </div>

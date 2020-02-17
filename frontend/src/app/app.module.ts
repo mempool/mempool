@@ -38,6 +38,8 @@ import { StatisticsComponent } from './components/statistics/statistics.componen
 import { ChartistComponent } from './components/statistics/chartist.component';
 import { BlockchainBlocksComponent } from './components/blockchain-blocks/blockchain-blocks.component';
 import { BlockchainComponent } from './components/blockchain/blockchain.component';
+import { FooterComponent } from './components/footer/footer.component';
+import { ExplorerComponent } from './components/explorer/explorer.component';
 
 @NgModule({
   declarations: [
@@ -68,7 +70,9 @@ import { BlockchainComponent } from './components/blockchain/blockchain.componen
     LatestTransactionsComponent,
     QrcodeComponent,
     ClipboardComponent,
+    ExplorerComponent,
     ChartistComponent,
+    FooterComponent,
   ],
   imports: [
     BrowserModule,

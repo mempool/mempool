@@ -4,11 +4,11 @@ $body-bg: #1d1f31;
 $body-color: #fff;
 $gray-800: #1d1f31;
 $gray-700: #fff;
-$gray-200: #10131f;
 
-$nav-tabs-link-active-bg: #24273e;
+$nav-tabs-link-active-bg: #11131f;
 
 $primary: #2b89c7;
+$secondary: #2d3348;
 
 $link-color:                #1bd8f4;
 $link-decoration:           none !default;
@@ -20,10 +20,15 @@ $link-hover-decoration:     underline !default;
 
 html, body {
   height: 100%;
+  overflow-x: hidden;
 }
 
 body {
   background-color: #11131f;
+}
+
+.container {
+  position: relative;
 }
 
 :focus {

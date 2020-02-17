@@ -8,6 +8,7 @@ import { MasterPageComponent } from './components/master-page/master-page.compon
 import { AboutComponent } from './components/about/about.component';
 import { TelevisionComponent } from './components/television/television.component';
 import { StatisticsComponent } from './components/statistics/statistics.component';
+import { ExplorerComponent } from './components/explorer/explorer.component';
 
 const routes: Routes = [
   {
@@ -17,6 +18,10 @@ const routes: Routes = [
       {
         path: '',
         component: StartComponent,
+      },
+      {
+        path: 'explorer',
+        component: ExplorerComponent,
       },
       {
         path: 'graphs',

@@ -1,29 +1,10 @@
-<ng-template [ngIf]="location === 'start'" [ngIfElse]="top">
-    
-  <form [formGroup]="searchForm" (submit)="searchForm.valid && search()" novalidate>
-    <div class="form-row">
-      <div class="col-12 col-md-10 mb-2 mb-md-0">
-        <input formControlName="searchText" type="text" class="form-control form-control-lg" [placeholder]="searchBoxPlaceholderText">
-      </div>
-      <div class="col-12 col-md-2">
-        <button type="submit" class="btn btn-block btn-lg btn-primary">{{ searchButtonText }}</button>
-      </div>
+<form [formGroup]="searchForm" (submit)="searchForm.valid && search()" novalidate>
+  <div class="form-row">
+    <div style="width: 350px;" class="mr-2">
+      <input formControlName="searchText" type="text" class="form-control" [placeholder]="searchBoxPlaceholderText">
     </div>
-  </form>
-
-</ng-template>
-
-<ng-template #top>
-
-  <form [formGroup]="searchForm" (submit)="searchForm.valid && search()" novalidate>
-    <div class="form-row">
-      <div style="width: 350px;" class="mr-2">
-        <input formControlName="searchText" type="text" class="form-control" [placeholder]="searchBoxPlaceholderText">
-      </div>
-      <div>
-        <button type="submit" class="btn btn-block btn-primary">{{ searchButtonText }}</button>
-      </div>
+    <div>
+      <button type="submit" class="btn btn-block btn-primary">{{ searchButtonText }}</button>
     </div>
-  </form>
-
-</ng-template>
+  </div>
+</form>
