@@ -31,6 +31,8 @@ export class TransactionComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.websocketService.want(['blocks', 'mempool-blocks']);
+
     this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         this.txId = params.get('id') || '';

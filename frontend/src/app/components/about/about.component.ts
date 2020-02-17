@@ -13,7 +13,7 @@ export class AboutComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.websocketService.want([]);
+    this.websocketService.want(['blocks']);
   }
 
 }

@@ -23,8 +23,6 @@
 .position-container {
   position: absolute;
   left: 50%;
-  /* top: calc(50% - 60px); */
-  top: 180px;
 }
 
 @media (max-width: 767.98px) {
@@ -47,4 +45,12 @@
   background-color: #11131f;
   z-index: 100;
   position: relative;
+}
+
+.loading-block {
+  position: absolute;
+  text-align: center;
+  margin: auto;
+  width: 100%;
+  top: 80px;
 }

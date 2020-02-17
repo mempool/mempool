@@ -9,7 +9,7 @@
     <ng-container *ngIf="(transactions$ | async) as transactions">
       <ng-template [ngIf]="!isLoading">
         <tr *ngFor="let transaction of transactions">
-          <td><a [routerLink]="['./tx/', transaction.txid]">{{ transaction.txid }}</a></td>
+          <td><a [routerLink]="['/tx/', transaction.txid]">{{ transaction.txid }}</a></td>
           <td>{{ transaction.value / 100000000 }} BTC</td>
           <td>{{ transaction.vsize | vbytes: 2 }}</td>
           <td>{{ transaction.fee / transaction.vsize | number : '1.2-2'}} sats/vB</td>

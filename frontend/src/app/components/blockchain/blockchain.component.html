@@ -1,16 +1,10 @@
-<div *ngIf="isLoading" class="text-center">
-  <h3>Loading blocks...</h3>
+<div *ngIf="isLoading" class="loading-block">
+  <h3>Waiting for blocks...</h3>
   <br>
   <div class="spinner-border text-light"></div>
 </div>
-<div *ngIf="!isLoading && txTrackingLoading" class="text-center black-background">
-  <h3>Locating transaction...</h3>
-</div>
-<div *ngIf="txShowTxNotFound" class="text-center black-background">
-  <h3>Transaction not found!</h3>
-</div>
 <div class="text-center" class="blockchain-wrapper">
-  <div class="position-container">
+  <div class="position-container" [ngStyle]="{'top': position === 'top' ? '100px' : 'calc(50% - 60px)'}">
     <app-mempool-blocks></app-mempool-blocks>
     <app-blockchain-blocks></app-blockchain-blocks>
 

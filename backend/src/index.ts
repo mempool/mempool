@@ -58,6 +58,7 @@ class Server {
   }
 
   private async runMempoolIntervalFunctions() {
+    await memPool.updateMemPoolInfo();
     await blocks.updateBlocks();
     await memPool.updateMempool();
     setTimeout(this.runMempoolIntervalFunctions.bind(this), config.ELECTRS_POLL_RATE_MS);
@@ -83,28 +84,33 @@ class Server {
           const parsedMessage = JSON.parse(message);
 
           if (parsedMessage.action === 'want') {
-            client['want-stats'] = parsedMessage.data.indexOf('stats') > -1;
+            client['want-blocks'] = parsedMessage.data.indexOf('blocks') > -1;
+            client['want-mempool-blocks'] = parsedMessage.data.indexOf('mempool-blocks') > -1;
             client['want-live-2h-chart'] = parsedMessage.data.indexOf('live-2h-chart') > -1;
+            client['want-stats'] = parsedMessage.data.indexOf('stats') > -1;
           }
 
           if (parsedMessage && parsedMessage.txId && /^[a-fA-F0-9]{64}$/.test(parsedMessage.txId)) {
             client['txId'] = parsedMessage.txId;
           }
+
+          if (parsedMessage.action === 'init') {
+            const _blocks = blocks.getBlocks();
+            if (!_blocks) {
+              return;
+            }
+            client.send(JSON.stringify({
+              'mempoolInfo': memPool.getMempoolInfo(),
+              'vBytesPerSecond': memPool.getVBytesPerSecond(),
+              'blocks': _blocks,
+              'conversions': fiatConversion.getTickers()['BTCUSD'],
+              'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
+            }));
+          }
         } catch (e) {
           console.log(e);
         }
       });
-
-      const _blocks = blocks.getBlocks();
-      if (!_blocks) {
-        return;
-      }
-      client.send(JSON.stringify({
-        'blocks': _blocks,
-        'conversions': fiatConversion.getTickers()['BTCUSD'],
-        'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
-      }));
-
     });
 
     statistics.setNewStatisticsEntryCallback((stats: Statistic) => {
@@ -113,17 +119,23 @@ class Server {
           return;
         }
 
-        if (client['want-live-2h-chart']) {
-          client.send(JSON.stringify({
-            'live-2h-chart': stats
-          }));
+        if (!client['want-live-2h-chart']) {
+          return;
         }
+
+        client.send(JSON.stringify({
+          'live-2h-chart': stats
+        }));
       });
     });
 
     blocks.setNewBlockCallback((block: Block, txIds: string[]) => {
       this.wss.clients.forEach((client) => {
         if (client.readyState !== WebSocket.OPEN) {
+          return;
+        }
+
+        if (!client['want-blocks']) {
           return;
         }
 
@@ -143,16 +155,29 @@ class Server {
 
     memPool.setMempoolChangedCallback((newMempool: { [txid: string]: SimpleTransaction }) => {
       mempoolBlocks.updateMempoolBlocks(newMempool);
-      const pBlocks = mempoolBlocks.getMempoolBlocks();
+      const mBlocks = mempoolBlocks.getMempoolBlocks();
+      const mempoolInfo = memPool.getMempoolInfo();
+      const vBytesPerSecond = memPool.getVBytesPerSecond();
 
       this.wss.clients.forEach((client: WebSocket) => {
         if (client.readyState !== WebSocket.OPEN) {
           return;
         }
 
-        client.send(JSON.stringify({
-          'mempool-blocks': pBlocks
-        }));
+        const response = {};
+
+        if (client['want-stats']) {
+          response['mempoolInfo'] = mempoolInfo;
+          response['vBytesPerSecond'] = vBytesPerSecond;
+        }
+
+        if (client['want-mempool-blocks']) {
+          response['mempool-blocks'] = mBlocks;
+        }
+
+        if (Object.keys(response).length) {
+          client.send(JSON.stringify(response));
+        }
       });
     });
   }

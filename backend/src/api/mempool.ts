@@ -32,6 +32,14 @@ class Mempool {
     }
   }
 
+  public async updateMemPoolInfo() {
+    try {
+      this.mempoolInfo = await bitcoinApi.getMempoolInfo();
+    } catch (err) {
+      console.log('Error getMempoolInfo', err);
+    }
+  }
+
   public getMempoolInfo(): MempoolInfo | undefined {
     return this.mempoolInfo;
   }

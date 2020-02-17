@@ -9,7 +9,10 @@
   <div class="navbar-collapse collapse" id="navbarCollapse" [ngClass]="{'show': navCollapsed}">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-        <a class="nav-link" routerLink="/" (click)="collapse()">Explorer</a>
+        <a class="nav-link" routerLink="/" (click)="collapse()">Blockchain</a>
+      </li>
+      <li class="nav-item" routerLinkActive="active">
+        <a class="nav-link" routerLink="/explorer" (click)="collapse()">Explorer</a>
       </li>
       <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" routerLink="/graphs" (click)="collapse()">Graphs</a>

@@ -1,6 +1,7 @@
 <ng-container *ngFor="let tx of transactions; let i = index; trackBy: trackByFn">
   <div *ngIf="!transactionPage" class="header-bg box" style="padding: 10px; margin-bottom: 10px;">
     <a [routerLink]="['/tx/', tx.txid]" [state]="{ data: tx }">{{ tx.txid }}</a>
+    <div class="float-right">{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}</div>
   </div>
   <div class="header-bg box">
     <div class="row">
@@ -9,14 +10,19 @@
           <tbody>
             <tr *ngFor="let vin of tx.vin">
               <td class="arrow-td">
-                <a [routerLink]="['/tx/', vin.txid]">
-                  <i class="arrow green"></i>
-                </a>
+                <ng-template [ngIf]="vin.prevout === null" [ngIfElse]="hasPrevout">
+                  <i class="arrow grey"></i>
+                </ng-template>
+                <ng-template #hasPrevout>
+                  <a [routerLink]="['/tx/', vin.txid]">
+                    <i class="arrow green"></i>
+                  </a>
+                </ng-template>
               </td>
               <td>
                 <div>
                   <ng-template [ngIf]="vin.is_coinbase" [ngIfElse]="regularVin">
-                    Coinbase
+                    Coinbase (Newly Generated Coins)
                   </ng-template>
                   <ng-template #regularVin>
                     <a [routerLink]="['/address/', vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">{{ vin.prevout.scriptpubkey_address | shortenString : 42 }}</a>
@@ -55,9 +61,9 @@
               <td class="pl-1 arrow-td">
                 <i *ngIf="!outspends[i]; else outspend" class="arrow grey"></i>
                 <ng-template #outspend>
-                  <i *ngIf="!outspends[i][vindex] || !outspends[i][vindex].spent; else spent" class="arrow green"></i>
+                  <i *ngIf="!outspends[i][vindex] || !outspends[i][vindex].spent; else spent" class="arrow red"></i>
                   <ng-template #spent>
-                    <a [routerLink]="['/tx/', outspends[i][vindex].txid]"><i class="arrow red"></i></a>
+                    <a [routerLink]="['/tx/', outspends[i][vindex].txid]"><i class="arrow green"></i></a>
                   </ng-template>
                 </ng-template>
               </td>

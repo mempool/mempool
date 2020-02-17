@@ -24,15 +24,12 @@ export class TelevisionComponent implements OnInit {
     private websocketService: WebsocketService,
     @Inject(LOCALE_ID) private locale: string,
     private vbytesPipe: VbytesPipe,
-    private renderer: Renderer2,
     private apiService: ApiService,
     private stateService: StateService,
   ) { }
 
   ngOnInit() {
-    this.websocketService.want(['live-2h-chart']);
-
-    this.renderer.addClass(document.body, 'disable-scroll');
+    this.websocketService.want(['blocks', 'live-2h-chart']);
 
     const labelInterpolationFnc = (value: any, index: any) => {
       return index % 6  === 0 ? formatDate(value, 'HH:mm', this.locale) : null;

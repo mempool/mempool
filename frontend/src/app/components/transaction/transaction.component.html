@@ -1,6 +1,6 @@
 <div class="container">
 
-  <app-blockchain></app-blockchain>
+  <app-blockchain position="top"></app-blockchain>
 
   <div class="clearfix"></div>
 
@@ -26,14 +26,16 @@
               <td>Included in block</td>
               <td><a [routerLink]="['/block/', tx.status.block_hash]" [state]="{ data: { blockHeight: tx.status.block_height } }">#{{ tx.status.block_height }}</a> at {{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }} <i>(<app-time-since [time]="tx.status.block_time"></app-time-since> ago)</i></td>
             </tr>
-            <tr>
-              <td>Fees</td>
-              <td>{{ tx.fee | number }} sats <span *ngIf="conversions">(<span class="green-color">{{ conversions.USD * tx.fee / 100000000 | currency:'USD':'symbol':'1.2-2' }}</span>)</span></td>
-            </tr>
-            <tr>
-              <td>Fees per vByte</td>
-              <td>{{ tx.fee / (tx.weight / 4) | number : '1.2-2' }} sat/vB</td>
-            </tr>
+            <ng-template [ngIf]="tx.fee">
+              <tr>
+                <td>Fees</td>
+                <td>{{ tx.fee | number }} sats <span *ngIf="conversions">(<span class="green-color">{{ conversions.USD * tx.fee / 100000000 | currency:'USD':'symbol':'1.2-2' }}</span>)</span></td>
+              </tr>
+              <tr>
+                <td>Fees per vByte</td>
+                <td>{{ tx.fee / (tx.weight / 4) | number : '1.2-2' }} sat/vB</td>
+              </tr>
+            </ng-template>
           </tbody>
         </table>
       </div>
@@ -66,15 +68,9 @@
           </tbody>
         </table>
       </div>
-
-      <br>
-<!--
-      <div>
-        <app-mempool-blocks style="right: 20px; position: relative;" *ngIf="!tx.status.confirmed" [txFeePerVSize]="tx.fee / (tx.weight / 4)" (rightPosition)="rightPosition = $event" (blockDepth)="blockDepth = $event"></app-mempool-blocks>
-      </div>
-    -->
-      <div class="clearfix"></div>
     </ng-template>
+
+    <br>
 
     <h2>Inputs & Outputs</h2>
 
