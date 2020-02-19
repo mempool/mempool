@@ -10,3 +10,15 @@
 
   width: 40px;
 }
+
+.title-block {
+  color: #FFF;
+  padding-left: 10px;
+  padding-top: 13px;
+  padding-bottom: 3px;
+  border-top: 5px solid #FFF;
+}
+
+.title-block > h1 {
+  margin: 0;
+}

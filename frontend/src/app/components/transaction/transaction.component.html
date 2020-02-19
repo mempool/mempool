@@ -1,10 +1,14 @@
 <div class="container">
 
-  <app-blockchain position="top"></app-blockchain>
+  <app-blockchain position="top" [markHeight]="tx?.status?.block_height"></app-blockchain>
 
-  <div class="clearfix"></div>
+  <div class="title-block">
+    <h1 style="float: left;">Transaction</h1>
+    <a [routerLink]="['/tx/', txId]" style="line-height: 55px; margin-left: 10px;">{{ txId }}</a>
+    <app-clipboard [text]="txId"></app-clipboard>
+  </div>
 
-  <h1>Transaction</h1>
+  <br>
 
   <ng-template [ngIf]="!isLoadingTx && !error">
 
@@ -51,19 +55,14 @@
         <table class="table table-borderless table-striped">
           <tbody>
             <tr>
-              <td>Transaction</td>
-              <td>
-                <a [routerLink]="['/tx/', txId]">{{ txId | shortenString }}</a>
-                <app-clipboard [text]="txId"></app-clipboard>
-              </td>
+              <td>Status</td>
               <td class="adjust-btn-padding">
                 <button type="button" class="btn btn-sm btn-danger">Unconfirmed</button>
               </td>
             </tr>
             <tr>
               <td>Fees</td>
-              <td>{{ tx.fee | number }} sats <span *ngIf="conversions">(<span class="green-color">{{ conversions.USD * tx.fee / 100000000 | currency:'USD':'symbol':'1.2-2' }}</span>)</span></td>
-              <td>{{ tx.fee / (tx.weight / 4) | number : '1.2-2' }} sat/vB</td>
+              <td>{{ tx.fee | number }} sats <span *ngIf="conversions">(<span class="green-color">{{ conversions.USD * tx.fee / 100000000 | currency:'USD':'symbol':'1.2-2' }}</span>)</span> {{ tx.fee / (tx.weight / 4) | number : '1.2-2' }} sat/vB</td>
             </tr>
           </tbody>
         </table>

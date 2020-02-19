@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, OnChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Block } from 'src/app/interfaces/electrs.interface';
 import { StateService } from 'src/app/services/state.service';
@@ -8,11 +8,17 @@ import { StateService } from 'src/app/services/state.service';
   templateUrl: './blockchain-blocks.component.html',
   styleUrls: ['./blockchain-blocks.component.scss']
 })
-export class BlockchainBlocksComponent implements OnInit, OnDestroy {
+export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
+  @Input() markHeight = 0;
+
   blocks: Block[] = [];
   blocksSubscription: Subscription;
   interval: any;
   trigger = 0;
+
+
+  arrowVisible = false;
+  arrowLeftPx = 30;
 
   constructor(
     private stateService: StateService,
@@ -26,14 +32,32 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
         }
         this.blocks.unshift(block);
         this.blocks = this.blocks.slice(0, 8);
+
+        this.moveArrowToPosition();
       });
 
     this.interval = setInterval(() => this.trigger++, 10 * 1000);
   }
 
+  ngOnChanges() {
+    this.moveArrowToPosition();
+  }
+
   ngOnDestroy() {
     this.blocksSubscription.unsubscribe();
     clearInterval(this.interval);
+  }
+
+  moveArrowToPosition() {
+    if (!this.markHeight) {
+      this.arrowVisible = false;
+      return;
+    }
+    const blockindex = this.blocks.findIndex((b) => b.height === this.markHeight);
+    if (blockindex !== -1) {
+      this.arrowVisible = true;
+      this.arrowLeftPx = blockindex * 150 + 30;
+    }
   }
 
   trackByBlocksFn(index: number, item: Block) {

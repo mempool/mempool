@@ -16,6 +16,7 @@ export class WebsocketService {
   private goneOffline = false;
   private lastWant: string[] | null = null;
   private trackingTxId: string | null = null;
+  private trackingAddress: string | null = null;
 
   constructor(
     private stateService: StateService,
@@ -86,7 +87,10 @@ export class WebsocketService {
             this.want(this.lastWant);
           }
           if (this.trackingTxId) {
-            this.startTrackTx(this.trackingTxId);
+            this.startTrackTransaction(this.trackingTxId);
+          }
+          if (this.trackingAddress) {
+            this.startTrackTransaction(this.trackingAddress);
           }
           this.stateService.isOffline$.next(false);
         }
@@ -99,9 +103,14 @@ export class WebsocketService {
       });
   }
 
-  startTrackTx(txId: string) {
-    this.websocketSubject.next({ txId });
+  startTrackTransaction(txId: string) {
+    this.websocketSubject.next({ 'track-tx': txId });
     this.trackingTxId = txId;
+  }
+
+  startTrackAddress(address: string) {
+    this.websocketSubject.next({ 'track-address': address });
+    this.trackingAddress = address;
   }
 
   fetchStatistics(historicalDate: string) {
