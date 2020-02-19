@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
@@ -12,7 +12,7 @@ import { WebsocketService } from '../../services/websocket.service';
   templateUrl: './transaction.component.html',
   styleUrls: ['./transaction.component.scss']
 })
-export class TransactionComponent implements OnInit {
+export class TransactionComponent implements OnInit, OnDestroy {
   tx: Transaction;
   txId: string;
   isLoadingTx = true;
@@ -51,7 +51,7 @@ export class TransactionComponent implements OnInit {
       window.scrollTo(0, 0);
 
       if (!tx.status.confirmed) {
-        this.websocketService.startTrackTx(tx.txid);
+        this.websocketService.startTrackTransaction(tx.txid);
       }
     },
     (error) => {
@@ -74,5 +74,9 @@ export class TransactionComponent implements OnInit {
           block_time: block.timestamp,
         };
       });
+  }
+
+  ngOnDestroy() {
+    this.websocketService.startTrackTransaction('stop');
   }
 }

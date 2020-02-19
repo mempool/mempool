@@ -90,8 +90,12 @@ class Server {
             client['want-stats'] = parsedMessage.data.indexOf('stats') > -1;
           }
 
-          if (parsedMessage && parsedMessage.txId && /^[a-fA-F0-9]{64}$/.test(parsedMessage.txId)) {
-            client['txId'] = parsedMessage.txId;
+          if (parsedMessage && parsedMessage['track-tx']) {
+            if (/^[a-fA-F0-9]{64}$/.test(parsedMessage['track-tx'])) {
+              client['track-tx'] = parsedMessage['track-tx'];
+            } else {
+              client['track-tx'] = null;
+            }
           }
 
           if (parsedMessage.action === 'init') {
@@ -139,8 +143,8 @@ class Server {
           return;
         }
 
-        if (client['txId'] && txIds.indexOf(client['txId']) > -1) {
-          client['txId'] = null;
+        if (client['track-tx'] && txIds.indexOf(client['track-tx']) > -1) {
+          client['track-tx'] = null;
           client.send(JSON.stringify({
             'block': block,
             'txConfirmed': true,

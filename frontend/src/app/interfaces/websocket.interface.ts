@@ -4,13 +4,14 @@ export interface WebsocketResponse {
   block?: Block;
   blocks?: Block[];
   conversions?: any;
-  txId?: string;
   txConfirmed?: boolean;
   historicalDate?: string;
   mempoolInfo?: MempoolInfo;
   vBytesPerSecond?: number;
   action?: string;
   data?: string[];
+  'track-tx'?: string;
+  'track-address'?: string;
 }
 
 export interface MempoolBlock {
