@@ -100,3 +100,15 @@
   z-index: 100;
   position: relative;
 }
+
+#arrow-up {
+  position: relative;
+  right: 75px;
+  top: 140px;
+  transition: 1s;
+  width: 0; 
+  height: 0; 
+  border-left: 35px solid transparent;
+  border-right: 35px solid transparent;
+  border-bottom: 35px solid #FFF;
+}

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, EventEmitter, Output, OnChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 import { StateService } from 'src/app/services/state.service';
@@ -8,16 +8,17 @@ import { StateService } from 'src/app/services/state.service';
   templateUrl: './mempool-blocks.component.html',
   styleUrls: ['./mempool-blocks.component.scss']
 })
-export class MempoolBlocksComponent implements OnInit, OnDestroy {
+export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   mempoolBlocks: MempoolBlock[];
   mempoolBlocksSubscription: Subscription;
 
   blockWidth = 125;
-  blockMarginLeft = 20;
+  blockPadding = 30;
+  arrowVisible = false;
+
+  rightPosition = 0;
 
   @Input() txFeePerVSize: number;
-  @Output() rightPosition: EventEmitter<number> = new EventEmitter<number>(true);
-  @Output() blockDepth: EventEmitter<number> = new EventEmitter<number>(true);
 
   constructor(
     private stateService: StateService,
@@ -29,6 +30,10 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
         this.mempoolBlocks = blocks;
         this.calculateTransactionPosition();
       });
+  }
+
+  ngOnChanges() {
+    this.calculateTransactionPosition();
   }
 
   ngOnDestroy() {
@@ -49,9 +54,12 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   }
 
   calculateTransactionPosition() {
-    if (!this.txFeePerVSize) {
+    if (!this.txFeePerVSize || !this.mempoolBlocks) {
+      this.arrowVisible = false;
       return;
     }
+
+    this.arrowVisible = true;
 
     for (const block of this.mempoolBlocks) {
       for (let i = 0; i < block.feeRange.length - 1; i++) {
@@ -68,12 +76,11 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
           const feePosition = feeRangeChunkSize * feeRangeIndex + chunkPositionOffset;
 
           const blockedFilledPercentage = (block.blockVSize > 1000000 ? 1000000 : block.blockVSize) / 1000000;
-
-          const arrowRightPosition = txInBlockIndex * (this.blockMarginLeft + this.blockWidth)
+          console.log(txInBlockIndex);
+          const arrowRightPosition = txInBlockIndex * (this.blockWidth + this.blockPadding)
             + ((1 - feePosition) * blockedFilledPercentage * this.blockWidth);
 
-          this.rightPosition.next(arrowRightPosition);
-          this.blockDepth.next(txInBlockIndex);
+          this.rightPosition = arrowRightPosition;
           break;
         }
       }

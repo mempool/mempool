@@ -5,7 +5,7 @@
 </div>
 <div class="text-center" class="blockchain-wrapper">
   <div class="position-container" [ngStyle]="{'top': position === 'top' ? '75px' : 'calc(50% - 60px)'}">
-    <app-mempool-blocks></app-mempool-blocks>
+    <app-mempool-blocks [txFeePerVSize]="txFeePerVSize"></app-mempool-blocks>
     <app-blockchain-blocks [markHeight]="markHeight"></app-blockchain-blocks>
 
     <div id="divider" *ngIf="!isLoading"></div>

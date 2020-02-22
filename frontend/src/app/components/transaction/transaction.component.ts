@@ -48,7 +48,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
     .subscribe((tx: Transaction) => {
       this.tx = tx;
       this.isLoadingTx = false;
-      window.scrollTo(0, 0);
+      document.body.scrollTo({ top: 0, behavior: 'smooth' });
 
       if (!tx.status.confirmed) {
         this.websocketService.startTrackTransaction(tx.txid);

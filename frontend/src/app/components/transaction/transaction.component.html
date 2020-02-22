@@ -1,11 +1,18 @@
 <div class="container">
 
-  <app-blockchain position="top" [markHeight]="tx?.status?.block_height"></app-blockchain>
+  <app-blockchain position="top" [txFeePerVSize]="tx?.status?.block_height ? 0 : tx?.fee / (tx?.weight / 4)" [markHeight]="tx?.status?.block_height"></app-blockchain>
 
   <div class="title-block">
     <h1 style="float: left;">Transaction</h1>
-    <a [routerLink]="['/tx/', txId]" style="line-height: 55px; margin-left: 10px;">{{ txId }}</a>
+    <a [routerLink]="['/tx/', txId]" style="line-height: 56px; margin-left: 10px;">{{ txId }}</a>
     <app-clipboard [text]="txId"></app-clipboard>
+   
+    <ng-template [ngIf]="tx?.status?.confirmed" [ngIfElse]="unconfirmedBtn">
+      <button *ngIf="latestBlock" type="button" class="btn btn-sm btn-success float-right mr-2" style="margin-top: 0.75rem;">{{ latestBlock.height - tx.status.block_height + 1 }} confirmation<ng-container *ngIf="latestBlock.height - tx.status.block_height + 1 > 1">s</ng-container></button>
+    </ng-template>
+    <ng-template #unconfirmedBtn>
+      <button type="button" class="btn btn-sm btn-danger float-right  mr-2" style="margin-top: 0.75rem;">Unconfirmed</button>
+    </ng-template>
   </div>
 
   <br>
@@ -18,14 +25,6 @@
         
         <table class="table table-borderless table-striped">
           <tbody>
-            <tr>
-              <td>Status</td>
-              <td class="adjust-btn-padding">
-                <ng-template [ngIf]="latestBlock">
-                  <button type="button" class="btn btn-sm btn-success">{{ latestBlock.height - tx.status.block_height + 1 }} confirmation<ng-container *ngIf="latestBlock.height - tx.status.block_height + 1 > 1">s</ng-container></button>
-                </ng-template>
-              </td>
-            </tr>
             <tr>
               <td>Included in block</td>
               <td><a [routerLink]="['/block/', tx.status.block_hash]" [state]="{ data: { blockHeight: tx.status.block_height } }">#{{ tx.status.block_height }}</a> at {{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }} <i>(<app-time-since [time]="tx.status.block_time"></app-time-since> ago)</i></td>
@@ -55,14 +54,12 @@
         <table class="table table-borderless table-striped">
           <tbody>
             <tr>
-              <td>Status</td>
-              <td class="adjust-btn-padding">
-                <button type="button" class="btn btn-sm btn-danger">Unconfirmed</button>
-              </td>
+              <td>Fees</td>
+              <td>{{ tx.fee | number }} sats <span *ngIf="conversions">(<span class="green-color">{{ conversions.USD * tx.fee / 100000000 | currency:'USD':'symbol':'1.2-2' }}</span>)</span></td>
             </tr>
             <tr>
-              <td>Fees</td>
-              <td>{{ tx.fee | number }} sats <span *ngIf="conversions">(<span class="green-color">{{ conversions.USD * tx.fee / 100000000 | currency:'USD':'symbol':'1.2-2' }}</span>)</span> {{ tx.fee / (tx.weight / 4) | number : '1.2-2' }} sat/vB</td>
+              <td>Fees per vByte</td>
+              <td>{{ tx.fee / (tx.weight / 4) | number : '1.2-2' }} sat/vB</td>
             </tr>
           </tbody>
         </table>
