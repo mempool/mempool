@@ -56,7 +56,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     const blockindex = this.blocks.findIndex((b) => b.height === this.markHeight);
     if (blockindex !== -1) {
       this.arrowVisible = true;
-      this.arrowLeftPx = blockindex * 150 + 30;
+      this.arrowLeftPx = blockindex * 155 + 30;
     }
   }
 

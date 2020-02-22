@@ -11,6 +11,7 @@ import { StateService } from 'src/app/services/state.service';
 export class BlockchainComponent implements OnInit, OnDestroy {
   @Input() position: 'middle' | 'top' = 'middle';
   @Input() markHeight: number;
+  @Input() txFeePerVSize: number;
 
   txTrackingSubscription: Subscription;
   blocksSubscription: Subscription;

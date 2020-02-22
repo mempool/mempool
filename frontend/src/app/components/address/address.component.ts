@@ -36,7 +36,7 @@ export class AddressComponent implements OnInit {
     .subscribe((address) => {
       this.address = address;
       this.isLoadingAddress = false;
-      window.scrollTo(0, 0);
+      document.body.scrollTo({ top: 0, behavior: 'smooth' });
       this.getAddressTransactions(address.address);
     },
     (error) => {

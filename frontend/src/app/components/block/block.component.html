@@ -43,7 +43,7 @@
             <tbody>
               <tr>
                 <td>Hash</td>
-                <td><a [routerLink]="['/block/', block.id]" title="{{ block.id }}" >{{ block.id | shortenString : 32 }}</a></td>
+                <td><a [routerLink]="['/block/', block.id]" title="{{ block.id }}">{{ block.id | shortenString : 32 }}</a> <app-clipboard [text]="block.id"></app-clipboard></td>
               </tr>
               <tr>
                 <td>Previous Block</td>
