@@ -70,7 +70,7 @@ class ElectrsApi {
     });
   }
 
-  getTxIdsForBlock(hash: string): Promise<Block> {
+  getTxIdsForBlock(hash: string): Promise<string[]> {
     return new Promise((resolve, reject) => {
       request(config.ELECTRS_API_URL + '/block/' + hash + '/txids', { json: true, timeout: 10000 }, (err, res, response) => {
         if (err) {

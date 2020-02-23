@@ -13,7 +13,7 @@ import mempoolBlocks from './api/mempool-blocks';
 import diskCache from './api/disk-cache';
 import statistics from './api/statistics';
 
-import { Block, SimpleTransaction, Statistic } from './interfaces';
+import { Block, TransactionExtended, Statistic } from './interfaces';
 
 import fiatConversion from './api/fiat-conversion';
 
@@ -98,6 +98,15 @@ class Server {
             }
           }
 
+          if (parsedMessage && parsedMessage['track-address']) {
+            if (/^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,87})$/
+              .test(parsedMessage['track-address'])) {
+              client['track-address'] = parsedMessage['track-address'];
+            } else {
+              client['track-address'] = null;
+            }
+          }
+
           if (parsedMessage.action === 'init') {
             const _blocks = blocks.getBlocks();
             if (!_blocks) {
@@ -133,7 +142,7 @@ class Server {
       });
     });
 
-    blocks.setNewBlockCallback((block: Block, txIds: string[]) => {
+    blocks.setNewBlockCallback((block: Block, txIds: string[], transactions: TransactionExtended[]) => {
       this.wss.clients.forEach((client) => {
         if (client.readyState !== WebSocket.OPEN) {
           return;
@@ -143,21 +152,40 @@ class Server {
           return;
         }
 
+        const response = {
+          'block': block
+        };
+
         if (client['track-tx'] && txIds.indexOf(client['track-tx']) > -1) {
           client['track-tx'] = null;
-          client.send(JSON.stringify({
-            'block': block,
-            'txConfirmed': true,
-          }));
-        } else {
-          client.send(JSON.stringify({
-            'block': block,
-          }));
+          response['txConfirmed'] = true;
         }
+
+        if (client['track-address']) {
+          const foundTransactions: TransactionExtended[] = [];
+
+          transactions.forEach((tx) => {
+            const someVin = tx.vin.some((vin) => vin.prevout.scriptpubkey_address === client['track-address']);
+            if (someVin) {
+              foundTransactions.push(tx);
+              return;
+            }
+            const someVout = tx.vout.some((vout) => vout.scriptpubkey_address === client['track-address']);
+            if (someVout) {
+              foundTransactions.push(tx);
+            }
+          });
+
+          if (foundTransactions.length) {
+            response['address-block-transactions'] = foundTransactions;
+          }
+        }
+
+        client.send(JSON.stringify(response));
       });
     });
 
-    memPool.setMempoolChangedCallback((newMempool: { [txid: string]: SimpleTransaction }) => {
+    memPool.setMempoolChangedCallback((newMempool: { [txid: string]: TransactionExtended }, newTransactions: TransactionExtended[]) => {
       mempoolBlocks.updateMempoolBlocks(newMempool);
       const mBlocks = mempoolBlocks.getMempoolBlocks();
       const mempoolInfo = memPool.getMempoolInfo();
@@ -177,6 +205,27 @@ class Server {
 
         if (client['want-mempool-blocks']) {
           response['mempool-blocks'] = mBlocks;
+        }
+
+        // Send all new incoming transactions related to tracked address
+        if (client['track-address']) {
+          const foundTransactions: TransactionExtended[] = [];
+
+          newTransactions.forEach((tx) => {
+            const someVin = tx.vin.some((vin) => vin.prevout.scriptpubkey_address === client['track-address']);
+            if (someVin) {
+              foundTransactions.push(tx);
+              return;
+            }
+            const someVout = tx.vout.some((vout) => vout.scriptpubkey_address === client['track-address']);
+            if (someVout) {
+              foundTransactions.push(tx);
+            }
+          });
+
+          if (foundTransactions.length) {
+            response['address-transactions'] = foundTransactions;
+          }
         }
 
         if (Object.keys(response).length) {

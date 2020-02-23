@@ -1,6 +1,7 @@
 const config = require('../../mempool-config.json');
 import bitcoinApi from './bitcoin/electrs-api';
-import { Block } from '../interfaces';
+import memPool from './mempool';
+import { Block, TransactionExtended } from '../interfaces';
 
 class Blocks {
   private blocks: Block[] = [];
@@ -39,15 +40,36 @@ class Blocks {
         const block = await bitcoinApi.getBlock(blockHash);
         const txIds = await bitcoinApi.getTxIdsForBlock(blockHash);
 
-        block.medianFee = 2;
-        block.feeRange = [1, 3];
+        const mempool = memPool.getMempool();
+        let found = 0;
+        let notFound = 0;
+
+        const transactions: TransactionExtended[] = [];
+
+        for (let i = 1; i < txIds.length; i++) {
+          if (mempool[txIds[i]]) {
+            transactions.push(mempool[txIds[i]]);
+            found++;
+          } else {
+            console.log(`Fetching block tx ${i} of ${txIds.length}`);
+            const tx = await memPool.getTransactionExtended(txIds[i]);
+            if (tx) {
+              transactions.push(tx);
+            }
+            notFound++;
+          }
+        }
+
+        transactions.sort((a, b) => b.feePerVsize - a.feePerVsize);
+        block.medianFee = this.median(transactions.map((tx) => tx.feePerVsize));
+        block.feeRange = this.getFeesInRange(transactions, 8);
 
         this.blocks.push(block);
         if (this.blocks.length > config.KEEP_BLOCK_AMOUNT) {
           this.blocks.shift();
         }
 
-        this.newBlockCallback(block, txIds);
+        this.newBlockCallback(block, txIds, transactions);
       }
 
     } catch (err) {

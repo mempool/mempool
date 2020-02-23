@@ -76,7 +76,6 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
           const feePosition = feeRangeChunkSize * feeRangeIndex + chunkPositionOffset;
 
           const blockedFilledPercentage = (block.blockVSize > 1000000 ? 1000000 : block.blockVSize) / 1000000;
-          console.log(txInBlockIndex);
           const arrowRightPosition = txInBlockIndex * (this.blockWidth + this.blockPadding)
             + ((1 - feePosition) * blockedFilledPercentage * this.blockWidth);
 

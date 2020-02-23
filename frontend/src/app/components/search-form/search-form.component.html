@@ -1,4 +1,4 @@
-<form [formGroup]="searchForm" (submit)="searchForm.valid && search()" novalidate>
+<form [formGroup]="searchForm" (submit)="searchForm.valid && search()" class="mr-4" novalidate>
   <div class="form-row">
     <div style="width: 350px;" class="mr-2">
       <input formControlName="searchText" type="text" class="form-control" [placeholder]="searchBoxPlaceholderText">

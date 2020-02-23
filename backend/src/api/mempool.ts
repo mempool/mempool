@@ -1,6 +1,6 @@
 const config = require('../../mempool-config.json');
 import bitcoinApi from './bitcoin/electrs-api';
-import { MempoolInfo, SimpleTransaction, Transaction } from '../interfaces';
+import { MempoolInfo, TransactionExtended, Transaction } from '../interfaces';
 
 class Mempool {
   private mempoolCache: any = {};
@@ -21,7 +21,7 @@ class Mempool {
     this.mempoolChangedCallback = fn;
   }
 
-  public getMempool(): { [txid: string]: SimpleTransaction } {
+  public getMempool(): { [txid: string]: TransactionExtended } {
     return this.mempoolCache;
   }
 
@@ -52,16 +52,13 @@ class Mempool {
     return this.vBytesPerSecond;
   }
 
-  public async getRawTransaction(txId: string): Promise<SimpleTransaction | false> {
+  public async getTransactionExtended(txId: string): Promise<TransactionExtended | false> {
     try {
       const transaction: Transaction = await bitcoinApi.getRawTransaction(txId);
-      return {
-        txid: transaction.txid,
-        fee: transaction.fee,
-        size: transaction.size,
+      return Object.assign({
         vsize: transaction.weight / 4,
-        feePerVsize: transaction.fee / (transaction.weight / 4)
-      };
+        feePerVsize: transaction.fee / (transaction.weight / 4),
+      }, transaction);
     } catch (e) {
       console.log(txId + ' not found');
       return false;
@@ -76,10 +73,11 @@ class Mempool {
     try {
       const transactions = await bitcoinApi.getRawMempool();
       const diff = transactions.length - Object.keys(this.mempoolCache).length;
+      const newTransactions: TransactionExtended[] = [];
 
       for (const txid of transactions) {
         if (!this.mempoolCache[txid]) {
-          const transaction = await this.getRawTransaction(txid);
+          const transaction = await this.getTransactionExtended(txid);
           if (transaction) {
             this.mempoolCache[txid] = transaction;
             txCount++;
@@ -94,6 +92,7 @@ class Mempool {
             } else {
               console.log('Fetched transaction ' + txCount);
             }
+            newTransactions.push(transaction);
           } else {
             console.log('Error finding transaction in mempool.');
           }
@@ -117,7 +116,7 @@ class Mempool {
       this.mempoolCache = newMempool;
 
       if (hasChange && this.mempoolChangedCallback) {
-        this.mempoolChangedCallback(this.mempoolCache);
+        this.mempoolChangedCallback(this.mempoolCache, newTransactions);
       }
 
       const end = new Date().getTime();
