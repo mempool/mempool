@@ -65,7 +65,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
     this.stateService.blocks$
       .subscribe((block) => this.latestBlock = block);
 
-    this.stateService.txConfirmed
+    this.stateService.txConfirmed$
       .subscribe((block) => {
         this.tx.status = {
           confirmed: true,

@@ -1,7 +1,7 @@
 import memPool from './mempool';
 import { DB } from '../database';
 
-import { Statistic, SimpleTransaction, OptimizedStatistic } from '../interfaces';
+import { Statistic, TransactionExtended, OptimizedStatistic } from '../interfaces';
 
 class Statistics {
   protected intervalTimer: NodeJS.Timer | undefined;
@@ -37,7 +37,7 @@ class Statistics {
 
     console.log('Running statistics');
 
-    let memPoolArray: SimpleTransaction[] = [];
+    let memPoolArray: TransactionExtended[] = [];
     for (const i in currentMempool) {
       if (currentMempool.hasOwnProperty(i)) {
         memPoolArray.push(currentMempool[i]);

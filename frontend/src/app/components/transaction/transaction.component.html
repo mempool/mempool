@@ -11,7 +11,7 @@
       <button *ngIf="latestBlock" type="button" class="btn btn-sm btn-success float-right mr-2" style="margin-top: 0.75rem;">{{ latestBlock.height - tx.status.block_height + 1 }} confirmation<ng-container *ngIf="latestBlock.height - tx.status.block_height + 1 > 1">s</ng-container></button>
     </ng-template>
     <ng-template #unconfirmedBtn>
-      <button type="button" class="btn btn-sm btn-danger float-right  mr-2" style="margin-top: 0.75rem;">Unconfirmed</button>
+      <button type="button" class="btn btn-sm btn-danger float-right mr-2" style="margin-top: 0.75rem;">Unconfirmed</button>
     </ng-template>
   </div>
 

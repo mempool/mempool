@@ -1,5 +1,5 @@
 const config = require('../../mempool-config.json');
-import { MempoolBlock, SimpleTransaction } from '../interfaces';
+import { MempoolBlock, TransactionExtended } from '../interfaces';
 
 class MempoolBlocks {
   private mempoolBlocks: MempoolBlock[] = [];
@@ -10,9 +10,9 @@ class MempoolBlocks {
     return this.mempoolBlocks;
   }
 
-  public updateMempoolBlocks(memPool: { [txid: string]: SimpleTransaction }): void {
+  public updateMempoolBlocks(memPool: { [txid: string]: TransactionExtended }): void {
     const latestMempool = memPool;
-    const memPoolArray: SimpleTransaction[] = [];
+    const memPoolArray: TransactionExtended[] = [];
     for (const i in latestMempool) {
       if (latestMempool.hasOwnProperty(i)) {
         memPoolArray.push(latestMempool[i]);
@@ -23,11 +23,11 @@ class MempoolBlocks {
     this.mempoolBlocks = this.calculateMempoolBlocks(transactionsSorted);
   }
 
-  private calculateMempoolBlocks(transactionsSorted: SimpleTransaction[]): MempoolBlock[] {
+  private calculateMempoolBlocks(transactionsSorted: TransactionExtended[]): MempoolBlock[] {
     const mempoolBlocks: MempoolBlock[] = [];
     let blockWeight = 0;
     let blockSize = 0;
-    let transactions: SimpleTransaction[] = [];
+    let transactions: TransactionExtended[] = [];
     transactionsSorted.forEach((tx) => {
       if (blockWeight + tx.vsize < 1000000 || mempoolBlocks.length === config.DEFAULT_PROJECTED_BLOCKS_AMOUNT) {
         blockWeight += tx.vsize;
@@ -46,7 +46,7 @@ class MempoolBlocks {
     return mempoolBlocks;
   }
 
-  private dataToMempoolBlocks(transactions: SimpleTransaction[], blockSize: number, blockVSize: number, blocksIndex: number): MempoolBlock {
+  private dataToMempoolBlocks(transactions: TransactionExtended[], blockSize: number, blockVSize: number, blocksIndex: number): MempoolBlock {
     let rangeLength = 3;
     if (blocksIndex === 0) {
       rangeLength = 8;
@@ -79,7 +79,7 @@ class MempoolBlocks {
     return medianNr;
   }
 
-  private getFeesInRange(transactions: SimpleTransaction[], rangeLength: number) {
+  private getFeesInRange(transactions: TransactionExtended[], rangeLength: number) {
     const arr = [transactions[transactions.length - 1].feePerVsize];
     const chunk = 1 / (rangeLength - 1);
     let itemsToAdd = rangeLength - 2;

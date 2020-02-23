@@ -27,7 +27,7 @@ export interface Transaction {
   status: Status;
 }
 
-export interface SimpleTransaction {
+export interface TransactionExtended extends Transaction {
   txid: string;
   fee: number;
   size: number;

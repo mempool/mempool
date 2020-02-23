@@ -69,13 +69,13 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     if (window.innerWidth <= 768) {
       return {
         top: 155 * this.blocks.indexOf(block) + 'px',
-        background: `repeating-linear-gradient(#2d3348, #2d3348 ${greenBackgroundHeight}%,
+        background: `repeating-linear-gradient(to right, #2d3348, #2d3348 ${greenBackgroundHeight}%,
           #9339f4 ${Math.max(greenBackgroundHeight, 0)}%, #105fb0 100%)`,
       };
     } else {
       return {
         left: 155 * this.blocks.indexOf(block) + 'px',
-        background: `repeating-linear-gradient(#2d3348, #2d3348 ${greenBackgroundHeight}%,
+        background: `repeating-linear-gradient(to right, #2d3348, #2d3348 ${greenBackgroundHeight}%,
           #9339f4 ${Math.max(greenBackgroundHeight, 0)}%, #105fb0 100%)`,
       };
     }

@@ -3,7 +3,7 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
 import { retryWhen, tap, delay } from 'rxjs/operators';
 import { StateService } from './state.service';
-import { Block } from '../interfaces/electrs.interface';
+import { Block, Transaction } from '../interfaces/electrs.interface';
 
 const WEB_SOCKET_PROTOCOL = (document.location.protocol === 'https:') ? 'wss:' : 'ws:';
 const WEB_SOCKET_URL = WEB_SOCKET_PROTOCOL + '//' + document.location.hostname + ':8999';
@@ -58,7 +58,7 @@ export class WebsocketService {
 
           if (response.txConfirmed) {
             this.trackingTxId = null;
-            this.stateService.txConfirmed.next(response.block);
+            this.stateService.txConfirmed$.next(response.block);
           }
         }
 
@@ -68,6 +68,18 @@ export class WebsocketService {
 
         if (response['mempool-blocks']) {
           this.stateService.mempoolBlocks$.next(response['mempool-blocks']);
+        }
+
+        if (response['address-transactions']) {
+          response['address-transactions'].forEach((addressTransaction: Transaction) => {
+            this.stateService.mempoolTransactions$.next(addressTransaction);
+          });
+        }
+
+        if (response['address-block-transactions']) {
+          response['address-block-transactions'].forEach((addressTransaction: Transaction) => {
+            this.stateService.blockTransactions$.next(addressTransaction);
+          });
         }
 
         if (response['live-2h-chart']) {
