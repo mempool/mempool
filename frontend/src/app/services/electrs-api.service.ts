@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Block, Transaction, Address, Outspend, Recent } from '../interfaces/electrs.interface';
 
-const API_BASE_URL = 'https://www.blockstream.info/testnet/api';
+const API_BASE_URL = document.location.protocol + '//' + document.location.hostname + ':' + document.location.port + '/electrs';
 
 @Injectable({
   providedIn: 'root'
