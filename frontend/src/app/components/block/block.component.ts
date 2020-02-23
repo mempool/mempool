@@ -42,6 +42,7 @@ export class BlockComponent implements OnInit {
         }
 
         this.blockHash = blockHash;
+        document.body.scrollTo(0, 0);
 
         if (history.state.data && history.state.data.block) {
           this.blockHeight = history.state.data.block.height;
@@ -57,7 +58,6 @@ export class BlockComponent implements OnInit {
       this.blockHeight = block.height;
       this.isLoadingBlock = false;
       this.getBlockTransactions(block.id);
-      document.body.scrollTo({ top: 0, behavior: 'smooth' });
     },
     (error) => {
       this.error = error;

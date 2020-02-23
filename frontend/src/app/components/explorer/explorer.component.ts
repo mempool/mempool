@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-explorer',
   templateUrl: './explorer.component.html',
-  styleUrls: ['./explorer.component.scss']
+  styleUrls: ['./explorer.component.scss'],
 })
 export class ExplorerComponent implements OnInit {
   view: 'blocks' | 'transactions' = 'blocks';

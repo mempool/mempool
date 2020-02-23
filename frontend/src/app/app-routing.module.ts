@@ -20,15 +20,11 @@ const routes: Routes = [
         component: StartComponent,
       },
       {
-        path: 'explorer',
-        component: ExplorerComponent,
-      },
-      {
         path: 'graphs',
         component: StatisticsComponent,
       },
       {
-        path: 'about',
+        path: 'team',
         component: AboutComponent,
       },
       {

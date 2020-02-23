@@ -12,16 +12,13 @@
         <a class="nav-link" routerLink="/" (click)="collapse()">Blockchain</a>
       </li>
       <li class="nav-item" routerLinkActive="active">
-        <a class="nav-link" routerLink="/explorer" (click)="collapse()">Explorer</a>
-      </li>
-      <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" routerLink="/graphs" (click)="collapse()">Graphs</a>
       </li>
       <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" routerLink="/tv" (click)="collapse()">TV view &nbsp;<img src="./assets/expand.png" width="15"/></a>
       </li>
       <li class="nav-item" routerLinkActive="active">
-        <a class="nav-link" routerLink="/about" (click)="collapse()">About</a>
+        <a class="nav-link" routerLink="/team" (click)="collapse()">Team</a>
       </li>
     </ul>
     <app-search-form location="top"></app-search-form>
@@ -32,3 +29,7 @@
 <br />
 
 <router-outlet></router-outlet>
+
+<br><br>
+
+<app-footer></app-footer>

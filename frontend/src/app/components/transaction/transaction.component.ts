@@ -38,6 +38,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
         this.txId = params.get('id') || '';
         this.error = undefined;
         this.isLoadingTx = true;
+        document.body.scrollTo(0, 0);
         if (history.state.data) {
           return of(history.state.data);
         } else {
@@ -48,7 +49,6 @@ export class TransactionComponent implements OnInit, OnDestroy {
     .subscribe((tx: Transaction) => {
       this.tx = tx;
       this.isLoadingTx = false;
-      document.body.scrollTo({ top: 0, behavior: 'smooth' });
 
       if (!tx.status.confirmed) {
         this.websocketService.startTrackTransaction(tx.txid);
