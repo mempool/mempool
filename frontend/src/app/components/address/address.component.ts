@@ -36,6 +36,7 @@ export class AddressComponent implements OnInit, OnDestroy {
         this.isLoadingAddress = true;
         this.isLoadingTransactions = true;
         this.transactions = null;
+        document.body.scrollTo(0, 0);
         this.addressString = params.get('id') || '';
         return this.electrsApiService.getAddress$(this.addressString);
       })
@@ -44,7 +45,6 @@ export class AddressComponent implements OnInit, OnDestroy {
       this.address = address;
       this.websocketService.startTrackAddress(address.address);
       this.isLoadingAddress = false;
-      document.body.scrollTo({ top: 0, behavior: 'smooth' });
       this.getAddressTransactions(address.address);
     },
     (error) => {

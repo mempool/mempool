@@ -13,7 +13,9 @@
   top: 0px;
   right: 0px;
   left: 0px;
+}
 
+.flashing {
   animation: opacityPulse 2s ease-out;
   animation-iteration-count: infinite; 
   opacity: 1;

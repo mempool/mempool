@@ -104,7 +104,7 @@ class Mempool {
       }
 
       // Replace mempool to clear already confirmed transactions
-      const newMempool: any = {};
+      const newMempool = {};
       transactions.forEach((tx) => {
         if (this.mempoolCache[tx]) {
           newMempool[tx] = this.mempoolCache[tx];
@@ -112,6 +112,9 @@ class Mempool {
           hasChange = true;
         }
       });
+
+      console.log(`New mempool size: ${Object.keys(newMempool).length} ` +
+       ` Change: ${transactions.length - Object.keys(newMempool).length}`);
 
       this.mempoolCache = newMempool;
 

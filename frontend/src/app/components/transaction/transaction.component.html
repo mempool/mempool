@@ -1,6 +1,6 @@
 <div class="container">
 
-  <app-blockchain position="top" [txFeePerVSize]="tx?.status?.block_height ? 0 : tx?.fee / (tx?.weight / 4)" [markHeight]="tx?.status?.block_height"></app-blockchain>
+  <app-blockchain position="top" [txFeePerVSize]="tx?.fee / (tx?.weight / 4)" [markHeight]="tx?.status?.block_height"></app-blockchain>
 
   <div class="title-block">
     <h1 style="float: left;">Transaction</h1>
