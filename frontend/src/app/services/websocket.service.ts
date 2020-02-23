@@ -6,7 +6,7 @@ import { StateService } from './state.service';
 import { Block, Transaction } from '../interfaces/electrs.interface';
 
 const WEB_SOCKET_PROTOCOL = (document.location.protocol === 'https:') ? 'wss:' : 'ws:';
-const WEB_SOCKET_URL = WEB_SOCKET_PROTOCOL + '//' + document.location.hostname + ':8999';
+const WEB_SOCKET_URL = WEB_SOCKET_PROTOCOL + '//' + document.location.hostname + ':' + document.location.port + '/ws';
 
 @Injectable({
   providedIn: 'root'
