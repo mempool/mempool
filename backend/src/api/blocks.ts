@@ -63,8 +63,8 @@ class Blocks {
         console.log(`${found} of ${txIds.length} found in mempool. ${notFound} not found.`);
 
         transactions.sort((a, b) => b.feePerVsize - a.feePerVsize);
-        block.medianFee = this.median(transactions.map((tx) => tx.feePerVsize));
-        block.feeRange = this.getFeesInRange(transactions, 8);
+        block.medianFee = transactions.length ? this.median(transactions.map((tx) => tx.feePerVsize)) : 0;
+        block.feeRange = transactions.length ? this.getFeesInRange(transactions, 8) : [];
 
         this.blocks.push(block);
         if (this.blocks.length > config.KEEP_BLOCK_AMOUNT) {
