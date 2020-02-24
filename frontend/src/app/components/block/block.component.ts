@@ -21,6 +21,8 @@ export class BlockComponent implements OnInit {
   transactions: Transaction[];
   isLoadingTransactions = true;
   error: any;
+  blockSubsidy = 50;
+  conversions: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -30,7 +32,7 @@ export class BlockComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.websocketService.want(['blocks', 'mempool-blocks']);
+    this.websocketService.want(['blocks', 'stats', 'mempool-blocks']);
 
     this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
@@ -66,6 +68,17 @@ export class BlockComponent implements OnInit {
 
     this.stateService.blocks$
       .subscribe((block) => this.latestBlock = block);
+
+    this.stateService.conversions$
+      .subscribe((conversions) => {
+        this.conversions = conversions;
+      });
+
+    let halvenings = Math.floor(this.block.height / 210000);
+    while (halvenings > 0) {
+      this.blockSubsidy = this.blockSubsidy / 2;
+      halvenings--;
+    }
   }
 
   getBlockTransactions(hash: string) {

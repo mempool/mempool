@@ -24,7 +24,7 @@ const routes: Routes = [
         component: StatisticsComponent,
       },
       {
-        path: 'team',
+        path: 'contributors',
         component: AboutComponent,
       },
       {
