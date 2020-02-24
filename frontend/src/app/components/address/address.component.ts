@@ -28,7 +28,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.websocketService.want(['blocks', 'mempool-blocks']);
+    this.websocketService.want(['blocks', 'stats', 'mempool-blocks']);
 
     this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
