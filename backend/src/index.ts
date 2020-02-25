@@ -165,13 +165,11 @@ class Server {
           const foundTransactions: TransactionExtended[] = [];
 
           transactions.forEach((tx) => {
-            const someVin = tx.vin.some((vin) => vin.prevout.scriptpubkey_address === client['track-address']);
-            if (someVin) {
+            if (tx.vin.some((vin) => vin.prevout.scriptpubkey_address === client['track-address'])) {
               foundTransactions.push(tx);
               return;
             }
-            const someVout = tx.vout.some((vout) => vout.scriptpubkey_address === client['track-address']);
-            if (someVout) {
+            if (tx.vout.some((vout) => vout.scriptpubkey_address === client['track-address'])) {
               foundTransactions.push(tx);
             }
           });

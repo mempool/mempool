@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, ChangeDetectorRef } from '@angular/core';
 import { StateService } from '../../services/state.service';
 import { Observable, forkJoin } from 'rxjs';
-import { Block, Outspend } from '../../interfaces/electrs.interface';
+import { Block, Outspend, Transaction } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 
 @Component({
@@ -62,7 +62,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     this.stateService.viewFiat$.next(oldvalue);
   }
 
-  trackByFn(index: number) {
-    return index;
+  trackByFn(index: number, tx: Transaction) {
+    return tx.txid;
   }
 }
