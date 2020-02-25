@@ -1,0 +1,49 @@
+#tv-wrapper {
+  height: 100%;
+  padding: 10px;
+  padding-top: 20px;
+}
+
+.blockchain-wrapper {
+  overflow: hidden;
+}
+
+.position-container {
+  position: absolute;
+  left: 50%;
+  bottom: 150px;
+}
+
+.chart-holder {
+  height: calc(100% - 220px);
+}
+
+#divider {
+  width: 3px;
+  height: 175px;
+  left: 0;
+  top: -40px;
+  background-image: url('/assets/divider-new.png');
+  background-repeat: repeat-y;
+  position: absolute;
+}
+
+#divider > img {
+  position: absolute;
+  left: -100px;
+  top: -28px;
+}
+
+@media (min-width: 1920px) {
+  .position-container {
+    transform: scale(1.3);
+    bottom: 190px;
+  }
+  .chart-holder {
+    height: calc(100% - 280px);
+  }
+}
+
+:host ::ng-deep .ct-legend {
+  top: 25px;
+}

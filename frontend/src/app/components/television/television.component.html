@@ -1,0 +1,25 @@
+<div id="tv-wrapper">
+
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner-border text-light"></div>
+  </div>
+
+  <div class="chart-holder" *ngIf="mempoolVsizeFeesData">
+    <app-chartist
+      [data]="mempoolVsizeFeesData"
+      [type]="'Line'"
+      [options]="mempoolVsizeFeesOptions">
+    </app-chartist>
+  </div>
+
+  <div class="text-center" class="blockchain-wrapper">
+    <div class="position-container">
+      <app-mempool-blocks></app-mempool-blocks>
+      <app-blockchain-blocks></app-blockchain-blocks>
+
+      <div id="divider"></div>
+    </div>
+
+  </div>
+
+</div>

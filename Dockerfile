@@ -4,8 +4,9 @@ RUN mkdir /mempool.space/
 COPY ./backend /mempool.space/backend/
 COPY ./frontend /mempool.space/frontend/
 COPY ./mariadb-structure.sql /mempool.space/mariadb-structure.sql
+#COPY ./nginx.conf /mempool.space/nginx.conf
 
-RUN apk add mariadb mariadb-client git nginx npm rsync bash
+RUN apk add mariadb mariadb-client jq git nginx npm rsync
 
 RUN mysql_install_db --user=mysql --datadir=/var/lib/mysql/
 RUN /usr/bin/mysqld_safe --datadir='/var/lib/mysql/'& \
@@ -31,8 +32,12 @@ ENV DB_PORT 3306
 ENV DB_USER mempool
 ENV DB_PASSWORD mempool
 ENV DB_DATABASE mempool
+ENV HTTP_PORT 80
 ENV API_ENDPOINT /api/v1/
 ENV CHAT_SSL_ENABLED false
+#ENV CHAT_SSL_PRIVKEY
+#ENV CHAT_SSL_CERT
+#ENV CHAT_SSL_CHAIN
 ENV MEMPOOL_REFRESH_RATE_MS 500
 ENV INITIAL_BLOCK_AMOUNT 8
 ENV DEFAULT_PROJECTED_BLOCKS_AMOUNT 3
@@ -42,8 +47,8 @@ ENV BITCOIN_NODE_PORT 8332
 ENV BITCOIN_NODE_USER bitcoinuser
 ENV BITCOIN_NODE_PASS bitcoinpass
 ENV TX_PER_SECOND_SPAN_SECONDS 150
-ENV BACKEND_API bitcoind
-ENV ELECTRS_API_URL https://www.blockstream.info/api
+
+#RUN echo "mysqld_safe& sleep 20 && cd /mempool.space/backend && rm -f mempool-config.json && rm -f cache.json && touch cache.json && jq -n env > mempool-config.json && node dist/index.js" > /entrypoint.sh
 
 RUN cd /mempool.space/frontend/ && \
     npm run build && \

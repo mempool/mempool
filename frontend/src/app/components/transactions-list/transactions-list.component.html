@@ -1,0 +1,93 @@
+<ng-container *ngFor="let tx of transactions; let i = index; trackBy: trackByFn">
+  <div *ngIf="!transactionPage" class="header-bg box" style="padding: 10px; margin-bottom: 10px;">
+    <a [routerLink]="['/tx/', tx.txid]" [state]="{ data: tx }">{{ tx.txid }}</a>
+    <div class="float-right">{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}</div>
+  </div>
+  <div class="header-bg box">
+    <div class="row">
+      <div class="col">
+        <table class="table table-borderless smaller-text table-xs" style="margin: 0;">
+          <tbody>
+            <tr *ngFor="let vin of tx.vin">
+              <td class="arrow-td">
+                <ng-template [ngIf]="vin.prevout === null" [ngIfElse]="hasPrevout">
+                  <i class="arrow grey"></i>
+                </ng-template>
+                <ng-template #hasPrevout>
+                  <a [routerLink]="['/tx/', vin.txid]">
+                    <i class="arrow green"></i>
+                  </a>
+                </ng-template>
+              </td>
+              <td>
+                <div>
+                  <ng-template [ngIf]="vin.is_coinbase" [ngIfElse]="regularVin">
+                    Coinbase (Newly Generated Coins)
+                  </ng-template>
+                  <ng-template #regularVin>
+                    <a [routerLink]="['/address/', vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">{{ vin.prevout.scriptpubkey_address | shortenString : 42 }}</a>
+                    <div>
+                      <app-address-labels [vin]="vin"></app-address-labels>
+                    </div>
+                  </ng-template>
+                </div>
+              </td>
+              <td class="text-right nowrap">
+                <app-amount *ngIf="vin.prevout" [satoshis]="vin.prevout.value"></app-amount>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+      <div class="col">
+        <table class="table table-borderless smaller-text table-xs"  style="margin: 0;">
+          <tbody>
+            <tr *ngFor="let vout of tx.vout; let vindex = index;">
+              <td>
+                <a *ngIf="vout.scriptpubkey_address; else scriptpubkey_type" [routerLink]="['/address/', vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">{{ vout.scriptpubkey_address | shortenString : 42 }}</a>
+                <ng-template #scriptpubkey_type>
+                  OP_RETURN
+                </ng-template>
+                <!--
+                <div>
+                  <app-address-labels [vout]="vout"></app-address-labels>
+                </div>
+                -->
+              </td>
+              <td class="text-right nowrap">
+                <app-amount [satoshis]="vout.value"></app-amount>
+              </td>
+              <td class="pl-1 arrow-td">
+                <i *ngIf="!outspends[i]; else outspend" class="arrow grey"></i>
+                <ng-template #outspend>
+                  <i *ngIf="!outspends[i][vindex] || !outspends[i][vindex].spent; else spent" class="arrow red"></i>
+                  <ng-template #spent>
+                    <a [routerLink]="['/tx/', outspends[i][vindex].txid]"><i class="arrow green"></i></a>
+                  </ng-template>
+                </ng-template>
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right" colspan="4">
+                <span *ngIf="showConfirmations && latestBlock$ | async as latestBlock">
+                  <button *ngIf="tx.status.confirmed; else unconfirmedButton" type="button" class="btn btn-sm btn-success mt-3">{{ latestBlock.height - tx.status.block_height + 1 }} confirmations</button>
+                  <ng-template #unconfirmedButton>
+                    <button type="button" class="btn btn-sm btn-danger mt-3">Unconfirmed</button>
+                  </ng-template>
+                  &nbsp;
+                </span>
+                <button type="button" class="btn btn-sm btn-primary mt-3" (click)="switchCurrency()">
+                  <app-amount [satoshis]="getTotalTxOutput(tx)"></app-amount>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <br>
+
+</ng-container>

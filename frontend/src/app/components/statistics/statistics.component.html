@@ -1,0 +1,88 @@
+<div class="container" style="max-width: 100%;">
+  <!--
+  <ul class="nav nav-pills" id="myTab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link" routerLinkActive="active" routerLink="mempool" role="tab">Mempool</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLinkActive="active" routerLink="blocks" role="tab">Blocks</a>
+      </li>
+    </ul>
+  <br/>
+
+  -->
+  
+  <div class="row">
+    <div class="col-lg-12" *ngIf="loading">
+      <div class="text-center">
+        <h3>Loading graphs...</h3>
+        <br>
+        <div class="spinner-border text-light"></div>
+      </div>
+    </div>
+
+    <div class="col-lg-12">
+
+      <div class="card mb-3" *ngIf="mempoolVsizeFeesData">
+        <div class="card-header">
+          <i class="fa fa-area-chart"></i> Mempool by vbytes (satoshis/vbyte)
+
+          <form [formGroup]="radioGroupForm" style="float: right;">
+            <div class="spinner-border text-light bootstrap-spinner" *ngIf="spinnerLoading"></div>
+            <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="'2h'" [routerLink]="['/graphs']" fragment="2h"> 2H (LIVE)
+              </label>
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="'24h'" [routerLink]="['/graphs']" fragment="24h"> 24H
+              </label>
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="'1w'" [routerLink]="['/graphs']" fragment="1w"> 1W
+              </label>
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="'1m'" [routerLink]="['/graphs']" fragment="1m"> 1M
+              </label>
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="'3m'" [routerLink]="['/graphs']" fragment="3m"> 3M
+              </label>
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="'6m'" [routerLink]="['/graphs']" fragment="6m"> 6M
+              </label>
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="'1y'" [routerLink]="['/graphs']" fragment="1y"> 1Y
+              </label>
+            </div>
+          </form>
+        </div>
+        <div class="card-body">
+          <div style="height: 600px;">
+            <app-chartist
+              [data]="mempoolVsizeFeesData"
+              [type]="'Line'"
+              [options]="mempoolVsizeFeesOptions">
+            </app-chartist>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-12">
+      <div class="card mb-3" *ngIf="mempoolTransactionsWeightPerSecondData">
+        <div class="card-header">
+          <i class="fa fa-area-chart"></i> Transactions weight per second (vBytes/s)</div>
+        <div class="card-body">
+          <div style="height: 600px;">
+            <app-chartist
+              [data]="mempoolTransactionsWeightPerSecondData"
+              [type]="'Line'"
+              [options]="transactionsWeightPerSecondOptions">
+            </app-chartist>
+          </div>
+  
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

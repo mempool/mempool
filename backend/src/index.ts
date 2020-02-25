@@ -6,39 +6,41 @@ import * as http from 'http';
 import * as https from 'https';
 import * as WebSocket from 'ws';
 
-import bitcoinApi from './api/bitcoin/bitcoin-api-factory';
-import diskCache from './api/disk-cache';
-import memPool from './api/mempool';
-import blocks from './api/blocks';
-import projectedBlocks from './api/projected-blocks';
-import statistics from './api/statistics';
-import { IBlock, IMempool, ITransaction, IMempoolStats } from './interfaces';
-
 import routes from './routes';
+import blocks from './api/blocks';
+import memPool from './api/mempool';
+import mempoolBlocks from './api/mempool-blocks';
+import diskCache from './api/disk-cache';
+import statistics from './api/statistics';
+
+import { Block, TransactionExtended, Statistic } from './interfaces';
+
 import fiatConversion from './api/fiat-conversion';
 
-class MempoolSpace {
+class Server {
   private wss: WebSocket.Server;
   private server: https.Server | http.Server;
   private app: any;
 
   constructor() {
     this.app = express();
+
     this.app
-      .use((req, res, next)  => {
+      .use((req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
         next();
       })
       .use(compression());
-    if (config.ENV === 'dev') {
-      this.server = http.createServer(this.app);
-      this.wss = new WebSocket.Server({ server: this.server });
-    } else {
+
+    if (config.SSL === true) {
       const credentials = {
-        cert: fs.readFileSync('/etc/letsencrypt/live/mempool.space/fullchain.pem'),
-        key: fs.readFileSync('/etc/letsencrypt/live/mempool.space/privkey.pem'),
+        cert: fs.readFileSync(config.SSL_CERT_FILE_PATH),
+        key: fs.readFileSync(config.SSL_KEY_FILE_PATH),
       };
       this.server = https.createServer(credentials, this.app);
+      this.wss = new WebSocket.Server({ server: this.server });
+    } else {
+      this.server = http.createServer(this.app);
       this.wss = new WebSocket.Server({ server: this.server });
     }
 
@@ -50,20 +52,16 @@ class MempoolSpace {
     statistics.startStatistics();
     fiatConversion.startService();
 
-    const opts = {
-        host: '127.0.0.1',
-        port: 8999
-    };
-    this.server.listen(opts, () => {
-      console.log(`Server started on ${opts.host}:${opts.port}`);
+    this.server.listen(config.HTTP_PORT, () => {
+      console.log(`Server started on port ${config.HTTP_PORT}`);
     });
   }
 
   private async runMempoolIntervalFunctions() {
-    await blocks.updateBlocks();
     await memPool.updateMemPoolInfo();
+    await blocks.updateBlocks();
     await memPool.updateMempool();
-    setTimeout(this.runMempoolIntervalFunctions.bind(this), config.MEMPOOL_REFRESH_RATE_MS);
+    setTimeout(this.runMempoolIntervalFunctions.bind(this), config.ELECTRS_POLL_RATE_MS);
   }
 
   private setUpMempoolCache() {
@@ -81,129 +79,116 @@ class MempoolSpace {
 
   private setUpWebsocketHandling() {
     this.wss.on('connection', (client: WebSocket) => {
-      let theBlocks = blocks.getBlocks();
-      theBlocks = theBlocks.concat([]).splice(theBlocks.length - config.INITIAL_BLOCK_AMOUNT);
-      const formatedBlocks = theBlocks.map((b) => blocks.formatBlock(b));
-
-      client.send(JSON.stringify({
-        'mempoolInfo': memPool.getMempoolInfo(),
-        'blocks': formatedBlocks,
-        'projectedBlocks': projectedBlocks.getProjectedBlocks(),
-        'txPerSecond': memPool.getTxPerSecond(),
-        'vBytesPerSecond': memPool.getVBytesPerSecond(),
-        'conversions': fiatConversion.getTickers()['BTCUSD'],
-      }));
-
-      client.on('message', async (message: any) => {
+      client.on('message', (message: any) => {
         try {
           const parsedMessage = JSON.parse(message);
 
           if (parsedMessage.action === 'want') {
-            client['want-stats'] = parsedMessage.data.indexOf('stats') > -1;
             client['want-blocks'] = parsedMessage.data.indexOf('blocks') > -1;
-            client['want-projected-blocks'] = parsedMessage.data.indexOf('projected-blocks') > -1;
+            client['want-mempool-blocks'] = parsedMessage.data.indexOf('mempool-blocks') > -1;
             client['want-live-2h-chart'] = parsedMessage.data.indexOf('live-2h-chart') > -1;
+            client['want-stats'] = parsedMessage.data.indexOf('stats') > -1;
           }
 
-          if (parsedMessage.action === 'track-tx' && parsedMessage.txId && /^[a-fA-F0-9]{64}$/.test(parsedMessage.txId)) {
-            const tx = await memPool.getRawTransaction(parsedMessage.txId);
-            if (tx) {
-              console.log('Now tracking: ' + parsedMessage.txId);
-              client['trackingTx'] = true;
-              client['txId'] = parsedMessage.txId;
-              client['tx'] = tx;
-
-              if (tx.blockhash) {
-                const currentBlocks = blocks.getBlocks();
-                const foundBlock = currentBlocks.find((block) => block.tx && block.tx.some((i: string) => i === parsedMessage.txId));
-                if (foundBlock) {
-                  console.log('Found block by looking in local cache');
-                  client['blockHeight'] = foundBlock.height;
-                } else {
-                  const theBlock = await bitcoinApi.getBlockAndTransactions(tx.blockhash);
-                  if (theBlock) {
-                    client['blockHeight'] = theBlock.height;
-                  }
-                }
-              } else {
-                client['blockHeight'] = 0;
-              }
-              client.send(JSON.stringify({
-                'projectedBlocks': projectedBlocks.getProjectedBlocks(client['txId']),
-                'track-tx': {
-                  tracking: true,
-                  blockHeight: client['blockHeight'],
-                  tx: client['tx'],
-                }
-              }));
+          if (parsedMessage && parsedMessage['track-tx']) {
+            if (/^[a-fA-F0-9]{64}$/.test(parsedMessage['track-tx'])) {
+              client['track-tx'] = parsedMessage['track-tx'];
             } else {
-              console.log('TX NOT FOUND, NOT TRACKING');
-              client['trackingTx'] = false;
-              client['blockHeight'] = 0;
-              client['tx'] = null;
-              client.send(JSON.stringify({
-                'track-tx': {
-                  tracking: false,
-                  blockHeight: 0,
-                  message: 'not-found',
-                }
-              }));
+              client['track-tx'] = null;
             }
           }
-          if (parsedMessage.action === 'stop-tracking-tx') {
-            console.log('STOP TRACKING');
-            client['trackingTx'] = false;
+
+          if (parsedMessage && parsedMessage['track-address']) {
+            if (/^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,87})$/
+              .test(parsedMessage['track-address'])) {
+              client['track-address'] = parsedMessage['track-address'];
+            } else {
+              client['track-address'] = null;
+            }
+          }
+
+          if (parsedMessage.action === 'init') {
+            const _blocks = blocks.getBlocks();
+            if (!_blocks) {
+              return;
+            }
             client.send(JSON.stringify({
-              'track-tx': {
-                tracking: false,
-                blockHeight: 0,
-                message: 'not-found',
-              }
+              'mempoolInfo': memPool.getMempoolInfo(),
+              'vBytesPerSecond': memPool.getVBytesPerSecond(),
+              'blocks': _blocks,
+              'conversions': fiatConversion.getTickers()['BTCUSD'],
+              'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
             }));
           }
         } catch (e) {
           console.log(e);
         }
       });
+    });
 
-      client.on('close', () => {
-        client['trackingTx'] = false;
+    statistics.setNewStatisticsEntryCallback((stats: Statistic) => {
+      this.wss.clients.forEach((client: WebSocket) => {
+        if (client.readyState !== WebSocket.OPEN) {
+          return;
+        }
+
+        if (!client['want-live-2h-chart']) {
+          return;
+        }
+
+        client.send(JSON.stringify({
+          'live-2h-chart': stats
+        }));
       });
     });
 
-    blocks.setNewBlockCallback((block: IBlock) => {
-      const formattedBlocks = blocks.formatBlock(block);
-
+    blocks.setNewBlockCallback((block: Block, txIds: string[], transactions: TransactionExtended[]) => {
       this.wss.clients.forEach((client) => {
         if (client.readyState !== WebSocket.OPEN) {
           return;
         }
 
-        const response = {};
-
-        if (client['trackingTx'] === true && client['blockHeight'] === 0) {
-          if (block.tx.some((tx: ITransaction) => tx === client['txId'])) {
-            client['blockHeight'] = block.height;
-          }
+        if (!client['want-blocks']) {
+          return;
         }
 
-        response['track-tx'] = {
-          tracking: client['trackingTx'] || false,
-          blockHeight: client['blockHeight'],
+        const response = {
+          'block': block
         };
 
-        response['block'] = formattedBlocks;
+        if (client['track-tx'] && txIds.indexOf(client['track-tx']) > -1) {
+          client['track-tx'] = null;
+          response['txConfirmed'] = true;
+        }
+
+        if (client['track-address']) {
+          const foundTransactions: TransactionExtended[] = [];
+
+          transactions.forEach((tx) => {
+            const someVin = tx.vin.some((vin) => vin.prevout.scriptpubkey_address === client['track-address']);
+            if (someVin) {
+              foundTransactions.push(tx);
+              return;
+            }
+            const someVout = tx.vout.some((vout) => vout.scriptpubkey_address === client['track-address']);
+            if (someVout) {
+              foundTransactions.push(tx);
+            }
+          });
+
+          if (foundTransactions.length) {
+            response['address-block-transactions'] = foundTransactions;
+          }
+        }
 
         client.send(JSON.stringify(response));
       });
     });
 
-    memPool.setMempoolChangedCallback((newMempool: IMempool) => {
-      projectedBlocks.updateProjectedBlocks(newMempool);
-
-      const pBlocks = projectedBlocks.getProjectedBlocks();
+    memPool.setMempoolChangedCallback((newMempool: { [txid: string]: TransactionExtended }, newTransactions: TransactionExtended[]) => {
+      mempoolBlocks.updateMempoolBlocks(newMempool);
+      const mBlocks = mempoolBlocks.getMempoolBlocks();
       const mempoolInfo = memPool.getMempoolInfo();
-      const txPerSecond = memPool.getTxPerSecond();
       const vBytesPerSecond = memPool.getVBytesPerSecond();
 
       this.wss.clients.forEach((client: WebSocket) => {
@@ -215,18 +200,32 @@ class MempoolSpace {
 
         if (client['want-stats']) {
           response['mempoolInfo'] = mempoolInfo;
-          response['txPerSecond'] = txPerSecond;
           response['vBytesPerSecond'] = vBytesPerSecond;
-          response['track-tx'] = {
-            tracking: client['trackingTx'] || false,
-            blockHeight: client['blockHeight'],
-          };
         }
 
-        if (client['want-projected-blocks'] && client['trackingTx'] && client['blockHeight'] === 0) {
-          response['projectedBlocks'] = projectedBlocks.getProjectedBlocks(client['txId']);
-        } else if (client['want-projected-blocks']) {
-          response['projectedBlocks'] = pBlocks;
+        if (client['want-mempool-blocks']) {
+          response['mempool-blocks'] = mBlocks;
+        }
+
+        // Send all new incoming transactions related to tracked address
+        if (client['track-address']) {
+          const foundTransactions: TransactionExtended[] = [];
+
+          newTransactions.forEach((tx) => {
+            const someVin = tx.vin.some((vin) => vin.prevout.scriptpubkey_address === client['track-address']);
+            if (someVin) {
+              foundTransactions.push(tx);
+              return;
+            }
+            const someVout = tx.vout.some((vout) => vout.scriptpubkey_address === client['track-address']);
+            if (someVout) {
+              foundTransactions.push(tx);
+            }
+          });
+
+          if (foundTransactions.length) {
+            response['address-transactions'] = foundTransactions;
+          }
         }
 
         if (Object.keys(response).length) {
@@ -234,51 +233,21 @@ class MempoolSpace {
         }
       });
     });
-
-    statistics.setNewStatisticsEntryCallback((stats: IMempoolStats) => {
-      this.wss.clients.forEach((client: WebSocket) => {
-        if (client.readyState !== WebSocket.OPEN) {
-          return;
-        }
-
-        if (client['want-live-2h-chart']) {
-          client.send(JSON.stringify({
-            'live-2h-chart': stats
-          }));
-        }
-      });
-    });
   }
 
   private setUpRoutes() {
     this.app
-      .get(config.API_ENDPOINT + 'transactions/height/:id', routes.$getgetTransactionsForBlock)
-      .get(config.API_ENDPOINT + 'transactions/projected/:id', routes.getgetTransactionsForProjectedBlock)
       .get(config.API_ENDPOINT + 'fees/recommended', routes.getRecommendedFees)
-      .get(config.API_ENDPOINT + 'fees/projected-blocks', routes.getProjectedBlocks)
+      .get(config.API_ENDPOINT + 'fees/mempool-blocks', routes.getMempoolBlocks)
       .get(config.API_ENDPOINT + 'statistics/2h', routes.get2HStatistics)
       .get(config.API_ENDPOINT + 'statistics/24h', routes.get24HStatistics.bind(routes))
       .get(config.API_ENDPOINT + 'statistics/1w', routes.get1WHStatistics.bind(routes))
       .get(config.API_ENDPOINT + 'statistics/1m', routes.get1MStatistics.bind(routes))
       .get(config.API_ENDPOINT + 'statistics/3m', routes.get3MStatistics.bind(routes))
       .get(config.API_ENDPOINT + 'statistics/6m', routes.get6MStatistics.bind(routes))
+      .get(config.API_ENDPOINT + 'statistics/1y', routes.get1YStatistics.bind(routes))
       ;
-
-    if (config.BACKEND_API === 'electrs') {
-      this.app
-        .get(config.API_ENDPOINT + 'explorer/blocks', routes.getBlocks)
-        .get(config.API_ENDPOINT + 'explorer/blocks/:height', routes.getBlocks)
-        .get(config.API_ENDPOINT + 'explorer/tx/:id', routes.getRawTransaction)
-        .get(config.API_ENDPOINT + 'explorer/block/:hash', routes.getBlock)
-        .get(config.API_ENDPOINT + 'explorer/block/:hash/tx', routes.getBlockTransactions)
-        .get(config.API_ENDPOINT + 'explorer/block/:hash/tx/:index', routes.getBlockTransactionsFromIndex)
-        .get(config.API_ENDPOINT + 'explorer/address/:address', routes.getAddress)
-        .get(config.API_ENDPOINT + 'explorer/address/:address/tx', routes.getAddressTransactions)
-        .get(config.API_ENDPOINT + 'explorer/address/:address/tx/chain/:txid', routes.getAddressTransactionsFromTxid)
-        ;
     }
+}
 
-    }
-  }
-
-const mempoolSpace = new MempoolSpace();
+const server = new Server();

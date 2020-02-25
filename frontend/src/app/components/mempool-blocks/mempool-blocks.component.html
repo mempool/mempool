@@ -1,0 +1,23 @@
+<div class="mempool-blocks-container">
+  <div class="flashing">
+    <div *ngFor="let projectedBlock of mempoolBlocks; let i = index; trackBy: trackByFn">
+      <div class="bitcoin-block text-center mempool-block" id="mempool-block-{{ i }}" [ngStyle]="getStyleForMempoolBlockAtIndex(i)">
+        <div class="block-body" *ngIf="mempoolBlocks?.length">
+          <div class="fees">
+            ~{{ projectedBlock.medianFee | ceil }} sat/vB
+            <br/>
+            <span class="yellow-color">{{ projectedBlock.feeRange[0] | ceil }} - {{ projectedBlock.feeRange[projectedBlock.feeRange.length - 1] | ceil }} sat/vB</span>
+          </div>
+          <div class="block-size">{{ projectedBlock.blockSize | bytes: 2 }}</div>
+          <div class="transaction-count">{{ projectedBlock.nTx }} transactions</div>
+          <div class="time-difference" *ngIf="i !== 3">In ~{{ 10 * i + 10 }} minutes</div>
+          <ng-template [ngIf]="i === 3 && mempoolBlocks?.length >= 4 && (projectedBlock.blockVSize / 1000000 | ceil) > 1">
+            <div class="time-difference">+{{ projectedBlock.blockVSize / 1000000 | ceil }} blocks</div>
+          </ng-template>
+        </div>
+        <span class="animated-border"></span>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="arrowVisible" id="arrow-up" [ngStyle]="{'right': rightPosition + 75 + 'px' }"></div>
+</div>
