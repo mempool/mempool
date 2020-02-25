@@ -42,15 +42,7 @@
           Default push: <span class="code">{{ '{' }} action: 'want', data: ['blocks', ...] {{ '}' }}</span>
           to express what you want pushed. Available: 'blocks', 'mempool-blocks', 'live-2h-chart' and 'stats'.
         </span>
-      </td>
-      <td>
-        <div class="mx-auto">
-          <input class="form-control" type="text" value="wss://mempool.space/ws" readonly>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td style="width: 50%;">
+        <br><br>
         <span class="text-small">
           Push transactions related to address: <span class="code">{{ '{' }} 'track-address': '3PbJ...bF9B' {{ '}' }}</span>
           to receive all new transactions containing that address as input or output. Returns an array of transactions. 'address-transactions' for new mempool transactions and 'address-block-transactions' for new block confirmed transactions.
