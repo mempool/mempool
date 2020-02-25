@@ -1,4 +1,4 @@
-export interface IMempoolInfo {
+export interface MempoolInfo {
   size: number;
   bytes: number;
   usage?: number;
@@ -7,80 +7,110 @@ export interface IMempoolInfo {
   minrelaytxfee?: number;
 }
 
-export interface ITransaction {
+export interface MempoolBlock {
+  blockSize: number;
+  blockVSize: number;
+  nTx: number;
+  medianFee: number;
+  feeRange: number[];
+}
+
+export interface Transaction {
   txid: string;
-  hash: string;
   version: number;
-  size: number;
-  vsize: number;
-  weight: number;
   locktime: number;
+  fee: number;
+  size: number;
+  weight: number;
   vin: Vin[];
   vout: Vout[];
-  hex: string;
+  status: Status;
+}
+
+export interface TransactionExtended extends Transaction {
+  txid: string;
   fee: number;
-  feePerWeightUnit: number;
-  feePerVsize: number;
-  blockhash?: string;
-  confirmations?: number;
-  time?: number;
-  blocktime?: number;
-  totalOut?: number;
-}
-
-export interface IBlock {
-  hash: string;
-  confirmations: number;
-  strippedsize: number;
   size: number;
-  weight: number;
-  height: number;
-  version: number;
-  versionHex: string;
-  merkleroot: string;
-  tx: any;
-  time: number;
-  mediantime: number;
-  nonce: number;
-  bits: string;
-  difficulty: number;
-  chainwork: string;
-  nTx: number;
-  previousblockhash: string;
-  fees: number;
-
-  minFee?: number;
-  maxFee?: number;
-  medianFee?: number;
+  vsize: number;
+  feePerVsize: number;
 }
 
-interface ScriptSig {
-  asm: string;
-  hex: string;
+export interface Prevout {
+  scriptpubkey: string;
+  scriptpubkey_asm: string;
+  scriptpubkey_type: string;
+  scriptpubkey_address: string;
+  value: number;
 }
 
-interface Vin {
+export interface Vin {
   txid: string;
   vout: number;
-  scriptSig: ScriptSig;
-  sequence: number;
+  prevout: Prevout;
+  scriptsig: string;
+  scriptsig_asm: string;
+  inner_redeemscript_asm?: string;
+  is_coinbase: boolean;
+  sequence: any;
+  witness?: string[];
+  inner_witnessscript_asm?: string;
 }
 
-interface ScriptPubKey {
-  asm: string;
-  hex: string;
-  reqSigs: number;
-  type: string;
-  addresses: string[];
-}
-
-interface Vout {
+export interface Vout {
+  scriptpubkey: string;
+  scriptpubkey_asm: string;
+  scriptpubkey_type: string;
+  scriptpubkey_address: string;
   value: number;
-  n: number;
-  scriptPubKey: ScriptPubKey;
 }
 
-export interface IMempoolStats {
+export interface Status {
+  confirmed: boolean;
+  block_height?: number;
+  block_hash?: string;
+  block_time?: number;
+}
+
+export interface Block {
+  id: string;
+  height: number;
+  version: number;
+  timestamp: number;
+  tx_count: number;
+  size: number;
+  weight: number;
+  merkle_root: string;
+  previousblockhash: string;
+  nonce: any;
+  bits: number;
+
+  medianFee?: number;
+  feeRange?: number[];
+}
+
+export interface Address {
+  address: string;
+  chain_stats: ChainStats;
+  mempool_stats: MempoolStats;
+}
+
+export interface ChainStats {
+  funded_txo_count: number;
+  funded_txo_sum: number;
+  spent_txo_count: number;
+  spent_txo_sum: number;
+  tx_count: number;
+}
+
+export interface MempoolStats {
+  funded_txo_count: number;
+  funded_txo_sum: number;
+  spent_txo_count: number;
+  spent_txo_sum: number;
+  tx_count: number;
+}
+
+export interface Statistic {
   id?: number;
   added: string;
   unconfirmed_transactions: number;
@@ -130,23 +160,21 @@ export interface IMempoolStats {
   vsize_2000: number;
 }
 
-export interface IProjectedBlockInternal extends IProjectedBlock {
-  txIds: string[];
-  txFeePerVsizes: number[];
+export interface OptimizedStatistic {
+  id: number;
+  added: string;
+  unconfirmed_transactions: number;
+  tx_per_second: number;
+  vbytes_per_second: number;
+  total_fee: number;
+  mempool_byte_weight: number;
+  vsizes: number[];
 }
 
-export interface IProjectedBlock {
-  blockSize: number;
-  blockWeight: number;
-  maxFee: number;
-  maxWeightFee: number;
-  medianFee: number;
-  minFee: number;
-  minWeightFee: number;
-  nTx: number;
-  fees: number;
-  hasMyTxId?: boolean;
+export interface Outspend {
+  spent: boolean;
+  txid: string;
+  vin: number;
+  status: Status;
 }
-
-export interface IMempool { [txid: string]: ITransaction; }
 

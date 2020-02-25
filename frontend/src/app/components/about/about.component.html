@@ -1,0 +1,61 @@
+<div class="container">
+  <div class="text-center">
+    <br />
+    <img src="./assets/mempool-tube.png" width="63" height="63" />
+    <br /><br />
+
+    <h1>Contributors</h1>
+
+    <p>Mempool.Space is a realtime Bitcoin blockchain explorer and mempool visualizer.</p>
+    <p>Development <a href="https://twitter.com/softbtc">@softbtc</a>
+    <br />Operations <a href="https://twitter.com/wiz">@wiz</a>
+    <br />Design <a href="https://instagram.com/markjborg">@markjborg</a>
+  </div>
+
+  <h2>HTTP API</h2>
+
+  <table class="table">
+    <tr>
+      <td style="width: 50%;">Fee API</td>
+      <td>
+        <div class="mx-auto">
+          <input class="form-control" type="text" value="https://mempool.space/api/v1/fees/recommended" readonly>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>Mempool blocks</td>
+      <td>
+        <div class="mx-auto">
+          <input class="form-control" type="text" value="https://mempool.space/api/v1/fees/mempool-blocks" readonly>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <h2>WebSocket API</h2>
+
+  <table class="table">
+    <tr>
+      <td style="width: 50%;">
+        <span class="text-small">
+          Default push: <span class="code">{{ '{' }} action: 'want', data: ['blocks', ...] {{ '}' }}</span>
+          to express what you want pushed. Available: 'blocks', 'mempool-blocks', 'live-2h-chart' and 'stats'.
+        </span>
+        <br><br>
+        <span class="text-small">
+          Push transactions related to address: <span class="code">{{ '{' }} 'track-address': '3PbJ...bF9B' {{ '}' }}</span>
+          to receive all new transactions containing that address as input or output. Returns an array of transactions. 'address-transactions' for new mempool transactions and 'address-block-transactions' for new block confirmed transactions.
+        </span>
+      </td>
+      <td>
+        <div class="mx-auto">
+          <input class="form-control" type="text" value="wss://mempool.space/ws" readonly>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <br> <br>
+
+</div>

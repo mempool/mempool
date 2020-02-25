@@ -1,19 +1,6 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
-CREATE TABLE `blocks` (
-  `height` int(11) NOT NULL,
-  `hash` varchar(65) NOT NULL,
-  `size` int(11) NOT NULL,
-  `weight` int(11) NOT NULL,
-  `minFee` int(11) NOT NULL,
-  `maxFee` int(11) NOT NULL,
-  `time` int(11) NOT NULL,
-  `fees` double NOT NULL,
-  `nTx` int(11) NOT NULL,
-  `medianFee` double NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 CREATE TABLE `statistics` (
   `id` int(11) NOT NULL,
   `added` datetime NOT NULL,

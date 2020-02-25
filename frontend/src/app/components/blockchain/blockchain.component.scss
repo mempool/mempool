@@ -1,0 +1,58 @@
+#divider {
+  width: 3px;
+  height: 200px;
+  left: 0;
+  top: -50px;
+  background-image: url('/assets/divider-new.png');
+  background-repeat: repeat-y;
+  position: absolute;
+  margin-bottom: 120px;
+}
+
+#divider > img {
+  position: absolute;
+  left: -100px;
+  top: -28px;
+}
+
+.blockchain-wrapper {
+  overflow: hidden;
+  height: 250px;
+}
+
+.position-container {
+  position: absolute;
+  left: 50%;
+  top: 75px;
+}
+
+@media (max-width: 767.98px) {
+  #divider {
+    top: -50px;
+    height: 1300px;
+  }
+  .position-container {
+    top: 100px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .position-container {
+    transform: scale(1.3);
+  }
+}
+
+.black-background {
+  background-color: #11131f;
+  z-index: 100;
+  position: relative;
+}
+
+.loading-block {
+  position: absolute;
+  text-align: center;
+  margin: auto;
+  width: 300px;
+  left: -150px;
+  top: 0px;
+}

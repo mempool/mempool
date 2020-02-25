@@ -1,0 +1,17 @@
+<div class="text-center" class="blockchain-wrapper">
+  <div class="position-container">
+    <app-mempool-blocks [txFeePerVSize]="markHeight ? 0 : txFeePerVSize"></app-mempool-blocks>
+    <app-blockchain-blocks [markHeight]="markHeight"></app-blockchain-blocks>
+
+    <div id="divider" *ngIf="!isLoading; else loadingTmpl"></div>
+
+    <ng-template #loadingTmpl>
+      <div class="loading-block">
+        <h3>Waiting for blocks...</h3>
+        <br>
+        <div class="spinner-border text-light"></div>
+      </div>
+    </ng-template>
+
+  </div>
+</div>

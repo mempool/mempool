@@ -7,5 +7,12 @@
     "target": "http://localhost:8999/",
     "secure": false,
     "ws": true
+  },
+  "/electrs": {
+    "target": "https://www.blockstream.info/api/",
+    "secure": false,
+    "pathRewrite": {
+      "^/electrs": ""
+    }
   }
 }

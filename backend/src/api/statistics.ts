@@ -1,7 +1,7 @@
 import memPool from './mempool';
 import { DB } from '../database';
 
-import { ITransaction, IMempoolStats } from '../interfaces';
+import { Statistic, TransactionExtended, OptimizedStatistic } from '../interfaces';
 
 class Statistics {
   protected intervalTimer: NodeJS.Timer | undefined;
@@ -37,41 +37,27 @@ class Statistics {
 
     console.log('Running statistics');
 
-    let memPoolArray: ITransaction[] = [];
+    let memPoolArray: TransactionExtended[] = [];
     for (const i in currentMempool) {
       if (currentMempool.hasOwnProperty(i)) {
         memPoolArray.push(currentMempool[i]);
       }
     }
     // Remove 0 and undefined
-    memPoolArray = memPoolArray.filter((tx) => tx.feePerWeightUnit);
+    memPoolArray = memPoolArray.filter((tx) => tx.feePerVsize);
 
     if (!memPoolArray.length) {
       return;
     }
 
-    memPoolArray.sort((a, b) => a.feePerWeightUnit - b.feePerWeightUnit);
+    memPoolArray.sort((a, b) => a.feePerVsize - b.feePerVsize);
     const totalWeight = memPoolArray.map((tx) => tx.vsize).reduce((acc, curr) => acc + curr) * 4;
     const totalFee = memPoolArray.map((tx) => tx.fee).reduce((acc, curr) => acc + curr);
 
     const logFees = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
       250, 300, 350, 400, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000];
 
-    const weightUnitFees: { [feePerWU: number]: number } = {};
     const weightVsizeFees: { [feePerWU: number]: number } = {};
-
-    memPoolArray.forEach((transaction) => {
-      for (let i = 0; i < logFees.length; i++) {
-        if ((logFees[i] === 2000 && transaction.feePerWeightUnit >= 2000) || transaction.feePerWeightUnit <= logFees[i]) {
-          if (weightUnitFees[logFees[i]]) {
-            weightUnitFees[logFees[i]] += transaction.vsize * 4;
-          } else {
-            weightUnitFees[logFees[i]] = transaction.vsize * 4;
-          }
-          break;
-        }
-      }
-    });
 
     memPoolArray.forEach((transaction) => {
       for (let i = 0; i < logFees.length; i++) {
@@ -93,10 +79,7 @@ class Statistics {
       vbytes_per_second: Math.round(vBytesPerSecond),
       mempool_byte_weight: totalWeight,
       total_fee: totalFee,
-      fee_data: JSON.stringify({
-        'wu': weightUnitFees,
-        'vsize': weightVsizeFees
-      }),
+      fee_data: '',
       vsize_1: weightVsizeFees['1'] || 0,
       vsize_2: weightVsizeFees['2'] || 0,
       vsize_3: weightVsizeFees['3'] || 0,
@@ -143,7 +126,7 @@ class Statistics {
     }
   }
 
-  private async $create(statistics: IMempoolStats): Promise<number | undefined> {
+  private async $create(statistics: Statistic): Promise<number | undefined> {
     try {
       const connection = await DB.pool.getConnection();
       const query = `INSERT INTO statistics(
@@ -295,93 +278,161 @@ class Statistics {
             AVG(vsize_2000) AS vsize_2000 FROM statistics GROUP BY UNIX_TIMESTAMP(added) DIV ${groupBy} ORDER BY id DESC LIMIT ${days}`;
   }
 
-  public async $get(id: number): Promise<IMempoolStats | undefined> {
+  public async $get(id: number): Promise<OptimizedStatistic | undefined> {
     try {
       const connection = await DB.pool.getConnection();
       const query = `SELECT * FROM statistics WHERE id = ?`;
       const [rows] = await connection.query<any>(query, [id]);
       connection.release();
-      return rows[0];
+      if (rows[0]) {
+        return this.mapStatisticToOptimizedStatistic([rows[0]])[0];
+      }
     } catch (e) {
       console.log('$list2H() error', e);
     }
   }
 
-  public async $list2H(): Promise<IMempoolStats[]> {
+  public async $list2H(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
       const query = `SELECT * FROM statistics ORDER BY id DESC LIMIT 120`;
       const [rows] = await connection.query<any>(query);
       connection.release();
-      return rows;
+      return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
       console.log('$list2H() error', e);
       return [];
     }
   }
 
-  public async $list24H(): Promise<IMempoolStats[]> {
+  public async $list24H(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(120, 720);
       const [rows] = await connection.query<any>(query);
       connection.release();
-      return rows;
+      return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
       return [];
     }
   }
 
-  public async $list1W(): Promise<IMempoolStats[]> {
+  public async $list1W(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(120, 5040);
       const [rows] = await connection.query<any>(query);
       connection.release();
-      return rows;
+      return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
       console.log('$list1W() error', e);
       return [];
     }
   }
 
-  public async $list1M(): Promise<IMempoolStats[]> {
+  public async $list1M(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(120, 20160);
       const [rows] = await connection.query<any>(query);
       connection.release();
-      return rows;
+      return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
       console.log('$list1M() error', e);
       return [];
     }
   }
 
-  public async $list3M(): Promise<IMempoolStats[]> {
+  public async $list3M(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(120, 60480);
       const [rows] = await connection.query<any>(query);
       connection.release();
-      return rows;
+      return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
       console.log('$list3M() error', e);
       return [];
     }
   }
 
-  public async $list6M(): Promise<IMempoolStats[]> {
+  public async $list6M(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(120, 120960);
       const [rows] = await connection.query<any>(query);
       connection.release();
-      return rows;
+      return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
       console.log('$list6M() error', e);
       return [];
     }
+  }
+
+  public async $list1Y(): Promise<OptimizedStatistic[]> {
+    try {
+      const connection = await DB.pool.getConnection();
+      const query = this.getQueryForDays(120, 241920);
+      const [rows] = await connection.query<any>(query);
+      connection.release();
+      return this.mapStatisticToOptimizedStatistic(rows);
+    } catch (e) {
+      console.log('$list6M() error', e);
+      return [];
+    }
+  }
+  private mapStatisticToOptimizedStatistic(statistic: Statistic[]): OptimizedStatistic[] {
+    return statistic.map((s) => {
+      return {
+        id: s.id || 0,
+        added: s.added,
+        unconfirmed_transactions: s.unconfirmed_transactions,
+        tx_per_second: s.tx_per_second,
+        vbytes_per_second: s.vbytes_per_second,
+        mempool_byte_weight: s.mempool_byte_weight,
+        total_fee: s.total_fee,
+        vsizes: [
+          s.vsize_1,
+          s.vsize_2,
+          s.vsize_3,
+          s.vsize_4,
+          s.vsize_5,
+          s.vsize_6,
+          s.vsize_8,
+          s.vsize_10,
+          s.vsize_12,
+          s.vsize_15,
+          s.vsize_20,
+          s.vsize_30,
+          s.vsize_40,
+          s.vsize_50,
+          s.vsize_60,
+          s.vsize_70,
+          s.vsize_80,
+          s.vsize_90,
+          s.vsize_100,
+          s.vsize_125,
+          s.vsize_150,
+          s.vsize_175,
+          s.vsize_200,
+          s.vsize_250,
+          s.vsize_300,
+          s.vsize_350,
+          s.vsize_400,
+          s.vsize_500,
+          s.vsize_600,
+          s.vsize_700,
+          s.vsize_800,
+          s.vsize_900,
+          s.vsize_1000,
+          s.vsize_1200,
+          s.vsize_1400,
+          s.vsize_1600,
+          s.vsize_1800,
+          s.vsize_2000,
+        ]
+      };
+    });
   }
 
 }

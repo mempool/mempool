@@ -1,0 +1,30 @@
+li.nav-item.active {
+  background-color: #653b9c;
+}
+
+li.nav-item {
+  padding: 10px;
+}
+
+.navbar {
+  z-index: 100;
+}
+
+@media (min-width: 768px) {
+  .navbar {
+    padding: 0rem 1rem;
+  }
+}
+
+.logo {
+  margin-left: 30px;
+}
+
+li.nav-item a {
+  color: #ffffff;
+}
+
+
+nav {
+  box-shadow: 0px 0px 15px 0px #000;
+}
