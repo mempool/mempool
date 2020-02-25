@@ -6,6 +6,7 @@ import { Transaction, Block } from '../../interfaces/electrs.interface';
 import { of } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
+import { AudioService } from 'src/app/services/audio.service';
 
 @Component({
   selector: 'app-transaction',
@@ -28,6 +29,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
     private electrsApiService: ElectrsApiService,
     private stateService: StateService,
     private websocketService: WebsocketService,
+    private audioService: AudioService,
   ) { }
 
   ngOnInit() {
@@ -73,6 +75,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
           block_hash: block.id,
           block_time: block.timestamp,
         };
+        this.audioService.playSound('magic');
       });
   }
 

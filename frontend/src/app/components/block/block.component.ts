@@ -59,6 +59,7 @@ export class BlockComponent implements OnInit {
       this.block = block;
       this.blockHeight = block.height;
       this.isLoadingBlock = false;
+      this.setBlockSubsidy();
       this.getBlockTransactions(block.id);
     },
     (error) => {
@@ -74,6 +75,9 @@ export class BlockComponent implements OnInit {
         this.conversions = conversions;
       });
 
+  }
+
+  setBlockSubsidy() {
     let halvenings = Math.floor(this.block.height / 210000);
     while (halvenings > 0) {
       this.blockSubsidy = this.blockSubsidy / 2;

@@ -14,16 +14,16 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td>Number of transactions</td>
-                <td>{{ address.chain_stats.tx_count + address.mempool_stats.tx_count }}</td>
-              </tr>
-              <tr>
                 <td>Total received</td>
-                <td>{{ (address.chain_stats.funded_txo_sum + address.mempool_stats.funded_txo_sum) / 100000000 | number: '1.2-2' }} BTC</td>
+                <td>{{ receieved / 100000000 | number: '1.2-8' }} BTC</td>
               </tr>
               <tr>
                 <td>Total sent</td>
-                <td>{{ (address.chain_stats.spent_txo_sum + address.mempool_stats.spent_txo_sum) / 100000000 | number: '1.2-2' }} BTC</td>
+                <td>{{ sent / 100000000 | number: '1.2-8' }} BTC</td>
+              </tr>
+              <tr>
+                <td>Balance</td>
+                <td>{{ (receieved - sent) / 100000000 | number: '1.2-8' }} BTC</td>
               </tr>
             </tbody>
           </table>
@@ -40,7 +40,7 @@
 
     <br>
 
-    <h2><ng-template [ngIf]="transactions?.length">{{ transactions?.length || '?' }} of </ng-template>{{ address.chain_stats.tx_count + address.mempool_stats.tx_count + addedTransactions }} transactions</h2>
+    <h2><ng-template [ngIf]="transactions?.length">{{ transactions?.length || '?' }} of </ng-template>{{ txCount }} transactions</h2>
 
     <app-transactions-list [transactions]="transactions" [showConfirmations]="true"></app-transactions-list>
 
@@ -49,7 +49,7 @@
         <div class="spinner-border"></div>
         <br><br>
       </ng-template>
-      <button *ngIf="transactions?.length && transactions?.length !== (address.chain_stats.tx_count + address.mempool_stats.tx_count)" type="button" class="btn btn-primary" (click)="loadMore()">Load more</button>
+      <button *ngIf="transactions?.length && transactions?.length !== txCount" type="button" class="btn btn-primary" (click)="loadMore()">Load more</button>
     </div>
 
   </ng-template>

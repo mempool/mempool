@@ -40,6 +40,7 @@ import { BlockchainBlocksComponent } from './components/blockchain-blocks/blockc
 import { BlockchainComponent } from './components/blockchain/blockchain.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { ExplorerComponent } from './components/explorer/explorer.component';
+import { AudioService } from './services/audio.service';
 
 @NgModule({
   declarations: [
@@ -87,6 +88,7 @@ import { ExplorerComponent } from './components/explorer/explorer.component';
     StateService,
     WebsocketService,
     VbytesPipe,
+    AudioService,
   ],
   bootstrap: [AppComponent]
 })

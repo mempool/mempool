@@ -9,7 +9,7 @@
     "ws": true
   },
   "/electrs": {
-    "target": "https://www.blockstream.info/api/",
+    "target": "https://www.blockstream.info/testnet/api/",
     "secure": false,
     "pathRewrite": {
       "^/electrs": ""

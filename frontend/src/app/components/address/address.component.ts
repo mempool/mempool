@@ -5,6 +5,7 @@ import { switchMap } from 'rxjs/operators';
 import { Address, Transaction } from '../../interfaces/electrs.interface';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { StateService } from 'src/app/services/state.service';
+import { AudioService } from 'src/app/services/audio.service';
 
 @Component({
   selector: 'app-address',
@@ -18,13 +19,17 @@ export class AddressComponent implements OnInit, OnDestroy {
   transactions: Transaction[];
   isLoadingTransactions = true;
   error: any;
-  addedTransactions = 0;
+
+  txCount = 0;
+  receieved = 0;
+  sent = 0;
 
   constructor(
     private route: ActivatedRoute,
     private electrsApiService: ElectrsApiService,
     private websocketService: WebsocketService,
     private stateService: StateService,
+    private audioService: AudioService,
   ) { }
 
   ngOnInit() {
@@ -43,9 +48,10 @@ export class AddressComponent implements OnInit, OnDestroy {
     )
     .subscribe((address) => {
       this.address = address;
+      this.updateChainStats();
       this.websocketService.startTrackAddress(address.address);
       this.isLoadingAddress = false;
-      this.getAddressTransactions(address.address);
+      this.reloadAddressTransactions(address.address);
     },
     (error) => {
       console.log(error);
@@ -56,7 +62,25 @@ export class AddressComponent implements OnInit, OnDestroy {
     this.stateService.mempoolTransactions$
       .subscribe((transaction) => {
         this.transactions.unshift(transaction);
-        this.addedTransactions++;
+        this.transactions = this.transactions.slice();
+        this.txCount++;
+
+        if (transaction.vout.some((vout) => vout.scriptpubkey_address === this.address.address)) {
+          this.audioService.playSound('cha-ching');
+        } else {
+          this.audioService.playSound('chime');
+        }
+
+        transaction.vin.forEach((vin) => {
+          if (vin.prevout.scriptpubkey_address === this.address.address) {
+            this.sent += vin.prevout.value;
+          }
+        });
+        transaction.vout.forEach((vout) => {
+          if (vout.scriptpubkey_address === this.address.address) {
+            this.receieved += vout.value;
+          }
+        });
       });
 
     this.stateService.blockTransactions$
@@ -64,6 +88,8 @@ export class AddressComponent implements OnInit, OnDestroy {
         const tx = this.transactions.find((t) => t.txid === transaction.txid);
         if (tx) {
           tx.status = transaction.status;
+          this.transactions = this.transactions.slice();
+          this.audioService.playSound('magic');
         }
       });
 
@@ -71,15 +97,24 @@ export class AddressComponent implements OnInit, OnDestroy {
       .subscribe((state) => {
         if (!state && this.transactions && this.transactions.length) {
           this.isLoadingTransactions = true;
-          this.getAddressTransactions(this.address.address);
+          this.reloadAddressTransactions(this.address.address);
         }
       });
   }
 
-  getAddressTransactions(address: string) {
+  updateChainStats() {
+    this.receieved = this.address.chain_stats.funded_txo_sum + this.address.mempool_stats.funded_txo_sum;
+    this.sent = this.address.chain_stats.spent_txo_sum + this.address.mempool_stats.spent_txo_sum;
+    this.txCount = this.address.chain_stats.tx_count + this.address.mempool_stats.tx_count;
+  }
+
+
+  reloadAddressTransactions(address: string) {
+    this.isLoadingTransactions = true;
     this.electrsApiService.getAddressTransactions$(address)
       .subscribe((transactions: any) => {
         this.transactions = transactions;
+        this.updateChainStats();
         this.isLoadingTransactions = false;
       });
   }
