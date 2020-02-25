@@ -1,5 +1,4 @@
 # mempool.space
-🚨This is beta software, and may have issues!🚨
 Please help us test and report bugs to our GitHub issue tracker.
 
 Mempool visualizer for the Bitcoin blockchain. Live demo: https://mempool.space/
@@ -12,6 +11,13 @@ Mempool visualizer for the Bitcoin blockchain. Live demo: https://mempool.space/
 * NodeJS (official stable LTS)
 * MySQL or MariaDB (default config)
 * Nginx (use supplied nginx.conf)
+
+## Checking out release tag
+```bash
+  git clone https://github.com/mempool-space/mempool.space
+  cd mempool.space
+  git checkout v1.0.0 # put latest release tag here
+```
 
 ## Bitcoin Core (bitcoind)
 
@@ -28,8 +34,6 @@ Enable RPC and txindex in bitcoin.conf
 Install dependencies and build code:
 
 ```bash
-  cd mempool.space
-
   # Install TypeScript Globally
   npm install -g typescript
 
