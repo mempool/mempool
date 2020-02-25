@@ -31,10 +31,6 @@
                 <td>Weight</td>
                 <td>{{ block.weight | wuBytes: 2 }}</td>
               </tr>
-              <tr>
-                <td>Status</td>
-                <td><ng-template [ngIf]="latestBlock">{{ (latestBlock.height - block.height + 1) }} confirmation{{ (latestBlock.height - block.height + 1) === 1 ? '' : 's' }}</ng-template></td>
-              </tr>
             </tbody>
           </table>
         </div>
@@ -52,6 +48,10 @@
               <tr>
                 <td>Block subsidy</td>
                 <td>{{ blockSubsidy | number: '1.2-2' }} BTC <span *ngIf="conversions">(<span class="green-color">{{ conversions.USD * blockSubsidy | currency:'USD':'symbol':'1.0-0' }}</span>)</span></td>
+              </tr>
+              <tr>
+                <td>Status</td>
+                <td><ng-template [ngIf]="latestBlock">{{ (latestBlock.height - block.height + 1) }} confirmation{{ (latestBlock.height - block.height + 1) === 1 ? '' : 's' }}</ng-template></td>
               </tr>
             </tbody>
           </table>
