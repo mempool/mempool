@@ -6,7 +6,7 @@ import * as QRCode from 'qrcode/build/qrcode.js';
   templateUrl: './qrcode.component.html',
   styleUrls: ['./qrcode.component.scss']
 })
-export class QrcodeComponent implements AfterViewInit, OnDestroy {
+export class QrcodeComponent implements AfterViewInit {
   @Input() data: string;
   @ViewChild('canvas') canvas: ElementRef;
 
@@ -30,14 +30,15 @@ export class QrcodeComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
-    QRCode.toCanvas(this.canvas.nativeElement, this.data.toUpperCase(), opts, (error: any) => {
+    const address = this.data;
+    if (this.data.indexOf('bc1') === 0 || this.data.indexOf('tb1') === 0) {
+      address.toUpperCase();
+    }
+
+    QRCode.toCanvas(this.canvas.nativeElement, address, opts, (error: any) => {
       if (error) {
          console.error(error);
       }
     });
   }
-
-  ngOnDestroy() {
-  }
-
 }

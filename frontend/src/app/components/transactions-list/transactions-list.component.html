@@ -71,7 +71,7 @@
             <tr>
               <td class="text-right" colspan="4">
                 <span *ngIf="showConfirmations && latestBlock$ | async as latestBlock">
-                  <button *ngIf="tx.status.confirmed; else unconfirmedButton" type="button" class="btn btn-sm btn-success mt-3">{{ latestBlock.height - tx.status.block_height + 1 }} confirmations</button>
+                  <button *ngIf="tx.status.confirmed; else unconfirmedButton" type="button" class="btn btn-sm btn-success mt-3">{{ latestBlock.height - tx.status.block_height + 1 }} confirmation<ng-container *ngIf="latestBlock.height - tx.status.block_height + 1 > 1">s</ng-container></button>
                   <ng-template #unconfirmedButton>
                     <button type="button" class="btn btn-sm btn-danger mt-3">Unconfirmed</button>
                   </ng-template>
