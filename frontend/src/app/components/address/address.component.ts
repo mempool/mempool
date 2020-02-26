@@ -35,29 +35,16 @@ export class AddressComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.websocketService.want(['blocks', 'stats', 'mempool-blocks']);
 
-    this.route.paramMap.pipe(
-      switchMap((params: ParamMap) => {
+    this.route.paramMap
+      .subscribe((params: ParamMap) => {
         this.error = undefined;
         this.isLoadingAddress = true;
         this.isLoadingTransactions = true;
         this.transactions = null;
         document.body.scrollTo(0, 0);
         this.addressString = params.get('id') || '';
-        return this.electrsApiService.getAddress$(this.addressString);
-      })
-    )
-    .subscribe((address) => {
-      this.address = address;
-      this.updateChainStats();
-      this.websocketService.startTrackAddress(address.address);
-      this.isLoadingAddress = false;
-      this.reloadAddressTransactions(address.address);
-    },
-    (error) => {
-      console.log(error);
-      this.error = error;
-      this.isLoadingAddress = false;
-    });
+        this.loadAddress(this.addressString);
+      });
 
     this.stateService.mempoolTransactions$
       .subscribe((transaction) => {
@@ -100,9 +87,24 @@ export class AddressComponent implements OnInit, OnDestroy {
     this.stateService.isOffline$
       .subscribe((state) => {
         if (!state && this.transactions && this.transactions.length) {
-          this.isLoadingTransactions = true;
-          this.reloadAddressTransactions(this.address.address);
+          this.loadAddress(this.addressString);
         }
+      });
+  }
+
+  loadAddress(addressStr?: string) {
+    this.electrsApiService.getAddress$(addressStr)
+      .subscribe((address) => {
+        this.address = address;
+        this.updateChainStats();
+        this.websocketService.startTrackAddress(address.address);
+        this.isLoadingAddress = false;
+        this.reloadAddressTransactions(address.address);
+      },
+      (error) => {
+        console.log(error);
+        this.error = error;
+        this.isLoadingAddress = false;
       });
   }
 
@@ -118,7 +120,6 @@ export class AddressComponent implements OnInit, OnDestroy {
     this.electrsApiService.getAddressTransactions$(address)
       .subscribe((transactions: any) => {
         this.transactions = transactions;
-        this.updateChainStats();
         this.isLoadingTransactions = false;
       });
   }
