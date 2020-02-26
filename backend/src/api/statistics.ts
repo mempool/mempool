@@ -11,10 +11,11 @@ class Statistics {
     this.newStatisticsEntryCallback = fn;
   }
 
-  constructor() {
-  }
+  constructor() { }
 
   public startStatistics(): void {
+    console.log('Starting statistics service');
+
     const now = new Date();
     const nextInterval = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(),
       Math.floor(now.getMinutes() / 1) * 1 + 1, 0, 0);

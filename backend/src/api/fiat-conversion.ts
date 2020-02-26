@@ -10,6 +10,7 @@ class FiatConversion {
   constructor() { }
 
   public startService() {
+    console.log('Starting currency rates service');
     setInterval(this.updateCurrency.bind(this), 1000 * 60 * 60);
     this.updateCurrency();
   }

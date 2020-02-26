@@ -113,8 +113,7 @@ class Mempool {
         }
       });
 
-      console.log(`New mempool size: ${Object.keys(newMempool).length} ` +
-       ` Change: ${transactions.length - Object.keys(newMempool).length}`);
+      console.log(`New mempool size: ${Object.keys(newMempool).length} Change: ${diff}`);
 
       this.mempoolCache = newMempool;
 
