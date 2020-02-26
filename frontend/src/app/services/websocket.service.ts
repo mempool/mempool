@@ -27,18 +27,6 @@ export class WebsocketService {
   startSubscription() {
     this.websocketSubject.next({'action': 'init'});
     this.websocketSubject
-      .pipe(
-        retryWhen((errors: any) => errors
-          .pipe(
-            tap(() => {
-              this.goneOffline = true;
-              this.websocketSubject.next({'action': 'init'});
-              this.stateService.isOffline$.next(true);
-            }),
-            delay(5000),
-          )
-        ),
-      )
       .subscribe((response: WebsocketResponse) => {
         if (response.blocks && response.blocks.length) {
           const blocks = response.blocks;
@@ -110,6 +98,7 @@ export class WebsocketService {
       (err: Error) => {
         console.log(err);
         this.goneOffline = true;
+        this.stateService.isOffline$.next(true);
         console.log('Error, retrying in 10 sec');
         window.setTimeout(() => this.startSubscription(), 10000);
       });

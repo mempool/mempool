@@ -178,6 +178,15 @@ class WebsocketHandler {
         });
 
         if (foundTransactions.length) {
+          foundTransactions.forEach((tx) => {
+            tx.status = {
+              confirmed: true,
+              block_height: block.height,
+              block_hash: block.id,
+              block_time: block.timestamp,
+            };
+          });
+
           response['address-block-transactions'] = foundTransactions;
         }
       }
