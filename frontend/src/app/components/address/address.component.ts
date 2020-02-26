@@ -61,6 +61,10 @@ export class AddressComponent implements OnInit, OnDestroy {
 
     this.stateService.mempoolTransactions$
       .subscribe((transaction) => {
+        if (this.transactions.some((t) => t.txid === transaction.txid)) {
+          return;
+        }
+
         this.transactions.unshift(transaction);
         this.transactions = this.transactions.slice();
         this.txCount++;

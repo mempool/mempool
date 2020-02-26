@@ -63,6 +63,6 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   }
 
   trackByFn(index: number, tx: Transaction) {
-    return tx.txid;
+    return tx.txid + tx.status.confirmed;
   }
 }
