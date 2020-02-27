@@ -49,7 +49,7 @@
         <div class="spinner-border"></div>
         <br><br>
       </ng-template>
-      <button *ngIf="transactions?.length && transactions?.length !== txCount" type="button" class="btn btn-primary" (click)="loadMore()">Load more</button>
+      <button *ngIf="!isLoadingTransactions && totalConfirmedTxCount && loadedConfirmedTxCount < totalConfirmedTxCount" type="button" class="btn btn-primary" (click)="loadMore()">Load more</button>
     </div>
 
   </ng-template>

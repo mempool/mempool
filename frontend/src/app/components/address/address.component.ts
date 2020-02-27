@@ -7,6 +7,7 @@ import { WebsocketService } from 'src/app/services/websocket.service';
 import { StateService } from 'src/app/services/state.service';
 import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-address',
@@ -18,14 +19,18 @@ export class AddressComponent implements OnInit, OnDestroy {
   addressString: string;
   isLoadingAddress = true;
   transactions: Transaction[];
-  tempTransactions: Transaction[];
   isLoadingTransactions = true;
   error: any;
 
-
+  totalConfirmedTxCount = 0;
+  loadedConfirmedTxCount = 0;
   txCount = 0;
   receieved = 0;
   sent = 0;
+
+  private tempTransactions: Transaction[];
+  private timeTxIndexes: number[];
+  private lastTransactionTxId: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -86,6 +91,8 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.transactions = this.transactions.slice();
           this.audioService.playSound('magic');
         }
+        this.totalConfirmedTxCount++;
+        this.loadedConfirmedTxCount++;
       });
 
     this.stateService.isOffline$
@@ -108,14 +115,27 @@ export class AddressComponent implements OnInit, OnDestroy {
           return this.electrsApiService.getAddressTransactions$(address.address);
         }),
         switchMap((transactions) => {
+          this.lastTransactionTxId = transactions[transactions.length - 1].txid;
           this.tempTransactions = transactions;
-          const fetchTxs = transactions.map((t) => t.txid);
+          this.loadedConfirmedTxCount = transactions.filter((tx) => tx.status.confirmed).length;
+
+          const fetchTxs: string[] = [];
+          this.timeTxIndexes = [];
+          transactions.forEach((tx, index) => {
+            if (!tx.status.confirmed) {
+              fetchTxs.push(tx.txid);
+              this.timeTxIndexes.push(index);
+            }
+          });
+          if (!fetchTxs.length) {
+            return of([]);
+          }
           return this.apiService.getTransactionTimes$(fetchTxs);
         })
       )
-      .subscribe((times) => {
+      .subscribe((times: number[]) => {
         times.forEach((time, index) => {
-          this.tempTransactions[index].firstSeen = time;
+          this.tempTransactions[this.timeTxIndexes[index]].firstSeen = time;
         });
         this.tempTransactions.sort((a, b) => {
           return b.status.block_time - a.status.block_time || b.firstSeen - a.firstSeen;
@@ -135,13 +155,41 @@ export class AddressComponent implements OnInit, OnDestroy {
     this.receieved = this.address.chain_stats.funded_txo_sum + this.address.mempool_stats.funded_txo_sum;
     this.sent = this.address.chain_stats.spent_txo_sum + this.address.mempool_stats.spent_txo_sum;
     this.txCount = this.address.chain_stats.tx_count + this.address.mempool_stats.tx_count;
+    this.totalConfirmedTxCount = this.address.chain_stats.tx_count;
   }
 
   loadMore() {
     this.isLoadingTransactions = true;
-    this.electrsApiService.getAddressTransactionsFromHash$(this.address.address, this.transactions[this.transactions.length - 1].txid)
-      .subscribe((transactions) => {
-        this.transactions = this.transactions.concat(transactions);
+    this.electrsApiService.getAddressTransactionsFromHash$(this.address.address, this.lastTransactionTxId)
+      .pipe(
+        switchMap((transactions) => {
+          this.tempTransactions = transactions;
+          this.lastTransactionTxId = transactions[transactions.length - 1].txid;
+          this.loadedConfirmedTxCount += transactions.filter((tx) => tx.status.confirmed).length;
+
+          const fetchTxs: string[] = [];
+          this.timeTxIndexes = [];
+          transactions.forEach((tx, index) => {
+            if (!tx.status.confirmed) {
+              fetchTxs.push(tx.txid);
+              this.timeTxIndexes.push(index);
+            }
+          });
+          if (!fetchTxs.length) {
+            return of([]);
+          }
+          return this.apiService.getTransactionTimes$(fetchTxs);
+        })
+      )
+      .subscribe((times: number[]) => {
+        times.forEach((time, index) => {
+          this.tempTransactions[this.timeTxIndexes[index]].firstSeen = time;
+        });
+        this.tempTransactions.sort((a, b) => {
+          return b.status.block_time - a.status.block_time || b.firstSeen - a.firstSeen;
+        });
+
+        this.transactions = this.transactions.concat(this.tempTransactions);
         this.isLoadingTransactions = false;
       });
   }
