@@ -14,7 +14,6 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
   blockSubscription: Subscription;
   isLoading = true;
   interval: any;
-  trigger = 0;
 
   constructor(
     private electrsApiService: ElectrsApiService,
@@ -47,7 +46,6 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
       });
 
     this.loadInitialBlocks();
-    this.interval = window.setInterval(() => this.trigger++, 1000 * 60);
   }
 
   ngOnDestroy() {

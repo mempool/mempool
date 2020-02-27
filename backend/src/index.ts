@@ -71,6 +71,7 @@ class Server {
 
   setUpHttpApiRoutes() {
     this.app
+      .get(config.API_ENDPOINT + 'transaction-times', routes.getTransactionTimes)
       .get(config.API_ENDPOINT + 'fees/recommended', routes.getRecommendedFees)
       .get(config.API_ENDPOINT + 'fees/mempool-blocks', routes.getMempoolBlocks)
       .get(config.API_ENDPOINT + 'statistics/2h', routes.get2HStatistics)

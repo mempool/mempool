@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { Observable } from 'rxjs';
 
@@ -39,5 +39,13 @@ export class ApiService {
 
   list1YStatistics$(): Observable<OptimizedMempoolStats[]> {
     return this.httpClient.get<OptimizedMempoolStats[]>(API_BASE_URL + '/statistics/1y');
+  }
+
+  getTransactionTimes$(txIds: string[]): Observable<number[]> {
+    let params = new HttpParams();
+    txIds.forEach((txId: string) => {
+      params = params.append('txId[]', txId);
+    });
+    return this.httpClient.get<number[]>(API_BASE_URL + '/transaction-times', { params });
   }
 }

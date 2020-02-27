@@ -1,6 +1,7 @@
 import statistics from './api/statistics';
 import feeApi from './api/fee-api';
 import mempoolBlocks from './api/mempool-blocks';
+import mempool from './api/mempool';
 
 class Routes {
   private cache = {};
@@ -61,6 +62,16 @@ class Routes {
     } catch (e) {
       res.status(500).send(e.message);
     }
+  }
+
+  public getTransactionTimes(req, res) {
+    if (!Array.isArray(req.query.txId)) {
+      res.status(500).send('Not an array');
+      return;
+    }
+    const txIds = req.query.txId;
+    const times = mempool.getFirstSeenForTransactions(txIds);
+    res.send(times);
   }
 }
 

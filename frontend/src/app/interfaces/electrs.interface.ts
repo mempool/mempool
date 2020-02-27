@@ -8,6 +8,7 @@ export interface Transaction {
   vin: Vin[];
   vout: Vout[];
   status: Status;
+  firstSeen?: number;
 }
 
 export interface Recent {

@@ -53,6 +53,18 @@
 
         <table class="table table-borderless table-striped">
           <tbody>
+            <ng-template [ngIf]="transactionTime !== 0">
+              <tr *ngIf="transactionTime === -1; else firstSeenTmpl">
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+              <ng-template #firstSeenTmpl>
+                <tr>
+                  <td>First seen</td>
+                  <td><app-time-since [time]="transactionTime"></app-time-since> ago</td>
+                </tr>
+              </ng-template>
+            </ng-template>
             <tr>
               <td>Fees</td>
               <td>{{ tx.fee | number }} sats <span *ngIf="conversions">(<span class="green-color">{{ conversions.USD * tx.fee / 100000000 | currency:'USD':'symbol':'1.2-2' }}</span>)</span></td>

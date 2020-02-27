@@ -7,6 +7,7 @@ import { of } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from 'src/app/services/audio.service';
+import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-transaction',
@@ -20,6 +21,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
   conversions: any;
   error: any = undefined;
   latestBlock: Block;
+  transactionTime = -1;
 
   rightPosition = 0;
   blockDepth = 0;
@@ -30,6 +32,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
     private stateService: StateService,
     private websocketService: WebsocketService,
     private audioService: AudioService,
+    private apiService: ApiService,
   ) { }
 
   ngOnInit() {
@@ -55,6 +58,8 @@ export class TransactionComponent implements OnInit, OnDestroy {
       if (!tx.status.confirmed) {
         this.websocketService.startTrackTransaction(tx.txid);
       }
+
+      this.getTransactionTime();
     },
     (error) => {
       this.error = error;
@@ -76,6 +81,13 @@ export class TransactionComponent implements OnInit, OnDestroy {
           block_time: block.timestamp,
         };
         this.audioService.playSound('magic');
+      });
+  }
+
+  getTransactionTime() {
+    this.apiService.getTransactionTimes$([this.tx.txid])
+      .subscribe((transactionTimes) => {
+        this.transactionTime = transactionTimes[0];
       });
   }
 

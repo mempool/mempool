@@ -11,7 +11,7 @@ import { ElectrsApiService } from '../../services/electrs-api.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TransactionsListComponent implements OnInit, OnChanges {
-  @Input() transactions: any[];
+  @Input() transactions: Transaction[];
   @Input() showConfirmations = false;
   @Input() transactionPage = false;
 

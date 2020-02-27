@@ -52,12 +52,25 @@ class Mempool {
     return this.vBytesPerSecond;
   }
 
+  public getFirstSeenForTransactions(txIds: string[]): number[] {
+    const txTimes: number[] = [];
+    txIds.forEach((txId: string) => {
+      if (this.mempoolCache[txId]) {
+        txTimes.push(this.mempoolCache[txId].firstSeen);
+      } else {
+        txTimes.push(0);
+      }
+    });
+    return txTimes;
+  }
+
   public async getTransactionExtended(txId: string): Promise<TransactionExtended | false> {
     try {
       const transaction: Transaction = await bitcoinApi.getRawTransaction(txId);
       return Object.assign({
         vsize: transaction.weight / 4,
         feePerVsize: transaction.fee / (transaction.weight / 4),
+        firstSeen: Math.round((new Date().getTime() / 1000)),
       }, transaction);
     } catch (e) {
       console.log(txId + ' not found');

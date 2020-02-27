@@ -14,8 +14,6 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   blocks: Block[] = [];
   blocksSubscription: Subscription;
   interval: any;
-  trigger = 0;
-
 
   arrowVisible = false;
   arrowLeftPx = 30;
@@ -35,8 +33,6 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
         this.moveArrowToPosition();
       });
-
-    this.interval = setInterval(() => this.trigger++, 10 * 1000);
   }
 
   ngOnChanges() {

@@ -33,6 +33,7 @@ export interface TransactionExtended extends Transaction {
   size: number;
   vsize: number;
   feePerVsize: number;
+  firstSeen: number;
 }
 
 export interface Prevout {

@@ -14,7 +14,7 @@
         <div class="block-size">{{ block.size | bytes: 2 }}</div>
         <div class="transaction-count">{{ block.tx_count }} transactions</div>
         <br /><br />
-        <div class="time-difference">{{ block.timestamp | timeSince : trigger }} ago</div>
+        <div class="time-difference"><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since> ago</div>
       </div>
     </div>
   </div>
