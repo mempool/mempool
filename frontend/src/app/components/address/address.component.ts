@@ -48,6 +48,7 @@ export class AddressComponent implements OnInit, OnDestroy {
       .subscribe((params: ParamMap) => {
         this.error = undefined;
         this.isLoadingAddress = true;
+        this.loadedConfirmedTxCount = 0;
         this.isLoadingTransactions = true;
         this.transactions = null;
         document.body.scrollTo(0, 0);
@@ -115,9 +116,9 @@ export class AddressComponent implements OnInit, OnDestroy {
           return this.electrsApiService.getAddressTransactions$(address.address);
         }),
         switchMap((transactions) => {
-          this.lastTransactionTxId = transactions[transactions.length - 1].txid;
           this.tempTransactions = transactions;
-          this.loadedConfirmedTxCount = transactions.filter((tx) => tx.status.confirmed).length;
+          this.lastTransactionTxId = transactions[transactions.length - 1].txid;
+          this.loadedConfirmedTxCount += transactions.filter((tx) => tx.status.confirmed).length;
 
           const fetchTxs: string[] = [];
           this.timeTxIndexes = [];
@@ -151,47 +152,21 @@ export class AddressComponent implements OnInit, OnDestroy {
       });
   }
 
+  loadMore() {
+    this.isLoadingTransactions = true;
+    this.electrsApiService.getAddressTransactionsFromHash$(this.address.address, this.lastTransactionTxId)
+      .subscribe((transactions: Transaction[]) => {
+        this.loadedConfirmedTxCount += transactions.length;
+        this.transactions = this.transactions.concat(transactions);
+        this.isLoadingTransactions = false;
+      });
+  }
+
   updateChainStats() {
     this.receieved = this.address.chain_stats.funded_txo_sum + this.address.mempool_stats.funded_txo_sum;
     this.sent = this.address.chain_stats.spent_txo_sum + this.address.mempool_stats.spent_txo_sum;
     this.txCount = this.address.chain_stats.tx_count + this.address.mempool_stats.tx_count;
     this.totalConfirmedTxCount = this.address.chain_stats.tx_count;
-  }
-
-  loadMore() {
-    this.isLoadingTransactions = true;
-    this.electrsApiService.getAddressTransactionsFromHash$(this.address.address, this.lastTransactionTxId)
-      .pipe(
-        switchMap((transactions) => {
-          this.tempTransactions = transactions;
-          this.lastTransactionTxId = transactions[transactions.length - 1].txid;
-          this.loadedConfirmedTxCount += transactions.filter((tx) => tx.status.confirmed).length;
-
-          const fetchTxs: string[] = [];
-          this.timeTxIndexes = [];
-          transactions.forEach((tx, index) => {
-            if (!tx.status.confirmed) {
-              fetchTxs.push(tx.txid);
-              this.timeTxIndexes.push(index);
-            }
-          });
-          if (!fetchTxs.length) {
-            return of([]);
-          }
-          return this.apiService.getTransactionTimes$(fetchTxs);
-        })
-      )
-      .subscribe((times: number[]) => {
-        times.forEach((time, index) => {
-          this.tempTransactions[this.timeTxIndexes[index]].firstSeen = time;
-        });
-        this.tempTransactions.sort((a, b) => {
-          return b.status.block_time - a.status.block_time || b.firstSeen - a.firstSeen;
-        });
-
-        this.transactions = this.transactions.concat(this.tempTransactions);
-        this.isLoadingTransactions = false;
-      });
   }
 
   ngOnDestroy() {

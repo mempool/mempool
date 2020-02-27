@@ -2,5 +2,5 @@
   <span>{{ conversions.USD * (satoshis / 100000000) | currency:'USD':'symbol':'1.2-2' }}</span>
 </ng-container>
 <ng-template #viewFiatVin>
-  {{ satoshis / 100000000 }} BTC
+  {{ satoshis / 100000000 | number : '1.8-8' }} BTC
 </ng-template>
