@@ -1,7 +1,12 @@
 <ng-container *ngFor="let tx of transactions; let i = index; trackBy: trackByFn">
   <div *ngIf="!transactionPage" class="header-bg box" style="padding: 10px; margin-bottom: 10px;">
     <a [routerLink]="['/tx/', tx.txid]" [state]="{ data: tx }">{{ tx.txid }}</a>
-    <div class="float-right">{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}</div>
+    <div class="float-right">
+      <ng-template [ngIf]="tx.status.confirmed">{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}</ng-template>
+      <ng-template [ngIf]="!tx.status.confirmed && tx.firstSeen">
+        <i><app-time-since [time]="tx.firstSeen"></app-time-since> ago</i>
+      </ng-template>
+    </div>
   </div>
   <div class="header-bg box">
     <div class="row">

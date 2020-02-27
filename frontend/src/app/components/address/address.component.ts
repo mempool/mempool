@@ -6,6 +6,7 @@ import { Address, Transaction } from '../../interfaces/electrs.interface';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { StateService } from 'src/app/services/state.service';
 import { AudioService } from 'src/app/services/audio.service';
+import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-address',
@@ -17,8 +18,10 @@ export class AddressComponent implements OnInit, OnDestroy {
   addressString: string;
   isLoadingAddress = true;
   transactions: Transaction[];
+  tempTransactions: Transaction[];
   isLoadingTransactions = true;
   error: any;
+
 
   txCount = 0;
   receieved = 0;
@@ -30,6 +33,7 @@ export class AddressComponent implements OnInit, OnDestroy {
     private websocketService: WebsocketService,
     private stateService: StateService,
     private audioService: AudioService,
+    private apiService: ApiService,
   ) { }
 
   ngOnInit() {
@@ -94,12 +98,31 @@ export class AddressComponent implements OnInit, OnDestroy {
 
   loadAddress(addressStr?: string) {
     this.electrsApiService.getAddress$(addressStr)
-      .subscribe((address) => {
-        this.address = address;
-        this.updateChainStats();
-        this.websocketService.startTrackAddress(address.address);
-        this.isLoadingAddress = false;
-        this.reloadAddressTransactions(address.address);
+      .pipe(
+        switchMap((address) => {
+          this.address = address;
+          this.updateChainStats();
+          this.websocketService.startTrackAddress(address.address);
+          this.isLoadingAddress = false;
+          this.isLoadingTransactions = true;
+          return this.electrsApiService.getAddressTransactions$(address.address);
+        }),
+        switchMap((transactions) => {
+          this.tempTransactions = transactions;
+          const fetchTxs = transactions.map((t) => t.txid);
+          return this.apiService.getTransactionTimes$(fetchTxs);
+        })
+      )
+      .subscribe((times) => {
+        times.forEach((time, index) => {
+          this.tempTransactions[index].firstSeen = time;
+        });
+        this.tempTransactions.sort((a, b) => {
+          return b.status.block_time - a.status.block_time || b.firstSeen - a.firstSeen;
+        });
+
+        this.transactions = this.tempTransactions;
+        this.isLoadingTransactions = false;
       },
       (error) => {
         console.log(error);
@@ -112,16 +135,6 @@ export class AddressComponent implements OnInit, OnDestroy {
     this.receieved = this.address.chain_stats.funded_txo_sum + this.address.mempool_stats.funded_txo_sum;
     this.sent = this.address.chain_stats.spent_txo_sum + this.address.mempool_stats.spent_txo_sum;
     this.txCount = this.address.chain_stats.tx_count + this.address.mempool_stats.tx_count;
-  }
-
-
-  reloadAddressTransactions(address: string) {
-    this.isLoadingTransactions = true;
-    this.electrsApiService.getAddressTransactions$(address)
-      .subscribe((transactions: any) => {
-        this.transactions = transactions;
-        this.isLoadingTransactions = false;
-      });
   }
 
   loadMore() {
