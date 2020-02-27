@@ -86,6 +86,8 @@ export class BlockComponent implements OnInit {
   }
 
   getBlockTransactions(hash: string) {
+    this.isLoadingTransactions = true;
+    this.transactions = null;
     this.electrsApiService.getBlockTransactions$(hash)
       .subscribe((transactions: any) => {
         this.transactions = transactions;
