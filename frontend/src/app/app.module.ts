@@ -10,7 +10,6 @@ import { AppComponent } from './components/app/app.component';
 
 import { StartComponent } from './components/start/start.component';
 import { ElectrsApiService } from './services/electrs-api.service';
-import { TimeSincePipe } from './pipes/time-since/time-since.pipe';
 import { BytesPipe } from './pipes/bytes-pipe/bytes.pipe';
 import { VbytesPipe } from './pipes/bytes-pipe/vbytes.pipe';
 import { WuBytesPipe } from './pipes/bytes-pipe/wubytes.pipe';
@@ -55,7 +54,6 @@ import { AudioService } from './services/audio.service';
     TransactionComponent,
     BlockComponent,
     TransactionsListComponent,
-    TimeSincePipe,
     BytesPipe,
     VbytesPipe,
     WuBytesPipe,
