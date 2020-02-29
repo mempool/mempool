@@ -37,7 +37,7 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
           return;
         }
 
-        if (block.height === this.blocks[0].height) {
+        if (block.height <= this.blocks[0].height) {
           return;
         }
 

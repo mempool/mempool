@@ -1,8 +1,8 @@
 <table class="table table-borderless">
   <thead>
-    <th style="width: 120px;">Height</th>
-    <th class="d-none d-md-block" style="width: 300px;">Timestamp</th>
-    <th style="width: 200px;">Mined</th>
+    <th style="width: 210px;">Height</th>
+    <th class="d-none d-md-block" style="width: 210px;">Timestamp</th>
+    <th style="width: 210px;">Mined</th>
     <th style="width: 150px;">Transactions</th>
     <th style="width: 175px;">Size</th>
     <th class="d-none d-md-block">Filled</th>
@@ -16,7 +16,7 @@
       <td>{{ block.size | bytes: 2 }}</td>
       <td class="d-none d-md-block">
         <div class="progress position-relative">
-          <div class="progress-bar bg-success" role="progressbar" [ngStyle]="{'width': (block.weight / 4000000)*100 + '%' }"></div>
+          <div class="progress-bar progress-mempool" role="progressbar" [ngStyle]="{'width': (block.weight / 4000000)*100 + '%' }"></div>
         </div>
       </td>
     </tr>
