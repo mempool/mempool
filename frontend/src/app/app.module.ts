@@ -4,6 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgbButtonsModule } from '@ng-bootstrap/ng-bootstrap';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app/app.component';
@@ -80,6 +81,7 @@ import { AudioService } from './services/audio.service';
     ReactiveFormsModule,
     BrowserAnimationsModule,
     NgbButtonsModule,
+    InfiniteScrollModule,
   ],
   providers: [
     ElectrsApiService,

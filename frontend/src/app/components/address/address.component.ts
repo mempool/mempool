@@ -153,6 +153,9 @@ export class AddressComponent implements OnInit, OnDestroy {
   }
 
   loadMore() {
+    if (this.isLoadingTransactions || !this.totalConfirmedTxCount || this.loadedConfirmedTxCount >= this.totalConfirmedTxCount) {
+      return;
+    }
     this.isLoadingTransactions = true;
     this.electrsApiService.getAddressTransactionsFromHash$(this.address.address, this.lastTransactionTxId)
       .subscribe((transactions: Transaction[]) => {

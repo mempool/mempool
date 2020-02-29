@@ -1,4 +1,4 @@
-<table class="table table-borderless">
+<table class="table table-borderless" [fromRoot]="true" [infiniteScrollContainer]="'body'" infiniteScroll [infiniteScrollDistance]="1.5" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50" (scrolled)="loadMore()">
   <thead>
     <th style="width: 210px;">Height</th>
     <th class="d-none d-md-block" style="width: 210px;">Timestamp</th>
@@ -32,8 +32,3 @@
     </ng-template>
   </tbody>
 </table>
-
-<div class="text-center">
-  <br>
-  <button *ngIf="blocks.length" [disabled]="isLoading" type="button" class="btn btn-primary" (click)="loadMore()">Load more</button>
-</div>

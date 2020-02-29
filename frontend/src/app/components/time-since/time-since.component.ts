@@ -31,7 +31,7 @@ export class TimeSinceComponent implements OnInit, OnDestroy {
   calculate() {
     const seconds = Math.floor((+new Date() - +new Date(this.time * 1000)) / 1000);
     if (seconds < 60) {
-      return '< 1 min';
+      return '< 1 minute';
     }
     const intervals = {
         year: 31536000,
