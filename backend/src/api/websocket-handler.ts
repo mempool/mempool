@@ -1,4 +1,5 @@
 import * as WebSocket from 'ws';
+import * as fs from 'fs';
 import { Block, TransactionExtended, Statistic } from '../interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
@@ -7,8 +8,19 @@ import fiatConversion from './fiat-conversion';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
+  private latestGitCommitHash = '';
 
-  constructor() { }
+  constructor() {
+    this.setLatestGitCommit();
+  }
+
+  setLatestGitCommit() {
+    try {
+      this.latestGitCommitHash = fs.readFileSync('../.git/refs/heads/master').toString().trim();
+    } catch (e) {
+      console.log('Could not load git commit info, skipping.');
+    }
+  }
 
   setWebsocketServer(wss: WebSocket.Server) {
     this.wss = wss;
@@ -59,6 +71,7 @@ class WebsocketHandler {
               'blocks': _blocks,
               'conversions': fiatConversion.getTickers()['BTCUSD'],
               'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
+              'git-commit': this.latestGitCommitHash
             }));
           }
         } catch (e) {

@@ -17,6 +17,7 @@ export class WebsocketService {
   private lastWant: string[] | null = null;
   private trackingTxId: string | null = null;
   private trackingAddress: string | null = null;
+  private latestGitCommit = '';
 
   constructor(
     private stateService: StateService,
@@ -56,6 +57,18 @@ export class WebsocketService {
 
         if (response['mempool-blocks']) {
           this.stateService.mempoolBlocks$.next(response['mempool-blocks']);
+        }
+
+        if (response['git-commit']) {
+          if (!this.latestGitCommit) {
+            this.latestGitCommit = response['git-commit'];
+          } else {
+            if (this.latestGitCommit !== response['git-commit']) {
+              setTimeout(() => {
+                window.location.reload();
+              }, Math.floor(Math.random() * 60000) + 1000);
+            }
+          }
         }
 
         if (response['address-transactions']) {
