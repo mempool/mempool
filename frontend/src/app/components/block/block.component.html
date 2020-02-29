@@ -65,14 +65,13 @@
 
     <br>
 
-    <app-transactions-list [transactions]="transactions"></app-transactions-list>
+    <app-transactions-list [transactions]="transactions" (loadMore)="loadMore()"></app-transactions-list>
 
     <div class="text-center">
       <ng-template [ngIf]="isLoadingTransactions">
         <div class="spinner-border"></div>
         <br><br>
       </ng-template>
-      <button *ngIf="transactions?.length && transactions?.length !== block.tx_count" type="button" class="btn btn-primary" (click)="loadMore()">Load more</button>
     </div>
 
   </ng-template>

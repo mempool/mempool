@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
 import { StateService } from '../../services/state.service';
 import { Observable, forkJoin } from 'rxjs';
 import { Block, Outspend, Transaction } from '../../interfaces/electrs.interface';
@@ -14,6 +14,8 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   @Input() transactions: Transaction[];
   @Input() showConfirmations = false;
   @Input() transactionPage = false;
+
+  @Output() loadMore = new EventEmitter();
 
   latestBlock$: Observable<Block>;
   outspends: Outspend[] = [];
@@ -51,6 +53,10 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         this.outspends = this.outspends.concat(newOutspends);
         this.ref.markForCheck();
       });
+  }
+
+  onScroll() {
+    this.loadMore.emit();
   }
 
   getTotalTxOutput(tx: any) {

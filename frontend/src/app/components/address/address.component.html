@@ -42,14 +42,13 @@
 
     <h2><ng-template [ngIf]="transactions?.length">{{ transactions?.length || '?' }} of </ng-template>{{ txCount }} transactions</h2>
 
-    <app-transactions-list [transactions]="transactions" [showConfirmations]="true"></app-transactions-list>
+    <app-transactions-list [transactions]="transactions" [showConfirmations]="true" (loadMore)="loadMore()"></app-transactions-list>
 
     <div class="text-center">
       <ng-template [ngIf]="isLoadingTransactions">
         <div class="spinner-border"></div>
         <br><br>
       </ng-template>
-      <button *ngIf="!isLoadingTransactions && totalConfirmedTxCount && loadedConfirmedTxCount < totalConfirmedTxCount" type="button" class="btn btn-primary" (click)="loadMore()">Load more</button>
     </div>
 
   </ng-template>

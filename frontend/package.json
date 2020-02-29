@@ -25,6 +25,7 @@
     "bootstrap": "^4.4.1",
     "chartist": "^0.11.4",
     "clipboard": "^2.0.4",
+    "ngx-infinite-scroll": "^8.0.1",
     "qrcode": "^1.4.4",
     "rxjs": "~6.5.3",
     "tlite": "^0.1.9",

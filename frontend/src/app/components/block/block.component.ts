@@ -96,6 +96,10 @@ export class BlockComponent implements OnInit {
   }
 
   loadMore() {
+    if (this.isLoadingTransactions || !this.transactions.length || this.transactions.length === this.block.tx_count) {
+      return;
+    }
+
     this.isLoadingTransactions = true;
     this.electrsApiService.getBlockTransactions$(this.block.id, this.transactions.length)
       .subscribe((transactions) => {
