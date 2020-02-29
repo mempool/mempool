@@ -14,6 +14,10 @@ class Blocks {
     return this.blocks;
   }
 
+  public setBlocks(blocks: Block[]) {
+    this.blocks = blocks;
+  }
+
   public setNewBlockCallback(fn: Function) {
     this.newBlockCallback = fn;
   }

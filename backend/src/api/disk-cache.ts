@@ -1,13 +1,17 @@
 import * as fs from 'fs';
 import memPool from './mempool';
+import blocks from './blocks';
 
 class DiskCache {
   static FILE_NAME = './cache.json';
 
   constructor() {
     process.on('SIGINT', () => {
-      this.saveData(JSON.stringify(memPool.getMempool()));
-      console.log('Mempool data saved to disk cache');
+      this.saveData(JSON.stringify({
+        mempool: memPool.getMempool(),
+        blocks: blocks.getBlocks(),
+      }));
+      console.log('Mempool and blocks data saved to disk cache');
       process.exit(2);
     });
   }
@@ -15,8 +19,14 @@ class DiskCache {
   loadMempoolCache() {
     const cacheData = this.loadData();
     if (cacheData) {
-      console.log('Restoring mempool data from disk cache');
-      memPool.setMempool(JSON.parse(cacheData));
+      console.log('Restoring mempool and blocks data from disk cache');
+      const data = JSON.parse(cacheData);
+      if (data.mempool) {
+        memPool.setMempool(data.mempool);
+        blocks.setBlocks(data.blocks);
+      } else {
+        memPool.setMempool(data);
+      }
     }
   }
 
