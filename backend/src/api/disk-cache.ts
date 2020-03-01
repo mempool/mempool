@@ -7,13 +7,22 @@ class DiskCache {
 
   constructor() {
     process.on('SIGINT', () => {
-      this.saveData(JSON.stringify({
-        mempool: memPool.getMempool(),
-        blocks: blocks.getBlocks(),
-      }));
-      console.log('Mempool and blocks data saved to disk cache');
+      this.saveCacheToDisk();
       process.exit(2);
     });
+
+    process.on('SIGTERM', () => {
+      this.saveCacheToDisk();
+      process.exit(2);
+    });
+  }
+
+  saveCacheToDisk() {
+    this.saveData(JSON.stringify({
+      mempool: memPool.getMempool(),
+      blocks: blocks.getBlocks(),
+    }));
+    console.log('Mempool and blocks data saved to disk cache');
   }
 
   loadMempoolCache() {
