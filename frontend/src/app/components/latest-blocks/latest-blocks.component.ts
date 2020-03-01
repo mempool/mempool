@@ -62,6 +62,9 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
   }
 
   loadMore() {
+    if (this.isLoading) {
+      return;
+    }
     this.isLoading = true;
     this.electrsApiService.listBlocks$(this.blocks[this.blocks.length - 1].height - 1)
       .subscribe((blocks) => {

@@ -8,7 +8,7 @@
       </ng-template>
     </div>
   </div>
-  <div class="header-bg box" infiniteScroll [fromRoot]="true" [infiniteScrollContainer]="'body'" [infiniteScrollDistance]="2" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50" (scrolled)="onScroll()">
+  <div class="header-bg box" infiniteScroll [alwaysCallback]="true" [fromRoot]="true" [infiniteScrollContainer]="'body'" [infiniteScrollDistance]="2" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50" (scrolled)="onScroll()">
     <div class="row">
       <div class="col">
         <table class="table table-borderless smaller-text table-xs" style="margin: 0;">
