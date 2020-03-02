@@ -22,7 +22,6 @@ export class BlockComponent implements OnInit {
   isLoadingTransactions = true;
   error: any;
   blockSubsidy = 50;
-  conversions: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -69,12 +68,6 @@ export class BlockComponent implements OnInit {
 
     this.stateService.blocks$
       .subscribe((block) => this.latestBlock = block);
-
-    this.stateService.conversions$
-      .subscribe((conversions) => {
-        this.conversions = conversions;
-      });
-
   }
 
   setBlockSubsidy() {
