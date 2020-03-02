@@ -47,7 +47,7 @@
               </tr>
               <tr>
                 <td>Block subsidy</td>
-                <td>{{ blockSubsidy | number: '1.2-2' }} BTC <span *ngIf="conversions">(<app-fiat [value]="blockSubsidy"></app-fiat>)</span></td>
+                <td>{{ blockSubsidy | number: '1.2-2' }} BTC (<app-fiat [value]="blockSubsidy"></app-fiat>)</td>
               </tr>
               <tr>
                 <td>Status</td>
