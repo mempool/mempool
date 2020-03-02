@@ -41,6 +41,7 @@ import { BlockchainComponent } from './components/blockchain/blockchain.componen
 import { FooterComponent } from './components/footer/footer.component';
 import { ExplorerComponent } from './components/explorer/explorer.component';
 import { AudioService } from './services/audio.service';
+import { FiatComponent } from './fiat/fiat.component';
 
 @NgModule({
   declarations: [
@@ -73,6 +74,7 @@ import { AudioService } from './services/audio.service';
     ExplorerComponent,
     ChartistComponent,
     FooterComponent,
+    FiatComponent,
   ],
   imports: [
     BrowserModule,

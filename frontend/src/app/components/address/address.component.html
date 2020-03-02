@@ -23,7 +23,7 @@
               </tr>
               <tr>
                 <td>Balance</td>
-                <td>{{ (receieved - sent) / 100000000 | number: '1.2-8' }} BTC</td>
+                <td>{{ (receieved - sent) / 100000000 | number: '1.2-8' }} BTC (<app-fiat [value]="receieved - sent"></app-fiat>)</td>
               </tr>
             </tbody>
           </table>

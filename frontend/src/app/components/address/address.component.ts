@@ -49,6 +49,7 @@ export class AddressComponent implements OnInit, OnDestroy {
         this.error = undefined;
         this.isLoadingAddress = true;
         this.loadedConfirmedTxCount = 0;
+        this.address = null;
         this.isLoadingTransactions = true;
         this.transactions = null;
         document.body.scrollTo(0, 0);

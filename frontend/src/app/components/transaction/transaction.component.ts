@@ -18,7 +18,6 @@ export class TransactionComponent implements OnInit, OnDestroy {
   tx: Transaction;
   txId: string;
   isLoadingTx = true;
-  conversions: any;
   error: any = undefined;
   latestBlock: Block;
   transactionTime = -1;
@@ -65,9 +64,6 @@ export class TransactionComponent implements OnInit, OnDestroy {
       this.error = error;
       this.isLoadingTx = false;
     });
-
-    this.stateService.conversions$
-      .subscribe((conversions) => this.conversions = conversions);
 
     this.stateService.blocks$
       .subscribe((block) => this.latestBlock = block);
