@@ -1,16 +1,17 @@
 <table class="table table-borderless">
   <thead>
     <th>Transaction ID</th>
-    <th style="width: 200px;">Value</th>
+    <th class="d-none d-xl-block" style="width: 180px;">Value</th>
     <th style="width: 125px;">Size</th>
-    <th style="width: 150px;">Fee</th>
+    <th>Fee</th>
   </thead>
   <tbody>
     <ng-container *ngIf="(transactions$ | async) as transactions">
       <ng-template [ngIf]="!isLoading">
         <tr *ngFor="let transaction of transactions">
-          <td><a [routerLink]="['/tx/', transaction.txid]">{{ transaction.txid }}</a></td>
-          <td>{{ transaction.value / 100000000 }} BTC</td>
+          <td class="d-block d-md-none d-xl-none"><a [routerLink]="['/tx/', transaction.txid]">{{ transaction.txid | shortenString }}</a></td>
+          <td class="d-none d-md-block d-xl-none"><a [routerLink]="['/tx/', transaction.txid]">{{ transaction.txid }}</a></td>
+          <td class="d-none d-xl-block">{{ transaction.value / 100000000 | number: '1.8-8' }} BTC</td>
           <td>{{ transaction.vsize | vbytes: 2 }}</td>
           <td>{{ transaction.fee / transaction.vsize | number : '1.2-2'}} sats/vB</td>
         </tr>
@@ -19,7 +20,7 @@
     <ng-template [ngIf]="isLoading">
       <tr *ngFor="let item of [1,2,3,4,5,6,7,8,9,10]">
         <td><span class="skeleton-loader"></span></td>
-        <td><span class="skeleton-loader"></span></td>
+        <td class="d-none d-lg-block"><span class="skeleton-loader"></span></td>
         <td><span class="skeleton-loader"></span></td>
         <td><span class="skeleton-loader"></span></td>
       </tr>
