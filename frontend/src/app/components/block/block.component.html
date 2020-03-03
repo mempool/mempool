@@ -1,6 +1,8 @@
-<div class="container">
+<div class="container-lg">
 
-  <app-blockchain position="top" [markHeight]="blockHeight"></app-blockchain>
+  <div style="position: relative;">
+    <app-blockchain position="top" [markHeight]="blockHeight"></app-blockchain>
+  </div>
 
   <div class="title-block">
     <h1>Block <ng-template [ngIf]="blockHeight"><a [routerLink]="['/block/', blockHash]">#{{ blockHeight }}</a></ng-template></h1>
