@@ -7,8 +7,29 @@
   box-shadow: 15px 15px 15px 15px #000;
 }
 
-.footer > .container {
-  margin-top: 17px;
+.sub-text {
+  display: block;
+  font-weight: bold;
+}
+
+.footer > div {
+  margin-top: 3px;
+}
+
+@media (min-width: 1200px) {
+  .footer > div {
+    margin-top: 17px;
+  }
+  .sub-text {
+    margin-left: 5px;
+    display: inline-block;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .extra-text {
+    display: none;
+  }
 }
 
 .txPerSecond {

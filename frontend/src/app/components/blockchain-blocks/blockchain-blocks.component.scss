@@ -67,6 +67,10 @@
     text-shadow: inherit;
     z-index: inherit;
   }
+
+  .blocks-container {
+    top: -40px;
+  }
 }
 
 @media (min-width: 768px) {

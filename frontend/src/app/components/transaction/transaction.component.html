@@ -1,6 +1,8 @@
-<div class="container">
+<div class="container-lg">
 
-  <app-blockchain position="top" [txFeePerVSize]="tx?.fee / (tx?.weight / 4)" [markHeight]="tx?.status?.block_height"></app-blockchain>
+  <div style="position: relative;">
+    <app-blockchain position="top" [txFeePerVSize]="tx?.fee / (tx?.weight / 4)" [markHeight]="tx?.status?.block_height"></app-blockchain>
+  </div>
 
   <div class="title-block">
     <h1 style="float: left;">Transaction</h1>
