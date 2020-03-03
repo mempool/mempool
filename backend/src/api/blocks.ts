@@ -32,6 +32,11 @@ class Blocks {
         this.currentBlockHeight = this.blocks[this.blocks.length - 1].height;
       }
 
+      if (blockHeightTip - this.currentBlockHeight > config.INITIAL_BLOCK_AMOUNT * 2) {
+        console.log(`${blockHeightTip - this.currentBlockHeight} blocks since tip. Fast forwarding to the ${config.INITIAL_BLOCK_AMOUNT} recent blocks`);
+        this.currentBlockHeight = blockHeightTip - config.INITIAL_BLOCK_AMOUNT;
+      }
+
       while (this.currentBlockHeight < blockHeightTip) {
         if (this.currentBlockHeight === 0) {
           this.currentBlockHeight = blockHeightTip;
