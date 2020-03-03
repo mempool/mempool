@@ -15,15 +15,15 @@
             <tbody>
               <tr>
                 <td>Total received</td>
-                <td>{{ receieved / 100000000 | number: '1.2-8' }} BTC</td>
+                <td>{{ receieved / 100000000 | number: '1.8-8' }} BTC</td>
               </tr>
               <tr>
                 <td>Total sent</td>
-                <td>{{ sent / 100000000 | number: '1.2-8' }} BTC</td>
+                <td>{{ sent / 100000000 | number: '1.8-8' }} BTC</td>
               </tr>
               <tr>
                 <td>Balance</td>
-                <td>{{ (receieved - sent) / 100000000 | number: '1.2-8' }} BTC (<app-fiat [value]="receieved - sent"></app-fiat>)</td>
+                <td>{{ (receieved - sent) / 100000000 | number: '1.8-8' }} BTC (<app-fiat [value]="receieved - sent"></app-fiat>)</td>
               </tr>
             </tbody>
           </table>
