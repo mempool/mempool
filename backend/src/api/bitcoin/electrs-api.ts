@@ -36,7 +36,11 @@ class ElectrsApi {
         } else if (res.statusCode !== 200) {
           reject(response);
         } else {
-          resolve(response);
+          if (response.constructor === Array) {
+            resolve(response);
+          } else {
+            reject('returned invalid data');
+          }
         }
       });
     });
@@ -50,7 +54,11 @@ class ElectrsApi {
         } else if (res.statusCode !== 200) {
           reject(response);
         } else {
-          resolve(response);
+          if (response.constructor === Object) {
+            resolve(response);
+          } else {
+            reject('returned invalid data');
+          }
         }
       });
     });
@@ -78,7 +86,11 @@ class ElectrsApi {
         } else if (res.statusCode !== 200) {
           reject(response);
         } else {
-          resolve(response);
+          if (response.constructor === Array) {
+            resolve(response);
+          } else {
+            reject('returned invalid data');
+          }
         }
       });
     });
