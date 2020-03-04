@@ -50,12 +50,12 @@
               <ng-template [ngIf]="fees" [ngIfElse]="loadingFees">
                 <tr>
                   <td>Total fees</td>
-                  <td>{{ fees | number: '1.2-8' }} BTC (<app-fiat [value]="fees * 100000000"></app-fiat>)</td>
+                  <td><span title="{{ fees | number: '1.2-8' }} BTC">{{ fees | number: '1.2-2' }} BTC</span> (<app-fiat [value]="fees * 100000000" digitsInfo="1.0-0"></app-fiat>)</td>
                 </tr>
                 <tr>
                   <td>Reward + fees:</td>
                   <td>
-                    {{ blockSubsidy + fees | number: '1.2-8' }} BTC (<app-fiat [value]="(blockSubsidy + fees) * 100000000"></app-fiat>)
+                    <span title="{{ blockSubsidy + fees | number: '1.2-8' }} BTC">{{ blockSubsidy + fees | number: '1.2-2' }} BTC</span> (<app-fiat [value]="(blockSubsidy + fees) * 100000000" digitsInfo="1.0-0"></app-fiat>)
                   </td>
                 </tr>
               </ng-template>
