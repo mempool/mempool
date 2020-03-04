@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { switchMap } from 'rxjs/operators';
-import { Block, Transaction } from '../../interfaces/electrs.interface';
+import { Block, Transaction, Vout } from '../../interfaces/electrs.interface';
 import { of } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
@@ -21,7 +21,8 @@ export class BlockComponent implements OnInit {
   transactions: Transaction[];
   isLoadingTransactions = true;
   error: any;
-  blockSubsidy = 50;
+  blockSubsidy: number;
+  fees: number;
 
   constructor(
     private route: ActivatedRoute,
@@ -37,6 +38,7 @@ export class BlockComponent implements OnInit {
       switchMap((params: ParamMap) => {
         const blockHash: string = params.get('id') || '';
         this.error = undefined;
+        this.fees = undefined;
 
         if (history.state.data && history.state.data.blockHeight) {
           this.blockHeight = history.state.data.blockHeight;
@@ -59,6 +61,9 @@ export class BlockComponent implements OnInit {
       this.blockHeight = block.height;
       this.isLoadingBlock = false;
       this.setBlockSubsidy();
+      if (block.reward) {
+        this.fees = block.reward / 100000000;
+      }
       this.getBlockTransactions(block.id);
     },
     (error) => {
@@ -71,6 +76,7 @@ export class BlockComponent implements OnInit {
   }
 
   setBlockSubsidy() {
+    this.blockSubsidy = 50;
     let halvenings = Math.floor(this.block.height / 210000);
     while (halvenings > 0) {
       this.blockSubsidy = this.blockSubsidy / 2;
@@ -83,6 +89,9 @@ export class BlockComponent implements OnInit {
     this.transactions = null;
     this.electrsApiService.getBlockTransactions$(hash)
       .subscribe((transactions: any) => {
+        if (!this.fees) {
+          this.fees = transactions[0].vout.reduce((acc: number, curr: Vout) => acc + curr.value, 0) / 100000000 - this.blockSubsidy;
+        }
         this.transactions = transactions;
         this.isLoadingTransactions = false;
       });

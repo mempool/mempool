@@ -87,6 +87,7 @@ export interface Block {
 
   medianFee?: number;
   feeRange?: number[];
+  reward?: number;
 }
 
 export interface Address {
