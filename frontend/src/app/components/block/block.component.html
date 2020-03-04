@@ -47,14 +47,28 @@
                 <td>Previous Block</td>
                 <td><a [routerLink]="['/block/', block.previousblockhash]" [state]="{ data: { blockHeight: blockHeight - 1 } }" title="{{ block.previousblockhash }}">{{ block.previousblockhash | shortenString : 32 }}</a></td>
               </tr>
-              <tr>
-                <td>Block subsidy</td>
-                <td>{{ blockSubsidy | number: '1.2-2' }} BTC (<app-fiat [value]="blockSubsidy"></app-fiat>)</td>
-              </tr>
-              <tr>
-                <td>Status</td>
-                <td><ng-template [ngIf]="latestBlock">{{ (latestBlock.height - block.height + 1) }} confirmation{{ (latestBlock.height - block.height + 1) === 1 ? '' : 's' }}</ng-template></td>
-              </tr>
+              <ng-template [ngIf]="fees" [ngIfElse]="loadingFees">
+                <tr>
+                  <td>Total fees</td>
+                  <td>{{ fees | number: '1.2-8' }} BTC (<app-fiat [value]="fees * 100000000"></app-fiat>)</td>
+                </tr>
+                <tr>
+                  <td>Reward + fees:</td>
+                  <td>
+                    {{ blockSubsidy + fees | number: '1.2-8' }} BTC (<app-fiat [value]="(blockSubsidy + fees) * 100000000"></app-fiat>)
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template #loadingFees>
+                <tr>
+                  <td>Total fees</td>
+                  <td><span class="skeleton-loader"></span></td>
+                </tr>
+                <tr>
+                  <td>Reward + fees:</td>
+                  <td><span class="skeleton-loader"></span></td>
+                </tr>
+              </ng-template>
             </tbody>
           </table>
         </div>

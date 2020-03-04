@@ -55,7 +55,7 @@ class Blocks {
 
         const transactions: TransactionExtended[] = [];
 
-        for (let i = 1; i < txIds.length; i++) {
+        for (let i = 0; i < txIds.length; i++) {
           if (mempool[txIds[i]]) {
             transactions.push(mempool[txIds[i]]);
             found++;
@@ -71,6 +71,7 @@ class Blocks {
 
         console.log(`${found} of ${txIds.length} found in mempool. ${notFound} not found.`);
 
+        block.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
         transactions.sort((a, b) => b.feePerVsize - a.feePerVsize);
         block.medianFee = transactions.length ? this.median(transactions.map((tx) => tx.feePerVsize)) : 0;
         block.feeRange = transactions.length ? this.getFeesInRange(transactions, 8) : [0, 0];
