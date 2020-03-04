@@ -62,7 +62,7 @@ export class BlockComponent implements OnInit {
       this.isLoadingBlock = false;
       this.setBlockSubsidy();
       if (block.reward) {
-        this.fees = block.reward / 100000000;
+        this.fees = block.reward / 100000000 - this.blockSubsidy;
       }
       this.getBlockTransactions(block.id);
     },
