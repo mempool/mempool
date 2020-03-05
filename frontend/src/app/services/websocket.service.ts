@@ -18,6 +18,8 @@ export class WebsocketService {
   private trackingTxId: string | null = null;
   private trackingAddress: string | null = null;
   private latestGitCommit = '';
+  private onlineCheckTimeout: number;
+  private onlineCheckTimeoutTwo: number;
 
   constructor(
     private stateService: StateService,
@@ -107,13 +109,12 @@ export class WebsocketService {
           }
           this.stateService.isOffline$.next(false);
         }
+
+        this.startOnlineCheck();
       },
       (err: Error) => {
         console.log(err);
-        this.goneOffline = true;
-        this.stateService.isOffline$.next(true);
-        console.log('Error, retrying in 10 sec');
-        window.setTimeout(() => this.startSubscription(), 10000);
+        this.goOffline();
       });
   }
 
@@ -134,5 +135,27 @@ export class WebsocketService {
   want(data: string[]) {
     this.websocketSubject.next({action: 'want', data: data});
     this.lastWant = data;
+  }
+
+  goOffline() {
+    this.goneOffline = true;
+    this.stateService.isOffline$.next(true);
+    console.log('Error, retrying in 10 sec');
+    window.setTimeout(() => this.startSubscription(), 10000);
+  }
+
+  startOnlineCheck() {
+    clearTimeout(this.onlineCheckTimeout);
+    clearTimeout(this.onlineCheckTimeoutTwo);
+
+    this.onlineCheckTimeout = window.setTimeout(() => {
+      this.websocketSubject.next({action: 'ping'});
+      this.onlineCheckTimeoutTwo = window.setTimeout(() => {
+        if (!this.goneOffline) {
+          this.websocketSubject.complete();
+          this.goOffline();
+        }
+      }, 1000);
+    }, 10000);
   }
 }
