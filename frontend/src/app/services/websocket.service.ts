@@ -114,6 +114,7 @@ export class WebsocketService {
       },
       (err: Error) => {
         console.log(err);
+        console.log('WebSocket error, trying to reconnect in 10 seconds');
         this.goOffline();
       });
   }
@@ -140,7 +141,6 @@ export class WebsocketService {
   goOffline() {
     this.goneOffline = true;
     this.stateService.isOffline$.next(true);
-    console.log('Error, retrying in 10 sec');
     window.setTimeout(() => this.startSubscription(), 10000);
   }
 
@@ -152,6 +152,7 @@ export class WebsocketService {
       this.websocketSubject.next({action: 'ping'});
       this.onlineCheckTimeoutTwo = window.setTimeout(() => {
         if (!this.goneOffline) {
+          console.log('WebSocket response timeout, force closing, trying to reconnect in 10 seconds');
           this.websocketSubject.complete();
           this.goOffline();
         }
