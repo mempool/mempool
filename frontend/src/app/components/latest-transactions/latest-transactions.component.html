@@ -1,9 +1,9 @@
 <table class="table table-borderless">
   <thead>
-    <th>Transaction ID</th>
-    <th class="d-none d-xl-block" style="width: 180px;">Value</th>
-    <th style="width: 125px;">Size</th>
-    <th>Fee</th>
+    <th style="width: 58%">Transaction ID</th>
+    <th class="d-none d-xl-block" style="width: 12%;">Value</th>
+    <th style="width: 10%;">Size</th>
+    <th style="width: 15%">Fee</th>
   </thead>
   <tbody>
     <ng-container *ngIf="(transactions$ | async) as transactions">
@@ -20,8 +20,8 @@
     <ng-template [ngIf]="isLoading">
       <tr *ngFor="let item of [1,2,3,4,5,6,7,8,9,10]">
         <td><span class="skeleton-loader"></span></td>
-        <td class="d-none d-lg-block"><span class="skeleton-loader"></span></td>
-        <td><span class="skeleton-loader"></span></td>
+        <td class="d-none d-lg-block" style="width: 25%;"><span class="skeleton-loader"></span></td>
+        <td style="width: 25%;"><span class="skeleton-loader"></span></td>
         <td><span class="skeleton-loader"></span></td>
       </tr>
     </ng-template>
