@@ -54,47 +54,37 @@
   font-size: 12px;
 }
 
-@media (max-width: 767.98px) {
-  .mempool-blocks-container {
-    position: absolute;
-    left: -165px;
-    top: -40px;
-  }
+.bitcoin-block::after {
+  content: '';   
+  width: 125px;
+  height: 24px;
+  position:absolute;
+  top: -24px;
+  left: -20px;
+  background-color: #232838;
+  transform:skew(40deg);
+  transform-origin:top;    
 }
 
-@media (min-width: 768px) {
-  .bitcoin-block::after {
-    content: '';   
-    width: 125px;
-    height: 24px;
-    position:absolute;
-    top: -24px;
-    left: -20px;
-    background-color: #232838;
-    transform:skew(40deg);
-    transform-origin:top;    
-  }
+.bitcoin-block::before {
+  content: '';
+  width: 20px;
+  height: 125px;
+  position: absolute;
+  top: -12px;
+  left: -20px;
+  background-color: #191c27; 
+  
+  transform: skewY(50deg);
+  transform-origin: top;     
+}
 
-  .bitcoin-block::before {
-    content: '';
-    width: 20px;
-    height: 125px;
-    position: absolute;
-    top: -12px;
-    left: -20px;
-    background-color: #191c27; 
-    
-    transform: skewY(50deg);
-    transform-origin: top;     
-  }
+.mempool-block.bitcoin-block::after {
+  background-color: #403834; 
+}
 
-  .mempool-block.bitcoin-block::after {
-    background-color: #403834; 
-  }
-
-  .mempool-block.bitcoin-block::before {
-    background-color: #2d2825; 
-  }
+.mempool-block.bitcoin-block::before {
+  background-color: #2d2825; 
 }
 
 .black-background {

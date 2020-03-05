@@ -1,4 +1,4 @@
-<div class="container-lg">
+<div class="container-xl">
 
   <div style="position: relative;">
     <app-blockchain position="top" [markHeight]="blockHeight"></app-blockchain>
@@ -41,11 +41,11 @@
             <tbody>
               <tr>
                 <td>Hash</td>
-                <td><a [routerLink]="['/block/', block.id]" title="{{ block.id }}">{{ block.id | shortenString : 32 }}</a> <app-clipboard [text]="block.id"></app-clipboard></td>
+                <td><a [routerLink]="['/block/', block.id]" title="{{ block.id }}">{{ block.id | shortenString : 16 }}</a> <app-clipboard [text]="block.id"></app-clipboard></td>
               </tr>
               <tr>
                 <td>Previous Block</td>
-                <td><a [routerLink]="['/block/', block.previousblockhash]" [state]="{ data: { blockHeight: blockHeight - 1 } }" title="{{ block.previousblockhash }}">{{ block.previousblockhash | shortenString : 32 }}</a></td>
+                <td><a [routerLink]="['/block/', block.previousblockhash]" [state]="{ data: { blockHeight: blockHeight - 1 } }" title="{{ block.previousblockhash }}">{{ block.previousblockhash | shortenString : 16 }}</a></td>
               </tr>
               <ng-template [ngIf]="fees" [ngIfElse]="loadingFees">
                 <tr>

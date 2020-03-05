@@ -60,44 +60,29 @@
   z-index: 100;
 }
 
-@media (max-width: 767.98px) {
-  .block-height {
-    bottom: 125px;
-    left: inherit;
-    text-shadow: inherit;
-    z-index: inherit;
-  }
-
-  .blocks-container {
-    top: -40px;
-  }
+.bitcoin-block::after {
+  content: '';   
+  width: 125px;
+  height: 24px;
+  position:absolute;
+  top: -24px;
+  left: -20px;
+  background-color: #232838;
+  transform:skew(40deg);
+  transform-origin:top;    
 }
 
-@media (min-width: 768px) {
-  .bitcoin-block::after {
-    content: '';   
-    width: 125px;
-    height: 24px;
-    position:absolute;
-    top: -24px;
-    left: -20px;
-    background-color: #232838;
-    transform:skew(40deg);
-    transform-origin:top;    
-  }
-
-  .bitcoin-block::before {
-    content: '';
-    width: 20px;
-    height: 125px;
-    position: absolute;
-    top: -12px;
-    left: -20px;
-    background-color: #191c27; 
-    
-    transform: skewY(50deg);
-    transform-origin: top;     
-  }
+.bitcoin-block::before {
+  content: '';
+  width: 20px;
+  height: 125px;
+  position: absolute;
+  top: -12px;
+  left: -20px;
+  background-color: #191c27; 
+  
+  transform: skewY(50deg);
+  transform-origin: top;     
 }
 
 .black-background {
