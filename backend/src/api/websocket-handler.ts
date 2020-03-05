@@ -74,6 +74,10 @@ class WebsocketHandler {
               'git-commit': this.latestGitCommitHash
             }));
           }
+
+          if (parsedMessage.action === 'ping') {
+            client.send(JSON.stringify({'pong': true}));
+          }
         } catch (e) {
           console.log(e);
         }
