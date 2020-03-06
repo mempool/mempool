@@ -4,6 +4,7 @@ import { WebsocketResponse } from '../interfaces/websocket.interface';
 import { retryWhen, tap, delay } from 'rxjs/operators';
 import { StateService } from './state.service';
 import { Block, Transaction } from '../interfaces/electrs.interface';
+import { Subscription } from 'rxjs';
 
 const WEB_SOCKET_PROTOCOL = (document.location.protocol === 'https:') ? 'wss:' : 'ws:';
 const WEB_SOCKET_URL = WEB_SOCKET_PROTOCOL + '//' + document.location.hostname + ':' + document.location.port + '/ws';
@@ -20,6 +21,7 @@ export class WebsocketService {
   private latestGitCommit = '';
   private onlineCheckTimeout: number;
   private onlineCheckTimeoutTwo: number;
+  private subscription: Subscription;
 
   constructor(
     private stateService: StateService,
@@ -29,7 +31,7 @@ export class WebsocketService {
 
   startSubscription() {
     this.websocketSubject.next({'action': 'init'});
-    this.websocketSubject
+    this.subscription = this.websocketSubject
       .subscribe((response: WebsocketResponse) => {
         if (response.blocks && response.blocks.length) {
           const blocks = response.blocks;
@@ -154,6 +156,7 @@ export class WebsocketService {
         if (!this.goneOffline) {
           console.log('WebSocket response timeout, force closing, trying to reconnect in 10 seconds');
           this.websocketSubject.complete();
+          this.subscription.unsubscribe();
           this.goOffline();
         }
       }, 1000);
