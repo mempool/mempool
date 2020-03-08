@@ -47,7 +47,7 @@ export interface Prevout {
 export interface Vin {
   txid: string;
   vout: number;
-  prevout: Prevout;
+  prevout?: Prevout;
   scriptsig: string;
   scriptsig_asm: string;
   inner_redeemscript_asm?: string;
