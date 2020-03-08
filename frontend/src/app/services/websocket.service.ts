@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
-import { retryWhen, tap, delay } from 'rxjs/operators';
 import { StateService } from './state.service';
 import { Block, Transaction } from '../interfaces/electrs.interface';
 import { Subscription } from 'rxjs';
@@ -21,6 +20,7 @@ export class WebsocketService {
   private latestGitCommit = '';
   private onlineCheckTimeout: number;
   private onlineCheckTimeoutTwo: number;
+  private connectionCheckTimeout: number;
   private subscription: Subscription;
 
   constructor(
@@ -30,6 +30,12 @@ export class WebsocketService {
   }
 
   startSubscription() {
+    this.connectionCheckTimeout = window.setTimeout(() => {
+      console.log('WebSocket failed to connect, force closing, trying to reconnect in 10 seconds');
+      this.websocketSubject.complete();
+      this.subscription.unsubscribe();
+      this.goOffline();
+    }, 5000);
     this.websocketSubject.next({'action': 'init'});
     this.subscription = this.websocketSubject
       .subscribe((response: WebsocketResponse) => {
@@ -112,6 +118,7 @@ export class WebsocketService {
           this.stateService.isOffline$.next(false);
         }
 
+        clearTimeout(this.connectionCheckTimeout);
         this.startOnlineCheck();
       },
       (err: Error) => {
