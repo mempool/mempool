@@ -136,7 +136,7 @@ class WebsocketHandler {
         const foundTransactions: TransactionExtended[] = [];
 
         newTransactions.forEach((tx) => {
-          const someVin = tx.vin.some((vin) => vin.prevout && vin.prevout.scriptpubkey_address === client['track-address']);
+          const someVin = tx.vin.some((vin) => !!vin.prevout && vin.prevout.scriptpubkey_address === client['track-address']);
           if (someVin) {
             foundTransactions.push(tx);
             return;
@@ -185,7 +185,7 @@ class WebsocketHandler {
         const foundTransactions: TransactionExtended[] = [];
 
         transactions.forEach((tx) => {
-          if (tx.vin && tx.vin.some((vin) => vin.prevout && vin.prevout.scriptpubkey_address === client['track-address'])) {
+          if (tx.vin && tx.vin.some((vin) => !!vin.prevout && vin.prevout.scriptpubkey_address === client['track-address'])) {
             foundTransactions.push(tx);
             return;
           }

@@ -29,13 +29,19 @@ export class WebsocketService {
     this.startSubscription();
   }
 
-  startSubscription() {
+  startSubscription(retrying = false) {
     this.connectionCheckTimeout = window.setTimeout(() => {
-      console.log('WebSocket failed to connect, force closing, trying to reconnect in 10 seconds');
+      console.log('WebSocket failed to connect, force closing, trying to reconnect');
       this.websocketSubject.complete();
       this.subscription.unsubscribe();
-      this.goOffline();
-    }, 5000);
+      this.goOffline(true);
+    }, 10000);
+    if (retrying) {
+      if (this.stateService.connectionState$.value === 2) {
+        return;
+      }
+      this.stateService.connectionState$.next(1);
+    }
     this.websocketSubject.next({'action': 'init'});
     this.subscription = this.websocketSubject
       .subscribe((response: WebsocketResponse) => {
@@ -115,7 +121,11 @@ export class WebsocketService {
           if (this.trackingAddress) {
             this.startTrackTransaction(this.trackingAddress);
           }
-          this.stateService.isOffline$.next(false);
+          this.stateService.connectionState$.next(2);
+        }
+
+        if (this.stateService.connectionState$.value === 1) {
+          this.stateService.connectionState$.next(2);
         }
 
         clearTimeout(this.connectionCheckTimeout);
@@ -147,10 +157,12 @@ export class WebsocketService {
     this.lastWant = data;
   }
 
-  goOffline() {
+  goOffline(instant = false) {
     this.goneOffline = true;
-    this.stateService.isOffline$.next(true);
-    window.setTimeout(() => this.startSubscription(), 10000);
+    this.stateService.connectionState$.next(0);
+    window.setTimeout(() => {
+      this.startSubscription(true);
+    }, instant ? 10 : 10000);
   }
 
   startOnlineCheck() {

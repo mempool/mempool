@@ -97,9 +97,9 @@ export class AddressComponent implements OnInit, OnDestroy {
         this.loadedConfirmedTxCount++;
       });
 
-    this.stateService.isOffline$
+    this.stateService.connectionState$
       .subscribe((state) => {
-        if (!state && this.transactions && this.transactions.length) {
+        if (state === 2 && this.transactions && this.transactions.length) {
           this.loadAddress(this.addressString);
         }
       });

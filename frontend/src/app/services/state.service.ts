@@ -20,5 +20,5 @@ export class StateService {
   live2Chart$ = new Subject<OptimizedMempoolStats>();
 
   viewFiat$ = new BehaviorSubject<boolean>(false);
-  isOffline$ = new BehaviorSubject<boolean>(false);
+  connectionState$ = new BehaviorSubject<0 | 1 | 2>(2);
 }

@@ -8,16 +8,16 @@ import { StateService } from '../../services/state.service';
 })
 export class MasterPageComponent implements OnInit {
   navCollapsed = false;
-  isOffline = false;
+  connectionState = 2;
 
   constructor(
     private stateService: StateService,
   ) { }
 
   ngOnInit() {
-    this.stateService.isOffline$
+    this.stateService.connectionState$
       .subscribe((state) => {
-        this.isOffline = state;
+        this.connectionState = state;
       });
   }
 
