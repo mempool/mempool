@@ -7,16 +7,22 @@
   <div class="transaction-content">
 
   <div class="title-block">
-    <h1 style="float: left;">Transaction</h1>
-    <a [routerLink]="['/tx/', txId]" style="line-height: 56px; margin-left: 10px;">{{ txId }}</a>
-    <app-clipboard [text]="txId"></app-clipboard>
-   
-    <ng-template [ngIf]="tx?.status?.confirmed" [ngIfElse]="unconfirmedBtn">
-      <button *ngIf="latestBlock" type="button" class="btn btn-sm btn-success float-right mr-2" style="margin-top: 0.75rem;">{{ latestBlock.height - tx.status.block_height + 1 }} confirmation<ng-container *ngIf="latestBlock.height - tx.status.block_height + 1 > 1">s</ng-container></button>
+    <h1 class="float-left-md">Transaction</h1>
+
+    <ng-template [ngIf]="tx?.status?.confirmed">
+      <button *ngIf="latestBlock" type="button" class="btn btn-sm btn-success float-right-md mr-2" style="margin-top: 0.75rem;">{{ latestBlock.height - tx.status.block_height + 1 }} confirmation<ng-container *ngIf="latestBlock.height - tx.status.block_height + 1 > 1">s</ng-container></button>
     </ng-template>
-    <ng-template #unconfirmedBtn>
-      <button type="button" class="btn btn-sm btn-danger float-right mr-2" style="margin-top: 0.75rem;">Unconfirmed</button>
+    <ng-template [ngIf]="tx && !tx?.status.confirmed">
+      <button type="button" class="btn btn-sm btn-danger float-right-md mr-2" style="margin-top: 0.75rem;">Unconfirmed</button>
     </ng-template>
+
+    <div>
+      <a [routerLink]="['/tx/', txId]" style="line-height: 56px; margin-left: 10px;">
+        <span class="d-inline d-lg-none">{{ txId | shortenString : 24 }}</span>
+        <span class="d-none d-lg-inline">{{ txId }}</span>
+      </a>
+      <app-clipboard [text]="txId"></app-clipboard>
+    </div>
   </div>
 
   <br>
@@ -31,7 +37,11 @@
           <tbody>
             <tr>
               <td>Included in block</td>
-              <td><a [routerLink]="['/block/', tx.status.block_hash]" [state]="{ data: { blockHeight: tx.status.block_height } }">#{{ tx.status.block_height }}</a> at {{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }} <i>(<app-time-since [time]="tx.status.block_time"></app-time-since> ago)</i></td>
+              <td>
+                <a [routerLink]="['/block/', tx.status.block_hash]" [state]="{ data: { blockHeight: tx.status.block_height } }">#{{ tx.status.block_height }}</a>
+                <div class="md-inline">&nbsp;at {{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}</div>
+                <div class="md-inline">&nbsp;<i>(<app-time-since [time]="tx.status.block_time"></app-time-since> ago)</i></div>
+              </td>
             </tr>
             <ng-template [ngIf]="tx.fee">
               <tr>

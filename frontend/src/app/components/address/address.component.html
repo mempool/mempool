@@ -1,6 +1,9 @@
 <div class="container-xl">
   <h1 style="float: left;">Address</h1>
-  <a [routerLink]="['/address/', addressString]" style="line-height: 56px; margin-left: 10px;">{{ addressString }}</a>
+  <a [routerLink]="['/address/', addressString]" style="line-height: 56px; margin-left: 10px;">
+    <span class="d-inline d-lg-none">{{ addressString | shortenString : 24 }}</span>
+    <span class="d-none d-lg-inline">{{ addressString }}</span>
+  </a>
   <app-clipboard [text]="addressString"></app-clipboard>
   <br>
 
@@ -28,7 +31,7 @@
             </tbody>
           </table>
         </div>
-        <div class="col text-right">
+        <div class="col qrcode-col">
           <div class="qr-wrapper">
             <app-qrcode [data]="address.address"></app-qrcode>
           </div>

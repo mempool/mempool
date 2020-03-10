@@ -1,6 +1,9 @@
 <ng-container *ngFor="let tx of transactions; let i = index; trackBy: trackByFn">
   <div *ngIf="!transactionPage" class="header-bg box" style="padding: 10px; margin-bottom: 10px;">
-    <a [routerLink]="['/tx/', tx.txid]" [state]="{ data: tx }">{{ tx.txid }}</a>
+    <a [routerLink]="['/tx/', tx.txid]" [state]="{ data: tx }">
+      <span style="float: left;" class="d-block d-md-none">{{ tx.txid | shortenString : 24 }}</span>
+      <span style="float: left;" class="d-none d-md-block">{{ tx.txid }}</span>
+    </a>
     <div class="float-right">
       <ng-template [ngIf]="tx.status.confirmed">{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}</ng-template>
       <ng-template [ngIf]="!tx.status.confirmed && tx.firstSeen">
@@ -30,7 +33,10 @@
                     Coinbase (Newly Generated Coins)
                   </ng-template>
                   <ng-template #regularVin>
-                    <a [routerLink]="['/address/', vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">{{ vin.prevout.scriptpubkey_address | shortenString : 42 }}</a>
+                    <a [routerLink]="['/address/', vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">
+                      <span style="float: left;" class="d-block d-lg-none">{{ vin.prevout.scriptpubkey_address | shortenString : 16 }}</span>
+                      <span class="d-none d-lg-block">{{ vin.prevout.scriptpubkey_address | shortenString : 42 }}</span>
+                    </a>
                     <div>
                       <app-address-labels [vin]="vin"></app-address-labels>
                     </div>
@@ -45,20 +51,18 @@
         </table>
 
       </div>
-      <div class="col">
-        <table class="table table-borderless smaller-text table-xs"  style="margin: 0;">
+      <div class="col mobile-bottomcol">
+        <table class="table table-borderless smaller-text table-xs"  style="margin: 0;height: 100%;">
           <tbody>
             <tr *ngFor="let vout of tx.vout; let vindex = index;">
               <td>
-                <a *ngIf="vout.scriptpubkey_address; else scriptpubkey_type" [routerLink]="['/address/', vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">{{ vout.scriptpubkey_address | shortenString : 42 }}</a>
+                <a *ngIf="vout.scriptpubkey_address; else scriptpubkey_type" [routerLink]="['/address/', vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">
+                  <span class="d-block d-lg-none">{{ vout.scriptpubkey_address | shortenString : 16 }}</span>
+                  <span class="d-none d-lg-block">{{ vout.scriptpubkey_address | shortenString : 42 }}</span>
+                </a>
                 <ng-template #scriptpubkey_type>
                   OP_RETURN
                 </ng-template>
-                <!--
-                <div>
-                  <app-address-labels [vout]="vout"></app-address-labels>
-                </div>
-                -->
               </td>
               <td class="text-right nowrap">
                 <app-amount [satoshis]="vout.value"></app-amount>
@@ -74,7 +78,7 @@
               </td>
             </tr>
             <tr>
-              <td class="text-right" colspan="4">
+              <td class="text-right" colspan="4" style="vertical-align: bottom;">
                 <span *ngIf="showConfirmations && latestBlock$ | async as latestBlock">
                   <button *ngIf="tx.status.confirmed; else unconfirmedButton" type="button" class="btn btn-sm btn-success mt-3">{{ latestBlock.height - tx.status.block_height + 1 }} confirmation<ng-container *ngIf="latestBlock.height - tx.status.block_height + 1 > 1">s</ng-container></button>
                   <ng-template #unconfirmedButton>

@@ -2,15 +2,6 @@
   padding: 0.55rem;
 }
 
-#arrow {
-  position: absolute;
-  bottom: -24px;
-  width: 40px;
-  right: -1px;
-
-  width: 40px;
-}
-
 .title-block {
   color: #FFF;
   padding-left: 10px;
@@ -21,4 +12,20 @@
 
 .title-block > h1 {
   margin: 0;
+}
+
+
+@media (max-width: 767.98px) {
+	.mobile-bottomcol {
+		margin-top: 15px;
+	}
+}
+
+@media (min-width: 768px) {
+  .float-right-md {
+    float: right;
+  }
+  .float-left-md {
+    float: left;
+  }
 }
