@@ -7,13 +7,13 @@
   <div class="transaction-content">
 
   <div class="title-block">
-    <h1 class="float-left-md">Transaction</h1>
+    <h1 class="float-md-left">Transaction</h1>
 
     <ng-template [ngIf]="tx?.status?.confirmed">
-      <button *ngIf="latestBlock" type="button" class="btn btn-sm btn-success float-right-md mr-2" style="margin-top: 0.75rem;">{{ latestBlock.height - tx.status.block_height + 1 }} confirmation<ng-container *ngIf="latestBlock.height - tx.status.block_height + 1 > 1">s</ng-container></button>
+      <button *ngIf="latestBlock" type="button" class="btn btn-sm btn-success float-md-right mr-2" style="margin-top: 0.75rem;">{{ latestBlock.height - tx.status.block_height + 1 }} confirmation<ng-container *ngIf="latestBlock.height - tx.status.block_height + 1 > 1">s</ng-container></button>
     </ng-template>
     <ng-template [ngIf]="tx && !tx?.status.confirmed">
-      <button type="button" class="btn btn-sm btn-danger float-right-md mr-2" style="margin-top: 0.75rem;">Unconfirmed</button>
+      <button type="button" class="btn btn-sm btn-danger float-md-right mr-2" style="margin-top: 0.75rem;">Unconfirmed</button>
     </ng-template>
 
     <div>

@@ -1,7 +1,7 @@
 <footer class="footer">
   <div class="container-xl">
     <div class="row text-center" *ngIf="memPoolInfo">
-      <div class="col">
+      <div class="col d-none d-sm-block">
         <span class="txPerSecond">Tx weight per second:</span>
         <div class="progress sub-text">
           <div class="progress-bar {{ progressClass }}" role="progressbar" [ngStyle]="{'width': progressWidth}">{{ memPoolInfo?.vBytesPerSecond | ceil | number }} vBytes/s</div>
