@@ -42,6 +42,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
         this.txId = params.get('id') || '';
         this.error = undefined;
         this.isLoadingTx = true;
+        this.transactionTime = -1;
         document.body.scrollTo(0, 0);
         if (history.state.data) {
           return of(history.state.data);
@@ -56,9 +57,8 @@ export class TransactionComponent implements OnInit, OnDestroy {
 
       if (!tx.status.confirmed) {
         this.websocketService.startTrackTransaction(tx.txid);
+        this.getTransactionTime();
       }
-
-      this.getTransactionTime();
     },
     (error) => {
       this.error = error;
