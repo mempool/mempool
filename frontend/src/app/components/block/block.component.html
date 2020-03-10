@@ -14,15 +14,20 @@
 
     <div class="box">
       <div class="row">
-        <div class="col">
+        <div class="col-sm">
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td>Timestamp</td>
-                <td>{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }} <i>(<app-time-since [time]="block.timestamp"></app-time-since> ago)</i></td>
+                <td class="mobile-width">Timestamp</td>
+                <td>
+                  {{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
+                  <div class="lg-inline">
+                    <i>(<app-time-since [time]="block.timestamp"></app-time-since> ago)</i>
+                  </div>
+                </td>
               </tr>
               <tr>
-                <td>Number of transactions</td>
+                <td>Transactions</td>
                 <td>{{ block.tx_count }}</td>
               </tr>
               <tr>
@@ -36,11 +41,11 @@
             </tbody>
           </table>
         </div>
-        <div class="col">
+        <div class="col-sm">
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td>Hash</td>
+                <td class="mobile-width">Hash</td>
                 <td><a [routerLink]="['/block/', block.id]" title="{{ block.id }}">{{ block.id | shortenString : 16 }}</a> <app-clipboard [text]="block.id"></app-clipboard></td>
               </tr>
               <tr>
@@ -98,14 +103,11 @@
 
     <div class="box">
       <div class="row">
-        <div class="col">
+        <div class="col-sm">
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td colspan="2"><span class="skeleton-loader"></span></td>
-              </tr>
-              <tr>
-                <td colspan="2"><span class="skeleton-loader"></span></td>
+                <td class="mobile-width" colspan="2"><span class="skeleton-loader"></span></td>
               </tr>
               <tr>
                 <td colspan="2"><span class="skeleton-loader"></span></td>
@@ -119,9 +121,15 @@
             </tbody>
           </table>
         </div>
-        <div class="col">
+        <div class="col-sm">
           <table class="table table-borderless table-striped">
             <tbody>
+              <tr>
+                <td class="mobile-width" colspan="2"><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td colspan="2"><span class="skeleton-loader"></span></td>
+              </tr>
               <tr>
                 <td colspan="2"><span class="skeleton-loader"></span></td>
               </tr>

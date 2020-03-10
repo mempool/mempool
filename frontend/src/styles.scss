@@ -317,3 +317,15 @@ hr {
 tr {
   white-space: nowrap;
 }
+
+@media (min-width: 992px) {
+  .lg-inline {
+    display: inline-block;
+  }
+}
+
+@media (min-width: 768px) {
+  .md-inline {
+    display: inline-block;
+  }
+}

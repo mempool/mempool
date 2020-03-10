@@ -9,8 +9,8 @@
     <ng-container *ngIf="(transactions$ | async) as transactions">
       <ng-template [ngIf]="!isLoading">
         <tr *ngFor="let transaction of transactions">
-          <td class="d-block d-md-none d-xl-none"><a [routerLink]="['/tx/', transaction.txid]">{{ transaction.txid | shortenString }}</a></td>
-          <td class="d-none d-md-block d-xl-none"><a [routerLink]="['/tx/', transaction.txid]">{{ transaction.txid }}</a></td>
+          <td class="d-block d-md-none"><a [routerLink]="['/tx/', transaction.txid]">{{ transaction.txid | shortenString }}</a></td>
+          <td class="d-none d-md-block"><a [routerLink]="['/tx/', transaction.txid]">{{ transaction.txid }}</a></td>
           <td class="d-none d-xl-block">{{ transaction.value / 100000000 | number: '1.8-8' }} BTC</td>
           <td>{{ transaction.vsize | vbytes: 2 }}</td>
           <td>{{ transaction.fee / transaction.vsize | number : '1.2-2'}} sats/vB</td>
