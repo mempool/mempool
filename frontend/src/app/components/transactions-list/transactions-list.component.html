@@ -34,7 +34,7 @@
                   </ng-template>
                   <ng-template #regularVin>
                     <a [routerLink]="['/address/', vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">
-                      <span style="float: left;" class="d-block d-lg-none">{{ vin.prevout.scriptpubkey_address | shortenString : 16 }}</span>
+                      <span class="d-block d-lg-none">{{ vin.prevout.scriptpubkey_address | shortenString : 16 }}</span>
                       <span class="d-none d-lg-block">{{ vin.prevout.scriptpubkey_address | shortenString : 42 }}</span>
                     </a>
                     <div>
@@ -52,7 +52,7 @@
 
       </div>
       <div class="col mobile-bottomcol">
-        <table class="table table-borderless smaller-text table-xs"  style="margin: 0;height: 100%;">
+        <table class="table table-borderless smaller-text table-xs"  style="margin: 0;">
           <tbody>
             <tr *ngFor="let vout of tx.vout; let vindex = index;">
               <td>
