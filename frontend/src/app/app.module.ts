@@ -28,7 +28,6 @@ import { TimeSinceComponent } from './components/time-since/time-since.component
 import { AddressLabelsComponent } from './components/address-labels/address-labels.component';
 import { MempoolBlocksComponent } from './components/mempool-blocks/mempool-blocks.component';
 import { CeilPipe } from './pipes/math-ceil/math-ceil.pipe';
-import { LatestTransactionsComponent } from './components/latest-transactions/latest-transactions.component';
 import { QrcodeComponent } from './components/qrcode/qrcode.component';
 import { ClipboardComponent } from './components/clipboard/clipboard.component';
 import { MasterPageComponent } from './components/master-page/master-page.component';
@@ -39,7 +38,6 @@ import { ChartistComponent } from './components/statistics/chartist.component';
 import { BlockchainBlocksComponent } from './components/blockchain-blocks/blockchain-blocks.component';
 import { BlockchainComponent } from './components/blockchain/blockchain.component';
 import { FooterComponent } from './components/footer/footer.component';
-import { ExplorerComponent } from './components/explorer/explorer.component';
 import { AudioService } from './services/audio.service';
 import { FiatComponent } from './fiat/fiat.component';
 
@@ -68,10 +66,8 @@ import { FiatComponent } from './fiat/fiat.component';
     TimeSinceComponent,
     AddressLabelsComponent,
     MempoolBlocksComponent,
-    LatestTransactionsComponent,
     QrcodeComponent,
     ClipboardComponent,
-    ExplorerComponent,
     ChartistComponent,
     FooterComponent,
     FiatComponent,
