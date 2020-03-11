@@ -15,6 +15,9 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
   isLoading = true;
   interval: any;
 
+  heightOfPageUntilBlocks = 430;
+  heightOfBlocksTableChunk = 470;
+
   constructor(
     private electrsApiService: ElectrsApiService,
     private stateService: StateService,
@@ -58,10 +61,16 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
       .subscribe((blocks) => {
         this.blocks = blocks;
         this.isLoading = false;
+
+        const spaceForBlocks = window.innerHeight - this.heightOfPageUntilBlocks;
+        const chunks = Math.ceil(spaceForBlocks / this.heightOfBlocksTableChunk) - 1;
+        if (chunks > 0) {
+          this.loadMore(chunks);
+        }
       });
   }
 
-  loadMore() {
+  loadMore(chunks = 0) {
     if (this.isLoading) {
       return;
     }
@@ -70,6 +79,11 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
       .subscribe((blocks) => {
         this.blocks = this.blocks.concat(blocks);
         this.isLoading = false;
+
+        const chunksLeft = chunks - 1;
+        if (chunksLeft > 0) {
+          this.loadMore(chunksLeft);
+        }
       });
   }
 
