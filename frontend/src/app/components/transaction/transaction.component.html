@@ -100,26 +100,55 @@
 
     <h2>Details</h2>
     <div class="box">
-      <div class="row">
-          <table class="table table-borderless table-striped">
-            <tbody>
-              <tr>
-                <td>Size</td>
-                <td>{{ tx.size | bytes: 2 }}</td>
-              </tr>
-              <tr>
-                <td>Weight</td>
-                <td>{{ tx.weight | wuBytes: 2 }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <table class="table table-borderless table-striped">
+        <tbody>
+          <tr>
+            <td>Size</td>
+            <td>{{ tx.size | bytes: 2 }}</td>
+          </tr>
+          <tr>
+            <td>Weight</td>
+            <td>{{ tx.weight | wuBytes: 2 }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
   </ng-template>
 
   <ng-template [ngIf]="isLoadingTx && !error">
 
+    <div class="box">
+      <table class="table table-borderless table-striped">
+        <tbody>
+          <tr>
+            <td><span class="skeleton-loader"></span></td>
+            <td><span class="skeleton-loader"></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <br>
+
+    <h2>Inputs & Outputs</h2>
+
+    <div class="box">
+      <div class="row">
+        <table class="table table-borderless table-striped">
+          <tbody>
+            <tr>
+              <td><span class="skeleton-loader"></span></td>
+              <td><span class="skeleton-loader"></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <br>
+
+    <h2>Details</h2>
     <div class="box">
       <table class="table table-borderless table-striped">
         <tbody>
@@ -135,12 +164,6 @@
       </table>
     </div>
 
-    <br>
-
-    <div class="text-center">
-      <div class="spinner-border"></div>
-      <br><br>
-    </div>
   </ng-template>
 
   <ng-template [ngIf]="error">

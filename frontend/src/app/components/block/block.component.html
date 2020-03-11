@@ -90,8 +90,22 @@
 
     <div class="text-center">
       <ng-template [ngIf]="isLoadingTransactions">
-        <div class="spinner-border"></div>
-        <br><br>
+
+        <div class="header-bg box" style="padding: 10px; margin-bottom: 10px;">
+          <span class="skeleton-loader"></span>
+        </div>
+
+        <div class="header-bg box">
+          <div class="row" style="height: 107px;">
+            <div class="col-sm">
+              <span class="skeleton-loader"></span>
+            </div>
+            <div class="col-sm">
+              <span class="skeleton-loader"></span>
+            </div>
+          </div>
+        </div>
+        
       </ng-template>
     </div>
 
@@ -140,13 +154,6 @@
           </table>
         </div>
       </div>
-    </div>
-
-    <br>
-    
-    <div class="text-center">
-      <div class="spinner-border"></div>
-      <br><br>
     </div>
   </ng-template>
 
