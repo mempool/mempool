@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, EventEmitter, Output, OnChanges } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, EventEmitter, Output, OnChanges, HostListener } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 import { StateService } from 'src/app/services/state.service';
@@ -10,6 +10,7 @@ import { StateService } from 'src/app/services/state.service';
 })
 export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   mempoolBlocks: MempoolBlock[];
+  mempoolBlocksFull: MempoolBlock[];
   mempoolBlocksSubscription: Subscription;
 
   blockWidth = 125;
@@ -27,10 +28,20 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     this.mempoolBlocksSubscription = this.stateService.mempoolBlocks$
       .subscribe((blocks) => {
-        this.mempoolBlocks = blocks;
+        this.mempoolBlocksFull = JSON.parse(JSON.stringify(blocks));
+        this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(blocks);
         this.calculateTransactionPosition();
       });
   }
+
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    console.log('onResize');
+    if (this.mempoolBlocks.length) {
+      this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(JSON.stringify(this.mempoolBlocksFull)));
+    }
+  }
+
 
   ngOnChanges() {
     this.calculateTransactionPosition();
@@ -42,6 +53,32 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
   trackByFn(index: number) {
     return index;
+  }
+
+  reduceMempoolBlocksToFitScreen(blocks: MempoolBlock[]): MempoolBlock[] {
+    const blocksAmount = Math.max(1, Math.floor(window.innerWidth / 2 / (this.blockWidth + this.blockPadding)));
+    while (blocks.length > blocksAmount) {
+      const block = blocks.pop();
+      const lastBlock = blocks[blocks.length - 1];
+      lastBlock.blockSize += block.blockSize;
+      lastBlock.blockVSize += block.blockVSize;
+      lastBlock.nTx += block.nTx;
+      lastBlock.feeRange = lastBlock.feeRange.concat(block.feeRange);
+      lastBlock.feeRange.sort((a, b) => a - b);
+      lastBlock.medianFee = this.median(lastBlock.feeRange);
+    }
+    return blocks;
+  }
+
+  median(numbers: number[]) {
+    let medianNr = 0;
+    const numsLen = numbers.length;
+    if (numsLen % 2 === 0) {
+        medianNr = (numbers[numsLen / 2 - 1] + numbers[numsLen / 2]) / 2;
+    } else {
+        medianNr = numbers[(numsLen - 1) / 2];
+    }
+    return medianNr;
   }
 
   getStyleForMempoolBlockAtIndex(index: number) {

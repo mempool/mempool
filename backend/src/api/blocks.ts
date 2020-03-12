@@ -73,8 +73,8 @@ class Blocks {
 
         block.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
         transactions.sort((a, b) => b.feePerVsize - a.feePerVsize);
-        block.medianFee = transactions.length ? this.median(transactions.map((tx) => tx.feePerVsize)) : 0;
-        block.feeRange = transactions.length ? this.getFeesInRange(transactions, 8) : [0, 0];
+        block.medianFee = transactions.length > 1 ? this.median(transactions.map((tx) => tx.feePerVsize)) : 0;
+        block.feeRange = transactions.length > 1 ? this.getFeesInRange(transactions, 8) : [0, 0];
 
         this.blocks.push(block);
         if (this.blocks.length > config.KEEP_BLOCK_AMOUNT) {
@@ -111,7 +111,7 @@ class Blocks {
       itemsToAdd--;
     }
 
-    arr.push(transactions[0].feePerVsize);
+    arr.push(transactions[1].feePerVsize);
     return arr;
   }
 }
