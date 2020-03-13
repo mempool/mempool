@@ -41,9 +41,9 @@
 }
 
 .fees {
-  font-size: 18px;
+  font-size: 14px;
   margin-top: 10px;
-  margin-bottom: 2px;
+  margin-bottom: 8px;
 }
 
 .transaction-count {
@@ -52,10 +52,10 @@
 
 .block-height {
   position: absolute;
-  font-size: 18px;
-  top: 133px;
+  font-size: 16px;
+  bottom: 160px;
   width: 100%;
-  left: 0px;
+  left: -12px;
   text-shadow: 0px 32px 3px #111;
   z-index: 100;
 }
