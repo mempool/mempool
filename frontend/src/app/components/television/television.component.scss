@@ -11,7 +11,7 @@
 .position-container {
   position: absolute;
   left: 50%;
-  bottom: 185px;
+  bottom: 150px;
 }
 
 .chart-holder {
@@ -37,7 +37,7 @@
 @media (min-width: 1920px) {
   .position-container {
     transform: scale(1.3);
-    bottom: 230px;
+    bottom: 190px;
   }
   .chart-holder {
     height: calc(100% - 280px);
