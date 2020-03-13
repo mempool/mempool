@@ -3,7 +3,7 @@
     <div class="text-center bitcoin-block mined-block" id="bitcoin-block-{{ block.height }}" [ngStyle]="getStyleForBlock(block)">
       <a [routerLink]="['/block/', block.id]" [state]="{ data: { block: block } }" class="blockLink">&nbsp;</a>
       <div class="block-height">
-        <a [routerLink]="['/block/', block.id]" [state]="{ data: { block: block } }">#{{ block.height }}</a>
+        <a [routerLink]="['/block/', block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a>
       </div>
       <div class="block-body">
         <div class="fees">
