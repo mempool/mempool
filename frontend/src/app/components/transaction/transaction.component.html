@@ -38,7 +38,7 @@
             <tr>
               <td>Included in block</td>
               <td>
-                <a [routerLink]="['/block/', tx.status.block_hash]" [state]="{ data: { blockHeight: tx.status.block_height } }">#{{ tx.status.block_height }}</a>
+                <a [routerLink]="['/block/', tx.status.block_hash]" [state]="{ data: { blockHeight: tx.status.block_height } }">{{ tx.status.block_height }}</a>
                 <div class="md-inline">&nbsp;at {{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}</div>
                 <div class="md-inline">&nbsp;<i>(<app-time-since [time]="tx.status.block_time"></app-time-since> ago)</i></div>
               </td>
