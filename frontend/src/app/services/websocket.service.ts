@@ -20,7 +20,6 @@ export class WebsocketService {
   private latestGitCommit = '';
   private onlineCheckTimeout: number;
   private onlineCheckTimeoutTwo: number;
-  private connectionCheckTimeout: number;
   private subscription: Subscription;
 
   constructor(
@@ -30,16 +29,7 @@ export class WebsocketService {
   }
 
   startSubscription(retrying = false) {
-    this.connectionCheckTimeout = window.setTimeout(() => {
-      console.log('WebSocket failed to connect, force closing, trying to reconnect');
-      this.websocketSubject.complete();
-      this.subscription.unsubscribe();
-      this.goOffline(true);
-    }, 10000);
     if (retrying) {
-      if (this.stateService.connectionState$.value === 2) {
-        return;
-      }
       this.stateService.connectionState$.next(1);
     }
     this.websocketSubject.next({'action': 'init'});
@@ -128,7 +118,6 @@ export class WebsocketService {
           this.stateService.connectionState$.next(2);
         }
 
-        clearTimeout(this.connectionCheckTimeout);
         this.startOnlineCheck();
       },
       (err: Error) => {
@@ -157,12 +146,12 @@ export class WebsocketService {
     this.lastWant = data;
   }
 
-  goOffline(instant = false) {
+  goOffline() {
     this.goneOffline = true;
     this.stateService.connectionState$.next(0);
     window.setTimeout(() => {
       this.startSubscription(true);
-    }, instant ? 10 : 10000);
+    }, 10000);
   }
 
   startOnlineCheck() {
