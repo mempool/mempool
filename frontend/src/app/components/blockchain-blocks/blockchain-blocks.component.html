@@ -2,19 +2,17 @@
   <div *ngFor="let block of blocks; let i = index; trackBy: trackByBlocksFn" >
     <div class="text-center bitcoin-block mined-block" id="bitcoin-block-{{ block.height }}" [ngStyle]="getStyleForBlock(block)">
       <a [routerLink]="['/block/', block.id]" [state]="{ data: { block: block } }" class="blockLink">&nbsp;</a>
-      <div class="block-height">
-        <a [routerLink]="['/block/', block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a>
-      </div>
       <div class="block-body">
         <div class="fees">
-          ~{{ block.medianFee | ceil }} sat/vB
-          <br/>
-          <span class="yellow-color">{{ block.feeRange[0] | ceil }} - {{ block.feeRange[block.feeRange.length - 1] | ceil }} sat/vB</span>
+          <span class="yellow-color">~{{ block.medianFee | ceil }} sat/vB</span>
         </div>
         <div class="block-size">{{ block.size | bytes: 2 }}</div>
         <div class="transaction-count">{{ block.tx_count }} transactions</div>
         <br /><br />
         <div class="time-difference"><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since> ago</div>
+      </div>
+      <div class="block-height">
+        <a [routerLink]="['/block/', block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a>
       </div>
     </div>
   </div>
