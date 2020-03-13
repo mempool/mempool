@@ -6,7 +6,7 @@
   "homepage": "https://mempool.space",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mempool/mempool.git"
+    "url": "git+https://github.com/mempool/mempool"
   },
   "bugs": {
     "url": "https://github.com/mempool/mempool/issues"
@@ -24,7 +24,6 @@
     "start": "npm run build && node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "license": "MIT",
   "dependencies": {
     "compression": "^1.7.4",
     "express": "^4.17.1",
