@@ -5,7 +5,7 @@
   </div>
 
   <div class="title-block">
-    <h1>Block <ng-template [ngIf]="blockHeight"><a [routerLink]="['/block/', blockHash]">#{{ blockHeight }}</a></ng-template></h1>
+    <h1>Block <ng-template [ngIf]="blockHeight"><a [routerLink]="['/block/', blockHash]">{{ blockHeight }}</a></ng-template></h1>
   </div>
 
   <ng-template [ngIf]="!isLoadingBlock && !error">
