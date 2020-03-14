@@ -29,7 +29,7 @@ export class TelevisionComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.websocketService.want(['blocks', 'live-2h-chart']);
+    this.websocketService.want(['blocks', 'live-2h-chart', 'mempool-blocks']);
 
     const labelInterpolationFnc = (value: any, index: any) => {
       return index % 6  === 0 ? formatDate(value, 'HH:mm', this.locale) : null;
