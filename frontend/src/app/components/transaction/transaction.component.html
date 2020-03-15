@@ -50,8 +50,8 @@
                   {{ tx.fee / (tx.weight / 4) | number : '1.2-2' }} sats/vB
                   &nbsp;
                   <span *ngIf="feeRating === 1" class="badge badge-success">Optimal</span>
-                  <span *ngIf="feeRating === 2" class="badge badge-warning">Overpaid {{ overpaidTimes }}x</span>
-                  <span *ngIf="feeRating === 3" class="badge badge-danger">Overpaid {{ overpaidTimes }}x</span>
+                  <span *ngIf="feeRating === 2" class="badge badge-warning" title="Only ~{{ medianFeeNeeded }} sat/vB was needed to get into this block">Overpaid {{ overpaidTimes }}x</span>
+                  <span *ngIf="feeRating === 3" class="badge badge-danger" title="Only ~{{ medianFeeNeeded }} sat/vB was needed to get into this block">Overpaid {{ overpaidTimes }}x</span>
                 </td>
               </tr>
               <tr>

@@ -19,6 +19,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
   txId: string;
   feeRating: number;
   overpaidTimes: number;
+  medianFeeNeeded: number;
   isLoadingTx = true;
   error: any = undefined;
   latestBlock: Block;
@@ -98,16 +99,16 @@ export class TransactionComponent implements OnInit, OnDestroy {
       .pipe(filter((block) => block.height === this.tx.status.block_height))
       .subscribe((block) => {
         const feePervByte = this.tx.fee / (this.tx.weight / 4);
-        let medianFee = block.feeRange[Math.round(block.feeRange.length * 0.5)];
+        this.medianFeeNeeded = block.feeRange[Math.round(block.feeRange.length * 0.5)];
 
         // Block not filled
         if (block.weight < 4000000 * 0.95) {
-          medianFee = 1;
+          this.medianFeeNeeded = 1;
         }
 
-        this.overpaidTimes = Math.round(feePervByte / block.medianFee);
+        this.overpaidTimes = Math.round(feePervByte / this.medianFeeNeeded);
 
-        if (feePervByte <= medianFee || this.overpaidTimes < 2) {
+        if (feePervByte <= this.medianFeeNeeded || this.overpaidTimes < 2) {
           this.feeRating = 1;
         } else {
           this.feeRating = 2;
