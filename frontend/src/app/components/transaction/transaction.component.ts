@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, filter } from 'rxjs/operators';
 import { Transaction, Block } from '../../interfaces/electrs.interface';
 import { of } from 'rxjs';
 import { StateService } from '../../services/state.service';
@@ -17,6 +17,8 @@ import { ApiService } from 'src/app/services/api.service';
 export class TransactionComponent implements OnInit, OnDestroy {
   tx: Transaction;
   txId: string;
+  feeRating: number;
+  overpaidTimes: number;
   isLoadingTx = true;
   error: any = undefined;
   latestBlock: Block;
@@ -41,6 +43,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
       switchMap((params: ParamMap) => {
         this.txId = params.get('id') || '';
         this.error = undefined;
+        this.feeRating = undefined;
         this.isLoadingTx = true;
         this.transactionTime = -1;
         document.body.scrollTo(0, 0);
@@ -58,6 +61,8 @@ export class TransactionComponent implements OnInit, OnDestroy {
       if (!tx.status.confirmed) {
         this.websocketService.startTrackTransaction(tx.txid);
         this.getTransactionTime();
+      } else {
+        this.findBlockAndSetFeeRating();
       }
     },
     (error) => {
@@ -77,6 +82,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
           block_time: block.timestamp,
         };
         this.audioService.playSound('magic');
+        this.findBlockAndSetFeeRating();
       });
   }
 
@@ -84,6 +90,24 @@ export class TransactionComponent implements OnInit, OnDestroy {
     this.apiService.getTransactionTimes$([this.tx.txid])
       .subscribe((transactionTimes) => {
         this.transactionTime = transactionTimes[0];
+      });
+  }
+
+  findBlockAndSetFeeRating() {
+    this.stateService.blocks$
+      .pipe(filter((block) => block.height === this.tx.status.block_height))
+      .subscribe((block) => {
+        const feePervByte = this.tx.fee / (this.tx.weight / 4);
+
+        if (feePervByte <= block.feeRange[Math.round(block.feeRange.length * 0.5)]) {
+          this.feeRating = 1;
+        } else {
+          this.feeRating = 2;
+          this.overpaidTimes = Math.round(feePervByte / block.medianFee);
+          if (this.overpaidTimes > 10) {
+            this.feeRating = 3;
+          }
+        }
       });
   }
 

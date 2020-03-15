@@ -45,12 +45,18 @@
             </tr>
             <ng-template [ngIf]="tx.fee">
               <tr>
-                <td>Fee</td>
-                <td>{{ tx.fee | number }} sats (<app-fiat [value]="tx.fee"></app-fiat>)</td>
+                <td>Fee per vByte</td>
+                <td>
+                  {{ tx.fee / (tx.weight / 4) | number : '1.2-2' }} sats/vB
+                  &nbsp;
+                  <span *ngIf="feeRating === 1" class="badge badge-success">Optimal</span>
+                  <span *ngIf="feeRating === 2" class="badge badge-warning">Overpaid {{ overpaidTimes }}x</span>
+                  <span *ngIf="feeRating === 3" class="badge badge-danger">Overpaid {{ overpaidTimes }}x</span>
+                </td>
               </tr>
               <tr>
-                <td>Fee per vByte</td>
-                <td>{{ tx.fee / (tx.weight / 4) | number : '1.2-2' }} sats/vB</td>
+                <td>Fee</td>
+                <td>{{ tx.fee | number }} sats (<app-fiat [value]="tx.fee"></app-fiat>)</td>
               </tr>
             </ng-template>
           </tbody>
