@@ -89,7 +89,7 @@ export class BlockComponent implements OnInit {
     this.transactions = null;
     this.electrsApiService.getBlockTransactions$(hash)
       .subscribe((transactions: any) => {
-        if (!this.fees) {
+        if (this.fees === undefined) {
           this.fees = transactions[0].vout.reduce((acc: number, curr: Vout) => acc + curr.value, 0) / 100000000 - this.blockSubsidy;
         }
         this.transactions = transactions;

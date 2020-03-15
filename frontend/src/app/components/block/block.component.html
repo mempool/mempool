@@ -48,11 +48,11 @@
                 <td class="mobile-width">Hash</td>
                 <td><a [routerLink]="['/block/', block.id]" title="{{ block.id }}">{{ block.id | shortenString : 16 }}</a> <app-clipboard [text]="block.id"></app-clipboard></td>
               </tr>
-              <tr>
-                <td>Previous Block</td>
-                <td><a [routerLink]="['/block/', block.previousblockhash]" [state]="{ data: { blockHeight: blockHeight - 1 } }" title="{{ block.previousblockhash }}">{{ block.previousblockhash | shortenString : 16 }}</a></td>
+              <tr *ngIf="block.medianFee !== undefined">
+                <td>Median fee</td>
+                <td>~{{ block.medianFee | ceil }} sats/vB (<app-fiat [value]="block.medianFee * 250" digitsInfo="1.2-2"></app-fiat>)</td>
               </tr>
-              <ng-template [ngIf]="fees" [ngIfElse]="loadingFees">
+              <ng-template [ngIf]="fees !== undefined" [ngIfElse]="loadingFees">
                 <tr>
                   <td>Total fees</td>
                   <td><span title="{{ fees | number: '1.2-8' }} BTC">{{ fees | number: '1.2-2' }} BTC</span> (<app-fiat [value]="fees * 100000000" digitsInfo="1.0-0"></app-fiat>)</td>

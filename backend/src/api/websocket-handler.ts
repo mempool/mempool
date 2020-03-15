@@ -1,3 +1,5 @@
+const config = require('../../mempool-config.json');
+
 import * as WebSocket from 'ws';
 import * as fs from 'fs';
 import { Block, TransactionExtended, Statistic } from '../interfaces';
@@ -68,7 +70,7 @@ class WebsocketHandler {
             client.send(JSON.stringify({
               'mempoolInfo': memPool.getMempoolInfo(),
               'vBytesPerSecond': memPool.getVBytesPerSecond(),
-              'blocks': _blocks,
+              'blocks': _blocks.slice(config.INITIAL_BLOCK_AMOUNT),
               'conversions': fiatConversion.getTickers()['BTCUSD'],
               'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
               'git-commit': this.latestGitCommitHash
