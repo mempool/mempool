@@ -70,7 +70,7 @@ class WebsocketHandler {
             client.send(JSON.stringify({
               'mempoolInfo': memPool.getMempoolInfo(),
               'vBytesPerSecond': memPool.getVBytesPerSecond(),
-              'blocks': _blocks.slice(config.INITIAL_BLOCK_AMOUNT),
+              'blocks': _blocks.slice(Math.max(_blocks.length - config.INITIAL_BLOCK_AMOUNT, 0)),
               'conversions': fiatConversion.getTickers()['BTCUSD'],
               'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
               'git-commit': this.latestGitCommitHash
