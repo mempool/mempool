@@ -45,12 +45,12 @@
             </tr>
             <ng-template [ngIf]="tx.fee">
               <tr>
-                <td>Fees</td>
+                <td>Fee</td>
                 <td>{{ tx.fee | number }} sats (<app-fiat [value]="tx.fee"></app-fiat>)</td>
               </tr>
               <tr>
-                <td>Fees per vByte</td>
-                <td>{{ tx.fee / (tx.weight / 4) | number : '1.2-2' }} sat/vB</td>
+                <td>Fee per vByte</td>
+                <td>{{ tx.fee / (tx.weight / 4) | number : '1.2-2' }} sats/vB</td>
               </tr>
             </ng-template>
           </tbody>
@@ -85,7 +85,7 @@
             </tr>
             <tr>
               <td>Fees per vByte</td>
-              <td>{{ tx.fee / (tx.weight / 4) | number : '1.2-2' }} sat/vB</td>
+              <td>{{ tx.fee / (tx.weight / 4) | number : '1.2-2' }} sats/vB</td>
             </tr>
           </tbody>
         </table>
