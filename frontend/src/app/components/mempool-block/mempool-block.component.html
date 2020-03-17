@@ -1,0 +1,54 @@
+<div class="container-xl" *ngIf="mempoolBlock">
+
+  <div style="position: relative;">
+    <app-blockchain position="top" [markMempoolBlockIndex]="mempoolBlockIndex"></app-blockchain>
+  </div>
+
+  <div class="title-block">
+    <h1>Mempool block</h1>
+  </div>
+
+  <br>
+
+  <div class="box">
+    <div class="row">
+      <div class="col-sm">
+        <table class="table table-borderless table-striped">
+          <tbody>
+            <tr>
+              <td>Median fee</td>
+              <td>~{{ mempoolBlock.medianFee | ceil }} sats/vB (<app-fiat [value]="mempoolBlock.medianFee * 250" digitsInfo="1.2-2"></app-fiat>)</td>
+            </tr>
+            <tr>
+              <td>Fee span</td>
+              <td><span class="yellow-color">{{ mempoolBlock.feeRange[0] | ceil }} - {{ mempoolBlock.feeRange[mempoolBlock.feeRange.length - 1] | ceil }} sat/vB</span></td>
+            </tr>
+            <tr>
+              <td>Total fees</td>
+              <td>{{ mempoolBlock.totalFees / 100000000 | number : '1.2-2' }} BTC (<app-fiat [value]="mempoolBlock.totalFees" digitsInfo="1.0-0"></app-fiat>)</td>
+            </tr>
+            <tr>
+              <td>Transactions</td>
+              <td>{{ mempoolBlock.nTx }}</td>
+            </tr>
+            <tr>
+              <td>Filled</td>
+              <td>
+                <div class="progress position-relative">
+                  <div class="progress-bar progress-mempool" role="progressbar" [ngStyle]="{'width': (mempoolBlock.blockVSize / 1000000) * 100 + '%' }"></div>
+                  <div class="progress-text">{{ mempoolBlock.blockSize | bytes: 2 }}</div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-sm">
+        <app-fee-distribution-graph [feeRange]="mempoolBlock.feeRange"></app-fee-distribution-graph>
+      </div>
+    </div>
+  </div>
+
+  <br>
+
+</div>

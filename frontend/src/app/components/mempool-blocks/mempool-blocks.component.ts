@@ -20,6 +20,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   rightPosition = 0;
 
   @Input() txFeePerVSize: number;
+  @Input() markIndex: number;
 
   constructor(
     private stateService: StateService,
@@ -41,7 +42,6 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
       this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(JSON.stringify(this.mempoolBlocksFull)));
     }
   }
-
 
   ngOnChanges() {
     this.calculateTransactionPosition();
@@ -91,12 +91,17 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   calculateTransactionPosition() {
-    if (!this.txFeePerVSize || !this.mempoolBlocks) {
+    if ((!this.txFeePerVSize && this.markIndex === -1) || !this.mempoolBlocks) {
       this.arrowVisible = false;
       return;
     }
 
     this.arrowVisible = true;
+
+    if (this.markIndex > -1) {
+      this.rightPosition = this.markIndex * (this.blockWidth + this.blockPadding) + 0.5 * this.blockWidth;
+      return;
+    }
 
     for (const block of this.mempoolBlocks) {
       for (let i = 0; i < block.feeRange.length - 1; i++) {

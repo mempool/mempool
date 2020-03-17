@@ -62,6 +62,7 @@ class MempoolBlocks {
       blockSize: blockSize,
       blockVSize: blockVSize,
       nTx: transactions.length,
+      totalFees: transactions.reduce((acc, cur) => acc + cur.fee, 0),
       medianFee: this.median(transactions.map((tx) => tx.feePerVsize)),
       feeRange: this.getFeesInRange(transactions, rangeLength),
     };

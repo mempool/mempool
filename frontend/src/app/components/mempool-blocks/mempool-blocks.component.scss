@@ -104,3 +104,11 @@
   border-right: 35px solid transparent;
   border-bottom: 35px solid #FFF;
 }
+
+.blockLink {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  z-index: 10;
+}

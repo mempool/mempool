@@ -12,13 +12,14 @@
   text-align: center;
 }
 
-@media (min-width: 768px) {
-  .d-md-block {
-      display: table-cell !important;
-  }
+.title-block {
+  color: #FFF;
+  padding-left: 10px;
+  padding-top: 20px;
+  padding-bottom: 3px;
+  border-top: 5px solid #FFF;
 }
-@media (min-width: 992px) {
-  .d-lg-block {
-      display: table-cell !important;
-  }
+
+.title-block > h1 {
+  margin: 0;
 }
