@@ -8,6 +8,7 @@ import { MasterPageComponent } from './components/master-page/master-page.compon
 import { AboutComponent } from './components/about/about.component';
 import { TelevisionComponent } from './components/television/television.component';
 import { StatisticsComponent } from './components/statistics/statistics.component';
+import { MempoolBlockComponent } from './components/mempool-block/mempool-block.component';
 
 const routes: Routes = [
   {
@@ -35,6 +36,11 @@ const routes: Routes = [
         path: 'block/:id',
         children: [],
         component: BlockComponent
+      },
+      {
+        path: 'mempool-block/:id',
+        children: [],
+        component: MempoolBlockComponent
       },
       {
         path: 'address/:id',

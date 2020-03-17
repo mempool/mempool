@@ -19,6 +19,7 @@ export interface MempoolBlock {
   blockVSize: number;
   nTx: number;
   medianFee: number;
+  totalFees: number;
   feeRange: number[];
 }
 

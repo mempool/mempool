@@ -40,6 +40,8 @@ import { BlockchainComponent } from './components/blockchain/blockchain.componen
 import { FooterComponent } from './components/footer/footer.component';
 import { AudioService } from './services/audio.service';
 import { FiatComponent } from './fiat/fiat.component';
+import { MempoolBlockComponent } from './components/mempool-block/mempool-block.component';
+import { FeeDistributionGraphComponent } from './components/fee-distribution-graph/fee-distribution-graph.component';
 
 @NgModule({
   declarations: [
@@ -71,6 +73,8 @@ import { FiatComponent } from './fiat/fiat.component';
     ChartistComponent,
     FooterComponent,
     FiatComponent,
+    MempoolBlockComponent,
+    FeeDistributionGraphComponent,
   ],
   imports: [
     BrowserModule,

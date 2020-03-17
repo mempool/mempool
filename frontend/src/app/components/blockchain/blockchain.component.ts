@@ -12,6 +12,7 @@ export class BlockchainComponent implements OnInit, OnDestroy {
   @Input() position: 'middle' | 'top' = 'middle';
   @Input() markHeight: number;
   @Input() txFeePerVSize: number;
+  @Input() markMempoolBlockIndex = -1;
 
   txTrackingSubscription: Subscription;
   blocksSubscription: Subscription;
