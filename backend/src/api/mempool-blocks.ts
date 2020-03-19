@@ -47,16 +47,14 @@ class MempoolBlocks {
   }
 
   private dataToMempoolBlocks(transactions: TransactionExtended[], blockSize: number, blockVSize: number, blocksIndex: number): MempoolBlock {
-    let rangeLength = 3;
+    let rangeLength = 4;
     if (blocksIndex === 0) {
       rangeLength = 8;
     }
     if (transactions.length > 4000) {
-      rangeLength = 5;
+      rangeLength = 6;
     } else if (transactions.length > 10000) {
       rangeLength = 8;
-    } else if (transactions.length > 25000) {
-      rangeLength = 10;
     }
     return {
       blockSize: blockSize,
@@ -71,7 +69,6 @@ class MempoolBlocks {
   private median(numbers: number[]) {
     let medianNr = 0;
     const numsLen = numbers.length;
-    numbers.sort();
     if (numsLen % 2 === 0) {
         medianNr = (numbers[numsLen / 2 - 1] + numbers[numsLen / 2]) / 2;
     } else {

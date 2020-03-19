@@ -92,7 +92,6 @@ class Blocks {
   private median(numbers: number[]) {
     let medianNr = 0;
     const numsLen = numbers.length;
-    numbers.sort();
     if (numsLen % 2 === 0) {
         medianNr = (numbers[numsLen / 2 - 1] + numbers[numsLen / 2]) / 2;
     } else {
