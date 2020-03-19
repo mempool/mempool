@@ -91,17 +91,16 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   calculateTransactionPosition() {
-    if ((!this.txFeePerVSize && this.markIndex === -1) || !this.mempoolBlocks) {
+    if ((!this.txFeePerVSize && (this.markIndex === undefined || this.markIndex === -1)) || !this.mempoolBlocks) {
       this.arrowVisible = false;
+      return;
+    } else if (this.markIndex > -1) {
+      this.rightPosition = this.markIndex * (this.blockWidth + this.blockPadding) + 0.5 * this.blockWidth;
+      this.arrowVisible = true;
       return;
     }
 
     this.arrowVisible = true;
-
-    if (this.markIndex > -1) {
-      this.rightPosition = this.markIndex * (this.blockWidth + this.blockPadding) + 0.5 * this.blockWidth;
-      return;
-    }
 
     for (const block of this.mempoolBlocks) {
       for (let i = 0; i < block.feeRange.length - 1; i++) {

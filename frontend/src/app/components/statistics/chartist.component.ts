@@ -630,6 +630,32 @@ Chartist.plugins.tooltip = function (options: any) {
   }
 };
 
+Chartist.plugins.ctPointLabels = (options) => {
+  return function ctPointLabels(chart) {
+      const defaultOptions2 = {
+          labelClass: 'ct-point-label',
+          labelOffset: {
+              x: 0,
+              y: -10
+          },
+          textAnchor: 'middle'
+      };
+      options = Chartist.extend({}, defaultOptions2, options);
+
+      if (chart instanceof Chartist.Line) {
+          chart.on('draw', (data) => {
+              if (data.type === 'point') {
+                  data.group.elem('text', {
+                      x: data.x + options.labelOffset.x,
+                      y: data.y + options.labelOffset.y,
+                      style: 'text-anchor: ' + options.textAnchor
+                  }, options.labelClass).text(options.labelInterpolationFnc(data.value.y));  // 07.11.17 added ".y"
+              }
+          });
+      }
+  };
+};
+
 function show(element: any) {
   if (!hasClass(element, 'tooltip-show')) {
     element.className = element.className + ' tooltip-show';
