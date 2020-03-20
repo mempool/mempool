@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy, Input, EventEmitter, Output, OnChanges, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, OnChanges, HostListener } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 import { StateService } from 'src/app/services/state.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-mempool-blocks',
@@ -18,11 +19,13 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   arrowVisible = false;
 
   rightPosition = 0;
+  transition = '1s';
 
   @Input() txFeePerVSize: number;
   @Input() markIndex: number;
 
   constructor(
+    private router: Router,
     private stateService: StateService,
   ) { }
 
@@ -40,6 +43,29 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     console.log('onResize');
     if (this.mempoolBlocks.length) {
       this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(JSON.stringify(this.mempoolBlocksFull)));
+    }
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvents(event: KeyboardEvent) {
+    if (this.markIndex === -1) {
+      return;
+    }
+    if (event.key === 'ArrowRight') {
+      if (this.mempoolBlocks[this.markIndex - 1]) {
+        this.router.navigate(['/mempool-block/', this.markIndex - 1]);
+      } else {
+        this.stateService.blocks$
+          .subscribe((block) => {
+            if (this.stateService.latestBlockHeight === block.height) {
+              this.router.navigate(['/block/', block.id], { state: { data: { block } }});
+            }
+          });
+      }
+    } else if (event.key === 'ArrowLeft') {
+      if (this.mempoolBlocks[this.markIndex + 1]) {
+        this.router.navigate(['/mempool-block/', this.markIndex + 1]);
+      }
     }
   }
 
@@ -95,8 +121,10 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
       this.arrowVisible = false;
       return;
     } else if (this.markIndex > -1) {
+      this.transition = 'inherit';
       this.rightPosition = this.markIndex * (this.blockWidth + this.blockPadding) + 0.5 * this.blockWidth;
       this.arrowVisible = true;
+      setTimeout(() => this.transition = '1s');
       return;
     }
 

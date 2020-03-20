@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy, Input, OnChanges } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, OnChanges, HostListener } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Block } from 'src/app/interfaces/electrs.interface';
 import { StateService } from 'src/app/services/state.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-blockchain-blocks',
@@ -18,8 +19,11 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   arrowVisible = false;
   arrowLeftPx = 30;
 
+  transition = '1s';
+
   constructor(
     private stateService: StateService,
+    private router: Router,
   ) { }
 
   ngOnInit() {
@@ -31,12 +35,12 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
         this.blocks.unshift(block);
         this.blocks = this.blocks.slice(0, 8);
 
-        this.moveArrowToPosition();
+        this.moveArrowToPosition(true);
       });
   }
 
   ngOnChanges() {
-    this.moveArrowToPosition();
+    this.moveArrowToPosition(false);
   }
 
   ngOnDestroy() {
@@ -44,15 +48,41 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     clearInterval(this.interval);
   }
 
-  moveArrowToPosition() {
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvents(event: KeyboardEvent) {
+    if (!this.markHeight) {
+      return;
+    }
+    if (event.key === 'ArrowRight') {
+      const blockindex = this.blocks.findIndex((b) => b.height === this.markHeight);
+      if (this.blocks[blockindex + 1]) {
+        this.router.navigate(['/block/', this.blocks[blockindex + 1].id], { state: { data: { block: this.blocks[blockindex + 1] } } });
+      }
+    } else if (event.key === 'ArrowLeft') {
+      const blockindex = this.blocks.findIndex((b) => b.height === this.markHeight);
+      if (blockindex === 0) {
+        this.router.navigate(['/mempool-block/', '0']);
+      } else {
+        this.router.navigate(['/block/', this.blocks[blockindex - 1].id], { state: { data: { block: this.blocks[blockindex - 1] }}});
+      }
+    }
+  }
+
+  moveArrowToPosition(animate: boolean) {
     if (!this.markHeight) {
       this.arrowVisible = false;
       return;
     }
     const blockindex = this.blocks.findIndex((b) => b.height === this.markHeight);
     if (blockindex !== -1) {
+      if (!animate) {
+        this.transition = 'inherit';
+      }
       this.arrowVisible = true;
       this.arrowLeftPx = blockindex * 155 + 30;
+      if (!animate) {
+        setTimeout(() => this.transition = '1s');
+      }
     }
   }
 
