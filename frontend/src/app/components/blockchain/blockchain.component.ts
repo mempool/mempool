@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { StateService } from 'src/app/services/state.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-blockchain',
@@ -23,6 +24,7 @@ export class BlockchainComponent implements OnInit, OnDestroy {
 
   constructor(
     private stateService: StateService,
+    private router: Router,
   ) {}
 
   ngOnInit() {
@@ -30,7 +32,7 @@ export class BlockchainComponent implements OnInit, OnDestroy {
       .pipe(
         take(1)
       )
-      .subscribe((block) => this.isLoading = false);
+      .subscribe(() => this.isLoading = false);
   }
 
   ngOnDestroy() {
