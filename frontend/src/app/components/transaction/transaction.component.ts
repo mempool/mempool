@@ -38,8 +38,6 @@ export class TransactionComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.websocketService.want(['blocks', 'stats', 'mempool-blocks']);
-
     this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         this.txId = params.get('id') || '';
