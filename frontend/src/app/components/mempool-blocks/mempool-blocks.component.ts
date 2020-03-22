@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, OnChanges, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 import { StateService } from 'src/app/services/state.service';
@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   templateUrl: './mempool-blocks.component.html',
   styleUrls: ['./mempool-blocks.component.scss']
 })
-export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
+export class MempoolBlocksComponent implements OnInit, OnDestroy {
   mempoolBlocks: MempoolBlock[];
   mempoolBlocksFull: MempoolBlock[];
   mempoolBlocksSubscription: Subscription;
@@ -21,8 +21,8 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   rightPosition = 0;
   transition = '1s';
 
-  @Input() txFeePerVSize: number;
-  @Input() markIndex: number;
+  markIndex: number;
+  txFeePerVSize: number;
 
   constructor(
     private router: Router,
@@ -36,11 +36,23 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
         this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(blocks);
         this.calculateTransactionPosition();
       });
+
+    this.stateService.markBlock$
+      .subscribe((state) => {
+        this.markIndex = undefined;
+        this.txFeePerVSize = undefined;
+        if (state.mempoolBlockIndex !== undefined) {
+          this.markIndex = state.mempoolBlockIndex;
+        }
+        if (state.txFeePerVSize) {
+          this.txFeePerVSize = state.txFeePerVSize;
+        }
+        this.calculateTransactionPosition();
+      });
   }
 
   @HostListener('window:resize', ['$event'])
   onResize() {
-    console.log('onResize');
     if (this.mempoolBlocks.length) {
       this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(JSON.stringify(this.mempoolBlocksFull)));
     }
@@ -48,29 +60,27 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvents(event: KeyboardEvent) {
-    if (this.markIndex === -1) {
-      return;
-    }
-    if (event.key === 'ArrowRight') {
-      if (this.mempoolBlocks[this.markIndex - 1]) {
-        this.router.navigate(['/mempool-block/', this.markIndex - 1]);
-      } else {
-        this.stateService.blocks$
-          .subscribe((block) => {
-            if (this.stateService.latestBlockHeight === block.height) {
-              this.router.navigate(['/block/', block.id], { state: { data: { block } }});
-            }
-          });
+    setTimeout(() => {
+      if (this.markIndex === undefined) {
+        return;
       }
-    } else if (event.key === 'ArrowLeft') {
-      if (this.mempoolBlocks[this.markIndex + 1]) {
-        this.router.navigate(['/mempool-block/', this.markIndex + 1]);
+      if (event.key === 'ArrowRight') {
+        if (this.mempoolBlocks[this.markIndex - 1]) {
+          this.router.navigate(['/mempool-block/', this.markIndex - 1]);
+        } else {
+          this.stateService.blocks$
+            .subscribe((block) => {
+              if (this.stateService.latestBlockHeight === block.height) {
+                this.router.navigate(['/block/', block.id], { state: { data: { block } }});
+              }
+            });
+        }
+      } else if (event.key === 'ArrowLeft') {
+        if (this.mempoolBlocks[this.markIndex + 1]) {
+          this.router.navigate(['/mempool-block/', this.markIndex + 1]);
+        }
       }
-    }
-  }
-
-  ngOnChanges() {
-    this.calculateTransactionPosition();
+    });
   }
 
   ngOnDestroy() {

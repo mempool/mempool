@@ -65,6 +65,11 @@ export class TransactionComponent implements OnInit, OnDestroy {
       } else {
         this.findBlockAndSetFeeRating();
       }
+      if (this.tx.status.confirmed) {
+        this.stateService.markBlock$.next({ blockHeight: tx.status.block_height });
+      } else {
+        this.stateService.markBlock$.next({ txFeePerVSize: tx.fee / (tx.weight / 4) });
+      }
     },
     (error) => {
       this.error = error;
@@ -82,6 +87,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
           block_hash: block.id,
           block_time: block.timestamp,
         };
+        this.stateService.markBlock$.next({ blockHeight: block.height });
         this.audioService.playSound('magic');
         this.findBlockAndSetFeeRating();
       });
@@ -121,5 +127,6 @@ export class TransactionComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.websocketService.startTrackTransaction('stop');
+    this.stateService.markBlock$.next({});
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { StateService } from 'src/app/services/state.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap, map } from 'rxjs/operators';
@@ -10,7 +10,7 @@ import { WebsocketService } from 'src/app/services/websocket.service';
   templateUrl: './mempool-block.component.html',
   styleUrls: ['./mempool-block.component.scss']
 })
-export class MempoolBlockComponent implements OnInit {
+export class MempoolBlockComponent implements OnInit, OnDestroy {
   mempoolBlockIndex: number;
   mempoolBlock: MempoolBlock;
 
@@ -26,6 +26,7 @@ export class MempoolBlockComponent implements OnInit {
     this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         this.mempoolBlockIndex = parseInt(params.get('id'), 10) || 0;
+        this.stateService.markBlock$.next({ mempoolBlockIndex: this.mempoolBlockIndex });
         return this.stateService.mempoolBlocks$
           .pipe(
             map((mempoolBlocks) => mempoolBlocks[this.mempoolBlockIndex])
@@ -35,6 +36,10 @@ export class MempoolBlockComponent implements OnInit {
     .subscribe((mempoolBlock) => {
       this.mempoolBlock = mempoolBlock;
     });
+  }
+
+  ngOnDestroy(): void {
+    this.stateService.markBlock$.next({});
   }
 
 }

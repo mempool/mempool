@@ -1,8 +1,7 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { StateService } from 'src/app/services/state.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-blockchain',
@@ -10,12 +9,6 @@ import { Router } from '@angular/router';
   styleUrls: ['./blockchain.component.scss']
 })
 export class BlockchainComponent implements OnInit, OnDestroy {
-  @Input() position: 'middle' | 'top' = 'middle';
-  @Input() markHeight: number;
-  @Input() txFeePerVSize: number;
-  @Input() markMempoolBlockIndex = -1;
-
-  txTrackingSubscription: Subscription;
   blocksSubscription: Subscription;
 
   txTrackingLoading = false;
@@ -24,7 +17,6 @@ export class BlockchainComponent implements OnInit, OnDestroy {
 
   constructor(
     private stateService: StateService,
-    private router: Router,
   ) {}
 
   ngOnInit() {

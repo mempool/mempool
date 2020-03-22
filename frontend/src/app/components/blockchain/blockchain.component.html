@@ -1,7 +1,7 @@
 <div class="text-center" class="blockchain-wrapper">
   <div class="position-container">
-    <app-mempool-blocks [markIndex]="markMempoolBlockIndex" [txFeePerVSize]="markHeight ? 0 : txFeePerVSize"></app-mempool-blocks>
-    <app-blockchain-blocks [markHeight]="markHeight"></app-blockchain-blocks>
+    <app-mempool-blocks></app-mempool-blocks>
+    <app-blockchain-blocks></app-blockchain-blocks>
 
     <div id="divider" *ngIf="!isLoading; else loadingTmpl"></div>
 

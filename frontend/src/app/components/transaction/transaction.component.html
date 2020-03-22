@@ -1,11 +1,5 @@
 <div class="container-xl">
 
-  <div style="position: relative;">
-    <app-blockchain position="top" [txFeePerVSize]="tx?.fee / (tx?.weight / 4)" [markHeight]="tx?.status?.block_height"></app-blockchain>
-  </div>
-
-  <div class="transaction-content">
-
   <div class="title-block">
     <h1 class="float-md-left">Transaction</h1>
 
@@ -180,7 +174,6 @@
     </div>
   </ng-template>
 
-</div>
 </div>
 
 <br>
