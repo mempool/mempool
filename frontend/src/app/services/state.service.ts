@@ -4,6 +4,12 @@ import { Block, Transaction } from '../interfaces/electrs.interface';
 import { MempoolBlock, MemPoolState } from '../interfaces/websocket.interface';
 import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 
+interface MarkBlockState {
+  blockHeight?: number;
+  mempoolBlockIndex?: number;
+  txFeePerVSize?: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -21,4 +27,6 @@ export class StateService {
 
   viewFiat$ = new BehaviorSubject<boolean>(false);
   connectionState$ = new BehaviorSubject<0 | 1 | 2>(2);
+
+  markBlock$ = new Subject<MarkBlockState>();
 }

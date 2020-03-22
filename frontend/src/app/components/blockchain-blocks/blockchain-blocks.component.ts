@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, OnChanges, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Block } from 'src/app/interfaces/electrs.interface';
 import { StateService } from 'src/app/services/state.service';
@@ -9,10 +9,9 @@ import { Router } from '@angular/router';
   templateUrl: './blockchain-blocks.component.html',
   styleUrls: ['./blockchain-blocks.component.scss']
 })
-export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() markHeight = 0;
-
+export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   blocks: Block[] = [];
+  markHeight: number;
   blocksSubscription: Subscription;
   interval: any;
 
@@ -37,10 +36,15 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
         this.moveArrowToPosition(true);
       });
-  }
 
-  ngOnChanges() {
-    this.moveArrowToPosition(false);
+    this.stateService.markBlock$
+      .subscribe((state) => {
+        this.markHeight = undefined;
+        if (state.blockHeight) {
+          this.markHeight = state.blockHeight;
+        }
+        this.moveArrowToPosition(false);
+      });
   }
 
   ngOnDestroy() {

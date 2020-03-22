@@ -9,6 +9,7 @@ import { AboutComponent } from './components/about/about.component';
 import { TelevisionComponent } from './components/television/television.component';
 import { StatisticsComponent } from './components/statistics/statistics.component';
 import { MempoolBlockComponent } from './components/mempool-block/mempool-block.component';
+import { LatestBlocksComponent } from './components/latest-blocks/latest-blocks.component';
 
 const routes: Routes = [
   {
@@ -18,6 +19,24 @@ const routes: Routes = [
       {
         path: '',
         component: StartComponent,
+        children: [
+          {
+            path: '',
+            component: LatestBlocksComponent
+          },
+          {
+            path: 'tx/:id',
+            component: TransactionComponent
+          },
+          {
+            path: 'block/:id',
+            component: BlockComponent
+          },
+          {
+            path: 'mempool-block/:id',
+            component: MempoolBlockComponent
+          },
+        ],
       },
       {
         path: 'graphs',
@@ -26,21 +45,6 @@ const routes: Routes = [
       {
         path: 'contributors',
         component: AboutComponent,
-      },
-      {
-        path: 'tx/:id',
-        children: [],
-        component: TransactionComponent
-      },
-      {
-        path: 'block/:id',
-        children: [],
-        component: BlockComponent
-      },
-      {
-        path: 'mempool-block/:id',
-        children: [],
-        component: MempoolBlockComponent
       },
       {
         path: 'address/:id',
