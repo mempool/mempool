@@ -1,4 +1,4 @@
-<div class="container-xl" *ngIf="mempoolBlock">
+<div class="container-xl" *ngIf="mempoolBlock$ | async as mempoolBlock">
 
   <div class="title-block">
     <h1>Mempool block</h1>
