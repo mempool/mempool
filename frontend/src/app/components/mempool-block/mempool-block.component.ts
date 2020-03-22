@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { StateService } from 'src/app/services/state.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { switchMap, map } from 'rxjs/operators';
+import { switchMap, map, tap } from 'rxjs/operators';
 import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-mempool-block',
@@ -11,7 +12,7 @@ import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 })
 export class MempoolBlockComponent implements OnInit, OnDestroy {
   mempoolBlockIndex: number;
-  mempoolBlock: MempoolBlock;
+  mempoolBlock$: Observable<MempoolBlock>;
 
   constructor(
     private route: ActivatedRoute,
@@ -19,19 +20,24 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.route.paramMap.pipe(
-      switchMap((params: ParamMap) => {
-        this.mempoolBlockIndex = parseInt(params.get('id'), 10) || 0;
-        this.stateService.markBlock$.next({ mempoolBlockIndex: this.mempoolBlockIndex });
-        return this.stateService.mempoolBlocks$
-          .pipe(
-            map((mempoolBlocks) => mempoolBlocks[this.mempoolBlockIndex])
-          );
-      })
-    )
-    .subscribe((mempoolBlock) => {
-      this.mempoolBlock = mempoolBlock;
-    });
+    this.mempoolBlock$ = this.route.paramMap
+      .pipe(
+        switchMap((params: ParamMap) => {
+          this.mempoolBlockIndex = parseInt(params.get('id'), 10) || 0;
+          return this.stateService.mempoolBlocks$
+            .pipe(
+              map((mempoolBlocks) => {
+                while (!mempoolBlocks[this.mempoolBlockIndex]) {
+                  this.mempoolBlockIndex--;
+                }
+                return mempoolBlocks[this.mempoolBlockIndex];
+              })
+            );
+        }),
+        tap(() => {
+          this.stateService.markBlock$.next({ mempoolBlockIndex: this.mempoolBlockIndex });
+        })
+      );
   }
 
   ngOnDestroy(): void {
