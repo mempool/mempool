@@ -18,7 +18,7 @@
                 <td>
                   {{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
                   <div class="lg-inline">
-                    <i>(<app-time-since [time]="block.timestamp"></app-time-since> ago)</i>
+                    <i>(<app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since> ago)</i>
                   </div>
                 </td>
               </tr>

@@ -42,6 +42,7 @@ import { AudioService } from './services/audio.service';
 import { FiatComponent } from './fiat/fiat.component';
 import { MempoolBlockComponent } from './components/mempool-block/mempool-block.component';
 import { FeeDistributionGraphComponent } from './components/fee-distribution-graph/fee-distribution-graph.component';
+import { TimespanComponent } from './components/timespan/timespan.component';
 
 @NgModule({
   declarations: [
@@ -66,6 +67,7 @@ import { FeeDistributionGraphComponent } from './components/fee-distribution-gra
     SearchFormComponent,
     LatestBlocksComponent,
     TimeSinceComponent,
+    TimespanComponent,
     AddressLabelsComponent,
     MempoolBlocksComponent,
     QrcodeComponent,
