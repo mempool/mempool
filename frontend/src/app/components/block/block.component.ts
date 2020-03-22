@@ -1,11 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
-import { switchMap, tap, debounceTime } from 'rxjs/operators';
+import { switchMap, tap, debounceTime, catchError } from 'rxjs/operators';
 import { Block, Transaction, Vout } from '../../interfaces/electrs.interface';
-import { of, Observable } from 'rxjs';
+import { of, empty } from 'rxjs';
 import { StateService } from '../../services/state.service';
-import { WebsocketService } from 'src/app/services/websocket.service';
 
 @Component({
   selector: 'app-block',
@@ -28,12 +27,9 @@ export class BlockComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private electrsApiService: ElectrsApiService,
     private stateService: StateService,
-    private websocketService: WebsocketService,
   ) { }
 
   ngOnInit() {
-    this.websocketService.want(['blocks', 'stats', 'mempool-blocks']);
-
     this.route.paramMap
     .pipe(
       switchMap((params: ParamMap) => {
@@ -68,8 +64,14 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.isLoadingTransactions = true;
         this.transactions = null;
       }),
-      debounceTime(250),
-      switchMap((block) => this.electrsApiService.getBlockTransactions$(block.id))
+      debounceTime(300),
+      switchMap((block) => this.electrsApiService.getBlockTransactions$(block.id)
+        .pipe(
+          catchError((err) => {
+            console.log(err);
+            return of([]);
+        }))
+      ),
     )
     .subscribe((transactions: Transaction[]) => {
       if (this.fees === undefined) {

@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-mempool-blocks',
@@ -69,6 +70,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
           this.router.navigate(['/mempool-block/', this.markIndex - 1]);
         } else {
           this.stateService.blocks$
+            .pipe(take(8))
             .subscribe((block) => {
               if (this.stateService.latestBlockHeight === block.height) {
                 this.router.navigate(['/block/', block.id], { state: { data: { block } }});
