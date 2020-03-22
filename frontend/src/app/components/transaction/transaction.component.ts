@@ -1,13 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { switchMap, filter } from 'rxjs/operators';
+import { switchMap, filter, take } from 'rxjs/operators';
 import { Transaction, Block } from '../../interfaces/electrs.interface';
 import { of } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
+import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 
 @Component({
   selector: 'app-transaction',
@@ -20,13 +21,13 @@ export class TransactionComponent implements OnInit, OnDestroy {
   feeRating: number;
   overpaidTimes: number;
   medianFeeNeeded: number;
+  txInBlockIndex: number;
   isLoadingTx = true;
   error: any = undefined;
   latestBlock: Block;
   transactionTime = -1;
 
   rightPosition = 0;
-  blockDepth = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -56,6 +57,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
     .subscribe((tx: Transaction) => {
       this.tx = tx;
       this.isLoadingTx = false;
+      this.setMempoolBlocksSubscription();
 
       if (!tx.status.confirmed) {
         this.websocketService.startTrackTransaction(tx.txid);
@@ -91,6 +93,25 @@ export class TransactionComponent implements OnInit, OnDestroy {
       });
   }
 
+  setMempoolBlocksSubscription() {
+    this.stateService.mempoolBlocks$
+      .subscribe((mempoolBlocks) => {
+        if (!this.tx) {
+          return;
+        }
+
+        const txFeePerVSize = this.tx.fee / (this.tx.weight / 4);
+
+        for (const block of mempoolBlocks) {
+          for (let i = 0; i < block.feeRange.length - 1; i++) {
+            if (txFeePerVSize < block.feeRange[i + 1] && txFeePerVSize >= block.feeRange[i]) {
+              this.txInBlockIndex = mempoolBlocks.indexOf(block);
+            }
+          }
+        }
+      });
+  }
+
   getTransactionTime() {
     this.apiService.getTransactionTimes$([this.tx.txid])
       .subscribe((transactionTimes) => {
@@ -100,7 +121,10 @@ export class TransactionComponent implements OnInit, OnDestroy {
 
   findBlockAndSetFeeRating() {
     this.stateService.blocks$
-      .pipe(filter((block) => block.height === this.tx.status.block_height))
+      .pipe(
+        filter((block) => block.height === this.tx.status.block_height),
+        take(1)
+      )
       .subscribe((block) => {
         const feePervByte = this.tx.fee / (this.tx.weight / 4);
         this.medianFeeNeeded = block.feeRange[Math.round(block.feeRange.length * 0.5)];
