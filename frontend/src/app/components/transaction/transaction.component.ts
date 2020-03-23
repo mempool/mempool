@@ -93,9 +93,6 @@ export class TransactionComponent implements OnInit, OnDestroy {
         this.audioService.playSound('magic');
         this.findBlockAndSetFeeRating();
       });
-
-    this.titleService.setTitle('');
-    this.meta.addTag({name: 'description', content: 'Angular project training on rsgitech.com'});
   }
 
   setMempoolBlocksSubscription() {
