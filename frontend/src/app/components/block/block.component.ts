@@ -3,8 +3,9 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { switchMap, tap, debounceTime, catchError } from 'rxjs/operators';
 import { Block, Transaction, Vout } from '../../interfaces/electrs.interface';
-import { of, empty } from 'rxjs';
+import { of } from 'rxjs';
 import { StateService } from '../../services/state.service';
+import { SeoService } from 'src/app/services/seo.service';
 
 @Component({
   selector: 'app-block',
@@ -27,6 +28,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private electrsApiService: ElectrsApiService,
     private stateService: StateService,
+    private seoService: SeoService,
   ) { }
 
   ngOnInit() {
@@ -55,6 +57,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       tap((block: Block) => {
         this.block = block;
         this.blockHeight = block.height;
+        this.seoService.setTitle('Block: #' + block.height + ': ' + block.id);
         this.isLoadingBlock = false;
         this.setBlockSubsidy();
         if (block.reward) {

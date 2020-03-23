@@ -12,6 +12,7 @@ import { ApiService } from '../../services/api.service';
 
 import * as Chartist from 'chartist';
 import { StateService } from 'src/app/services/state.service';
+import { SeoService } from 'src/app/services/seo.service';
 
 @Component({
   selector: 'app-statistics',
@@ -41,6 +42,7 @@ export class StatisticsComponent implements OnInit {
     private websocketService: WebsocketService,
     private apiService: ApiService,
     private stateService: StateService,
+    private seoService: SeoService,
   ) {
     this.radioGroupForm = this.formBuilder.group({
       dateSpan: '2h'
@@ -48,6 +50,7 @@ export class StatisticsComponent implements OnInit {
    }
 
   ngOnInit() {
+    this.seoService.setTitle('Graphs');
     const labelInterpolationFnc = (value: any, index: any) => {
       const nr = 6;
 

@@ -8,6 +8,7 @@ import { StateService } from 'src/app/services/state.service';
 import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
 import { of } from 'rxjs';
+import { SeoService } from 'src/app/services/seo.service';
 
 @Component({
   selector: 'app-address',
@@ -39,6 +40,7 @@ export class AddressComponent implements OnInit, OnDestroy {
     private stateService: StateService,
     private audioService: AudioService,
     private apiService: ApiService,
+    private seoService: SeoService,
   ) { }
 
   ngOnInit() {
@@ -54,6 +56,7 @@ export class AddressComponent implements OnInit, OnDestroy {
         this.transactions = null;
         document.body.scrollTo(0, 0);
         this.addressString = params.get('id') || '';
+        this.seoService.setTitle('Address: ' + this.addressString);
         this.loadAddress(this.addressString);
       });
 

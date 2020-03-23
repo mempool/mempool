@@ -3,6 +3,7 @@ import { ElectrsApiService } from '../../services/electrs-api.service';
 import { StateService } from '../../services/state.service';
 import { Block } from '../../interfaces/electrs.interface';
 import { Subscription } from 'rxjs';
+import { SeoService } from 'src/app/services/seo.service';
 
 @Component({
   selector: 'app-latest-blocks',
@@ -21,9 +22,12 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
   constructor(
     private electrsApiService: ElectrsApiService,
     private stateService: StateService,
+    private seoService: SeoService,
   ) { }
 
   ngOnInit() {
+    this.seoService.resetTitle();
+
     this.blockSubscription = this.stateService.blocks$
       .subscribe((block) => {
         if (block === null || !this.blocks.length) {
