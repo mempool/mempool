@@ -4,6 +4,7 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap, map, tap } from 'rxjs/operators';
 import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 import { Observable } from 'rxjs';
+import { SeoService } from 'src/app/services/seo.service';
 
 @Component({
   selector: 'app-mempool-block',
@@ -17,9 +18,11 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private stateService: StateService,
+    private seoService: SeoService,
   ) { }
 
   ngOnInit(): void {
+    this.seoService.setTitle('Mempool block');
     this.mempoolBlock$ = this.route.paramMap
       .pipe(
         switchMap((params: ParamMap) => {

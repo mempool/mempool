@@ -8,7 +8,7 @@ import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
-import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
+import { SeoService } from 'src/app/services/seo.service';
 
 @Component({
   selector: 'app-transaction',
@@ -36,12 +36,14 @@ export class TransactionComponent implements OnInit, OnDestroy {
     private websocketService: WebsocketService,
     private audioService: AudioService,
     private apiService: ApiService,
+    private seoService: SeoService,
   ) { }
 
   ngOnInit() {
     this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         this.txId = params.get('id') || '';
+        this.seoService.setTitle('Transaction: ' + this.txId);
         this.error = undefined;
         this.feeRating = undefined;
         this.isLoadingTx = true;
@@ -91,6 +93,9 @@ export class TransactionComponent implements OnInit, OnDestroy {
         this.audioService.playSound('magic');
         this.findBlockAndSetFeeRating();
       });
+
+    this.titleService.setTitle('');
+    this.meta.addTag({name: 'description', content: 'Angular project training on rsgitech.com'});
   }
 
   setMempoolBlocksSubscription() {

@@ -7,6 +7,7 @@ import { WebsocketService } from 'src/app/services/websocket.service';
 import { OptimizedMempoolStats } from '../../interfaces/node-api.interface';
 import { StateService } from 'src/app/services/state.service';
 import { ApiService } from 'src/app/services/api.service';
+import { SeoService } from 'src/app/services/seo.service';
 
 @Component({
   selector: 'app-television',
@@ -26,9 +27,11 @@ export class TelevisionComponent implements OnInit {
     private vbytesPipe: VbytesPipe,
     private apiService: ApiService,
     private stateService: StateService,
+    private seoService: SeoService,
   ) { }
 
   ngOnInit() {
+    this.seoService.setTitle('TV view');
     this.websocketService.want(['blocks', 'live-2h-chart', 'mempool-blocks']);
 
     const labelInterpolationFnc = (value: any, index: any) => {

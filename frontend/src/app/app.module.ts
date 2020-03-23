@@ -43,6 +43,7 @@ import { FiatComponent } from './fiat/fiat.component';
 import { MempoolBlockComponent } from './components/mempool-block/mempool-block.component';
 import { FeeDistributionGraphComponent } from './components/fee-distribution-graph/fee-distribution-graph.component';
 import { TimespanComponent } from './components/timespan/timespan.component';
+import { SeoService } from './services/seo.service';
 
 @NgModule({
   declarations: [
@@ -93,6 +94,7 @@ import { TimespanComponent } from './components/timespan/timespan.component';
     WebsocketService,
     VbytesPipe,
     AudioService,
+    SeoService,
   ],
   bootstrap: [AppComponent]
 })
