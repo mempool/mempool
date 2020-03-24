@@ -1,13 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, filter } from 'rxjs/operators';
 import { Address, Transaction } from '../../interfaces/electrs.interface';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { StateService } from 'src/app/services/state.service';
 import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
-import { of } from 'rxjs';
+import { of, merge } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
 
 @Component({
@@ -47,69 +47,28 @@ export class AddressComponent implements OnInit, OnDestroy {
     this.websocketService.want(['blocks', 'stats', 'mempool-blocks']);
 
     this.route.paramMap
-      .subscribe((params: ParamMap) => {
-        this.error = undefined;
-        this.isLoadingAddress = true;
-        this.loadedConfirmedTxCount = 0;
-        this.address = null;
-        this.isLoadingTransactions = true;
-        this.transactions = null;
-        document.body.scrollTo(0, 0);
-        this.addressString = params.get('id') || '';
-        this.seoService.setTitle('Address: ' + this.addressString);
-        this.loadAddress(this.addressString);
-      });
+      .pipe(
+        switchMap((params: ParamMap) => {
+          this.error = undefined;
+          this.isLoadingAddress = true;
+          this.loadedConfirmedTxCount = 0;
+          this.address = null;
+          this.isLoadingTransactions = true;
+          this.transactions = null;
+          document.body.scrollTo(0, 0);
+          this.addressString = params.get('id') || '';
+          this.seoService.setTitle('Address: ' + this.addressString);
 
-    this.stateService.mempoolTransactions$
-      .subscribe((transaction) => {
-        if (this.transactions.some((t) => t.txid === transaction.txid)) {
-          return;
-        }
-
-        this.transactions.unshift(transaction);
-        this.transactions = this.transactions.slice();
-        this.txCount++;
-
-        if (transaction.vout.some((vout) => vout.scriptpubkey_address === this.address.address)) {
-          this.audioService.playSound('cha-ching');
-        } else {
-          this.audioService.playSound('chime');
-        }
-
-        transaction.vin.forEach((vin) => {
-          if (vin.prevout.scriptpubkey_address === this.address.address) {
-            this.sent += vin.prevout.value;
-          }
-        });
-        transaction.vout.forEach((vout) => {
-          if (vout.scriptpubkey_address === this.address.address) {
-            this.receieved += vout.value;
-          }
-        });
-      });
-
-    this.stateService.blockTransactions$
-      .subscribe((transaction) => {
-        const tx = this.transactions.find((t) => t.txid === transaction.txid);
-        if (tx) {
-          tx.status = transaction.status;
-          this.transactions = this.transactions.slice();
-          this.audioService.playSound('magic');
-        }
-        this.totalConfirmedTxCount++;
-        this.loadedConfirmedTxCount++;
-      });
-
-    this.stateService.connectionState$
-      .subscribe((state) => {
-        if (state === 2 && this.transactions && this.transactions.length) {
-          this.loadAddress(this.addressString);
-        }
-      });
-  }
-
-  loadAddress(addressStr?: string) {
-    this.electrsApiService.getAddress$(addressStr)
+          return merge(
+            of(true),
+            this.stateService.connectionState$
+              .pipe(filter((state) => state === 2 && this.transactions && this.transactions.length > 0))
+          )
+          .pipe(
+            switchMap(() => this.electrsApiService.getAddress$(this.addressString))
+          );
+        })
+      )
       .pipe(
         switchMap((address) => {
           this.address = address;
@@ -153,6 +112,46 @@ export class AddressComponent implements OnInit, OnDestroy {
         console.log(error);
         this.error = error;
         this.isLoadingAddress = false;
+      });
+
+    this.stateService.mempoolTransactions$
+      .subscribe((transaction) => {
+        if (this.transactions.some((t) => t.txid === transaction.txid)) {
+          return;
+        }
+
+        this.transactions.unshift(transaction);
+        this.transactions = this.transactions.slice();
+        this.txCount++;
+
+        if (transaction.vout.some((vout) => vout.scriptpubkey_address === this.address.address)) {
+          this.audioService.playSound('cha-ching');
+        } else {
+          this.audioService.playSound('chime');
+        }
+
+        transaction.vin.forEach((vin) => {
+          if (vin.prevout.scriptpubkey_address === this.address.address) {
+            this.sent += vin.prevout.value;
+          }
+        });
+        transaction.vout.forEach((vout) => {
+          if (vout.scriptpubkey_address === this.address.address) {
+            this.receieved += vout.value;
+          }
+        });
+      });
+
+    this.stateService.blockTransactions$
+      .subscribe((transaction) => {
+        const tx = this.transactions.find((t) => t.txid === transaction.txid);
+        if (tx) {
+          tx.status = transaction.status;
+          this.transactions = this.transactions.slice();
+          this.audioService.playSound('magic');
+        }
+        this.totalConfirmedTxCount++;
+        this.loadedConfirmedTxCount++;
       });
   }
 
