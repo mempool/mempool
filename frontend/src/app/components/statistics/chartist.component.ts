@@ -636,7 +636,7 @@ Chartist.plugins.ctPointLabels = (options) => {
           labelClass: 'ct-point-label',
           labelOffset: {
               x: 0,
-              y: -10
+              y: -7
           },
           textAnchor: 'middle'
       };

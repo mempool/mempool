@@ -25,6 +25,8 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   markIndex: number;
   txFeePerVSize: number;
 
+  resetTransitionTimeout: number;
+
   constructor(
     private router: Router,
     private stateService: StateService,
@@ -133,10 +135,11 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
       this.arrowVisible = false;
       return;
     } else if (this.markIndex > -1) {
+      clearTimeout(this.resetTransitionTimeout);
       this.transition = 'inherit';
       this.rightPosition = this.markIndex * (this.blockWidth + this.blockPadding) + 0.5 * this.blockWidth;
       this.arrowVisible = true;
-      setTimeout(() => this.transition = '1s');
+      this.resetTransitionTimeout = window.setTimeout(() => this.transition = '1s', 100);
       return;
     }
 

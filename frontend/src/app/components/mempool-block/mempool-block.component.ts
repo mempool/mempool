@@ -22,20 +22,20 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.seoService.setTitle('Mempool block');
     this.mempoolBlock$ = this.route.paramMap
       .pipe(
         switchMap((params: ParamMap) => {
           this.mempoolBlockIndex = parseInt(params.get('id'), 10) || 0;
           return this.stateService.mempoolBlocks$
-            .pipe(
-              map((mempoolBlocks) => {
-                while (!mempoolBlocks[this.mempoolBlockIndex]) {
-                  this.mempoolBlockIndex--;
-                }
-                return mempoolBlocks[this.mempoolBlockIndex];
-              })
-            );
+          .pipe(
+            map((mempoolBlocks) => {
+              while (!mempoolBlocks[this.mempoolBlockIndex]) {
+                this.mempoolBlockIndex--;
+              }
+              this.seoService.setTitle(this.getGetOrdinal());
+              return mempoolBlocks[this.mempoolBlockIndex];
+            })
+          );
         }),
         tap(() => {
           this.stateService.markBlock$.next({ mempoolBlockIndex: this.mempoolBlockIndex });
@@ -46,5 +46,15 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.stateService.markBlock$.next({});
   }
+
+  getGetOrdinal() {
+    if (this.mempoolBlockIndex === 0) {
+      return 'Next block';
+    }
+
+    const s = ['th', 'st', 'nd', 'rd'];
+    const v = this.mempoolBlockIndex + 1 % 100;
+    return this.mempoolBlockIndex + 1 + (s[(v - 20) % 10] || s[v] || s[0]) + ' next block';
+ }
 
 }
