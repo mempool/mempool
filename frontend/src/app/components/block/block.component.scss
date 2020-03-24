@@ -5,6 +5,12 @@
   border-top: 5px solid #FFF;
 }
 
-.mobile-width {
-  width: 130px;
+.td-width {
+  width: 175px;
+}
+
+@media (max-width: 767.98px) {
+	.td-width {
+		width: 150px;
+	}
 }

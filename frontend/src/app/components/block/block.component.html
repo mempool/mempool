@@ -14,7 +14,7 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td class="mobile-width">Timestamp</td>
+                <td class="td-width">Timestamp</td>
                 <td>
                   {{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
                   <div class="lg-inline">
@@ -41,7 +41,7 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td class="mobile-width">Hash</td>
+                <td class="td-width">Hash</td>
                 <td><a [routerLink]="['/block/', block.id]" title="{{ block.id }}">{{ block.id | shortenString : 13 }}</a> <app-clipboard [text]="block.id"></app-clipboard></td>
               </tr>
               <tr *ngIf="block.medianFee !== undefined">
@@ -117,7 +117,7 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td class="mobile-width" colspan="2"><span class="skeleton-loader"></span></td>
+                <td class="td-width" colspan="2"><span class="skeleton-loader"></span></td>
               </tr>
               <tr>
                 <td colspan="2"><span class="skeleton-loader"></span></td>
@@ -135,7 +135,7 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td class="mobile-width" colspan="2"><span class="skeleton-loader"></span></td>
+                <td class="td-width" colspan="2"><span class="skeleton-loader"></span></td>
               </tr>
               <tr>
                 <td colspan="2"><span class="skeleton-loader"></span></td>
