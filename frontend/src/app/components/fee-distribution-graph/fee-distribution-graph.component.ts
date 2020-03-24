@@ -28,6 +28,7 @@ export class FeeDistributionGraphComponent implements OnChanges {
       low: 0,
       axisY: {
         showLabel: false,
+        offset: 0
       },
       axisX: {
         showGrid: true,
