@@ -3,7 +3,7 @@ import { ElectrsApiService } from '../../services/electrs-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap, filter, take } from 'rxjs/operators';
 import { Transaction, Block } from '../../interfaces/electrs.interface';
-import { of } from 'rxjs';
+import { of, merge } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from 'src/app/services/audio.service';
@@ -49,11 +49,19 @@ export class TransactionComponent implements OnInit, OnDestroy {
         this.isLoadingTx = true;
         this.transactionTime = -1;
         document.body.scrollTo(0, 0);
-        if (history.state.data) {
-          return of(history.state.data);
-        } else {
-          return this.electrsApiService.getTransaction$(this.txId);
-        }
+        return merge(
+          of(true),
+          this.stateService.connectionState$
+            .pipe(filter((state) => state === 2 && this.tx && !this.tx.status.confirmed) ),
+        )
+        .pipe(
+          switchMap(() => {
+            if (history.state.data) {
+              return of(history.state.data);
+            }
+            return this.electrsApiService.getTransaction$(this.txId);
+          })
+        );
       })
     )
     .subscribe((tx: Transaction) => {
