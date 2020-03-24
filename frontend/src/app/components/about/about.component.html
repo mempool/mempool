@@ -34,7 +34,7 @@
 
   <table class="table">
     <tr>
-      <td style="width: 50%;">Fee API</td>
+      <td>Fee API</td>
       <td>
         <div class="mx-auto">
           <input class="form-control" type="text" value="https://mempool.space/api/v1/fees/recommended" readonly>
@@ -59,7 +59,7 @@
 
   <table class="table">
     <tr>
-      <td style="width: 50%;">
+      <td>
         <span class="text-small">
           Default push: <span class="code">{{ '{' }} action: 'want', data: ['blocks', ...] {{ '}' }}</span>
           to express what you want pushed. Available: 'blocks', 'mempool-blocks', 'live-2h-chart' and 'stats'.
@@ -70,10 +70,10 @@
           to receive all new transactions containing that address as input or output. Returns an array of transactions. 'address-transactions' for new mempool transactions and 'address-block-transactions' for new block confirmed transactions.
         </span>
       </td>
-      <td>
-        <div class="mx-auto">
+    </tr>
+    <tr>
+      <td style="border: 0;">
           <input class="form-control" type="text" value="wss://mempool.space/ws" readonly>
-        </div>
       </td>
     </tr>
   </table>

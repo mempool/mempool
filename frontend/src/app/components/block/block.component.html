@@ -6,8 +6,6 @@
 
   <ng-template [ngIf]="!isLoadingBlock && !error">
 
-    <br>
-
     <div class="box">
       <div class="row">
         <div class="col-sm">
@@ -80,8 +78,6 @@
 
     <h2><ng-template [ngIf]="transactions?.length">{{ transactions?.length || '?' }} of </ng-template>{{ block.tx_count }} transactions</h2>
 
-    <br>
-
     <app-transactions-list [transactions]="transactions" (loadMore)="loadMore()"></app-transactions-list>
 
     <div class="text-center">
@@ -109,8 +105,6 @@
 
   <ng-template [ngIf]="isLoadingBlock && !error">
     
-    <br>
-
     <div class="box">
       <div class="row">
         <div class="col-sm">
