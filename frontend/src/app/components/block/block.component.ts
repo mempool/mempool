@@ -6,6 +6,7 @@ import { Block, Transaction, Vout } from '../../interfaces/electrs.interface';
 import { of } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { SeoService } from 'src/app/services/seo.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-block',
@@ -13,6 +14,7 @@ import { SeoService } from 'src/app/services/seo.service';
   styleUrls: ['./block.component.scss']
 })
 export class BlockComponent implements OnInit, OnDestroy {
+  network = environment.network;
   block: Block;
   blockHeight: number;
   blockHash: string;
@@ -97,6 +99,10 @@ export class BlockComponent implements OnInit, OnDestroy {
   }
 
   setBlockSubsidy() {
+    if (this.network === 'liquid') {
+      this.blockSubsidy = 0;
+      return;
+    }
     this.blockSubsidy = 50;
     let halvenings = Math.floor(this.block.height / 210000);
     while (halvenings > 0) {

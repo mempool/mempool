@@ -9,6 +9,7 @@ import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
 import { of, merge } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-address',
@@ -16,6 +17,8 @@ import { SeoService } from 'src/app/services/seo.service';
   styleUrls: ['./address.component.scss']
 })
 export class AddressComponent implements OnInit, OnDestroy {
+  network = environment.network;
+
   address: Address;
   addressString: string;
   isLoadingAddress = true;

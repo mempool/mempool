@@ -5,6 +5,7 @@ import { switchMap, map, tap } from 'rxjs/operators';
 import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 import { Observable } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-mempool-block',
@@ -12,6 +13,7 @@ import { SeoService } from 'src/app/services/seo.service';
   styleUrls: ['./mempool-block.component.scss']
 })
 export class MempoolBlockComponent implements OnInit, OnDestroy {
+  network = environment.network;
   mempoolBlockIndex: number;
   mempoolBlock$: Observable<MempoolBlock>;
 

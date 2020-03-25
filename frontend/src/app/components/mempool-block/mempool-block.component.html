@@ -19,7 +19,7 @@
             </tr>
             <tr>
               <td>Total fees</td>
-              <td>{{ mempoolBlock.totalFees / 100000000 | number : '1.2-2' }} BTC (<app-fiat [value]="mempoolBlock.totalFees" digitsInfo="1.0-0"></app-fiat>)</td>
+              <td>{{ mempoolBlock.totalFees / 100000000 | number : '1.2-2' }} <ng-template [ngIf]="network === 'liquid'">L-</ng-template>BTC (<app-fiat [value]="mempoolBlock.totalFees" digitsInfo="1.0-0"></app-fiat>)</td>
             </tr>
             <tr>
               <td>Transactions</td>
