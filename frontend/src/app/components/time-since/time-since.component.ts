@@ -1,11 +1,11 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnChanges } from '@angular/core';
 
 @Component({
   selector: 'app-time-since',
   template: `{{ text }}`,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TimeSinceComponent implements OnInit, OnDestroy {
+export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
   interval: number;
   text: string;
 
@@ -17,11 +17,15 @@ export class TimeSinceComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.text = this.calculate();
     this.interval = window.setInterval(() => {
       this.text = this.calculate();
       this.ref.markForCheck();
     }, 1000 * (this.fastRender ? 1 : 60));
+  }
+
+  ngOnChanges() {
+    this.text = this.calculate();
+    this.ref.markForCheck();
   }
 
   ngOnDestroy() {

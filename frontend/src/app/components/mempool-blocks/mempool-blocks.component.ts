@@ -35,8 +35,9 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.mempoolBlocksSubscription = this.stateService.mempoolBlocks$
       .subscribe((blocks) => {
-        this.mempoolBlocksFull = JSON.parse(JSON.stringify(blocks));
-        this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(blocks);
+        const stringifiedBlocks = JSON.stringify(blocks);
+        this.mempoolBlocksFull = JSON.parse(stringifiedBlocks);
+        this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(stringifiedBlocks));
         this.calculateTransactionPosition();
       });
 
