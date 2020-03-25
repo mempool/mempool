@@ -4,7 +4,7 @@ import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
 import { take } from 'rxjs/operators';
-
+import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-mempool-blocks',
   templateUrl: './mempool-blocks.component.html',
@@ -14,6 +14,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   mempoolBlocks: MempoolBlock[];
   mempoolBlocksFull: MempoolBlock[];
   mempoolBlocksSubscription: Subscription;
+  network = environment.network;
 
   blockWidth = 125;
   blockPadding = 30;

@@ -77,7 +77,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       ),
     )
     .subscribe((transactions: Transaction[]) => {
-      if (this.fees === undefined) {
+      if (this.fees === undefined && transactions[0]) {
         this.fees = transactions[0].vout.reduce((acc: number, curr: Vout) => acc + curr.value, 0) / 100000000 - this.blockSubsidy;
       }
       this.transactions = transactions;

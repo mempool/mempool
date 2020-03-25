@@ -102,7 +102,12 @@
                       <span class="skeleton-loader"></span>
                     </ng-template>
                     <ng-template #estimationTmpl>
-                      ~{{ 10 * txInBlockIndex + 10 }} minutes <i>({{ txInBlockIndex + 1 }} block{{ txInBlockIndex > 0 ? 's' : '' }})</i>
+                      <ng-template [ngIf]="network === 'liquid'" [ngIfElse]="timeEstimateDefault">
+                        &lt; {{ 1 * txInBlockIndex + 1 }} minutes <i>({{ txInBlockIndex + 1 }} block{{ txInBlockIndex > 0 ? 's' : '' }})</i>
+                      </ng-template>
+                      <ng-template #timeEstimateDefault>
+                        ~{{ 10 * txInBlockIndex + 10 }} minutes <i>({{ txInBlockIndex + 1 }} block{{ txInBlockIndex > 0 ? 's' : '' }})</i>
+                      </ng-template>
                     </ng-template>
                   </td>
                 </tr>
