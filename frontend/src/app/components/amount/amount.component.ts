@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 import { StateService } from '../../services/state.service';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-amount',
@@ -11,6 +12,7 @@ import { Observable } from 'rxjs';
 export class AmountComponent implements OnInit {
   conversions$: Observable<any>;
   viewFiat$: Observable<boolean>;
+  network = environment.network;
 
   @Input() satoshis: number;
 

@@ -9,6 +9,7 @@ import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-transaction',
@@ -16,6 +17,7 @@ import { SeoService } from 'src/app/services/seo.service';
   styleUrls: ['./transaction.component.scss']
 })
 export class TransactionComponent implements OnInit, OnDestroy {
+  network = environment.network;
   tx: Transaction;
   txId: string;
   feeRating: number;
