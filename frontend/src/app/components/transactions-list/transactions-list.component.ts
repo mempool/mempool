@@ -42,6 +42,11 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       observableObject[i] = this.electrsApiService.getOutspends$(tx.txid);
     });
 
+    if (Object.keys(observableObject).length > 100) {
+      console.log('Too many outspends requests');
+      return;
+    }
+
     forkJoin(observableObject)
       .subscribe((outspends: any) => {
         const newOutspends = [];

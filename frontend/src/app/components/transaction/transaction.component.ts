@@ -139,7 +139,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
       )
       .subscribe((block) => {
         const feePervByte = this.tx.fee / (this.tx.weight / 4);
-        this.medianFeeNeeded = block.feeRange[Math.round(block.feeRange.length * 0.5)];
+        this.medianFeeNeeded = Math.round(block.feeRange[Math.round(block.feeRange.length * 0.5)]);
 
         // Block not filled
         if (block.weight < 4000000 * 0.95) {
