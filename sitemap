@@ -1,11 +1,10 @@
 #!/usr/bin/env zsh
 BLOCK_TIP_HEIGHT="$(curl -s https://mempool.space/electrs/mainnet/blocks/tip/height)"
 BLOCK_HEIGHT=0
-BLOCK_PER_FILE=1000
+BLOCK_PER_FILE=144
 
 FILE_TOTAL="$(($BLOCK_TIP_HEIGHT / $BLOCK_PER_FILE))"
-FILE_START="$(($FILE_TOTAL - 10))"
-FILE_START=0 # initial index
+FILE_START=1
 FILE_STOP="${FILE_TOTAL}"
 FILE="${FILE_START}"
 
@@ -24,32 +23,35 @@ BLOCK_TIMESTAMP=$(echo "${BLOCK}"|sed -e 's/.*timestamp.://' -e 's/,.*//')
 
 SITEMAP_FILE=$(printf "sitemap-%05d.xml" "${FILE}")
 SITEMAP_LASTMOD=$(date -r "${BLOCK_TIMESTAMP}" +"%Y-%m-%dT%H:%M:%SZ")
-echo "generating ${SITEMAP_FILE} from block ${BLOCK_HEIGHT}"
 
-echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">' > "${SITEMAP_FILE}"
+if [ ! -f "${SITEMAP_FILE}.gz" ] || [ "${BLOCK_HEIGHT}" -gt $(($BLOCK_TIP_HEIGHT - 2000)) ];then
 
-BLOCK_STOP="$(($BLOCK_HEIGHT + ${BLOCK_PER_FILE}))"
-until [ "${BLOCK_HEIGHT}" = "${BLOCK_STOP}" ];do
+    BLOCK_STOP="$(($BLOCK_HEIGHT - ${BLOCK_PER_FILE}))"
+    echo "generating ${SITEMAP_FILE} for block ${BLOCK_STOP} ~ ${BLOCK_HEIGHT}"
 
-    BLOCK_HASH=$(curl -s https://mempool.space/electrs/mainnet/block-height/${BLOCK_HEIGHT})
-    BLOCK=$(curl -s https://mempool.space/electrs/mainnet/block/${BLOCK_HASH})
-    BLOCK_TIMESTAMP=$(echo "${BLOCK}"|sed -e 's/.*timestamp.://' -e 's/,.*//')
-    BLOCK_LASTMOD=$(date -r "${BLOCK_TIMESTAMP}" +"%Y-%m-%dT%H:%M:%SZ")
+    echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">' > "${SITEMAP_FILE}"
 
-    echo '<url>' >> "${SITEMAP_FILE}"
-    echo "<loc>https://mempool.space/block/${BLOCK_HASH}</loc>" >> "${SITEMAP_FILE}"
-    echo "<lastmod>${BLOCK_LASTMOD}</lastmod>" >> "${SITEMAP_FILE}"
-    echo '</url>' >> "${SITEMAP_FILE}"
+    until [ "${BLOCK_HEIGHT}" = "${BLOCK_STOP}" ];do
 
-    ((BLOCK_HEIGHT++))
-done
+        BLOCK_HASH=$(curl -s https://mempool.space/electrs/mainnet/block-height/${BLOCK_HEIGHT})
+        BLOCK=$(curl -s https://mempool.space/electrs/mainnet/block/${BLOCK_HASH})
+        BLOCK_TIMESTAMP=$(echo "${BLOCK}"|sed -e 's/.*timestamp.://' -e 's/,.*//')
+        BLOCK_LASTMOD=$(date -r "${BLOCK_TIMESTAMP}" +"%Y-%m-%dT%H:%M:%SZ")
 
-echo '</urlset>' >> "${SITEMAP_FILE}"
-gzip -f "${SITEMAP_FILE}"
-SITEMAP_FILE="${SITEMAP_FILE}.gz"
+        echo '<url>' >> "${SITEMAP_FILE}"
+        echo "<loc>https://mempool.space/block/${BLOCK_HASH}</loc>" >> "${SITEMAP_FILE}"
+        echo "<lastmod>${BLOCK_LASTMOD}</lastmod>" >> "${SITEMAP_FILE}"
+        echo '</url>' >> "${SITEMAP_FILE}"
+
+        ((BLOCK_HEIGHT--))
+    done
+
+    echo '</urlset>' >> "${SITEMAP_FILE}"
+    gzip -f "${SITEMAP_FILE}"
+fi
 
 echo '<sitemap>' >> sitemap.xml
-echo "<loc>https://mempool.space/${SITEMAP_FILE}</loc>" >> sitemap.xml
+echo "<loc>https://mempool.space/${SITEMAP_FILE}.gz</loc>" >> sitemap.xml
 echo "<lastmod>${SITEMAP_LASTMOD}</lastmod>" >> sitemap.xml
 echo '</sitemap>' >> sitemap.xml
 
