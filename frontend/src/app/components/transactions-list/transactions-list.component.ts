@@ -39,13 +39,12 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       if (this.outspends[i]) {
         return;
       }
+      if (tx.vin.length + tx.vout.length > 50) {
+        console.log('Too many outspends on transaction: ', tx.txid);
+        return;
+      }
       observableObject[i] = this.electrsApiService.getOutspends$(tx.txid);
     });
-
-    if (Object.keys(observableObject).length > 100) {
-      console.log('Too many outspends requests');
-      return;
-    }
 
     forkJoin(observableObject)
       .subscribe((outspends: any) => {
