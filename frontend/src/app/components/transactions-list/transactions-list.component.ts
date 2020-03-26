@@ -36,11 +36,9 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     }
     const observableObject = {};
     this.transactions.forEach((tx, i) => {
+      tx['@voutLength'] = 10;
+      tx['@vinLength'] = 10;
       if (this.outspends[i]) {
-        return;
-      }
-      if (tx.vin.length + tx.vout.length > 50) {
-        console.log('Too many outspends on transaction: ', tx.txid);
         return;
       }
       observableObject[i] = this.electrsApiService.getOutspends$(tx.txid);
@@ -63,7 +61,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     this.loadMore.emit();
   }
 
-  getTotalTxOutput(tx: any) {
+  getTotalTxOutput(tx: Transaction) {
     return tx.vout.map((v: any) => v.value || 0).reduce((a: number, b: number) => a + b);
   }
 
@@ -74,5 +72,23 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
   trackByFn(index: number, tx: Transaction) {
     return tx.txid + tx.status.confirmed;
+  }
+
+  loadMoreVin(tx: Transaction) {
+    tx['@vinLength'] += 10;
+    this.ref.markForCheck();
+  }
+
+  loadMoreVout(tx: Transaction) {
+    tx['@voutLength'] += 10;
+    this.ref.markForCheck();
+  }
+
+  getFilteredTxVin(tx: Transaction) {
+    return tx.vin.slice(0, tx['@vinLength']);
+  }
+
+  getFilteredTxVout(tx: Transaction) {
+    return tx.vout.slice(0, tx['@voutLength']);
   }
 }
