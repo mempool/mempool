@@ -16,7 +16,7 @@
       <div class="col">
         <table class="table table-borderless smaller-text table-xs" style="margin: 0;">
           <tbody>
-            <tr *ngFor="let vin of tx.vin">
+            <tr *ngFor="let vin of getFilteredTxVin(tx)">
               <td class="arrow-td">
                 <ng-template [ngIf]="vin.prevout === null" [ngIfElse]="hasPrevout">
                   <i class="arrow grey"></i>
@@ -47,6 +47,11 @@
                 <app-amount *ngIf="vin.prevout" [satoshis]="vin.prevout.value"></app-amount>
               </td>
             </tr>
+            <tr *ngIf="tx.vin.length > tx['@vinLength']">
+              <td colspan="3" class="text-center">
+                <button class="btn btn-sm btn-primary" (click)="loadMoreVin(tx)">Load more</button>
+              </td>
+            </tr>
           </tbody>
         </table>
 
@@ -54,7 +59,7 @@
       <div class="col mobile-bottomcol">
         <table class="table table-borderless smaller-text table-xs"  style="margin: 0;">
           <tbody>
-            <tr *ngFor="let vout of tx.vout; let vindex = index;">
+            <tr *ngFor="let vout of getFilteredTxVout(tx); let vindex = index;">
               <td>
                 <a *ngIf="vout.scriptpubkey_address; else scriptpubkey_type" [routerLink]="['/address/', vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">
                   <span class="d-block d-lg-none">{{ vout.scriptpubkey_address | shortenString : 16 }}</span>
@@ -75,6 +80,11 @@
                     <a [routerLink]="['/tx/', outspends[i][vindex].txid]"><i class="arrow green"></i></a>
                   </ng-template>
                 </ng-template>
+              </td>
+            </tr>
+            <tr *ngIf="tx.vout.length > tx['@voutLength']">
+              <td colspan="3" class="text-center">
+                <button class="btn btn-sm btn-primary" (click)="loadMoreVout(tx)">Load more</button>
               </td>
             </tr>
             <tr>
