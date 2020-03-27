@@ -116,7 +116,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
 
         for (const block of mempoolBlocks) {
           for (let i = 0; i < block.feeRange.length - 1; i++) {
-            if (txFeePerVSize < block.feeRange[i + 1] && txFeePerVSize >= block.feeRange[i]) {
+            if (txFeePerVSize <= block.feeRange[i + 1] && txFeePerVSize >= block.feeRange[i]) {
               this.txInBlockIndex = mempoolBlocks.indexOf(block);
             }
           }
@@ -148,7 +148,9 @@ export class TransactionComponent implements OnInit, OnDestroy {
 
         this.overpaidTimes = Math.round(feePervByte / this.medianFeeNeeded);
 
-        if (feePervByte <= this.medianFeeNeeded || this.overpaidTimes < 2) {
+        if (feePervByte < 0.9) {
+          this.feeRating = 0;
+        } else if (feePervByte <= this.medianFeeNeeded || this.overpaidTimes < 2) {
           this.feeRating = 1;
         } else {
           this.feeRating = 2;
