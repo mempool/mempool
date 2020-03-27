@@ -27,7 +27,7 @@ BLOCK_HASH=$(curl -s https://mempool.space/electrs/mainnet/block-height/${BLOCK_
 BLOCK=$(curl -s https://mempool.space/electrs/mainnet/block/${BLOCK_HASH})
 BLOCK_TIMESTAMP=$(echo "${BLOCK}"|sed -e 's/.*timestamp.://' -e 's/,.*//')
 
-SITEMAP_FILE=$(printf "sitemap-%05d.xml" "${FILE}")
+SITEMAP_FILE=$(printf "sitemap/%05d.xml" "${FILE}")
 SITEMAP_LASTMOD=$(date -r "${BLOCK_TIMESTAMP}" +"%Y-%m-%dT%H:%M:%SZ")
 
 if [ ! -f "${SITEMAP_FILE}" ] || [ "${BLOCK_HEIGHT}" -gt $(($BLOCK_TIP_HEIGHT - 2000)) ];then
