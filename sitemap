@@ -1,7 +1,9 @@
 #!/usr/bin/env zsh
+SITEMAP_TEMP_FILE=temp.xml
+
 BLOCK_TIP_HEIGHT="$(curl -s https://mempool.space/electrs/mainnet/blocks/tip/height)"
 BLOCK_HEIGHT=0
-BLOCK_PER_FILE=144
+BLOCK_PER_FILE=100
 
 FILE_TOTAL="$(($BLOCK_TIP_HEIGHT / $BLOCK_PER_FILE))"
 FILE_START=1
@@ -12,11 +14,14 @@ echo "${BLOCK_TIP_HEIGHT} blocks"
 echo "${BLOCK_PER_FILE} blocks per sitemap"
 echo "${FILE_TOTAL} total sitemaps"
 
-echo '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' > sitemap.xml
+echo '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' > "${SITEMAP_TEMP_FILE}"
 
 until [ "${FILE}" = "${FILE_STOP}" ];do
 
-BLOCK_HEIGHT=$(($FILE * $BLOCK_PER_FILE))
+BLOCK_HEIGHT=$((($FILE * $BLOCK_PER_FILE) - 1))
+if [ "${BLOCK_HEIGHT}" -gt "${BLOCK_TIP_HEIGHT}" ];then
+	BLOCK_HEIGHT="${BLOCK_TIP_HEIGHT}"
+fi
 BLOCK_HASH=$(curl -s https://mempool.space/electrs/mainnet/block-height/${BLOCK_HEIGHT})
 BLOCK=$(curl -s https://mempool.space/electrs/mainnet/block/${BLOCK_HASH})
 BLOCK_TIMESTAMP=$(echo "${BLOCK}"|sed -e 's/.*timestamp.://' -e 's/,.*//')
@@ -26,12 +31,12 @@ SITEMAP_LASTMOD=$(date -r "${BLOCK_TIMESTAMP}" +"%Y-%m-%dT%H:%M:%SZ")
 
 if [ ! -f "${SITEMAP_FILE}.gz" ] || [ "${BLOCK_HEIGHT}" -gt $(($BLOCK_TIP_HEIGHT - 2000)) ];then
 
-    BLOCK_STOP="$(($BLOCK_HEIGHT - ${BLOCK_PER_FILE}))"
+    BLOCK_STOP="$((($BLOCK_HEIGHT - ${BLOCK_PER_FILE}) + 1))"
     echo "generating ${SITEMAP_FILE} for block ${BLOCK_STOP} ~ ${BLOCK_HEIGHT}"
 
     echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">' > "${SITEMAP_FILE}"
 
-    until [ "${BLOCK_HEIGHT}" = "${BLOCK_STOP}" ];do
+    while [ "${BLOCK_HEIGHT}" -ge "${BLOCK_STOP}" ];do
 
         BLOCK_HASH=$(curl -s https://mempool.space/electrs/mainnet/block-height/${BLOCK_HEIGHT})
         BLOCK=$(curl -s https://mempool.space/electrs/mainnet/block/${BLOCK_HASH})
@@ -50,13 +55,14 @@ if [ ! -f "${SITEMAP_FILE}.gz" ] || [ "${BLOCK_HEIGHT}" -gt $(($BLOCK_TIP_HEIGHT
     gzip -f "${SITEMAP_FILE}"
 fi
 
-echo '<sitemap>' >> sitemap.xml
-echo "<loc>https://mempool.space/${SITEMAP_FILE}.gz</loc>" >> sitemap.xml
-echo "<lastmod>${SITEMAP_LASTMOD}</lastmod>" >> sitemap.xml
-echo '</sitemap>' >> sitemap.xml
+echo '<sitemap>' >> "${SITEMAP_TEMP_FILE}"
+echo "<loc>https://mempool.space/${SITEMAP_FILE}.gz</loc>" >> "${SITEMAP_TEMP_FILE}"
+echo "<lastmod>${SITEMAP_LASTMOD}</lastmod>" >> "${SITEMAP_TEMP_FILE}"
+echo '</sitemap>' >> "${SITEMAP_TEMP_FILE}"
 
 ((FILE++))
 
 done
 
-echo '</sitemapindex>' >> sitemap.xml
+echo '</sitemapindex>' >> "${SITEMAP_TEMP_FILE}"
+mv "${SITEMAP_TEMP_FILE}" "sitemap.xml"
