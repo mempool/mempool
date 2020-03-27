@@ -14,7 +14,8 @@ echo "${BLOCK_TIP_HEIGHT} blocks"
 echo "${BLOCK_PER_FILE} blocks per sitemap"
 echo "${FILE_TOTAL} total sitemaps"
 
-echo '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' > "${SITEMAP_TEMP_FILE}"
+echo '<?xml version="1.0" encoding="UTF-8"?>' > "${SITEMAP_TEMP_FILE}"
+echo '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' >> "${SITEMAP_TEMP_FILE}"
 
 until [ "${FILE}" = "${FILE_STOP}" ];do
 
@@ -29,12 +30,13 @@ BLOCK_TIMESTAMP=$(echo "${BLOCK}"|sed -e 's/.*timestamp.://' -e 's/,.*//')
 SITEMAP_FILE=$(printf "sitemap-%05d.xml" "${FILE}")
 SITEMAP_LASTMOD=$(date -r "${BLOCK_TIMESTAMP}" +"%Y-%m-%dT%H:%M:%SZ")
 
-if [ ! -f "${SITEMAP_FILE}.gz" ] || [ "${BLOCK_HEIGHT}" -gt $(($BLOCK_TIP_HEIGHT - 2000)) ];then
+if [ ! -f "${SITEMAP_FILE}" ] || [ "${BLOCK_HEIGHT}" -gt $(($BLOCK_TIP_HEIGHT - 2000)) ];then
 
     BLOCK_STOP="$((($BLOCK_HEIGHT - ${BLOCK_PER_FILE}) + 1))"
     echo "generating ${SITEMAP_FILE} for block ${BLOCK_STOP} ~ ${BLOCK_HEIGHT}"
 
-    echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">' > "${SITEMAP_FILE}"
+    echo '<?xml version="1.0" encoding="UTF-8"?>' > "${SITEMAP_FILE}"
+    echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">' >> "${SITEMAP_FILE}"
 
     while [ "${BLOCK_HEIGHT}" -ge "${BLOCK_STOP}" ];do
 
@@ -52,11 +54,10 @@ if [ ! -f "${SITEMAP_FILE}.gz" ] || [ "${BLOCK_HEIGHT}" -gt $(($BLOCK_TIP_HEIGHT
     done
 
     echo '</urlset>' >> "${SITEMAP_FILE}"
-    gzip -f "${SITEMAP_FILE}"
 fi
 
 echo '<sitemap>' >> "${SITEMAP_TEMP_FILE}"
-echo "<loc>https://mempool.space/${SITEMAP_FILE}.gz</loc>" >> "${SITEMAP_TEMP_FILE}"
+echo "<loc>https://mempool.space/${SITEMAP_FILE}</loc>" >> "${SITEMAP_TEMP_FILE}"
 echo "<lastmod>${SITEMAP_LASTMOD}</lastmod>" >> "${SITEMAP_TEMP_FILE}"
 echo '</sitemap>' >> "${SITEMAP_TEMP_FILE}"
 
