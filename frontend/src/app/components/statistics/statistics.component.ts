@@ -13,6 +13,7 @@ import { ApiService } from '../../services/api.service';
 import * as Chartist from 'chartist';
 import { StateService } from 'src/app/services/state.service';
 import { SeoService } from 'src/app/services/seo.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-statistics',
@@ -20,6 +21,8 @@ import { SeoService } from 'src/app/services/seo.service';
   styleUrls: ['./statistics.component.scss']
 })
 export class StatisticsComponent implements OnInit {
+  network = environment.network;
+
   loading = true;
   spinnerLoading = false;
 
@@ -99,7 +102,10 @@ export class StatisticsComponent implements OnInit {
                return '500+';
               }
               if (i === 0) {
-                return '1 sat/vbyte';
+                if (this.network === 'liquid') {
+                  return '0 - 1';
+                }
+                return '1 sat/vB';
               }
               return arr[i - 1] + ' - ' + sats;
             })
@@ -193,6 +199,11 @@ export class StatisticsComponent implements OnInit {
     };
 
     const finalArrayVbyte = this.generateArray(mempoolStats);
+
+    // Only Liquid has lower than 1 sat/vb transactions
+    if (this.network !== 'liquid') {
+      finalArrayVbyte.shift();
+    }
 
     this.mempoolVsizeFeesData = {
       labels: labels,

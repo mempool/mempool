@@ -129,7 +129,6 @@ body {
   margin-bottom: 0;
 }
 
-
 .close {
   color: #fff;
 }
@@ -162,7 +161,6 @@ body {
 /* Chartist */
 $ct-series-names: (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z);
 $ct-series-colors: (
-  #b71c1c,
   #D81B60,
   #8E24AA,
   #5E35B1,
@@ -262,6 +260,7 @@ $ct-series-colors: (
       height: 12px;
       position: absolute;
       left: 0;
+      bottom: 3px;
       content: '';
       border: 3px solid transparent;
       border-radius: 2px;
