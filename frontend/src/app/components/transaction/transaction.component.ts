@@ -148,9 +148,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
 
         this.overpaidTimes = Math.round(feePervByte / this.medianFeeNeeded);
 
-        if (feePervByte < 0.9) {
-          this.feeRating = 0;
-        } else if (feePervByte <= this.medianFeeNeeded || this.overpaidTimes < 2) {
+        if (feePervByte <= this.medianFeeNeeded || this.overpaidTimes < 2) {
           this.feeRating = 1;
         } else {
           this.feeRating = 2;
