@@ -194,9 +194,6 @@ export class StatisticsComponent implements OnInit {
 
     const finalArrayVbyte = this.generateArray(mempoolStats);
 
-    // Remove the 0-1 fee vbyte since it's practially empty
-    finalArrayVbyte.shift();
-
     this.mempoolVsizeFeesData = {
       labels: labels,
       series: finalArrayVbyte
