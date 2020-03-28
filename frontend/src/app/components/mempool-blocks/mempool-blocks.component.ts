@@ -58,7 +58,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
   @HostListener('window:resize', ['$event'])
   onResize() {
-    if (this.mempoolBlocks.length) {
+    if (this.mempoolBlocks && this.mempoolBlocks.length) {
       this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(JSON.stringify(this.mempoolBlocksFull)));
     }
   }
