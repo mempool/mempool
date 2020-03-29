@@ -1,9 +1,29 @@
-# mempool.space
-Please help us test and report bugs to our GitHub issue tracker.
+# mempool
+## a mempool visualizer and explorer for Bitcoin
 
-Mempool visualizer for the Bitcoin blockchain. Live demo: https://mempool.space/
-![blockchain](https://pbs.twimg.com/media/EAETXWAU8AAj4IP?format=jpg&name=4096x4096)
 ![mempool](https://pbs.twimg.com/media/EAETXWCU4AAv2v-?format=jpg&name=4096x4096)
+![blockchain](https://pbs.twimg.com/media/EAETXWAU8AAj4IP?format=jpg&name=4096x4096)
+
+## Pick the right version for your use case
+
+Mempool V1 has basic explorer functionality and can run from a Bitcoin Core full node on a Raspberry Pi (no pruning, txindex=1).
+
+Mempool V2 is what runs on https://mempool.space and has advanced explorer functionality, but requires a fully synced electrs backend running on powerful server hardware.
+
+# Mempool V1 using Docker (easy)
+
+Install from Docker Hub, passing your Bitcoin Core RPC credentials as environment variables:
+
+```bash
+docker pull mempool/mempool:v1.0
+docker create -p 80:80 -e BITCOIN_NODE_HOST=192.168.1.102 -e BITCOIN_NODE_USER=foo -e BITCOIN_NODE_PASS=bar --name mempool mempool/mempool:v1.0
+docker start mempool
+docker logs mempool
+```
+
+You should see mempool starting up, which takes over an hour (needs 8 blocks). When it's ready, visit http://127.0.0.1/ to see your mempool.
+
+# Mempool V1 not using Docker (advanced)
 
 ## Dependencies
 
