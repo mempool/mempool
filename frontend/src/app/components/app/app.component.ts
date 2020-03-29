@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
     this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) {
         if (this.network === 'liquid' || this.network === 'testnet') {
-          this.updateCanonicalUrlElement('https://mempool.ninja' + location.pathname);
+          this.updateCanonicalUrlElement('https://' + this.network + '.mempool.ninja' + location.pathname);
         } else {
           this.updateCanonicalUrlElement('https://mempool.space' + location.pathname);
         }
