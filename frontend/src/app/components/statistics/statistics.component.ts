@@ -3,9 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { formatDate } from '@angular/common';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { of, merge} from 'rxjs';
-import { switchMap, tap } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 
-import { VbytesPipe } from '../../pipes/bytes-pipe/vbytes.pipe';
 import { OptimizedMempoolStats } from '../../interfaces/node-api.interface';
 import { WebsocketService } from '../../services/websocket.service';
 import { ApiService } from '../../services/api.service';
@@ -39,7 +38,6 @@ export class StatisticsComponent implements OnInit {
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
-    private vbytesPipe: VbytesPipe,
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private websocketService: WebsocketService,
@@ -75,44 +73,6 @@ export class StatisticsComponent implements OnInit {
       return index % nr  === 0 ? value : null;
     };
 
-    this.mempoolVsizeFeesOptions = {
-      showArea: true,
-      showLine: false,
-      fullWidth: true,
-      showPoint: false,
-      low: 0,
-      axisX: {
-        labelInterpolationFnc: labelInterpolationFnc,
-        offset: 40
-      },
-      axisY: {
-        labelInterpolationFnc: (value: number): any => {
-          return this.vbytesPipe.transform(value, 2);
-        },
-        offset: 160
-      },
-      plugins: [
-        Chartist.plugins.ctTargetLine({
-          value: 1000000
-        }),
-        Chartist.plugins.legend({
-          legendNames: [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
-            250, 300, 350, 400, 500, 600].map((sats, i, arr) => {
-              if (sats === 600) {
-               return '500+';
-              }
-              if (i === 0) {
-                if (this.network === 'liquid') {
-                  return '0 - 1';
-                }
-                return '1 sat/vB';
-              }
-              return arr[i - 1] + ' - ' + sats;
-            })
-        })
-      ]
-    };
-
     this.transactionsWeightPerSecondOptions = {
       showArea: false,
       showLine: true,
@@ -142,11 +102,6 @@ export class StatisticsComponent implements OnInit {
     merge(
       of(''),
       this.radioGroupForm.controls.dateSpan.valueChanges
-        .pipe(
-          tap(() => {
-            this.mempoolStats = [];
-          })
-        )
     )
     .pipe(
       switchMap(() => {
@@ -197,40 +152,5 @@ export class StatisticsComponent implements OnInit {
       labels: labels,
       series: [mempoolStats.map((stats) => stats.vbytes_per_second)],
     };
-
-    const finalArrayVbyte = this.generateArray(mempoolStats);
-
-    // Only Liquid has lower than 1 sat/vb transactions
-    if (this.network !== 'liquid') {
-      finalArrayVbyte.shift();
-    }
-
-    this.mempoolVsizeFeesData = {
-      labels: labels,
-      series: finalArrayVbyte
-    };
-  }
-
-  generateArray(mempoolStats: OptimizedMempoolStats[]) {
-    const finalArray: number[][] = [];
-    let feesArray: number[] = [];
-
-    for (let index = 37; index > -1; index--) {
-      feesArray = [];
-      mempoolStats.forEach((stats) => {
-        const theFee = stats.vsizes[index].toString();
-        if (theFee) {
-          feesArray.push(parseInt(theFee, 10));
-        } else {
-          feesArray.push(0);
-        }
-      });
-      if (finalArray.length) {
-        feesArray = feesArray.map((value, i) => value + finalArray[finalArray.length - 1][i]);
-      }
-      finalArray.push(feesArray);
-    }
-    finalArray.reverse();
-    return finalArray;
   }
 }

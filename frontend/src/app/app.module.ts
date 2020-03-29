@@ -44,6 +44,7 @@ import { MempoolBlockComponent } from './components/mempool-block/mempool-block.
 import { FeeDistributionGraphComponent } from './components/fee-distribution-graph/fee-distribution-graph.component';
 import { TimespanComponent } from './components/timespan/timespan.component';
 import { SeoService } from './services/seo.service';
+import { MempoolGraphComponent } from './components/mempool-graph/mempool-graph.component';
 
 @NgModule({
   declarations: [
@@ -78,6 +79,7 @@ import { SeoService } from './services/seo.service';
     FiatComponent,
     MempoolBlockComponent,
     FeeDistributionGraphComponent,
+    MempoolGraphComponent,
   ],
   imports: [
     BrowserModule,
