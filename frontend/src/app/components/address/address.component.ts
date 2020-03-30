@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
-import { switchMap, filter } from 'rxjs/operators';
+import { switchMap, filter, catchError } from 'rxjs/operators';
 import { Address, Transaction } from '../../interfaces/electrs.interface';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { StateService } from 'src/app/services/state.service';
@@ -68,11 +68,21 @@ export class AddressComponent implements OnInit, OnDestroy {
               .pipe(filter((state) => state === 2 && this.transactions && this.transactions.length > 0))
           )
           .pipe(
-            switchMap(() => this.electrsApiService.getAddress$(this.addressString))
+            switchMap(() => this.electrsApiService.getAddress$(this.addressString)
+              .pipe(
+                catchError((err) => {
+                  this.isLoadingAddress = false;
+                  this.error = err;
+                  console.log(err);
+                  return of(null);
+                })
+              )
+            )
           );
         })
       )
       .pipe(
+        filter((address) => !!address),
         switchMap((address) => {
           this.address = address;
           this.updateChainStats();
@@ -83,8 +93,10 @@ export class AddressComponent implements OnInit, OnDestroy {
         }),
         switchMap((transactions) => {
           this.tempTransactions = transactions;
-          this.lastTransactionTxId = transactions[transactions.length - 1].txid;
-          this.loadedConfirmedTxCount += transactions.filter((tx) => tx.status.confirmed).length;
+          if (transactions.length) {
+            this.lastTransactionTxId = transactions[transactions.length - 1].txid;
+            this.loadedConfirmedTxCount += transactions.filter((tx) => tx.status.confirmed).length;
+          }
 
           const fetchTxs: string[] = [];
           this.timeTxIndexes = [];
