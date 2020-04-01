@@ -3,6 +3,7 @@ import bitcoinApi from './bitcoin/electrs-api';
 import { MempoolInfo, TransactionExtended, Transaction } from '../interfaces';
 
 class Mempool {
+  private inSync: boolean = false;
   private mempoolCache: any = {};
   private mempoolInfo: MempoolInfo | undefined;
   private mempoolChangedCallback: Function | undefined;
@@ -15,6 +16,10 @@ class Mempool {
 
   constructor() {
     setInterval(this.updateTxPerSecond.bind(this), 1000);
+  }
+
+  public isInSync() {
+    return this.inSync;
   }
 
   public setMempoolChangedCallback(fn: Function) {
@@ -94,11 +99,13 @@ class Mempool {
           if (transaction) {
             this.mempoolCache[txid] = transaction;
             txCount++;
-            this.txPerSecondArray.push(new Date().getTime());
-            this.vBytesPerSecondArray.push({
-              unixTime: new Date().getTime(),
-              vSize: transaction.vsize,
-            });
+            if (this.inSync) {
+              this.txPerSecondArray.push(new Date().getTime());
+              this.vBytesPerSecondArray.push({
+                unixTime: new Date().getTime(),
+                vSize: transaction.vsize,
+              });
+            }
             hasChange = true;
             if (diff > 0) {
               console.log('Fetched transaction ' + txCount + ' / ' + diff);
@@ -125,6 +132,11 @@ class Mempool {
           hasChange = true;
         }
       });
+
+      if (!this.inSync && transactions.length === Object.keys(newMempool).length) {
+        this.inSync = true;
+        console.log('The mempool is now in sync!');
+      }
 
       console.log(`New mempool size: ${Object.keys(newMempool).length} Change: ${diff}`);
 

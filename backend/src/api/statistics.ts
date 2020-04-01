@@ -23,7 +23,12 @@ class Statistics {
 
     setTimeout(() => {
       this.runStatistics();
-      this.intervalTimer = setInterval(() => { this.runStatistics(); }, 1 * 60 * 1000);
+      this.intervalTimer = setInterval(() => {
+        if (!memPool.isInSync()) {
+          return;
+        }
+        this.runStatistics();
+      }, 1 * 60 * 1000);
     }, difference);
   }
 
