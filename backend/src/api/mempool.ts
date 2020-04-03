@@ -5,7 +5,7 @@ import { MempoolInfo, TransactionExtended, Transaction } from '../interfaces';
 class Mempool {
   private inSync: boolean = false;
   private mempoolCache: any = {};
-  private mempoolInfo: MempoolInfo | undefined;
+  private mempoolInfo: MempoolInfo = { size: 0, bytes: 0 };
   private mempoolChangedCallback: Function | undefined;
 
   private txPerSecondArray: number[] = [];
