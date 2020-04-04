@@ -59,7 +59,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       tap((block: Block) => {
         this.block = block;
         this.blockHeight = block.height;
-        this.seoService.setTitle('Block: #' + block.height + ': ' + block.id);
+        this.seoService.setTitle('Block: #' + block.height + ': ' + block.id, true);
         this.isLoadingBlock = false;
         this.setBlockSubsidy();
         if (block.reward) {

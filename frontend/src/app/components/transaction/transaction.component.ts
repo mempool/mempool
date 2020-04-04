@@ -45,7 +45,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
     this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         this.txId = params.get('id') || '';
-        this.seoService.setTitle('Transaction: ' + this.txId);
+        this.seoService.setTitle('Transaction: ' + this.txId, true);
         this.error = undefined;
         this.feeRating = undefined;
         this.isLoadingTx = true;
