@@ -10,7 +10,7 @@
           <span class="yellow-color">~{{ block.medianFee | ceil }} sats/vB</span>
         </div>
         <div class="block-size">{{ block.size | bytes: 2 }}</div>
-        <div class="transaction-count">{{ block.tx_count }} transactions</div>
+        <div class="transaction-count">{{ block.tx_count | number }} transactions</div>
         <br /><br />
         <div class="time-difference"><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since> ago</div>
       </div>

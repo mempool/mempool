@@ -49,7 +49,7 @@
             </tr>
             <tr *ngIf="tx.vin.length > tx['@vinLength']">
               <td colspan="3" class="text-center">
-                <button class="btn btn-sm btn-primary" (click)="loadMoreVin(tx)">Load more</button>
+                <button class="btn btn-sm btn-primary mt-2" (click)="loadMoreVin(tx)">Load more</button>
               </td>
             </tr>
           </tbody>
@@ -84,7 +84,7 @@
             </tr>
             <tr *ngIf="tx.vout.length > tx['@voutLength']">
               <td colspan="3" class="text-center">
-                <button class="btn btn-sm btn-primary" (click)="loadMoreVout(tx)">Load more</button>
+                <button class="btn btn-sm btn-primary mt-2" (click)="loadMoreVout(tx)">Load more</button>
               </td>
             </tr>
             <tr>
