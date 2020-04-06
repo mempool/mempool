@@ -22,7 +22,7 @@
               </tr>
               <tr>
                 <td>Transactions</td>
-                <td>{{ block.tx_count }}</td>
+                <td>{{ block.tx_count | number }}</td>
               </tr>
               <tr>
                 <td>Size</td>
@@ -76,7 +76,7 @@
 
     <br>
 
-    <h2><ng-template [ngIf]="transactions?.length">{{ transactions?.length || '?' }} of </ng-template>{{ block.tx_count }} transactions</h2>
+    <h2><ng-template [ngIf]="transactions?.length">{{ (transactions?.length | number) || '?' }} of </ng-template>{{ block.tx_count | number }} transactions</h2>
 
     <app-transactions-list [transactions]="transactions" (loadMore)="loadMore()"></app-transactions-list>
 
