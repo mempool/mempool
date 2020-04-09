@@ -4,6 +4,7 @@ import { StateService } from '../../services/state.service';
 import { Block } from '../../interfaces/electrs.interface';
 import { Subscription } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-latest-blocks',
@@ -11,10 +12,14 @@ import { SeoService } from 'src/app/services/seo.service';
   styleUrls: ['./latest-blocks.component.scss'],
 })
 export class LatestBlocksComponent implements OnInit, OnDestroy {
+  network = environment.network;
+
   blocks: any[] = [];
   blockSubscription: Subscription;
   isLoading = true;
   interval: any;
+
+  latestBlockHeight: number;
 
   heightOfPageUntilBlocks = 430;
   heightOfBlocksTableChunk = 470;
@@ -33,6 +38,8 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
         if (block === null || !this.blocks.length) {
           return;
         }
+
+        this.latestBlockHeight = block.height;
 
         if (block.height === this.blocks[0].height) {
           return;
@@ -65,6 +72,8 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
       .subscribe((blocks) => {
         this.blocks = blocks;
         this.isLoading = false;
+
+        this.latestBlockHeight = blocks[0].height;
 
         const spaceForBlocks = window.innerHeight - this.heightOfPageUntilBlocks;
         const chunks = Math.ceil(spaceForBlocks / this.heightOfBlocksTableChunk) - 1;
