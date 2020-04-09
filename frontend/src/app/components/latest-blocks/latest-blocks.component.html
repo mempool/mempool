@@ -1,5 +1,5 @@
 
-<div class="text-center pb-1" *ngIf="network === '' && latestBlockHeight && latestBlockHeight < 630000">
+<div class="text-center pb-1" *ngIf="network === 'mempool' && latestBlockHeight && latestBlockHeight < 630000">
   <h3>Quantitative Hardening in {{ 630000 - latestBlockHeight }} blocks (~<app-timespan [time]="(630000 - latestBlockHeight) * 10 * 60"></app-timespan>)</h3> 
 </div>
 
