@@ -11,11 +11,11 @@
           <tbody>
             <tr>
               <td>Median fee</td>
-              <td>~{{ mempoolBlock.medianFee | ceil }} sats/vB (<app-fiat [value]="mempoolBlock.medianFee * 250" digitsInfo="1.2-2"></app-fiat>)</td>
+              <td>~{{ mempoolBlock.medianFee | number:'1.0-0' }} sats/vB (<app-fiat [value]="mempoolBlock.medianFee * 250" digitsInfo="1.2-2"></app-fiat>)</td>
             </tr>
             <tr>
               <td>Fee span</td>
-              <td><span class="yellow-color">{{ mempoolBlock.feeRange[0] | ceil }} - {{ mempoolBlock.feeRange[mempoolBlock.feeRange.length - 1] | ceil }} sat/vB</span></td>
+              <td><span class="yellow-color">{{ mempoolBlock.feeRange[0] | number:'1.0-0' }} - {{ mempoolBlock.feeRange[mempoolBlock.feeRange.length - 1] | number:'1.0-0' }} sat/vB</span></td>
             </tr>
             <tr>
               <td>Total fees</td>
