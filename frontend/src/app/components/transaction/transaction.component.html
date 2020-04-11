@@ -52,12 +52,12 @@
                 <ng-template [ngIf]="tx.fee">
                   <tr>
                     <td class="td-width">Fee</td>
-                    <td>{{ tx.fee | number }} sats (<app-fiat [value]="tx.fee"></app-fiat>)</td>
+                    <td>{{ tx.fee | number }} sat (<app-fiat [value]="tx.fee"></app-fiat>)</td>
                   </tr>
                   <tr>
                     <td>Fee per vByte</td>
                     <td>
-                      {{ tx.fee / (tx.weight / 4) | number : '1.1-1' }} sats/vB
+                      {{ tx.fee / (tx.weight / 4) | number : '1.1-1' }} sat/vB
                       &nbsp;
                       <span *ngIf="feeRating === 1" class="badge badge-success">Optimal</span>
                       <span *ngIf="feeRating === 2" class="badge badge-warning" title="Only ~{{ medianFeeNeeded }} sat/vB was needed to get into this block">Overpaid {{ overpaidTimes }}x</span>
@@ -119,11 +119,11 @@
               <tbody>
                 <tr>
                   <td class="td-width">Fee</td>
-                  <td>{{ tx.fee | number }} sats (<app-fiat [value]="tx.fee"></app-fiat>)</td>
+                  <td>{{ tx.fee | number }} sat (<app-fiat [value]="tx.fee"></app-fiat>)</td>
                 </tr>
                 <tr>
                   <td>Fee per vByte</td>
-                  <td>{{ tx.fee / (tx.weight / 4) | number : '1.1-1' }} sats/vB</td>
+                  <td>{{ tx.fee / (tx.weight / 4) | number : '1.1-1' }} sat/vB</td>
                 </tr>
               </tbody>
             </table>
