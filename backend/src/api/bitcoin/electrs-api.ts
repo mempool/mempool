@@ -131,8 +131,12 @@ class ElectrsApi {
           reject(err);
         } else if (res.statusCode !== 200) {
           reject(response);
-        } else  {
-          resolve(response);
+        } else {
+          if (response.constructor === Object) {
+            resolve(response);
+          } else {
+            reject('getBlock returned invalid data');
+          }
         }
       });
     });
