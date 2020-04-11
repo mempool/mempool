@@ -3,7 +3,7 @@ import { ElectrsApiService } from '../../services/electrs-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap, filter, take } from 'rxjs/operators';
 import { Transaction, Block } from '../../interfaces/electrs.interface';
-import { of, merge } from 'rxjs';
+import { of, merge, Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from 'src/app/services/audio.service';
@@ -28,6 +28,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
   error: any = undefined;
   latestBlock: Block;
   transactionTime = -1;
+  subscription: Subscription;
 
   rightPosition = 0;
 
@@ -42,7 +43,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.route.paramMap.pipe(
+    this.subscription = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         this.txId = params.get('id') || '';
         this.seoService.setTitle('Transaction: ' + this.txId, true);
@@ -51,6 +52,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
         this.isLoadingTx = true;
         this.transactionTime = -1;
         document.body.scrollTo(0, 0);
+        this.leaveTransaction();
         return merge(
           of(true),
           this.stateService.connectionState$
@@ -160,7 +162,12 @@ export class TransactionComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.websocketService.startTrackTransaction('stop');
+    this.subscription.unsubscribe();
+    this.leaveTransaction();
+  }
+
+  leaveTransaction() {
+    this.websocketService.stopTrackingTransaction();
     this.stateService.markBlock$.next({});
   }
 }

@@ -7,7 +7,7 @@ import { WebsocketService } from 'src/app/services/websocket.service';
 import { StateService } from 'src/app/services/state.service';
 import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
-import { of, merge } from 'rxjs';
+import { of, merge, Subscription } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
 import { environment } from 'src/environments/environment';
 
@@ -25,6 +25,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   transactions: Transaction[];
   isLoadingTransactions = true;
   error: any;
+  mainSubscription: Subscription;
 
   totalConfirmedTxCount = 0;
   loadedConfirmedTxCount = 0;
@@ -49,7 +50,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.websocketService.want(['blocks', 'stats', 'mempool-blocks']);
 
-    this.route.paramMap
+    this.mainSubscription = this.route.paramMap
       .pipe(
         switchMap((params: ParamMap) => {
           this.error = undefined;
@@ -192,6 +193,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.websocketService.startTrackAddress('stop');
+    this.mainSubscription.unsubscribe();
+    this.websocketService.stopTrackingAddress();
   }
 }

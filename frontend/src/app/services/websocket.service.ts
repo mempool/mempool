@@ -15,8 +15,7 @@ export class WebsocketService {
   private websocketSubject: WebSocketSubject<WebsocketResponse> = webSocket<WebsocketResponse | any>(WEB_SOCKET_URL);
   private goneOffline = false;
   private lastWant: string[] | null = null;
-  private trackingTxId: string | null = null;
-  private trackingAddress: string | null = null;
+  private isTrackingTx = false;
   private latestGitCommit = '';
   private onlineCheckTimeout: number;
   private onlineCheckTimeoutTwo: number;
@@ -52,7 +51,7 @@ export class WebsocketService {
           }
 
           if (response.txConfirmed) {
-            this.trackingTxId = null;
+            this.isTrackingTx = false;
             this.stateService.txConfirmed$.next(response.block);
           }
         }
@@ -105,12 +104,6 @@ export class WebsocketService {
           if (this.lastWant) {
             this.want(this.lastWant);
           }
-          if (this.trackingTxId) {
-            this.startTrackTransaction(this.trackingTxId);
-          }
-          if (this.trackingAddress) {
-            this.startTrackTransaction(this.trackingAddress);
-          }
           this.stateService.connectionState$.next(2);
         }
 
@@ -129,12 +122,23 @@ export class WebsocketService {
 
   startTrackTransaction(txId: string) {
     this.websocketSubject.next({ 'track-tx': txId });
-    this.trackingTxId = txId;
+    this.isTrackingTx = true;
+  }
+
+  stopTrackingTransaction() {
+    if (this.isTrackingTx === false) {
+      return;
+    }
+    this.websocketSubject.next({ 'track-tx': 'stop' });
+    this.isTrackingTx = false;
   }
 
   startTrackAddress(address: string) {
     this.websocketSubject.next({ 'track-address': address });
-    this.trackingAddress = address;
+  }
+
+  stopTrackingAddress() {
+    this.websocketSubject.next({ 'track-address': 'stop' });
   }
 
   fetchStatistics(historicalDate: string) {
@@ -168,6 +172,6 @@ export class WebsocketService {
           this.goOffline();
         }
       }, 1000);
-    }, 10000);
+    }, 30000);
   }
 }
