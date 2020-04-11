@@ -5,10 +5,10 @@
         <a [routerLink]="['/mempool-block/', i]" class="blockLink">&nbsp;</a>
         <div class="block-body" *ngIf="mempoolBlocks?.length">
           <div class="fees">
-            <span class="yellow-color">~{{ projectedBlock.medianFee | number:'1.0-0' }} sats/vB</span>
+            <span class="yellow-color">~{{ projectedBlock.medianFee | number:'1.0-0' }} sat/vB</span>
           </div>
           <div class="block-size">{{ projectedBlock.blockSize | bytes: 2 }}</div>
-          <div class="transaction-count">{{ projectedBlock.nTx }} transactions</div>
+          <div class="transaction-count">{{ projectedBlock.nTx | number }} transactions</div>
           <div class="time-difference" *ngIf="projectedBlock.blockVSize < 1000000">
             <ng-template [ngIf]="network === 'liquid'" [ngIfElse]="timeDiffMainnet">
               In &lt; {{ 1 * i + 1 }} minute

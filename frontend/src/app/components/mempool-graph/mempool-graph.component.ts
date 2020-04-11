@@ -49,8 +49,8 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         }),
         Chartist.plugins.legend({
           legendNames: [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
-            250, 300, 350, 400].map((sats, i, arr) => {
-              if (sats === 400) {
+            250, 300, 350, 400].map((sat, i, arr) => {
+              if (sat === 400) {
                return '350+';
               }
               if (i === 0) {
@@ -59,7 +59,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
                 }
                 return '1 sat/vB';
               }
-              return arr[i - 1] + ' - ' + sats;
+              return arr[i - 1] + ' - ' + sat;
             })
         })
       ]
