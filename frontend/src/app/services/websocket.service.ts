@@ -129,6 +129,9 @@ export class WebsocketService {
   }
 
   startTrackTransaction(txId: string) {
+    if (this.isTrackingTx) {
+      return;
+    }
     this.websocketSubject.next({ 'track-tx': txId });
     this.isTrackingTx = true;
   }
@@ -139,7 +142,7 @@ export class WebsocketService {
   }
 
   stopTrackingTransaction() {
-    if (this.isTrackingTx === false) {
+    if (!this.isTrackingTx) {
       return;
     }
     this.websocketSubject.next({ 'track-tx': 'stop' });
