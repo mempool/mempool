@@ -133,6 +133,13 @@ class WebsocketHandler {
         response['mempool-blocks'] = mBlocks;
       }
 
+      if (client['track-tx']) {
+        const tx = newTransactions.find((t) => t.txid === client['track-tx']);
+        if (tx) {
+          response['tx'] = tx;
+        }
+      }
+
       // Send all new incoming transactions related to tracked address
       if (client['track-address']) {
         const foundTransactions: TransactionExtended[] = [];

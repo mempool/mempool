@@ -1,12 +1,16 @@
 import { Injectable } from '@angular/core';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { WebsocketResponse, MempoolBlock } from '../interfaces/websocket.interface';
+import { WebsocketResponse } from '../interfaces/websocket.interface';
 import { StateService } from './state.service';
 import { Block, Transaction } from '../interfaces/electrs.interface';
 import { Subscription } from 'rxjs';
 
 const WEB_SOCKET_PROTOCOL = (document.location.protocol === 'https:') ? 'wss:' : 'ws:';
 const WEB_SOCKET_URL = WEB_SOCKET_PROTOCOL + '//' + document.location.hostname + ':' + document.location.port + '/ws';
+
+const OFFLINE_RETRY_AFTER_MS = 10000;
+const OFFLINE_PING_CHECK_AFTER_MS = 30000;
+const EXPECT_PING_RESPONSE_AFTER_MS = 1000;
 
 @Injectable({
   providedIn: 'root'
@@ -42,6 +46,10 @@ export class WebsocketService {
               this.stateService.blocks$.next(block);
             }
           });
+        }
+
+        if (response.tx) {
+          this.stateService.mempoolTransactions$.next(response.tx);
         }
 
         if (response.block) {
@@ -115,7 +123,7 @@ export class WebsocketService {
       },
       (err: Error) => {
         console.log(err);
-        console.log('WebSocket error, trying to reconnect in 10 seconds');
+        console.log(`WebSocket error, trying to reconnect in ${OFFLINE_RETRY_AFTER_MS} seconds`);
         this.goOffline();
       });
   }
@@ -155,7 +163,7 @@ export class WebsocketService {
     this.stateService.connectionState$.next(0);
     window.setTimeout(() => {
       this.startSubscription(true);
-    }, 10000);
+    }, OFFLINE_RETRY_AFTER_MS);
   }
 
   startOnlineCheck() {
@@ -171,7 +179,7 @@ export class WebsocketService {
           this.subscription.unsubscribe();
           this.goOffline();
         }
-      }, 1000);
-    }, 30000);
+      }, EXPECT_PING_RESPONSE_AFTER_MS);
+    }, OFFLINE_PING_CHECK_AFTER_MS);
   }
 }
