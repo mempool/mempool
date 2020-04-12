@@ -56,7 +56,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
           ),
         );
       }),
-      flatMap(() => {
+      switchMap(() => {
         let transactionObservable$: Observable<Transaction>;
         if (history.state.data) {
           transactionObservable$ = of(history.state.data);
