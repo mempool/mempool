@@ -133,6 +133,11 @@ export class WebsocketService {
     this.isTrackingTx = true;
   }
 
+  startMultiTrackTransaction(txId: string) {
+    this.websocketSubject.next({ 'track-tx': txId, 'watch-mempool': true });
+    this.isTrackingTx = true;
+  }
+
   stopTrackingTransaction() {
     if (this.isTrackingTx === false) {
       return;

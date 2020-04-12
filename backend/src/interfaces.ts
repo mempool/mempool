@@ -180,4 +180,10 @@ export interface Outspend {
   vin: number;
   status: Status;
 }
-
+export interface WebsocketResponse {
+  action: string;
+  data: string[];
+  'track-tx': string;
+  'track-address': string;
+  'watch-mempool': boolean;
+}
