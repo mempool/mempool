@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { switchMap, filter, take, catchError, mergeMap, flatMap, mergeAll, tap, map } from 'rxjs/operators';
+import { switchMap, filter, take, catchError, flatMap } from 'rxjs/operators';
 import { Transaction, Block } from '../../interfaces/electrs.interface';
-import { of, merge, Subscription, Observable, scheduled } from 'rxjs';
+import { of, merge, Subscription, Observable } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from 'src/app/services/audio.service';
@@ -122,7 +122,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
 
   handleLoadElectrsTransactionError(error: any): Observable<any> {
     if (error.status === 404 && /^[a-fA-F0-9]{64}$/.test(this.txId)) {
-      this.websocketService.startTrackTransaction(this.txId);
+      this.websocketService.startMultiTrackTransaction(this.txId);
       this.waitingForTransaction = true;
     }
     this.error = error;

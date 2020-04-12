@@ -13,6 +13,7 @@ export interface WebsocketResponse {
   tx?: Transaction;
   'track-tx'?: string;
   'track-address'?: string;
+  'watch-mempool'?: boolean;
 }
 
 export interface MempoolBlock {
