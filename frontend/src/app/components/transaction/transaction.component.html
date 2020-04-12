@@ -72,8 +72,6 @@
         </div>
       </div>
 
-      <br>
-
     </ng-template>
 
     <ng-template #unconfirmedTemplate>
@@ -131,6 +129,8 @@
         </div>
       </div>
     </ng-template>
+
+    <br>
 
     <h2>Inputs & Outputs</h2>
 
@@ -227,11 +227,18 @@
   </ng-template>
 
   <ng-template [ngIf]="error">
-    <div class="text-center">
-      Error loading transaction data.
-      <br>
-      <i>{{ error.error }}</i>
+
+    <div class="text-center" *ngIf="waitingForTransaction">
+      <h3>Transaction not found.</h3>
+      <h5>Waiting for it to appear in the mempool...</h5>
+      <div class="spinner-border text-light mt-2"></div>
     </div>
+    
+    <ng-template #errorTemplate>
+      <div class="text-center">
+        <h3>{{ error.error }}</h3>
+      </div>
+    </ng-template>
   </ng-template>
 
 </div>

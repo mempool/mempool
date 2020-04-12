@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { switchMap, filter, take } from 'rxjs/operators';
+import { switchMap, filter, take, catchError, mergeMap, flatMap, mergeAll, tap, map } from 'rxjs/operators';
 import { Transaction, Block } from '../../interfaces/electrs.interface';
-import { of, merge, Subscription } from 'rxjs';
+import { of, merge, Subscription, Observable, scheduled } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from 'src/app/services/audio.service';
@@ -26,6 +26,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
   txInBlockIndex: number;
   isLoadingTx = true;
   error: any = undefined;
+  waitingForTransaction = false;
   latestBlock: Block;
   transactionTime = -1;
   subscription: Subscription;
@@ -47,35 +48,47 @@ export class TransactionComponent implements OnInit, OnDestroy {
       switchMap((params: ParamMap) => {
         this.txId = params.get('id') || '';
         this.seoService.setTitle('Transaction: ' + this.txId, true);
-        this.error = undefined;
-        this.feeRating = undefined;
-        this.isLoadingTx = true;
-        this.transactionTime = -1;
-        document.body.scrollTo(0, 0);
-        this.leaveTransaction();
+        this.resetTransaction();
         return merge(
           of(true),
-          this.stateService.connectionState$
-            .pipe(filter((state) => state === 2 && this.tx && !this.tx.status.confirmed) ),
-        )
-        .pipe(
-          switchMap(() => {
-            if (history.state.data) {
-              return of(history.state.data);
-            }
-            return this.electrsApiService.getTransaction$(this.txId);
-          })
+          this.stateService.connectionState$.pipe(
+            filter((state) => state === 2 && this.tx && !this.tx.status.confirmed)
+          ),
+        );
+      }),
+      flatMap(() => {
+        let transactionObservable$: Observable<Transaction>;
+        if (history.state.data) {
+          transactionObservable$ = of(history.state.data);
+        } else {
+          transactionObservable$ = this.electrsApiService.getTransaction$(this.txId).pipe(
+            catchError(this.handleLoadElectrsTransactionError.bind(this))
+          );
+        }
+        return merge(
+          transactionObservable$,
+          this.stateService.mempoolTransactions$
         );
       })
     )
     .subscribe((tx: Transaction) => {
+      if (!tx) {
+        return;
+      }
       this.tx = tx;
       this.isLoadingTx = false;
+      this.error = undefined;
+      this.waitingForTransaction = false;
       this.setMempoolBlocksSubscription();
 
       if (!tx.status.confirmed) {
         this.websocketService.startTrackTransaction(tx.txid);
-        this.getTransactionTime();
+
+        if (tx.firstSeen) {
+          this.transactionTime = tx.firstSeen;
+        } else {
+          this.getTransactionTime();
+        }
       } else {
         this.findBlockAndSetFeeRating();
       }
@@ -105,6 +118,16 @@ export class TransactionComponent implements OnInit, OnDestroy {
         this.audioService.playSound('magic');
         this.findBlockAndSetFeeRating();
       });
+  }
+
+  handleLoadElectrsTransactionError(error: any): Observable<any> {
+    if (error.status === 404 && /^[a-fA-F0-9]{64}$/.test(this.txId)) {
+      this.websocketService.startTrackTransaction(this.txId);
+      this.waitingForTransaction = true;
+    }
+    this.error = error;
+    this.isLoadingTx = false;
+    return of(false);
   }
 
   setMempoolBlocksSubscription() {
@@ -161,13 +184,24 @@ export class TransactionComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
+  resetTransaction() {
+    this.error = undefined;
+    this.tx = null;
+    this.feeRating = undefined;
+    this.waitingForTransaction = false;
+    this.isLoadingTx = true;
+    this.transactionTime = -1;
+    document.body.scrollTo(0, 0);
     this.leaveTransaction();
   }
 
   leaveTransaction() {
     this.websocketService.stopTrackingTransaction();
     this.stateService.markBlock$.next({});
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+    this.leaveTransaction();
   }
 }

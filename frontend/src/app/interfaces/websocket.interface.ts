@@ -1,4 +1,4 @@
-import { Block } from './electrs.interface';
+import { Block, Transaction } from './electrs.interface';
 
 export interface WebsocketResponse {
   block?: Block;
@@ -10,6 +10,7 @@ export interface WebsocketResponse {
   vBytesPerSecond?: number;
   action?: string;
   data?: string[];
+  tx?: Transaction;
   'track-tx'?: string;
   'track-address'?: string;
 }
