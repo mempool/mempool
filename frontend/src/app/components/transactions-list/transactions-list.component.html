@@ -23,7 +23,7 @@
                 </ng-template>
                 <ng-template #hasPrevout>
                   <a [routerLink]="['/tx/', vin.txid]">
-                    <i class="arrow green"></i>
+                    <i class="arrow red"></i>
                   </a>
                 </ng-template>
               </td>
@@ -75,9 +75,9 @@
               <td class="pl-1 arrow-td">
                 <i *ngIf="!outspends[i]; else outspend" class="arrow grey"></i>
                 <ng-template #outspend>
-                  <i *ngIf="!outspends[i][vindex] || !outspends[i][vindex].spent; else spent" class="arrow red"></i>
+                  <i *ngIf="!outspends[i][vindex] || !outspends[i][vindex].spent; else spent" class="arrow green"></i>
                   <ng-template #spent>
-                    <a [routerLink]="['/tx/', outspends[i][vindex].txid]"><i class="arrow green"></i></a>
+                    <a [routerLink]="['/tx/', outspends[i][vindex].txid]"><i class="arrow red"></i></a>
                   </ng-template>
                 </ng-template>
               </td>

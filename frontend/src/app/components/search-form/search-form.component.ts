@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 })
 export class SearchFormComponent implements OnInit {
   searchForm: FormGroup;
+  @Output() searchTriggered = new EventEmitter();
 
   regexAddress = /^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,87})$/;
   regexBlockhash = /^[0]{8}[a-fA-F0-9]{56}$/;
@@ -31,10 +32,13 @@ export class SearchFormComponent implements OnInit {
     if (searchText) {
       if (this.regexAddress.test(searchText)) {
         this.router.navigate(['/address/', searchText]);
+        this.searchTriggered.emit();
       } else if (this.regexBlockhash.test(searchText)) {
         this.router.navigate(['/block/', searchText]);
+        this.searchTriggered.emit();
       } else if (this.regexTransaction.test(searchText)) {
         this.router.navigate(['/tx/', searchText]);
+        this.searchTriggered.emit();
       } else {
         return;
       }
