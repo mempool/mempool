@@ -25,7 +25,7 @@
         <a class="nav-link" routerLink="/contributors" (click)="collapse()">Contributors</a>
       </li>
     </ul>
-    <app-search-form location="top"></app-search-form>
+    <app-search-form location="top" (searchTriggered)="collapse()"></app-search-form>
   </div>
 </nav>
 </header>
