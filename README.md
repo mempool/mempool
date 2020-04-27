@@ -197,7 +197,7 @@ Build the frontend static HTML/CSS/JS, rsync the output into nginx folder:
 ```bash
   cd frontend/
   npm run build
-  sudo rsync -av --delete dist/mempool/ /var/www/html/
+  sudo rsync -av --delete dist/mempoolspace/ /var/www/html/
 ```
 
 ## Try It Out
