@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "mempoolspace": {
+    "mempool": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/mempoolspace",
+            "outputPath": "dist/mempool",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -65,18 +65,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "mempoolspace:build"
+            "browserTarget": "mempool:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "mempoolspace:build:production"
+              "browserTarget": "mempool:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "mempoolspace:build"
+            "browserTarget": "mempool:build"
           }
         },
         "test": {
@@ -113,15 +113,15 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "mempoolspace:serve"
+            "devServerTarget": "mempool:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "mempoolspace:serve:production"
+              "devServerTarget": "mempool:serve:production"
             }
           }
         }
       }
     }},
-  "defaultProject": "mempoolspace"
+  "defaultProject": "mempool"
 }
