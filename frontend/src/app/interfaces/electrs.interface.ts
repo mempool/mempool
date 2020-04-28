@@ -98,3 +98,74 @@ export interface Outspend {
   vin: number;
   status: Status;
 }
+
+export interface Asset {
+  asset_id: string;
+  issuance_txin: IssuanceTxin;
+  issuance_prevout: IssuancePrevout;
+  reissuance_token: string;
+  contract_hash: string;
+  status: Status;
+  chain_stats: AssetChainStats;
+  mempool_stats: AssetMempoolStats;
+  contract: Contract;
+  entity: Entity;
+  precision: number;
+  name: string;
+  ticker: string;
+}
+
+interface IssuanceTxin {
+  txid: string;
+  vin: number;
+}
+
+interface IssuancePrevout {
+  txid: string;
+  vout: number;
+}
+
+interface AssetChainStats {
+  tx_count: number;
+  issuance_count: number;
+  issued_amount: number;
+  burned_amount: number;
+  has_blinded_issuances: boolean;
+  reissuance_tokens: number;
+  burned_reissuance_tokens: number;
+
+  peg_in_count: number;
+  peg_in_amount: number;
+  peg_out_count: number;
+  peg_out_amount: number;
+  burn_count: number;
+}
+
+interface AssetMempoolStats {
+  tx_count: number;
+  issuance_count: number;
+  issued_amount: number;
+  burned_amount: number;
+  has_blinded_issuances: boolean;
+  reissuance_tokens: any;
+  burned_reissuance_tokens: number;
+
+  peg_in_count: number;
+  peg_in_amount: number;
+  peg_out_count: number;
+  peg_out_amount: number;
+  burn_count: number;
+}
+
+interface Contract {
+  entity: Entity;
+  issuer_pubkey: string;
+  name: string;
+  precision: number;
+  ticker: string;
+  version: number;
+}
+
+interface Entity {
+  domain: string;
+}

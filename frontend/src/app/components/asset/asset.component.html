@@ -1,0 +1,124 @@
+<div class="container-xl">
+  <h1 style="float: left;">Asset</h1>
+  <a [routerLink]="['/asset/', assetString]" style="line-height: 56px; margin-left: 10px;">
+    <span class="d-inline d-lg-none">{{ assetString | shortenString : 24 }}</span>
+    <span class="d-none d-lg-inline">{{ assetString }}</span>
+  </a>
+  <app-clipboard [text]="assetString"></app-clipboard>
+  <br>
+
+  <div class="clearfix"></div>
+
+  <ng-template [ngIf]="!isLoadingAsset && !error">
+    <div class="box">
+
+      <div class="row">
+        <div class="col">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td>Name</td>
+                <td>{{ asset.name }} ({{ asset.ticker }})</td>
+              </tr>
+              <tr>
+                <td>Precision</td>
+                <td>{{ asset.precision }}</td>
+              </tr>
+              <tr>
+                <td>Issuer</td>
+                <td><a target="_blank" href="{{ 'http://' + asset.contract.entity.domain }}">{{ asset.contract.entity.domain }}</a></td>
+              </tr>
+              <tr>
+                <td>Issuance tx</td>
+                <td><a [routerLink]="['/tx/', asset.issuance_txin.txid]">{{ asset.issuance_txin.txid | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="asset.issuance_txin.txid"></app-clipboard></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td>Circulating amount</td>
+                <td>{{ (asset.chain_stats.issued_amount - asset.chain_stats.burned_amount) / 100000000 | number: '1.0-' + asset.precision }}</td>
+              </tr>
+              <tr>
+                <td>Issued amount</td>
+                <td>{{ asset.chain_stats.issued_amount / 100000000 | number: '1.0-' + asset.precision }}</td>
+              </tr>
+              <tr>
+                <td>Burned amount</td>
+                <td>{{ asset.chain_stats.burned_amount / 100000000 | number: '1.0-' + asset.precision }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <br>
+
+    <h2><ng-template [ngIf]="transactions?.length">{{ (transactions?.length | number) || '?' }} of </ng-template>{{ txCount | number }} transactions</h2>
+
+    <app-transactions-list [transactions]="transactions" [showConfirmations]="true" (loadMore)="loadMore()"></app-transactions-list>
+
+    <div class="text-center">
+      <ng-template [ngIf]="isLoadingTransactions">
+        <div class="header-bg box" style="padding: 10px; margin-bottom: 10px;">
+          <span class="skeleton-loader"></span>
+        </div>
+
+        <div class="header-bg box">
+          <div class="row" style="height: 107px;">
+            <div class="col-sm">
+              <span class="skeleton-loader"></span>
+            </div>
+            <div class="col-sm">
+              <span class="skeleton-loader"></span>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+
+  </ng-template>
+
+  <ng-template [ngIf]="isLoadingAsset && !error">
+
+    <div class="box">
+      <div class="row">
+        <div class="col">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td colspan="2"><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td colspan="2"><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td colspan="2"><span class="skeleton-loader"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col">
+          
+        </div>
+      </div>
+    </div>
+
+  </ng-template>
+
+  <ng-template [ngIf]="error">
+    <div class="text-center">
+      Error loading asset data.
+      <br>
+      <i>{{ error.error }}</i>
+    </div>
+  </ng-template>
+
+</div>
+
+<br>

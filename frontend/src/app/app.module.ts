@@ -45,6 +45,8 @@ import { FeeDistributionGraphComponent } from './components/fee-distribution-gra
 import { TimespanComponent } from './components/timespan/timespan.component';
 import { SeoService } from './services/seo.service';
 import { MempoolGraphComponent } from './components/mempool-graph/mempool-graph.component';
+import { AssetComponent } from './components/asset/asset.component';
+import { ScriptpubkeyTypePipe } from './pipes/scriptpubkey-type-pipe/scriptpubkey-type.pipe';
 
 @NgModule({
   declarations: [
@@ -80,6 +82,8 @@ import { MempoolGraphComponent } from './components/mempool-graph/mempool-graph.
     MempoolBlockComponent,
     FeeDistributionGraphComponent,
     MempoolGraphComponent,
+    AssetComponent,
+    ScriptpubkeyTypePipe,
   ],
   imports: [
     BrowserModule,
