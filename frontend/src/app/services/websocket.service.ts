@@ -157,6 +157,14 @@ export class WebsocketService {
     this.websocketSubject.next({ 'track-address': 'stop' });
   }
 
+  startTrackAsset(asset: string) {
+    this.websocketSubject.next({ 'track-asset': asset });
+  }
+
+  stopTrackingAsset() {
+    this.websocketSubject.next({ 'track-asset': 'stop' });
+  }
+
   fetchStatistics(historicalDate: string) {
     this.websocketSubject.next({ historicalDate });
   }

@@ -10,6 +10,7 @@ import { TelevisionComponent } from './components/television/television.componen
 import { StatisticsComponent } from './components/statistics/statistics.component';
 import { MempoolBlockComponent } from './components/mempool-block/mempool-block.component';
 import { LatestBlocksComponent } from './components/latest-blocks/latest-blocks.component';
+import { AssetComponent } from './components/asset/asset.component';
 
 const routes: Routes = [
   {
@@ -35,6 +36,10 @@ const routes: Routes = [
           {
             path: 'mempool-block/:id',
             component: MempoolBlockComponent
+          },
+          {
+            path: 'asset/:id',
+            component: AssetComponent
           },
         ],
       },

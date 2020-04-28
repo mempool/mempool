@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Block, Transaction, Address, Outspend, Recent } from '../interfaces/electrs.interface';
+import { Block, Transaction, Address, Outspend, Recent, Asset } from '../interfaces/electrs.interface';
 
 const API_BASE_URL = document.location.protocol + '//' + document.location.hostname + ':' + document.location.port + '/electrs';
 
@@ -52,6 +52,18 @@ export class ElectrsApiService {
 
   getAddressTransactionsFromHash$(address: string, txid: string): Observable<Transaction[]> {
     return this.httpClient.get<Transaction[]>(API_BASE_URL + '/address/' + address + '/txs/chain/' + txid);
+  }
+
+  getAsset$(assetId: string): Observable<Asset> {
+    return this.httpClient.get<Asset>(API_BASE_URL + '/asset/' + assetId);
+  }
+
+  getAssetTransactions$(assetId: string): Observable<Transaction[]> {
+    return this.httpClient.get<Transaction[]>(API_BASE_URL + '/asset/' + assetId + '/txs');
+  }
+
+  getAssetTransactionsFromHash$(assetId: string, txid: string): Observable<Transaction[]> {
+    return this.httpClient.get<Transaction[]>(API_BASE_URL + '/asset/' + assetId + '/txs/chain/' + txid);
   }
 
 }

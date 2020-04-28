@@ -13,6 +13,7 @@ export interface WebsocketResponse {
   tx?: Transaction;
   'track-tx'?: string;
   'track-address'?: string;
+  'track-asset'?: string;
   'watch-mempool'?: boolean;
 }
 
