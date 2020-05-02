@@ -96,7 +96,6 @@ export class AssetComponent implements OnInit, OnDestroy {
         switchMap(([asset, assetsData]) => {
           this.asset = asset;
           this.assetContract = assetsData[this.asset.asset_id];
-          console.log(this.assetContract);
           this.isNativeAsset = asset.asset_id === this.nativeAssetId;
           this.updateChainStats();
           this.websocketService.startTrackAsset(asset.asset_id);
@@ -188,7 +187,7 @@ export class AssetComponent implements OnInit, OnDestroy {
       return;
     }
     this.isLoadingTransactions = true;
-    this.electrsApiService.getAddressTransactionsFromHash$(this.asset.asset_id, this.lastTransactionTxId)
+    this.electrsApiService.getAssetTransactionsFromHash$(this.asset.asset_id, this.lastTransactionTxId)
       .subscribe((transactions: Transaction[]) => {
         this.lastTransactionTxId = transactions[transactions.length - 1].txid;
         this.loadedConfirmedTxCount += transactions.length;
@@ -201,7 +200,7 @@ export class AssetComponent implements OnInit, OnDestroy {
     // this.receieved = this.asset.chain_stats.funded_txo_sum + this.asset.mempool_stats.funded_txo_sum;
     // this.sent = this.asset.chain_stats.spent_txo_sum + this.asset.mempool_stats.spent_txo_sum;
     this.txCount = this.asset.chain_stats.tx_count + this.asset.mempool_stats.tx_count;
-    // this.totalConfirmedTxCount = this.asset.chain_stats.tx_count;
+    this.totalConfirmedTxCount = this.asset.chain_stats.tx_count;
   }
 
   ngOnDestroy() {
