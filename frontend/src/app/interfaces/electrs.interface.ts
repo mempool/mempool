@@ -45,6 +45,7 @@ export interface Vout {
   scriptpubkey_type: string;
   scriptpubkey_address: string;
   value: number;
+  asset?: string;
 }
 
 export interface Status {
@@ -108,11 +109,6 @@ export interface Asset {
   status: Status;
   chain_stats: AssetChainStats;
   mempool_stats: AssetMempoolStats;
-  contract: Contract;
-  entity: Entity;
-  precision: number;
-  name: string;
-  ticker: string;
 }
 
 interface IssuanceTxin {
@@ -155,15 +151,6 @@ interface AssetMempoolStats {
   peg_out_count: number;
   peg_out_amount: number;
   burn_count: number;
-}
-
-interface Contract {
-  entity: Entity;
-  issuer_pubkey: string;
-  name: string;
-  precision: number;
-  ticker: string;
-  version: number;
 }
 
 interface Entity {

@@ -1,15 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
-import { switchMap, filter, catchError } from 'rxjs/operators';
+import { switchMap, filter, catchError, take } from 'rxjs/operators';
 import { Asset, Transaction } from '../../interfaces/electrs.interface';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { StateService } from 'src/app/services/state.service';
 import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
-import { of, merge, Subscription } from 'rxjs';
+import { of, merge, Subscription, combineLatest } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
 import { environment } from 'src/environments/environment';
+import { AssetsService } from 'src/app/services/assets.service';
 
 @Component({
   selector: 'app-asset',
@@ -20,6 +21,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   network = environment.network;
 
   asset: Asset;
+  assetContract: any;
   assetString: string;
   isLoadingAsset = true;
   transactions: Transaction[];
@@ -45,6 +47,7 @@ export class AssetComponent implements OnInit, OnDestroy {
     private audioService: AudioService,
     private apiService: ApiService,
     private seoService: SeoService,
+    private assetsService: AssetsService,
   ) { }
 
   ngOnInit() {
@@ -57,6 +60,7 @@ export class AssetComponent implements OnInit, OnDestroy {
           this.isLoadingAsset = true;
           this.loadedConfirmedTxCount = 0;
           this.asset = null;
+          this.assetContract = null;
           this.isLoadingTransactions = true;
           this.transactions = null;
           document.body.scrollTo(0, 0);
@@ -69,22 +73,27 @@ export class AssetComponent implements OnInit, OnDestroy {
               .pipe(filter((state) => state === 2 && this.transactions && this.transactions.length > 0))
           )
           .pipe(
-            switchMap(() => this.electrsApiService.getAsset$(this.assetString)
+            switchMap(() => {
+              return combineLatest([this.electrsApiService.getAsset$(this.assetString)
+                .pipe(
+                  catchError((err) => {
+                    this.isLoadingAsset = false;
+                    this.error = err;
+                    console.log(err);
+                    return of(null);
+                  })
+                ), this.assetsService.assetsMinimal$])
               .pipe(
-                catchError((err) => {
-                  this.isLoadingAsset = false;
-                  this.error = err;
-                  console.log(err);
-                  return of(null);
-                })
-              )
-            )
+                take(1)
+              );
+            })
           );
         })
       )
       .pipe(
-        switchMap((asset: Asset) => {
+        switchMap(([asset, assetsData]) => {
           this.asset = asset;
+          this.assetContract = assetsData[this.asset.asset_id];
           this.updateChainStats();
           this.websocketService.startTrackAsset(asset.asset_id);
           this.isLoadingAsset = false;

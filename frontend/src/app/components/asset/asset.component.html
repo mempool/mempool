@@ -9,7 +9,7 @@
 
   <div class="clearfix"></div>
 
-  <ng-template [ngIf]="!isLoadingAsset && !error">
+  <ng-template [ngIf]="!isLoadingAsset && !error && assetContract">
     <div class="box">
 
       <div class="row">
@@ -18,15 +18,15 @@
             <tbody>
               <tr>
                 <td>Name</td>
-                <td>{{ asset.name }} ({{ asset.ticker }})</td>
+                <td>{{ assetContract[2] }} ({{ assetContract[1] }})</td>
               </tr>
               <tr>
                 <td>Precision</td>
-                <td>{{ asset.precision }}</td>
+                <td>{{ assetContract[3] }}</td>
               </tr>
               <tr>
                 <td>Issuer</td>
-                <td><a target="_blank" href="{{ 'http://' + asset.contract.entity.domain }}">{{ asset.contract.entity.domain }}</a></td>
+                <td><a target="_blank" href="{{ 'http://' + assetContract[0] }}">{{ assetContract[0] }}</a></td>
               </tr>
               <tr>
                 <td>Issuance tx</td>
@@ -40,15 +40,15 @@
             <tbody>
               <tr>
                 <td>Circulating amount</td>
-                <td>{{ (asset.chain_stats.issued_amount - asset.chain_stats.burned_amount) / 100000000 | number: '1.0-' + asset.precision }}</td>
+                <td>{{ (asset.chain_stats.issued_amount - asset.chain_stats.burned_amount) / 100000000 | number: '1.0-' + assetContract[3] }}</td>
               </tr>
               <tr>
                 <td>Issued amount</td>
-                <td>{{ asset.chain_stats.issued_amount / 100000000 | number: '1.0-' + asset.precision }}</td>
+                <td>{{ asset.chain_stats.issued_amount / 100000000 | number: '1.0-' + assetContract[3] }}</td>
               </tr>
               <tr>
                 <td>Burned amount</td>
-                <td>{{ asset.chain_stats.burned_amount / 100000000 | number: '1.0-' + asset.precision }}</td>
+                <td>{{ asset.chain_stats.burned_amount / 100000000 | number: '1.0-' + assetContract[3] }}</td>
               </tr>
             </tbody>
           </table>

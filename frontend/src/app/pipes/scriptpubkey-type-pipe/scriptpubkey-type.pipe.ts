@@ -11,7 +11,7 @@ export class ScriptpubkeyTypePipe implements PipeTransform {
         return 'Transaction fee';
       case 'op_return':
       default:
-          return 'Script';
+          return 'OP_RETURN';
     }
   }
 

@@ -2,7 +2,7 @@
   <span>{{ conversions.USD * (satoshis / 100000000) | currency:'USD':'symbol':'1.2-2' }}</span>
 </ng-container>
 <ng-template #viewFiatVin>
-  <ng-template [ngIf]="network === 'liquid' && !satoshis" [ngIfElse]="default">
+  <ng-template [ngIf]="network === 'liquid' && satoshis === undefined" [ngIfElse]="default">
     Confidential
   </ng-template>
   <ng-template #default>
