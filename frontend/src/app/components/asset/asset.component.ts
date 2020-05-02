@@ -19,6 +19,7 @@ import { AssetsService } from 'src/app/services/assets.service';
 })
 export class AssetComponent implements OnInit, OnDestroy {
   network = environment.network;
+  nativeAssetId = environment.nativeAssetId;
 
   asset: Asset;
   assetContract: any;
@@ -26,6 +27,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   isLoadingAsset = true;
   transactions: Transaction[];
   isLoadingTransactions = true;
+  isNativeAsset = false;
   error: any;
   mainSubscription: Subscription;
 
@@ -94,6 +96,8 @@ export class AssetComponent implements OnInit, OnDestroy {
         switchMap(([asset, assetsData]) => {
           this.asset = asset;
           this.assetContract = assetsData[this.asset.asset_id];
+          console.log(this.assetContract);
+          this.isNativeAsset = asset.asset_id === this.nativeAssetId;
           this.updateChainStats();
           this.websocketService.startTrackAsset(asset.asset_id);
           this.isLoadingAsset = false;

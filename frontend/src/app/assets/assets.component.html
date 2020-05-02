@@ -1,0 +1,61 @@
+<div class="container-xl">
+  <h1 style="float: left;">Registered assets</h1>
+  <br>
+
+  <div class="clearfix"></div>
+
+  <ng-template [ngIf]="!isLoading && !error">
+    <table class="table table-borderless table-striped">
+      <thead>
+        <th style="td-name">Name</th>
+        <th>Ticker</th>
+        <th class="d-none d-md-block">Issuer domain</th>
+        <th>Asset ID</th>
+        <th class="d-none d-lg-block">Issuance TX</th>
+      </thead>
+      <tbody>
+        <tr *ngFor="let asset of assets">
+          <td class="td-name">{{ asset.name }}</td>
+          <td>{{ asset.ticker }}</td>
+          <td class="d-none d-md-block"><a *ngIf="asset.entity" target="_blank" href="{{ 'http://' + asset.entity.domain }}">{{ asset.entity.domain }}</a></td>
+          <td><a [routerLink]="['/asset/', asset.asset_id]">{{ asset.asset_id | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="asset.asset_id"></app-clipboard></td>
+          <td class="d-none d-lg-block"><ng-template [ngIf]="asset.issuance_txin"><a [routerLink]="['/tx/', asset.issuance_txin.txid]">{{ asset.issuance_txin.txid | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="asset.issuance_txin.txid"></app-clipboard></ng-template></td>
+        </tr> 
+      </tbody>
+    </table>
+  </ng-template>
+
+  <ng-template [ngIf]="isLoading && !error">
+
+    <table class="table table-borderless table-striped">
+      <thead>
+        <th>Name</th>
+        <th>Ticker</th>
+        <th>Issuer domain</th>
+        <th>Asset ID</th>
+        <th>Issuance TX</th>
+      </thead>
+      <tbody>
+        <tr *ngFor="let dummy of [0,0,0]">
+          <td><span class="skeleton-loader"></span></td>
+          <td><span class="skeleton-loader"></span></td>
+          <td><span class="skeleton-loader"></span></td>
+          <td><span class="skeleton-loader"></span></td>
+          <td><span class="skeleton-loader"></span></td>
+        </tr> 
+      </tbody>
+    </table>
+
+  </ng-template>
+
+  <ng-template [ngIf]="error">
+    <div class="text-center">
+      Error loading assets data.
+      <br>
+      <i>{{ error.error }}</i>
+    </div>
+  </ng-template>
+
+</div>
+
+<br>

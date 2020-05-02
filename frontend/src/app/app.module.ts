@@ -47,6 +47,7 @@ import { SeoService } from './services/seo.service';
 import { MempoolGraphComponent } from './components/mempool-graph/mempool-graph.component';
 import { AssetComponent } from './components/asset/asset.component';
 import { ScriptpubkeyTypePipe } from './pipes/scriptpubkey-type-pipe/scriptpubkey-type.pipe';
+import { AssetsComponent } from './assets/assets.component';
 
 @NgModule({
   declarations: [
@@ -84,6 +85,7 @@ import { ScriptpubkeyTypePipe } from './pipes/scriptpubkey-type-pipe/scriptpubke
     MempoolGraphComponent,
     AssetComponent,
     ScriptpubkeyTypePipe,
+    AssetsComponent,
   ],
   imports: [
     BrowserModule,
