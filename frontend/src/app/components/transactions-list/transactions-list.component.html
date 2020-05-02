@@ -70,10 +70,22 @@
                 </ng-template>
               </td>
               <td class="text-right nowrap">
-                <app-amount [satoshis]="vout.value"></app-amount>
+                <ng-template [ngIf]="vout.asset && vout.scriptpubkey_type === 'op_return' && vout.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
+                  <div *ngIf="assetsMinimal && assetsMinimal[vout.asset]">
+                    {{ vout.value / 100000000 | number: '1.0-' + assetsMinimal[vout.asset][3] }} {{ assetsMinimal[vout.asset][1] }}
+                    <br>
+                    {{ assetsMinimal[vout.asset][0] }}
+                    <br>
+                    <a [routerLink]="['/asset/', vout.asset]">{{ vout.asset | shortenString : 13 }}</a>
+                    <br><br>
+                </div>
+                </ng-template>
+                <ng-template #defaultOutput>
+                  <app-amount [satoshis]="vout.value"></app-amount>
+                </ng-template>
               </td>
               <td class="pl-1 arrow-td">
-                <i *ngIf="!outspends[i]; else outspend" class="arrow grey"></i>
+                <i *ngIf="!outspends[i] || vout.scriptpubkey_type === 'op_return' || vout.scriptpubkey_type === 'fee' ; else outspend" class="arrow grey"></i>
                 <ng-template #outspend>
                   <i *ngIf="!outspends[i][vindex] || !outspends[i][vindex].spent; else spent" class="arrow green"></i>
                   <ng-template #spent>
@@ -97,7 +109,10 @@
                   &nbsp;
                 </span>
                 <button type="button" class="btn btn-sm btn-primary mt-3" (click)="switchCurrency()">
-                  <app-amount [satoshis]="getTotalTxOutput(tx)"></app-amount>
+                  <ng-template [ngIf]="network === 'liquid'" [ngIfElse]="defaultAmount">Confidential</ng-template>
+                  <ng-template #defaultAmount>
+                    <app-amount [satoshis]="getTotalTxOutput(tx)"></app-amount>
+                  </ng-template>
                 </button>
               </td>
             </tr>

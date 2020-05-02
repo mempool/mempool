@@ -3,6 +3,8 @@ import { StateService } from '../../services/state.service';
 import { Observable, forkJoin } from 'rxjs';
 import { Block, Outspend, Transaction } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
+import { environment } from 'src/environments/environment';
+import { AssetsService } from 'src/app/services/assets.service';
 
 @Component({
   selector: 'app-transactions-list',
@@ -11,6 +13,9 @@ import { ElectrsApiService } from '../../services/electrs-api.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TransactionsListComponent implements OnInit, OnChanges {
+  network = environment.network;
+  nativeAssetId = environment.nativeAssetId;
+
   @Input() transactions: Transaction[];
   @Input() showConfirmations = false;
   @Input() transactionPage = false;
@@ -19,15 +24,20 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
   latestBlock$: Observable<Block>;
   outspends: Outspend[] = [];
+  assetsMinimal: any;
 
   constructor(
     private stateService: StateService,
     private electrsApiService: ElectrsApiService,
+    private assetsService: AssetsService,
     private ref: ChangeDetectorRef,
   ) { }
 
   ngOnInit() {
     this.latestBlock$ = this.stateService.blocks$;
+    this.assetsService.assetsMinimal$.subscribe((assets) => {
+      this.assetsMinimal = assets;
+    });
   }
 
   ngOnChanges() {
@@ -66,6 +76,9 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   }
 
   switchCurrency() {
+    if (this.network === 'liquid') {
+      return;
+    }
     const oldvalue = !this.stateService.viewFiat$.value;
     this.stateService.viewFiat$.next(oldvalue);
   }

@@ -1,6 +1,8 @@
 import { Component, OnInit, ChangeDetectionStrategy, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
+import { AssetsService } from 'src/app/services/assets.service';
 
 @Component({
   selector: 'app-search-form',
@@ -9,6 +11,9 @@ import { Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchFormComponent implements OnInit {
+  network = environment.network;
+  assets: object;
+
   searchForm: FormGroup;
   @Output() searchTriggered = new EventEmitter();
 
@@ -19,12 +24,17 @@ export class SearchFormComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
+    private assetsService: AssetsService,
   ) { }
 
   ngOnInit() {
     this.searchForm = this.formBuilder.group({
       searchText: ['', Validators.required],
     });
+    this.assetsService.assetsMinimal$
+      .subscribe((assets) => {
+        this.assets = assets;
+      });
   }
 
   search() {
@@ -37,7 +47,11 @@ export class SearchFormComponent implements OnInit {
         this.router.navigate(['/block/', searchText]);
         this.searchTriggered.emit();
       } else if (this.regexTransaction.test(searchText)) {
-        this.router.navigate(['/tx/', searchText]);
+        if (this.network === 'liquid' && this.assets[searchText]) {
+          this.router.navigate(['/asset/', searchText]);
+        } else {
+          this.router.navigate(['/tx/', searchText]);
+        }
         this.searchTriggered.emit();
       } else {
         return;
