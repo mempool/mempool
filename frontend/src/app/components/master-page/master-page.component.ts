@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { StateService } from '../../services/state.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-master-page',
@@ -7,6 +8,8 @@ import { StateService } from '../../services/state.service';
   styleUrls: ['./master-page.component.scss']
 })
 export class MasterPageComponent implements OnInit {
+  network = environment.network;
+
   navCollapsed = false;
   connectionState = 2;
 
