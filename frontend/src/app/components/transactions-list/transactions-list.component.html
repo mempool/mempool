@@ -28,11 +28,10 @@
                 </ng-template>
               </td>
               <td>
-                <div>
-                  <ng-template [ngIf]="vin.is_coinbase" [ngIfElse]="regularVin">
-                    Coinbase (Newly Generated Coins)
-                  </ng-template>
-                  <ng-template #regularVin>
+                <div [ngSwitch]="true">
+                  <ng-container *ngSwitchCase="vin.is_coinbase">Coinbase (Newly Generated Coins)</ng-container>
+                  <ng-container *ngSwitchCase="vin.is_pegin">PEG IN</ng-container>
+                  <ng-container *ngSwitchDefault>
                     <a [routerLink]="['/address/', vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">
                       <span class="d-block d-lg-none">{{ vin.prevout.scriptpubkey_address | shortenString : 16 }}</span>
                       <span class="d-none d-lg-block">{{ vin.prevout.scriptpubkey_address | shortenString : 42 }}</span>
@@ -40,7 +39,7 @@
                     <div>
                       <app-address-labels [vin]="vin"></app-address-labels>
                     </div>
-                  </ng-template>
+                  </ng-container>
                 </div>
               </td>
               <td class="text-right nowrap">
@@ -66,7 +65,12 @@
                   <span class="d-none d-lg-block">{{ vout.scriptpubkey_address | shortenString : 42 }}</span>
                 </a>
                 <ng-template #scriptpubkey_type>
-                  {{ vout.scriptpubkey_type | scriptpubkeyType }}
+                  <ng-template [ngIf]="vout.pegout" [ngIfElse]="defaultscriptpubkey_type">
+                    PEG OUT
+                  </ng-template>
+                  <ng-template #defaultscriptpubkey_type>
+                    {{ vout.scriptpubkey_type | scriptpubkeyType }}
+                  </ng-template>
                 </ng-template>
               </td>
               <td class="text-right nowrap">

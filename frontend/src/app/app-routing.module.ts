@@ -11,6 +11,7 @@ import { StatisticsComponent } from './components/statistics/statistics.componen
 import { MempoolBlockComponent } from './components/mempool-block/mempool-block.component';
 import { LatestBlocksComponent } from './components/latest-blocks/latest-blocks.component';
 import { AssetComponent } from './components/asset/asset.component';
+import { AssetsComponent } from './assets/assets.component';
 
 const routes: Routes = [
   {
@@ -37,10 +38,6 @@ const routes: Routes = [
             path: 'mempool-block/:id',
             component: MempoolBlockComponent
           },
-          {
-            path: 'asset/:id',
-            component: AssetComponent
-          },
         ],
       },
       {
@@ -55,6 +52,14 @@ const routes: Routes = [
         path: 'address/:id',
         children: [],
         component: AddressComponent
+      },
+      {
+        path: 'asset/:id',
+        component: AssetComponent
+      },
+      {
+        path: 'assets',
+        component: AssetsComponent,
       },
     ],
   },

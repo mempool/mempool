@@ -24,11 +24,11 @@
                 <td>Precision</td>
                 <td>{{ assetContract[3] }}</td>
               </tr>
-              <tr>
+              <tr *ngIf="!isNativeAsset">
                 <td>Issuer</td>
                 <td><a target="_blank" href="{{ 'http://' + assetContract[0] }}">{{ assetContract[0] }}</a></td>
               </tr>
-              <tr>
+              <tr *ngIf="!isNativeAsset">
                 <td>Issuance tx</td>
                 <td><a [routerLink]="['/tx/', asset.issuance_txin.txid]">{{ asset.issuance_txin.txid | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="asset.issuance_txin.txid"></app-clipboard></td>
               </tr>
@@ -38,17 +38,29 @@
         <div class="col">
           <table class="table table-borderless table-striped">
             <tbody>
-              <tr>
-                <td>Circulating amount</td>
-                <td>{{ (asset.chain_stats.issued_amount - asset.chain_stats.burned_amount) / 100000000 | number: '1.0-' + assetContract[3] }}</td>
+              <tr *ngIf="isNativeAsset">
+                <td>Pegged in</td>
+                <td>{{ asset.chain_stats.peg_in_amount / 100000000 | number: '1.0-' + assetContract[3] }} {{ assetContract[1] }}</td>
               </tr>
-              <tr>
+              <tr *ngIf="isNativeAsset">
+                <td>Pegged out</td>
+                <td>{{ asset.chain_stats.peg_out_amount / 100000000 | number: '1.0-' + assetContract[3] }} {{ assetContract[1] }}</td>
+              </tr>
+              <tr *ngIf="!isNativeAsset">
                 <td>Issued amount</td>
-                <td>{{ asset.chain_stats.issued_amount / 100000000 | number: '1.0-' + assetContract[3] }}</td>
+                <td>{{ asset.chain_stats.issued_amount / 100000000 | number: '1.0-' + assetContract[3] }} {{ assetContract[1] }}</td>
               </tr>
               <tr>
                 <td>Burned amount</td>
-                <td>{{ asset.chain_stats.burned_amount / 100000000 | number: '1.0-' + assetContract[3] }}</td>
+                <td>{{ asset.chain_stats.burned_amount / 100000000 | number: '1.0-' + assetContract[3] }} {{ assetContract[1] }}</td>
+              </tr>
+              <tr *ngIf="!isNativeAsset">
+                <td>Circulating amount</td>
+                <td>{{ (asset.chain_stats.issued_amount - asset.chain_stats.burned_amount) / 100000000 | number: '1.0-' + assetContract[3] }} {{ assetContract[1] }}</td>
+              </tr>
+              <tr *ngIf="isNativeAsset">
+                <td>Circulating amount</td>
+                <td>{{ (asset.chain_stats.peg_in_amount - asset.chain_stats.burned_amount - asset.chain_stats.peg_out_amount) / 100000000 | number: '1.0-' + assetContract[3] }} {{ assetContract[1] }}</td>
               </tr>
             </tbody>
           </table>
@@ -59,7 +71,7 @@
 
     <br>
 
-    <h2><ng-template [ngIf]="transactions?.length">{{ (transactions?.length | number) || '?' }} of </ng-template>{{ txCount | number }} transactions</h2>
+    <h2><ng-template [ngIf]="transactions?.length">{{ (transactions?.length | number) || '?' }} of </ng-template>{{ txCount | number }} <ng-template [ngIf]="isNativeAsset" [ngIfElse]="defaultAsset">Peg In/Out and Burn Transactions</ng-template><ng-template #defaultAsset>In/Out and Burn Transactions</ng-template></h2>
 
     <app-transactions-list [transactions]="transactions" [showConfirmations]="true" (loadMore)="loadMore()"></app-transactions-list>
 
@@ -86,26 +98,28 @@
 
   <ng-template [ngIf]="isLoadingAsset && !error">
 
+    <ng-template #loadingTmpl>
+      <div class="col">
+        <table class="table table-borderless table-striped">
+          <tbody>
+            <tr>
+              <td colspan="2"><span class="skeleton-loader"></span></td>
+            </tr>
+            <tr>
+              <td colspan="2"><span class="skeleton-loader"></span></td>
+            </tr>
+            <tr>
+              <td colspan="2"><span class="skeleton-loader"></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-template>
+
     <div class="box">
       <div class="row">
-        <div class="col">
-          <table class="table table-borderless table-striped">
-            <tbody>
-              <tr>
-                <td colspan="2"><span class="skeleton-loader"></span></td>
-              </tr>
-              <tr>
-                <td colspan="2"><span class="skeleton-loader"></span></td>
-              </tr>
-              <tr>
-                <td colspan="2"><span class="skeleton-loader"></span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="col">
-          
-        </div>
+        <ng-container *ngTemplateOutlet="loadingTmpl"></ng-container>
+        <ng-container *ngTemplateOutlet="loadingTmpl"></ng-container>
       </div>
     </div>
 

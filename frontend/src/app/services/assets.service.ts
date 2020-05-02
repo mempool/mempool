@@ -22,8 +22,11 @@ export class AssetsService {
   getAssetsMinimalJson$() {
     this.httpClient.get('/assets/assets.minimal.json')
     .subscribe((data) => {
-      console.log(data);
       this.assetsMinimal$.next(data);
     });
+  }
+
+  getAssetsJson$() {
+    return this.httpClient.get('/assets/assets.json');
   }
 }
