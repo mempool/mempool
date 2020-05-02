@@ -10,7 +10,7 @@ export class AudioService {
 
   public playSound(name: 'magic' | 'chime' | 'cha-ching') {
     try {
-      this.audio.src = '../../../assets/sounds/' + name + '.mp3';
+      this.audio.src = '../../../resources/sounds/' + name + '.mp3';
       this.audio.load();
       this.audio.play();
     } catch (e) {

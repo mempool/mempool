@@ -1,7 +1,7 @@
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
   <a class="navbar-brand" routerLink="/" style="position: relative;">
-    <img src="./assets/mempool-logo.png" height="35" width="140" class="logo" [ngStyle]="{'opacity': connectionState === 2 ? 1 : 0.5 }">
+    <img src="./resources/mempool-logo.png" height="35" width="140" class="logo" [ngStyle]="{'opacity': connectionState === 2 ? 1 : 0.5 }">
     <div class="badge badge-warning connection-badge" *ngIf="connectionState === 0">Offline</div>
     <div class="badge badge-warning connection-badge" style="left: 30px;" *ngIf="connectionState === 1">Reconnecting...</div>
   </a>
@@ -19,7 +19,7 @@
         <a class="nav-link" routerLink="/graphs" (click)="collapse()">Graphs</a>
       </li>
       <li class="nav-item" routerLinkActive="active">
-        <a class="nav-link" routerLink="/tv" (click)="collapse()">TV view &nbsp;<img src="./assets/expand.png" width="15"/></a>
+        <a class="nav-link" routerLink="/tv" (click)="collapse()">TV view &nbsp;<img src="./resources/expand.png" width="15"/></a>
       </li>
       <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" routerLink="/assets" (click)="collapse()">Assets</a>

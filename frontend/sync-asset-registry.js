@@ -1,9 +1,9 @@
 var https = require('https');
 var fs = require('fs');
 
-var PATH = 'dist/mempool/assets/';
+var PATH = 'dist/mempool/resources/';
 if (process.argv[2] && process.argv[2] === 'dev') {
-  PATH = 'src/assets/';
+  PATH = 'src/resources/';
 }
 
 function download(filename, url) {
