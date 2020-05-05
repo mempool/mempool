@@ -35,9 +35,11 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.latestBlock$ = this.stateService.blocks$;
-    this.assetsService.assetsMinimal$.subscribe((assets) => {
-      this.assetsMinimal = assets;
-    });
+    if (this.network === 'liquid') {
+      this.assetsService.getAssetsMinimalJson$.subscribe((assets) => {
+        this.assetsMinimal = assets;
+      });
+    }
   }
 
   ngOnChanges() {

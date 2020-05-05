@@ -31,10 +31,12 @@ export class SearchFormComponent implements OnInit {
     this.searchForm = this.formBuilder.group({
       searchText: ['', Validators.required],
     });
-    this.assetsService.assetsMinimal$
-      .subscribe((assets) => {
-        this.assets = assets;
-      });
+    if (this.network === 'liquid') {
+      this.assetsService.getAssetsMinimalJson$
+        .subscribe((assets) => {
+          this.assets = assets;
+        });
+    }
   }
 
   search() {

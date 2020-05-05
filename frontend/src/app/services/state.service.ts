@@ -21,6 +21,7 @@ export class StateService {
   mempoolBlocks$ = new ReplaySubject<MempoolBlock[]>(1);
   txConfirmed$ = new Subject<Block>();
   mempoolTransactions$ = new Subject<Transaction>();
+  assetTransactions$ = new Subject<Transaction>();
   blockTransactions$ = new Subject<Transaction>();
 
   live2Chart$ = new Subject<OptimizedMempoolStats>();

@@ -84,7 +84,7 @@ export class AssetComponent implements OnInit, OnDestroy {
                     console.log(err);
                     return of(null);
                   })
-                ), this.assetsService.assetsMinimal$])
+                ), this.assetsService.getAssetsMinimalJson$])
               .pipe(
                 take(1)
               );
@@ -141,7 +141,7 @@ export class AssetComponent implements OnInit, OnDestroy {
         this.isLoadingAsset = false;
       });
 
-    this.stateService.mempoolTransactions$
+    this.stateService.assetTransactions$
       .subscribe((transaction) => {
         if (this.transactions.some((t) => t.txid === transaction.txid)) {
           return;
@@ -151,22 +151,7 @@ export class AssetComponent implements OnInit, OnDestroy {
         this.transactions = this.transactions.slice();
         this.txCount++;
 
-        // if (transaction.vout.some((vout) => vout.scriptpubkey_asset === this.asset.asset)) {
-        //   this.audioService.playSound('cha-ching');
-        // } else {
-        //   this.audioService.playSound('chime');
-        // }
-
-        // transaction.vin.forEach((vin) => {
-        //   if (vin.prevout.scriptpubkey_asset === this.asset.asset) {
-        //     this.sent += vin.prevout.value;
-        //   }
-        // });
-        // transaction.vout.forEach((vout) => {
-        //   if (vout.scriptpubkey_asset === this.asset.asset) {
-        //     this.receieved += vout.value;
-        //   }
-        // });
+        this.audioService.playSound('chime');
       });
 
     this.stateService.blockTransactions$
