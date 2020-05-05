@@ -20,7 +20,11 @@ export class AssetsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.assetsService.getAssetsJson$()
+    setTimeout(() => this.getAssets());
+  }
+
+  getAssets() {
+    this.assetsService.getAssetsJson$
       .subscribe((assets) => {
         this.assets = Object.values(assets);
         this.assets.push({
@@ -36,6 +40,6 @@ export class AssetsComponent implements OnInit {
         this.error = error;
         this.isLoading = false;
       });
-  }
+    }
 
 }

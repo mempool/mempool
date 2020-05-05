@@ -29,7 +29,7 @@
               </td>
               <td>
                 <div [ngSwitch]="true">
-                  <ng-container *ngSwitchCase="vin.is_coinbase">Coinbase (Newly Generated Coins)</ng-container>
+                  <ng-container *ngSwitchCase="vin.is_coinbase">Coinbase<ng-template [ngIf]="network !== 'liquid'"> (Newly Generated Coins)</ng-template></ng-container>
                   <ng-container *ngSwitchCase="vin.is_pegin">PEG IN</ng-container>
                   <ng-container *ngSwitchDefault>
                     <a [routerLink]="['/address/', vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">

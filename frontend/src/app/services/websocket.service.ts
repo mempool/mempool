@@ -96,6 +96,18 @@ export class WebsocketService {
           });
         }
 
+        if (response['asset-transactions']) {
+          response['asset-transactions'].forEach((assetTransaction: Transaction) => {
+            this.stateService.assetTransactions$.next(assetTransaction);
+          });
+        }
+
+        if (response['asset-block-transactions']) {
+          response['asset-block-transactions'].forEach((addressTransaction: Transaction) => {
+            this.stateService.blockTransactions$.next(addressTransaction);
+          });
+        }
+
         if (response['live-2h-chart']) {
           this.stateService.live2Chart$.next(response['live-2h-chart']);
         }

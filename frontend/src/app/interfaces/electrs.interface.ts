@@ -38,6 +38,19 @@ export interface Vin {
   witness?: string[];
   inner_witnessscript_asm?: string;
   is_pegin?: boolean;
+  issuance?: Issuance;
+}
+
+interface Issuance {
+  asset_id: string;
+  is_reissuance: string;
+  asset_blinding_nonce: string;
+  asset_entropy: string;
+  contract_hash: string;
+  assetamount?: number;
+  assetamountcommitment?: string;
+  tokenamount?: number;
+  tokenamountcommitment?: string;
 }
 
 export interface Vout {

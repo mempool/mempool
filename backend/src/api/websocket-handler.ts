@@ -72,6 +72,14 @@ class WebsocketHandler {
             }
           }
 
+          if (parsedMessage && parsedMessage['track-asset']) {
+            if (/^[a-fA-F0-9]{64}$/.test(parsedMessage['track-asset'])) {
+              client['track-asset'] = parsedMessage['track-asset'];
+            } else {
+              client['track-asset'] = null;
+            }
+          }
+
           if (parsedMessage.action === 'init') {
             const _blocks = blocks.getBlocks();
             if (!_blocks) {
@@ -155,24 +163,24 @@ class WebsocketHandler {
         }
       }
 
-      // Send all new incoming transactions related to tracked address
-      if (client['track-address']) {
+      // Send all new incoming transactions related to tracked asset
+      if (client['track-asset']) {
         const foundTransactions: TransactionExtended[] = [];
 
         newTransactions.forEach((tx) => {
-          const someVin = tx.vin.some((vin) => !!vin.prevout && vin.prevout.scriptpubkey_address === client['track-address']);
+          const someVin = tx.vin.some((vin) => !!vin.issuance && vin.issuance.asset_id === client['track-asset']);
           if (someVin) {
             foundTransactions.push(tx);
             return;
           }
-          const someVout = tx.vout.some((vout) => vout.scriptpubkey_address === client['track-address']);
+          const someVout = tx.vout.some((vout) => !!vout.asset && vout.asset === client['track-asset']);
           if (someVout) {
             foundTransactions.push(tx);
           }
         });
 
         if (foundTransactions.length) {
-          response['address-transactions'] = foundTransactions;
+          response['asset-transactions'] = foundTransactions;
         }
       }
 
@@ -213,7 +221,34 @@ class WebsocketHandler {
             foundTransactions.push(tx);
             return;
           }
-          if (tx.vout && tx.vout.some((vout) => vout.scriptpubkey_address === client['track-address'])) {
+          if (tx.vout && tx.vout.some((vout) => !!vout.asset && vout.asset === client['track-asset'])) {
+            foundTransactions.push(tx);
+          }
+        });
+
+        if (foundTransactions.length) {
+          foundTransactions.forEach((tx) => {
+            tx.status = {
+              confirmed: true,
+              block_height: block.height,
+              block_hash: block.id,
+              block_time: block.timestamp,
+            };
+          });
+
+          response['asset-block-transactions'] = foundTransactions;
+        }
+      }
+
+      if (client['track-asset']) {
+        const foundTransactions: TransactionExtended[] = [];
+
+        transactions.forEach((tx) => {
+          if (tx.vin && tx.vin.some((vin) => !!vin.issuance && vin.issuance.asset_id === client['track-asset'])) {
+            foundTransactions.push(tx);
+            return;
+          }
+          if (tx.vout && tx.vout.some((vout) => !!vout.asset && vout.asset === client['track-asset'])) {
             foundTransactions.push(tx);
           }
         });
