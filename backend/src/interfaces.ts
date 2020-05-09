@@ -76,7 +76,7 @@ export interface Vout {
   scriptpubkey: string;
   scriptpubkey_asm: string;
   scriptpubkey_type: string;
-  scriptpubkey_address: string;
+  scriptpubkey_address?: string;
   value: number;
 
   asset?: string;

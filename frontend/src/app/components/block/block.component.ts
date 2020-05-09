@@ -37,6 +37,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     .pipe(
       switchMap((params: ParamMap) => {
         const blockHash: string = params.get('id') || '';
+        this.block = undefined;
         this.error = undefined;
         this.fees = undefined;
 

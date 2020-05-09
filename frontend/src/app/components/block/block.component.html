@@ -49,12 +49,12 @@
               <ng-template [ngIf]="fees !== undefined" [ngIfElse]="loadingFees">
                 <tr>
                   <td>Total fees</td>
-                  <td><app-amount [satoshis]="fees * 100000000" digitsInfo="1.2-8"></app-amount> (<app-fiat [value]="fees * 100000000" digitsInfo="1.0-0"></app-fiat>)</td>
+                  <td><app-amount [satoshis]="fees * 100000000" digitsInfo="1.2-2"></app-amount> (<app-fiat [value]="fees * 100000000" digitsInfo="1.0-0"></app-fiat>)</td>
                 </tr>
                 <tr>
                   <td>Reward + fees:</td>
                   <td>
-                    <app-amount [satoshis]="(blockSubsidy + fees) * 100000000" digitsInfo="1.2-8"></app-amount> (<app-fiat [value]="(blockSubsidy + fees) * 100000000" digitsInfo="1.0-0"></app-fiat>)
+                    <app-amount [satoshis]="(blockSubsidy + fees) * 100000000" digitsInfo="1.2-2"></app-amount> (<app-fiat [value]="(blockSubsidy + fees) * 100000000" digitsInfo="1.0-0"></app-fiat>)
                   </td>
                 </tr>
               </ng-template>
@@ -68,6 +68,10 @@
                   <td><span class="skeleton-loader"></span></td>
                 </tr>
               </ng-template>
+              <tr>
+                <td>Miner</td>
+                <td><app-miner [coinbaseTransaction]="transactions && transactions[0]"></app-miner></td>
+              </tr>
             </tbody>
           </table>
         </div>
