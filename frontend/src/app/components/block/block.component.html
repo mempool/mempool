@@ -70,7 +70,7 @@
               </ng-template>
               <tr>
                 <td>Miner</td>
-                <td><app-miner [coinbaseTransaction]="transactions && transactions[0]"></app-miner></td>
+                <td><app-miner [coinbaseTransaction]="block.coinbaseTx || (transactions && transactions[0])"></app-miner></td>
               </tr>
             </tbody>
           </table>

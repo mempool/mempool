@@ -92,6 +92,7 @@ export interface Block {
   medianFee?: number;
   feeRange?: number[];
   reward?: number;
+  coinbaseTx?: Transaction;
 }
 
 export interface Address {
