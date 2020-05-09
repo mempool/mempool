@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Block, Transaction, Address, Outspend, Recent, Asset } from '../interfaces/electrs.interface';
+import { StateService } from './state.service';
 
 const API_BASE_URL = document.location.protocol + '//' + document.location.hostname + ':' + document.location.port + '/electrs';
 
@@ -9,61 +10,68 @@ const API_BASE_URL = document.location.protocol + '//' + document.location.hostn
   providedIn: 'root'
 })
 export class ElectrsApiService {
+  apiBaseUrl: string;
+
   constructor(
     private httpClient: HttpClient,
+    private stateService: StateService,
   ) {
+    this.apiBaseUrl = API_BASE_URL;
+    this.stateService.networkChanged$.subscribe((network) => {
+      this.apiBaseUrl = API_BASE_URL + '/' + network;
+    });
   }
 
   getBlock$(hash: string): Observable<Block> {
-    return this.httpClient.get<Block>(API_BASE_URL + '/block/' + hash);
+    return this.httpClient.get<Block>(this.apiBaseUrl + '/block/' + hash);
   }
 
   listBlocks$(height?: number): Observable<Block[]> {
-    return this.httpClient.get<Block[]>(API_BASE_URL + '/blocks/' + (height || ''));
+    return this.httpClient.get<Block[]>(this.apiBaseUrl + '/blocks/' + (height || ''));
   }
 
   getTransaction$(txId: string): Observable<Transaction> {
-    return this.httpClient.get<Transaction>(API_BASE_URL + '/tx/' + txId);
+    return this.httpClient.get<Transaction>(this.apiBaseUrl + '/tx/' + txId);
   }
 
   getRecentTransaction$(): Observable<Recent[]> {
-    return this.httpClient.get<Recent[]>(API_BASE_URL + '/mempool/recent');
+    return this.httpClient.get<Recent[]>(this.apiBaseUrl + '/mempool/recent');
   }
 
   getOutspend$(hash: string, vout: number): Observable<Outspend> {
-    return this.httpClient.get<Outspend>(API_BASE_URL + '/tx/' + hash + '/outspend/' + vout);
+    return this.httpClient.get<Outspend>(this.apiBaseUrl + '/tx/' + hash + '/outspend/' + vout);
   }
 
   getOutspends$(hash: string): Observable<Outspend[]> {
-    return this.httpClient.get<Outspend[]>(API_BASE_URL + '/tx/' + hash + '/outspends');
+    return this.httpClient.get<Outspend[]>(this.apiBaseUrl + '/tx/' + hash + '/outspends');
   }
 
   getBlockTransactions$(hash: string, index: number = 0): Observable<Transaction[]> {
-    return this.httpClient.get<Transaction[]>(API_BASE_URL + '/block/' + hash + '/txs/' + index);
+    return this.httpClient.get<Transaction[]>(this.apiBaseUrl + '/block/' + hash + '/txs/' + index);
   }
 
   getAddress$(address: string): Observable<Address> {
-    return this.httpClient.get<Address>(API_BASE_URL + '/address/' + address);
+    return this.httpClient.get<Address>(this.apiBaseUrl + '/address/' + address);
   }
 
   getAddressTransactions$(address: string): Observable<Transaction[]> {
-    return this.httpClient.get<Transaction[]>(API_BASE_URL + '/address/' + address + '/txs');
+    return this.httpClient.get<Transaction[]>(this.apiBaseUrl + '/address/' + address + '/txs');
   }
 
   getAddressTransactionsFromHash$(address: string, txid: string): Observable<Transaction[]> {
-    return this.httpClient.get<Transaction[]>(API_BASE_URL + '/address/' + address + '/txs/chain/' + txid);
+    return this.httpClient.get<Transaction[]>(this.apiBaseUrl + '/address/' + address + '/txs/chain/' + txid);
   }
 
   getAsset$(assetId: string): Observable<Asset> {
-    return this.httpClient.get<Asset>(API_BASE_URL + '/asset/' + assetId);
+    return this.httpClient.get<Asset>(this.apiBaseUrl + '/asset/' + assetId);
   }
 
   getAssetTransactions$(assetId: string): Observable<Transaction[]> {
-    return this.httpClient.get<Transaction[]>(API_BASE_URL + '/asset/' + assetId + '/txs');
+    return this.httpClient.get<Transaction[]>(this.apiBaseUrl + '/asset/' + assetId + '/txs');
   }
 
   getAssetTransactionsFromHash$(assetId: string, txid: string): Observable<Transaction[]> {
-    return this.httpClient.get<Transaction[]>(API_BASE_URL + '/asset/' + assetId + '/txs/chain/' + txid);
+    return this.httpClient.get<Transaction[]>(this.apiBaseUrl + '/asset/' + assetId + '/txs/chain/' + txid);
   }
 
 }

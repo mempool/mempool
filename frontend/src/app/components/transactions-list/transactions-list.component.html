@@ -1,6 +1,6 @@
 <ng-container *ngFor="let tx of transactions; let i = index; trackBy: trackByFn">
   <div *ngIf="!transactionPage" class="header-bg box" style="padding: 10px; margin-bottom: 10px;">
-    <a [routerLink]="['/tx/', tx.txid]" [state]="{ data: tx }">
+    <a [routerLink]="['/tx/' | relativeUrl, tx.txid]" [state]="{ data: tx }">
       <span style="float: left;" class="d-block d-md-none">{{ tx.txid | shortenString : 16 }}</span>
       <span style="float: left;" class="d-none d-md-block">{{ tx.txid }}</span>
     </a>
@@ -18,21 +18,28 @@
           <tbody>
             <tr *ngFor="let vin of getFilteredTxVin(tx)">
               <td class="arrow-td">
-                <ng-template [ngIf]="vin.prevout === null" [ngIfElse]="hasPrevout">
+                <ng-template [ngIf]="vin.prevout === null && !vin.is_pegin" [ngIfElse]="hasPrevout">
                   <i class="arrow grey"></i>
                 </ng-template>
                 <ng-template #hasPrevout>
-                  <a [routerLink]="['/tx/', vin.txid]">
+                  <a *ngIf="vin.is_pegin; else defaultPrevout" [routerLink]="['/tx/', vin.txid]">
                     <i class="arrow red"></i>
                   </a>
+                  <ng-template #defaultPrevout>
+                    <a [routerLink]="['/tx/' | relativeUrl, vin.txid]">
+                      <i class="arrow red"></i>
+                    </a>
+                  </ng-template>
                 </ng-template>
               </td>
               <td>
                 <div [ngSwitch]="true">
                   <ng-container *ngSwitchCase="vin.is_coinbase">Coinbase<ng-template [ngIf]="network !== 'liquid'"> (Newly Generated Coins)</ng-template></ng-container>
-                  <ng-container *ngSwitchCase="vin.is_pegin">PEG IN</ng-container>
+                  <ng-container *ngSwitchCase="vin.is_pegin">
+                    Peg-in
+                  </ng-container>
                   <ng-container *ngSwitchDefault>
-                    <a [routerLink]="['/address/', vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">
+                    <a [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">
                       <span class="d-block d-lg-none">{{ vin.prevout.scriptpubkey_address | shortenString : 16 }}</span>
                       <span class="d-none d-lg-block">{{ vin.prevout.scriptpubkey_address | shortenString : 42 }}</span>
                     </a>
@@ -60,13 +67,16 @@
           <tbody>
             <tr *ngFor="let vout of getFilteredTxVout(tx); let vindex = index;">
               <td>
-                <a *ngIf="vout.scriptpubkey_address; else scriptpubkey_type" [routerLink]="['/address/', vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">
+                <a *ngIf="vout.scriptpubkey_address; else scriptpubkey_type" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">
                   <span class="d-block d-lg-none">{{ vout.scriptpubkey_address | shortenString : 16 }}</span>
                   <span class="d-none d-lg-block">{{ vout.scriptpubkey_address | shortenString : 42 }}</span>
                 </a>
                 <ng-template #scriptpubkey_type>
                   <ng-template [ngIf]="vout.pegout" [ngIfElse]="defaultscriptpubkey_type">
-                    PEG OUT
+                    Peg-out to <a [routerLink]="['/address/', vout.pegout.scriptpubkey_address]" title="{{ vout.pegout.scriptpubkey_address }}">
+                      <span class="d-block d-lg-none">{{ vout.pegout.scriptpubkey_address | shortenString : 16 }}</span>
+                      <span class="d-none d-lg-block">{{ vout.pegout.scriptpubkey_address | shortenString : 42 }}</span>
+                    </a>
                   </ng-template>
                   <ng-template #defaultscriptpubkey_type>
                     {{ vout.scriptpubkey_type | scriptpubkeyType }}
@@ -80,7 +90,7 @@
                     <br>
                     {{ assetsMinimal[vout.asset][0] }}
                     <br>
-                    <a [routerLink]="['/asset/', vout.asset]">{{ vout.asset | shortenString : 13 }}</a>
+                    <a [routerLink]="['/asset/' | relativeUrl, vout.asset]">{{ vout.asset | shortenString : 13 }}</a>
                     <br><br>
                 </div>
                 </ng-template>
@@ -93,7 +103,7 @@
                 <ng-template #outspend>
                   <i *ngIf="!outspends[i][vindex] || !outspends[i][vindex].spent; else spent" class="arrow green"></i>
                   <ng-template #spent>
-                    <a [routerLink]="['/tx/', outspends[i][vindex].txid]"><i class="arrow red"></i></a>
+                    <a [routerLink]="['/tx/' | relativeUrl, outspends[i][vindex].txid]"><i class="arrow red"></i></a>
                   </ng-template>
                 </ng-template>
               </td>

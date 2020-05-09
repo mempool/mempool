@@ -6,7 +6,6 @@ import { Block, Transaction, Vout } from '../../interfaces/electrs.interface';
 import { of } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { SeoService } from 'src/app/services/seo.service';
-import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-block',
@@ -14,7 +13,7 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./block.component.scss']
 })
 export class BlockComponent implements OnInit, OnDestroy {
-  network = environment.network;
+  network = '';
   block: Block;
   blockHeight: number;
   blockHash: string;
@@ -92,6 +91,9 @@ export class BlockComponent implements OnInit, OnDestroy {
 
     this.stateService.blocks$
       .subscribe((block) => this.latestBlock = block);
+
+    this.stateService.networkChanged$
+      .subscribe((network) => this.network = network);
   }
 
   ngOnDestroy() {

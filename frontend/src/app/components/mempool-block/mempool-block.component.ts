@@ -5,7 +5,6 @@ import { switchMap, map, tap } from 'rxjs/operators';
 import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 import { Observable } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
-import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-mempool-block',
@@ -13,7 +12,7 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./mempool-block.component.scss']
 })
 export class MempoolBlockComponent implements OnInit, OnDestroy {
-  network = environment.network;
+  network = '';
   mempoolBlockIndex: number;
   mempoolBlock$: Observable<MempoolBlock>;
 
@@ -43,6 +42,9 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
           this.stateService.markBlock$.next({ mempoolBlockIndex: this.mempoolBlockIndex });
         })
       );
+
+    this.stateService.networkChanged$
+      .subscribe((network) => this.network = network);
   }
 
   ngOnDestroy(): void {

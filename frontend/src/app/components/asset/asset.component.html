@@ -1,6 +1,6 @@
 <div class="container-xl">
   <h1 style="float: left;">Asset</h1>
-  <a [routerLink]="['/asset/', assetString]" style="line-height: 56px; margin-left: 10px;">
+  <a [routerLink]="['/asset/' | relativeUrl, assetString]" style="line-height: 56px; margin-left: 10px;">
     <span class="d-inline d-lg-none">{{ assetString | shortenString : 24 }}</span>
     <span class="d-none d-lg-inline">{{ assetString }}</span>
   </a>
@@ -30,7 +30,7 @@
               </tr>
               <tr *ngIf="!isNativeAsset">
                 <td>Issuance tx</td>
-                <td><a [routerLink]="['/tx/', asset.issuance_txin.txid]">{{ asset.issuance_txin.txid | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="asset.issuance_txin.txid"></app-clipboard></td>
+                <td><a [routerLink]="['/tx/' | relativeUrl, asset.issuance_txin.txid]">{{ asset.issuance_txin.txid | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="asset.issuance_txin.txid"></app-clipboard></td>
               </tr>
             </tbody>
           </table>

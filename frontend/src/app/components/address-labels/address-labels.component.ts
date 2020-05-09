@@ -16,7 +16,7 @@ export class AddressLabelsComponent implements OnInit {
   multisigM: number;
   multisigN: number;
 
-  lnChannelClose = false;
+  secondLayerClose = false;
 
   constructor() { }
 
@@ -33,12 +33,16 @@ export class AddressLabelsComponent implements OnInit {
       if (this.vin.inner_witnessscript_asm.indexOf('OP_CHECKMULTISIG') > -1) {
         const matches = this.getMatches(this.vin.inner_witnessscript_asm, /OP_PUSHNUM_([0-9])/g, 1);
         this.multisig = true;
-        this.multisigM = matches[0];
-        this.multisigN = matches[1];
+        this.multisigM = parseInt(matches[0], 10);
+        this.multisigN = parseInt(matches[1], 10);
+
+        if (this.multisigM === 1 && this.multisigN === 1) {
+          this.multisig = false;
+        }
       }
 
       if (/OP_IF (.+) OP_ELSE (.+) OP_CSV OP_DROP/.test(this.vin.inner_witnessscript_asm)) {
-        this.lnChannelClose = true;
+        this.secondLayerClose = true;
       }
     }
 

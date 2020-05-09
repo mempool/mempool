@@ -4,7 +4,6 @@ import { StateService } from '../../services/state.service';
 import { Block } from '../../interfaces/electrs.interface';
 import { Subscription } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
-import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-latest-blocks',
@@ -12,7 +11,7 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./latest-blocks.component.scss'],
 })
 export class LatestBlocksComponent implements OnInit, OnDestroy {
-  network = environment.network;
+  network = '';
 
   blocks: any[] = [];
   blockSubscription: Subscription;
@@ -32,6 +31,7 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.seoService.resetTitle();
+    this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     this.blockSubscription = this.stateService.blocks$
       .subscribe((block) => {

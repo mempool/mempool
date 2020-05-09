@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 import { StateService } from '../../services/state.service';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-amount',
@@ -12,9 +11,10 @@ import { environment } from '../../../environments/environment';
 export class AmountComponent implements OnInit {
   conversions$: Observable<any>;
   viewFiat$: Observable<boolean>;
-  network = environment.network;
+  network = '';
 
   @Input() satoshis: number;
+  @Input() digitsInfo = '1.8-8';
 
   constructor(
     private stateService: StateService,
@@ -23,6 +23,7 @@ export class AmountComponent implements OnInit {
   ngOnInit() {
     this.viewFiat$ = this.stateService.viewFiat$.asObservable();
     this.conversions$ = this.stateService.conversions$.asObservable();
+    this.stateService.networkChanged$.subscribe((network) => this.network = network);
   }
 
 }

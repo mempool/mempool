@@ -13,7 +13,7 @@ import { AssetsService } from 'src/app/services/assets.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TransactionsListComponent implements OnInit, OnChanges {
-  network = environment.network;
+  network = '';
   nativeAssetId = environment.nativeAssetId;
 
   @Input() transactions: Transaction[];
@@ -35,6 +35,8 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.latestBlock$ = this.stateService.blocks$;
+    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+
     if (this.network === 'liquid') {
       this.assetsService.getAssetsMinimalJson$.subscribe((assets) => {
         this.assetsMinimal = assets;

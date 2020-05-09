@@ -56,6 +56,14 @@ body {
   }
 }
 
+.navbar-nav.liquid > .active {
+  background-color: #116761 !important;
+}
+
+.navbar-nav.testnet > .active {
+  background-color: #1d486f !important;
+}
+
 .form-control {
   color: #495057;
 }

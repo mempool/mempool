@@ -68,7 +68,7 @@ interface Pegout {
   genesis_hash: string;
   scriptpubkey: string;
   scriptpubkey_asm: string;
-  scriptpubkey_addres: string;
+  scriptpubkey_address: string;
 }
 
 export interface Status {

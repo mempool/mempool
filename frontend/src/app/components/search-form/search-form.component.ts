@@ -1,8 +1,8 @@
 import { Component, OnInit, ChangeDetectionStrategy, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { environment } from 'src/environments/environment';
 import { AssetsService } from 'src/app/services/assets.service';
+import { StateService } from 'src/app/services/state.service';
 
 @Component({
   selector: 'app-search-form',
@@ -11,7 +11,7 @@ import { AssetsService } from 'src/app/services/assets.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchFormComponent implements OnInit {
-  network = environment.network;
+  network = '';
   assets: object;
 
   searchForm: FormGroup;
@@ -25,9 +25,12 @@ export class SearchFormComponent implements OnInit {
     private formBuilder: FormBuilder,
     private router: Router,
     private assetsService: AssetsService,
+    private stateService: StateService,
   ) { }
 
   ngOnInit() {
+    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+
     this.searchForm = this.formBuilder.group({
       searchText: ['', Validators.required],
     });
@@ -43,16 +46,16 @@ export class SearchFormComponent implements OnInit {
     const searchText = this.searchForm.value.searchText.trim();
     if (searchText) {
       if (this.regexAddress.test(searchText)) {
-        this.router.navigate(['/address/', searchText]);
+        this.router.navigate([(this.network ? '/' + this.network : '') + '/address/', searchText]);
         this.searchTriggered.emit();
       } else if (this.regexBlockhash.test(searchText)) {
-        this.router.navigate(['/block/', searchText]);
+        this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', searchText]);
         this.searchTriggered.emit();
       } else if (this.regexTransaction.test(searchText)) {
         if (this.network === 'liquid' && this.assets[searchText]) {
-          this.router.navigate(['/asset/', searchText]);
+          this.router.navigate([(this.network ? '/' + this.network : '') + '/asset/', searchText]);
         } else {
-          this.router.navigate(['/tx/', searchText]);
+          this.router.navigate([(this.network ? '/' + this.network : '') + '/tx/', searchText]);
         }
         this.searchTriggered.emit();
       } else {

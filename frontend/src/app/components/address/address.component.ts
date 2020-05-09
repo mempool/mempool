@@ -9,7 +9,6 @@ import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
 import { of, merge, Subscription } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
-import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-address',
@@ -17,7 +16,7 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./address.component.scss']
 })
 export class AddressComponent implements OnInit, OnDestroy {
-  network = environment.network;
+  network = '';
 
   address: Address;
   addressString: string;
@@ -48,6 +47,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.websocketService.want(['blocks', 'stats', 'mempool-blocks']);
 
     this.mainSubscription = this.route.paramMap

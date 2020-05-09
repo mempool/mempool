@@ -1,17 +1,20 @@
 import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { environment } from 'src/environments/environment';
+import { StateService } from './state.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SeoService {
-  network = environment.network;
+  network = '';
   defaultTitle = 'mempool - Bitcoin Explorer';
 
   constructor(
     private titleService: Title,
-  ) { }
+    private stateService: StateService,
+  ) {
+    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+  }
 
   setTitle(newTitle: string, prependNetwork = false) {
     let networkName = '';

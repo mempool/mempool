@@ -48,6 +48,7 @@ import { MempoolGraphComponent } from './components/mempool-graph/mempool-graph.
 import { AssetComponent } from './components/asset/asset.component';
 import { ScriptpubkeyTypePipe } from './pipes/scriptpubkey-type-pipe/scriptpubkey-type.pipe';
 import { AssetsComponent } from './assets/assets.component';
+import { RelativeUrlPipe } from './pipes/relative-url/relative-url.pipe';
 
 @NgModule({
   declarations: [
@@ -86,6 +87,7 @@ import { AssetsComponent } from './assets/assets.component';
     AssetComponent,
     ScriptpubkeyTypePipe,
     AssetsComponent,
+    RelativeUrlPipe,
   ],
   imports: [
     BrowserModule,

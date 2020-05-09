@@ -4,7 +4,6 @@ import { OptimizedMempoolStats } from '../../interfaces/node-api.interface';
 import { StateService } from 'src/app/services/state.service';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
-import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-television',
@@ -13,7 +12,6 @@ import { environment } from 'src/environments/environment';
 })
 export class TelevisionComponent implements OnInit {
   loading = true;
-  network = environment.network;
 
   mempoolStats: OptimizedMempoolStats[] = [];
   mempoolVsizeFeesData: any;

@@ -16,7 +16,7 @@ const EXPECT_PING_RESPONSE_AFTER_MS = 1000;
   providedIn: 'root'
 })
 export class WebsocketService {
-  private websocketSubject: WebSocketSubject<WebsocketResponse> = webSocket<WebsocketResponse | any>(WEB_SOCKET_URL);
+  private websocketSubject: WebSocketSubject<WebsocketResponse>;
   private goneOffline = false;
   private lastWant: string[] | null = null;
   private isTrackingTx = false;
@@ -28,7 +28,22 @@ export class WebsocketService {
   constructor(
     private stateService: StateService,
   ) {
+    this.websocketSubject = webSocket<WebsocketResponse | any>(WEB_SOCKET_URL + '/' + this.stateService.network);
     this.startSubscription();
+
+    this.stateService.networkChanged$.subscribe((network) => {
+      clearTimeout(this.onlineCheckTimeout);
+      clearTimeout(this.onlineCheckTimeoutTwo);
+
+      this.stateService.latestBlockHeight = 0;
+
+      this.websocketSubject.complete();
+      this.subscription.unsubscribe();
+      this.websocketSubject = webSocket<WebsocketResponse | any>(WEB_SOCKET_URL + '/' + network);
+
+      this.startSubscription();
+    });
+
   }
 
   startSubscription(retrying = false) {

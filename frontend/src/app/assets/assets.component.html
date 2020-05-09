@@ -18,8 +18,8 @@
           <td class="td-name">{{ asset.name }}</td>
           <td>{{ asset.ticker }}</td>
           <td class="d-none d-md-block"><a *ngIf="asset.entity" target="_blank" href="{{ 'http://' + asset.entity.domain }}">{{ asset.entity.domain }}</a></td>
-          <td><a [routerLink]="['/asset/', asset.asset_id]">{{ asset.asset_id | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="asset.asset_id"></app-clipboard></td>
-          <td class="d-none d-lg-block"><ng-template [ngIf]="asset.issuance_txin"><a [routerLink]="['/tx/', asset.issuance_txin.txid]">{{ asset.issuance_txin.txid | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="asset.issuance_txin.txid"></app-clipboard></ng-template></td>
+          <td><a [routerLink]="['/asset/' | relativeUrl, asset.asset_id]">{{ asset.asset_id | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="asset.asset_id"></app-clipboard></td>
+          <td class="d-none d-lg-block"><ng-template [ngIf]="asset.issuance_txin"><a [routerLink]="['/tx/' | relativeUrl, asset.issuance_txin.txid]">{{ asset.issuance_txin.txid | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="asset.issuance_txin.txid"></app-clipboard></ng-template></td>
         </tr> 
       </tbody>
     </table>

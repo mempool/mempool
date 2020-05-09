@@ -2,7 +2,7 @@
   <div class="flashing">
     <div *ngFor="let projectedBlock of mempoolBlocks; let i = index; trackBy: trackByFn">
       <div class="bitcoin-block text-center mempool-block" id="mempool-block-{{ i }}" [ngStyle]="getStyleForMempoolBlockAtIndex(i)">
-        <a [routerLink]="['/mempool-block/', i]" class="blockLink">&nbsp;</a>
+        <a [routerLink]="['/mempool-block/' | relativeUrl, i]" class="blockLink">&nbsp;</a>
         <div class="block-body" *ngIf="mempoolBlocks?.length">
           <div class="fees">
             <span class="yellow-color">~{{ projectedBlock.medianFee | number:'1.0-0' }} sat/vB</span>

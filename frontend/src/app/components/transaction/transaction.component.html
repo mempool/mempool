@@ -11,7 +11,7 @@
     </ng-template>
 
     <div>
-      <a [routerLink]="['/tx/', txId]" style="line-height: 56px;">
+      <a [routerLink]="['/tx/' | relativeUrl, txId]" style="line-height: 56px;">
         <span class="d-inline d-lg-none">{{ txId | shortenString : 24 }}</span>
         <span class="d-none d-lg-inline">{{ txId }}</span>
       </a>
@@ -33,7 +33,7 @@
                 <tr>
                   <td class="td-width">Included in block</td>
                   <td>
-                    <a [routerLink]="['/block/', tx.status.block_hash]" [state]="{ data: { blockHeight: tx.status.block_height } }">{{ tx.status.block_height }}</a>
+                    <a [routerLink]="['/block/' | relativeUrl, tx.status.block_hash]" [state]="{ data: { blockHeight: tx.status.block_height } }">{{ tx.status.block_height }}</a>
                     <i> (<app-time-since [time]="tx.status.block_time" [fastRender]="true"></app-time-since> ago)</i>
                   </td>
                 </tr>

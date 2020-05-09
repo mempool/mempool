@@ -12,7 +12,6 @@ import { ApiService } from '../../services/api.service';
 import * as Chartist from 'chartist';
 import { StateService } from 'src/app/services/state.service';
 import { SeoService } from 'src/app/services/seo.service';
-import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-statistics',
@@ -20,7 +19,7 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./statistics.component.scss']
 })
 export class StatisticsComponent implements OnInit {
-  network = environment.network;
+  network = '';
 
   loading = true;
   spinnerLoading = false;
@@ -52,6 +51,8 @@ export class StatisticsComponent implements OnInit {
 
   ngOnInit() {
     this.seoService.setTitle('Graphs');
+    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+
     const labelInterpolationFnc = (value: any, index: any) => {
       const nr = 6;
 

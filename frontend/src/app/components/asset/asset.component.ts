@@ -18,7 +18,7 @@ import { AssetsService } from 'src/app/services/assets.service';
   styleUrls: ['./asset.component.scss']
 })
 export class AssetComponent implements OnInit, OnDestroy {
-  network = environment.network;
+  network = '';
   nativeAssetId = environment.nativeAssetId;
 
   asset: Asset;
@@ -54,6 +54,7 @@ export class AssetComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.websocketService.want(['blocks', 'stats', 'mempool-blocks']);
+    this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     this.mainSubscription = this.route.paramMap
       .pipe(
