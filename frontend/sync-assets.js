@@ -17,3 +17,5 @@ console.log('Downloading assets');
 download(PATH + 'assets.json', 'https://raw.githubusercontent.com/Blockstream/asset_registry_db/master/index.json');
 console.log('Downloading assets minimal');
 download(PATH + 'assets.minimal.json', 'https://raw.githubusercontent.com/Blockstream/asset_registry_db/master/index.minimal.json');
+console.log('Downloading mining pools info');
+download(PATH + 'pools.json', 'https://raw.githubusercontent.com/btccom/Blockchain-Known-Pools/master/pools.json');

@@ -23,8 +23,8 @@
     "ng": "ng",
     "start": "npm run sync-assets-dev && ng serve --proxy-config proxy.conf.json",
     "build": "ng build --prod && npm run sync-assets",
-    "sync-assets": "node sync-asset-registry.js",
-    "sync-assets-dev": "node sync-asset-registry.js dev",
+    "sync-assets": "node sync-assets.js",
+    "sync-assets-dev": "node sync-assets.js dev",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
