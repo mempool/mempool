@@ -56,7 +56,7 @@ export interface Vin {
   sequence: any;
   witness?: string[];
   inner_witnessscript_asm?: string;
-
+  is_pegin?: boolean;
   issuance?: Issuance;
 }
 
@@ -79,6 +79,7 @@ export interface Vout {
   scriptpubkey_address?: string;
   value: number;
 
+  pegout?: any;
   asset?: string;
 }
 

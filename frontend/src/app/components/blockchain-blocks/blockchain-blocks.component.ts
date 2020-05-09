@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./blockchain-blocks.component.scss']
 })
 export class BlockchainBlocksComponent implements OnInit, OnDestroy {
+  network = '';
   blocks: Block[] = [];
   markHeight: number;
   blocksSubscription: Subscription;
@@ -26,6 +27,8 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+
     this.blocksSubscription = this.stateService.blocks$
       .subscribe((block) => {
         if (this.blocks.some((b) => b.height === block.height)) {
@@ -60,14 +63,16 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
     if (event.key === 'ArrowRight') {
       const blockindex = this.blocks.findIndex((b) => b.height === this.markHeight);
       if (this.blocks[blockindex + 1]) {
-        this.router.navigate(['/block/', this.blocks[blockindex + 1].id], { state: { data: { block: this.blocks[blockindex + 1] } } });
+        this.router.navigate([(this.network ? '/' + this.network : '') + '/block/',
+          this.blocks[blockindex + 1].id], { state: { data: { block: this.blocks[blockindex + 1] } } });
       }
     } else if (event.key === 'ArrowLeft') {
       const blockindex = this.blocks.findIndex((b) => b.height === this.markHeight);
       if (blockindex === 0) {
-        this.router.navigate(['/mempool-block/', '0']);
+        this.router.navigate([(this.network ? '/' + this.network : '') + '/mempool-block/', '0']);
       } else {
-        this.router.navigate(['/block/', this.blocks[blockindex - 1].id], { state: { data: { block: this.blocks[blockindex - 1] }}});
+        this.router.navigate([(this.network ? '/' + this.network : '') + '/block/',
+          this.blocks[blockindex - 1].id], { state: { data: { block: this.blocks[blockindex - 1] }}});
       }
     }
   }

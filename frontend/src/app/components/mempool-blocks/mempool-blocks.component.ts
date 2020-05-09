@@ -74,19 +74,19 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
       }
       if (event.key === 'ArrowRight') {
         if (this.mempoolBlocks[this.markIndex - 1]) {
-          this.router.navigate(['/mempool-block/', this.markIndex - 1]);
+          this.router.navigate([(this.network ? '/' + this.network : '') + '/mempool-block/', this.markIndex - 1]);
         } else {
           this.stateService.blocks$
             .pipe(take(8))
             .subscribe((block) => {
               if (this.stateService.latestBlockHeight === block.height) {
-                this.router.navigate(['/block/', block.id], { state: { data: { block } }});
+                this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', block.id], { state: { data: { block } }});
               }
             });
         }
       } else if (event.key === 'ArrowLeft') {
         if (this.mempoolBlocks[this.markIndex + 1]) {
-          this.router.navigate(['/mempool-block/', this.markIndex + 1]);
+          this.router.navigate([(this.network ? '/' + this.network : '') + '/mempool-block/', this.markIndex + 1]);
         }
       }
     });
