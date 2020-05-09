@@ -75,6 +75,7 @@ class Blocks {
         transactions.sort((a, b) => b.feePerVsize - a.feePerVsize);
         block.medianFee = transactions.length > 1 ? this.median(transactions.map((tx) => tx.feePerVsize)) : 0;
         block.feeRange = transactions.length > 1 ? this.getFeesInRange(transactions, 8) : [0, 0];
+        block.coinbaseTx = transactions[0];
 
         this.blocks.push(block);
         if (this.blocks.length > config.KEEP_BLOCK_AMOUNT) {

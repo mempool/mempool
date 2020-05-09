@@ -19,6 +19,7 @@ export class MinerComponent implements OnChanges {
   ) { }
 
   ngOnChanges() {
+    this.miner = '';
     this.loading = true;
     this.findMinerFromCoinbase();
   }
