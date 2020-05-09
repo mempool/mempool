@@ -11,6 +11,7 @@ import fiatConversion from './fiat-conversion';
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
   private latestGitCommitHash = '';
+  private nativeAssetId = '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
 
   constructor() {
     this.setLatestGitCommit();
@@ -168,14 +169,23 @@ class WebsocketHandler {
         const foundTransactions: TransactionExtended[] = [];
 
         newTransactions.forEach((tx) => {
-          const someVin = tx.vin.some((vin) => !!vin.issuance && vin.issuance.asset_id === client['track-asset']);
-          if (someVin) {
-            foundTransactions.push(tx);
-            return;
-          }
-          const someVout = tx.vout.some((vout) => !!vout.asset && vout.asset === client['track-asset']);
-          if (someVout) {
-            foundTransactions.push(tx);
+
+          if (client['track-asset'] === this.nativeAssetId) {
+            if (tx.vin.some((vin) => !!vin.is_pegin)) {
+              foundTransactions.push(tx);
+              return;
+            }
+            if (tx.vout.some((vout) => !!vout.pegout)) {
+              foundTransactions.push(tx);
+            }
+          } else {
+            if (tx.vin.some((vin) => !!vin.issuance && vin.issuance.asset_id === client['track-asset'])) {
+              foundTransactions.push(tx);
+              return;
+            }
+            if (tx.vout.some((vout) => !!vout.asset && vout.asset === client['track-asset'])) {
+              foundTransactions.push(tx);
+            }
           }
         });
 
@@ -244,12 +254,22 @@ class WebsocketHandler {
         const foundTransactions: TransactionExtended[] = [];
 
         transactions.forEach((tx) => {
-          if (tx.vin && tx.vin.some((vin) => !!vin.issuance && vin.issuance.asset_id === client['track-asset'])) {
-            foundTransactions.push(tx);
-            return;
-          }
-          if (tx.vout && tx.vout.some((vout) => !!vout.asset && vout.asset === client['track-asset'])) {
-            foundTransactions.push(tx);
+          if (client['track-asset'] === this.nativeAssetId) {
+            if (tx.vin && tx.vin.some((vin) => !!vin.is_pegin)) {
+              foundTransactions.push(tx);
+              return;
+            }
+            if (tx.vout && tx.vout.some((vout) => !!vout.pegout)) {
+              foundTransactions.push(tx);
+            }
+          } else {
+            if (tx.vin && tx.vin.some((vin) => !!vin.issuance && vin.issuance.asset_id === client['track-asset'])) {
+              foundTransactions.push(tx);
+              return;
+            }
+            if (tx.vout && tx.vout.some((vout) => !!vout.asset && vout.asset === client['track-asset'])) {
+              foundTransactions.push(tx);
+            }
           }
         });
 
