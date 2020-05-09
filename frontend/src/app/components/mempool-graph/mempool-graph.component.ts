@@ -2,8 +2,8 @@ import { Component, OnInit, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, O
 import { formatDate } from '@angular/common';
 import { VbytesPipe } from 'src/app/pipes/bytes-pipe/vbytes.pipe';
 import * as Chartist from 'chartist';
-import { environment } from 'src/environments/environment';
 import { OptimizedMempoolStats } from 'src/app/interfaces/node-api.interface';
+import { StateService } from 'src/app/services/state.service';
 
 @Component({
   selector: 'app-mempool-graph',
@@ -13,16 +13,18 @@ import { OptimizedMempoolStats } from 'src/app/interfaces/node-api.interface';
 export class MempoolGraphComponent implements OnInit, OnChanges {
   @Input() data;
 
-  network = environment.network;
+  network = '';
   mempoolVsizeFeesOptions: any;
   mempoolVsizeFeesData: any;
 
   constructor(
     private vbytesPipe: VbytesPipe,
+    private stateService: StateService,
     @Inject(LOCALE_ID) private locale: string,
   ) { }
 
   ngOnInit(): void {
+    this.stateService.networkChanged$.subscribe((network) => this.network = network);
     const labelInterpolationFnc = (value: any, index: any) => {
       return index % 6  === 0 ? formatDate(value, 'HH:mm', this.locale) : null;
     };

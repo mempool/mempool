@@ -5,27 +5,38 @@
     <div class="badge badge-warning connection-badge" *ngIf="connectionState === 0">Offline</div>
     <div class="badge badge-warning connection-badge" style="left: 30px;" *ngIf="connectionState === 1">Reconnecting...</div>
   </a>
-  
+
+  <div class="btn-group" style="margin-right: 16px;">
+    <button type="button" (click)="networkDropdownHidden = !networkDropdownHidden" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <span class="sr-only">Toggle Dropdown</span>
+    </button>
+    <div class="dropdown-menu" [class.d-block]="!networkDropdownHidden">
+      <a class="dropdown-item" routerLink="/">Mainnet</a>
+      <a class="dropdown-item" routerLink="/liquid">Liquid</a>
+      <a class="dropdown-item" routerLink="/testnet">Testnet</a>
+      </div>
+  </div>
+
   <button class="navbar-toggler" type="button" (click)="collapse()" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   
   <div class="navbar-collapse collapse" id="navbarCollapse" [ngClass]="{'show': navCollapsed}">
-    <ul class="navbar-nav mr-auto">
+    <ul class="navbar-nav mr-auto {{ network }}">
       <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-        <a class="nav-link" routerLink="/" (click)="collapse()">Blockchain</a>
+        <a class="nav-link" [routerLink]="['/' | relativeUrl]" (click)="collapse()">Blockchain</a>
       </li>
       <li class="nav-item" routerLinkActive="active">
-        <a class="nav-link" routerLink="/graphs" (click)="collapse()">Graphs</a>
+        <a class="nav-link" [routerLink]="['/graphs' | relativeUrl]" (click)="collapse()">Graphs</a>
       </li>
       <li class="nav-item" routerLinkActive="active">
-        <a class="nav-link" routerLink="/tv" (click)="collapse()">TV view &nbsp;<img src="./resources/expand.png" width="15"/></a>
+        <a class="nav-link" [routerLink]="[tvViewRoute]" (click)="collapse()">TV view &nbsp;<img src="./resources/expand.png" width="15"/></a>
       </li>
       <li *ngIf="network === 'liquid'" class="nav-item" routerLinkActive="active">
-        <a class="nav-link" routerLink="/assets" (click)="collapse()">Assets</a>
+        <a class="nav-link" [routerLink]="['/assets' | relativeUrl]" (click)="collapse()">Assets</a>
       </li>
       <li class="nav-item" routerLinkActive="active">
-        <a class="nav-link" routerLink="/contributors" (click)="collapse()">Contributors</a>
+        <a class="nav-link" [routerLink]="['/contributors' | relativeUrl]" (click)="collapse()">Contributors</a>
       </li>
     </ul>
     <app-search-form location="top" (searchTriggered)="collapse()"></app-search-form>

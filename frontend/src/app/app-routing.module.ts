@@ -64,13 +64,176 @@ const routes: Routes = [
     ],
   },
   {
+    path: 'liquid',
+    component: MasterPageComponent,
+    children: [
+      {
+        path: '',
+        component: StartComponent,
+        children: [
+          {
+            path: '',
+            component: LatestBlocksComponent
+          },
+          {
+            path: 'tx/:id',
+            component: TransactionComponent
+          },
+          {
+            path: 'block/:id',
+            component: BlockComponent
+          },
+          {
+            path: 'mempool-block/:id',
+            component: MempoolBlockComponent
+          },
+        ],
+      },
+      {
+        path: 'graphs',
+        component: StatisticsComponent,
+      },
+      {
+        path: 'tv',
+        component: TelevisionComponent,
+      },
+      {
+        path: 'contributors',
+        component: AboutComponent,
+      },
+      {
+        path: 'address/:id',
+        children: [],
+        component: AddressComponent
+      },
+      {
+        path: 'asset/:id',
+        component: AssetComponent
+      },
+      {
+        path: 'assets',
+        component: AssetsComponent,
+      },
+      {
+        path: '**',
+        redirectTo: ''
+      },
+    ],
+  },
+  {
+    path: 'liquid',
+    component: MasterPageComponent,
+    children: [
+      {
+        path: '',
+        component: StartComponent,
+        children: [
+          {
+            path: '',
+            component: LatestBlocksComponent
+          },
+          {
+            path: 'tx/:id',
+            component: TransactionComponent
+          },
+          {
+            path: 'block/:id',
+            component: BlockComponent
+          },
+          {
+            path: 'mempool-block/:id',
+            component: MempoolBlockComponent
+          },
+        ],
+      },
+      {
+        path: 'graphs',
+        component: StatisticsComponent,
+      },
+      {
+        path: 'contributors',
+        component: AboutComponent,
+      },
+      {
+        path: 'address/:id',
+        children: [],
+        component: AddressComponent
+      },
+      {
+        path: 'asset/:id',
+        component: AssetComponent
+      },
+      {
+        path: 'assets',
+        component: AssetsComponent,
+      },
+      {
+        path: '**',
+        redirectTo: ''
+      },
+    ],
+  },
+  {
+    path: 'testnet',
+    component: MasterPageComponent,
+    children: [
+      {
+        path: '',
+        component: StartComponent,
+        children: [
+          {
+            path: '',
+            component: LatestBlocksComponent
+          },
+          {
+            path: 'tx/:id',
+            component: TransactionComponent
+          },
+          {
+            path: 'block/:id',
+            component: BlockComponent
+          },
+          {
+            path: 'mempool-block/:id',
+            component: MempoolBlockComponent
+          },
+        ],
+      },
+      {
+        path: 'graphs',
+        component: StatisticsComponent,
+      },
+      {
+        path: 'contributors',
+        component: AboutComponent,
+      },
+      {
+        path: 'address/:id',
+        children: [],
+        component: AddressComponent
+      },
+      {
+        path: '**',
+        redirectTo: ''
+      },
+    ],
+  },
+  {
     path: 'tv',
+    component: TelevisionComponent,
+  },
+  {
+    path: 'liquid-tv',
+    component: TelevisionComponent,
+  },
+  {
+    path: 'testnet-tv',
     component: TelevisionComponent,
   },
   {
     path: '**',
     redirectTo: ''
-  }
+  },
 ];
 
 @NgModule({

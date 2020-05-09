@@ -9,7 +9,6 @@ import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
-import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-transaction',
@@ -17,7 +16,7 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./transaction.component.scss']
 })
 export class TransactionComponent implements OnInit, OnDestroy {
-  network = environment.network;
+  network = '';
   tx: Transaction;
   txId: string;
   feeRating: number;
@@ -44,6 +43,8 @@ export class TransactionComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+
     this.subscription = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         this.txId = params.get('id') || '';

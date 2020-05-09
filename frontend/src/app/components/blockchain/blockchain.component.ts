@@ -1,6 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { Component, OnInit } from '@angular/core';
 import { StateService } from 'src/app/services/state.service';
 
 @Component({
@@ -8,9 +6,7 @@ import { StateService } from 'src/app/services/state.service';
   templateUrl: './blockchain.component.html',
   styleUrls: ['./blockchain.component.scss']
 })
-export class BlockchainComponent implements OnInit, OnDestroy {
-  blocksSubscription: Subscription;
-
+export class BlockchainComponent implements OnInit {
   txTrackingLoading = false;
   txShowTxNotFound = false;
   isLoading = true;
@@ -20,14 +16,7 @@ export class BlockchainComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.blocksSubscription = this.stateService.blocks$
-      .pipe(
-        take(1)
-      )
-      .subscribe(() => this.isLoading = false);
-  }
-
-  ngOnDestroy() {
-    this.blocksSubscription.unsubscribe();
+    this.stateService.blocks$.subscribe(() => this.isLoading = false);
+    this.stateService.networkChanged$.subscribe(() => this.isLoading = true);
   }
 }

@@ -1,7 +1,7 @@
 <div class="container-xl">
 
   <div class="title-block">
-    <h1>Block <ng-template [ngIf]="blockHeight"><a [routerLink]="['/block/', blockHash]">{{ blockHeight }}</a></ng-template></h1>
+    <h1>Block <ng-template [ngIf]="blockHeight"><a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a></ng-template></h1>
   </div>
 
   <ng-template [ngIf]="!isLoadingBlock && !error">
@@ -40,7 +40,7 @@
             <tbody>
               <tr>
                 <td class="td-width">Hash</td>
-                <td><a [routerLink]="['/block/', block.id]" title="{{ block.id }}">{{ block.id | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="block.id"></app-clipboard></td>
+                <td><a [routerLink]="['/block/' | relativeUrl, block.id]" title="{{ block.id }}">{{ block.id | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="block.id"></app-clipboard></td>
               </tr>
               <tr *ngIf="block.medianFee !== undefined">
                 <td>Median fee</td>
@@ -49,12 +49,12 @@
               <ng-template [ngIf]="fees !== undefined" [ngIfElse]="loadingFees">
                 <tr>
                   <td>Total fees</td>
-                  <td><span title="{{ fees | number: '1.2-8' }} BTC">{{ fees | number: '1.2-2' }} <ng-template [ngIf]="network === 'liquid'">L-</ng-template>BTC</span> (<app-fiat [value]="fees * 100000000" digitsInfo="1.0-0"></app-fiat>)</td>
+                  <td><app-amount [satoshis]="fees * 100000000" digitsInfo="1.2-8"></app-amount> (<app-fiat [value]="fees * 100000000" digitsInfo="1.0-0"></app-fiat>)</td>
                 </tr>
                 <tr>
                   <td>Reward + fees:</td>
                   <td>
-                    <span title="{{ blockSubsidy + fees | number: '1.2-8' }} BTC">{{ blockSubsidy + fees | number: '1.2-2' }} <ng-template [ngIf]="network === 'liquid'">L-</ng-template>BTC</span> (<app-fiat [value]="(blockSubsidy + fees) * 100000000" digitsInfo="1.0-0"></app-fiat>)
+                    <app-amount [satoshis]="(blockSubsidy + fees) * 100000000" digitsInfo="1.2-8"></app-amount> (<app-fiat [value]="(blockSubsidy + fees) * 100000000" digitsInfo="1.0-0"></app-fiat>)
                   </td>
                 </tr>
               </ng-template>
