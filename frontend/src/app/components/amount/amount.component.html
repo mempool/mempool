@@ -7,8 +7,7 @@
   </ng-template>
   <ng-template #default>
     {{ satoshis / 100000000 | number : digitsInfo }}
-    <ng-template [ngIf]="network === 'liquid'">L-BTC</ng-template>
-    <ng-template [ngIf]="network === 'testnet'">tBTC</ng-template>
-    <ng-template [ngIf]="network === ''">BTC</ng-template>
+    <ng-template [ngIf]="network === 'liquid'">L-</ng-template>
+    <ng-template [ngIf]="network === 'testnet'">t</ng-template>BTC
   </ng-template>
 </ng-template>
