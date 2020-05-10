@@ -11,9 +11,9 @@
       <span class="sr-only">Toggle Dropdown</span>
     </button>
     <div class="dropdown-menu" [class.d-block]="!networkDropdownHidden">
-      <a class="dropdown-item" routerLink="/">Mainnet</a>
-      <a class="dropdown-item" routerLink="/liquid">Liquid</a>
-      <a class="dropdown-item" routerLink="/testnet">Testnet</a>
+      <a class="dropdown-item" [class.active]="network === ''" routerLink="/">Mainnet</a>
+      <a class="dropdown-item" [class.active]="network === 'liquid'" routerLink="/liquid">Liquid</a>
+      <a class="dropdown-item" [class.active]="network === 'testnet'" routerLink="/testnet">Testnet</a>
       </div>
   </div>
 

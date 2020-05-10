@@ -15,6 +15,15 @@ $link-decoration:           none !default;
 $link-hover-color:          darken($link-color, 15%) !default;
 $link-hover-decoration:     underline !default;
 
+$dropdown-bg: #1d1f31;
+$dropdown-link-color: #fff;
+
+$dropdown-link-hover-color: #fff;
+$dropdown-link-hover-bg: #11131f;
+
+$dropdown-link-active-color: #fff;
+$dropdown-link-active-bg: #11131f;
+
 @import "~bootstrap/scss/bootstrap";
 @import '~tlite/tlite.css';
 
