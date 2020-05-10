@@ -15,6 +15,7 @@ export class AmountComponent implements OnInit {
 
   @Input() satoshis: number;
   @Input() digitsInfo = '1.8-8';
+  @Input() noFiat = false;
 
   constructor(
     private stateService: StateService,
