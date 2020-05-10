@@ -20,6 +20,7 @@ export class SearchFormComponent implements OnInit {
   regexAddress = /^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,87})$/;
   regexBlockhash = /^[0]{8}[a-fA-F0-9]{56}$/;
   regexTransaction = /^[a-fA-F0-9]{64}$/;
+  regexBlockheight = /^[0-9]+$/;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -48,7 +49,7 @@ export class SearchFormComponent implements OnInit {
       if (this.regexAddress.test(searchText)) {
         this.router.navigate([(this.network ? '/' + this.network : '') + '/address/', searchText]);
         this.searchTriggered.emit();
-      } else if (this.regexBlockhash.test(searchText)) {
+      } else if (this.regexBlockhash.test(searchText) || this.regexBlockheight.test(searchText)) {
         this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', searchText]);
         this.searchTriggered.emit();
       } else if (this.regexTransaction.test(searchText)) {

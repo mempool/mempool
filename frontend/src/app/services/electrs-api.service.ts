@@ -50,6 +50,10 @@ export class ElectrsApiService {
     return this.httpClient.get<Transaction[]>(this.apiBaseUrl + '/block/' + hash + '/txs/' + index);
   }
 
+  getBlockHashFromHeight$(height: number): Observable<string> {
+    return this.httpClient.get(this.apiBaseUrl + '/block-height/' + height, {responseType: 'text'});
+  }
+
   getAddress$(address: string): Observable<Address> {
     return this.httpClient.get<Address>(this.apiBaseUrl + '/address/' + address);
   }
