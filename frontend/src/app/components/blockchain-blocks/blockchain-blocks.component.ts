@@ -21,6 +21,12 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
 
   transition = '1s';
 
+  gradientColors = {
+    '': ['#9339f4', '#105fb0'],
+    liquid: ['#116761', '#183550'],
+    testnet: ['#1d486f', '#183550'],
+  };
+
   constructor(
     private stateService: StateService,
     private router: Router,
@@ -103,8 +109,12 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
     const greenBackgroundHeight = 100 - (block.weight / 4000000) * 100;
     return {
       left: 155 * this.blocks.indexOf(block) + 'px',
-      background: `repeating-linear-gradient(#2d3348, #2d3348 ${greenBackgroundHeight}%,
-        #9339f4 ${Math.max(greenBackgroundHeight, 0)}%, #105fb0 100%)`,
+      background: `repeating-linear-gradient(
+        #2d3348,
+        #2d3348 ${greenBackgroundHeight}%,
+        ${this.gradientColors[this.network][0]} ${Math.max(greenBackgroundHeight, 0)}%,
+        ${this.gradientColors[this.network][1]} 100%
+      )`,
     };
   }
 
