@@ -12,6 +12,7 @@ import { StateService } from 'src/app/services/state.service';
 })
 export class MempoolGraphComponent implements OnInit, OnChanges {
   @Input() data;
+  @Input() dateSpan = '2h';
 
   network = '';
   mempoolVsizeFeesOptions: any;
@@ -26,7 +27,21 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
     const labelInterpolationFnc = (value: any, index: any) => {
-      return index % 6  === 0 ? formatDate(value, 'HH:mm', this.locale) : null;
+      switch (this.dateSpan) {
+        case '2h':
+        case '24h':
+          value = formatDate(value, 'HH:mm', this.locale);
+          break;
+        case '1w':
+          value = formatDate(value, 'dd/MM HH:mm', this.locale);
+          break;
+        case '1m':
+        case '3m':
+        case '6m':
+        case '1y':
+          value = formatDate(value, 'dd/MM', this.locale);
+      }
+      return index % 6  === 0 ? value : null;
     };
 
     this.mempoolVsizeFeesOptions = {

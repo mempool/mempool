@@ -55,7 +55,7 @@
             </tr>
             <tr *ngIf="tx.vin.length > tx['@vinLength']">
               <td colspan="3" class="text-center">
-                <button class="btn btn-sm btn-primary mt-2" (click)="loadMoreVin(tx)">Load more</button>
+                <button class="btn btn-sm btn-primary mt-2" (click)="loadMoreVin(tx)">Load more ({{ tx.vin.length - tx['@vinLength'] }})</button>
               </td>
             </tr>
           </tbody>
