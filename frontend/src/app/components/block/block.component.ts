@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { Location } from '@angular/common';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { switchMap, tap, debounceTime, catchError } from 'rxjs/operators';
 import { Block, Transaction, Vout } from '../../interfaces/electrs.interface';
@@ -27,6 +28,8 @@ export class BlockComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
+    private location: Location,
+    private router: Router,
     private electrsApiService: ElectrsApiService,
     private stateService: StateService,
     private seoService: SeoService,
@@ -38,6 +41,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       switchMap((params: ParamMap) => {
         const blockHash: string = params.get('id') || '';
         this.block = undefined;
+        let isBlockHeight = false;
         this.error = undefined;
         this.fees = undefined;
 
@@ -45,7 +49,11 @@ export class BlockComponent implements OnInit, OnDestroy {
           this.blockHeight = history.state.data.blockHeight;
         }
 
-        this.blockHash = blockHash;
+        if (/^[0-9]+$/.test(blockHash)) {
+          isBlockHeight = true;
+        } else {
+          this.blockHash = blockHash;
+        }
         document.body.scrollTo(0, 0);
 
         if (history.state.data && history.state.data.block) {
@@ -53,6 +61,19 @@ export class BlockComponent implements OnInit, OnDestroy {
           return of(history.state.data.block);
         } else {
           this.isLoadingBlock = true;
+
+          if (isBlockHeight) {
+            return this.electrsApiService.getBlockHashFromHeight$(parseInt(blockHash, 10))
+              .pipe(
+                switchMap((hash) => {
+                  this.blockHash = hash;
+                  this.location.replaceState(
+                    this.router.createUrlTree([(this.network ? '/' + this.network : '') + '/block/', hash]).toString()
+                  );
+                  return this.electrsApiService.getBlock$(hash);
+                })
+              );
+          }
           return this.electrsApiService.getBlock$(blockHash);
         }
       }),
