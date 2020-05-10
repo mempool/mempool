@@ -16,7 +16,7 @@
                 <td><a [routerLink]="['/block/' | relativeUrl, block.id]" title="{{ block.id }}">{{ block.id | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="block.id"></app-clipboard></td>
               </tr>
               <tr>
-                <td class="td-width">Timestamp</td>
+                <td>Timestamp</td>
                 <td>
                   {{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
                   <div class="lg-inline">
@@ -39,7 +39,7 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr *ngIf="block.medianFee !== undefined">
-                <td>Median fee</td>
+                <td class="td-width">Median fee</td>
                 <td>~{{ block.medianFee | number:'1.0-0' }} sat/vB (<app-fiat [value]="block.medianFee * 250" digitsInfo="1.2-2"></app-fiat>)</td>
               </tr>
               <ng-template [ngIf]="fees !== undefined" [ngIfElse]="loadingFees">
@@ -57,7 +57,7 @@
               <ng-template #loadingFees>
                 <tr>
                   <td>Total fees</td>
-                  <td><span class="skeleton-loader"></span></td>
+                  <td style="width: 75%;"><span class="skeleton-loader"></span></td>
                 </tr>
                 <tr>
                   <td>Reward + fees:</td>

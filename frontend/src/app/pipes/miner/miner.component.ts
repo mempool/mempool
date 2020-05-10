@@ -47,7 +47,7 @@ export class MinerComponent implements OnChanges {
             const coinbaseAscii = this.hex2ascii(this.coinbaseTransaction.vin[0].scriptsig);
             if (coinbaseAscii.indexOf(tag) > -1) {
               this.miner = pools.coinbase_tags[tag].name;
-              this.title = 'Identified by coinbase tag: ' + tag;
+              this.title = 'Identified by coinbase tag: \'' + tag + '\'';
               this.url = pools.coinbase_tags[tag].link;
               break;
             }
