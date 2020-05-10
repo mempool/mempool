@@ -12,6 +12,10 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
+                <td class="td-width">Hash</td>
+                <td><a [routerLink]="['/block/' | relativeUrl, block.id]" title="{{ block.id }}">{{ block.id | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="block.id"></app-clipboard></td>
+              </tr>
+              <tr>
                 <td class="td-width">Timestamp</td>
                 <td>
                   {{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
@@ -19,10 +23,6 @@
                     <i>(<app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since> ago)</i>
                   </div>
                 </td>
-              </tr>
-              <tr>
-                <td>Transactions</td>
-                <td>{{ block.tx_count | number }}</td>
               </tr>
               <tr>
                 <td>Size</td>
@@ -38,10 +38,6 @@
         <div class="col-sm">
           <table class="table table-borderless table-striped">
             <tbody>
-              <tr>
-                <td class="td-width">Hash</td>
-                <td><a [routerLink]="['/block/' | relativeUrl, block.id]" title="{{ block.id }}">{{ block.id | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="block.id"></app-clipboard></td>
-              </tr>
               <tr *ngIf="block.medianFee !== undefined">
                 <td>Median fee</td>
                 <td>~{{ block.medianFee | number:'1.0-0' }} sat/vB (<app-fiat [value]="block.medianFee * 250" digitsInfo="1.2-2"></app-fiat>)</td>

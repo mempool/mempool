@@ -38,30 +38,36 @@ export class StateService {
   constructor(
     private router: Router,
   ) {
+    this.setNetworkBasedonUrl(window.location.pathname);
+
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
-        switch (event.url.split('/')[1]) {
-          case 'liquid':
-          case 'liquid-tv':
-            if (this.network !== 'liquid') {
-              this.network = 'liquid';
-              this.networkChanged$.next('liquid');
-            }
-            return;
-          case 'testnet':
-          case 'testnet-tv':
-            if (this.network !== 'testnet') {
-              this.network = 'testnet';
-              this.networkChanged$.next('testnet');
-            }
-            return;
-          default:
-            if (this.network !== '') {
-              this.network = '';
-              this.networkChanged$.next('');
-            }
-        }
+        this.setNetworkBasedonUrl(event.url);
       }
     });
+  }
+
+  setNetworkBasedonUrl(url: string) {
+    switch (url.split('/')[1]) {
+      case 'liquid':
+      case 'liquid-tv':
+        if (this.network !== 'liquid') {
+          this.network = 'liquid';
+          this.networkChanged$.next('liquid');
+        }
+        return;
+      case 'testnet':
+      case 'testnet-tv':
+        if (this.network !== 'testnet') {
+          this.network = 'testnet';
+          this.networkChanged$.next('testnet');
+        }
+        return;
+      default:
+        if (this.network !== '') {
+          this.network = '';
+          this.networkChanged$.next('');
+        }
+    }
   }
 }

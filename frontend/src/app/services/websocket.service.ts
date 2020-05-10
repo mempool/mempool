@@ -24,14 +24,20 @@ export class WebsocketService {
   private onlineCheckTimeout: number;
   private onlineCheckTimeoutTwo: number;
   private subscription: Subscription;
+  private network = '';
 
   constructor(
     private stateService: StateService,
   ) {
-    this.websocketSubject = webSocket<WebsocketResponse | any>(WEB_SOCKET_URL + '/' + this.stateService.network);
+    this.network = this.stateService.network;
+    this.websocketSubject = webSocket<WebsocketResponse | any>(WEB_SOCKET_URL + '/' + this.network);
     this.startSubscription();
 
     this.stateService.networkChanged$.subscribe((network) => {
+      if (network === this.network) {
+        return;
+      }
+      this.network = network;
       clearTimeout(this.onlineCheckTimeout);
       clearTimeout(this.onlineCheckTimeoutTwo);
 
