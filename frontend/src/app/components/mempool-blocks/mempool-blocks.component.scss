@@ -111,3 +111,21 @@
   left: 0;
   z-index: 10;
 }
+
+
+
+// Blinking block
+
+.blink-bg {
+  color: #fff;
+  animation: blinkingBackground 1s infinite;
+  background: inherit !important;
+}
+
+@keyframes blinkingBackground {
+  0%		{ background-color: #10c018;}
+  25%		{ background-color: #1056c0;}
+  50%		{ background-color: #ef0a1a;}
+  75%		{ background-color: #CFB53B;}
+  100%	{ background-color: #04a1d5;}
+}
