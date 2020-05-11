@@ -28,12 +28,20 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
   resetTransitionTimeout: number;
 
+  blocksLeftToHalving: number;
+
   constructor(
     private router: Router,
     private stateService: StateService,
   ) { }
 
   ngOnInit() {
+
+    this.stateService.blocks$
+      .subscribe((block) => {
+        this.blocksLeftToHalving = 630000 - block.height;
+      });
+
     this.mempoolBlocksSubscription = this.stateService.mempoolBlocks$
       .subscribe((blocks) => {
         const stringifiedBlocks = JSON.stringify(blocks);
