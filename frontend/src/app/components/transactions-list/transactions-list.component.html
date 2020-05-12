@@ -110,7 +110,7 @@
             </tr>
             <tr *ngIf="tx.vout.length > tx['@voutLength']">
               <td colspan="3" class="text-center">
-                <button class="btn btn-sm btn-primary mt-2" (click)="loadMoreVout(tx)">Load more</button>
+                <button class="btn btn-sm btn-primary mt-2" (click)="loadMoreVout(tx)">Load more ({{ tx.vout.length - tx['@voutLength'] }})</button>
               </td>
             </tr>
             <tr>
