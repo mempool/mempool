@@ -65,21 +65,12 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
     this.stateService.networkChanged$
       .subscribe((network) => this.network = network);
-  }
 
-  @HostListener('window:resize', ['$event'])
-  onResize() {
-    if (this.mempoolBlocks && this.mempoolBlocks.length) {
-      this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(JSON.stringify(this.mempoolBlocksFull)));
-    }
-  }
-
-  @HostListener('document:keydown', ['$event'])
-  handleKeyboardEvents(event: KeyboardEvent) {
-    setTimeout(() => {
+    this.stateService.keyNavigation$.subscribe((event) => {
       if (this.markIndex === undefined) {
         return;
       }
+
       if (event.key === 'ArrowRight') {
         if (this.mempoolBlocks[this.markIndex - 1]) {
           this.router.navigate([(this.network ? '/' + this.network : '') + '/mempool-block/', this.markIndex - 1]);
@@ -98,6 +89,13 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
         }
       }
     });
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    if (this.mempoolBlocks && this.mempoolBlocks.length) {
+      this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(JSON.stringify(this.mempoolBlocksFull)));
+    }
   }
 
   ngOnDestroy() {
