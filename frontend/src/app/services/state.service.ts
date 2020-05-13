@@ -34,6 +34,7 @@ export class StateService {
   connectionState$ = new BehaviorSubject<0 | 1 | 2>(2);
 
   markBlock$ = new Subject<MarkBlockState>();
+  keyNavigation$ = new Subject<KeyboardEvent>();
 
   constructor(
     private router: Router,
