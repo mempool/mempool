@@ -20,7 +20,7 @@ export class AppComponent {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvents(event: KeyboardEvent) {
-    if (event.target !== document.body) {
+    if (event.target instanceof HTMLInputElement) {
       return;
     }
     this.stateService.keyNavigation$.next(event);
