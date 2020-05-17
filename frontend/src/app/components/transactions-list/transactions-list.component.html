@@ -10,6 +10,7 @@
         <i><app-time-since [time]="tx.firstSeen" [fastRender]="true"></app-time-since> ago</i>
       </ng-template>
     </div>
+    <div class="clearfix"></div>
   </div>
   <div class="header-bg box" infiniteScroll [alwaysCallback]="true" [fromRoot]="true" [infiniteScrollContainer]="'body'" [infiniteScrollDistance]="2" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50" (scrolled)="onScroll()">
     <div class="row">
@@ -41,7 +42,7 @@
                   <ng-container *ngSwitchDefault>
                     <a [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">
                       <span class="d-block d-lg-none">{{ vin.prevout.scriptpubkey_address | shortenString : 16 }}</span>
-                      <span class="d-none d-lg-block">{{ vin.prevout.scriptpubkey_address | shortenString : 42 }}</span>
+                      <span class="d-none d-lg-block">{{ vin.prevout.scriptpubkey_address | shortenString : 35 }}</span>
                     </a>
                     <div>
                       <app-address-labels [vin]="vin"></app-address-labels>
@@ -69,13 +70,13 @@
               <td>
                 <a *ngIf="vout.scriptpubkey_address; else scriptpubkey_type" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">
                   <span class="d-block d-lg-none">{{ vout.scriptpubkey_address | shortenString : 16 }}</span>
-                  <span class="d-none d-lg-block">{{ vout.scriptpubkey_address | shortenString : 42 }}</span>
+                  <span class="d-none d-lg-block">{{ vout.scriptpubkey_address | shortenString : 35 }}</span>
                 </a>
                 <ng-template #scriptpubkey_type>
                   <ng-template [ngIf]="vout.pegout" [ngIfElse]="defaultscriptpubkey_type">
                     Peg-out to <a [routerLink]="['/address/', vout.pegout.scriptpubkey_address]" title="{{ vout.pegout.scriptpubkey_address }}">
                       <span class="d-block d-lg-none">{{ vout.pegout.scriptpubkey_address | shortenString : 16 }}</span>
-                      <span class="d-none d-lg-block">{{ vout.pegout.scriptpubkey_address | shortenString : 42 }}</span>
+                      <span class="d-none d-lg-block">{{ vout.pegout.scriptpubkey_address | shortenString : 35 }}</span>
                     </a>
                   </ng-template>
                   <ng-template #defaultscriptpubkey_type>

@@ -14,7 +14,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   @Input() data;
   @Input() dateSpan = '2h';
 
-  network = '';
   mempoolVsizeFeesOptions: any;
   mempoolVsizeFeesData: any;
 
@@ -25,7 +24,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    this.stateService.networkChanged$.subscribe((network) => this.network = network);
     const labelInterpolationFnc = (value: any, index: any) => {
       switch (this.dateSpan) {
         case '2h':
@@ -71,7 +69,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
                return '350+';
               }
               if (i === 0) {
-                if (this.network === 'liquid') {
+                if (this.stateService.network === 'liquid') {
                   return '0 - 1';
                 }
                 return '1 sat/vB';
@@ -94,7 +92,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     const finalArrayVbyte = this.generateArray(mempoolStats);
 
     // Only Liquid has lower than 1 sat/vb transactions
-    if (this.network !== 'liquid') {
+    if (this.stateService.network !== 'liquid') {
       finalArrayVbyte.shift();
     }
 
