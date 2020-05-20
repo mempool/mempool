@@ -61,7 +61,6 @@
             </tr>
           </tbody>
         </table>
-
       </div>
       <div class="col mobile-bottomcol">
         <table class="table table-borderless smaller-text table-xs"  style="margin: 0;">
@@ -114,27 +113,34 @@
                 <button class="btn btn-sm btn-primary mt-2" (click)="loadMoreVout(tx)">Load more ({{ tx.vout.length - tx['@voutLength'] }})</button>
               </td>
             </tr>
-            <tr>
-              <td class="text-right" colspan="4" style="vertical-align: bottom;">
-                <span *ngIf="showConfirmations && latestBlock$ | async as latestBlock">
-                  <button *ngIf="tx.status.confirmed; else unconfirmedButton" type="button" class="btn btn-sm btn-success mt-3">{{ latestBlock.height - tx.status.block_height + 1 }} confirmation<ng-container *ngIf="latestBlock.height - tx.status.block_height + 1 > 1">s</ng-container></button>
-                  <ng-template #unconfirmedButton>
-                    <button type="button" class="btn btn-sm btn-danger mt-3">Unconfirmed</button>
-                  </ng-template>
-                  &nbsp;
-                </span>
-                <button type="button" class="btn btn-sm btn-primary mt-3" (click)="switchCurrency()">
-                  <ng-template [ngIf]="network === 'liquid'" [ngIfElse]="defaultAmount">Confidential</ng-template>
-                  <ng-template #defaultAmount>
-                    <app-amount [satoshis]="getTotalTxOutput(tx)"></app-amount>
-                  </ng-template>
-                </button>
-              </td>
-            </tr>
           </tbody>
         </table>
       </div>
     </div>
+
+    <div>
+      <div class="float-left mt-2-5" *ngIf="!transactionPage && tx.fee">
+        {{ tx.fee / (tx.weight / 4) | number : '1.1-1' }} sat/vB <span class="d-none d-sm-inline-block"> &ndash; {{ tx.fee | number }} sat (<app-fiat [value]="tx.fee"></app-fiat>)</span>
+      </div>
+
+      <div class="float-right">
+        <span *ngIf="showConfirmations && latestBlock$ | async as latestBlock">
+          <button *ngIf="tx.status.confirmed; else unconfirmedButton" type="button" class="btn btn-sm btn-success mt-2">{{ latestBlock.height - tx.status.block_height + 1 }} confirmation<ng-container *ngIf="latestBlock.height - tx.status.block_height + 1 > 1">s</ng-container></button>
+          <ng-template #unconfirmedButton>
+            <button type="button" class="btn btn-sm btn-danger mt-2">Unconfirmed</button>
+          </ng-template>
+          &nbsp;
+        </span>
+        <button type="button" class="btn btn-sm btn-primary mt-2" (click)="switchCurrency()">
+          <ng-template [ngIf]="network === 'liquid'" [ngIfElse]="defaultAmount">Confidential</ng-template>
+          <ng-template #defaultAmount>
+            <app-amount [satoshis]="getTotalTxOutput(tx)"></app-amount>
+          </ng-template>
+        </button>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+
   </div>
 
   <br>
