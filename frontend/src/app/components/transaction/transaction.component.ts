@@ -30,8 +30,6 @@ export class TransactionComponent implements OnInit, OnDestroy {
   transactionTime = -1;
   subscription: Subscription;
 
-  rightPosition = 0;
-
   constructor(
     private route: ActivatedRoute,
     private electrsApiService: ElectrsApiService,

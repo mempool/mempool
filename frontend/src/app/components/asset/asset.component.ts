@@ -142,7 +142,7 @@ export class AssetComponent implements OnInit, OnDestroy {
         this.isLoadingAsset = false;
       });
 
-    this.stateService.assetTransactions$
+    this.stateService.mempoolTransactions$
       .subscribe((transaction) => {
         if (this.transactions.some((t) => t.txid === transaction.txid)) {
           return;

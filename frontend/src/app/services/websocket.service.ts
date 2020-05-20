@@ -111,20 +111,8 @@ export class WebsocketService {
           });
         }
 
-        if (response['address-block-transactions']) {
-          response['address-block-transactions'].forEach((addressTransaction: Transaction) => {
-            this.stateService.blockTransactions$.next(addressTransaction);
-          });
-        }
-
-        if (response['asset-transactions']) {
-          response['asset-transactions'].forEach((assetTransaction: Transaction) => {
-            this.stateService.assetTransactions$.next(assetTransaction);
-          });
-        }
-
-        if (response['asset-block-transactions']) {
-          response['asset-block-transactions'].forEach((addressTransaction: Transaction) => {
+        if (response['block-transactions']) {
+          response['block-transactions'].forEach((addressTransaction: Transaction) => {
             this.stateService.blockTransactions$.next(addressTransaction);
           });
         }

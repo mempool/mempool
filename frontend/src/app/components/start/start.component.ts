@@ -7,8 +7,6 @@ import { WebsocketService } from 'src/app/services/websocket.service';
   styleUrls: ['./start.component.scss']
 })
 export class StartComponent implements OnInit {
-  view: 'blocks' | 'transactions' = 'blocks';
-
   constructor(
     private websocketService: WebsocketService,
   ) { }
