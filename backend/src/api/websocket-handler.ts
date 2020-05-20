@@ -164,7 +164,26 @@ class WebsocketHandler {
         }
       }
 
-      // Send all new incoming transactions related to tracked asset
+      if (client['track-address']) {
+        const foundTransactions: TransactionExtended[] = [];
+
+        newTransactions.forEach((tx) => {
+          const someVin = tx.vin.some((vin) => !!vin.prevout && vin.prevout.scriptpubkey_address === client['track-address']);
+          if (someVin) {
+            foundTransactions.push(tx);
+            return;
+          }
+          const someVout = tx.vout.some((vout) => vout.scriptpubkey_address === client['track-address']);
+          if (someVout) {
+            foundTransactions.push(tx);
+          }
+        });
+
+        if (foundTransactions.length) {
+          response['address-transactions'] = foundTransactions;
+        }
+      }
+
       if (client['track-asset']) {
         const foundTransactions: TransactionExtended[] = [];
 
@@ -190,7 +209,7 @@ class WebsocketHandler {
         });
 
         if (foundTransactions.length) {
-          response['asset-transactions'] = foundTransactions;
+          response['address-transactions'] = foundTransactions;
         }
       }
 
@@ -231,7 +250,7 @@ class WebsocketHandler {
             foundTransactions.push(tx);
             return;
           }
-          if (tx.vout && tx.vout.some((vout) => !!vout.asset && vout.asset === client['track-asset'])) {
+          if (tx.vout && tx.vout.some((vout) => vout.scriptpubkey_address === client['track-address'])) {
             foundTransactions.push(tx);
           }
         });
@@ -246,7 +265,7 @@ class WebsocketHandler {
             };
           });
 
-          response['asset-block-transactions'] = foundTransactions;
+          response['block-transactions'] = foundTransactions;
         }
       }
 
@@ -283,7 +302,7 @@ class WebsocketHandler {
             };
           });
 
-          response['address-block-transactions'] = foundTransactions;
+          response['block-transactions'] = foundTransactions;
         }
       }
 
