@@ -388,3 +388,7 @@ h1, h2, h3 {
 .mt-2-5, .my-2-5 {
   margin-top: 0.75rem !important;
 }
+
+.tooltip-inner {
+  max-width: inherit;
+}
