@@ -50,6 +50,7 @@ import { ScriptpubkeyTypePipe } from './pipes/scriptpubkey-type-pipe/scriptpubke
 import { AssetsComponent } from './assets/assets.component';
 import { RelativeUrlPipe } from './pipes/relative-url/relative-url.pipe';
 import { MinerComponent } from './pipes/miner/miner.component';
+import { Hex2asciiPipe } from './pipes/hex2ascii/hex2ascii.pipe';
 
 @NgModule({
   declarations: [
@@ -90,6 +91,7 @@ import { MinerComponent } from './pipes/miner/miner.component';
     AssetsComponent,
     RelativeUrlPipe,
     MinerComponent,
+    Hex2asciiPipe,
   ],
   imports: [
     BrowserModule,
