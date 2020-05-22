@@ -44,6 +44,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         let isBlockHeight = false;
         this.error = undefined;
         this.fees = undefined;
+        this.stateService.markBlock$.next({});
 
         if (history.state.data && history.state.data.blockHeight) {
           this.blockHeight = history.state.data.blockHeight;
