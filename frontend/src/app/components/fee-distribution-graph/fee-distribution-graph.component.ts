@@ -1,5 +1,4 @@
 import { Component, Input, OnChanges } from '@angular/core';
-import { VbytesPipe } from 'src/app/pipes/bytes-pipe/vbytes.pipe';
 import * as Chartist from 'chartist';
 
 @Component({

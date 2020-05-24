@@ -4,15 +4,17 @@ import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
 import { take } from 'rxjs/operators';
+import { feeLevels, mempoolFeeColors } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-mempool-blocks',
   templateUrl: './mempool-blocks.component.html',
-  styleUrls: ['./mempool-blocks.component.scss']
+  styleUrls: ['./mempool-blocks.component.scss'],
 })
 export class MempoolBlocksComponent implements OnInit, OnDestroy {
   mempoolBlocks: MempoolBlock[];
   mempoolBlocksFull: MempoolBlock[];
+  mempoolBlockStyles = [];
   mempoolBlocksSubscription: Subscription;
   network = '';
 
@@ -27,7 +29,6 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   txFeePerVSize: number;
 
   resetTransitionTimeout: number;
-
   blocksLeftToHalving: number;
 
   constructor(
@@ -47,6 +48,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
         const stringifiedBlocks = JSON.stringify(blocks);
         this.mempoolBlocksFull = JSON.parse(stringifiedBlocks);
         this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(stringifiedBlocks));
+        this.updateMempoolBlockStyles();
         this.calculateTransactionPosition();
       });
 
@@ -132,12 +134,34 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     return medianNr;
   }
 
-  getStyleForMempoolBlockAtIndex(index: number) {
-    const greenBackgroundHeight = 100 - this.mempoolBlocks[index].blockVSize / 1000000 * 100;
+  updateMempoolBlockStyles() {
+    this.mempoolBlockStyles = [];
+    this.mempoolBlocksFull.forEach((block, i) => this.mempoolBlockStyles.push(this.getStyleForMempoolBlock(block, i)));
+  }
+
+  getStyleForMempoolBlock(mempoolBlock: MempoolBlock, index: number) {
+    const emptyBackgroundSpacePercentage = Math.max(100 - mempoolBlock.blockVSize / 1000000 * 100, 0);
+    const backgroundGradients = [`repeating-linear-gradient(to right,  #554b45, #554b45 ${emptyBackgroundSpacePercentage}%`];
+    const gradientColors = [];
+
+    const trimmedFeeRange = index === 0 ? mempoolBlock.feeRange.slice(0, -1) : mempoolBlock.feeRange;
+
+    trimmedFeeRange.forEach((fee: number) => {
+      let feeLevelIndex = feeLevels.slice().reverse().findIndex((feeLvl) => fee >= feeLvl);
+      feeLevelIndex = feeLevelIndex >= 0 ? feeLevels.length - feeLevelIndex : feeLevelIndex;
+      gradientColors.push(mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
+    });
+
+    gradientColors.forEach((color, i, gc) => {
+      backgroundGradients.push(`
+        #${i === 0 ? color : gc[i - 1]} ${ i === 0 ? emptyBackgroundSpacePercentage : (i / gradientColors.length) * 100 }%,
+        #${color} ${Math.round(((i + 1) / gradientColors.length) * 100)}%
+      `);
+    });
+
     return {
       'right': 40 + index * 155 + 'px',
-      'background': `repeating-linear-gradient(to right,  #554b45, #554b45 ${greenBackgroundHeight}%,
-        #bd7c13 ${Math.max(greenBackgroundHeight, 0)}%, #c5345a 100%)`,
+      'background': backgroundGradients.join(',') + ')'
     };
   }
 
