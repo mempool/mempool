@@ -76,7 +76,7 @@ class Blocks {
         transactions.sort((a, b) => b.feePerVsize - a.feePerVsize);
         block.medianFee = transactions.length > 1 ? Common.median(transactions.map((tx) => tx.feePerVsize)) : 0;
         block.feeRange = transactions.length > 1 ? Common.getFeesInRange(transactions, 8) : [0, 0];
-        block.coinbaseTx = transactions[0];
+        block.coinbaseTx = this.stripCoinbaseTransaction(transactions[0]);
 
         this.blocks.push(block);
         if (this.blocks.length > config.KEEP_BLOCK_AMOUNT) {
@@ -89,6 +89,15 @@ class Blocks {
     } catch (err) {
       console.log('updateBlocks error', err);
     }
+  }
+
+  private stripCoinbaseTransaction(tx: TransactionExtended): any {
+    return {
+      vin: [{
+        scriptsig: tx.vin[0].scriptsig
+      }],
+      vout: tx.vout.map((vout) => ({ scriptpubkey_address: vout.scriptpubkey_address }))
+    };
   }
 }
 
