@@ -2,6 +2,7 @@ const config = require('../../mempool-config.json');
 import bitcoinApi from './bitcoin/electrs-api';
 import memPool from './mempool';
 import { Block, TransactionExtended } from '../interfaces';
+import { Common } from './common';
 
 class Blocks {
   private blocks: Block[] = [];
@@ -73,8 +74,8 @@ class Blocks {
 
         block.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
         transactions.sort((a, b) => b.feePerVsize - a.feePerVsize);
-        block.medianFee = transactions.length > 1 ? this.median(transactions.map((tx) => tx.feePerVsize)) : 0;
-        block.feeRange = transactions.length > 1 ? this.getFeesInRange(transactions, 8) : [0, 0];
+        block.medianFee = transactions.length > 1 ? Common.median(transactions.map((tx) => tx.feePerVsize)) : 0;
+        block.feeRange = transactions.length > 1 ? Common.getFeesInRange(transactions, 8) : [0, 0];
         block.coinbaseTx = transactions[0];
 
         this.blocks.push(block);
@@ -88,31 +89,6 @@ class Blocks {
     } catch (err) {
       console.log('updateBlocks error', err);
     }
-  }
-
-  private median(numbers: number[]) {
-    let medianNr = 0;
-    const numsLen = numbers.length;
-    if (numsLen % 2 === 0) {
-        medianNr = (numbers[numsLen / 2 - 1] + numbers[numsLen / 2]) / 2;
-    } else {
-        medianNr = numbers[(numsLen - 1) / 2];
-    }
-    return medianNr;
-  }
-
-  private getFeesInRange(transactions: any[], rangeLength: number) {
-    const arr = [transactions[transactions.length - 1].feePerVsize];
-    const chunk = 1 / (rangeLength - 1);
-    let itemsToAdd = rangeLength - 2;
-
-    while (itemsToAdd > 0) {
-      arr.push(transactions[Math.floor(transactions.length * chunk * itemsToAdd)].feePerVsize);
-      itemsToAdd--;
-    }
-
-    arr.push(transactions[1].feePerVsize);
-    return arr;
   }
 }
 

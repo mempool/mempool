@@ -1,5 +1,6 @@
 const config = require('../../mempool-config.json');
 import { MempoolBlock, TransactionExtended } from '../interfaces';
+import { Common } from './common';
 
 class MempoolBlocks {
   private mempoolBlocks: MempoolBlock[] = [];
@@ -46,7 +47,8 @@ class MempoolBlocks {
     return mempoolBlocks;
   }
 
-  private dataToMempoolBlocks(transactions: TransactionExtended[], blockSize: number, blockVSize: number, blocksIndex: number): MempoolBlock {
+  private dataToMempoolBlocks(transactions: TransactionExtended[],
+    blockSize: number, blockVSize: number, blocksIndex: number): MempoolBlock {
     let rangeLength = 4;
     if (blocksIndex === 0) {
       rangeLength = 8;
@@ -61,34 +63,9 @@ class MempoolBlocks {
       blockVSize: blockVSize,
       nTx: transactions.length,
       totalFees: transactions.reduce((acc, cur) => acc + cur.fee, 0),
-      medianFee: this.median(transactions.map((tx) => tx.feePerVsize)),
-      feeRange: this.getFeesInRange(transactions, rangeLength),
+      medianFee: Common.median(transactions.map((tx) => tx.feePerVsize)),
+      feeRange: Common.getFeesInRange(transactions, rangeLength),
     };
-  }
-
-  private median(numbers: number[]) {
-    let medianNr = 0;
-    const numsLen = numbers.length;
-    if (numsLen % 2 === 0) {
-        medianNr = (numbers[numsLen / 2 - 1] + numbers[numsLen / 2]) / 2;
-    } else {
-        medianNr = numbers[(numsLen - 1) / 2];
-    }
-    return medianNr;
-  }
-
-  private getFeesInRange(transactions: TransactionExtended[], rangeLength: number) {
-    const arr = [transactions[transactions.length - 1].feePerVsize];
-    const chunk = 1 / (rangeLength - 1);
-    let itemsToAdd = rangeLength - 2;
-
-    while (itemsToAdd > 0) {
-      arr.push(transactions[Math.floor(transactions.length * chunk * itemsToAdd)].feePerVsize);
-      itemsToAdd--;
-    }
-
-    arr.push(transactions[0].feePerVsize);
-    return arr;
   }
 }
 
