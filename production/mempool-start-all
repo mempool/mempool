@@ -1,0 +1,9 @@
+#!/usr/local/bin/zsh
+for site in mainnet liquid testnet
+do
+    cd "${HOME}/${site}/backend/"
+    screen -dmS "${site}" npm run production
+done
+
+#cd "${HOME}/webhook/"
+#screen -dmS webhook ./start

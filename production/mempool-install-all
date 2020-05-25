@@ -1,0 +1,12 @@
+#!/usr/local/bin/zsh
+for site in mainnet liquid testnet
+do
+    git clone https://github.com/mempool/mempool "${HOME}/${site}"
+    cd "${HOME}/${site}/backend/"
+    cp "../production/mempool-config.${site}.json" "mempool-config.json"
+    npm install
+    npm run build
+    cd "${HOME}/${site}/frontend/"
+    npm install
+    npm run build
+done

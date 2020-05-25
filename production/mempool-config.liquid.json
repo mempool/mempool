@@ -1,0 +1,19 @@
+{
+  "HTTP_PORT": 8998,
+  "DB_HOST": "localhost",
+  "DB_PORT": 3306,
+  "DB_USER": "lmempool",
+  "DB_PASSWORD": "lmempool",
+  "DB_DATABASE": "lmempool",
+  "API_ENDPOINT": "/api/v1/",
+  "ELECTRS_POLL_RATE_MS": 2000,
+  "MEMPOOL_REFRESH_RATE_MS": 2000,
+  "DEFAULT_PROJECTED_BLOCKS_AMOUNT": 8,
+  "KEEP_BLOCK_AMOUNT": 24,
+  "INITIAL_BLOCK_AMOUNT": 8,
+  "TX_PER_SECOND_SPAN_SECONDS": 150,
+  "ELECTRS_API_URL": "http://[::1]:3001",
+  "SSL": false,
+  "SSL_CERT_FILE_PATH": "/etc/letsencrypt/live/mysite/fullchain.pem",
+  "SSL_KEY_FILE_PATH": "/etc/letsencrypt/live/mysite/privkey.pem"
+}

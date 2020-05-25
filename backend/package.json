@@ -22,6 +22,7 @@
   "scripts": {
     "build": "tsc",
     "start": "npm run build && node dist/index.js",
+    "production": "until false;do npm install;npm run build;node dist/index.js;sleep 1;done",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
