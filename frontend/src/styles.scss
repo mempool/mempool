@@ -373,6 +373,13 @@ h1, h2, h3 {
   font-size: 14px;
 }
 
+.progress-text {
+  position: absolute;
+  top: 8px;
+  width: 100%;
+  text-align: center;
+}
+
 .progress-mempool {
   background: repeating-linear-gradient(to right, #2d3348, #2d3348 0%, #105fb0 0%, #9339f4 100%);
 }
