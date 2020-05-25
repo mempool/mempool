@@ -1,0 +1,25 @@
+#!/usr/local/bin/zsh -x
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:$HOME/bin
+
+[ -f $HOME/lock ] && exit 1
+touch $HOME/lock
+
+echo 'rebuilding mempool sites'|wall
+
+for site in mainnet liquid testnet
+do
+    cd "$HOME/${site}"
+    git pull origin master
+    hash=$(git rev-parse HEAD)
+    cd "$HOME/${site}/frontend"
+    npm run build
+    rsync -av ./dist/mempool/* "${HOME}/public_html/${site}/"
+    cd "$HOME/${site}/backend"
+    npm run build
+done
+
+ps uaxw|grep 'node dist/index'|grep -v grep|awk '{print $2}'|xargs -n 1 kill
+
+keybase chat send --channel dev mempool "All mempool sites updated to ${hash}"
+
+rm "$HOME/lock"
