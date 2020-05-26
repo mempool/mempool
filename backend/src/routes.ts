@@ -2,6 +2,7 @@ import statistics from './api/statistics';
 import feeApi from './api/fee-api';
 import mempoolBlocks from './api/mempool-blocks';
 import mempool from './api/mempool';
+import * as os from 'os';
 
 class Routes {
   private cache = {};
@@ -72,6 +73,12 @@ class Routes {
     const txIds = req.query.txId;
     const times = mempool.getFirstSeenForTransactions(txIds);
     res.send(times);
+  }
+
+  public getBackendInfo(req, res) {
+    res.send({
+      'hostname': os.hostname(),
+    });
   }
 }
 

@@ -81,6 +81,7 @@ class Server {
       .get(config.API_ENDPOINT + 'statistics/3m', routes.get3MStatistics.bind(routes))
       .get(config.API_ENDPOINT + 'statistics/6m', routes.get6MStatistics.bind(routes))
       .get(config.API_ENDPOINT + 'statistics/1y', routes.get1YStatistics.bind(routes))
+      .get(config.API_ENDPOINT + 'backend-info', routes.getBackendInfo)
     ;
   }
 }
