@@ -2,7 +2,7 @@
 for site in mainnet liquid testnet
 do
     cd "${HOME}/${site}/backend/"
-    screen -dmS "${site}" sh -c 'while true;do npm run production;sleep 1;done'
+    screen -dmS "${site}" sh -c 'while true;do npm run start;sleep 1;done'
 done
 
 #cd "${HOME}/webhook/"
