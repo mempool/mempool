@@ -35,6 +35,31 @@ I recommend to build rust from latest source:
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
+### Tor
+
+Install tor, add Bitcoin to _tor group:
+```
+pkg install -y tor
+pw user mod bitcoin -G _tor
+```
+
+Then configure `/usr/local/etc/tor/torrc` as follows:
+```
+RunAsDaemon 1
+SOCKSPort 9050
+ControlPort 9051
+Log notice syslog
+
+CookieAuthentication 1
+CookieAuthFileGroupReadable 1
+DataDirectoryGroupReadable 1
+
+HiddenServiceDir /var/db/tor/mempool
+HiddenServicePort 80 127.0.0.1:81
+HiddenServiceVersion 3
+```
+
+
 ### Bitcoin
 
 Build [Bitcoin Core](https://github.com/bitcoin/bitcoin) from source. Alternatively, install the OS packages:
