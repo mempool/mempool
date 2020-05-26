@@ -60,7 +60,6 @@ rpcpassword=2d89d36cac4a13c87b5d19ef8f577e37
 rpcworkqueue=128
 rpcthreads=32
 rpctimeout=60
-uacomment=@wiz
 
 [main]
 bind=127.0.0.1:8333
