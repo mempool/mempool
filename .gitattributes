@@ -1,0 +1,3 @@
+# ignore all differences in line endings
+package.json -crlf
+*/package.json -crlf
