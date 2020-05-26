@@ -11,10 +11,17 @@ do
     cd "$HOME/${site}"
     git pull origin master
     hash=$(git rev-parse HEAD)
-    cd "$HOME/${site}/frontend"
-    npm run build
-    rsync -av ./dist/mempool/* "${HOME}/public_html/${site}/"
+
+    if [ "${site}" = "mainnet" ]
+    then
+	    cd "$HOME/${site}/frontend"
+	    npm install
+	    npm run build
+	    rsync -av ./dist/mempool/* "${HOME}/public_html/${site}/"
+    fi
+
     cd "$HOME/${site}/backend"
+    npm install
     npm run build
 done
 
