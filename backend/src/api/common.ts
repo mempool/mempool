@@ -12,7 +12,7 @@ export class Common {
     return medianNr;
   }
 
-  static getFeesInRange(transactions: TransactionExtended[], rangeLength: number) {
+  static getFeesInRange(transactions: TransactionExtended[], rangeLength: number, lastindex = 0) {
     const arr = [transactions[transactions.length - 1].feePerVsize];
     const chunk = 1 / (rangeLength - 1);
     let itemsToAdd = rangeLength - 2;
@@ -22,7 +22,7 @@ export class Common {
       itemsToAdd--;
     }
 
-    arr.push(transactions[1].feePerVsize);
+    arr.push(transactions[lastindex].feePerVsize);
     return arr;
   }
 }
