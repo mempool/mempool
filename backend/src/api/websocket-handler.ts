@@ -7,6 +7,7 @@ import blocks from './blocks';
 import memPool from './mempool';
 import mempoolBlocks from './mempool-blocks';
 import fiatConversion from './fiat-conversion';
+import * as os from 'os';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
@@ -92,7 +93,8 @@ class WebsocketHandler {
               'blocks': _blocks.slice(Math.max(_blocks.length - config.INITIAL_BLOCK_AMOUNT, 0)),
               'conversions': fiatConversion.getTickers()['BTCUSD'],
               'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
-              'git-commit': this.latestGitCommitHash
+              'git-commit': this.latestGitCommitHash,
+              'hostname': os.hostname(),
             }));
           }
 
