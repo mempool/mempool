@@ -7,9 +7,14 @@ if (process.argv[2] && process.argv[2] === 'dev') {
 }
 
 function download(filename, url) {
-  var file = fs.createWriteStream(filename);
-  https.get(url, function(response) {
-    response.pipe(file);
+  https.get(url, (response) => {
+    if (response.statusCode < 200 || response.statusCode > 299) {
+      throw new Error('HTTP Error ' + response.statusCode + ' while fetching \'' + filename + '\'');
+    }
+    response.pipe(fs.createWriteStream(filename));
+  })
+  .on('error', function(e) {
+    throw new Error(e);
   });
 }
 
