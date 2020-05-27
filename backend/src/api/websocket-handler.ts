@@ -1,30 +1,19 @@
 const config = require('../../mempool-config.json');
 
 import * as WebSocket from 'ws';
-import * as fs from 'fs';
 import { Block, TransactionExtended, Statistic, WebsocketResponse } from '../interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
+import backendInfo from './backend-info';
 import mempoolBlocks from './mempool-blocks';
 import fiatConversion from './fiat-conversion';
 import * as os from 'os';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
-  private latestGitCommitHash = '';
   private nativeAssetId = '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
 
-  constructor() {
-    this.setLatestGitCommit();
-  }
-
-  setLatestGitCommit() {
-    try {
-      this.latestGitCommitHash = fs.readFileSync('../.git/refs/heads/master').toString().trim();
-    } catch (e) {
-      console.log('Could not load git commit info, skipping.');
-    }
-  }
+  constructor() { }
 
   setWebsocketServer(wss: WebSocket.Server) {
     this.wss = wss;
@@ -93,8 +82,8 @@ class WebsocketHandler {
               'blocks': _blocks.slice(Math.max(_blocks.length - config.INITIAL_BLOCK_AMOUNT, 0)),
               'conversions': fiatConversion.getTickers()['BTCUSD'],
               'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
-              'git-commit': this.latestGitCommitHash,
-              'hostname': os.hostname(),
+              'git-commit': backendInfo.gitCommitHash,
+              'hostname': backendInfo.hostname,
             }));
           }
 
