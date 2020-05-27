@@ -12,7 +12,7 @@ import { StateService } from 'src/app/services/state.service';
 })
 export class SearchFormComponent implements OnInit {
   network = '';
-  assets: object;
+  assets: object = {};
 
   searchForm: FormGroup;
   @Output() searchTriggered = new EventEmitter();
