@@ -1,8 +1,8 @@
 import statistics from './api/statistics';
 import feeApi from './api/fee-api';
+import backendInfo from './api/backend-info';
 import mempoolBlocks from './api/mempool-blocks';
 import mempool from './api/mempool';
-import * as os from 'os';
 
 class Routes {
   private cache = {};
@@ -76,9 +76,7 @@ class Routes {
   }
 
   public getBackendInfo(req, res) {
-    res.send({
-      'hostname': os.hostname(),
-    });
+    res.send(backendInfo.getBackendInfo());
   }
 }
 
