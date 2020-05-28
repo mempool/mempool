@@ -9,6 +9,7 @@ import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
+import { calcSegwitFeeGains } from 'src/app/bitcoin.utils';
 
 @Component({
   selector: 'app-transaction',
@@ -29,6 +30,12 @@ export class TransactionComponent implements OnInit, OnDestroy {
   latestBlock: Block;
   transactionTime = -1;
   subscription: Subscription;
+  segwitGains = {
+    realizedGains: 0,
+    potentialBech32Gains: 0,
+    potentialP2shGains: 0,
+  };
+  isRbfTransaction: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -79,6 +86,8 @@ export class TransactionComponent implements OnInit, OnDestroy {
       this.error = undefined;
       this.waitingForTransaction = false;
       this.setMempoolBlocksSubscription();
+      this.segwitGains = calcSegwitFeeGains(tx);
+      this.isRbfTransaction = tx.vin.some((v) => v.sequence < 0xfffffffe);
 
       if (!tx.status.confirmed) {
         this.websocketService.startTrackTransaction(tx.txid);
