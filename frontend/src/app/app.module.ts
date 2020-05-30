@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgbButtonsModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbButtonsModule, NgbTooltipModule, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -101,6 +101,7 @@ import { Hex2asciiPipe } from './pipes/hex2ascii/hex2ascii.pipe';
     BrowserAnimationsModule,
     NgbButtonsModule,
     NgbTooltipModule,
+    NgbPaginationModule,
     InfiniteScrollModule,
   ],
   providers: [

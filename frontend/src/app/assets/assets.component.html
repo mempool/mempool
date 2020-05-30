@@ -4,6 +4,15 @@
 
   <div class="clearfix"></div>
 
+  <form [formGroup]="searchForm" class="form-inline">
+    <div class="input-group m-2">
+      <input style="width: 250px;" formControlName="searchText" type="text" class="form-control" placeholder="Search asset">
+      <div class="input-group-append">
+        <button [disabled]="!searchForm.get('searchText')?.value.length" class="btn btn-secondary" type="button" (click)="searchForm.get('searchText')?.setValue('');" autocomplete="off">Clear</button>
+      </div>
+    </div>
+  </form>
+
   <ng-template [ngIf]="!isLoading && !error">
     <table class="table table-borderless table-striped">
       <thead>
@@ -14,7 +23,7 @@
         <th class="d-none d-lg-block">Issuance TX</th>
       </thead>
       <tbody>
-        <tr *ngFor="let asset of assets">
+        <tr *ngFor="let asset of filteredAssets; trackBy: trackByAsset">
           <td class="td-name">{{ asset.name }}</td>
           <td>{{ asset.ticker }}</td>
           <td class="d-none d-md-block"><a *ngIf="asset.entity" target="_blank" href="{{ 'http://' + asset.entity.domain }}">{{ asset.entity.domain }}</a></td>
@@ -23,6 +32,11 @@
         </tr> 
       </tbody>
     </table>
+
+    <br>
+
+    <ngb-pagination [collectionSize]="assets.length" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="5" [boundaryLinks]="true"></ngb-pagination>
+
   </ng-template>
 
   <ng-template [ngIf]="isLoading && !error">
