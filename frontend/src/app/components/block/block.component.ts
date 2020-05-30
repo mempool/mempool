@@ -7,6 +7,7 @@ import { Block, Transaction, Vout } from '../../interfaces/electrs.interface';
 import { of } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { SeoService } from 'src/app/services/seo.service';
+import { ELCTRS_ITEMS_PER_PAGE } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-block',
@@ -25,6 +26,9 @@ export class BlockComponent implements OnInit, OnDestroy {
   error: any;
   blockSubsidy: number;
   fees: number;
+  paginationMaxSize: number;
+  page = 1;
+  itemsPerPage = ELCTRS_ITEMS_PER_PAGE;
 
   constructor(
     private route: ActivatedRoute,
@@ -36,11 +40,14 @@ export class BlockComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.paginationMaxSize = window.matchMedia('(max-width: 700px)').matches ? 3 : 5;
+
     this.route.paramMap
     .pipe(
       switchMap((params: ParamMap) => {
         const blockHash: string = params.get('id') || '';
         this.block = undefined;
+        this.page = 1;
         let isBlockHeight = false;
         this.error = undefined;
         this.fees = undefined;
@@ -136,17 +143,15 @@ export class BlockComponent implements OnInit, OnDestroy {
     }
   }
 
-  loadMore() {
-    if (this.isLoadingTransactions || !this.transactions.length || this.transactions.length === this.block.tx_count) {
-      return;
-    }
-
+  pageChange(page: number) {
+    const start = (page - 1) * this.itemsPerPage;
     this.isLoadingTransactions = true;
-    this.electrsApiService.getBlockTransactions$(this.block.id, this.transactions.length)
-      .subscribe((transactions) => {
-        this.transactions = this.transactions.concat(transactions);
+    this.transactions = null;
+
+    this.electrsApiService.getBlockTransactions$(this.block.id, start)
+     .subscribe((transactions) => {
+        this.transactions = transactions;
         this.isLoadingTransactions = false;
       });
   }
-
 }
