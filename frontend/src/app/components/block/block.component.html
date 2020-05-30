@@ -76,12 +76,16 @@
 
     <br>
 
-    <h2><ng-template [ngIf]="transactions?.length">{{ (transactions?.length | number) || '?' }} of </ng-template>{{ block.tx_count | number }} transactions</h2>
+    <h2 class="float-left">{{ block.tx_count | number }} transactions</h2>
 
-    <app-transactions-list [transactions]="transactions" (loadMore)="loadMore()"></app-transactions-list>
+    <ngb-pagination class="float-right" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true"></ngb-pagination>
 
-    <div class="text-center">
-      <ng-template [ngIf]="isLoadingTransactions">
+    <div class="clearfix"></div>
+
+    <app-transactions-list [transactions]="transactions"></app-transactions-list>
+
+    <ng-template [ngIf]="isLoadingTransactions">
+      <div class="text-center mb-4">
 
         <div class="header-bg box" style="padding: 10px; margin-bottom: 10px;">
           <span class="skeleton-loader"></span>
@@ -94,12 +98,15 @@
             </div>
             <div class="col-sm">
               <span class="skeleton-loader"></span>
+              <span class="skeleton-loader"></span>
             </div>
           </div>
         </div>
         
-      </ng-template>
-    </div>
+      </div>
+    </ng-template>
+
+    <ngb-pagination class="float-right" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true"></ngb-pagination>
 
   </ng-template>
 
@@ -157,4 +164,5 @@
 
 </div>
 
+<br>
 <br>
