@@ -141,6 +141,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
   getStyleForMempoolBlock(mempoolBlock: MempoolBlock, index: number) {
     const emptyBackgroundSpacePercentage = Math.max(100 - mempoolBlock.blockVSize / 1000000 * 100, 0);
+    const usedBlockSpace = 100 - emptyBackgroundSpacePercentage;
     const backgroundGradients = [`repeating-linear-gradient(to right,  #554b45, #554b45 ${emptyBackgroundSpacePercentage}%`];
     const gradientColors = [];
 
@@ -152,10 +153,11 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
       gradientColors.push(mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
     });
 
+
     gradientColors.forEach((color, i, gc) => {
       backgroundGradients.push(`
-        #${i === 0 ? color : gc[i - 1]} ${ i === 0 ? emptyBackgroundSpacePercentage : (i / gradientColors.length) * 100 }%,
-        #${color} ${Math.round(((i + 1) / gradientColors.length) * 100)}%
+        #${i === 0 ? color : gc[i - 1]} ${ i === 0 ? emptyBackgroundSpacePercentage : ((i / gradientColors.length) * 100) * usedBlockSpace / 100 + emptyBackgroundSpacePercentage }%,
+        #${color} ${Math.round(((i + 1) / gradientColors.length) * 100) * usedBlockSpace / 100 + emptyBackgroundSpacePercentage}%
       `);
     });
 
