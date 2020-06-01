@@ -20,7 +20,9 @@ export class AssetsComponent implements OnInit {
   error: any;
 
   page = 1;
-  itemsPerPage = 15;
+  itemsPerPage: number;
+  contentSpace = window.innerHeight - (250 + 200);
+  fiveItemsPxSize = 250;
 
   constructor(
     private assetsService: AssetsService,
@@ -28,6 +30,11 @@ export class AssetsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.itemsPerPage = Math.round(this.contentSpace / this.fiveItemsPxSize) * 5;
+    if (this.itemsPerPage === 5) {
+      this.itemsPerPage = 10;
+    }
+
     setTimeout(() => this.getAssets());
 
     this.searchForm = this.formBuilder.group({
