@@ -30,10 +30,7 @@ export class AssetsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.itemsPerPage = Math.round(this.contentSpace / this.fiveItemsPxSize) * 5;
-    if (this.itemsPerPage === 5) {
-      this.itemsPerPage = 10;
-    }
+    this.itemsPerPage = Math.max(Math.round(this.contentSpace / this.fiveItemsPxSize) * 5, 10);
 
     setTimeout(() => this.getAssets());
 
