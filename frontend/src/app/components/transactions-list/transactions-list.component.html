@@ -35,7 +35,7 @@
               </td>
               <td>
                 <div [ngSwitch]="true">
-                  <ng-container *ngSwitchCase="vin.is_coinbase"><a placement="bottom" [ngbTooltip]="vin.scriptsig | hex2ascii">Coinbase<ng-template [ngIf]="network !== 'liquid'"> (Newly Generated Coins)</ng-template></a></ng-container>
+                  <ng-container *ngSwitchCase="vin.is_coinbase"><a placement="bottom" [ngbTooltip]="vin.scriptsig | hex2ascii">Coinbase<ng-template [ngIf]="network !== 'liquid'"> (Newly Generated Coins)</ng-template></a><br><span class="badge badge-secondary scriptmessage longer">{{ vin.scriptsig | hex2ascii }}</span></ng-container>
                   <ng-container *ngSwitchCase="vin.is_pegin">
                     Peg-in
                   </ng-container>
@@ -80,7 +80,7 @@
                     </a>
                   </ng-template>
                   <ng-template #defaultscriptpubkey_type>
-                    <a placement="bottom" [ngbTooltip]="vout.scriptpubkey | hex2ascii">{{ vout.scriptpubkey_type | scriptpubkeyType }}</a>
+                    <a placement="bottom" [ngbTooltip]="vout.scriptpubkey | hex2ascii">{{ vout.scriptpubkey_type | scriptpubkeyType }}</a>&nbsp;<span class="badge badge-secondary scriptmessage">{{ vout.scriptpubkey_asm | hex2ascii }}</span>
                   </ng-template>
                 </ng-template>
               </td>

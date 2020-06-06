@@ -59,8 +59,26 @@
   background-color:#6c757d;
 }
 
+.scriptmessage {
+	max-width: 280px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	vertical-align: middle;
+}
+
+.scriptmessage.longer {
+	max-width: 500px;
+}
+
 @media (max-width: 767.98px) {
 	.mobile-bottomcol {
 		margin-top: 15px;
+	}
+
+	.scriptmessage {
+		max-width: 90px !important;
+	}
+	.scriptmessage.longer {
+		max-width: 280px !important;
 	}
 }
