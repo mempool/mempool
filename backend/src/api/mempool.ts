@@ -4,7 +4,7 @@ import { MempoolInfo, TransactionExtended, Transaction } from '../interfaces';
 
 class Mempool {
   private inSync: boolean = false;
-  private mempoolCache: any = {};
+  private mempoolCache: { [txId: string]: TransactionExtended } = {};
   private mempoolInfo: MempoolInfo = { size: 0, bytes: 0 };
   private mempoolChangedCallback: Function | undefined;
 
@@ -30,7 +30,7 @@ class Mempool {
     return this.mempoolCache;
   }
 
-  public setMempool(mempoolData: any) {
+  public setMempool(mempoolData: { [txId: string]: TransactionExtended }) {
     this.mempoolCache = mempoolData;
     if (this.mempoolChangedCallback && mempoolData) {
       this.mempoolChangedCallback(mempoolData);

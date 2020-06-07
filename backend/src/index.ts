@@ -1,4 +1,5 @@
 const config = require('../mempool-config.json');
+import { Express, Request, Response, NextFunction } from 'express';
 import * as fs from 'fs';
 import * as express from 'express';
 import * as compression from 'compression';
@@ -17,13 +18,13 @@ import fiatConversion from './api/fiat-conversion';
 class Server {
   wss: WebSocket.Server;
   server: https.Server | http.Server;
-  app: any;
+  app: Express;
 
   constructor() {
     this.app = express();
 
     this.app
-      .use((req, res, next) => {
+      .use((req: Request, res: Response, next: NextFunction) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
         next();
       })

@@ -26,23 +26,23 @@ class MempoolBlocks {
 
   private calculateMempoolBlocks(transactionsSorted: TransactionExtended[]): MempoolBlock[] {
     const mempoolBlocks: MempoolBlock[] = [];
-    let blockWeight = 0;
+    let blockVSize = 0;
     let blockSize = 0;
     let transactions: TransactionExtended[] = [];
     transactionsSorted.forEach((tx) => {
-      if (blockWeight + tx.vsize < 1000000 || mempoolBlocks.length === config.DEFAULT_PROJECTED_BLOCKS_AMOUNT - 1) {
-        blockWeight += tx.vsize;
+      if (blockVSize + tx.vsize <= 1000000 || mempoolBlocks.length === config.DEFAULT_PROJECTED_BLOCKS_AMOUNT - 1) {
+        blockVSize += tx.vsize;
         blockSize += tx.size;
         transactions.push(tx);
       } else {
-        mempoolBlocks.push(this.dataToMempoolBlocks(transactions, blockSize, blockWeight, mempoolBlocks.length));
-        blockWeight = 0;
+        mempoolBlocks.push(this.dataToMempoolBlocks(transactions, blockSize, blockVSize, mempoolBlocks.length));
+        blockVSize = 0;
         blockSize = 0;
         transactions = [];
       }
     });
     if (transactions.length) {
-      mempoolBlocks.push(this.dataToMempoolBlocks(transactions, blockSize, blockWeight, mempoolBlocks.length));
+      mempoolBlocks.push(this.dataToMempoolBlocks(transactions, blockSize, blockVSize, mempoolBlocks.length));
     }
     return mempoolBlocks;
   }
