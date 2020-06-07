@@ -1,7 +1,7 @@
 const config = require('../../mempool-config.json');
 
 import * as WebSocket from 'ws';
-import { Block, TransactionExtended, Statistic, WebsocketResponse } from '../interfaces';
+import { Block, TransactionExtended, Statistic, WebsocketResponse, MempoolBlock } from '../interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
 import backendInfo from './backend-info';
@@ -215,6 +215,32 @@ class WebsocketHandler {
       throw new Error('WebSocket.Server is not set');
     }
 
+    // Check how many transactions in the new block matches the latest projected mempool block
+    // If it's more than 0, recalculate the mempool blocks and send to client in the same update
+    let mBlocks: undefined | MempoolBlock[];
+    let matchRate = 0;
+    const _mempoolBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
+    if (_mempoolBlocks[0]) {
+      const matches: string[] = [];
+      for (const txId of txIds) {
+        if (_mempoolBlocks[0].transactionIds.indexOf(txId) > -1) {
+          matches.push(txId);
+        }
+      }
+
+      matchRate = Math.ceil((matches.length / txIds.length) * 100);
+      if (matchRate > 0) {
+        const currentMemPool = memPool.getMempool();
+        for (const txId of matches) {
+          delete currentMemPool[txId];
+        }
+        mempoolBlocks.updateMempoolBlocks(currentMemPool);
+        mBlocks = mempoolBlocks.getMempoolBlocks();
+      }
+    }
+
+    block.matchRate = matchRate;
+
     this.wss.clients.forEach((client) => {
       if (client.readyState !== WebSocket.OPEN) {
         return;
@@ -227,6 +253,10 @@ class WebsocketHandler {
       const response = {
         'block': block
       };
+
+      if (mBlocks && client['want-mempool-blocks']) {
+        response['mempool-blocks'] = mBlocks;
+      }
 
       if (client['track-tx'] && txIds.indexOf(client['track-tx']) > -1) {
         client['track-tx'] = null;

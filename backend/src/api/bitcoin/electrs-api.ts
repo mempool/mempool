@@ -15,7 +15,7 @@ class ElectrsApi {
         } else if (res.statusCode !== 200) {
           reject(response);
         } else {
-          if (!response.count) {
+          if (typeof response.count !== 'number') {
             reject('Empty data');
             return;
           }

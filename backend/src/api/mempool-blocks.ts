@@ -1,13 +1,26 @@
 const config = require('../../mempool-config.json');
-import { MempoolBlock, TransactionExtended } from '../interfaces';
+import { MempoolBlock, TransactionExtended, MempoolBlockWithTransactions } from '../interfaces';
 import { Common } from './common';
 
 class MempoolBlocks {
-  private mempoolBlocks: MempoolBlock[] = [];
+  private mempoolBlocks: MempoolBlockWithTransactions[] = [];
 
   constructor() {}
 
   public getMempoolBlocks(): MempoolBlock[] {
+    return this.mempoolBlocks.map((block) => {
+      return {
+        blockSize: block.blockSize,
+        blockVSize: block.blockVSize,
+        nTx: block.nTx,
+        totalFees: block.totalFees,
+        medianFee: block.medianFee,
+        feeRange: block.feeRange,
+      };
+    });
+  }
+
+  public getMempoolBlocksWithTransactions(): MempoolBlockWithTransactions[] {
     return this.mempoolBlocks;
   }
 
@@ -24,8 +37,8 @@ class MempoolBlocks {
     this.mempoolBlocks = this.calculateMempoolBlocks(transactionsSorted);
   }
 
-  private calculateMempoolBlocks(transactionsSorted: TransactionExtended[]): MempoolBlock[] {
-    const mempoolBlocks: MempoolBlock[] = [];
+  private calculateMempoolBlocks(transactionsSorted: TransactionExtended[]): MempoolBlockWithTransactions[] {
+    const mempoolBlocks: MempoolBlockWithTransactions[] = [];
     let blockVSize = 0;
     let blockSize = 0;
     let transactions: TransactionExtended[] = [];
@@ -48,7 +61,7 @@ class MempoolBlocks {
   }
 
   private dataToMempoolBlocks(transactions: TransactionExtended[],
-    blockSize: number, blockVSize: number, blocksIndex: number): MempoolBlock {
+    blockSize: number, blockVSize: number, blocksIndex: number): MempoolBlockWithTransactions {
     let rangeLength = 4;
     if (blocksIndex === 0) {
       rangeLength = 8;
@@ -65,6 +78,7 @@ class MempoolBlocks {
       totalFees: transactions.reduce((acc, cur) => acc + cur.fee, 0),
       medianFee: Common.median(transactions.map((tx) => tx.feePerVsize)),
       feeRange: Common.getFeesInRange(transactions, rangeLength),
+      transactionIds: transactions.map((tx) => tx.txid),
     };
   }
 }
