@@ -1,3 +1,4 @@
+import { Request, Response } from 'express';
 import statistics from './api/statistics';
 import feeApi from './api/fee-api';
 import backendInfo from './api/backend-info';
@@ -22,60 +23,66 @@ class Routes {
     console.log('Statistics cache created');
   }
 
-  public async get2HStatistics(req, res) {
+  public async get2HStatistics(req: Request, res: Response) {
     const result = await statistics.$list2H();
     res.send(result);
   }
 
-  public get24HStatistics(req, res) {
+  public get24HStatistics(req: Request, res: Response) {
     res.send(this.cache['24h']);
   }
 
-  public get1WHStatistics(req, res) {
+  public get1WHStatistics(req: Request, res: Response) {
     res.send(this.cache['1w']);
   }
 
-  public get1MStatistics(req, res) {
+  public get1MStatistics(req: Request, res: Response) {
     res.send(this.cache['1m']);
   }
 
-  public get3MStatistics(req, res) {
+  public get3MStatistics(req: Request, res: Response) {
     res.send(this.cache['3m']);
   }
 
-  public get6MStatistics(req, res) {
+  public get6MStatistics(req: Request, res: Response) {
     res.send(this.cache['6m']);
   }
 
-  public get1YStatistics(req, res) {
+  public get1YStatistics(req: Request, res: Response) {
     res.send(this.cache['1y']);
   }
 
-  public async getRecommendedFees(req, res) {
+  public async getRecommendedFees(req: Request, res: Response) {
     const result = feeApi.getRecommendedFee();
     res.send(result);
   }
 
-  public async getMempoolBlocks(req, res) {
+  public getMempoolBlocks(req: Request, res: Response) {
     try {
-      const result = await mempoolBlocks.getMempoolBlocks();
+      const result = mempoolBlocks.getMempoolBlocks();
       res.send(result);
     } catch (e) {
       res.status(500).send(e.message);
     }
   }
 
-  public getTransactionTimes(req, res) {
+  public getTransactionTimes(req: Request, res: Response) {
     if (!Array.isArray(req.query.txId)) {
       res.status(500).send('Not an array');
       return;
     }
-    const txIds = req.query.txId;
+    const txIds: string[] = [];
+    for (const _txId in req.query.txId) {
+      if (typeof req.query.txId[_txId] === 'string') {
+        txIds.push(req.query.txId[_txId].toString());
+      }
+    }
+
     const times = mempool.getFirstSeenForTransactions(txIds);
     res.send(times);
   }
 
-  public getBackendInfo(req, res) {
+  public getBackendInfo(req: Request, res: Response) {
     res.send(backendInfo.getBackendInfo());
   }
 }

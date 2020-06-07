@@ -25,7 +25,7 @@ class WebsocketHandler {
     }
 
     this.wss.on('connection', (client: WebSocket) => {
-      client.on('message', (message: any) => {
+      client.on('message', (message: string) => {
         try {
           const parsedMessage: WebsocketResponse = JSON.parse(message);
           const response = {};

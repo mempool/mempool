@@ -9,7 +9,7 @@
           </div>
           <div class="block-size">{{ projectedBlock.blockSize | bytes: 2 }}</div>
           <div class="transaction-count">{{ projectedBlock.nTx | number }} transactions</div>
-          <div class="time-difference" *ngIf="projectedBlock.blockVSize < 1000000">
+          <div class="time-difference" *ngIf="projectedBlock.blockVSize <= 1000000; else mergedBlock">
             <ng-template [ngIf]="network === 'liquid'" [ngIfElse]="timeDiffMainnet">
               In &lt; {{ 1 * i + 1 }} minute
             </ng-template>
@@ -17,8 +17,8 @@
               In ~{{ 10 * i + 10 }} minutes
             </ng-template>
           </div>
-          <ng-template [ngIf]="i === mempoolBlocks.length - 1 && projectedBlock.blockVSize >= 1000000">
-            <div class="time-difference">+{{ projectedBlock.blockVSize / 1000000 | ceil }} blocks</div>
+          <ng-template #mergedBlock>
+            <div class="time-difference"><b>({{ projectedBlock.blockVSize / 1000000 | ceil }} blocks)</b></div>
           </ng-template>
         </div>
         <span class="animated-border"></span>
