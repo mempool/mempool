@@ -16,6 +16,12 @@ export interface MempoolBlock {
   feeRange: number[];
 }
 
+
+export interface MempoolBlockWithTransactions extends MempoolBlock {
+  transactionIds: string[];
+}
+
+
 export interface Transaction {
   txid: string;
   version: number;
@@ -107,6 +113,7 @@ export interface Block {
   feeRange?: number[];
   reward?: number;
   coinbaseTx?: Transaction;
+  matchRate?: number;
 }
 
 export interface Address {
