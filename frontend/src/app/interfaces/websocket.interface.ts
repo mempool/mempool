@@ -11,6 +11,7 @@ export interface WebsocketResponse {
   action?: string;
   data?: string[];
   tx?: Transaction;
+  rbfTransaction?: Transaction;
   'track-tx'?: string;
   'track-address'?: string;
   'track-asset'?: string;

@@ -36,6 +36,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
     potentialP2shGains: 0,
   };
   isRbfTransaction: boolean;
+  rbfTransaction: undefined | Transaction;
 
   constructor(
     private route: ActivatedRoute,
@@ -126,6 +127,9 @@ export class TransactionComponent implements OnInit, OnDestroy {
         this.audioService.playSound('magic');
         this.findBlockAndSetFeeRating();
       });
+
+    this.stateService.txReplaced$
+      .subscribe((rbfTransaction) => this.rbfTransaction = rbfTransaction);
   }
 
   handleLoadElectrsTransactionError(error: any): Observable<any> {
@@ -198,6 +202,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
     this.feeRating = undefined;
     this.waitingForTransaction = false;
     this.isLoadingTx = true;
+    this.rbfTransaction = undefined;
     this.transactionTime = -1;
     document.body.scrollTo(0, 0);
     this.leaveTransaction();

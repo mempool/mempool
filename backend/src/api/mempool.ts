@@ -123,31 +123,30 @@ class Mempool {
         }
       }
 
-      // Replace mempool to clear already confirmed transactions
+      // Replace mempool to clear deleted transactions
       const newMempool = {};
-      transactions.forEach((tx) => {
-        if (this.mempoolCache[tx]) {
+      const deletedTransactions: Transaction[] = [];
+      for (const tx in this.mempoolCache) {
+        if (transactions.indexOf(tx) > -1) {
           newMempool[tx] = this.mempoolCache[tx];
         } else {
-          hasChange = true;
+          deletedTransactions.push(this.mempoolCache[tx]);
         }
-      });
+      }
 
       if (!this.inSync && transactions.length === Object.keys(newMempool).length) {
         this.inSync = true;
         console.log('The mempool is now in sync!');
       }
 
-      console.log(`New mempool size: ${Object.keys(newMempool).length} Change: ${diff}`);
-
-      this.mempoolCache = newMempool;
-
-      if (hasChange && this.mempoolChangedCallback) {
-        this.mempoolChangedCallback(this.mempoolCache, newTransactions);
+      if (this.mempoolChangedCallback && (hasChange || deletedTransactions.length)) {
+        this.mempoolCache = newMempool;
+        this.mempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
       }
 
       const end = new Date().getTime();
       const time = end - start;
+      console.log(`New mempool size: ${Object.keys(newMempool).length} Change: ${diff}`);
       console.log('Mempool updated in ' + time / 1000 + ' seconds');
     } catch (err) {
       console.log('getRawMempool error.', err);

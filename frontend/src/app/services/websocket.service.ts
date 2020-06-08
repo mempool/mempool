@@ -89,6 +89,10 @@ export class WebsocketService {
           this.stateService.conversions$.next(response.conversions);
         }
 
+        if (response.rbfTransaction) {
+          this.stateService.txReplaced$.next(response.rbfTransaction);
+        }
+
         if (response['mempool-blocks']) {
           this.stateService.mempoolBlocks$.next(response['mempool-blocks']);
         }

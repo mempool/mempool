@@ -24,6 +24,7 @@ export class StateService {
   mempoolStats$ = new ReplaySubject<MemPoolState>(1);
   mempoolBlocks$ = new ReplaySubject<MempoolBlock[]>(1);
   txConfirmed$ = new Subject<Block>();
+  txReplaced$ = new Subject<Transaction>();
   mempoolTransactions$ = new Subject<Transaction>();
   blockTransactions$ = new Subject<Transaction>();
 

@@ -8,6 +8,7 @@ import backendInfo from './backend-info';
 import mempoolBlocks from './mempool-blocks';
 import fiatConversion from './fiat-conversion';
 import * as os from 'os';
+import { Common } from './common';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
@@ -121,7 +122,8 @@ class WebsocketHandler {
     });
   }
 
-  handleMempoolChange(newMempool: { [txid: string]: TransactionExtended }, newTransactions: TransactionExtended[]) {
+  handleMempoolChange(newMempool: { [txid: string]: TransactionExtended },
+    newTransactions: TransactionExtended[], deletedTransactions: TransactionExtended[]) {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
     }
@@ -130,6 +132,7 @@ class WebsocketHandler {
     const mBlocks = mempoolBlocks.getMempoolBlocks();
     const mempoolInfo = memPool.getMempoolInfo();
     const vBytesPerSecond = memPool.getVBytesPerSecond();
+    const rbfTransactions = Common.findRbfTransactions(newTransactions, deletedTransactions);
 
     this.wss.clients.forEach((client: WebSocket) => {
       if (client.readyState !== WebSocket.OPEN) {
@@ -204,6 +207,15 @@ class WebsocketHandler {
         }
       }
 
+      if (client['track-tx'] && rbfTransactions[client['track-tx']]) {
+        for (const rbfTransaction in rbfTransactions) {
+          if (client['track-tx'] === rbfTransaction) {
+            response['rbfTransaction'] = rbfTransactions[rbfTransaction];
+            break;
+          }
+        }
+      }
+
       if (Object.keys(response).length) {
         client.send(JSON.stringify(response));
       }
@@ -228,7 +240,7 @@ class WebsocketHandler {
         }
       }
 
-      matchRate = Math.ceil((matches.length / txIds.length) * 100);
+      matchRate = Math.round((matches.length / (txIds.length - 1)) * 100);
       if (matchRate > 0) {
         const currentMemPool = memPool.getMempool();
         for (const txId of matches) {
