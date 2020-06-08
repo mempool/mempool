@@ -1,13 +1,13 @@
 const config = require('../../mempool-config.json');
 import bitcoinApi from './bitcoin/electrs-api';
 import memPool from './mempool';
-import { Block, TransactionExtended } from '../interfaces';
+import { Block, TransactionExtended, TransactionMinerInfo } from '../interfaces';
 import { Common } from './common';
 
 class Blocks {
   private blocks: Block[] = [];
   private currentBlockHeight = 0;
-  private newBlockCallback: Function = () => {};
+  private newBlockCallback: ((block: Block, txIds: string[], transactions: TransactionExtended[]) => void) | undefined;
 
   constructor() { }
 
@@ -19,7 +19,7 @@ class Blocks {
     this.blocks = blocks;
   }
 
-  public setNewBlockCallback(fn: Function) {
+  public setNewBlockCallback(fn: (block: Block, txIds: string[], transactions: TransactionExtended[]) => void) {
     this.newBlockCallback = fn;
   }
 
@@ -83,7 +83,9 @@ class Blocks {
           this.blocks.shift();
         }
 
-        this.newBlockCallback(block, txIds, transactions);
+        if (this.newBlockCallback) {
+          this.newBlockCallback(block, txIds, transactions);
+        }
       }
 
     } catch (err) {
@@ -91,7 +93,7 @@ class Blocks {
     }
   }
 
-  private stripCoinbaseTransaction(tx: TransactionExtended): any {
+  private stripCoinbaseTransaction(tx: TransactionExtended): TransactionMinerInfo {
     return {
       vin: [{
         scriptsig: tx.vin[0].scriptsig

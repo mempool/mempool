@@ -6,7 +6,8 @@ class Mempool {
   private inSync: boolean = false;
   private mempoolCache: { [txId: string]: TransactionExtended } = {};
   private mempoolInfo: MempoolInfo = { size: 0, bytes: 0 };
-  private mempoolChangedCallback: Function | undefined;
+  private mempoolChangedCallback: ((newMempool: { [txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
+    deletedTransactions: TransactionExtended[]) => void) | undefined;
 
   private txPerSecondArray: number[] = [];
   private txPerSecond: number = 0;
@@ -22,7 +23,8 @@ class Mempool {
     return this.inSync;
   }
 
-  public setMempoolChangedCallback(fn: Function) {
+  public setMempoolChangedCallback(fn: (newMempool: { [txId: string]: TransactionExtended; },
+    newTransactions: TransactionExtended[], deletedTransactions: TransactionExtended[]) => void) {
     this.mempoolChangedCallback = fn;
   }
 
@@ -122,7 +124,7 @@ class Mempool {
 
       // Replace mempool to clear deleted transactions
       const newMempool = {};
-      const deletedTransactions: Transaction[] = [];
+      const deletedTransactions: TransactionExtended[] = [];
       for (const tx in this.mempoolCache) {
         if (transactions.indexOf(tx) > -1) {
           newMempool[tx] = this.mempoolCache[tx];

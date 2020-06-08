@@ -34,6 +34,19 @@ export interface Transaction {
   status: Status;
 }
 
+export interface TransactionMinerInfo {
+  vin: VinStrippedToScriptsig[];
+  vout: VoutStrippedToScriptPubkey[];
+}
+
+interface VinStrippedToScriptsig {
+  scriptsig: string;
+}
+
+interface VoutStrippedToScriptPubkey {
+  scriptpubkey_address: string | undefined;
+}
+
 export interface TransactionExtended extends Transaction {
   vsize: number;
   feePerVsize: number;
@@ -109,7 +122,7 @@ export interface Block {
   medianFee?: number;
   feeRange?: number[];
   reward?: number;
-  coinbaseTx?: Transaction;
+  coinbaseTx?: TransactionMinerInfo;
   matchRate?: number;
 }
 
