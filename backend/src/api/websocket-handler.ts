@@ -1,13 +1,12 @@
 const config = require('../../mempool-config.json');
 
 import * as WebSocket from 'ws';
-import { Block, TransactionExtended, Statistic, WebsocketResponse, MempoolBlock } from '../interfaces';
+import { Block, TransactionExtended, WebsocketResponse, MempoolBlock, OptimizedStatistic } from '../interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
 import backendInfo from './backend-info';
 import mempoolBlocks from './mempool-blocks';
 import fiatConversion from './fiat-conversion';
-import * as os from 'os';
 import { Common } from './common';
 
 class WebsocketHandler {
@@ -102,7 +101,7 @@ class WebsocketHandler {
     });
   }
 
-  handleNewStatistic(stats: Statistic) {
+  handleNewStatistic(stats: OptimizedStatistic) {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
     }

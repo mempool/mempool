@@ -5,9 +5,9 @@ import { Statistic, TransactionExtended, OptimizedStatistic } from '../interface
 
 class Statistics {
   protected intervalTimer: NodeJS.Timer | undefined;
-  protected newStatisticsEntryCallback: Function | undefined;
+  protected newStatisticsEntryCallback: ((stats: OptimizedStatistic) => void) | undefined;
 
-  public setNewStatisticsEntryCallback(fn: Function) {
+  public setNewStatisticsEntryCallback(fn: (stats: OptimizedStatistic) => void) {
     this.newStatisticsEntryCallback = fn;
   }
 
@@ -128,7 +128,9 @@ class Statistics {
 
     if (this.newStatisticsEntryCallback && insertId) {
       const newStats = await this.$get(insertId);
-      this.newStatisticsEntryCallback(newStats);
+      if (newStats) {
+        this.newStatisticsEntryCallback(newStats);
+      }
     }
   }
 
