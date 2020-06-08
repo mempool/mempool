@@ -122,11 +122,15 @@ class Mempool {
         }
       }
 
-      // Replace mempool to clear deleted transactions
+      // Index object for faster search
+      const transactionsObject = {};
+      transactions.forEach((txId) => transactionsObject[txId] = true);
+
+      // Replace mempool to separate deleted transactions
       const newMempool = {};
       const deletedTransactions: TransactionExtended[] = [];
       for (const tx in this.mempoolCache) {
-        if (transactions.indexOf(tx) > -1) {
+        if (transactionsObject[tx]) {
           newMempool[tx] = this.mempoolCache[tx];
         } else {
           deletedTransactions.push(this.mempoolCache[tx]);
