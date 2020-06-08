@@ -32,9 +32,6 @@ class Mempool {
 
   public setMempool(mempoolData: { [txId: string]: TransactionExtended }) {
     this.mempoolCache = mempoolData;
-    if (this.mempoolChangedCallback && mempoolData) {
-      this.mempoolChangedCallback(mempoolData);
-    }
   }
 
   public async updateMemPoolInfo() {
