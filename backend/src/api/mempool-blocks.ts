@@ -49,9 +49,9 @@ class MempoolBlocks {
         transactions.push(tx);
       } else {
         mempoolBlocks.push(this.dataToMempoolBlocks(transactions, blockSize, blockVSize, mempoolBlocks.length));
-        blockVSize = 0;
-        blockSize = 0;
-        transactions = [];
+        blockVSize = tx.vsize;
+        blockSize = tx.size;
+        transactions = [tx];
       }
     });
     if (transactions.length) {

@@ -35,9 +35,6 @@ export interface Transaction {
 }
 
 export interface TransactionExtended extends Transaction {
-  txid: string;
-  fee: number;
-  size: number;
   vsize: number;
   feePerVsize: number;
   firstSeen: number;
