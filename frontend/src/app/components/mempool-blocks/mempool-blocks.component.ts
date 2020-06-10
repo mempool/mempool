@@ -21,6 +21,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   blockWidth = 125;
   blockPadding = 30;
   arrowVisible = false;
+  tabHidden = true;
 
   rightPosition = 0;
   transition = '2s';
@@ -38,6 +39,8 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
+
     this.mempoolBlocksSubscription = this.stateService.mempoolBlocks$
       .subscribe((blocks) => {
         blocks.forEach((block, i) => {
@@ -65,7 +68,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
     this.stateService.blocks$
       .subscribe(([block]) => {
-        if (block.matchRate >= 80) {
+        if (block.matchRate >= 80 && !this.tabHidden) {
           this.blockIndex++;
         }
       });

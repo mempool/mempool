@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { ReplaySubject, BehaviorSubject, Subject } from 'rxjs';
+import { ReplaySubject, BehaviorSubject, Subject, fromEvent } from 'rxjs';
 import { Block, Transaction } from '../interfaces/electrs.interface';
 import { MempoolBlock, MemPoolState } from '../interfaces/websocket.interface';
 import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { KEEP_BLOCKS_AMOUNT } from '../app.constants';
+import { shareReplay, map } from 'rxjs/operators';
 
 interface MarkBlockState {
   blockHeight?: number;
@@ -32,6 +33,7 @@ export class StateService {
 
   viewFiat$ = new BehaviorSubject<boolean>(false);
   connectionState$ = new BehaviorSubject<0 | 1 | 2>(2);
+  isTabHidden$ = fromEvent(document, 'visibilitychange').pipe(map((event) => this.isHidden()), shareReplay());
 
   markBlock$ = new ReplaySubject<MarkBlockState>();
   keyNavigation$ = new Subject<KeyboardEvent>();
@@ -70,5 +72,22 @@ export class StateService {
           this.networkChanged$.next('');
         }
     }
+  }
+
+  getHiddenProp(){
+    const prefixes = ['webkit', 'moz', 'ms', 'o'];
+    if ('hidden' in document) { return 'hidden'; }
+    for (const prefix of prefixes) {
+      if ((prefix + 'Hidden') in document) {
+        return prefix + 'Hidden';
+      }
+    }
+    return null;
+  }
+
+  isHidden() {
+    const prop = this.getHiddenProp();
+    if (!prop) { return false; }
+    return document[prop];
   }
 }
