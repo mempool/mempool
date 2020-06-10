@@ -1,8 +1,10 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Block } from 'src/app/interfaces/electrs.interface';
 import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
+import { AudioService } from 'src/app/services/audio.service';
+import { KEEP_BLOCKS_AMOUNT } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-blockchain-blocks',
@@ -14,6 +16,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   blocks: Block[] = [];
   markHeight: number;
   blocksSubscription: Subscription;
+  blockStyles = [];
   interval: any;
 
   arrowVisible = false;
@@ -30,20 +33,40 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   constructor(
     private stateService: StateService,
     private router: Router,
+    private audioService: AudioService,
   ) { }
 
   ngOnInit() {
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     this.blocksSubscription = this.stateService.blocks$
-      .subscribe((block) => {
+      .subscribe(([block, txConfirmed]) => {
+        const currentBlocksAmount = this.blocks.length;
         if (this.blocks.some((b) => b.height === block.height)) {
           return;
         }
         this.blocks.unshift(block);
         this.blocks = this.blocks.slice(0, 8);
 
-        this.moveArrowToPosition(true);
+        if (currentBlocksAmount === KEEP_BLOCKS_AMOUNT) {
+          setTimeout(() => this.audioService.playSound('bright-harmony'));
+          block.stage = block.matchRate >= 80 ? 1 : 2;
+        }
+
+        if (txConfirmed) {
+          this.markHeight = block.height;
+          this.moveArrowToPosition(true, true);
+        } else {
+          this.moveArrowToPosition(true, false);
+        }
+
+        this.blockStyles = [];
+        this.blocks.forEach((b) => this.blockStyles.push(this.getStyleForBlock(b)));
+        setTimeout(() => {
+          this.blockStyles = [];
+          this.blocks.forEach((b) => this.blockStyles.push(this.getStyleForBlock(b)));
+        }, 50);
+
       });
 
     this.stateService.markBlock$
@@ -83,20 +106,28 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
     clearInterval(this.interval);
   }
 
-  moveArrowToPosition(animate: boolean) {
+  moveArrowToPosition(animate: boolean, newBlockFromLeft = false) {
     if (!this.markHeight) {
       this.arrowVisible = false;
       return;
     }
     const blockindex = this.blocks.findIndex((b) => b.height === this.markHeight);
-    if (blockindex !== -1) {
+    if (blockindex > -1) {
       if (!animate) {
         this.transition = 'inherit';
       }
       this.arrowVisible = true;
-      this.arrowLeftPx = blockindex * 155 + 30;
-      if (!animate) {
-        setTimeout(() => this.transition = '1s');
+      if (newBlockFromLeft) {
+        this.arrowLeftPx = blockindex * 155 + 30 - 205;
+        setTimeout(() => {
+          this.transition = '2s';
+          this.arrowLeftPx = blockindex * 155 + 30;
+        }, 50);
+      } else {
+        this.arrowLeftPx = blockindex * 155 + 30;
+        if (!animate) {
+          setTimeout(() => this.transition = '2s');
+        }
       }
     }
   }
@@ -107,8 +138,15 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
 
   getStyleForBlock(block: Block) {
     const greenBackgroundHeight = 100 - (block.weight / 4000000) * 100;
+    let addLeft = 0;
+
+    if (block.stage === 1) {
+      block.stage = 2;
+      addLeft = -205;
+    }
+
     return {
-      left: 155 * this.blocks.indexOf(block) + 'px',
+      left: addLeft + 155 * this.blocks.indexOf(block) + 'px',
       background: `repeating-linear-gradient(
         #2d3348,
         #2d3348 ${greenBackgroundHeight}%,

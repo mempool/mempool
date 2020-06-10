@@ -113,19 +113,20 @@ export class TransactionComponent implements OnInit, OnDestroy {
     });
 
     this.stateService.blocks$
-      .subscribe((block) => this.latestBlock = block);
+      .subscribe(([block, txConfirmed]) => {
+        this.latestBlock = block;
 
-    this.stateService.txConfirmed$
-      .subscribe((block) => {
-        this.tx.status = {
-          confirmed: true,
-          block_height: block.height,
-          block_hash: block.id,
-          block_time: block.timestamp,
-        };
-        this.stateService.markBlock$.next({ blockHeight: block.height });
-        this.audioService.playSound('magic');
-        this.findBlockAndSetFeeRating();
+        if (txConfirmed) {
+          this.tx.status = {
+            confirmed: true,
+            block_height: block.height,
+            block_hash: block.id,
+            block_time: block.timestamp,
+          };
+          this.stateService.markBlock$.next({ blockHeight: block.height });
+          this.audioService.playSound('magic');
+          this.findBlockAndSetFeeRating();
+        }
       });
 
     this.stateService.txReplaced$
@@ -171,10 +172,10 @@ export class TransactionComponent implements OnInit, OnDestroy {
   findBlockAndSetFeeRating() {
     this.stateService.blocks$
       .pipe(
-        filter((block) => block.height === this.tx.status.block_height),
+        filter(([block]) => block.height === this.tx.status.block_height),
         take(1)
       )
-      .subscribe((block) => {
+      .subscribe(([block]) => {
         const feePervByte = this.tx.fee / (this.tx.weight / 4);
         this.medianFeeNeeded = Math.round(block.feeRange[Math.round(block.feeRange.length * 0.5)]);
 

@@ -34,7 +34,7 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     this.blockSubscription = this.stateService.blocks$
-      .subscribe((block) => {
+      .subscribe(([block]) => {
         if (block === null || !this.blocks.length) {
           return;
         }
