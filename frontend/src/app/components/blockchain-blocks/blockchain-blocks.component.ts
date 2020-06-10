@@ -47,7 +47,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
         this.blocks = this.blocks.slice(0, 8);
 
         if (!refilling) {
-          setTimeout(() => this.audioService.playSound('bright-harmony'));
+          // setTimeout(() => this.audioService.playSound('bright-harmony'));
           block.stage = block.matchRate >= 80 ? 1 : 2;
         }
 
