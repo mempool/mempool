@@ -17,6 +17,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   blocksSubscription: Subscription;
   blockStyles = [];
   interval: any;
+  tabHidden = true;
 
   arrowVisible = false;
   arrowLeftPx = 30;
@@ -37,6 +38,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
 
     this.blocksSubscription = this.stateService.blocks$
       .subscribe(([block, txConfirmed, refilling]) => {
@@ -46,7 +48,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
         this.blocks.unshift(block);
         this.blocks = this.blocks.slice(0, 8);
 
-        if (!refilling) {
+        if (!refilling && !this.tabHidden) {
           // setTimeout(() => this.audioService.playSound('bright-harmony'));
           block.stage = block.matchRate >= 80 ? 1 : 2;
         }
