@@ -20,7 +20,7 @@ export class StateService {
   latestBlockHeight = 0;
 
   networkChanged$ = new ReplaySubject<string>(1);
-  blocks$ = new ReplaySubject<[Block, boolean]>(KEEP_BLOCKS_AMOUNT);
+  blocks$ = new ReplaySubject<[Block, boolean, boolean]>(KEEP_BLOCKS_AMOUNT);
   conversions$ = new ReplaySubject<any>(1);
   mempoolStats$ = new ReplaySubject<MemPoolState>(1);
   mempoolBlocks$ = new ReplaySubject<MempoolBlock[]>(1);

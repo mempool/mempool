@@ -4,7 +4,6 @@ import { Block } from 'src/app/interfaces/electrs.interface';
 import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
 import { AudioService } from 'src/app/services/audio.service';
-import { KEEP_BLOCKS_AMOUNT } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-blockchain-blocks',
@@ -40,15 +39,14 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     this.blocksSubscription = this.stateService.blocks$
-      .subscribe(([block, txConfirmed]) => {
-        const currentBlocksAmount = this.blocks.length;
+      .subscribe(([block, txConfirmed, refilling]) => {
         if (this.blocks.some((b) => b.height === block.height)) {
           return;
         }
         this.blocks.unshift(block);
         this.blocks = this.blocks.slice(0, 8);
 
-        if (currentBlocksAmount === KEEP_BLOCKS_AMOUNT) {
+        if (!refilling) {
           setTimeout(() => this.audioService.playSound('bright-harmony'));
           block.stage = block.matchRate >= 80 ? 1 : 2;
         }
