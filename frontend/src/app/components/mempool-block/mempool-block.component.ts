@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { StateService } from 'src/app/services/state.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { switchMap, map, tap } from 'rxjs/operators';
+import { switchMap, map, tap, filter } from 'rxjs/operators';
 import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 import { Observable } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
@@ -29,6 +29,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
           this.mempoolBlockIndex = parseInt(params.get('id'), 10) || 0;
           return this.stateService.mempoolBlocks$
           .pipe(
+            filter((mempoolBlocks) => mempoolBlocks.length > 0),
             map((mempoolBlocks) => {
               while (!mempoolBlocks[this.mempoolBlockIndex]) {
                 this.mempoolBlockIndex--;

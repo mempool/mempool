@@ -22,7 +22,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
   @Output() loadMore = new EventEmitter();
 
-  latestBlock$: Observable<Block>;
+  latestBlock: Block;
   outspends: Outspend[] = [];
   assetsMinimal: any;
 
@@ -34,7 +34,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit() {
-    this.latestBlock$ = this.stateService.blocks$;
+    this.stateService.blocks$.subscribe(([block]) => this.latestBlock = block);
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     if (this.network === 'liquid') {

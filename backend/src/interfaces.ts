@@ -222,3 +222,8 @@ export interface WebsocketResponse {
   'track-address': string;
   'watch-mempool': boolean;
 }
+
+export interface VbytesPerSecond {
+  unixTime: number;
+  vSize: number;
+}

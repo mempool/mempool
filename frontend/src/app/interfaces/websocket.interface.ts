@@ -25,6 +25,7 @@ export interface MempoolBlock {
   medianFee: number;
   totalFees: number;
   feeRange: number[];
+  index: number;
 }
 
 export interface MemPoolState {

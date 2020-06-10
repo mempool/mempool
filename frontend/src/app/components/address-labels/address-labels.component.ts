@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
 import { Vin, Vout } from '../../interfaces/electrs.interface';
+import { StateService } from 'src/app/services/state.service';
 
 @Component({
   selector: 'app-address-labels',
@@ -8,6 +9,7 @@ import { Vin, Vout } from '../../interfaces/electrs.interface';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddressLabelsComponent implements OnInit {
+  network = '';
 
   @Input() vin: Vin;
   @Input() vout: Vout;
@@ -18,7 +20,11 @@ export class AddressLabelsComponent implements OnInit {
 
   secondLayerClose = false;
 
-  constructor() { }
+  constructor(
+    stateService: StateService,
+  ) {
+    this.network = stateService.network;
+  }
 
   ngOnInit() {
     if (this.vin) {

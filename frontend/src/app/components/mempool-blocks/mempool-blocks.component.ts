@@ -23,13 +23,14 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   arrowVisible = false;
 
   rightPosition = 0;
-  transition = '1s';
+  transition = '2s';
 
   markIndex: number;
   txFeePerVSize: number;
 
   resetTransitionTimeout: number;
-  blocksLeftToHalving: number;
+
+  blockIndex = 1;
 
   constructor(
     private router: Router,
@@ -37,14 +38,11 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-
-    this.stateService.blocks$
-      .subscribe((block) => {
-        this.blocksLeftToHalving = 630000 - block.height;
-      });
-
     this.mempoolBlocksSubscription = this.stateService.mempoolBlocks$
       .subscribe((blocks) => {
+        blocks.forEach((block, i) => {
+          block.index = this.blockIndex + i;
+        });
         const stringifiedBlocks = JSON.stringify(blocks);
         this.mempoolBlocksFull = JSON.parse(stringifiedBlocks);
         this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(stringifiedBlocks));
@@ -65,6 +63,13 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
         this.calculateTransactionPosition();
       });
 
+    this.stateService.blocks$
+      .subscribe(([block]) => {
+        if (block.matchRate >= 80) {
+          this.blockIndex++;
+        }
+      });
+
     this.stateService.networkChanged$
       .subscribe((network) => this.network = network);
 
@@ -79,7 +84,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
         } else {
           this.stateService.blocks$
             .pipe(take(8))
-            .subscribe((block) => {
+            .subscribe(([block]) => {
               if (this.stateService.latestBlockHeight === block.height) {
                 this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', block.id], { state: { data: { block } }});
               }
@@ -104,8 +109,8 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     this.mempoolBlocksSubscription.unsubscribe();
   }
 
-  trackByFn(index: number) {
-    return index;
+  trackByFn(index: number, block: MempoolBlock) {
+    return block.index;
   }
 
   reduceMempoolBlocksToFitScreen(blocks: MempoolBlock[]): MempoolBlock[] {
@@ -176,7 +181,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
       this.transition = 'inherit';
       this.rightPosition = this.markIndex * (this.blockWidth + this.blockPadding) + 0.5 * this.blockWidth;
       this.arrowVisible = true;
-      this.resetTransitionTimeout = window.setTimeout(() => this.transition = '1s', 100);
+      this.resetTransitionTimeout = window.setTimeout(() => this.transition = '2s', 100);
       return;
     }
 

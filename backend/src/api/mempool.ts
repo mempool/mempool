@@ -1,6 +1,6 @@
 const config = require('../../mempool-config.json');
 import bitcoinApi from './bitcoin/electrs-api';
-import { MempoolInfo, TransactionExtended, Transaction } from '../interfaces';
+import { MempoolInfo, TransactionExtended, Transaction, VbytesPerSecond } from '../interfaces';
 
 class Mempool {
   private inSync: boolean = false;
@@ -12,7 +12,7 @@ class Mempool {
   private txPerSecondArray: number[] = [];
   private txPerSecond: number = 0;
 
-  private vBytesPerSecondArray: any[] = [];
+  private vBytesPerSecondArray: VbytesPerSecond[] = [];
   private vBytesPerSecond: number = 0;
 
   constructor() {

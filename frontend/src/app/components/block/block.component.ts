@@ -120,7 +120,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     });
 
     this.stateService.blocks$
-      .subscribe((block) => this.latestBlock = block);
+      .subscribe(([block]) => this.latestBlock = block);
 
     this.stateService.networkChanged$
       .subscribe((network) => this.network = network);

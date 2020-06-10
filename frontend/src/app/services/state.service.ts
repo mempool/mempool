@@ -4,6 +4,7 @@ import { Block, Transaction } from '../interfaces/electrs.interface';
 import { MempoolBlock, MemPoolState } from '../interfaces/websocket.interface';
 import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
+import { KEEP_BLOCKS_AMOUNT } from '../app.constants';
 
 interface MarkBlockState {
   blockHeight?: number;
@@ -19,11 +20,10 @@ export class StateService {
   latestBlockHeight = 0;
 
   networkChanged$ = new ReplaySubject<string>(1);
-  blocks$ = new ReplaySubject<Block>(8);
+  blocks$ = new ReplaySubject<[Block, boolean]>(KEEP_BLOCKS_AMOUNT);
   conversions$ = new ReplaySubject<any>(1);
   mempoolStats$ = new ReplaySubject<MemPoolState>(1);
   mempoolBlocks$ = new ReplaySubject<MempoolBlock[]>(1);
-  txConfirmed$ = new Subject<Block>();
   txReplaced$ = new Subject<Transaction>();
   mempoolTransactions$ = new Subject<Transaction>();
   blockTransactions$ = new Subject<Transaction>();
