@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AssetsService } from '../services/assets.service';
 import { environment } from 'src/environments/environment';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { filter, distinctUntilChanged } from 'rxjs/operators';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-assets',
@@ -32,13 +32,11 @@ export class AssetsComponent implements OnInit {
   ngOnInit() {
     this.itemsPerPage = Math.max(Math.round(this.contentSpace / this.fiveItemsPxSize) * 5, 10);
 
-    setTimeout(() => this.getAssets());
-
     this.searchForm = this.formBuilder.group({
-      searchText: ['', Validators.required],
+      searchText: [{ value: '', disabled: true }, Validators.required]
     });
 
-    this.searchForm.controls.searchText.valueChanges
+    this.searchForm.get('searchText').valueChanges
       .pipe(
         distinctUntilChanged(),
       )
@@ -54,6 +52,8 @@ export class AssetsComponent implements OnInit {
           this.filteredAssets = this.assets.slice(0, this.itemsPerPage);
         }
       });
+
+    this.getAssets();
   }
 
   getAssets() {
@@ -67,6 +67,7 @@ export class AssetsComponent implements OnInit {
         });
         this.assets = this.assets.sort((a: any, b: any) => a.name.localeCompare(b.name));
         this.assetsCache = this.assets;
+        this.searchForm.controls['searchText'].enable();
         this.filteredAssets = this.assets.slice(0, this.itemsPerPage);
         this.isLoading = false;
       },
