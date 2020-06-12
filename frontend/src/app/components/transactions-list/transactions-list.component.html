@@ -51,7 +51,14 @@
                 </div>
               </td>
               <td class="text-right nowrap">
-                <app-amount *ngIf="vin.prevout" [satoshis]="vin.prevout.value"></app-amount>
+                <ng-template [ngIf]="vin.prevout && vin.prevout.asset && vin.prevout.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
+                  <div *ngIf="assetsMinimal && assetsMinimal[vin.prevout.asset]">
+                    <ng-container *ngTemplateOutlet="assetBox; context:{ $implicit: vin.prevout }"></ng-container>
+                  </div>
+                </ng-template>
+                <ng-template #defaultOutput>
+                  <app-amount *ngIf="vin.prevout" [satoshis]="vin.prevout.value"></app-amount>
+                </ng-template>
               </td>
             </tr>
             <tr *ngIf="tx.vin.length > tx['@vinLength']">
@@ -85,14 +92,9 @@
                 </ng-template>
               </td>
               <td class="text-right nowrap">
-                <ng-template [ngIf]="vout.asset && vout.scriptpubkey_type === 'op_return' && vout.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
+                <ng-template [ngIf]="vout.asset && vout.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
                   <div *ngIf="assetsMinimal && assetsMinimal[vout.asset]">
-                    {{ vout.value / 100000000 | number: '1.0-' + assetsMinimal[vout.asset][3] }} {{ assetsMinimal[vout.asset][1] }}
-                    <br>
-                    {{ assetsMinimal[vout.asset][0] }}
-                    <br>
-                    <a [routerLink]="['/asset/' | relativeUrl, vout.asset]">{{ vout.asset | shortenString : 13 }}</a>
-                    <br><br>
+                    <ng-container *ngTemplateOutlet="assetBox; context:{ $implicit: vout }"></ng-container>
                 </div>
                 </ng-template>
                 <ng-template #defaultOutput>
@@ -147,3 +149,12 @@
   <br>
 
 </ng-container>
+
+<ng-template #assetBox let-item>
+  {{ item.value / 100000000 | number: '1.0-' + assetsMinimal[item.asset][3] }} {{ assetsMinimal[item.asset][1] }}
+  <br>
+  {{ assetsMinimal[item.asset][0] }}
+  <br>
+  <a [routerLink]="['/asset/' | relativeUrl, item.asset]">{{ item.asset | shortenString : 13 }}</a>
+  <br><br>
+</ng-template>

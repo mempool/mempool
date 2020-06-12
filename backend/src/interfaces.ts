@@ -59,6 +59,7 @@ export interface Prevout {
   scriptpubkey_type: string;
   scriptpubkey_address: string;
   value: number;
+  asset?: string;
 }
 
 export interface Vin {
