@@ -2,12 +2,14 @@ export interface Transaction {
   txid: string;
   version: number;
   locktime: number;
-  fee: number;
   size: number;
   weight: number;
+  fee: number;
   vin: Vin[];
   vout: Vout[];
   status: Status;
+
+  // Custom properties
   firstSeen?: number;
 }
 
@@ -18,26 +20,18 @@ export interface Recent {
   value: number;
 }
 
-export interface Prevout {
-  scriptpubkey: string;
-  scriptpubkey_asm: string;
-  scriptpubkey_type: string;
-  scriptpubkey_address: string;
-  value: number;
-  asset?: string;
-}
-
 export interface Vin {
   txid: string;
   vout: number;
-  prevout: Prevout;
+  is_coinbase: boolean;
   scriptsig: string;
   scriptsig_asm: string;
   inner_redeemscript_asm?: string;
-  is_coinbase: boolean;
+  inner_witnessscript_asm?: string;
   sequence: any;
   witness?: string[];
-  inner_witnessscript_asm?: string;
+  prevout: Vout;
+  // Elements
   is_pegin?: boolean;
   issuance?: Issuance;
 }
@@ -60,6 +54,7 @@ export interface Vout {
   scriptpubkey_type: string;
   scriptpubkey_address: string;
   value: number;
+  // Elements
   valuecommitment?: number;
   asset?: string;
   pegout?: Pegout;
@@ -84,10 +79,13 @@ export interface Block {
   height: number;
   version: number;
   timestamp: number;
+  bits: number;
+  nounce: number;
+  difficulty: number;
+  merkle_root: string;
   tx_count: number;
   size: number;
   weight: number;
-  merkle_root: string;
   previousblockhash: string;
 
   // Custom properties
@@ -135,8 +133,8 @@ export interface Asset {
   reissuance_token: string;
   contract_hash: string;
   status: Status;
-  chain_stats: AssetChainStats;
-  mempool_stats: AssetMempoolStats;
+  chain_stats: AssetStats;
+  mempool_stats: AssetStats;
 }
 
 interface IssuanceTxin {
@@ -149,7 +147,7 @@ interface IssuancePrevout {
   vout: number;
 }
 
-interface AssetChainStats {
+interface AssetStats {
   tx_count: number;
   issuance_count: number;
   issued_amount: number;
@@ -157,30 +155,9 @@ interface AssetChainStats {
   has_blinded_issuances: boolean;
   reissuance_tokens: number;
   burned_reissuance_tokens: number;
-
   peg_in_count: number;
   peg_in_amount: number;
   peg_out_count: number;
   peg_out_amount: number;
   burn_count: number;
-}
-
-interface AssetMempoolStats {
-  tx_count: number;
-  issuance_count: number;
-  issued_amount: number;
-  burned_amount: number;
-  has_blinded_issuances: boolean;
-  reissuance_tokens: any;
-  burned_reissuance_tokens: number;
-
-  peg_in_count: number;
-  peg_in_amount: number;
-  peg_out_count: number;
-  peg_out_amount: number;
-  burn_count: number;
-}
-
-interface Entity {
-  domain: string;
 }

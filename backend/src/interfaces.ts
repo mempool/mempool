@@ -16,11 +16,9 @@ export interface MempoolBlock {
   feeRange: number[];
 }
 
-
 export interface MempoolBlockWithTransactions extends MempoolBlock {
   transactionIds: string[];
 }
-
 
 export interface Transaction {
   txid: string;
@@ -53,26 +51,18 @@ export interface TransactionExtended extends Transaction {
   firstSeen: number;
 }
 
-export interface Prevout {
-  scriptpubkey: string;
-  scriptpubkey_asm: string;
-  scriptpubkey_type: string;
-  scriptpubkey_address: string;
-  value: number;
-  asset?: string;
-}
-
 export interface Vin {
   txid: string;
   vout: number;
-  prevout?: Prevout;
+  is_coinbase: boolean;
   scriptsig: string;
   scriptsig_asm: string;
   inner_redeemscript_asm?: string;
-  is_coinbase: boolean;
+  inner_witnessscript_asm?: string;
   sequence: any;
   witness?: string[];
-  inner_witnessscript_asm?: string;
+  prevout: Vout;
+  // Elements
   is_pegin?: boolean;
   issuance?: Issuance;
 }
@@ -93,11 +83,19 @@ export interface Vout {
   scriptpubkey: string;
   scriptpubkey_asm: string;
   scriptpubkey_type: string;
-  scriptpubkey_address?: string;
+  scriptpubkey_address: string;
   value: number;
-
-  pegout?: any;
+  // Elements
+  valuecommitment?: number;
   asset?: string;
+  pegout?: Pegout;
+}
+
+interface Pegout {
+  genesis_hash: string;
+  scriptpubkey: string;
+  scriptpubkey_asm: string;
+  scriptpubkey_address: string;
 }
 
 export interface Status {
@@ -112,19 +110,22 @@ export interface Block {
   height: number;
   version: number;
   timestamp: number;
+  bits: number;
+  nounce: number;
+  difficulty: number;
+  merkle_root: string;
   tx_count: number;
   size: number;
   weight: number;
-  merkle_root: string;
   previousblockhash: string;
-  nonce: any;
-  bits: number;
 
+  // Custom properties
   medianFee?: number;
   feeRange?: number[];
   reward?: number;
-  coinbaseTx?: TransactionMinerInfo;
-  matchRate?: number;
+  coinbaseTx?: Transaction;
+  matchRate: number;
+  stage: number;
 }
 
 export interface Address {
