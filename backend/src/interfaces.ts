@@ -123,7 +123,7 @@ export interface Block {
   medianFee?: number;
   feeRange?: number[];
   reward?: number;
-  coinbaseTx?: Transaction;
+  coinbaseTx?: TransactionMinerInfo;
   matchRate: number;
   stage: number;
 }
