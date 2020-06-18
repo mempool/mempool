@@ -37,10 +37,6 @@ class Statistics {
     const txPerSecond = memPool.getTxPerSecond();
     const vBytesPerSecond = memPool.getVBytesPerSecond();
 
-    if (txPerSecond === 0) {
-      return;
-    }
-
     console.log('Running statistics');
 
     let memPoolArray: TransactionExtended[] = [];
