@@ -14,6 +14,7 @@ class Mempool {
 
   private vBytesPerSecondArray: VbytesPerSecond[] = [];
   private vBytesPerSecond: number = 0;
+  private mempoolProtection = 0;
 
   constructor() {
     setInterval(this.updateTxPerSecond.bind(this), 1000);
@@ -86,10 +87,11 @@ class Mempool {
     console.log('Updating mempool');
     const start = new Date().getTime();
     let hasChange: boolean = false;
+    const currentMempoolSize = Object.keys(this.mempoolCache).length;
     let txCount = 0;
     try {
       const transactions = await bitcoinApi.getRawMempool();
-      const diff = transactions.length - Object.keys(this.mempoolCache).length;
+      const diff = transactions.length - currentMempoolSize;
       const newTransactions: TransactionExtended[] = [];
 
       for (const txid of transactions) {
@@ -122,19 +124,35 @@ class Mempool {
         }
       }
 
-      // Index object for faster search
-      const transactionsObject = {};
-      transactions.forEach((txId) => transactionsObject[txId] = true);
+      // Prevent mempool from clear on bitcoind restart by delaying the deletion
+      if (this.mempoolProtection === 0 && transactions.length < currentMempoolSize / 2) {
+        this.mempoolProtection = 1;
+        console.log('Mempool clear protection triggered.');
+        setTimeout(() => {
+          this.mempoolProtection = 2;
+          console.log('Mempool clear protection resumed.');
+        }, 1000 * 60 * 2);
+      }
 
-      // Replace mempool to separate deleted transactions
-      const newMempool = {};
+      let newMempool = {};
       const deletedTransactions: TransactionExtended[] = [];
-      for (const tx in this.mempoolCache) {
-        if (transactionsObject[tx]) {
-          newMempool[tx] = this.mempoolCache[tx];
-        } else {
-          deletedTransactions.push(this.mempoolCache[tx]);
+
+      if (this.mempoolProtection !== 1) {
+        this.mempoolProtection = 0;
+        // Index object for faster search
+        const transactionsObject = {};
+        transactions.forEach((txId) => transactionsObject[txId] = true);
+
+        // Replace mempool to separate deleted transactions
+        for (const tx in this.mempoolCache) {
+          if (transactionsObject[tx]) {
+            newMempool[tx] = this.mempoolCache[tx];
+          } else {
+            deletedTransactions.push(this.mempoolCache[tx]);
+          }
         }
+      } else {
+        newMempool = this.mempoolCache;
       }
 
       if (!this.inSync && transactions.length === Object.keys(newMempool).length) {
