@@ -41,6 +41,7 @@ export class BlockComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.paginationMaxSize = window.matchMedia('(max-width: 700px)').matches ? 3 : 5;
+    this.network = this.stateService.network;
 
     this.route.paramMap
     .pipe(
@@ -48,7 +49,6 @@ export class BlockComponent implements OnInit, OnDestroy {
         const blockHash: string = params.get('id') || '';
         this.block = undefined;
         this.page = 1;
-        let isBlockHeight = false;
         this.error = undefined;
         this.fees = undefined;
         this.stateService.markBlock$.next({});
@@ -57,6 +57,7 @@ export class BlockComponent implements OnInit, OnDestroy {
           this.blockHeight = history.state.data.blockHeight;
         }
 
+        let isBlockHeight = false;
         if (/^[0-9]+$/.test(blockHash)) {
           isBlockHeight = true;
         } else {
