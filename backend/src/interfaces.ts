@@ -43,6 +43,7 @@ interface VinStrippedToScriptsig {
 
 interface VoutStrippedToScriptPubkey {
   scriptpubkey_address: string | undefined;
+  value: number;
 }
 
 export interface TransactionExtended extends Transaction {
