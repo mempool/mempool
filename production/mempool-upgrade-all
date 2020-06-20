@@ -6,6 +6,10 @@ touch $HOME/lock
 
 echo 'rebuilding mempool sites'|wall
 
+cd "$HOME/mempool"
+git pull origin master
+cd "$HOME/"
+
 for site in mainnet liquid testnet
 do
     cd "$HOME/${site}"
@@ -27,6 +31,7 @@ done
 
 ps uaxw|grep 'node dist/index'|grep -v grep|awk '{print $2}'|xargs -n 1 kill
 
-keybase chat send --channel dev mempool "All mempool sites updated to ${hash}"
+hostname=$(hostname)
+keybase chat send --channel dev mempool "${hostname} updated to ${hash}"
 
 rm "$HOME/lock"
