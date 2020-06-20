@@ -23,9 +23,6 @@
   
   <div class="navbar-collapse collapse" id="navbarCollapse" [ngClass]="{'show': navCollapsed}">
     <ul class="navbar-nav mr-auto {{ network }}">
-      <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-        <a class="nav-link" [routerLink]="['/' | relativeUrl]" (click)="collapse()">Blockchain</a>
-      </li>
       <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/graphs' | relativeUrl]" (click)="collapse()">Graphs</a>
       </li>
@@ -36,7 +33,7 @@
         <a class="nav-link" [routerLink]="['/assets' | relativeUrl]" (click)="collapse()">Assets</a>
       </li>
       <li class="nav-item" routerLinkActive="active">
-        <a class="nav-link" [routerLink]="['/contributors' | relativeUrl]" (click)="collapse()">Contributors</a>
+        <a class="nav-link" [routerLink]="['/contributors' | relativeUrl]" (click)="collapse()">About</a>
       </li>
     </ul>
     <app-search-form location="top" (searchTriggered)="collapse()"></app-search-form>
