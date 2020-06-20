@@ -22,10 +22,10 @@ The mempool.space site is powered by FreeBSD with ZFS root and ARC cache for max
 
 You'll probably need these:
 ```
-pkg install -y zsh sudo git screen vim-console curl wget calc neovim  rsync
-pkg install -y openssl openssh-portable open-vm-tools-nox11 py27-pip py37-pip
+pkg install -y zsh sudo git screen vim-console curl wget neovim rsync
+pkg install -y openssl openssh-portable open-vm-tools-nox11 py37-pip
 pkg install -y boost-libs autoconf automake gmake gcc libevent libtool pkgconf
-pkg install -y mariadb55-server mariadb55-client nginx py37-certbot-nginx
+pkg install -y mariadb55-server mariadb55-client nginx py37-certbot-nginx npm
 ```
 
 ### Rust
