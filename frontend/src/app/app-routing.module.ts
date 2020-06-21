@@ -45,7 +45,7 @@ const routes: Routes = [
         component: StatisticsComponent,
       },
       {
-        path: 'contributors',
+        path: 'about',
         component: AboutComponent,
       },
       {
@@ -98,7 +98,7 @@ const routes: Routes = [
         component: TelevisionComponent,
       },
       {
-        path: 'contributors',
+        path: 'about',
         component: AboutComponent,
       },
       {
@@ -151,7 +151,7 @@ const routes: Routes = [
         component: StatisticsComponent,
       },
       {
-        path: 'contributors',
+        path: 'about',
         component: AboutComponent,
       },
       {
@@ -204,7 +204,7 @@ const routes: Routes = [
         component: StatisticsComponent,
       },
       {
-        path: 'contributors',
+        path: 'about',
         component: AboutComponent,
       },
       {

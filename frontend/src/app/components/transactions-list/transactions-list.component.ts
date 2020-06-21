@@ -5,6 +5,7 @@ import { Block, Outspend, Transaction } from '../../interfaces/electrs.interface
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { environment } from 'src/environments/environment';
 import { AssetsService } from 'src/app/services/assets.service';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-transactions-list',
@@ -22,7 +23,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
   @Output() loadMore = new EventEmitter();
 
-  latestBlock: Block;
+  latestBlock$: Observable<Block>;
   outspends: Outspend[] = [];
   assetsMinimal: any;
 
@@ -34,7 +35,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit() {
-    this.stateService.blocks$.subscribe(([block]) => this.latestBlock = block);
+    this.latestBlock$ = this.stateService.blocks$.pipe(map(([block]) => block));
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     if (this.network === 'liquid') {
