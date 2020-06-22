@@ -48,3 +48,7 @@ Thumbs.db
 src/resources/assets.json
 src/resources/assets.minimal.json
 src/resources/pools.json
+
+# environment config
+mempool-frontend-config.json
+generated-config.js

@@ -30,7 +30,9 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "generated-config.js"
+            ]
           },
           "configurations": {
             "production": {

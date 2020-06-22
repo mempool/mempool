@@ -1,5 +1,6 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { StateService } from '../../services/state.service';
+import { env } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-master-page',
@@ -9,6 +10,7 @@ import { StateService } from '../../services/state.service';
 export class MasterPageComponent implements OnInit {
   network = '';
   tvViewRoute = '/tv';
+  env = env;
 
   navCollapsed = false;
   connectionState = 2;

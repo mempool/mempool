@@ -21,10 +21,11 @@
   "main": "index.ts",
   "scripts": {
     "ng": "ng",
-    "start": "npm run sync-assets-dev && ng serve --proxy-config proxy.conf.json",
-    "build": "ng build --prod && npm run sync-assets",
+    "start": "npm run generate-config && npm run sync-assets-dev && ng serve --proxy-config proxy.conf.json",
+    "build": "npm run generate-config && ng build --prod && npm run sync-assets",
     "sync-assets": "node sync-assets.js",
     "sync-assets-dev": "node sync-assets.js dev",
+    "generate-config": "node generate-config.js",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

@@ -1,0 +1,6 @@
+{
+  "TESTNET_ENABLED": false,
+  "LIQUID_ENABLED": false,
+  "ELCTRS_ITEMS_PER_PAGE": 25,
+  "KEEP_BLOCKS_AMOUNT": 8
+}
