@@ -7,7 +7,7 @@ import { Block, Transaction, Vout } from '../../interfaces/electrs.interface';
 import { of } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { SeoService } from 'src/app/services/seo.service';
-import { ELCTRS_ITEMS_PER_PAGE } from 'src/app/app.constants';
+import { env } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-block',
@@ -28,7 +28,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   fees: number;
   paginationMaxSize: number;
   page = 1;
-  itemsPerPage = ELCTRS_ITEMS_PER_PAGE;
+  itemsPerPage = env.ELCTRS_ITEMS_PER_PAGE;
 
   constructor(
     private route: ActivatedRoute,

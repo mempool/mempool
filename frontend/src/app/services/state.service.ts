@@ -4,7 +4,7 @@ import { Block, Transaction } from '../interfaces/electrs.interface';
 import { MempoolBlock, MemPoolState } from '../interfaces/websocket.interface';
 import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
-import { KEEP_BLOCKS_AMOUNT } from '../app.constants';
+import { env } from '../app.constants';
 import { shareReplay, map } from 'rxjs/operators';
 
 interface MarkBlockState {
@@ -21,7 +21,7 @@ export class StateService {
   latestBlockHeight = 0;
 
   networkChanged$ = new ReplaySubject<string>(1);
-  blocks$ = new ReplaySubject<[Block, boolean, boolean]>(KEEP_BLOCKS_AMOUNT);
+  blocks$ = new ReplaySubject<[Block, boolean, boolean]>(env.KEEP_BLOCKS_AMOUNT);
   conversions$ = new ReplaySubject<any>(1);
   mempoolStats$ = new ReplaySubject<MemPoolState>(1);
   mempoolBlocks$ = new ReplaySubject<MempoolBlock[]>(1);

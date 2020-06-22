@@ -200,6 +200,13 @@ Build the frontend static HTML/CSS/JS, rsync the output into nginx folder:
   sudo rsync -av --delete dist/mempool/ /var/www/html/
 ```
 
+### Optional frontend configuration
+In the `frontend` folder, make a copy of the sample config and modify it to fit your settings.
+
+```bash
+  cp mempool-frontend-config.sample.json mempool-frontend-config.json
+```
+
 ## Try It Out
 
 If everything went okay you should see the beautiful mempool :grin:
