@@ -119,7 +119,7 @@ class Mempool {
           }
         }
 
-        if ((new Date().getTime()) - start > config.MEMPOOL_REFRESH_RATE_MS) {
+        if ((new Date().getTime()) - start > config.MEMPOOL_REFRESH_RATE_MS * 10) {
           break;
         }
       }
