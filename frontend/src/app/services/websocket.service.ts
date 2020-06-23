@@ -103,7 +103,7 @@ export class WebsocketService {
             if (this.latestGitCommit !== response['git-commit']) {
               setTimeout(() => {
                 window.location.reload();
-              }, Math.floor(Math.random() * 60000) + 1000);
+              }, Math.floor(Math.random() * 60000) + 60000);
             }
           }
         }
