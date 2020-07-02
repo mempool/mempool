@@ -51,6 +51,7 @@ import { AssetsComponent } from './assets/assets.component';
 import { RelativeUrlPipe } from './pipes/relative-url/relative-url.pipe';
 import { MinerComponent } from './pipes/miner/miner.component';
 import { Hex2asciiPipe } from './pipes/hex2ascii/hex2ascii.pipe';
+import { StatusViewComponent } from './components/status-view/status-view.component';
 
 @NgModule({
   declarations: [
@@ -92,6 +93,7 @@ import { Hex2asciiPipe } from './pipes/hex2ascii/hex2ascii.pipe';
     RelativeUrlPipe,
     MinerComponent,
     Hex2asciiPipe,
+    StatusViewComponent,
   ],
   imports: [
     BrowserModule,
