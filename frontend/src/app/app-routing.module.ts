@@ -220,6 +220,14 @@ const routes: Routes = [
     component: StatusViewComponent
   },
   {
+    path: 'liquid-status-view',
+    component: StatusViewComponent
+  },
+  {
+    path: 'testnet-status-view',
+    component: StatusViewComponent
+  },
+  {
     path: '**',
     redirectTo: ''
   },
