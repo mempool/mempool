@@ -12,6 +12,7 @@ import { MempoolBlockComponent } from './components/mempool-block/mempool-block.
 import { LatestBlocksComponent } from './components/latest-blocks/latest-blocks.component';
 import { AssetComponent } from './components/asset/asset.component';
 import { AssetsComponent } from './assets/assets.component';
+import { StatusViewComponent } from './components/status-view/status-view.component';
 
 const routes: Routes = [
   {
@@ -52,14 +53,6 @@ const routes: Routes = [
         path: 'address/:id',
         children: [],
         component: AddressComponent
-      },
-      {
-        path: 'asset/:id',
-        component: AssetComponent
-      },
-      {
-        path: 'assets',
-        component: AssetsComponent,
       },
     ],
   },
@@ -105,14 +98,6 @@ const routes: Routes = [
         path: 'address/:id',
         children: [],
         component: AddressComponent
-      },
-      {
-        path: 'asset/:id',
-        component: AssetComponent
-      },
-      {
-        path: 'assets',
-        component: AssetsComponent,
       },
       {
         path: '**',
@@ -229,6 +214,10 @@ const routes: Routes = [
   {
     path: 'testnet-tv',
     component: TelevisionComponent,
+  },
+  {
+    path: 'status-view',
+    component: StatusViewComponent
   },
   {
     path: '**',
