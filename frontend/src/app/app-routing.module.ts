@@ -58,173 +58,133 @@ const routes: Routes = [
   },
   {
     path: 'liquid',
-    component: MasterPageComponent,
     children: [
       {
         path: '',
-        component: StartComponent,
+        component: MasterPageComponent,
         children: [
           {
             path: '',
-            component: LatestBlocksComponent
+            component: StartComponent,
+            children: [
+              {
+                path: '',
+                component: LatestBlocksComponent
+              },
+              {
+                path: 'tx/:id',
+                component: TransactionComponent
+              },
+              {
+                path: 'block/:id',
+                component: BlockComponent
+              },
+              {
+                path: 'mempool-block/:id',
+                component: MempoolBlockComponent
+              },
+            ],
           },
           {
-            path: 'tx/:id',
-            component: TransactionComponent
+            path: 'graphs',
+            component: StatisticsComponent,
           },
           {
-            path: 'block/:id',
-            component: BlockComponent
+            path: 'about',
+            component: AboutComponent,
           },
           {
-            path: 'mempool-block/:id',
-            component: MempoolBlockComponent
+            path: 'address/:id',
+            component: AddressComponent
+          },
+          {
+            path: 'asset/:id',
+            component: AssetComponent
+          },
+          {
+            path: 'assets',
+            component: AssetsComponent,
           },
         ],
-      },
-      {
-        path: 'graphs',
-        component: StatisticsComponent,
       },
       {
         path: 'tv',
-        component: TelevisionComponent,
+        component: TelevisionComponent
       },
       {
-        path: 'about',
-        component: AboutComponent,
-      },
-      {
-        path: 'address/:id',
-        children: [],
-        component: AddressComponent
+        path: 'status',
+        component: StatusViewComponent
       },
       {
         path: '**',
         redirectTo: ''
       },
-    ],
-  },
-  {
-    path: 'liquid',
-    component: MasterPageComponent,
-    children: [
-      {
-        path: '',
-        component: StartComponent,
-        children: [
-          {
-            path: '',
-            component: LatestBlocksComponent
-          },
-          {
-            path: 'tx/:id',
-            component: TransactionComponent
-          },
-          {
-            path: 'block/:id',
-            component: BlockComponent
-          },
-          {
-            path: 'mempool-block/:id',
-            component: MempoolBlockComponent
-          },
-        ],
-      },
-      {
-        path: 'graphs',
-        component: StatisticsComponent,
-      },
-      {
-        path: 'about',
-        component: AboutComponent,
-      },
-      {
-        path: 'address/:id',
-        children: [],
-        component: AddressComponent
-      },
-      {
-        path: 'asset/:id',
-        component: AssetComponent
-      },
-      {
-        path: 'assets',
-        component: AssetsComponent,
-      },
-      {
-        path: '**',
-        redirectTo: ''
-      },
-    ],
+    ]
   },
   {
     path: 'testnet',
-    component: MasterPageComponent,
     children: [
       {
         path: '',
-        component: StartComponent,
+        component: MasterPageComponent,
         children: [
           {
             path: '',
-            component: LatestBlocksComponent
+            component: StartComponent,
+            children: [
+              {
+                path: '',
+                component: LatestBlocksComponent
+              },
+              {
+                path: 'tx/:id',
+                component: TransactionComponent
+              },
+              {
+                path: 'block/:id',
+                component: BlockComponent
+              },
+              {
+                path: 'mempool-block/:id',
+                component: MempoolBlockComponent
+              },
+            ],
           },
           {
-            path: 'tx/:id',
-            component: TransactionComponent
+            path: 'graphs',
+            component: StatisticsComponent,
           },
           {
-            path: 'block/:id',
-            component: BlockComponent
+            path: 'about',
+            component: AboutComponent,
           },
           {
-            path: 'mempool-block/:id',
-            component: MempoolBlockComponent
+            path: 'address/:id',
+            children: [],
+            component: AddressComponent
           },
         ],
       },
       {
-        path: 'graphs',
-        component: StatisticsComponent,
+        path: 'tv',
+        component: TelevisionComponent
       },
       {
-        path: 'about',
-        component: AboutComponent,
-      },
-      {
-        path: 'address/:id',
-        children: [],
-        component: AddressComponent
+        path: 'status',
+        component: StatusViewComponent
       },
       {
         path: '**',
         redirectTo: ''
       },
-    ],
+    ]
   },
   {
     path: 'tv',
     component: TelevisionComponent,
   },
   {
-    path: 'liquid-tv',
-    component: TelevisionComponent,
-  },
-  {
-    path: 'testnet-tv',
-    component: TelevisionComponent,
-  },
-  {
-    path: 'status-view',
-    component: StatusViewComponent
-  },
-  {
-    path: 'liquid-status-view',
-    component: StatusViewComponent
-  },
-  {
-    path: 'testnet-status-view',
+    path: 'status',
     component: StatusViewComponent
   },
   {

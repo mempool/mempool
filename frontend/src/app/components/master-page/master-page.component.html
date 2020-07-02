@@ -27,7 +27,7 @@
         <a class="nav-link" [routerLink]="['/graphs' | relativeUrl]" (click)="collapse()">Graphs</a>
       </li>
       <li class="nav-item" routerLinkActive="active">
-        <a class="nav-link" [routerLink]="[tvViewRoute]" (click)="collapse()">TV view &nbsp;<img src="./resources/expand.png" width="15"/></a>
+        <a class="nav-link" [routerLink]="['/tv' | relativeUrl]" (click)="collapse()">TV view &nbsp;<img src="./resources/expand.png" width="15"/></a>
       </li>
       <li *ngIf="network === 'liquid'" class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/assets' | relativeUrl]" (click)="collapse()">Assets</a>
