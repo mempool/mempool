@@ -17,7 +17,7 @@
       <div class="col">
         <table class="table table-borderless smaller-text table-xs" style="margin: 0;">
           <tbody>
-            <tr *ngFor="let vin of getFilteredTxVin(tx)">
+            <tr *ngFor="let vin of getFilteredTxVin(tx); trackBy: trackByIndexFn">
               <td class="arrow-td">
                 <ng-template [ngIf]="vin.prevout === null && !vin.is_pegin" [ngIfElse]="hasPrevout">
                   <i class="arrow grey"></i>
@@ -73,7 +73,7 @@
       <div class="col mobile-bottomcol">
         <table class="table table-borderless smaller-text table-xs"  style="margin: 0;">
           <tbody>
-            <tr *ngFor="let vout of getFilteredTxVout(tx); let vindex = index;">
+            <tr *ngFor="let vout of getFilteredTxVout(tx); let vindex = index; trackBy: trackByIndexFn">
               <td>
                 <a *ngIf="vout.scriptpubkey_address; else scriptpubkey_type" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">
                   <span class="d-block d-lg-none">{{ vout.scriptpubkey_address | shortenString : 16 }}</span>

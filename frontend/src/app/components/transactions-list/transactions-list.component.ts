@@ -109,4 +109,8 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   getFilteredTxVout(tx: Transaction) {
     return tx.vout.slice(0, tx['@voutLength']);
   }
+
+  trackByIndexFn(index: number) {
+    return index;
+  }
 }

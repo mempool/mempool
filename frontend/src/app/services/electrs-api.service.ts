@@ -18,6 +18,9 @@ export class ElectrsApiService {
   ) {
     this.apiBaseUrl = API_BASE_URL;
     this.stateService.networkChanged$.subscribe((network) => {
+      if (network === 'bisq') {
+        network = '';
+      }
       this.apiBaseUrl = API_BASE_URL + '/' + network;
     });
   }

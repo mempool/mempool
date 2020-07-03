@@ -10,6 +10,7 @@ import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { calcSegwitFeeGains } from 'src/app/bitcoin.utils';
+import { BisqTransaction } from 'src/app/interfaces/bisq.interfaces';
 
 @Component({
   selector: 'app-transaction',
@@ -37,6 +38,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
   };
   isRbfTransaction: boolean;
   rbfTransaction: undefined | Transaction;
+  bisqTx: BisqTransaction;
 
   constructor(
     private route: ActivatedRoute,
@@ -90,6 +92,10 @@ export class TransactionComponent implements OnInit, OnDestroy {
       this.segwitGains = calcSegwitFeeGains(tx);
       this.isRbfTransaction = tx.vin.some((v) => v.sequence < 0xfffffffe);
 
+      if (this.network === 'bisq') {
+        this.loadBisqTransaction();
+      }
+
       if (!tx.status.confirmed) {
         this.websocketService.startTrackTransaction(tx.txid);
 
@@ -131,6 +137,17 @@ export class TransactionComponent implements OnInit, OnDestroy {
 
     this.stateService.txReplaced$
       .subscribe((rbfTransaction) => this.rbfTransaction = rbfTransaction);
+  }
+
+  loadBisqTransaction() {
+    if (history.state.bsqTx) {
+      this.bisqTx = history.state.bsqTx;
+    } else {
+      this.apiService.getBisqTransaction$(this.txId)
+        .subscribe((tx) => {
+          this.bisqTx = tx;
+        });
+    }
   }
 
   handleLoadElectrsTransactionError(error: any): Observable<any> {
@@ -204,6 +221,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
     this.waitingForTransaction = false;
     this.isLoadingTx = true;
     this.rbfTransaction = undefined;
+    this.bisqTx = undefined;
     this.transactionTime = -1;
     document.body.scrollTo(0, 0);
     this.leaveTransaction();

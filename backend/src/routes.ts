@@ -4,6 +4,7 @@ import feeApi from './api/fee-api';
 import backendInfo from './api/backend-info';
 import mempoolBlocks from './api/mempool-blocks';
 import mempool from './api/mempool';
+import bisq from './api/bisq';
 
 class Routes {
   private cache = {};
@@ -84,6 +85,36 @@ class Routes {
 
   public getBackendInfo(req: Request, res: Response) {
     res.send(backendInfo.getBackendInfo());
+  }
+
+  public getBisqTransaction(req: Request, res: Response) {
+    const result = bisq.getTransaction(req.params.txId);
+    if (result) {
+      res.send(result);
+    } else {
+      res.status(404).send('Bisq transaction not found');
+    }
+  }
+
+  public getBisqTransactions(req: Request, res: Response) {
+    const index = parseInt(req.params.index, 10) || 0;
+    const length = parseInt(req.params.length, 10) > 100 ? 100 : parseInt(req.params.length, 10) || 25;
+    const [transactions, count] = bisq.getTransactions(index, length);
+    if (transactions) {
+      res.header('X-Total-Count', count.toString());
+      res.send(transactions);
+    } else {
+      res.status(404).send('Bisq transaction not found');
+    }
+  }
+
+  public getBisqBlock(req: Request, res: Response) {
+    const result = bisq.getBlock(req['hash']);
+    if (result) {
+      res.send(result);
+    } else {
+      res.status(404).send('Bisq block not found');
+    }
   }
 }
 

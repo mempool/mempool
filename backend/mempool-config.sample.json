@@ -13,6 +13,7 @@
   "INITIAL_BLOCK_AMOUNT": 8,
   "TX_PER_SECOND_SPAN_SECONDS": 150,
   "ELECTRS_API_URL": "https://www.blockstream.info/testnet/api",
+  "BISQ_ENABLED": false,
   "SSL": false,
   "SSL_CERT_FILE_PATH": "/etc/letsencrypt/live/mysite/fullchain.pem",
   "SSL_KEY_FILE_PATH": "/etc/letsencrypt/live/mysite/privkey.pem"

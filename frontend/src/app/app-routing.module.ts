@@ -180,6 +180,11 @@ const routes: Routes = [
     ]
   },
   {
+    path: 'bisq',
+    component: MasterPageComponent,
+    loadChildren: () => import('./bisq/bisq.module').then(m => m.BisqModule)
+  },
+  {
     path: 'tv',
     component: TelevisionComponent,
   },

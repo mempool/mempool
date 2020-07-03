@@ -148,6 +148,21 @@
 
     <br>
 
+    <ng-template [ngIf]="bisqTx">
+      <h2>BSQ Information</h2>
+
+      <app-bisq-transaction-details [tx]="bisqTx"></app-bisq-transaction-details>
+
+      <br>
+
+      <h2>BSQ transfers</h2>
+
+      <app-bisq-transfers [tx]="bisqTx"></app-bisq-transfers>
+
+      <br>
+
+    </ng-template>
+
     <h2>Inputs & Outputs</h2>
 
     <app-transactions-list [transactions]="[tx]" [transactionPage]="true"></app-transactions-list>
