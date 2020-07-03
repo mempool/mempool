@@ -1,0 +1,32 @@
+<div class="container-xl">
+  <h2 style="float: left;">Latest BSQ Transactions</h2>
+  <br>
+
+  <div class="clearfix"></div>
+
+  <table class="table table-borderless table-striped">
+    <thead>
+      <th>Transaction</th>
+      <th>Type</th>
+      <th>Total Sent (BSQ)</th>
+      <th>Outputs</th>
+      <th>Block Height</th>
+      <th>Block Time</th>
+    </thead>
+    <tbody>
+      <tr *ngFor="let tx of transactions">
+        <td><a [routerLink]="['/tx/' | relativeUrl, tx.id]" [state]="{ bsqTx: tx }">{{ tx.id | shortenString : 16 }}</a></td>
+        <td><app-bisq-icon class="mr-1" [txType]="tx.txType"></app-bisq-icon> {{ tx.txTypeDisplayString }}</td>
+        <td>{{ calculateTotalOutput(tx.outputs) / 100 | number: '1.2-2' }}</td>
+        <td>{{ tx.outputs.length }}</td>
+        <td><a [routerLink]="['/block/' | relativeUrl, tx.blockHash]">{{ tx.blockHeight }}</a></td>
+        <td>{{ tx.time | date:'yyyy-MM-dd HH:mm' }}</td>
+      </tr> 
+    </tbody>
+  </table>
+
+  <br>
+
+  <ngb-pagination [collectionSize]="totalCount" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="5" [boundaryLinks]="true"></ngb-pagination>
+
+</div>

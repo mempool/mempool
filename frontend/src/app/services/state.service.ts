@@ -64,6 +64,12 @@ export class StateService {
           this.networkChanged$.next('testnet');
         }
         return;
+      case 'bisq':
+        if (this.network !== 'bisq') {
+          this.network = 'bisq';
+          this.networkChanged$.next('bisq');
+        }
+        return;
       default:
         if (this.network !== '') {
           this.network = '';

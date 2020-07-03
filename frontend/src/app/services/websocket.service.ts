@@ -29,11 +29,14 @@ export class WebsocketService {
   constructor(
     private stateService: StateService,
   ) {
-    this.network = this.stateService.network;
+    this.network = this.stateService.network === 'bisq' ? '' : this.stateService.network;
     this.websocketSubject = webSocket<WebsocketResponse | any>(WEB_SOCKET_URL + '/' + this.network);
     this.startSubscription();
 
     this.stateService.networkChanged$.subscribe((network) => {
+      if (network === 'bisq') {
+        network = '';
+      }
       if (network === this.network) {
         return;
       }

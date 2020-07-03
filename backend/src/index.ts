@@ -14,6 +14,7 @@ import diskCache from './api/disk-cache';
 import statistics from './api/statistics';
 import websocketHandler from './api/websocket-handler';
 import fiatConversion from './api/fiat-conversion';
+import bisq from './api/bisq';
 
 class Server {
   wss: WebSocket.Server;
@@ -50,6 +51,10 @@ class Server {
     fiatConversion.startService();
     diskCache.loadMempoolCache();
 
+    if (config.BISQ_ENABLED) {
+      bisq.startBisqService();
+    }
+
     this.server.listen(config.HTTP_PORT, () => {
       console.log(`Server started on port ${config.HTTP_PORT}`);
     });
@@ -84,6 +89,14 @@ class Server {
       .get(config.API_ENDPOINT + 'statistics/1y', routes.get1YStatistics.bind(routes))
       .get(config.API_ENDPOINT + 'backend-info', routes.getBackendInfo)
     ;
+
+    if (config.BISQ_ENABLED) {
+      this.app
+        .get(config.API_ENDPOINT + 'bisq/tx/:txId', routes.getBisqTransaction)
+        .get(config.API_ENDPOINT + 'bisq/block/:hash', routes.getBisqBlock)
+        .get(config.API_ENDPOINT + 'bisq/txs/:index/:length', routes.getBisqTransactions)
+      ;
+    }
   }
 }
 

@@ -37,14 +37,6 @@ export class MasterPageComponent implements OnInit {
     this.stateService.networkChanged$
       .subscribe((network) => {
         this.network = network;
-
-        if (network === 'testnet') {
-          this.tvViewRoute = '/testnet-tv';
-        } else if (network === 'liquid') {
-          this.tvViewRoute = '/liquid-tv';
-        } else {
-          this.tvViewRoute = '/tv';
-        }
       });
   }
 
