@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { Block, Transaction, Address, Outspend, Recent, Asset } from '../interfaces/electrs.interface';
 import { StateService } from './state.service';
 
-const API_BASE_URL = document.location.protocol + '//' + document.location.hostname + ':' + document.location.port + '/electrs';
+const API_BASE_URL = '{network}/api';
 
 @Injectable({
   providedIn: 'root'
@@ -16,9 +16,9 @@ export class ElectrsApiService {
     private httpClient: HttpClient,
     private stateService: StateService,
   ) {
-    this.apiBaseUrl = API_BASE_URL;
+    this.apiBaseUrl = API_BASE_URL.replace('{network}', '');
     this.stateService.networkChanged$.subscribe((network) => {
-      this.apiBaseUrl = API_BASE_URL + '/' + network;
+      this.apiBaseUrl = API_BASE_URL.replace('{network}', network ? '/' + network : '');
     });
   }
 

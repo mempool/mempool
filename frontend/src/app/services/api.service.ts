@@ -4,7 +4,7 @@ import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { Observable } from 'rxjs';
 import { StateService } from './state.service';
 
-const API_BASE_URL = '/api{network}/v1';
+const API_BASE_URL = '{network}/api/v1';
 
 @Injectable({
   providedIn: 'root'
