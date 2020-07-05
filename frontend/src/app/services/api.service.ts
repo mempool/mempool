@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { StateService } from './state.service';
 import { BisqTransaction, BisqBlock } from '../interfaces/bisq.interfaces';
 
-const API_BASE_URL = '/api{network}/v1';
+const API_BASE_URL = '{network}/api/v1';
 
 @Injectable({
   providedIn: 'root'
