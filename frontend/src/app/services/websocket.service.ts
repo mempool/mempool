@@ -6,7 +6,7 @@ import { Block, Transaction } from '../interfaces/electrs.interface';
 import { Subscription } from 'rxjs';
 
 const WEB_SOCKET_PROTOCOL = (document.location.protocol === 'https:') ? 'wss:' : 'ws:';
-const WEB_SOCKET_URL = WEB_SOCKET_PROTOCOL + '//' + document.location.hostname + ':' + document.location.port + '/ws';
+const WEB_SOCKET_URL = WEB_SOCKET_PROTOCOL + '//' + document.location.hostname + ':' + document.location.port + '{network}/api/v1/ws';
 
 const OFFLINE_RETRY_AFTER_MS = 10000;
 const OFFLINE_PING_CHECK_AFTER_MS = 30000;
@@ -30,7 +30,7 @@ export class WebsocketService {
     private stateService: StateService,
   ) {
     this.network = this.stateService.network;
-    this.websocketSubject = webSocket<WebsocketResponse | any>(WEB_SOCKET_URL + '/' + this.network);
+    this.websocketSubject = webSocket<WebsocketResponse | any>(WEB_SOCKET_URL.replace('{network}', this.network ? '/' + this.network : ''));
     this.startSubscription();
 
     this.stateService.networkChanged$.subscribe((network) => {
@@ -45,7 +45,7 @@ export class WebsocketService {
 
       this.websocketSubject.complete();
       this.subscription.unsubscribe();
-      this.websocketSubject = webSocket<WebsocketResponse | any>(WEB_SOCKET_URL + '/' + network);
+      this.websocketSubject = webSocket<WebsocketResponse | any>(WEB_SOCKET_URL.replace('{network}', this.network ? '/' + this.network : ''));
 
       this.startSubscription();
     });
