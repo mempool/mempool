@@ -100,12 +100,8 @@ class Routes {
     const index = parseInt(req.params.index, 10) || 0;
     const length = parseInt(req.params.length, 10) > 100 ? 100 : parseInt(req.params.length, 10) || 25;
     const [transactions, count] = bisq.getTransactions(index, length);
-    if (transactions) {
-      res.header('X-Total-Count', count.toString());
-      res.send(transactions);
-    } else {
-      res.status(404).send('Bisq transaction not found');
-    }
+    res.header('X-Total-Count', count.toString());
+    res.send(transactions);
   }
 
   public getBisqBlock(req: Request, res: Response) {
@@ -115,6 +111,20 @@ class Routes {
     } else {
       res.status(404).send('Bisq block not found');
     }
+  }
+
+  public getBisqBlockTransactions(req: Request, res: Response) {
+    const blockHash = req.params.hash || '';
+    const index = parseInt(req.params.index, 10) || 0;
+    const length = parseInt(req.params.length, 10) > 100 ? 100 : parseInt(req.params.length, 10) || 25;
+    const [transactions, count] = bisq.getBlockTransactions(blockHash, index, length);
+    if (count === -1) {
+      res.header('X-Total-Count', '0');
+      res.send([]);
+      return;
+    }
+    res.header('X-Total-Count', count.toString());
+    res.send(transactions);
   }
 }
 

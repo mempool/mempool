@@ -1,8 +1,8 @@
+const config = require('../../mempool-config.json');
 import * as fs from 'fs';
 import { BisqBlocks, BisqBlock, BisqTransaction } from '../interfaces';
 
 class Bisq {
-  static FILE_NAME = './blocks.json';
   private latestBlockHeight = 0;
   private blocks: BisqBlock[] = [];
   private transactions: BisqTransaction[] = [];
@@ -13,11 +13,29 @@ class Bisq {
 
   startBisqService(): void {
     this.loadBisqDumpFile();
+
+    let fsWait: NodeJS.Timeout | null = null;
+    fs.watch(config.BSQ_BLOCKS_DATA_PATH, (event, filename) => {
+      if (filename) {
+        if (fsWait) {
+          clearTimeout(fsWait);
+        }
+        fsWait = setTimeout(() => {
+          console.log(`${filename} file changed. Reloading dump file.`);
+          this.loadBisqDumpFile();
+        }, 1000);
+      }
+    });
   }
 
   async loadBisqDumpFile(): Promise<void> {
-    await this.loadBisqBlocksDump();
-    this.buildIndex();
+    try {
+      const data = await this.loadData();
+      await this.loadBisqBlocksDump(data);
+      this.buildIndex();
+    } catch (e) {
+      console.log('loadBisqDumpFile() error.', e.message);
+    }
   }
 
   getTransaction(txId: string): BisqTransaction | undefined {
@@ -28,11 +46,22 @@ class Bisq {
     return [this.transactions.slice(start, length + start), this.transactions.length];
   }
 
+  getBlockTransactions(blockHash: string, start: number, length: number): [BisqTransaction[], number] {
+    const block = this.blocksIndex[blockHash];
+    if (!block) {
+      return [[], -1];
+    }
+    return [block.txs.slice(start, length + start), block.txs.length];
+  }
+
   getBlock(hash: string): BisqBlock | undefined {
     return this.blocksIndex[hash];
   }
 
   private buildIndex() {
+    this.transactions = [];
+    this.transactionsIndex = {};
+    this.blocksIndex = {};
     this.blocks.forEach((block) => {
       this.blocksIndex[block.hash] = block;
       block.txs.forEach((tx) => {
@@ -45,10 +74,9 @@ class Bisq {
     console.log('Bisq data index rebuilt');
   }
 
-  private async loadBisqBlocksDump() {
+  private async loadBisqBlocksDump(cacheData: string) {
     const start = new Date().getTime();
-    const cacheData = await this.loadData();
-    if (cacheData) {
+    if (cacheData && cacheData.length !== 0) {
       console.log('Parsing Bisq data from dump file');
       const data: BisqBlocks = JSON.parse(cacheData);
       if (data.blocks) {
@@ -65,7 +93,7 @@ class Bisq {
 
   private loadData(): Promise<string> {
     return new Promise((resolve, reject) => {
-      fs.readFile(Bisq.FILE_NAME, 'utf8', (err, data) => {
+      fs.readFile(config.BSQ_BLOCKS_DATA_PATH, 'utf8', (err, data) => {
         if (err) {
           reject(err);
         }
