@@ -20,7 +20,6 @@ import { AddressComponent } from './components/address/address.component';
 import { SearchFormComponent } from './components/search-form/search-form.component';
 import { LatestBlocksComponent } from './components/latest-blocks/latest-blocks.component';
 import { WebsocketService } from './services/websocket.service';
-import { TimeSinceComponent } from './components/time-since/time-since.component';
 import { AddressLabelsComponent } from './components/address-labels/address-labels.component';
 import { MempoolBlocksComponent } from './components/mempool-blocks/mempool-blocks.component';
 import { QrcodeComponent } from './components/qrcode/qrcode.component';
@@ -45,8 +44,6 @@ import { AssetsComponent } from './assets/assets.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
 import { MinerComponent } from './components/miner/miner.component';
 import { SharedModule } from './shared/shared.module';
-import { BisqTransfersComponent } from './components/bisq-transfers/bisq-transfers.component';
-import { BisqTransactionDetailsComponent } from './components/bisq-transaction-details/bisq-transaction-details.component';
 
 @NgModule({
   declarations: [
@@ -65,7 +62,6 @@ import { BisqTransactionDetailsComponent } from './components/bisq-transaction-d
     AmountComponent,
     SearchFormComponent,
     LatestBlocksComponent,
-    TimeSinceComponent,
     TimespanComponent,
     AddressLabelsComponent,
     MempoolBlocksComponent,
@@ -81,8 +77,6 @@ import { BisqTransactionDetailsComponent } from './components/bisq-transaction-d
     AssetsComponent,
     MinerComponent,
     StatusViewComponent,
-    BisqTransfersComponent,
-    BisqTransactionDetailsComponent,
   ],
   imports: [
     BrowserModule,

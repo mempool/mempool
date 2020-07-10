@@ -24,14 +24,22 @@
   
   <div class="navbar-collapse collapse" id="navbarCollapse" [ngClass]="{'show': navCollapsed}">
     <ul class="navbar-nav mr-auto {{ network }}">
-      <li class="nav-item" routerLinkActive="active">
+      <ng-template [ngIf]="network === 'bisq'">
+        <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+          <a class="nav-link" [routerLink]="['/bisq']" (click)="collapse()">Transactions</a>
+        </li>
+        <li class="nav-item" routerLinkActive="active">
+          <a class="nav-link" [routerLink]="['/bisq/blocks']" (click)="collapse()">Blocks</a>
+        </li>
+      </ng-template>
+      <li *ngIf="network !== 'bisq'" class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/graphs' | relativeUrl]" (click)="collapse()">Graphs</a>
       </li>
-      <li class="nav-item" routerLinkActive="active">
+      <li *ngIf="network !== 'bisq'" class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/tv' | relativeUrl]" (click)="collapse()">TV view &nbsp;<img src="./resources/expand.png" width="15"/></a>
       </li>
       <li *ngIf="network === 'liquid'" class="nav-item" routerLinkActive="active">
-        <a class="nav-link" [routerLink]="['/assets' | relativeUrl]" (click)="collapse()">Assets</a>
+        <a class="nav-link" [routerLink]="['liquid/assets']" (click)="collapse()">Assets</a>
       </li>
       <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/about' | relativeUrl]" (click)="collapse()">About</a>
@@ -46,6 +54,10 @@
 
 <router-outlet></router-outlet>
 
-<br><br><br>
+<br>
 
-<app-footer></app-footer>
+<ng-template [ngIf]="network !== 'bisq'">
+  <br><br>
+
+  <app-footer></app-footer>
+</ng-template>

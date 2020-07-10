@@ -59,27 +59,25 @@ class Bisq {
   }
 
   private buildIndex() {
-    this.transactions = [];
-    this.transactionsIndex = {};
-    this.blocksIndex = {};
     this.blocks.forEach((block) => {
+      if (this.blocksIndex[block.hash]) {
+        return;
+      }
       this.blocksIndex[block.hash] = block;
       block.txs.forEach((tx) => {
-        this.transactions.push(tx);
+        this.transactions.unshift(tx);
         this.transactionsIndex[tx.id] = tx;
       });
     });
-    this.blocks.reverse();
-    this.transactions.reverse();
     console.log('Bisq data index rebuilt');
   }
 
-  private async loadBisqBlocksDump(cacheData: string) {
+  private async loadBisqBlocksDump(cacheData: string): Promise<void> {
     const start = new Date().getTime();
     if (cacheData && cacheData.length !== 0) {
       console.log('Parsing Bisq data from dump file');
       const data: BisqBlocks = JSON.parse(cacheData);
-      if (data.blocks) {
+      if (data.blocks && data.blocks.length !== this.blocks.length) {
         this.blocks = data.blocks;
         this.latestBlockHeight = data.chainHeight;
         const end = new Date().getTime();

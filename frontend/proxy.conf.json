@@ -1,18 +1,18 @@
 {
-  "/api": {
+  "/api/v1": {
     "target": "http://localhost:8999/",
     "secure": false
   },
-  "/ws": {
+  "/api/v1/ws": {
     "target": "http://localhost:8999/",
     "secure": false,
     "ws": true
   },
-  "/electrs": {
-    "target": "https://www.blockstream.info/testnet/api/",
+  "/api": {
+    "target": "http://localhost:50001/",
     "secure": false,
     "pathRewrite": {
-      "^/electrs": ""
+      "^/api": ""
     }
   }
 }

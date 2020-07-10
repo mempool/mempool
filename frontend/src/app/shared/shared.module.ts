@@ -8,9 +8,7 @@ import { RelativeUrlPipe } from './pipes/relative-url/relative-url.pipe';
 import { ScriptpubkeyTypePipe } from './pipes/scriptpubkey-type-pipe/scriptpubkey-type.pipe';
 import { BytesPipe } from './pipes/bytes-pipe/bytes.pipe';
 import { WuBytesPipe } from './pipes/bytes-pipe/wubytes.pipe';
-import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { BisqIconComponent } from '../components/bisq-icon/bisq-icon.component';
-import { faLeaf, faQuestion, faExclamationTriangle, faRocket, faRetweet, faFileAlt, faMoneyBill, faEye, faEyeSlash, faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons';
+import { TimeSinceComponent } from '../components/time-since/time-since.component';
 
 @NgModule({
   declarations: [
@@ -22,11 +20,10 @@ import { faLeaf, faQuestion, faExclamationTriangle, faRocket, faRetweet, faFileA
     WuBytesPipe,
     CeilPipe,
     ShortenStringPipe,
-    BisqIconComponent,
+    TimeSinceComponent,
   ],
   imports: [
     CommonModule,
-    FontAwesomeModule,
   ],
   providers: [
     VbytesPipe,
@@ -40,21 +37,7 @@ import { faLeaf, faQuestion, faExclamationTriangle, faRocket, faRetweet, faFileA
     WuBytesPipe,
     CeilPipe,
     ShortenStringPipe,
-    BisqIconComponent,
+    TimeSinceComponent,
   ]
 })
-export class SharedModule {
-  constructor(library: FaIconLibrary) {
-    library.addIcons(faQuestion);
-    library.addIcons(faExclamationTriangle);
-    library.addIcons(faRocket);
-    library.addIcons(faRetweet);
-    library.addIcons(faLeaf);
-    library.addIcons(faFileAlt);
-    library.addIcons(faMoneyBill);
-    library.addIcons(faEye);
-    library.addIcons(faEyeSlash);
-    library.addIcons(faLock);
-    library.addIcons(faLockOpen);
-  }
-}
+export class SharedModule {}

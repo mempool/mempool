@@ -30,7 +30,7 @@ export class WebsocketService {
     private stateService: StateService,
   ) {
     this.network = this.stateService.network === 'bisq' ? '' : this.stateService.network;
-    this.websocketSubject = webSocket<WebsocketResponse | any>(WEB_SOCKET_URL.replace('{network}', this.network ? '/' + this.network : ''));
+    this.websocketSubject = webSocket<WebsocketResponse>(WEB_SOCKET_URL.replace('{network}', this.network ? '/' + this.network : ''));
     this.startSubscription();
 
     this.stateService.networkChanged$.subscribe((network) => {
@@ -48,7 +48,7 @@ export class WebsocketService {
 
       this.websocketSubject.complete();
       this.subscription.unsubscribe();
-      this.websocketSubject = webSocket<WebsocketResponse | any>(WEB_SOCKET_URL.replace('{network}', this.network ? '/' + this.network : ''));
+      this.websocketSubject = webSocket<WebsocketResponse>(WEB_SOCKET_URL.replace('{network}', this.network ? '/' + this.network : ''));
 
       this.startSubscription();
     });

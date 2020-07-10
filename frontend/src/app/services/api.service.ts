@@ -73,4 +73,10 @@ export class ApiService {
   getBisqBlock$(hash: string): Observable<BisqBlock> {
     return this.httpClient.get<BisqBlock>(this.apiBaseUrl + '/bisq/block/' + hash);
   }
+
+  listBisqBlockTransactions$(blockHash: string, start: number, length: number): Observable<HttpResponse<BisqTransaction[]>> {
+    return this.httpClient.get<BisqTransaction[]>(
+      this.apiBaseUrl + `/bisq/block/${blockHash}/txs/${start}/${length}`, { observe: 'response' }
+    );
+  }
 }

@@ -1,18 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { StartComponent } from '../components/start/start.component';
-import { TransactionComponent } from '../components/transaction/transaction.component';
-import { BlockComponent } from '../components/block/block.component';
-import { MempoolBlockComponent } from '../components/mempool-block/mempool-block.component';
 import { AboutComponent } from '../components/about/about.component';
 import { AddressComponent } from '../components/address/address.component';
 import { BisqTransactionsComponent } from './bisq-transactions/bisq-transactions.component';
-import { StatisticsComponent } from '../components/statistics/statistics.component';
+import { BisqTransactionComponent } from './bisq-transaction/bisq-transaction.component';
+import { BisqBlockComponent } from './bisq-block/bisq-block.component';
+import { BisqBlocksComponent } from './bisq-blocks/bisq-blocks.component';
+import { BisqExplorerComponent } from './bisq-explorer/bisq-explorer.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: StartComponent,
+    component: BisqExplorerComponent,
     children: [
       {
         path: '',
@@ -20,34 +19,30 @@ const routes: Routes = [
       },
       {
         path: 'tx/:id',
-        component: TransactionComponent
+        component: BisqTransactionComponent
+      },
+      {
+        path: 'blocks',
+        children: [],
+        component: BisqBlocksComponent
       },
       {
         path: 'block/:id',
-        component: BlockComponent
+        component: BisqBlockComponent,
       },
       {
-        path: 'mempool-block/:id',
-        component: MempoolBlockComponent
+        path: 'address/:id',
+        component: AddressComponent
       },
-    ],
-  },
-  {
-    path: 'graphs',
-    component: StatisticsComponent,
-  },
-  {
-    path: 'about',
-    component: AboutComponent,
-  },
-  {
-    path: 'address/:id',
-    children: [],
-    component: AddressComponent
-  },
-  {
-    path: '**',
-    redirectTo: ''
+      {
+        path: 'about',
+        component: AboutComponent,
+      },
+      {
+        path: '**',
+        redirectTo: ''
+      }
+    ]
   }
 ];
 
