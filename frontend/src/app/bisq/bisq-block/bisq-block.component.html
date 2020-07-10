@@ -1,0 +1,28 @@
+<div class="container-xl">
+
+  <div class="title-block">
+    <h1>Block <ng-template [ngIf]="blockHeight"><a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a></ng-template></h1>
+  </div>
+
+  <div class="clearfix"></div>
+
+  <ng-template ngFor let-tx [ngForOf]="bisqTransactions">
+
+    <div class="header-bg box" style="padding: 10px; margin-bottom: 10px;">
+      <a [routerLink]="['/tx/' | relativeUrl, tx.id]" [state]="{ data: tx }">
+        <span style="float: left;" class="d-block d-md-none">{{ tx.id | shortenString : 16 }}</span>
+        <span style="float: left;" class="d-none d-md-block">{{ tx.id }}</span>
+      </a>
+      <div class="float-right">
+        {{ tx.time | date:'yyyy-MM-dd HH:mm' }}
+      </div>
+      <div class="clearfix"></div>
+    </div>
+
+    <app-bisq-transfers [tx]="tx"></app-bisq-transfers>
+
+    <br>
+
+  </ng-template>
+
+</div>

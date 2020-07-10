@@ -92,10 +92,6 @@ export class TransactionComponent implements OnInit, OnDestroy {
       this.segwitGains = calcSegwitFeeGains(tx);
       this.isRbfTransaction = tx.vin.some((v) => v.sequence < 0xfffffffe);
 
-      if (this.network === 'bisq') {
-        this.loadBisqTransaction();
-      }
-
       if (!tx.status.confirmed) {
         this.websocketService.startTrackTransaction(tx.txid);
 
@@ -137,17 +133,6 @@ export class TransactionComponent implements OnInit, OnDestroy {
 
     this.stateService.txReplaced$
       .subscribe((rbfTransaction) => this.rbfTransaction = rbfTransaction);
-  }
-
-  loadBisqTransaction() {
-    if (history.state.bsqTx) {
-      this.bisqTx = history.state.bsqTx;
-    } else {
-      this.apiService.getBisqTransaction$(this.txId)
-        .subscribe((tx) => {
-          this.bisqTx = tx;
-        });
-    }
   }
 
   handleLoadElectrsTransactionError(error: any): Observable<any> {

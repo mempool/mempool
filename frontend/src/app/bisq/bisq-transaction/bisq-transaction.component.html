@@ -1,0 +1,65 @@
+<div class="container-xl">
+
+  <h1 class="float-left mr-3 mb-md-3">Transaction</h1>
+
+  <button type="button" class="btn btn-sm btn-success float-right mr-2 mt-1 mt-md-3">2 confirmations</button>
+
+  <div>
+    <a [routerLink]="['/bisq-tx' | relativeUrl, bisqTx.blockHash]" style="line-height: 56px;">
+      <span class="d-inline d-lg-none">{{ bisqTx.blockHash | shortenString : 24 }}</span>
+      <span class="d-none d-lg-inline">{{ bisqTx.blockHash }}</span>
+    </a>
+  </div>
+  <div class="clearfix"></div>
+
+  <div class="box">
+    <div class="row">
+      <div class="col-sm">
+        <table class="table table-borderless table-striped">
+          <tbody>
+            <tr>
+              <td class="td-width">Included in block</td>
+              <td>
+                <a [routerLink]="['/block/' | relativeUrl, bisqTx.blockHash]" [state]="{ data: { blockHeight: bisqTx.blockHash } }">{{ bisqTx.blockHeight }}</a>
+                <i> (<app-time-since [time]="bisqTx.time" [fastRender]="true"></app-time-since> ago)</i>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-sm">
+        <table class="table table-borderless table-striped">
+          <tbody>
+              <tr>
+                <td class="td-width">Fee</td>
+                <td>15,436 sat ($1.40)</td>
+              </tr>
+              <tr>
+                <td>Fee per vByte</td>
+                <td>	68.2 sat/vB 
+                </td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+
+<br>
+
+<h2>Details</h2>
+
+
+<app-bisq-transaction-details [tx]="bisqTx"></app-bisq-transaction-details>
+
+<br>
+
+<h2>Inputs & Outputs</h2>
+
+<app-bisq-transfers [tx]="bisqTx"></app-bisq-transfers>
+
+<br>
+
+</div>
