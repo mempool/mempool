@@ -94,6 +94,7 @@ class Server {
       this.app
         .get(config.API_ENDPOINT + 'bisq/tx/:txId', routes.getBisqTransaction)
         .get(config.API_ENDPOINT + 'bisq/block/:hash', routes.getBisqBlock)
+        .get(config.API_ENDPOINT + 'bisq/block/:hash/txs/:index/:length', routes.getBisqBlockTransactions)
         .get(config.API_ENDPOINT + 'bisq/txs/:index/:length', routes.getBisqTransactions)
       ;
     }
