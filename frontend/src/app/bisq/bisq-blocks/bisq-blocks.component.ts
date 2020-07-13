@@ -3,6 +3,7 @@ import { BisqApiService } from '../bisq-api.service';
 import { switchMap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { BisqBlock, BisqOutput, BisqTransaction } from '../bisq.interfaces';
+import { SeoService } from 'src/app/services/seo.service';
 
 @Component({
   selector: 'app-bisq-blocks',
@@ -21,9 +22,11 @@ export class BisqBlocksComponent implements OnInit {
 
   constructor(
     private bisqApiService: BisqApiService,
+    private seoService: SeoService,
   ) { }
 
   ngOnInit(): void {
+    this.seoService.setTitle('Blocks', true);
     this.itemsPerPage = Math.max(Math.round(this.contentSpace / this.fiveItemsPxSize) * 5, 10);
 
     this.pageSubject$

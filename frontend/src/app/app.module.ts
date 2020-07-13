@@ -22,7 +22,6 @@ import { LatestBlocksComponent } from './components/latest-blocks/latest-blocks.
 import { WebsocketService } from './services/websocket.service';
 import { AddressLabelsComponent } from './components/address-labels/address-labels.component';
 import { MempoolBlocksComponent } from './components/mempool-blocks/mempool-blocks.component';
-import { QrcodeComponent } from './components/qrcode/qrcode.component';
 import { MasterPageComponent } from './components/master-page/master-page.component';
 import { AboutComponent } from './components/about/about.component';
 import { TelevisionComponent } from './components/television/television.component';
@@ -64,7 +63,6 @@ import { SharedModule } from './shared/shared.module';
     TimespanComponent,
     AddressLabelsComponent,
     MempoolBlocksComponent,
-    QrcodeComponent,
     ChartistComponent,
     FooterComponent,
     FiatComponent,

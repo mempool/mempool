@@ -7,6 +7,7 @@ import { BisqTransactionComponent } from './bisq-transaction/bisq-transaction.co
 import { BisqBlockComponent } from './bisq-block/bisq-block.component';
 import { BisqBlocksComponent } from './bisq-blocks/bisq-blocks.component';
 import { BisqExplorerComponent } from './bisq-explorer/bisq-explorer.component';
+import { BisqAddressComponent } from './bisq-address/bisq-address.component';
 
 const routes: Routes = [
   {
@@ -32,7 +33,7 @@ const routes: Routes = [
       },
       {
         path: 'address/:id',
-        component: AddressComponent
+        component: BisqAddressComponent,
       },
       {
         path: 'about',

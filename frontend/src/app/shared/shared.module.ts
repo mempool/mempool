@@ -10,6 +10,7 @@ import { BytesPipe } from './pipes/bytes-pipe/bytes.pipe';
 import { WuBytesPipe } from './pipes/bytes-pipe/wubytes.pipe';
 import { TimeSinceComponent } from '../components/time-since/time-since.component';
 import { ClipboardComponent } from '../components/clipboard/clipboard.component';
+import { QrcodeComponent } from '../components/qrcode/qrcode.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { ClipboardComponent } from '../components/clipboard/clipboard.component'
     ShortenStringPipe,
     ClipboardComponent,
     TimeSinceComponent,
+    QrcodeComponent,
   ],
   imports: [
     CommonModule,
@@ -40,7 +42,8 @@ import { ClipboardComponent } from '../components/clipboard/clipboard.component'
     CeilPipe,
     ShortenStringPipe,
     TimeSinceComponent,
-    ClipboardComponent
+    ClipboardComponent,
+    QrcodeComponent,
   ]
 })
 export class SharedModule {}

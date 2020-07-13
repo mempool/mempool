@@ -15,6 +15,7 @@ import { faLeaf, faQuestion, faExclamationTriangle, faRocket, faRetweet, faFileA
 import { BisqBlocksComponent } from './bisq-blocks/bisq-blocks.component';
 import { BisqExplorerComponent } from './bisq-explorer/bisq-explorer.component';
 import { BisqApiService } from './bisq-api.service';
+import { BisqAddressComponent } from './bisq-address/bisq-address.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { BisqApiService } from './bisq-api.service';
     BisqTransfersComponent,
     BisqBlocksComponent,
     BisqExplorerComponent,
+    BisqAddressComponent,
   ],
   imports: [
     CommonModule,

@@ -4,6 +4,7 @@ import { BisqApiService } from '../bisq-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Subscribable, Subscription, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { SeoService } from 'src/app/services/seo.service';
 
 @Component({
   selector: 'app-bisq-block',
@@ -21,6 +22,7 @@ export class BisqBlockComponent implements OnInit, OnDestroy {
   constructor(
     private bisqApiService: BisqApiService,
     private route: ActivatedRoute,
+    private seoService: SeoService,
   ) { }
 
   ngOnInit(): void {
@@ -28,6 +30,7 @@ export class BisqBlockComponent implements OnInit, OnDestroy {
       .pipe(
         switchMap((params: ParamMap) => {
           this.blockHash = params.get('id') || '';
+          document.body.scrollTo(0, 0);
           this.isLoading = true;
           if (history.state.data && history.state.data.blockHeight) {
             this.blockHeight = history.state.data.blockHeight;
@@ -42,6 +45,7 @@ export class BisqBlockComponent implements OnInit, OnDestroy {
       .subscribe((block: BisqBlock) => {
         this.isLoading = false;
         this.blockHeight = block.height;
+        this.seoService.setTitle('Block: #' + block.height + ': ' + block.hash, true);
         this.block = block;
       });
   }

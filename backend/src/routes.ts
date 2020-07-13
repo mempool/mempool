@@ -120,6 +120,15 @@ class Routes {
     res.header('X-Total-Count', count.toString());
     res.send(transactions);
   }
+
+  public getBisqAddress(req: Request, res: Response) {
+    const result = bisq.getAddress(req.params.address.substr(1));
+    if (result) {
+      res.send(result);
+    } else {
+      res.status(404).send('Bisq address not found');
+    }
+  }
 }
 
 export default new Routes();

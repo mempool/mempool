@@ -30,4 +30,8 @@ export class BisqApiService {
   listBlocks$(start: number, length: number): Observable<HttpResponse<BisqBlock[]>> {
     return this.httpClient.get<BisqBlock[]>(API_BASE_URL + `/bisq/blocks/${start}/${length}`, { observe: 'response' });
   }
+
+  getAddress$(address: string): Observable<BisqTransaction[]> {
+    return this.httpClient.get<BisqTransaction[]>(API_BASE_URL + '/bisq/address/' + address);
+  }
 }

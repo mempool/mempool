@@ -16,7 +16,7 @@
                 </ng-template>
               </td>
               <td>
-                <a [routerLink]="['/address/' | relativeUrl, input.address]" title="{{ input.address }}">
+                <a [routerLink]="['/address/' | relativeUrl, 'B' + input.address]" title="B{{ input.address }}">
                   <span class="d-block d-lg-none">B{{ input.address | shortenString : 16 }}</span>
                   <span class="d-none d-lg-block">B{{ input.address | shortenString : 35 }}</span>
                 </a>
@@ -36,7 +36,7 @@
           <ng-template ngFor let-output [ngForOf]="tx.outputs" [ngForTrackBy]="trackByIndexFn">
             <tr *ngIf="output.isVerified && output.opReturn === undefined">
               <td>
-                <a [routerLink]="['/address/' | relativeUrl, output.address]" title="{{ output.address }}">
+                <a [routerLink]="['/address/' | relativeUrl, 'B' + output.address]" title="B{{ output.address }}">
                   <span class="d-block d-lg-none">B{{ output.address | shortenString : 16 }}</span>
                   <span class="d-none d-lg-block">B{{ output.address | shortenString : 35 }}</span>
                 </a>
