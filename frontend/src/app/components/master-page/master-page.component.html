@@ -6,6 +6,8 @@
     <div class="badge badge-warning connection-badge" style="left: 30px;" *ngIf="connectionState === 1">Reconnecting...</div>
   </a>
 
+  <img *ngIf="network !== ''" src="./resources/{{ network }}-logo.png" style="width: 35.5px;" class="mr-3">
+
   <div class="btn-group" style="margin-right: 16px;" *ngIf="env.TESTNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED">
     <button type="button" (click)="networkDropdownHidden = !networkDropdownHidden" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
       <span class="sr-only">Toggle Dropdown</span>
