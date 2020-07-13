@@ -1,32 +1,52 @@
-import { Component, OnInit } from '@angular/core';
-import { BisqTransaction } from 'src/app/interfaces/bisq.interfaces';
-import { ApiService } from 'src/app/services/api.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { BisqTransaction, BisqBlock } from 'src/app/bisq/bisq.interfaces';
+import { BisqApiService } from '../bisq-api.service';
+import { ActivatedRoute, ParamMap } from '@angular/router';
+import { Subscribable, Subscription, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-bisq-block',
   templateUrl: './bisq-block.component.html',
   styleUrls: ['./bisq-block.component.scss']
 })
-export class BisqBlockComponent implements OnInit {
-  bisqTransactions: BisqTransaction[];
-  bisqTransactionsCount: number;
-
+export class BisqBlockComponent implements OnInit, OnDestroy {
+  block: BisqBlock;
+  subscription: Subscription;
   blockHash = '';
   blockHeight = 0;
+  isLoading = true;
+  error: any;
 
   constructor(
-    private apiService: ApiService,
+    private bisqApiService: BisqApiService,
+    private route: ActivatedRoute,
   ) { }
 
   ngOnInit(): void {
-    this.apiService.listBisqBlockTransactions$(this.blockHash, 0, 10)
-    .subscribe((response) => {
-      this.bisqTransactionsCount = parseInt(response.headers.get('x-total-count'), 10);
-      this.bisqTransactions = response.body;
-    });
-
+    this.subscription = this.route.paramMap
+      .pipe(
+        switchMap((params: ParamMap) => {
+          this.blockHash = params.get('id') || '';
+          this.isLoading = true;
+          if (history.state.data && history.state.data.blockHeight) {
+            this.blockHeight = history.state.data.blockHeight;
+          }
+          if (history.state.data && history.state.data.block) {
+            this.blockHeight = history.state.data.block.height;
+            return of(history.state.data.block);
+          }
+          return this.bisqApiService.getBlock$(this.blockHash);
+        })
+      )
+      .subscribe((block: BisqBlock) => {
+        this.isLoading = false;
+        this.blockHeight = block.height;
+        this.block = block;
+      });
   }
 
-
-
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
 }

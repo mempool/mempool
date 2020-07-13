@@ -1,5 +1,30 @@
 <div class="container-xl">
-  <h2 style="float: left;">Blocks</h2>
+  <h2 style="float: left;">BSQ Blocks</h2>
   <br>
+
+  <div class="clearfix"></div>
+
+  <table class="table table-borderless table-striped">
+    <thead>
+      <th>Hash</th>
+      <th>Total Sent (BSQ)</th>
+      <th>Transactions</th>
+      <th>Height</th>
+      <th>Time</th>
+    </thead>
+    <tbody>
+      <tr *ngFor="let block of blocks; trackBy: trackByFn">
+        <td><a [routerLink]="['/block/' | relativeUrl, block.hash]" title="{{ block.hash }}" [state]="{ data: { block: block } }">{{ block.hash | shortenString : 13 }}</a></td>
+        <td>{{ calculateTotalOutput(block) / 100 | number: '1.2-2' }}</td>
+        <td>{{ block.txs.length }}</td>
+        <td><a [routerLink]="['/block/' | relativeUrl, block.hash]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
+        <td>{{ block.time | date:'yyyy-MM-dd HH:mm' }}</td>
+      </tr> 
+    </tbody>
+  </table>
+
+  <br>
+
+  <ngb-pagination [collectionSize]="totalCount" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="5" [boundaryLinks]="true"></ngb-pagination>
 
 </div>

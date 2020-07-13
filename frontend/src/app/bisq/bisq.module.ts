@@ -14,6 +14,7 @@ import { faLeaf, faQuestion, faExclamationTriangle, faRocket, faRetweet, faFileA
   faEye, faEyeSlash, faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons';
 import { BisqBlocksComponent } from './bisq-blocks/bisq-blocks.component';
 import { BisqExplorerComponent } from './bisq-explorer/bisq-explorer.component';
+import { BisqApiService } from './bisq-api.service';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,9 @@ import { BisqExplorerComponent } from './bisq-explorer/bisq-explorer.component';
     NgbPaginationModule,
     FontAwesomeModule,
   ],
+  providers: [
+    BisqApiService,
+  ]
 })
 export class BisqModule {
   constructor(library: FaIconLibrary) {
