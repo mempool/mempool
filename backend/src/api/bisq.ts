@@ -107,7 +107,7 @@ class Bisq {
       console.log('Loading Bisq data from dump...');
       const data: BisqBlocks = JSON.parse(cacheData);
       if (data.blocks && data.blocks.length !== this.blocks.length) {
-        this.blocks = data.blocks;
+        this.blocks = data.blocks.filter((block) => block.txs.length > 0);
         this.blocks.reverse();
         const time = new Date().getTime() - start;
         console.log('Bisq dump loaded in ' + time + ' ms');

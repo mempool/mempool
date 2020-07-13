@@ -1,5 +1,5 @@
 <div class="container-xl">
-  <h1 style="float: left;">Bisq Address</h1>
+  <h1 style="float: left;">Address</h1>
   <a [routerLink]="['/address/' | relativeUrl, addressString]" style="line-height: 56px; margin-left: 10px;">
     <span class="d-inline d-lg-none">{{ addressString | shortenString : 24 }}</span>
     <span class="d-none d-lg-inline">{{ addressString }}</span>
