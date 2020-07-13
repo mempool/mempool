@@ -18,14 +18,9 @@ export class SeoService {
 
   setTitle(newTitle: string, prependNetwork = false) {
     let networkName = '';
-    if (prependNetwork) {
-      if (this.network === 'liquid') {
-        networkName = 'Liquid ';
-      } else if (this.network === 'testnet') {
-        networkName = 'Testnet ';
-      }
+    if (prependNetwork && this.network !== '') {
+      networkName = this.network.substr(0, 1).toUpperCase() + this.network.substr(1) + ' ';
     }
-
     this.titleService.setTitle(networkName + newTitle + ' - ' + this.defaultTitle);
   }
 

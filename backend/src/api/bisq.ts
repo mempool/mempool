@@ -3,11 +3,11 @@ import * as fs from 'fs';
 import { BisqBlocks, BisqBlock, BisqTransaction } from '../interfaces';
 
 class Bisq {
-  private latestBlockHeight = 0;
   private blocks: BisqBlock[] = [];
   private transactions: BisqTransaction[] = [];
-  private transactionsIndex: { [txId: string]: BisqTransaction } = {};
-  private blocksIndex: { [hash: string]: BisqBlock } = {};
+  private transactionIndex: { [txId: string]: BisqTransaction } = {};
+  private blockIndex: { [hash: string]: BisqBlock } = {};
+  private addressIndex: { [address: string]: BisqTransaction[] } = {};
 
   constructor() {}
 
@@ -29,7 +29,7 @@ class Bisq {
   }
 
   getTransaction(txId: string): BisqTransaction | undefined {
-    return this.transactionsIndex[txId];
+    return this.transactionIndex[txId];
   }
 
   getTransactions(start: number, length: number): [BisqTransaction[], number] {
@@ -37,9 +37,11 @@ class Bisq {
   }
 
   getBlock(hash: string): BisqBlock | undefined {
-    console.log(hash);
-    console.log(this.blocksIndex[hash]);
-    return this.blocksIndex[hash];
+    return this.blockIndex[hash];
+  }
+
+  getAddress(hash: string): BisqTransaction[] {
+    return this.addressIndex[hash];
   }
 
   getBlocks(start: number, length: number): [BisqBlock[], number] {
@@ -59,16 +61,42 @@ class Bisq {
   private buildIndex() {
     const start = new Date().getTime();
     this.transactions = [];
-    this.transactionsIndex = {};
+    this.transactionIndex = {};
+    this.addressIndex = {};
+
     this.blocks.forEach((block) => {
-      if (!this.blocksIndex[block.hash]) {
-        this.blocksIndex[block.hash] = block;
+      /* Build block index */
+      if (!this.blockIndex[block.hash]) {
+        this.blockIndex[block.hash] = block;
       }
+
+      /* Build transactions index */
       block.txs.forEach((tx) => {
         this.transactions.push(tx);
-        this.transactionsIndex[tx.id] = tx;
+        this.transactionIndex[tx.id] = tx;
       });
     });
+
+    /* Build address index */
+    this.transactions.forEach((tx) => {
+      tx.inputs.forEach((input) => {
+        if (!this.addressIndex[input.address]) {
+          this.addressIndex[input.address] = [];
+        }
+        if (this.addressIndex[input.address].indexOf(tx) === -1) {
+          this.addressIndex[input.address].push(tx);
+        }
+      });
+      tx.outputs.forEach((output) => {
+        if (!this.addressIndex[output.address]) {
+          this.addressIndex[output.address] = [];
+        }
+        if (this.addressIndex[output.address].indexOf(tx) === -1) {
+          this.addressIndex[output.address].push(tx);
+        }
+      });
+    });
+
     const time = new Date().getTime() - start;
     console.log('Bisq data index rebuilt in ' + time + ' ms');
   }
@@ -81,7 +109,6 @@ class Bisq {
       if (data.blocks && data.blocks.length !== this.blocks.length) {
         this.blocks = data.blocks;
         this.blocks.reverse();
-        this.latestBlockHeight = data.chainHeight;
         const time = new Date().getTime() - start;
         console.log('Bisq dump loaded in ' + time + ' ms');
       } else {
