@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { BisqTransaction, BisqOutput } from '../../interfaces/bisq.interfaces';
+import { BisqTransaction, BisqOutput } from '../bisq.interfaces';
 import { Subject } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { ApiService } from 'src/app/services/api.service';
+import { BisqApiService } from '../bisq-api.service';
 
 @Component({
   selector: 'app-bisq-transactions',
@@ -14,13 +14,13 @@ export class BisqTransactionsComponent implements OnInit {
   totalCount: number;
   page = 1;
   itemsPerPage: number;
-  contentSpace = window.innerHeight - (200 + 200);
+  contentSpace = window.innerHeight - (165 + 75);
   fiveItemsPxSize = 250;
 
   pageSubject$ = new Subject<number>();
 
   constructor(
-    private apiService: ApiService,
+    private bisqApiService: BisqApiService,
   ) { }
 
   ngOnInit(): void {
@@ -28,7 +28,7 @@ export class BisqTransactionsComponent implements OnInit {
 
     this.pageSubject$
       .pipe(
-        switchMap((page) => this.apiService.listBisqTransactions$((page - 1) * 10, this.itemsPerPage))
+        switchMap((page) => this.bisqApiService.listTransactions$((page - 1) * 10, this.itemsPerPage))
       )
       .subscribe((response) => {
         this.transactions = response.body;
@@ -46,5 +46,9 @@ export class BisqTransactionsComponent implements OnInit {
 
   calculateTotalOutput(outputs: BisqOutput[]): number {
     return outputs.reduce((acc: number, output: BisqOutput) => acc + output.bsqAmount, 0);
+  }
+
+  trackByFn(index: number) {
+    return index;
   }
 }

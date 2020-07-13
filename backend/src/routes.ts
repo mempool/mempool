@@ -105,7 +105,7 @@ class Routes {
   }
 
   public getBisqBlock(req: Request, res: Response) {
-    const result = bisq.getBlock(req['hash']);
+    const result = bisq.getBlock(req.params.hash);
     if (result) {
       res.send(result);
     } else {
@@ -113,16 +113,10 @@ class Routes {
     }
   }
 
-  public getBisqBlockTransactions(req: Request, res: Response) {
-    const blockHash = req.params.hash || '';
+  public getBisqBlocks(req: Request, res: Response) {
     const index = parseInt(req.params.index, 10) || 0;
     const length = parseInt(req.params.length, 10) > 100 ? 100 : parseInt(req.params.length, 10) || 25;
-    const [transactions, count] = bisq.getBlockTransactions(blockHash, index, length);
-    if (count === -1) {
-      res.header('X-Total-Count', '0');
-      res.send([]);
-      return;
-    }
+    const [transactions, count] = bisq.getBlocks(index, length);
     res.header('X-Total-Count', count.toString());
     res.send(transactions);
   }

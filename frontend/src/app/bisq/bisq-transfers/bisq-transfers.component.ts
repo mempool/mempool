@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
-import { BisqTransaction } from 'src/app/interfaces/bisq.interfaces';
+import { BisqTransaction } from 'src/app/bisq/bisq.interfaces';
 
 @Component({
   selector: 'app-bisq-transfers',

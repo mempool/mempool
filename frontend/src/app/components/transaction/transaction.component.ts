@@ -10,7 +10,7 @@ import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { calcSegwitFeeGains } from 'src/app/bitcoin.utils';
-import { BisqTransaction } from 'src/app/interfaces/bisq.interfaces';
+import { BisqTransaction } from 'src/app/bisq/bisq.interfaces';
 
 @Component({
   selector: 'app-transaction',

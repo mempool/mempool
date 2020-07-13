@@ -9,6 +9,7 @@ import { ScriptpubkeyTypePipe } from './pipes/scriptpubkey-type-pipe/scriptpubke
 import { BytesPipe } from './pipes/bytes-pipe/bytes.pipe';
 import { WuBytesPipe } from './pipes/bytes-pipe/wubytes.pipe';
 import { TimeSinceComponent } from '../components/time-since/time-since.component';
+import { ClipboardComponent } from '../components/clipboard/clipboard.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { TimeSinceComponent } from '../components/time-since/time-since.componen
     WuBytesPipe,
     CeilPipe,
     ShortenStringPipe,
+    ClipboardComponent,
     TimeSinceComponent,
   ],
   imports: [
@@ -38,6 +40,7 @@ import { TimeSinceComponent } from '../components/time-since/time-since.componen
     CeilPipe,
     ShortenStringPipe,
     TimeSinceComponent,
+    ClipboardComponent
   ]
 })
 export class SharedModule {}

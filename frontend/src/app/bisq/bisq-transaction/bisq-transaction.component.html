@@ -2,64 +2,133 @@
 
   <h1 class="float-left mr-3 mb-md-3">Transaction</h1>
 
-  <button type="button" class="btn btn-sm btn-success float-right mr-2 mt-1 mt-md-3">2 confirmations</button>
+  <ng-template [ngIf]="!isLoading" [ngIfElse]="isLoadingTmpl">
 
-  <div>
-    <a [routerLink]="['/bisq-tx' | relativeUrl, bisqTx.blockHash]" style="line-height: 56px;">
-      <span class="d-inline d-lg-none">{{ bisqTx.blockHash | shortenString : 24 }}</span>
-      <span class="d-none d-lg-inline">{{ bisqTx.blockHash }}</span>
-    </a>
-  </div>
-  <div class="clearfix"></div>
+    <button *ngIf="(latestBlock$ | async) as latestBlock" type="button" class="btn btn-sm btn-success float-right mr-2 mt-1 mt-md-3">{{ latestBlock.height - bisqTx.blockHeight + 1 }} confirmation<ng-container *ngIf="latestBlock.height - bisqTx.blockHeight + 1 > 1">s</ng-container></button>
 
-  <div class="box">
-    <div class="row">
-      <div class="col-sm">
+    <div>
+      <a [routerLink]="['/bisq-tx' | relativeUrl, bisqTx.blockHash]" style="line-height: 56px;">
+        <span class="d-inline d-lg-none">{{ bisqTx.blockHash | shortenString : 24 }}</span>
+        <span class="d-none d-lg-inline">{{ bisqTx.blockHash }}</span>
+      </a>
+      <app-clipboard [text]="txId"></app-clipboard>
+    </div>
+    <div class="clearfix"></div>
+
+    <div class="box">
+      <div class="row">
+        <div class="col-sm">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td class="td-width">Included in block</td>
+                <td>
+                  <a [routerLink]="['/block/' | relativeUrl, bisqTx.blockHash]" [state]="{ data: { blockHeight: bisqTx.blockHash } }">{{ bisqTx.blockHeight }}</a>
+                  <i> (<app-time-since [time]="bisqTx.time / 1000" [fastRender]="true"></app-time-since> ago)</i>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-sm">
+          <table class="table table-borderless table-striped">
+            <tbody>
+                <tr>
+                  <td class="td-width">Fee burnt</td>
+                  <td>
+                    {{ bisqTx.burntFee / 100 | number: '1.2-2' }} BSQ
+                </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+    <br>
+
+    <h2>Details</h2>
+
+
+    <app-bisq-transaction-details [tx]="bisqTx"></app-bisq-transaction-details>
+
+    <br>
+
+    <h2>Inputs & Outputs</h2>
+
+    <app-bisq-transfers [tx]="bisqTx"></app-bisq-transfers>
+
+    <br>
+
+  </ng-template>
+
+  <ng-template #isLoadingTmpl>
+
+    <div class="clearfix"></div>
+
+    <div class="box">
+      <div class="row">
+        <div class="col-sm">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td class="td-width"><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-sm">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td class="td-width"><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <br>
+
+    <h2>Details</h2>
+    <div class="box">
+      <table class="table table-borderless table-striped">
+        <tbody>
+          <tr>
+            <td><span class="skeleton-loader"></span></td>
+            <td><span class="skeleton-loader"></span></td>
+          </tr>
+          <tr>
+            <td><span class="skeleton-loader"></span></td>
+            <td><span class="skeleton-loader"></span></td>
+          </tr>
+          <tr>
+            <td><span class="skeleton-loader"></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <br>
+
+    <h2>Inputs & Outputs</h2>
+
+    <div class="box">
+      <div class="row">
         <table class="table table-borderless table-striped">
           <tbody>
             <tr>
-              <td class="td-width">Included in block</td>
-              <td>
-                <a [routerLink]="['/block/' | relativeUrl, bisqTx.blockHash]" [state]="{ data: { blockHeight: bisqTx.blockHash } }">{{ bisqTx.blockHeight }}</a>
-                <i> (<app-time-since [time]="bisqTx.time" [fastRender]="true"></app-time-since> ago)</i>
-              </td>
+              <td><span class="skeleton-loader"></span></td>
+              <td><span class="skeleton-loader"></span></td>
             </tr>
           </tbody>
         </table>
       </div>
-      <div class="col-sm">
-        <table class="table table-borderless table-striped">
-          <tbody>
-              <tr>
-                <td class="td-width">Fee</td>
-                <td>15,436 sat ($1.40)</td>
-              </tr>
-              <tr>
-                <td>Fee per vByte</td>
-                <td>	68.2 sat/vB 
-                </td>
-              </tr>
-          </tbody>
-        </table>
-      </div>
-
     </div>
-  </div>
 
-
-<br>
-
-<h2>Details</h2>
-
-
-<app-bisq-transaction-details [tx]="bisqTx"></app-bisq-transaction-details>
-
-<br>
-
-<h2>Inputs & Outputs</h2>
-
-<app-bisq-transfers [tx]="bisqTx"></app-bisq-transfers>
-
-<br>
+  </ng-template>
 
 </div>

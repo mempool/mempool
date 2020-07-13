@@ -21,21 +21,11 @@ class Bisq {
           clearTimeout(fsWait);
         }
         fsWait = setTimeout(() => {
-          console.log(`${filename} file changed. Reloading dump file.`);
+          console.log(`${filename} file change detected.`);
           this.loadBisqDumpFile();
         }, 1000);
       }
     });
-  }
-
-  async loadBisqDumpFile(): Promise<void> {
-    try {
-      const data = await this.loadData();
-      await this.loadBisqBlocksDump(data);
-      this.buildIndex();
-    } catch (e) {
-      console.log('loadBisqDumpFile() error.', e.message);
-    }
   }
 
   getTransaction(txId: string): BisqTransaction | undefined {
@@ -46,43 +36,54 @@ class Bisq {
     return [this.transactions.slice(start, length + start), this.transactions.length];
   }
 
-  getBlockTransactions(blockHash: string, start: number, length: number): [BisqTransaction[], number] {
-    const block = this.blocksIndex[blockHash];
-    if (!block) {
-      return [[], -1];
-    }
-    return [block.txs.slice(start, length + start), block.txs.length];
-  }
-
   getBlock(hash: string): BisqBlock | undefined {
+    console.log(hash);
+    console.log(this.blocksIndex[hash]);
     return this.blocksIndex[hash];
   }
 
+  getBlocks(start: number, length: number): [BisqBlock[], number] {
+    return [this.blocks.slice(start, length + start), this.blocks.length];
+  }
+
+  private async loadBisqDumpFile(): Promise<void> {
+    try {
+      const data = await this.loadData();
+      await this.loadBisqBlocksDump(data);
+      this.buildIndex();
+    } catch (e) {
+      console.log('loadBisqDumpFile() error.', e.message);
+    }
+  }
+
   private buildIndex() {
+    const start = new Date().getTime();
+    this.transactions = [];
+    this.transactionsIndex = {};
     this.blocks.forEach((block) => {
-      if (this.blocksIndex[block.hash]) {
-        return;
+      if (!this.blocksIndex[block.hash]) {
+        this.blocksIndex[block.hash] = block;
       }
-      this.blocksIndex[block.hash] = block;
       block.txs.forEach((tx) => {
-        this.transactions.unshift(tx);
+        this.transactions.push(tx);
         this.transactionsIndex[tx.id] = tx;
       });
     });
-    console.log('Bisq data index rebuilt');
+    const time = new Date().getTime() - start;
+    console.log('Bisq data index rebuilt in ' + time + ' ms');
   }
 
   private async loadBisqBlocksDump(cacheData: string): Promise<void> {
     const start = new Date().getTime();
     if (cacheData && cacheData.length !== 0) {
-      console.log('Parsing Bisq data from dump file');
+      console.log('Loading Bisq data from dump...');
       const data: BisqBlocks = JSON.parse(cacheData);
       if (data.blocks && data.blocks.length !== this.blocks.length) {
         this.blocks = data.blocks;
+        this.blocks.reverse();
         this.latestBlockHeight = data.chainHeight;
-        const end = new Date().getTime();
-        const time = end - start;
-        console.log('Loaded bisq dump in ' + time + ' ms');
+        const time = new Date().getTime() - start;
+        console.log('Bisq dump loaded in ' + time + ' ms');
       } else {
         throw new Error(`Bisq dump didn't contain any blocks`);
       }
