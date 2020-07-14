@@ -1,0 +1,85 @@
+<div class="container-xl">
+  <h1 style="float: left;">BSQ Statistics</h1>
+  <br>
+
+  <div class="clearfix"></div>
+
+  <table class="table table-borderless table-striped">
+    <thead>
+      <th>Property</th>
+      <th>Value</th>
+    </thead>
+    <tbody *ngIf="!isLoading; else loadingTemplate">
+      <tr>
+        <td class="td-width">Existing amount</td>
+        <td>{{ (stats.minted - stats.burnt) / 100 | number: '1.2-2' }} BSQ</td>
+      </tr>
+      <tr>
+        <td>Minted amount</td>
+        <td>{{ stats.minted | number: '1.2-2' }} BSQ</td>
+      </tr>
+      <tr>
+        <td>Burnt amount</td>
+        <td>{{ stats.burnt | number: '1.2-2' }} BSQ</td>
+      </tr>
+      <tr>
+        <td>Addresses</td>
+        <td>{{ stats.addresses | number }}</td>
+      </tr>
+      <tr>
+        <td>Unspent TXOs</td>
+        <td>{{ stats.unspent_txos | number }}</td>
+      </tr>
+      <tr>
+        <td>Spent TXOs</td>
+        <td>{{ stats.spent_txos | number }}</td>
+      </tr>
+      <tr>
+        <td>Price</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Market cap</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+
+<ng-template #loadingTemplate>
+  <tbody>
+    <tr>
+      <td class="td-width">Existing amount</td>
+      <td><span class="skeleton-loader"></span></td>
+    </tr>
+    <tr>
+      <td>Minted amount</td>
+      <td><span class="skeleton-loader"></span></td>
+    </tr>
+    <tr>
+      <td>Burnt amount</td>
+      <td><span class="skeleton-loader"></span></td>
+    </tr>
+    <tr>
+      <td>Addresses</td>
+      <td><span class="skeleton-loader"></span></td>
+    </tr>
+    <tr>
+      <td>Unspent TXOs</td>
+      <td><span class="skeleton-loader"></span></td>
+    </tr>
+    <tr>
+      <td>Spent TXOs</td>
+      <td><span class="skeleton-loader"></span></td>
+    </tr>
+    <tr>
+      <td>Price</td>
+      <td><span class="skeleton-loader"></span></td>
+    </tr>
+    <tr>
+      <td>Market cap</td>
+      <td><span class="skeleton-loader"></span></td>
+    </tr>
+  </tbody>
+</ng-template>

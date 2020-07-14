@@ -35,7 +35,7 @@ export class QrcodeComponent implements AfterViewInit {
       address.toUpperCase();
     }
 
-    QRCode.toCanvas(this.canvas.nativeElement, 'bitcoin:' + address, opts, (error: any) => {
+    QRCode.toCanvas(this.canvas.nativeElement, address, opts, (error: any) => {
       if (error) {
          console.error(error);
       }

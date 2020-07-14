@@ -59,6 +59,14 @@ export interface BisqOutput {
   opReturn?: string;
 }
 
+export interface BisqStats {
+  minted: number;
+  burnt: number;
+  addresses: number;
+  unspent_txos: number;
+  spent_txos: number;
+}
+
 interface BisqScriptPubKey {
   addresses: string[];
   asm: string;

@@ -16,6 +16,7 @@ import { BisqBlocksComponent } from './bisq-blocks/bisq-blocks.component';
 import { BisqExplorerComponent } from './bisq-explorer/bisq-explorer.component';
 import { BisqApiService } from './bisq-api.service';
 import { BisqAddressComponent } from './bisq-address/bisq-address.component';
+import { BisqStatsComponent } from './bisq-stats/bisq-stats.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { BisqAddressComponent } from './bisq-address/bisq-address.component';
     BisqBlocksComponent,
     BisqExplorerComponent,
     BisqAddressComponent,
+    BisqStatsComponent,
   ],
   imports: [
     CommonModule,

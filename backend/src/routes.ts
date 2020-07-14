@@ -87,6 +87,11 @@ class Routes {
     res.send(backendInfo.getBackendInfo());
   }
 
+  public getBisqStats(req: Request, res: Response) {
+    const result = bisq.getStats();
+    res.send(result);
+  }
+
   public getBisqTransaction(req: Request, res: Response) {
     const result = bisq.getTransaction(req.params.txId);
     if (result) {

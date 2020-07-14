@@ -1,0 +1,13 @@
+.td-width {
+  width: 300px;
+}
+
+@media (max-width: 767.98px) {
+	.td-width {
+		width: 175px;
+	}
+}
+
+.skeleton-loader {
+	width: 200px;
+}

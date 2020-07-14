@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { BisqTransaction, BisqBlock } from './bisq.interfaces';
+import { BisqTransaction, BisqBlock, BisqStats } from './bisq.interfaces';
 
 const API_BASE_URL = '/api/v1';
 
@@ -14,6 +14,10 @@ export class BisqApiService {
   constructor(
     private httpClient: HttpClient,
   ) { }
+
+  getStats$(): Observable<BisqStats> {
+    return this.httpClient.get<BisqStats>(API_BASE_URL + '/bisq/stats');
+  }
 
   getTransaction$(txId: string): Observable<BisqTransaction> {
     return this.httpClient.get<BisqTransaction>(API_BASE_URL + '/bisq/tx/' + txId);
