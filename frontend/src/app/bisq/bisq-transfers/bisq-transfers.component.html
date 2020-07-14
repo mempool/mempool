@@ -22,7 +22,7 @@
                 </a>
               </td>
               <td class="text-right nowrap">
-                {{ input.bsqAmount / 100 | number: '1.2-2' }} BSQ
+                <app-bsq-amount [bsq]="input.bsqAmount"></app-bsq-amount>
               </td>
             </tr>
           </ng-template>
@@ -42,7 +42,7 @@
                 </a>
               </td>
               <td class="text-right nowrap">
-                {{ output.bsqAmount / 100 | number: '1.2-2' }} BSQ
+                <app-bsq-amount [bsq]="output.bsqAmount"></app-bsq-amount>
               </td>
               <td class="pl-1 arrow-td">
                 <i *ngIf="!output.spentInfo; else spent" class="arrow green"></i>
@@ -55,6 +55,23 @@
         </tbody>
       </table>
     </div>
+  </div>
+
+  <div>
+    <div class="float-left mt-2-5" *ngIf="showConfirmations && tx.burntFee">
+      Fee: {{ tx.burntFee / 100 | number: '1.2-2' }} BSQ (<app-bsq-amount [bsq]="tx.burntFee" [forceFiat]="true" [green]="true"></app-bsq-amount>)
+    </div>
+
+    <div class="float-right">
+      <span *ngIf="showConfirmations && latestBlock$ | async as latestBlock">
+        <button type="button" class="btn btn-sm btn-success mt-2">{{ latestBlock.height - tx.blockHeight + 1 }} confirmation<ng-container *ngIf="latestBlock.height - tx.blockHeight + 1 > 1">s</ng-container></button>
+        &nbsp;
+      </span>
+      <button type="button" class="btn btn-sm btn-primary mt-2" (click)="switchCurrency()">
+        <app-bsq-amount [bsq]="totalOutput"></app-bsq-amount>
+      </button>
+    </div>
+    <div class="clearfix"></div>
   </div>
 
 </div>

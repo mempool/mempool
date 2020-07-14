@@ -99,6 +99,10 @@ export class WebsocketService {
           this.stateService.mempoolBlocks$.next(response['mempool-blocks']);
         }
 
+        if (response['bsq-price']) {
+          this.stateService.bsqPrice$.next(response['bsq-price']);
+        }
+
         if (response['git-commit']) {
           if (!this.latestGitCommit) {
             this.latestGitCommit = response['git-commit'];

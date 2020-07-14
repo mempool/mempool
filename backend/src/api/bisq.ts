@@ -1,6 +1,8 @@
 const config = require('../../mempool-config.json');
 import * as fs from 'fs';
-import { BisqBlocks, BisqBlock, BisqTransaction, BisqStats } from '../interfaces';
+import * as request from 'request';
+import { BisqBlocks, BisqBlock, BisqTransaction, BisqStats, BisqTrade } from '../interfaces';
+import { Common } from './common';
 
 class Bisq {
   private blocks: BisqBlock[] = [];
@@ -15,6 +17,8 @@ class Bisq {
     unspent_txos: 0,
     spent_txos: 0,
   };
+  private price: number = 0;
+  private priceUpdateCallbackFunction: ((price: number) => void) | undefined;
 
   constructor() {}
 
@@ -22,7 +26,7 @@ class Bisq {
     this.loadBisqDumpFile();
 
     let fsWait: NodeJS.Timeout | null = null;
-    fs.watch(config.BSQ_BLOCKS_DATA_PATH, (event, filename) => {
+    fs.watch(config.BSQ_BLOCKS_DATA_PATH, (event: string, filename: string) => {
       if (filename) {
         if (fsWait) {
           clearTimeout(fsWait);
@@ -33,6 +37,9 @@ class Bisq {
         }, 1000);
       }
     });
+
+    setInterval(this.updatePrice.bind(this), 1000 * 60 * 60);
+    this.updatePrice();
   }
 
   getTransaction(txId: string): BisqTransaction | undefined {
@@ -57,6 +64,26 @@ class Bisq {
 
   getStats(): BisqStats {
     return this.stats;
+  }
+
+  setPriceCallbackFunction(fn: (price: number) => void) {
+    this.priceUpdateCallbackFunction = fn;
+  }
+
+  private updatePrice() {
+    request('https://markets.bisq.network/api/trades/?market=bsq_btc', { json: true }, (err, res, trades: BisqTrade[]) => {
+      if (err) { return console.log(err); }
+
+      const prices: number[] = [];
+      trades.forEach((trade) => {
+        prices.push(parseFloat(trade.price) * 100000000);
+      });
+      prices.sort((a, b) => a - b);
+      this.price = Common.median(prices);
+      if (this.priceUpdateCallbackFunction) {
+        this.priceUpdateCallbackFunction(this.price);
+      }
+    });
   }
 
   private async loadBisqDumpFile(): Promise<void> {

@@ -4,47 +4,52 @@
 
   <div class="clearfix"></div>
 
-  <table class="table table-borderless table-striped">
-    <thead>
-      <th>Property</th>
-      <th>Value</th>
-    </thead>
-    <tbody *ngIf="!isLoading; else loadingTemplate">
-      <tr>
-        <td class="td-width">Existing amount</td>
-        <td>{{ (stats.minted - stats.burnt) / 100 | number: '1.2-2' }} BSQ</td>
-      </tr>
-      <tr>
-        <td>Minted amount</td>
-        <td>{{ stats.minted | number: '1.2-2' }} BSQ</td>
-      </tr>
-      <tr>
-        <td>Burnt amount</td>
-        <td>{{ stats.burnt | number: '1.2-2' }} BSQ</td>
-      </tr>
-      <tr>
-        <td>Addresses</td>
-        <td>{{ stats.addresses | number }}</td>
-      </tr>
-      <tr>
-        <td>Unspent TXOs</td>
-        <td>{{ stats.unspent_txos | number }}</td>
-      </tr>
-      <tr>
-        <td>Spent TXOs</td>
-        <td>{{ stats.spent_txos | number }}</td>
-      </tr>
-      <tr>
-        <td>Price</td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>Market cap</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="row">
+    <div class="col-sm">
+      <table class="table table-borderless table-striped">
+        <thead>
+          <th>Property</th>
+          <th>Value</th>
+        </thead>
+        <tbody *ngIf="!isLoading; else loadingTemplate">
+          <tr>
+            <td class="td-width">Existing amount</td>
+            <td>{{ (stats.minted - stats.burnt) / 100 | number: '1.2-2' }} BSQ</td>
+          </tr>
+          <tr>
+            <td>Minted amount</td>
+            <td>{{ stats.minted | number: '1.2-2' }} BSQ</td>
+          </tr>
+          <tr>
+            <td>Burnt amount</td>
+            <td>{{ stats.burnt | number: '1.2-2' }} BSQ</td>
+          </tr>
+          <tr>
+            <td>Addresses</td>
+            <td>{{ stats.addresses | number }}</td>
+          </tr>
+          <tr>
+            <td>Unspent TXOs</td>
+            <td>{{ stats.unspent_txos | number }}</td>
+          </tr>
+          <tr>
+            <td>Spent TXOs</td>
+            <td>{{ stats.spent_txos | number }}</td>
+          </tr>
+          <tr>
+            <td>Price</td>
+            <td><app-fiat [value]="price"></app-fiat></td>
+          </tr>
+          <tr>
+            <td>Market cap</td>
+            <td><app-fiat [value]="price * (stats.minted - stats.burnt) / 100 "></app-fiat></td>
+          </tr>
+        </tbody>
+      </table>
 
+    </div>
+    <div class="col-sm"></div>
+  </div>
 </div>
 
 <ng-template #loadingTemplate>
