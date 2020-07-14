@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnInit, Input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, OnChanges } from '@angular/core';
 import { IconPrefix, IconName } from '@fortawesome/fontawesome-common-types';
 
 @Component({
@@ -7,7 +7,7 @@ import { IconPrefix, IconName } from '@fortawesome/fontawesome-common-types';
   styleUrls: ['./bisq-icon.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BisqIconComponent implements OnInit {
+export class BisqIconComponent implements OnChanges {
   @Input() txType: string;
 
   iconProp: [IconPrefix, IconName] = ['fas', 'leaf'];
@@ -15,7 +15,7 @@ export class BisqIconComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnChanges() {
     switch (this.txType) {
       case 'UNVERIFIED':
         this.iconProp[1] = 'question';
