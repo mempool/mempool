@@ -12,11 +12,16 @@ import { Common } from './common';
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
   private nativeAssetId = '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
+  private extraInitProperties = {};
 
   constructor() { }
 
   setWebsocketServer(wss: WebSocket.Server) {
     this.wss = wss;
+  }
+
+  setExtraInitProperties(property: string, value: any) {
+    this.extraInitProperties[property] = value;
   }
 
   setupConnectionHandling() {
@@ -84,6 +89,7 @@ class WebsocketHandler {
               'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
               'git-commit': backendInfo.gitCommitHash,
               'hostname': backendInfo.hostname,
+              ...this.extraInitProperties
             }));
           }
 

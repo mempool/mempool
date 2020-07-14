@@ -11,6 +11,7 @@ import { WuBytesPipe } from './pipes/bytes-pipe/wubytes.pipe';
 import { TimeSinceComponent } from '../components/time-since/time-since.component';
 import { ClipboardComponent } from '../components/clipboard/clipboard.component';
 import { QrcodeComponent } from '../components/qrcode/qrcode.component';
+import { FiatComponent } from '../fiat/fiat.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { QrcodeComponent } from '../components/qrcode/qrcode.component';
     ClipboardComponent,
     TimeSinceComponent,
     QrcodeComponent,
+    FiatComponent,
   ],
   imports: [
     CommonModule,
@@ -44,6 +46,7 @@ import { QrcodeComponent } from '../components/qrcode/qrcode.component';
     TimeSinceComponent,
     ClipboardComponent,
     QrcodeComponent,
+    FiatComponent,
   ]
 })
 export class SharedModule {}

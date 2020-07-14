@@ -53,6 +53,7 @@ class Server {
 
     if (config.BISQ_ENABLED) {
       bisq.startBisqService();
+      bisq.setPriceCallbackFunction((price) => websocketHandler.setExtraInitProperties('bsq-price', price));
     }
 
     this.server.listen(config.HTTP_PORT, () => {

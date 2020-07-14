@@ -312,3 +312,13 @@ interface SpentInfo {
   inputIndex: number;
   txId: string;
 }
+
+export interface BisqTrade {
+  direction: string;
+  price: string;
+  amount: string;
+  volume: string;
+  payment_method: string;
+  trade_id: string;
+  trade_date: number;
+}

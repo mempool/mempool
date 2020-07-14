@@ -36,7 +36,7 @@
                 <tr>
                   <td class="td-width">Fee burnt</td>
                   <td>
-                    {{ bisqTx.burntFee / 100 | number: '1.2-2' }} BSQ
+                    {{ bisqTx.burntFee / 100 | number: '1.2-2' }} BSQ (<app-bsq-amount [bsq]="bisqTx.burntFee" [forceFiat]="true" [green]="true"></app-bsq-amount>)
                 </tr>
             </tbody>
           </table>

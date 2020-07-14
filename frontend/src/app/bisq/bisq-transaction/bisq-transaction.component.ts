@@ -17,6 +17,7 @@ export class BisqTransactionComponent implements OnInit, OnDestroy {
   bisqTx: BisqTransaction;
   latestBlock$: Observable<Block>;
   txId: string;
+  price: number;
   isLoading = true;
   subscription: Subscription;
 
@@ -46,6 +47,11 @@ export class BisqTransactionComponent implements OnInit, OnDestroy {
     });
 
     this.latestBlock$ = this.stateService.blocks$.pipe(map((([block]) => block)));
+
+    this.stateService.bsqPrice$
+      .subscribe((bsqPrice) => {
+        this.price = bsqPrice;
+      });
   }
 
   ngOnDestroy() {

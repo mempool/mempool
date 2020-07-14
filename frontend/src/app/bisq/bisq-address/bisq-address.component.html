@@ -18,15 +18,15 @@
             <tbody>
               <tr>
                 <td>Total received</td>
-                <td>{{ totalReceived / 100 }} BSQ</td>
+                <td>{{ totalReceived / 100 | number: '1.2-2' }} BSQ</td>
               </tr>
               <tr>
                 <td>Total sent</td>
-                <td>{{ totalSent / 100 }} BSQ</td>
+                <td>{{ totalSent / 100 | number: '1.2-2' }} BSQ</td>
               </tr>
               <tr>
                 <td>Final balance</td>
-                <td>{{ (totalReceived - totalSent) / 100 }} BSQ</td>
+                <td>{{ (totalReceived - totalSent) / 100 | number: '1.2-2' }} BSQ</td>
               </tr>
             </tbody>
           </table>
@@ -58,7 +58,7 @@
         <div class="clearfix"></div>
       </div>
   
-      <app-bisq-transfers [tx]="tx"></app-bisq-transfers>
+      <app-bisq-transfers [tx]="tx" [showConfirmations]="true"></app-bisq-transfers>
   
       <br>
     </ng-template>
