@@ -1,6 +1,6 @@
 const config = require('../../mempool-config.json');
 import * as fs from 'fs';
-import { BisqBlocks, BisqBlock, BisqTransaction } from '../interfaces';
+import { BisqBlocks, BisqBlock, BisqTransaction, BisqStats } from '../interfaces';
 
 class Bisq {
   private blocks: BisqBlock[] = [];
@@ -8,6 +8,13 @@ class Bisq {
   private transactionIndex: { [txId: string]: BisqTransaction } = {};
   private blockIndex: { [hash: string]: BisqBlock } = {};
   private addressIndex: { [address: string]: BisqTransaction[] } = {};
+  private stats: BisqStats = {
+    minted: 0,
+    burnt: 0,
+    addresses: 0,
+    unspent_txos: 0,
+    spent_txos: 0,
+  };
 
   constructor() {}
 
@@ -48,11 +55,16 @@ class Bisq {
     return [this.blocks.slice(start, length + start), this.blocks.length];
   }
 
+  getStats(): BisqStats {
+    return this.stats;
+  }
+
   private async loadBisqDumpFile(): Promise<void> {
     try {
       const data = await this.loadData();
       await this.loadBisqBlocksDump(data);
       this.buildIndex();
+      this.calculateStats();
     } catch (e) {
       console.log('loadBisqDumpFile() error.', e.message);
     }
@@ -99,6 +111,38 @@ class Bisq {
 
     const time = new Date().getTime() - start;
     console.log('Bisq data index rebuilt in ' + time + ' ms');
+  }
+
+  private calculateStats() {
+    let minted = 0;
+    let burned = 0;
+    let unspent = 0;
+    let spent = 0;
+
+    this.transactions.forEach((tx) => {
+      tx.outputs.forEach((output) => {
+        if (output.opReturn) {
+          return;
+        }
+        if (output.txOutputType === 'GENESIS_OUTPUT' || output.txOutputType === 'ISSUANCE_CANDIDATE_OUTPUT' && output.isVerified) {
+          minted += output.bsqAmount;
+        }
+        if (output.isUnspent) {
+          unspent++;
+        } else {
+          spent++;
+        }
+      });
+      burned += tx['burntFee'];
+    });
+
+    this.stats = {
+      addresses: Object.keys(this.addressIndex).length,
+      minted: minted,
+      burnt: burned,
+      spent_txos: spent,
+      unspent_txos: unspent,
+    };
   }
 
   private async loadBisqBlocksDump(cacheData: string): Promise<void> {

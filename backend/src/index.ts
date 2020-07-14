@@ -92,6 +92,7 @@ class Server {
 
     if (config.BISQ_ENABLED) {
       this.app
+        .get(config.API_ENDPOINT + 'bisq/stats', routes.getBisqStats)
         .get(config.API_ENDPOINT + 'bisq/tx/:txId', routes.getBisqTransaction)
         .get(config.API_ENDPOINT + 'bisq/block/:hash', routes.getBisqBlock)
         .get(config.API_ENDPOINT + 'bisq/blocks/:index/:length', routes.getBisqBlocks)
