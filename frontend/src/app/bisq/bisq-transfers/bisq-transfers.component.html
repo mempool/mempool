@@ -59,7 +59,7 @@
 
   <div>
     <div class="float-left mt-2-5" *ngIf="showConfirmations && tx.burntFee">
-      Fee: {{ tx.burntFee / 100 | number: '1.2-2' }} BSQ (<app-bsq-amount [bsq]="tx.burntFee" [forceFiat]="true" [green]="true"></app-bsq-amount>)
+      Burnt: {{ tx.burntFee / 100 | number: '1.2-2' }} BSQ (<app-bsq-amount [bsq]="tx.burntFee" [forceFiat]="true" [green]="true"></app-bsq-amount>)
     </div>
 
     <div class="float-right">

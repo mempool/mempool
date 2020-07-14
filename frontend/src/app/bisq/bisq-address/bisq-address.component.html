@@ -26,7 +26,7 @@
               </tr>
               <tr>
                 <td>Final balance</td>
-                <td>{{ (totalReceived - totalSent) / 100 | number: '1.2-2' }} BSQ</td>
+                <td>{{ (totalReceived - totalSent) / 100 | number: '1.2-2' }} BSQ (<app-bsq-amount [bsq]="totalReceived - totalSent" [forceFiat]="true" [green]="true"></app-bsq-amount>)</td>
               </tr>
             </tbody>
           </table>
