@@ -17,6 +17,7 @@
     <div class="dropdown-menu" [class.d-block]="!networkDropdownHidden">
       <a class="dropdown-item mainnet" routerLink="/"><img src="./resources/bitcoin-logo.png" style="width: 35.5px;"> Mainnet</a>
       <a *ngIf="env.TESTNET_ENABLED" class="dropdown-item testnet" [class.active]="network === 'testnet'" routerLink="/testnet"><img src="./resources/testnet-logo.png" style="width: 35.5px;"> Testnet</a>
+      <div *ngIf="env.LIQUID_ENABLED || env.BISQ_ENABLED" class="dropdown-divider"></div>
       <a *ngIf="env.LIQUID_ENABLED" class="dropdown-item liquid" [class.active]="network === 'liquid'" routerLink="/liquid"><img src="./resources/liquid-logo.png" style="width: 35.5px;"> Liquid</a>
       <a *ngIf="env.BISQ_ENABLED" class="dropdown-item mainnet" [class.active]="network === 'bisq'" routerLink="/bisq"><img src="./resources/bisq-logo.png" style="width: 35.5px;"> Bisq</a>
     </div>
