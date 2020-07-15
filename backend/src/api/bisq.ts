@@ -28,15 +28,13 @@ class Bisq {
 
     let fsWait: NodeJS.Timeout | null = null;
     fs.watch(config.BSQ_BLOCKS_DATA_PATH, (event: string, filename: string) => {
-      if (filename) {
-        if (fsWait) {
-          clearTimeout(fsWait);
-        }
-        fsWait = setTimeout(() => {
-          console.log(`${filename} file change detected.`);
-          this.loadBisqDumpFile();
-        }, 1000);
+      if (fsWait) {
+        clearTimeout(fsWait);
       }
+      fsWait = setTimeout(() => {
+        console.log(`${filename} file change detected.`);
+        this.loadBisqDumpFile();
+      }, 1000);
     });
 
     setInterval(this.updatePrice.bind(this), 1000 * 60 * 60);
