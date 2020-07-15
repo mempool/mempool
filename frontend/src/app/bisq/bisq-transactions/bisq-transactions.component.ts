@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BisqTransaction, BisqOutput } from '../bisq.interfaces';
 import { Subject } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, tap } from 'rxjs/operators';
 import { BisqApiService } from '../bisq-api.service';
 import { SeoService } from 'src/app/services/seo.service';
 
@@ -17,7 +17,8 @@ export class BisqTransactionsComponent implements OnInit {
   itemsPerPage: number;
   contentSpace = window.innerHeight - (165 + 75);
   fiveItemsPxSize = 250;
-
+  isLoading = true;
+  loadingItems: number[];
   pageSubject$ = new Subject<number>();
 
   constructor(
@@ -29,12 +30,15 @@ export class BisqTransactionsComponent implements OnInit {
     this.seoService.setTitle('Transactions', true);
 
     this.itemsPerPage = Math.max(Math.round(this.contentSpace / this.fiveItemsPxSize) * 5, 10);
+    this.loadingItems = Array(this.itemsPerPage);
 
     this.pageSubject$
       .pipe(
+        tap(() => this.isLoading = true),
         switchMap((page) => this.bisqApiService.listTransactions$((page - 1) * 10, this.itemsPerPage))
       )
       .subscribe((response) => {
+        this.isLoading = false;
         this.transactions = response.body;
         this.totalCount = parseInt(response.headers.get('x-total-count'), 10);
       }, (error) => {

@@ -92,6 +92,11 @@ class Routes {
     res.send(result);
   }
 
+  public getBisqTip(req: Request, res: Response) {
+    const result = bisq.getLatestBlockHeight();
+    res.send(result.toString());
+  }
+
   public getBisqTransaction(req: Request, res: Response) {
     const result = bisq.getTransaction(req.params.txId);
     if (result) {

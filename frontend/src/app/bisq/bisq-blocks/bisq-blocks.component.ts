@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BisqApiService } from '../bisq-api.service';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, tap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { BisqBlock, BisqOutput, BisqTransaction } from '../bisq.interfaces';
 import { SeoService } from 'src/app/services/seo.service';
@@ -17,6 +17,8 @@ export class BisqBlocksComponent implements OnInit {
   itemsPerPage: number;
   contentSpace = window.innerHeight - (165 + 75);
   fiveItemsPxSize = 250;
+  loadingItems: number[];
+  isLoading = true;
 
   pageSubject$ = new Subject<number>();
 
@@ -28,12 +30,15 @@ export class BisqBlocksComponent implements OnInit {
   ngOnInit(): void {
     this.seoService.setTitle('Blocks', true);
     this.itemsPerPage = Math.max(Math.round(this.contentSpace / this.fiveItemsPxSize) * 5, 10);
+    this.loadingItems = Array(this.itemsPerPage);
 
     this.pageSubject$
       .pipe(
+        tap(() => this.isLoading = true),
         switchMap((page) => this.bisqApiService.listBlocks$((page - 1) * 10, this.itemsPerPage))
       )
       .subscribe((response) => {
+        this.isLoading = false;
         this.blocks = response.body;
         this.totalCount = parseInt(response.headers.get('x-total-count'), 10);
       }, (error) => {

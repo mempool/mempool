@@ -1,12 +1,14 @@
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-  <a class="navbar-brand" [routerLink]="['/' | relativeUrl]" style="position: relative;">
+  <a class="navbar-brand" [routerLink]="['/']" style="position: relative;">
     <img src="./resources/mempool-logo.png" height="35" width="140" class="logo" [ngStyle]="{'opacity': connectionState === 2 ? 1 : 0.5 }">
     <div class="badge badge-warning connection-badge" *ngIf="connectionState === 0">Offline</div>
     <div class="badge badge-warning connection-badge" style="left: 30px;" *ngIf="connectionState === 1">Reconnecting...</div>
   </a>
 
-  <img *ngIf="network !== ''" src="./resources/{{ network }}-logo.png" style="width: 35.5px;" class="mr-3">
+  <a class="navbar-brand" [routerLink]="['/' | relativeUrl]">
+    <img *ngIf="network !== ''" src="./resources/{{ network }}-logo.png" style="width: 35.5px;">
+  </a>
 
   <div class="btn-group" style="margin-right: 16px;" *ngIf="env.TESTNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED">
     <button type="button" (click)="networkDropdownHidden = !networkDropdownHidden" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -14,9 +16,9 @@
     </button>
     <div class="dropdown-menu" [class.d-block]="!networkDropdownHidden">
       <a class="dropdown-item mainnet" routerLink="/"><img src="./resources/bitcoin-logo.png" style="width: 35.5px;"> Mainnet</a>
+      <a *ngIf="env.TESTNET_ENABLED" class="dropdown-item testnet" [class.active]="network === 'testnet'" routerLink="/testnet"><img src="./resources/testnet-logo.png" style="width: 35.5px;"> Testnet</a>
       <a *ngIf="env.LIQUID_ENABLED" class="dropdown-item liquid" [class.active]="network === 'liquid'" routerLink="/liquid"><img src="./resources/liquid-logo.png" style="width: 35.5px;"> Liquid</a>
       <a *ngIf="env.BISQ_ENABLED" class="dropdown-item mainnet" [class.active]="network === 'bisq'" routerLink="/bisq"><img src="./resources/bisq-logo.png" style="width: 35.5px;"> Bisq</a>
-      <a *ngIf="env.TESTNET_ENABLED" class="dropdown-item testnet" [class.active]="network === 'testnet'" routerLink="/testnet"><img src="./resources/testnet-logo.png" style="width: 35.5px;"> Testnet</a>
     </div>
   </div>
 
