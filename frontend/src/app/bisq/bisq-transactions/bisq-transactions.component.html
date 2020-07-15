@@ -6,18 +6,25 @@
 
   <table class="table table-borderless table-striped">
     <thead>
-      <th>Transaction</th>
-      <th>Type</th>
-      <th>Total Sent (BSQ)</th>
-      <th>Outputs</th>
-      <th>Block Height</th>
-      <th>Block Time</th>
+      <th style="width: 18%;">Transaction</th>
+      <th style="width: 15%;">Type</th>
+      <th style="width: 15%;">Total Sent (BSQ)</th>
+      <th style="width: 12%;">Outputs</th>
+      <th style="width: 15%;">Block Height</th>
+      <th style="width: 15%;">Block Time</th>
     </thead>
-    <tbody>
+    <tbody *ngIf="!isLoading; else loadingTmpl">
       <tr *ngFor="let tx of transactions; trackBy: trackByFn">
         <td><a [routerLink]="['/tx/' | relativeUrl, tx.id]" [state]="{ bsqTx: tx }">{{ tx.id | shortenString : 16 }}</a></td>
         <td><app-bisq-icon class="mr-1" [txType]="tx.txType"></app-bisq-icon> {{ tx.txTypeDisplayString }}</td>
-        <td>{{ calculateTotalOutput(tx.outputs) / 100 | number: '1.2-2' }}</td>
+        <td>
+          <ng-template [ngIf]="tx.txType === 'PAY_TRADE_FEE'" [ngIfElse]="defaultTxType">
+            {{ tx.burntFee / 100 | number: '1.2-2' }}
+          </ng-template>
+          <ng-template #defaultTxType>
+            {{ calculateTotalOutput(tx.outputs) / 100 | number: '1.2-2' }}
+          </ng-template>
+        </td>
         <td>{{ tx.outputs.length }}</td>
         <td><a [routerLink]="['/block/' | relativeUrl, tx.blockHash]">{{ tx.blockHeight }}</a></td>
         <td>{{ tx.time | date:'yyyy-MM-dd HH:mm' }}</td>
@@ -30,3 +37,9 @@
   <ngb-pagination [collectionSize]="totalCount" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="5" [boundaryLinks]="true"></ngb-pagination>
 
 </div>
+
+<ng-template #loadingTmpl>
+  <tr *ngFor="let i of loadingItems">
+    <td *ngFor="let j of [1, 2, 3, 4, 5, 6]"><span class="skeleton-loader"></span></td>
+  </tr>
+</ng-template>

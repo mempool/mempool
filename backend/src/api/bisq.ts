@@ -5,6 +5,7 @@ import { BisqBlocks, BisqBlock, BisqTransaction, BisqStats, BisqTrade } from '..
 import { Common } from './common';
 
 class Bisq {
+  private latestBlockHeight = 0;
   private blocks: BisqBlock[] = [];
   private transactions: BisqTransaction[] = [];
   private transactionIndex: { [txId: string]: BisqTransaction } = {};
@@ -68,6 +69,10 @@ class Bisq {
 
   setPriceCallbackFunction(fn: (price: number) => void) {
     this.priceUpdateCallbackFunction = fn;
+  }
+
+  getLatestBlockHeight(): number {
+    return this.latestBlockHeight;
   }
 
   private updatePrice() {
@@ -180,6 +185,7 @@ class Bisq {
       if (data.blocks && data.blocks.length !== this.blocks.length) {
         this.blocks = data.blocks.filter((block) => block.txs.length > 0);
         this.blocks.reverse();
+        this.latestBlockHeight = data.chainHeight;
         const time = new Date().getTime() - start;
         console.log('Bisq dump loaded in ' + time + ' ms');
       } else {

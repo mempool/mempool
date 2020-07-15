@@ -6,13 +6,13 @@
 
   <table class="table table-borderless table-striped">
     <thead>
-      <th>Hash</th>
-      <th>Total Sent (BSQ)</th>
-      <th>Transactions</th>
-      <th>Height</th>
-      <th>Time</th>
+      <th style="width: 20%;">Hash</th>
+      <th style="width: 20%;">Total Sent (BSQ)</th>
+      <th style="width: 20%;">Transactions</th>
+      <th style="width: 20%;">Height</th>
+      <th style="width: 20%;">Time</th>
     </thead>
-    <tbody>
+    <tbody *ngIf="!isLoading; else loadingTmpl">
       <tr *ngFor="let block of blocks; trackBy: trackByFn">
         <td><a [routerLink]="['/block/' | relativeUrl, block.hash]" title="{{ block.hash }}" [state]="{ data: { block: block } }">{{ block.hash | shortenString : 13 }}</a></td>
         <td>{{ calculateTotalOutput(block) / 100 | number: '1.2-2' }}</td>
@@ -28,3 +28,9 @@
   <ngb-pagination [collectionSize]="totalCount" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="5" [boundaryLinks]="true"></ngb-pagination>
 
 </div>
+
+<ng-template #loadingTmpl>
+  <tr *ngFor="let i of loadingItems">
+    <td *ngFor="let j of [1, 2, 3, 4, 5]"><span class="skeleton-loader"></span></td>
+  </tr>
+</ng-template>
