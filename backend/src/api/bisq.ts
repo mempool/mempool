@@ -196,7 +196,7 @@ class Bisq {
 
   private loadData(): Promise<string> {
     return new Promise((resolve, reject) => {
-      fs.readFile(config.BSQ_BLOCKS_DATA_PATH, 'utf8', (err, data) => {
+      fs.readFile(config.BSQ_BLOCKS_DATA_PATH + '/blocks.json', 'utf8', (err, data) => {
         if (err) {
           reject(err);
         }
