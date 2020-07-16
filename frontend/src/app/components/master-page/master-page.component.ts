@@ -15,18 +15,9 @@ export class MasterPageComponent implements OnInit {
   navCollapsed = false;
   connectionState = 2;
 
-  networkDropdownHidden = true;
-
   constructor(
     private stateService: StateService,
   ) { }
-
-  @HostListener('document:click', ['$event'])
-  documentClick(event: any): void {
-    if (!event.target.classList.contains('dropdown-toggle')) {
-      this.networkDropdownHidden = true;
-    }
-  }
 
   ngOnInit() {
     this.stateService.connectionState$

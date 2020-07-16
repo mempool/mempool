@@ -27,12 +27,12 @@ class Bisq {
     this.loadBisqDumpFile();
 
     let fsWait: NodeJS.Timeout | null = null;
-    fs.watch(config.BSQ_BLOCKS_DATA_PATH, (event: string, filename: string) => {
+    fs.watch(config.BSQ_BLOCKS_DATA_PATH, () => {
       if (fsWait) {
         clearTimeout(fsWait);
       }
       fsWait = setTimeout(() => {
-        console.log(`${filename} file change detected.`);
+        console.log(`Change detected in the Bisq data folder.`);
         this.loadBisqDumpFile();
       }, 1000);
     });
