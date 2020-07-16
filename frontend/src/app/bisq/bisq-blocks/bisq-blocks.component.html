@@ -4,24 +4,24 @@
 
   <div class="clearfix"></div>
 
-  <table class="table table-borderless table-striped">
-    <thead>
-      <th style="width: 20%;">Hash</th>
-      <th style="width: 20%;">Total Sent (BSQ)</th>
-      <th style="width: 20%;">Transactions</th>
-      <th style="width: 20%;">Height</th>
-      <th style="width: 20%;">Time</th>
-    </thead>
-    <tbody *ngIf="!isLoading; else loadingTmpl">
-      <tr *ngFor="let block of blocks; trackBy: trackByFn">
-        <td><a [routerLink]="['/block/' | relativeUrl, block.hash]" title="{{ block.hash }}" [state]="{ data: { block: block } }">{{ block.hash | shortenString : 13 }}</a></td>
-        <td>{{ calculateTotalOutput(block) / 100 | number: '1.2-2' }}</td>
-        <td>{{ block.txs.length }}</td>
-        <td><a [routerLink]="['/block/' | relativeUrl, block.hash]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
-        <td>{{ block.time | date:'yyyy-MM-dd HH:mm' }}</td>
-      </tr> 
-    </tbody>
-  </table>
+  <div class="table-responsive-sm">
+    <table class="table table-borderless table-striped">
+      <thead>
+        <th style="width: 25%;">Height</th>
+        <th style="width: 25%;">Timestamp</th>
+        <th style="width: 25%;">Total Sent (BSQ)</th>
+        <th style="width: 25%;">Transactions</th>
+      </thead>
+      <tbody *ngIf="!isLoading; else loadingTmpl">
+        <tr *ngFor="let block of blocks; trackBy: trackByFn">
+          <td><a [routerLink]="['/block/' | relativeUrl, block.hash]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
+          <td>{{ block.time | date:'yyyy-MM-dd HH:mm' }}</td>
+          <td>{{ calculateTotalOutput(block) / 100 | number: '1.2-2' }}</td>
+          <td>{{ block.txs.length }}</td>
+        </tr> 
+      </tbody>
+    </table>
+  </div>
 
   <br>
 
