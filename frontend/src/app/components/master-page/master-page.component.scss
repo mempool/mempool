@@ -51,3 +51,12 @@ nav {
 .dropdown-divider {
   border-top: 1px solid #121420;
 }
+
+.dropdown-toggle::after {
+  vertical-align: 0.1em;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items:center;
+}
