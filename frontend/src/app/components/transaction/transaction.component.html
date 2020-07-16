@@ -244,7 +244,7 @@
 
   <ng-template [ngIf]="error">
 
-    <div class="text-center" *ngIf="waitingForTransaction">
+    <div class="text-center" *ngIf="waitingForTransaction; else errorTemplate">
       <h3>Transaction not found.</h3>
       <h5>Waiting for it to appear in the mempool...</h5>
       <div class="spinner-border text-light mt-2"></div>
