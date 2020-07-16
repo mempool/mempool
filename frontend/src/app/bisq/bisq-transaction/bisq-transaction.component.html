@@ -2,7 +2,7 @@
 
   <h1 class="float-left mr-3 mb-md-3">Transaction</h1>
 
-  <ng-template [ngIf]="!isLoading" [ngIfElse]="isLoadingTmpl">
+  <ng-template [ngIf]="!isLoading && !error">
 
     <button *ngIf="(latestBlock$ | async) as latestBlock" type="button" class="btn btn-sm btn-success float-right mr-2 mt-1 mt-md-3">{{ latestBlock.height - bisqTx.blockHeight + 1 }} confirmation<ng-container *ngIf="latestBlock.height - bisqTx.blockHeight + 1 > 1">s</ng-container></button>
 
@@ -62,7 +62,7 @@
 
   </ng-template>
 
-  <ng-template #isLoadingTmpl>
+  <ng-template [ngIf="isLoading && !error">
 
     <div class="clearfix"></div>
 
@@ -129,6 +129,16 @@
       </div>
     </div>
 
+  </ng-template>
+
+  <ng-template [ngIf]="error">
+    <div class="clearfix"></div>
+
+    <div class="text-center">
+      Error loading transaction
+      <br>
+      <i>{{ error.status }}: {{ error.statusText }}</i>
+    </div>
   </ng-template>
 
 </div>
