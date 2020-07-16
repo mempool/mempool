@@ -66,9 +66,7 @@
 
   </ng-template>
 
-  <ng-template [ngIf]="isLoading">
-
-
+  <ng-template [ngIf]="isLoading && !error">
     <div class="box">
       <div class="row">
         <div class="col-sm">
@@ -94,6 +92,16 @@
           </table>
         </div>
       </div>
+    </div>
+  </ng-template>
+
+  <ng-template [ngIf]="error">
+    <div class="clearfix"></div>
+
+    <div class="text-center">
+      Error loading block
+      <br>
+      <i>{{ error.status }}: {{ error.statusText }}</i>
     </div>
   </ng-template>
 
