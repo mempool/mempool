@@ -4,9 +4,10 @@ import { Location } from '@angular/common';
 import { BisqApiService } from '../bisq-api.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Subscription, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, catchError } from 'rxjs/operators';
 import { SeoService } from 'src/app/services/seo.service';
 import { ElectrsApiService } from 'src/app/services/electrs-api.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-bisq-block',
@@ -19,7 +20,7 @@ export class BisqBlockComponent implements OnInit, OnDestroy {
   blockHash = '';
   blockHeight = 0;
   isLoading = true;
-  error: any;
+  error: HttpErrorResponse | null;
 
   constructor(
     private bisqApiService: BisqApiService,
@@ -37,6 +38,7 @@ export class BisqBlockComponent implements OnInit, OnDestroy {
           const blockHash = params.get('id') || '';
           document.body.scrollTo(0, 0);
           this.isLoading = true;
+          this.error = null;
           if (history.state.data && history.state.data.blockHeight) {
             this.blockHeight = history.state.data.blockHeight;
           }
@@ -56,19 +58,28 @@ export class BisqBlockComponent implements OnInit, OnDestroy {
             return this.electrsApiService.getBlockHashFromHeight$(parseInt(blockHash, 10))
               .pipe(
                 switchMap((hash) => {
+                  if (!hash) {
+                    return;
+                  }
                   this.blockHash = hash;
                   this.location.replaceState(
                     this.router.createUrlTree(['/bisq/block/', hash]).toString()
                   );
-                  return this.bisqApiService.getBlock$(this.blockHash);
-                })
+                  return this.bisqApiService.getBlock$(this.blockHash)
+                    .pipe(catchError(this.caughtHttpError.bind(this)));
+                }),
+                catchError(this.caughtHttpError.bind(this))
               );
           }
 
-          return this.bisqApiService.getBlock$(this.blockHash);
+          return this.bisqApiService.getBlock$(this.blockHash)
+            .pipe(catchError(this.caughtHttpError.bind(this)));
         })
       )
       .subscribe((block: BisqBlock) => {
+        if (!block) {
+          return;
+        }
         this.isLoading = false;
         this.blockHeight = block.height;
         this.seoService.setTitle('Block: #' + block.height + ': ' + block.hash, true);
@@ -78,5 +89,10 @@ export class BisqBlockComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+  }
+
+  caughtHttpError(err: HttpErrorResponse){
+    this.error = err;
+    return of(null);
   }
 }
