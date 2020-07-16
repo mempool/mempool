@@ -7,11 +7,11 @@
     <button *ngIf="(latestBlock$ | async) as latestBlock" type="button" class="btn btn-sm btn-success float-right mr-2 mt-1 mt-md-3">{{ latestBlock.height - bisqTx.blockHeight + 1 }} confirmation<ng-container *ngIf="latestBlock.height - bisqTx.blockHeight + 1 > 1">s</ng-container></button>
 
     <div>
-      <a [routerLink]="['/bisq-tx' | relativeUrl, bisqTx.blockHash]" style="line-height: 56px;">
-        <span class="d-inline d-lg-none">{{ bisqTx.blockHash | shortenString : 24 }}</span>
-        <span class="d-none d-lg-inline">{{ bisqTx.blockHash }}</span>
+      <a [routerLink]="['/bisq-tx' | relativeUrl, bisqTx.id]" style="line-height: 56px;">
+        <span class="d-inline d-lg-none">{{ bisqTx.id | shortenString : 24 }}</span>
+        <span class="d-none d-lg-inline">{{ bisqTx.id }}</span>
       </a>
-      <app-clipboard [text]="txId"></app-clipboard>
+      <app-clipboard [text]="bisqTx.id"></app-clipboard>
     </div>
     <div class="clearfix"></div>
 
