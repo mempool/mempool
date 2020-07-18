@@ -50,6 +50,16 @@ export class BisqTransactionComponent implements OnInit, OnDestroy {
               if (bisqTxError.status === 404) {
                 return this.electrsApiService.getTransaction$(this.txId)
                   .pipe(
+                    map((tx) => {
+                      if (tx.status.confirmed) {
+                        this.error = {
+                          status: 200,
+                          statusText: 'Transaction is confirmed but not available in the Bisq database, please try reloading this page.'
+                        };
+                        return null;
+                      }
+                      return tx;
+                    }),
                     catchError((txError: HttpErrorResponse) => {
                       console.log(txError);
                       this.error = txError;
