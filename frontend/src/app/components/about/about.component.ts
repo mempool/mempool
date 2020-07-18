@@ -25,7 +25,7 @@ export class AboutComponent implements OnInit {
     if (this.stateService.network === 'bisq') {
       this.active = 2;
     }
-    if (document.location.port !== '443') {
+    if (document.location.port !== '') {
       this.hostname = this.hostname + ':' + document.location.port;
     }
   }
