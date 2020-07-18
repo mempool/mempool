@@ -12,6 +12,7 @@ import { TimeSinceComponent } from '../components/time-since/time-since.componen
 import { ClipboardComponent } from '../components/clipboard/clipboard.component';
 import { QrcodeComponent } from '../components/qrcode/qrcode.component';
 import { FiatComponent } from '../fiat/fiat.component';
+import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -30,11 +31,14 @@ import { FiatComponent } from '../fiat/fiat.component';
   ],
   imports: [
     CommonModule,
+    NgbNavModule,
   ],
   providers: [
     VbytesPipe,
   ],
   exports: [
+    NgbNavModule,
+    CommonModule,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     Hex2asciiPipe,
