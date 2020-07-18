@@ -7,28 +7,29 @@
   <div class="table-responsive-sm">
     <table class="table table-borderless table-striped">
       <thead>
-        <th style="width: 18%;">Transaction</th>
+        <th style="width: 20%;">Transaction</th>
         <th style="width: 20%;">Type</th>
-        <th style="width: 15%;">Total Sent (BSQ)</th>
-        <th style="width: 10%;">Outputs</th>
-        <th style="width: 12%;">Block Height</th>
-        <th style="width: 15%;">Block Time</th>
+        <th style="width: 20%;">Amount</th>
+        <th style="width: 20%;">Confirmed</th>
+        <th class="d-none d-md-block" style="width: 20%;">Height</th>
       </thead>
       <tbody *ngIf="!isLoading; else loadingTmpl">
         <tr *ngFor="let tx of transactions; trackBy: trackByFn">
-          <td><a [routerLink]="['/tx/' | relativeUrl, tx.id]" [state]="{ data: tx }">{{ tx.id | shortenString : 16 }}</a></td>
-          <td><app-bisq-icon class="mr-1" [txType]="tx.txType"></app-bisq-icon> {{ tx.txTypeDisplayString }}</td>
+          <td><a [routerLink]="['/tx/' | relativeUrl, tx.id]" [state]="{ data: tx }">{{ tx.id | slice : 0 : 8 }}</a></td>
+          <td>
+            <app-bisq-icon class="mr-1" [txType]="tx.txType"></app-bisq-icon>
+            <span class="d-none d-md-inline"> {{ tx.txTypeDisplayString }}</span>
+          </td>
           <td>
             <ng-template [ngIf]="tx.txType === 'PAY_TRADE_FEE'" [ngIfElse]="defaultTxType">
-              {{ tx.burntFee / 100 | number: '1.2-2' }}
+              {{ tx.burntFee / 100 | number: '1.2-2' }}<span class="d-none d-md-inline"> BSQ</span>
             </ng-template>
             <ng-template #defaultTxType>
-              {{ calculateTotalOutput(tx.outputs) / 100 | number: '1.2-2' }}
+              {{ calculateTotalOutput(tx.outputs) / 100 | number: '1.2-2' }}<span class="d-none d-md-inline"> BSQ</span>
             </ng-template>
           </td>
-          <td>{{ tx.outputs.length }}</td>
-          <td><a [routerLink]="['/block/' | relativeUrl, tx.blockHash]">{{ tx.blockHeight }}</a></td>
-          <td>{{ tx.time | date:'yyyy-MM-dd HH:mm' }}</td>
+          <td><app-time-since [time]="tx.time / 1000" [fastRender]="true"></app-time-since> ago</td>
+          <td class="d-none d-md-block"><a [routerLink]="['/block/' | relativeUrl, tx.blockHash]">{{ tx.blockHeight }}</a></td>
         </tr> 
       </tbody>
     </table>
@@ -42,6 +43,6 @@
 
 <ng-template #loadingTmpl>
   <tr *ngFor="let i of loadingItems">
-    <td *ngFor="let j of [1, 2, 3, 4, 5, 6]"><span class="skeleton-loader"></span></td>
+    <td *ngFor="let j of [1, 2, 3, 4, 5]"><span class="skeleton-loader"></span></td>
   </tr>
 </ng-template>
