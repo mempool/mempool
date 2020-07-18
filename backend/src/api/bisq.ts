@@ -27,7 +27,7 @@ class Bisq {
     this.loadBisqDumpFile();
 
     let fsWait: NodeJS.Timeout | null = null;
-    fs.watch(config.BSQ_BLOCKS_DATA_PATH, () => {
+    fs.watch(config.BSQ_BLOCKS_DATA_PATH, { recursive: true }, () => {
       if (fsWait) {
         clearTimeout(fsWait);
       }
