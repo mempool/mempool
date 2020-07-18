@@ -1,6 +1,6 @@
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-  <a class="navbar-brand" [routerLink]="['/']" style="position: relative;">
+  <a class="navbar-brand" [routerLink]="['/' | relativeUrl]" style="position: relative;">
     <img src="./resources/mempool-logo.png" height="35" width="140" class="logo" [ngStyle]="{'opacity': connectionState === 2 ? 1 : 0.5 }">
     <div class="badge badge-warning connection-badge" *ngIf="connectionState === 0">Offline</div>
     <div class="badge badge-warning connection-badge" style="left: 30px;" *ngIf="connectionState === 1">Reconnecting...</div>
