@@ -20,25 +20,16 @@ class Bisq {
   };
   private price: number = 0;
   private priceUpdateCallbackFunction: ((price: number) => void) | undefined;
+  private subdirectoryWatcher: fs.FSWatcher | undefined;
 
   constructor() {}
 
   startBisqService(): void {
     this.loadBisqDumpFile();
-
-    let fsWait: NodeJS.Timeout | null = null;
-    fs.watch(config.BSQ_BLOCKS_DATA_PATH, { recursive: true }, () => {
-      if (fsWait) {
-        clearTimeout(fsWait);
-      }
-      fsWait = setTimeout(() => {
-        console.log(`Change detected in the Bisq data folder.`);
-        this.loadBisqDumpFile();
-      }, 1000);
-    });
-
     setInterval(this.updatePrice.bind(this), 1000 * 60 * 60);
     this.updatePrice();
+    this.startTopLevelDirectoryWatcher();
+    this.restartSubDirectoryWatcher();
   }
 
   getTransaction(txId: string): BisqTransaction | undefined {
@@ -71,6 +62,36 @@ class Bisq {
 
   getLatestBlockHeight(): number {
     return this.latestBlockHeight;
+  }
+
+  private startTopLevelDirectoryWatcher() {
+    let fsWait: NodeJS.Timeout | null = null;
+    fs.watch(config.BSQ_BLOCKS_DATA_PATH, () => {
+      if (fsWait) {
+        clearTimeout(fsWait);
+      }
+      fsWait = setTimeout(() => {
+        console.log(`Change detected in the top level Bisq data folder. Resetting inner watcher.`);
+        this.restartSubDirectoryWatcher();
+      }, 15000);
+    });
+  }
+
+  private restartSubDirectoryWatcher() {
+    if (this.subdirectoryWatcher) {
+      this.subdirectoryWatcher.close();
+    }
+
+    let fsWait: NodeJS.Timeout | null = null;
+    this.subdirectoryWatcher = fs.watch(config.BSQ_BLOCKS_DATA_PATH + '/all', () => {
+      if (fsWait) {
+        clearTimeout(fsWait);
+      }
+      fsWait = setTimeout(() => {
+        console.log(`Change detected in the Bisq data folder.`);
+        this.loadBisqDumpFile();
+      }, 2000);
+    });
   }
 
   private updatePrice() {
