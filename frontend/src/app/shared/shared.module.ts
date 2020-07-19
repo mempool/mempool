@@ -12,10 +12,18 @@ import { TimeSinceComponent } from '../components/time-since/time-since.componen
 import { ClipboardComponent } from '../components/clipboard/clipboard.component';
 import { QrcodeComponent } from '../components/qrcode/qrcode.component';
 import { FiatComponent } from '../fiat/fiat.component';
-import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbNavModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { TxFeaturesComponent } from '../components/tx-features/tx-features.component';
+import { TxFeeRatingComponent } from '../components/tx-fee-rating/tx-fee-rating.component';
 
 @NgModule({
   declarations: [
+    ClipboardComponent,
+    TimeSinceComponent,
+    QrcodeComponent,
+    FiatComponent,
+    TxFeaturesComponent,
+    TxFeeRatingComponent,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     Hex2asciiPipe,
@@ -24,14 +32,11 @@ import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
     WuBytesPipe,
     CeilPipe,
     ShortenStringPipe,
-    ClipboardComponent,
-    TimeSinceComponent,
-    QrcodeComponent,
-    FiatComponent,
   ],
   imports: [
     CommonModule,
     NgbNavModule,
+    NgbTooltipModule,
   ],
   providers: [
     VbytesPipe,
@@ -39,6 +44,13 @@ import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
   exports: [
     NgbNavModule,
     CommonModule,
+    NgbTooltipModule,
+    TimeSinceComponent,
+    ClipboardComponent,
+    QrcodeComponent,
+    FiatComponent,
+    TxFeaturesComponent,
+    TxFeeRatingComponent,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     Hex2asciiPipe,
@@ -47,10 +59,6 @@ import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
     WuBytesPipe,
     CeilPipe,
     ShortenStringPipe,
-    TimeSinceComponent,
-    ClipboardComponent,
-    QrcodeComponent,
-    FiatComponent,
   ]
 })
 export class SharedModule {}
