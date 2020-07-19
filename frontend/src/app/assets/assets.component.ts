@@ -67,7 +67,7 @@ export class AssetsComponent implements OnInit {
         });
         this.assets = this.assets.sort((a: any, b: any) => a.name.localeCompare(b.name));
         this.assetsCache = this.assets;
-        this.searchForm.controls['searchText'].enable();
+        this.searchForm.get('searchText').enable();
         this.filteredAssets = this.assets.slice(0, this.itemsPerPage);
         this.isLoading = false;
       },

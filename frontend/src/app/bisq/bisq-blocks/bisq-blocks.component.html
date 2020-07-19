@@ -1,0 +1,36 @@
+<div class="container-xl">
+  <h1 style="float: left;">Blocks</h1>
+  <br>
+
+  <div class="clearfix"></div>
+
+  <div class="table-responsive-sm">
+    <table class="table table-borderless table-striped">
+      <thead>
+        <th style="width: 25%;">Height</th>
+        <th style="width: 25%;">Confirmed</th>
+        <th style="width: 25%;">Total Sent</th>
+        <th class="d-none d-md-block" style="width: 25%;">Transactions</th>
+      </thead>
+      <tbody *ngIf="!isLoading; else loadingTmpl">
+        <tr *ngFor="let block of blocks; trackBy: trackByFn">
+          <td><a [routerLink]="['/block/' | relativeUrl, block.hash]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
+          <td><app-time-since [time]="block.time / 1000" [fastRender]="true"></app-time-since> ago</td>
+          <td>{{ calculateTotalOutput(block) / 100 | number: '1.2-2' }}<span class="d-none d-md-inline"> BSQ</span></td>
+          <td class="d-none d-md-block">{{ block.txs.length }}</td>
+        </tr> 
+      </tbody>
+    </table>
+  </div>
+
+  <br>
+
+  <ngb-pagination [size]="paginationSize" [collectionSize]="totalCount" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true"></ngb-pagination>
+
+</div>
+
+<ng-template #loadingTmpl>
+  <tr *ngFor="let i of loadingItems">
+    <td *ngFor="let j of [1, 2, 3, 4, 5]"><span class="skeleton-loader"></span></td>
+  </tr>
+</ng-template>

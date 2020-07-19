@@ -171,7 +171,7 @@ body {
 }
 
 .table-striped tbody tr:nth-of-type(odd) {
-  background-color: #181b2d !important;
+  background-color: #181b2d;
 }
 
 .bordertop {
@@ -375,7 +375,7 @@ h1, h2, h3 {
 }
 
 @media (min-width: 768px) {
-  .md-inline {
+  .d-md-inline {
     display: inline-block;
   }
 }
@@ -415,4 +415,8 @@ h1, h2, h3 {
   color: #ffffff;
   background-color: #653b9c;
   border-color: #3a1c61;
+}
+
+th {
+  white-space: nowrap;
 }

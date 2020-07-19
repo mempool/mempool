@@ -1,36 +1,52 @@
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-  <a class="navbar-brand" routerLink="/" style="position: relative;">
+  <a class="navbar-brand" [routerLink]="['/' | relativeUrl]" style="position: relative;">
     <img src="./resources/mempool-logo.png" height="35" width="140" class="logo" [ngStyle]="{'opacity': connectionState === 2 ? 1 : 0.5 }">
     <div class="badge badge-warning connection-badge" *ngIf="connectionState === 0">Offline</div>
     <div class="badge badge-warning connection-badge" style="left: 30px;" *ngIf="connectionState === 1">Reconnecting...</div>
   </a>
 
-  <div class="btn-group" style="margin-right: 16px;" *ngIf="env.TESTNET_ENABLED || env.LIQUID_ENABLED">
-    <button type="button" (click)="networkDropdownHidden = !networkDropdownHidden" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      <span class="sr-only">Toggle Dropdown</span>
+
+  <div ngbDropdown display="dynamic" style="margin-right: 16px;" *ngIf="env.TESTNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED">
+    <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split" aria-haspopup="true">
+      <img src="./resources/{{ network === '' ? 'bitcoin' : network }}-logo.png" style="width: 25px; height: 25px;" class="mr-1">
     </button>
-    <div class="dropdown-menu" [class.d-block]="!networkDropdownHidden">
-      <a class="dropdown-item mainnet" [class.active]="network === ''" routerLink="/"><img src="./resources/bitcoin-logo.png" style="width: 35.5px;"> Mainnet</a>
-      <a *ngIf="env.LIQUID_ENABLED" class="dropdown-item liquid" [class.active]="network === 'liquid'" routerLink="/liquid"><img src="./resources/liquid-logo.png" style="width: 35.5px;"> Liquid</a>
-      <a *ngIf="env.TESTNET_ENABLED" class="dropdown-item testnet" [class.active]="network === 'testnet'" routerLink="/testnet"><img src="./resources/testnet-logo.png" style="width: 35.5px;"> Testnet</a>
+    <div ngbDropdownMenu>
+      <button ngbDropdownItem class="mainnet" routerLink="/"><img src="./resources/bitcoin-logo.png" style="width: 30px;" class="mr-1"> Mainnet</button>
+      <button ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet" [class.active]="network === 'testnet'" routerLink="/testnet"><img src="./resources/testnet-logo.png" style="width: 30px;" class="mr-1"> Testnet</button>
+      <h6 *ngIf="env.LIQUID_ENABLED || env.BISQ_ENABLED" class="dropdown-header">Layer 2 Networks</h6>
+      <button ngbDropdownItem *ngIf="env.BISQ_ENABLED" class="mainnet" [class.active]="network === 'bisq'" routerLink="/bisq"><img src="./resources/bisq-logo.png" style="width: 30px;" class="mr-1"> Bisq</button>
+      <button ngbDropdownItem *ngIf="env.LIQUID_ENABLED" class="liquid" [class.active]="network === 'liquid'" routerLink="/liquid"><img src="./resources/liquid-logo.png" style="width: 30px;" class="mr-1"> Liquid</button>
     </div>
   </div>
 
-  <button class="navbar-toggler" type="button" (click)="collapse()" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+  <button class="navbar-toggler" type="button" (click)="collapse()">
     <span class="navbar-toggler-icon"></span>
   </button>
   
   <div class="navbar-collapse collapse" id="navbarCollapse" [ngClass]="{'show': navCollapsed}">
     <ul class="navbar-nav mr-auto {{ network }}">
-      <li class="nav-item" routerLinkActive="active">
-        <a class="nav-link" [routerLink]="['/graphs' | relativeUrl]" (click)="collapse()">Graphs</a>
-      </li>
-      <li class="nav-item" routerLinkActive="active">
-        <a class="nav-link" [routerLink]="['/tv' | relativeUrl]" (click)="collapse()">TV view &nbsp;<img src="./resources/expand.png" width="15"/></a>
-      </li>
+      <ng-template [ngIf]="network === 'bisq'" [ngIfElse]="notBisq">
+        <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+          <a class="nav-link" [routerLink]="['/bisq']" (click)="collapse()">Transactions</a>
+        </li>
+        <li class="nav-item" routerLinkActive="active">
+          <a class="nav-link" [routerLink]="['/bisq/blocks']" (click)="collapse()">Blocks</a>
+        </li>
+        <li class="nav-item" routerLinkActive="active">
+          <a class="nav-link" [routerLink]="['/bisq/stats']" (click)="collapse()">Stats</a>
+        </li>
+      </ng-template>
+      <ng-template #notBisq>
+        <li class="nav-item" routerLinkActive="active">
+          <a class="nav-link" [routerLink]="['/graphs' | relativeUrl]" (click)="collapse()">Graphs</a>
+        </li>
+        <li class="nav-item" routerLinkActive="active">
+          <a class="nav-link" [routerLink]="['/tv' | relativeUrl]" (click)="collapse()">TV view &nbsp;<img src="./resources/expand.png" width="15"/></a>
+        </li>
+      </ng-template>
       <li *ngIf="network === 'liquid'" class="nav-item" routerLinkActive="active">
-        <a class="nav-link" [routerLink]="['/assets' | relativeUrl]" (click)="collapse()">Assets</a>
+        <a class="nav-link" [routerLink]="['liquid/assets']" (click)="collapse()">Assets</a>
       </li>
       <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/about' | relativeUrl]" (click)="collapse()">About</a>
@@ -45,6 +61,10 @@
 
 <router-outlet></router-outlet>
 
-<br><br><br>
+<br>
 
-<app-footer></app-footer>
+<ng-template [ngIf]="network !== 'bisq'">
+  <br><br>
+
+  <app-footer></app-footer>
+</ng-template>

@@ -37,13 +37,15 @@ export const feeLevels = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 7
 interface Env {
   TESTNET_ENABLED: boolean;
   LIQUID_ENABLED: boolean;
+  BISQ_ENABLED: boolean;
   ELCTRS_ITEMS_PER_PAGE: number;
   KEEP_BLOCKS_AMOUNT: number;
-};
+}
 
 const defaultEnv: Env = {
   'TESTNET_ENABLED': false,
   'LIQUID_ENABLED': false,
+  'BISQ_ENABLED': false,
   'ELCTRS_ITEMS_PER_PAGE': 25,
   'KEEP_BLOCKS_AMOUNT': 8
 };

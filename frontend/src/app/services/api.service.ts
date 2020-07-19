@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { Observable } from 'rxjs';
 import { StateService } from './state.service';
@@ -18,6 +18,9 @@ export class ApiService {
   ) {
     this.apiBaseUrl = API_BASE_URL.replace('{network}', '');
     this.stateService.networkChanged$.subscribe((network) => {
+      if (network === 'bisq') {
+        network = '';
+      }
       this.apiBaseUrl = API_BASE_URL.replace('{network}', network ? '/' + network : '');
     });
   }

@@ -17,6 +17,5 @@ export class BlockchainComponent implements OnInit {
 
   ngOnInit() {
     this.stateService.blocks$.subscribe(() => this.isLoading = false);
-    this.stateService.networkChanged$.subscribe(() => this.isLoading = true);
   }
 }
