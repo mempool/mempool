@@ -21,6 +21,9 @@ export class TxFeaturesComponent implements OnChanges {
   constructor() { }
 
   ngOnChanges() {
+    if (!this.tx) {
+      return;
+    }
     this.segwitGains = calcSegwitFeeGains(this.tx);
     this.isRbfTransaction = this.tx.vin.some((v) => v.sequence < 0xfffffffe);
   }

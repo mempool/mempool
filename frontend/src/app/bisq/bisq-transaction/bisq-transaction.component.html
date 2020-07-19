@@ -27,17 +27,37 @@
                   <i> (<app-time-since [time]="bisqTx.time / 1000" [fastRender]="true"></app-time-since> ago)</i>
                 </td>
               </tr>
+              <tr>
+                <td class="td-width">Features</td>
+                <td>
+                  <app-tx-features *ngIf="tx; else loadingTx" [tx]="tx"></app-tx-features>
+                  <ng-template #loadingTx>
+                    <span class="skeleton-loader"></span>
+                  </ng-template>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
         <div class="col-sm">
           <table class="table table-borderless table-striped">
             <tbody>
-                <tr>
-                  <td class="td-width">Burnt</td>
-                  <td>
-                    {{ bisqTx.burntFee / 100 | number: '1.2-2' }} BSQ (<app-bsq-amount [bsq]="bisqTx.burntFee" [forceFiat]="true" [green]="true"></app-bsq-amount>)
-                </tr>
+              <tr>
+                <td class="td-width">Burnt</td>
+                <td>
+                  {{ bisqTx.burntFee / 100 | number: '1.2-2' }} BSQ (<app-bsq-amount [bsq]="bisqTx.burntFee" [forceFiat]="true" [green]="true"></app-bsq-amount>)
+              </tr>
+              <tr>
+                <td>Fee per vByte</td>
+                <td *ngIf="!isLoadingTx; else loadingTxFee">
+                  {{ tx.fee / (tx.weight / 4) | number : '1.1-1' }} sat/vB
+                  &nbsp;
+                  <app-tx-fee-rating [tx]="tx"></app-tx-fee-rating>
+                </td>
+                <ng-template #loadingTxFee>
+                  <td><span class="skeleton-loader"></span></td>
+                </ng-template>
+              </tr>
             </tbody>
           </table>
         </div>
