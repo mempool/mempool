@@ -15,18 +15,9 @@ export class MasterPageComponent implements OnInit {
   navCollapsed = false;
   connectionState = 2;
 
-  networkDropdownHidden = true;
-
   constructor(
     private stateService: StateService,
   ) { }
-
-  @HostListener('document:click', ['$event'])
-  documentClick(event: any): void {
-    if (!event.target.classList.contains('dropdown-toggle')) {
-      this.networkDropdownHidden = true;
-    }
-  }
 
   ngOnInit() {
     this.stateService.connectionState$
@@ -37,14 +28,6 @@ export class MasterPageComponent implements OnInit {
     this.stateService.networkChanged$
       .subscribe((network) => {
         this.network = network;
-
-        if (network === 'testnet') {
-          this.tvViewRoute = '/testnet-tv';
-        } else if (network === 'liquid') {
-          this.tvViewRoute = '/liquid-tv';
-        } else {
-          this.tvViewRoute = '/tv';
-        }
       });
   }
 

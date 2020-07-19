@@ -73,10 +73,10 @@ class Blocks {
         console.log(`${found} of ${txIds.length} found in mempool. ${notFound} not found.`);
 
         block.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
+        block.coinbaseTx = this.stripCoinbaseTransaction(transactions[0]);
         transactions.sort((a, b) => b.feePerVsize - a.feePerVsize);
         block.medianFee = transactions.length > 1 ? Common.median(transactions.map((tx) => tx.feePerVsize)) : 0;
         block.feeRange = transactions.length > 1 ? Common.getFeesInRange(transactions, 8, 1) : [0, 0];
-        block.coinbaseTx = this.stripCoinbaseTransaction(transactions[0]);
 
         this.blocks.push(block);
         if (this.blocks.length > config.KEEP_BLOCK_AMOUNT) {

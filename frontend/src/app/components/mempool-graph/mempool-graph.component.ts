@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnChanges } from '@angular/core';
 import { formatDate } from '@angular/common';
-import { VbytesPipe } from 'src/app/pipes/bytes-pipe/vbytes.pipe';
+import { VbytesPipe } from 'src/app/shared/pipes/bytes-pipe/vbytes.pipe';
 import * as Chartist from 'chartist';
 import { OptimizedMempoolStats } from 'src/app/interfaces/node-api.interface';
 import { StateService } from 'src/app/services/state.service';

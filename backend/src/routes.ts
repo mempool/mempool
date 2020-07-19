@@ -4,6 +4,7 @@ import feeApi from './api/fee-api';
 import backendInfo from './api/backend-info';
 import mempoolBlocks from './api/mempool-blocks';
 import mempool from './api/mempool';
+import bisq from './api/bisq';
 
 class Routes {
   private cache = {};
@@ -25,42 +26,42 @@ class Routes {
 
   public async get2HStatistics(req: Request, res: Response) {
     const result = await statistics.$list2H();
-    res.send(result);
+    res.json(result);
   }
 
   public get24HStatistics(req: Request, res: Response) {
-    res.send(this.cache['24h']);
+    res.json(this.cache['24h']);
   }
 
   public get1WHStatistics(req: Request, res: Response) {
-    res.send(this.cache['1w']);
+    res.json(this.cache['1w']);
   }
 
   public get1MStatistics(req: Request, res: Response) {
-    res.send(this.cache['1m']);
+    res.json(this.cache['1m']);
   }
 
   public get3MStatistics(req: Request, res: Response) {
-    res.send(this.cache['3m']);
+    res.json(this.cache['3m']);
   }
 
   public get6MStatistics(req: Request, res: Response) {
-    res.send(this.cache['6m']);
+    res.json(this.cache['6m']);
   }
 
   public get1YStatistics(req: Request, res: Response) {
-    res.send(this.cache['1y']);
+    res.json(this.cache['1y']);
   }
 
   public async getRecommendedFees(req: Request, res: Response) {
     const result = feeApi.getRecommendedFee();
-    res.send(result);
+    res.json(result);
   }
 
   public getMempoolBlocks(req: Request, res: Response) {
     try {
       const result = mempoolBlocks.getMempoolBlocks();
-      res.send(result);
+      res.json(result);
     } catch (e) {
       res.status(500).send(e.message);
     }
@@ -79,11 +80,65 @@ class Routes {
     }
 
     const times = mempool.getFirstSeenForTransactions(txIds);
-    res.send(times);
+    res.json(times);
   }
 
   public getBackendInfo(req: Request, res: Response) {
-    res.send(backendInfo.getBackendInfo());
+    res.json(backendInfo.getBackendInfo());
+  }
+
+  public getBisqStats(req: Request, res: Response) {
+    const result = bisq.getStats();
+    res.json(result);
+  }
+
+  public getBisqTip(req: Request, res: Response) {
+    const result = bisq.getLatestBlockHeight();
+    res.type('text/plain');
+    res.send(result.toString());
+  }
+
+  public getBisqTransaction(req: Request, res: Response) {
+    const result = bisq.getTransaction(req.params.txId);
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(404).send('Bisq transaction not found');
+    }
+  }
+
+  public getBisqTransactions(req: Request, res: Response) {
+    const index = parseInt(req.params.index, 10) || 0;
+    const length = parseInt(req.params.length, 10) > 100 ? 100 : parseInt(req.params.length, 10) || 25;
+    const [transactions, count] = bisq.getTransactions(index, length);
+    res.header('X-Total-Count', count.toString());
+    res.json(transactions);
+  }
+
+  public getBisqBlock(req: Request, res: Response) {
+    const result = bisq.getBlock(req.params.hash);
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(404).send('Bisq block not found');
+    }
+  }
+
+  public getBisqBlocks(req: Request, res: Response) {
+    const index = parseInt(req.params.index, 10) || 0;
+    const length = parseInt(req.params.length, 10) > 100 ? 100 : parseInt(req.params.length, 10) || 25;
+    const [transactions, count] = bisq.getBlocks(index, length);
+    res.header('X-Total-Count', count.toString());
+    res.json(transactions);
+  }
+
+  public getBisqAddress(req: Request, res: Response) {
+    const result = bisq.getAddress(req.params.address.substr(1));
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(404).send('Bisq address not found');
+    }
   }
 }
 

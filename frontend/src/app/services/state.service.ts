@@ -23,6 +23,7 @@ export class StateService {
   networkChanged$ = new ReplaySubject<string>(1);
   blocks$ = new ReplaySubject<[Block, boolean, boolean]>(env.KEEP_BLOCKS_AMOUNT);
   conversions$ = new ReplaySubject<any>(1);
+  bsqPrice$ = new ReplaySubject<number>(1);
   mempoolStats$ = new ReplaySubject<MemPoolState>(1);
   mempoolBlocks$ = new ReplaySubject<MempoolBlock[]>(1);
   txReplaced$ = new Subject<Transaction>();
@@ -62,6 +63,12 @@ export class StateService {
         if (this.network !== 'testnet') {
           this.network = 'testnet';
           this.networkChanged$.next('testnet');
+        }
+        return;
+      case 'bisq':
+        if (this.network !== 'bisq') {
+          this.network = 'bisq';
+          this.networkChanged$.next('bisq');
         }
         return;
       default:

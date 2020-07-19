@@ -29,11 +29,14 @@ export class WebsocketService {
   constructor(
     private stateService: StateService,
   ) {
-    this.network = this.stateService.network;
-    this.websocketSubject = webSocket<WebsocketResponse | any>(WEB_SOCKET_URL.replace('{network}', this.network ? '/' + this.network : ''));
+    this.network = this.stateService.network === 'bisq' ? '' : this.stateService.network;
+    this.websocketSubject = webSocket<WebsocketResponse>(WEB_SOCKET_URL.replace('{network}', this.network ? '/' + this.network : ''));
     this.startSubscription();
 
     this.stateService.networkChanged$.subscribe((network) => {
+      if (network === 'bisq') {
+        network = '';
+      }
       if (network === this.network) {
         return;
       }
@@ -45,7 +48,7 @@ export class WebsocketService {
 
       this.websocketSubject.complete();
       this.subscription.unsubscribe();
-      this.websocketSubject = webSocket<WebsocketResponse | any>(WEB_SOCKET_URL.replace('{network}', this.network ? '/' + this.network : ''));
+      this.websocketSubject = webSocket<WebsocketResponse>(WEB_SOCKET_URL.replace('{network}', this.network ? '/' + this.network : ''));
 
       this.startSubscription();
     });
@@ -94,6 +97,10 @@ export class WebsocketService {
 
         if (response['mempool-blocks']) {
           this.stateService.mempoolBlocks$.next(response['mempool-blocks']);
+        }
+
+        if (response['bsq-price']) {
+          this.stateService.bsqPrice$.next(response['bsq-price']);
         }
 
         if (response['git-commit']) {

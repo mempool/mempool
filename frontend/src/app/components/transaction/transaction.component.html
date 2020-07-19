@@ -51,7 +51,12 @@
                     <td>After <app-timespan [time]="tx.status.block_time - transactionTime"></app-timespan></td>
                   </tr>
                 </ng-template>
-                <ng-container *ngTemplateOutlet="features"></ng-container>
+                <tr *ngIf="network !== 'liquid'">
+                  <td class="td-width">Features</td>
+                  <td>
+                    <app-tx-features [tx]="tx"></app-tx-features>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -68,9 +73,7 @@
                     <td>
                       {{ tx.fee / (tx.weight / 4) | number : '1.1-1' }} sat/vB
                       &nbsp;
-                      <span *ngIf="feeRating === 1" class="badge badge-success">Optimal</span>
-                      <span *ngIf="feeRating === 2" class="badge badge-warning" title="Only ~{{ medianFeeNeeded }} sat/vB was needed to get into this block">Overpaid {{ overpaidTimes }}x</span>
-                      <span *ngIf="feeRating === 3" class="badge badge-danger" title="Only ~{{ medianFeeNeeded }} sat/vB was needed to get into this block">Overpaid {{ overpaidTimes }}x</span>
+                      <app-tx-fee-rating [tx]="tx"></app-tx-fee-rating>
                     </td>
                   </tr>
                 </ng-template>
@@ -124,7 +127,12 @@
                     </ng-template>
                   </td>
                 </tr>
-                <ng-container *ngTemplateOutlet="features"></ng-container>
+                <tr *ngIf="network !== 'liquid'">
+                  <td class="td-width">Features</td>
+                  <td>
+                    <app-tx-features [tx]="tx"></app-tx-features>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -244,7 +252,7 @@
 
   <ng-template [ngIf]="error">
 
-    <div class="text-center" *ngIf="waitingForTransaction">
+    <div class="text-center" *ngIf="waitingForTransaction; else errorTemplate">
       <h3>Transaction not found.</h3>
       <h5>Waiting for it to appear in the mempool...</h5>
       <div class="spinner-border text-light mt-2"></div>
@@ -260,15 +268,3 @@
 </div>
 
 <br>
-
-<ng-template #features>
-  <tr *ngIf="network !== 'liquid'">
-    <td class="td-width">Features</td>
-    <td>
-      <span *ngIf="segwitGains.realizedGains && !segwitGains.potentialBech32Gains" class="badge badge-success mr-1" ngbTooltip="This transaction saved {{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}% on fees by using native SegWit-Bech32" placement="bottom">SegWit</span>
-      <span *ngIf="segwitGains.realizedGains && segwitGains.potentialBech32Gains" class="badge badge-warning mr-1" ngbTooltip="This transaction saved {{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}% on fees by using SegWit and could save {{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}% more by fully upgrading to native SegWit-Bech32" placement="bottom">SegWit</span>
-      <span *ngIf="segwitGains.potentialP2shGains" class="badge badge-danger mr-1" ngbTooltip="This transaction could save {{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}% on fees by upgrading to native SegWit-Bech32 or {{ segwitGains.potentialP2shGains * 100 | number:  '1.0-0' }}% by upgrading to SegWit-P2SH" placement="bottom"><del>SegWit</del></span>
-      <span *ngIf="isRbfTransaction" class="badge badge-success" ngbTooltip="This transaction support Replace-By-Fee (RBF) allowing fee bumping" placement="bottom">RBF</span>
-    </td>
-  </tr>
-</ng-template>

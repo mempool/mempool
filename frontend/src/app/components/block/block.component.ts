@@ -4,7 +4,7 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { switchMap, tap, debounceTime, catchError } from 'rxjs/operators';
 import { Block, Transaction, Vout } from '../../interfaces/electrs.interface';
-import { of } from 'rxjs';
+import { of, Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { env } from 'src/app/app.constants';
@@ -25,6 +25,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   isLoadingTransactions = true;
   error: any;
   blockSubsidy: number;
+  subscription: Subscription;
   fees: number;
   paginationMaxSize: number;
   page = 1;
@@ -43,7 +44,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.paginationMaxSize = window.matchMedia('(max-width: 700px)').matches ? 3 : 5;
     this.network = this.stateService.network;
 
-    this.route.paramMap
+    this.subscription = this.route.paramMap
     .pipe(
       switchMap((params: ParamMap) => {
         const blockHash: string = params.get('id') || '';
@@ -129,6 +130,7 @@ export class BlockComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.stateService.markBlock$.next({});
+    this.subscription.unsubscribe();
   }
 
   setBlockSubsidy() {
