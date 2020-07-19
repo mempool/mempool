@@ -29,7 +29,7 @@
             </ng-template>
           </td>
           <td><app-time-since [time]="tx.time / 1000" [fastRender]="true"></app-time-since> ago</td>
-          <td class="d-none d-md-block"><a [routerLink]="['/block/' | relativeUrl, tx.blockHash]">{{ tx.blockHeight }}</a></td>
+          <td class="d-none d-md-block"><a [routerLink]="['/block/' | relativeUrl, tx.blockHash]" [state]="{ data: { blockHeight: tx.blockHeight } }">{{ tx.blockHeight }}</a></td>
         </tr> 
       </tbody>
     </table>
