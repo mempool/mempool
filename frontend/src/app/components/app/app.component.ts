@@ -9,7 +9,7 @@ import { StateService } from 'src/app/services/state.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  link: HTMLLinkElement;
+  link: HTMLElement = document.getElementById('canonical');
 
   constructor(
     public router: Router,
@@ -28,19 +28,8 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) {
-        this.updateCanonicalUrlElement('https://mempool.space' + location.pathname);
+        this.link.setAttribute('href', 'https://mempool.space' + (location.pathname === '/' ? '' : location.pathname));
       }
     });
   }
-
-  updateCanonicalUrlElement(url: string) {
-    if (!this.link) {
-      this.link = window.document.createElement('link');
-      this.link.setAttribute('rel', 'canonical');
-      window.document.head.appendChild(this.link);
-    }
-    this.link.setAttribute('href', url);
-  }
-
-
 }
