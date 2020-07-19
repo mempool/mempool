@@ -21,6 +21,10 @@ export class BisqTransactionsComponent implements OnInit {
   loadingItems: number[];
   pageSubject$ = new Subject<number>();
 
+  // @ts-ignore
+  paginationSize: 'sm' | 'lg' = 'md';
+  paginationMaxSize = 10;
+
   constructor(
     private bisqApiService: BisqApiService,
     private seoService: SeoService,
@@ -32,10 +36,15 @@ export class BisqTransactionsComponent implements OnInit {
     this.itemsPerPage = Math.max(Math.round(this.contentSpace / this.fiveItemsPxSize) * 5, 10);
     this.loadingItems = Array(this.itemsPerPage);
 
+    if (document.body.clientWidth < 768) {
+      this.paginationSize = 'sm';
+      this.paginationMaxSize = 3;
+    }
+
     this.pageSubject$
       .pipe(
         tap(() => this.isLoading = true),
-        switchMap((page) => this.bisqApiService.listTransactions$((page - 1) * 10, this.itemsPerPage))
+        switchMap((page) => this.bisqApiService.listTransactions$((page - 1) * this.itemsPerPage, this.itemsPerPage))
       )
       .subscribe((response) => {
         this.isLoading = false;

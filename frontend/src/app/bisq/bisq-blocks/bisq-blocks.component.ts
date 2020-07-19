@@ -19,6 +19,9 @@ export class BisqBlocksComponent implements OnInit {
   fiveItemsPxSize = 250;
   loadingItems: number[];
   isLoading = true;
+  // @ts-ignore
+  paginationSize: 'sm' | 'lg' = 'md';
+  paginationMaxSize = 10;
 
   pageSubject$ = new Subject<number>();
 
@@ -31,11 +34,15 @@ export class BisqBlocksComponent implements OnInit {
     this.seoService.setTitle('Blocks', true);
     this.itemsPerPage = Math.max(Math.round(this.contentSpace / this.fiveItemsPxSize) * 5, 10);
     this.loadingItems = Array(this.itemsPerPage);
+    if (document.body.clientWidth < 768) {
+      this.paginationSize = 'sm';
+      this.paginationMaxSize = 3;
+    }
 
     this.pageSubject$
       .pipe(
         tap(() => this.isLoading = true),
-        switchMap((page) => this.bisqApiService.listBlocks$((page - 1) * 10, this.itemsPerPage))
+        switchMap((page) => this.bisqApiService.listBlocks$((page - 1) * this.itemsPerPage, this.itemsPerPage))
       )
       .subscribe((response) => {
         this.isLoading = false;
