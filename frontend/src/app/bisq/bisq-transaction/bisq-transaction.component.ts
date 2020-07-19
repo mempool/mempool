@@ -4,7 +4,7 @@ import { BisqTransaction } from 'src/app/bisq/bisq.interfaces';
 import { switchMap, map, catchError } from 'rxjs/operators';
 import { of, Observable, Subscription } from 'rxjs';
 import { StateService } from 'src/app/services/state.service';
-import { Block } from 'src/app/interfaces/electrs.interface';
+import { Block, Transaction } from 'src/app/interfaces/electrs.interface';
 import { BisqApiService } from '../bisq-api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { ElectrsApiService } from 'src/app/services/electrs-api.service';
@@ -17,10 +17,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class BisqTransactionComponent implements OnInit, OnDestroy {
   bisqTx: BisqTransaction;
+  tx: Transaction;
   latestBlock$: Observable<Block>;
   txId: string;
   price: number;
   isLoading = true;
+  isLoadingTx = true;
   error = null;
   subscription: Subscription;
 
@@ -37,6 +39,7 @@ export class BisqTransactionComponent implements OnInit, OnDestroy {
     this.subscription = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         this.isLoading = true;
+        this.isLoadingTx = true;
         this.error = null;
         document.body.scrollTo(0, 0);
         this.txId = params.get('id') || '';
@@ -71,21 +74,31 @@ export class BisqTransactionComponent implements OnInit, OnDestroy {
               return of(null);
             })
           );
-      })
+      }),
+      switchMap((tx) => {
+        if (!tx) {
+          return of(null);
+        }
+
+        if (tx.version) {
+          this.router.navigate(['/tx/', this.txId], { state: { data: tx, bsqTx: true }});
+          return of(null);
+        }
+
+        this.bisqTx = tx;
+        this.isLoading = false;
+
+        return this.electrsApiService.getTransaction$(this.txId);
+      }),
     )
     .subscribe((tx) => {
-      this.isLoading = false;
+      this.isLoadingTx = false;
 
       if (!tx) {
         return;
       }
 
-      if (tx.version) {
-        this.router.navigate(['/tx/', this.txId], { state: { data: tx, bsqTx: true }});
-        return;
-      }
-
-      this.bisqTx = tx;
+      this.tx = tx;
     },
     (error) => {
       this.error = error;
