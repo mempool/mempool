@@ -1,5 +1,5 @@
-import { Component, HostListener } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, HostListener, OnInit } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
 import { WebsocketService } from '../../services/websocket.service';
 import { StateService } from 'src/app/services/state.service';
 
@@ -8,8 +8,7 @@ import { StateService } from 'src/app/services/state.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  network = '';
+export class AppComponent implements OnInit {
   link: HTMLLinkElement;
 
   constructor(
@@ -25,5 +24,23 @@ export class AppComponent {
     }
     this.stateService.keyNavigation$.next(event);
   }
+
+  ngOnInit() {
+    this.router.events.subscribe((val) => {
+      if (val instanceof NavigationEnd) {
+        this.updateCanonicalUrlElement('https://mempool.space' + location.pathname);
+      }
+    });
+  }
+
+  updateCanonicalUrlElement(url: string) {
+    if (!this.link) {
+      this.link = window.document.createElement('link');
+      this.link.setAttribute('rel', 'canonical');
+      window.document.head.appendChild(this.link);
+    }
+    this.link.setAttribute('href', url);
+  }
+
 
 }
