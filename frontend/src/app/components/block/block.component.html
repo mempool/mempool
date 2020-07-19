@@ -1,8 +1,11 @@
 <div class="container-xl">
 
   <div class="title-block">
-    <h1>Block <ng-template [ngIf]="blockHeight"><a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a></ng-template></h1>
+    <h1 class="float-left">Block <ng-template [ngIf]="blockHeight"><a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a></ng-template></h1>
+    <button [routerLink]="['/' | relativeUrl]" class="btn btn-sm float-right mr-2 mt-2">&#10005;</button>
   </div>
+
+  <div class="clearfix"></div>
 
   <ng-template [ngIf]="!isLoadingBlock && !error">
 
