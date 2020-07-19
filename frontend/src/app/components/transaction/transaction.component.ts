@@ -9,7 +9,6 @@ import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
-import { calcSegwitFeeGains } from 'src/app/bitcoin.utils';
 import { BisqTransaction } from 'src/app/bisq/bisq.interfaces';
 
 @Component({
@@ -21,9 +20,6 @@ export class TransactionComponent implements OnInit, OnDestroy {
   network = '';
   tx: Transaction;
   txId: string;
-  feeRating: number;
-  overpaidTimes: number;
-  medianFeeNeeded: number;
   txInBlockIndex: number;
   isLoadingTx = true;
   error: any = undefined;
@@ -31,14 +27,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
   latestBlock: Block;
   transactionTime = -1;
   subscription: Subscription;
-  segwitGains = {
-    realizedGains: 0,
-    potentialBech32Gains: 0,
-    potentialP2shGains: 0,
-  };
-  isRbfTransaction: boolean;
   rbfTransaction: undefined | Transaction;
-  bisqTx: BisqTransaction;
 
   constructor(
     private route: ActivatedRoute,
@@ -89,8 +78,6 @@ export class TransactionComponent implements OnInit, OnDestroy {
       this.error = undefined;
       this.waitingForTransaction = false;
       this.setMempoolBlocksSubscription();
-      this.segwitGains = calcSegwitFeeGains(tx);
-      this.isRbfTransaction = tx.vin.some((v) => v.sequence < 0xfffffffe);
 
       if (!tx.status.confirmed) {
         this.websocketService.startTrackTransaction(tx.txid);
@@ -100,8 +87,6 @@ export class TransactionComponent implements OnInit, OnDestroy {
         } else {
           this.getTransactionTime();
         }
-      } else {
-        this.findBlockAndSetFeeRating();
       }
       if (this.tx.status.confirmed) {
         this.stateService.markBlock$.next({ blockHeight: tx.status.block_height });
@@ -127,7 +112,6 @@ export class TransactionComponent implements OnInit, OnDestroy {
           };
           this.stateService.markBlock$.next({ blockHeight: block.height });
           this.audioService.playSound('magic');
-          this.findBlockAndSetFeeRating();
         }
       });
 
@@ -171,42 +155,12 @@ export class TransactionComponent implements OnInit, OnDestroy {
       });
   }
 
-  findBlockAndSetFeeRating() {
-    this.stateService.blocks$
-      .pipe(
-        filter(([block]) => block.height === this.tx.status.block_height),
-        take(1)
-      )
-      .subscribe(([block]) => {
-        const feePervByte = this.tx.fee / (this.tx.weight / 4);
-        this.medianFeeNeeded = Math.round(block.feeRange[Math.round(block.feeRange.length * 0.5)]);
-
-        // Block not filled
-        if (block.weight < 4000000 * 0.95) {
-          this.medianFeeNeeded = 1;
-        }
-
-        this.overpaidTimes = Math.round(feePervByte / this.medianFeeNeeded);
-
-        if (feePervByte <= this.medianFeeNeeded || this.overpaidTimes < 2) {
-          this.feeRating = 1;
-        } else {
-          this.feeRating = 2;
-          if (this.overpaidTimes > 10) {
-            this.feeRating = 3;
-          }
-        }
-      });
-  }
-
   resetTransaction() {
     this.error = undefined;
     this.tx = null;
-    this.feeRating = undefined;
     this.waitingForTransaction = false;
     this.isLoadingTx = true;
     this.rbfTransaction = undefined;
-    this.bisqTx = undefined;
     this.transactionTime = -1;
     document.body.scrollTo(0, 0);
     this.leaveTransaction();
