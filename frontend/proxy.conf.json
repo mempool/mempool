@@ -8,11 +8,11 @@
     "secure": false,
     "ws": true
   },
-  "/api/bisq": {
+  "/bisq/api": {
     "target": "http://localhost:8999/",
     "secure": false,
     "pathRewrite": {
-      "^/api/bisq": "/api/v1/bisq"
+      "^/bisq/api": "/api/v1/bisq"
     }
   },
   "/api": {

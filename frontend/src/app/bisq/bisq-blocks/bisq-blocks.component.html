@@ -25,7 +25,7 @@
 
   <br>
 
-  <ngb-pagination [collectionSize]="totalCount" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="5" [boundaryLinks]="true"></ngb-pagination>
+  <ngb-pagination [size]="paginationSize" [collectionSize]="totalCount" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true"></ngb-pagination>
 
 </div>
 

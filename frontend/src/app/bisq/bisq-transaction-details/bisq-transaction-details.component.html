@@ -4,7 +4,7 @@
       <table class="table table-borderless table-striped">
         <tbody>
           <tr>
-            <td>Inputs</td>
+            <td class="td-width">Inputs</td>
             <td>{{ totalInput / 100 | number: '1.2-2' }} BSQ</td>
           </tr>
           <tr>
@@ -20,9 +20,9 @@
     </div>
     <div class="col-sm">
       <table class="table table-borderless table-striped">
-        <tbody>
+        <tbody class="mobile-even">
           <tr>
-            <td>Type</td>
+            <td class="td-width">Type</td>
             <td><app-bisq-icon class="mr-1" [txType]="tx.txType"></app-bisq-icon> {{ tx.txTypeDisplayString }}</td>
           </tr>
           <tr>
