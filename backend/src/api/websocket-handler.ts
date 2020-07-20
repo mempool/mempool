@@ -268,7 +268,8 @@ class WebsocketHandler {
       }
 
       const response = {
-        'block': block
+        'block': block,
+        'mempoolInfo': memPool.getMempoolInfo(),
       };
 
       if (mBlocks && client['want-mempool-blocks']) {
