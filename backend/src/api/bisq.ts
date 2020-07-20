@@ -71,8 +71,11 @@ class Bisq {
         clearTimeout(fsWait);
       }
       fsWait = setTimeout(() => {
-        console.log(`Change detected in the top level Bisq data folder. Resetting inner watcher.`);
-        this.restartSubDirectoryWatcher();
+        console.log(`Bisq restart detected. Resetting inner watcher in 3 minutes.`);
+        setTimeout(() => {
+          this.restartSubDirectoryWatcher();
+          this.loadBisqDumpFile();
+        }, 180000);
       }, 15000);
     });
   }
