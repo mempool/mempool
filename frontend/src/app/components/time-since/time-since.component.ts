@@ -8,13 +8,36 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, ChangeDet
 export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
   interval: number;
   text: string;
+  intervals = {};
 
   @Input() time: number;
   @Input() fastRender = false;
 
   constructor(
     private ref: ChangeDetectorRef
-  ) { }
+  ) {
+    if (document.body.clientWidth < 768) {
+      this.intervals = {
+        year: 31536000,
+        month: 2592000,
+        week: 604800,
+        day: 86400,
+        hour: 3600,
+        min: 60,
+        sec: 1
+      };
+    } else {
+      this.intervals = {
+        year: 31536000,
+        month: 2592000,
+        week: 604800,
+        day: 86400,
+        hour: 3600,
+        minute: 60,
+        second: 1
+      };
+    }
+  }
 
   ngOnInit() {
     this.interval = window.setInterval(() => {
@@ -37,19 +60,10 @@ export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
     if (seconds < 60) {
       return '< 1 minute';
     }
-    const intervals = {
-        year: 31536000,
-        month: 2592000,
-        week: 604800,
-        day: 86400,
-        hour: 3600,
-        minute: 60,
-        second: 1
-    };
     let counter;
-    for (const i in intervals) {
-      if (intervals.hasOwnProperty(i)) {
-        counter = Math.floor(seconds / intervals[i]);
+    for (const i in this.intervals) {
+      if (this.intervals.hasOwnProperty(i)) {
+        counter = Math.floor(seconds / this.intervals[i]);
         if (counter > 0) {
           if (counter === 1) {
               return counter + ' ' + i; // singular (1 day ago)
