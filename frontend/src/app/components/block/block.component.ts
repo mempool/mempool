@@ -28,6 +28,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   subscription: Subscription;
   fees: number;
   paginationMaxSize: number;
+  coinbaseTx: Transaction;
   page = 1;
   itemsPerPage = env.ELCTRS_ITEMS_PER_PAGE;
 
@@ -50,6 +51,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         const blockHash: string = params.get('id') || '';
         this.block = undefined;
         this.page = 1;
+        this.coinbaseTx = undefined;
         this.error = undefined;
         this.fees = undefined;
         this.stateService.markBlock$.next({});
@@ -92,6 +94,9 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.blockHeight = block.height;
         this.seoService.setTitle('Block: #' + block.height + ': ' + block.id, true);
         this.isLoadingBlock = false;
+        if (block.coinbaseTx) {
+          this.coinbaseTx = block.coinbaseTx;
+        }
         this.setBlockSubsidy();
         if (block.reward) {
           this.fees = block.reward / 100000000 - this.blockSubsidy;
@@ -112,6 +117,9 @@ export class BlockComponent implements OnInit, OnDestroy {
     .subscribe((transactions: Transaction[]) => {
       if (this.fees === undefined && transactions[0]) {
         this.fees = transactions[0].vout.reduce((acc: number, curr: Vout) => acc + curr.value, 0) / 100000000 - this.blockSubsidy;
+      }
+      if (!this.coinbaseTx && transactions[0]) {
+        this.coinbaseTx = transactions[0];
       }
       this.transactions = transactions;
       this.isLoadingTransactions = false;
