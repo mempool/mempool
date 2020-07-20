@@ -7,6 +7,9 @@
           <div class="fees">
             ~{{ projectedBlock.medianFee | number:'1.0-0' }} sat/vB
           </div>
+          <div class="fee-span">
+            {{ projectedBlock.feeRange[0] | number:'1.0-0' }} - {{ projectedBlock.feeRange[projectedBlock.feeRange.length - 1] | number:'1.0-0' }} sat/vB
+          </div>
           <div class="block-size">{{ projectedBlock.blockSize | bytes: 2 }}</div>
           <div class="transaction-count">{{ projectedBlock.nTx | number }} transactions</div>
           <div class="time-difference" *ngIf="projectedBlock.blockVSize <= 1000000; else mergedBlock">
