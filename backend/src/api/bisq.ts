@@ -5,6 +5,7 @@ import { BisqBlocks, BisqBlock, BisqTransaction, BisqStats, BisqTrade } from '..
 import { Common } from './common';
 
 class Bisq {
+  private static BLOCKS_JSON_FILE_PATH = '/all/blocks.json';
   private latestBlockHeight = 0;
   private blocks: BisqBlock[] = [];
   private transactions: BisqTransaction[] = [];
@@ -20,16 +21,18 @@ class Bisq {
   };
   private price: number = 0;
   private priceUpdateCallbackFunction: ((price: number) => void) | undefined;
+  private topDirectoryWatcher: fs.FSWatcher | undefined;
   private subdirectoryWatcher: fs.FSWatcher | undefined;
 
   constructor() {}
 
   startBisqService(): void {
+    this.checkForBisqDataFolder();
     this.loadBisqDumpFile();
     setInterval(this.updatePrice.bind(this), 1000 * 60 * 60);
     this.updatePrice();
-    this.startTopLevelDirectoryWatcher();
-    this.restartSubDirectoryWatcher();
+    this.startTopDirectoryWatcher();
+    this.startSubDirectoryWatcher();
   }
 
   getTransaction(txId: string): BisqTransaction | undefined {
@@ -64,27 +67,45 @@ class Bisq {
     return this.latestBlockHeight;
   }
 
-  private startTopLevelDirectoryWatcher() {
+  private checkForBisqDataFolder() {
+    if (!fs.existsSync(config.BSQ_BLOCKS_DATA_PATH + Bisq.BLOCKS_JSON_FILE_PATH)) {
+      console.log(config.BSQ_BLOCKS_DATA_PATH + Bisq.BLOCKS_JSON_FILE_PATH + ` doesn't exist. Make sure Bisq is running and the config is correct before starting the server.`);
+      return process.exit(1);
+    }
+  }
+
+  private startTopDirectoryWatcher() {
+    if (this.topDirectoryWatcher) {
+      this.topDirectoryWatcher.close();
+    }
     let fsWait: NodeJS.Timeout | null = null;
-    fs.watch(config.BSQ_BLOCKS_DATA_PATH, () => {
+    this.topDirectoryWatcher = fs.watch(config.BSQ_BLOCKS_DATA_PATH, () => {
       if (fsWait) {
         clearTimeout(fsWait);
       }
+      if (this.subdirectoryWatcher) {
+        this.subdirectoryWatcher.close();
+      }
       fsWait = setTimeout(() => {
-        console.log(`Bisq restart detected. Resetting inner watcher in 3 minutes.`);
+        console.log(`Bisq restart detected. Resetting both watchers in 3 minutes.`);
         setTimeout(() => {
-          this.restartSubDirectoryWatcher();
+          this.startTopDirectoryWatcher();
+          this.startSubDirectoryWatcher();
           this.loadBisqDumpFile();
         }, 180000);
       }, 15000);
     });
   }
 
-  private restartSubDirectoryWatcher() {
+  private startSubDirectoryWatcher() {
     if (this.subdirectoryWatcher) {
       this.subdirectoryWatcher.close();
     }
-
+    if (!fs.existsSync(config.BSQ_BLOCKS_DATA_PATH + Bisq.BLOCKS_JSON_FILE_PATH)) {
+      console.log(config.BSQ_BLOCKS_DATA_PATH + Bisq.BLOCKS_JSON_FILE_PATH + ` doesn't exist. Trying to restart sub directory watcher again in 3 minutes.`);
+      setTimeout(() => this.startSubDirectoryWatcher(), 180000);
+      return;
+    }
     let fsWait: NodeJS.Timeout | null = null;
     this.subdirectoryWatcher = fs.watch(config.BSQ_BLOCKS_DATA_PATH + '/all', () => {
       if (fsWait) {
@@ -202,14 +223,14 @@ class Bisq {
   private async loadBisqBlocksDump(cacheData: string): Promise<void> {
     const start = new Date().getTime();
     if (cacheData && cacheData.length !== 0) {
-      console.log('Loading Bisq data from dump...');
+      console.log('Processing Bisq data dump...');
       const data: BisqBlocks = JSON.parse(cacheData);
       if (data.blocks && data.blocks.length !== this.blocks.length) {
         this.blocks = data.blocks.filter((block) => block.txs.length > 0);
         this.blocks.reverse();
         this.latestBlockHeight = data.chainHeight;
         const time = new Date().getTime() - start;
-        console.log('Bisq dump loaded in ' + time + ' ms');
+        console.log('Bisq dump processed in ' + time + ' ms');
       } else {
         throw new Error(`Bisq dump didn't contain any blocks`);
       }
@@ -218,7 +239,10 @@ class Bisq {
 
   private loadData(): Promise<string> {
     return new Promise((resolve, reject) => {
-      fs.readFile(config.BSQ_BLOCKS_DATA_PATH + '/all/blocks.json', 'utf8', (err, data) => {
+      if (!fs.existsSync(config.BSQ_BLOCKS_DATA_PATH + Bisq.BLOCKS_JSON_FILE_PATH)) {
+        return reject(Bisq.BLOCKS_JSON_FILE_PATH + ` doesn't exist`);
+      }
+      fs.readFile(config.BSQ_BLOCKS_DATA_PATH + Bisq.BLOCKS_JSON_FILE_PATH, 'utf8', (err, data) => {
         if (err) {
           reject(err);
         }
