@@ -4,6 +4,7 @@ import { Block } from 'src/app/interfaces/electrs.interface';
 import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
 import { AudioService } from 'src/app/services/audio.service';
+import { env } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-blockchain-blocks',
@@ -21,7 +22,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
 
   arrowVisible = false;
   arrowLeftPx = 30;
-
+  blocksFilled = false;
   transition = '1s';
 
   gradientColors = {
@@ -34,7 +35,6 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   constructor(
     private stateService: StateService,
     private router: Router,
-    private audioService: AudioService,
   ) { }
 
   ngOnInit() {
@@ -42,15 +42,14 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
     this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
 
     this.blocksSubscription = this.stateService.blocks$
-      .subscribe(([block, txConfirmed, refilling]) => {
+      .subscribe(([block, txConfirmed]) => {
         if (this.blocks.some((b) => b.height === block.height)) {
           return;
         }
         this.blocks.unshift(block);
         this.blocks = this.blocks.slice(0, 8);
 
-        if (!refilling && !this.tabHidden) {
-          // setTimeout(() => this.audioService.playSound('bright-harmony'));
+        if (this.blocksFilled && !this.tabHidden) {
           block.stage = block.matchRate >= 66 ? 1 : 2;
         }
 
@@ -68,6 +67,9 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
           this.blocks.forEach((b) => this.blockStyles.push(this.getStyleForBlock(b)));
         }, 50);
 
+        if (this.blocks.length === env.KEEP_BLOCKS_AMOUNT) {
+          this.blocksFilled = true;
+        }
       });
 
     this.stateService.markBlock$
