@@ -21,7 +21,7 @@ export class StateService {
   latestBlockHeight = 0;
 
   networkChanged$ = new ReplaySubject<string>(1);
-  blocks$ = new ReplaySubject<[Block, boolean, boolean]>(env.KEEP_BLOCKS_AMOUNT);
+  blocks$ = new ReplaySubject<[Block, boolean]>(env.KEEP_BLOCKS_AMOUNT);
   conversions$ = new ReplaySubject<any>(1);
   bsqPrice$ = new ReplaySubject<number>(1);
   mempoolStats$ = new ReplaySubject<MemPoolState>(1);
