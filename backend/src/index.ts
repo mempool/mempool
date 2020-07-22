@@ -7,6 +7,7 @@ import * as http from 'http';
 import * as https from 'https';
 import * as WebSocket from 'ws';
 
+import { checkDbConnection } from './database';
 import routes from './routes';
 import blocks from './api/blocks';
 import memPool from './api/mempool';
@@ -43,11 +44,15 @@ class Server {
       this.wss = new WebSocket.Server({ server: this.server });
     }
 
+    if (!config.DB_DISABLED) {
+      checkDbConnection();
+      statistics.startStatistics();
+    }
+
     this.setUpHttpApiRoutes();
     this.setUpWebsocketHandling();
     this.runMempoolIntervalFunctions();
 
-    statistics.startStatistics();
     fiatConversion.startService();
     diskCache.loadMempoolCache();
 

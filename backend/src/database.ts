@@ -16,10 +16,10 @@ export class DB {
 export async function checkDbConnection() {
   try {
     const connection = await DB.pool.getConnection();
-    console.log('MySQL connection established.');
+    console.log('Database connection established.');
     connection.release();
   } catch (e) {
-    console.log('Could not connect to MySQL.');
+    console.log('Could not connect to database.');
     console.log(e);
     process.exit(1);
   }
