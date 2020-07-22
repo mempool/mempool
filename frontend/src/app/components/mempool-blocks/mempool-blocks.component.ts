@@ -68,7 +68,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
     this.stateService.blocks$
       .subscribe(([block]) => {
-        if (block.matchRate >= 80 && !this.tabHidden) {
+        if (block.matchRate >= 66 && !this.tabHidden) {
           this.blockIndex++;
         }
       });
