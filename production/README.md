@@ -18,6 +18,46 @@ If you don't have a fast SSD or NVMe backed disk, that's fine. What you do is, g
 
 The mempool.space site is powered by FreeBSD with ZFS root and ARC cache for maximum performance. Linux probably works fine too, but why settle?
 
+### Filesystem
+
+For maximum performance, I use 2x 1TB NVMe SSDs in a RAID 0 using ZFS with lots of RAM for the ARC L2 cache.
+```
+# zpool list -v nvmraid
+NAME         SIZE  ALLOC   FREE  CKPOINT  EXPANDSZ   FRAG    CAP  DEDUP  HEALTH  ALTROOT
+nvmraid     1.81T  1.04T   787G        -         -     0%    57%  1.00x  ONLINE  -
+  nvd0       928G   535G   393G        -         -     0%    57%
+  nvd1       928G   534G   394G        -         -     0%    57%
+```
+
+For maximum flexibility of configuration, I configure the partitions separately for each data folder:
+```
+Filesystem                             Size    Used   Avail Capacity  Mounted on
+nvmraid/mempool                        732G    3.0G    729G     0%    /mempool
+nvmraid/mysql                          730G    618M    729G     0%    /mysql
+nvmraid/bisq                           729G     88K    729G     0%    /bisq
+nvmraid/elements                       731G    1.8G    729G     0%    /elements
+nvmraid/elements/liquidv1              737G    7.2G    729G     1%    /elements/liquidv1
+nvmraid/elements/electrs               730G    434M    729G     0%    /elements/electrs
+nvmraid/bitcoin                        730G    694M    729G     0%    /bitcoin
+nvmraid/bitcoin/chainstate             733G    3.9G    729G     1%    /bitcoin/chainstate
+nvmraid/bitcoin/indexes                757G     27G    729G     4%    /bitcoin/indexes
+nvmraid/bitcoin/electrs                730G    853M    729G     0%    /bitcoin/electrs
+nvmraid/bitcoin/blocks                 1.0T    306G    729G    30%    /bitcoin/blocks
+nvmraid/bitcoin/testnet3               729G     13M    729G     0%    /bitcoin/testnet3
+nvmraid/bitcoin/testnet3/blocks        756G     26G    729G     3%    /bitcoin/testnet3/blocks
+nvmraid/bitcoin/testnet3/chainstate    731G    1.3G    729G     0%    /bitcoin/testnet3/chainstate
+nvmraid/bitcoin/testnet3/indexes       733G    3.8G    729G     1%    /bitcoin/testnet3/indexes
+nvmraid/electrs/liquid/cache           729G     39M    729G     0%    /electrs/liquid/newindex/cache
+nvmraid/electrs/liquid/history         730G    737M    729G     0%    /electrs/liquid/newindex/history
+nvmraid/electrs/liquid/txstore         736G    6.2G    729G     1%    /electrs/liquid/newindex/txstore
+nvmraid/electrs/mainnet/cache          729G     44M    729G     0%    /electrs/mainnet/newindex/cache
+nvmraid/electrs/mainnet/history        964G    234G    729G    24%    /electrs/mainnet/newindex/history
+nvmraid/electrs/mainnet/txstore        1.1T    392G    729G    35%    /electrs/mainnet/newindex/txstore
+nvmraid/electrs/testnet/cache          729G     40M    729G     0%    /electrs/testnet/newindex/cache
+nvmraid/electrs/testnet/history        747G     18G    729G     2%    /electrs/testnet/newindex/history
+nvmraid/electrs/testnet/txstore        764G     34G    729G     4%    /electrs/testnet/newindex/txstore
+```
+
 ### Build Dependencies
 
 You'll probably need these:
