@@ -29,6 +29,7 @@ export class StateService {
   txReplaced$ = new Subject<Transaction>();
   mempoolTransactions$ = new Subject<Transaction>();
   blockTransactions$ = new Subject<Transaction>();
+  isLoadingWebSocket$ = new ReplaySubject<boolean>(1);
 
   live2Chart$ = new Subject<OptimizedMempoolStats>();
 

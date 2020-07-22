@@ -52,16 +52,17 @@ export class WebsocketService {
 
       this.startSubscription();
     });
-
   }
 
   startSubscription(retrying = false) {
+    this.stateService.isLoadingWebSocket$.next(true);
     if (retrying) {
       this.stateService.connectionState$.next(1);
     }
     this.websocketSubject.next({'action': 'init'});
     this.subscription = this.websocketSubject
       .subscribe((response: WebsocketResponse) => {
+        this.stateService.isLoadingWebSocket$.next(false);
         if (response.blocks && response.blocks.length) {
           const blocks = response.blocks;
           blocks.forEach((block: Block) => {
