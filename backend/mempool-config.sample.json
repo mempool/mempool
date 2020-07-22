@@ -5,6 +5,7 @@
   "DB_USER": "mempool",
   "DB_PASSWORD": "mempool",
   "DB_DATABASE": "mempool",
+  "DB_DISABLED": false,
   "API_ENDPOINT": "/api/v1/",
   "ELECTRS_POLL_RATE_MS": 2000,
   "MEMPOOL_REFRESH_RATE_MS": 2000,
