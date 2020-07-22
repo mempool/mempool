@@ -63,20 +63,18 @@
           <div class="col-sm">
             <table class="table table-borderless table-striped">
               <tbody>
-                <ng-template [ngIf]="tx.fee">
-                  <tr>
-                    <td class="td-width">Fee</td>
-                    <td>{{ tx.fee | number }} sat (<app-fiat [value]="tx.fee"></app-fiat>)</td>
-                  </tr>
-                  <tr>
-                    <td>Fee per vByte</td>
-                    <td>
-                      {{ tx.fee / (tx.weight / 4) | number : '1.1-1' }} sat/vB
-                      &nbsp;
-                      <app-tx-fee-rating [tx]="tx"></app-tx-fee-rating>
-                    </td>
-                  </tr>
-                </ng-template>
+                <tr>
+                  <td class="td-width">Fee</td>
+                  <td>{{ tx.fee | number }} sat (<app-fiat [value]="tx.fee"></app-fiat>)</td>
+                </tr>
+                <tr>
+                  <td>Fee per vByte</td>
+                  <td>
+                    {{ tx.fee / (tx.weight / 4) | number : '1.1-1' }} sat/vB
+                    &nbsp;
+                    <app-tx-fee-rating *ngIf="tx.fee" [tx]="tx"></app-tx-fee-rating>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
