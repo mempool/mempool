@@ -46,6 +46,12 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
         if (this.blocks.some((b) => b.height === block.height)) {
           return;
         }
+
+        if (this.blocks.length && block.height !== this.blocks[0].height + 1) {
+          this.blocks = [];
+          this.blocksFilled = false;
+        }
+
         this.blocks.unshift(block);
         this.blocks = this.blocks.slice(0, 8);
 
