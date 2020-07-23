@@ -77,7 +77,7 @@ class Mempool {
       const transaction: Transaction = await bitcoinApi.getRawTransaction(txId);
       return Object.assign({
         vsize: transaction.weight / 4,
-        feePerVsize: transaction.fee / (transaction.weight / 4),
+        feePerVsize: (transaction.fee || 0) / (transaction.weight / 4),
         firstSeen: Math.round((new Date().getTime() / 1000)),
       }, transaction);
     } catch (e) {

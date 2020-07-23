@@ -74,6 +74,9 @@ export class TransactionComponent implements OnInit, OnDestroy {
         return;
       }
       this.tx = tx;
+      if (tx.fee === undefined) {
+        this.tx.fee = 0;
+      }
       this.isLoadingTx = false;
       this.error = undefined;
       this.waitingForTransaction = false;
