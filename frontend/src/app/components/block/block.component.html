@@ -50,7 +50,7 @@
                   <td>Total fees</td>
                   <td *ngIf="network !== 'liquid'; else liquidTotalFees"><app-amount [satoshis]="fees * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount> (<app-fiat [value]="fees * 100000000" digitsInfo="1.0-0"></app-fiat>)</td>
                   <ng-template #liquidTotalFees>
-                    <td>{{ fees | number }} L-sat (<app-fiat [value]="fees * 100000000" digitsInfo="1.2-2"></app-fiat>)</td>
+                    <td>{{ fees * 100000000 | number }} L-sat (<app-fiat [value]="fees * 100000000" digitsInfo="1.2-2"></app-fiat>)</td>
                   </ng-template>
                 </tr>
                 <tr *ngIf="network !== 'liquid'">
