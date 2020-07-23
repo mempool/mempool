@@ -46,7 +46,7 @@
         </li>
       </ng-template>
       <li *ngIf="network === 'liquid'" class="nav-item" routerLinkActive="active">
-        <a class="nav-link" [routerLink]="['liquid/assets']" (click)="collapse()">Assets</a>
+        <a class="nav-link" [routerLink]="['/liquid/assets']" (click)="collapse()">Assets</a>
       </li>
       <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/about' | relativeUrl]" (click)="collapse()">About</a>
