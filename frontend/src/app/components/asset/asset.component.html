@@ -49,15 +49,15 @@
               </tr>
               <tr *ngIf="!isNativeAsset">
                 <td>Issued amount</td>
-                <td>{{ asset.chain_stats.issued_amount / 100000000 | number: '1.0-' + assetContract[3] }} {{ assetContract[1] }}</td>
+                <td>{{ asset.chain_stats.issued_amount | number: '1.0-' + assetContract[3] }} {{ assetContract[1] }}</td>
               </tr>
               <tr>
                 <td>Burned amount</td>
-                <td>{{ asset.chain_stats.burned_amount / 100000000 | number: '1.0-' + assetContract[3] }} {{ assetContract[1] }}</td>
+                <td>{{ asset.chain_stats.burned_amount | number: '1.0-' + assetContract[3] }} {{ assetContract[1] }}</td>
               </tr>
               <tr *ngIf="!isNativeAsset">
                 <td>Circulating amount</td>
-                <td>{{ (asset.chain_stats.issued_amount - asset.chain_stats.burned_amount) / 100000000 | number: '1.0-' + assetContract[3] }} {{ assetContract[1] }}</td>
+                <td>{{ (asset.chain_stats.issued_amount - asset.chain_stats.burned_amount) | number: '1.0-' + assetContract[3] }} {{ assetContract[1] }}</td>
               </tr>
               <tr *ngIf="isNativeAsset">
                 <td>Circulating amount</td>
