@@ -1,6 +1,6 @@
 <div class="mempool-blocks-container">
   <div class="flashing">
-    <div *ngFor="let projectedBlock of mempoolBlocks; let i = index; trackBy: trackByFn">
+    <ng-template ngFor let-projectedBlock [ngForOf]="mempoolBlocks" let-i="index" [ngForTrackBy]="trackByFn">
       <div class="bitcoin-block text-center mempool-block" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]">
         <a [routerLink]="['/mempool-block/' | relativeUrl, i]" class="blockLink">&nbsp;</a>
         <div class="block-body" *ngIf="mempoolBlocks?.length">
@@ -26,7 +26,8 @@
         </div>
         <span class="animated-border"></span>
       </div>
-    </div>
+    </ng-template>
+    <div *ngIf="mempoolBlocks?.length === 0" class="bitcoin-block mempool-block empty-block">Mempool is empty</div>
   </div>
   <div *ngIf="arrowVisible" id="arrow-up" [ngStyle]="{'right': rightPosition + 75 + 'px', transition: transition }"></div>
 </div>
