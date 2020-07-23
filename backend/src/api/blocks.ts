@@ -98,7 +98,9 @@ class Blocks {
       vin: [{
         scriptsig: tx.vin[0].scriptsig
       }],
-      vout: tx.vout.map((vout) => ({ scriptpubkey_address: vout.scriptpubkey_address, value: vout.value }))
+      vout: tx.vout
+        .map((vout) => ({ scriptpubkey_address: vout.scriptpubkey_address, value: vout.value }))
+        .filter((vout) => vout.value)
     };
   }
 }

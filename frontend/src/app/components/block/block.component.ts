@@ -98,7 +98,7 @@ export class BlockComponent implements OnInit, OnDestroy {
           this.coinbaseTx = block.coinbaseTx;
         }
         this.setBlockSubsidy();
-        if (block.reward) {
+        if (block.reward !== undefined) {
           this.fees = block.reward / 100000000 - this.blockSubsidy;
         }
         this.stateService.markBlock$.next({ blockHeight: this.blockHeight });
