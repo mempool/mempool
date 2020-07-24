@@ -31,6 +31,12 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
           this.mempoolBlockIndex = parseInt(params.get('id'), 10) || 0;
           return this.stateService.mempoolBlocks$
           .pipe(
+            map((blocks) => {
+              if (!blocks.length) {
+                return [{ index: 0, blockSize: 0, blockVSize: 0, feeRange: [0, 0], medianFee: 0, nTx: 0, totalFees: 0 }];
+              }
+              return blocks;
+            }),
             filter((mempoolBlocks) => mempoolBlocks.length > 0),
             map((mempoolBlocks) => {
               while (!mempoolBlocks[this.mempoolBlockIndex]) {

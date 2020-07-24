@@ -25,14 +25,7 @@ export class StateService {
   conversions$ = new ReplaySubject<any>(1);
   bsqPrice$ = new ReplaySubject<number>(1);
   mempoolStats$ = new ReplaySubject<MemPoolState>(1);
-  mempoolBlocks$ = new ReplaySubject<MempoolBlock[]>(1).pipe(
-    map((blocks) => {
-      if (!blocks.length) {
-        return [{ blockSize: 0, blockVSize: 0, feeRange: [0, 0], medianFee: 0, nTx: 0, totalFees: 0 }];
-      }
-      return blocks;
-    })
-  );
+  mempoolBlocks$ = new ReplaySubject<MempoolBlock[]>(1);
   txReplaced$ = new Subject<Transaction>();
   mempoolTransactions$ = new Subject<Transaction>();
   blockTransactions$ = new Subject<Transaction>();
