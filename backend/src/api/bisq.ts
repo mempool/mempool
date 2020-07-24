@@ -39,8 +39,12 @@ class Bisq {
     return this.transactionIndex[txId];
   }
 
-  getTransactions(start: number, length: number): [BisqTransaction[], number] {
-    return [this.transactions.slice(start, length + start), this.transactions.length];
+  getTransactions(start: number, length: number, types: string[]): [BisqTransaction[], number] {
+    let transactions = this.transactions;
+    if (types.length) {
+      transactions = transactions.filter((tx) => types.indexOf(tx.txType) > -1);
+    }
+    return [transactions.slice(start, length + start), transactions.length];
   }
 
   getBlock(hash: string): BisqBlock | undefined {

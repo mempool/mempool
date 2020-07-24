@@ -1,38 +1,94 @@
 <div class="container-xl">
   <h1 style="float: left;">Transactions</h1>
+
+  <div ngbDropdown class="d-block float-right">
+    <button class="btn btn-primary" id="dropdownForm1" ngbDropdownToggle>Filter</button>
+    <div ngbDropdownMenu aria-labelledby="dropdownForm1">
+      <form [formGroup]="radioGroupForm">
+        <label>
+          <input type="checkbox" formControlName="GENESIS"> Genesis
+        </label>
+        <br>
+        <label>
+          <input type="checkbox" formControlName="TRANSFER_BSQ"> Transfer BSQ
+        </label>
+        <br>
+        <label>
+          <input type="checkbox" formControlName="PAY_TRADE_FEE"> Pay trade fee
+        </label>
+        <br>
+        <label>
+          <input type="checkbox" formControlName="PROPOSAL"> Proposal
+        </label>
+        <br>
+        <label>
+          <input type="checkbox" formControlName="COMPENSATION_REQUEST"> Compensation request
+        </label>
+        <br>
+        <label>
+          <input type="checkbox" formControlName="REIMBURSEMENT_REQUEST"> Reimbursement request
+        </label>
+        <br>
+        <label>
+          <input type="checkbox" formControlName="BLIND_VOTE"> Blind vote
+        </label>
+        <br>
+        <label>
+          <input type="checkbox" formControlName="VOTE_REVEAL"> Vote reveal
+        </label>
+        <br>
+        <label>
+          <input type="checkbox" formControlName="LOCKUP"> Lockup
+        </label>
+        <br>
+        <label>
+          <input type="checkbox" formControlName="UNLOCK"> Unlock
+        </label>
+        <br>
+        <label>
+          <input type="checkbox" formControlName="ASSET_LISTING_FEE"> Asset listing fee
+        </label>
+        <br>
+        <label>
+          <input type="checkbox" formControlName="PROOF_OF_BURN"> Proof of burn
+        </label>
+      </form>
+    </div>
+  </div>
+
   <br>
 
   <div class="clearfix"></div>
 
-    <table class="table table-borderless table-striped">
-      <thead>
-        <th style="width: 20%;">Transaction</th>
-        <th class="d-none d-md-block" style="width: 20%;">Type</th>
-        <th style="width: 20%;">Amount</th>
-        <th style="width: 20%;">Confirmed</th>
-        <th class="d-none d-md-block" style="width: 20%;">Height</th>
-      </thead>
-      <tbody *ngIf="!isLoading; else loadingTmpl">
-        <tr *ngFor="let tx of transactions; trackBy: trackByFn">
-          <td><a [routerLink]="['/tx/' | relativeUrl, tx.id]" [state]="{ data: tx }">{{ tx.id | slice : 0 : 8 }}</a></td>
-          <td class="d-none d-md-block">
-            <app-bisq-icon class="mr-1" [txType]="tx.txType"></app-bisq-icon>
-            <span class="d-none d-md-inline"> {{ tx.txTypeDisplayString }}</span>
-          </td>
-          <td>
-            <app-bisq-icon class="d-inline d-md-none mr-1" [txType]="tx.txType"></app-bisq-icon>
-            <ng-template [ngIf]="tx.txType === 'PAY_TRADE_FEE'" [ngIfElse]="defaultTxType">
-              {{ tx.burntFee / 100 | number: '1.2-2' }}<span class="d-none d-md-inline"> BSQ</span>
-            </ng-template>
-            <ng-template #defaultTxType>
-              {{ calculateTotalOutput(tx.outputs) / 100 | number: '1.2-2' }}<span class="d-none d-md-inline"> BSQ</span>
-            </ng-template>
-          </td>
-          <td><app-time-since [time]="tx.time / 1000" [fastRender]="true"></app-time-since> ago</td>
-          <td class="d-none d-md-block"><a [routerLink]="['/block/' | relativeUrl, tx.blockHash]" [state]="{ data: { blockHeight: tx.blockHeight } }">{{ tx.blockHeight }}</a></td>
-        </tr> 
-      </tbody>
-    </table>
+  <table class="table table-borderless table-striped">
+    <thead>
+      <th style="width: 20%;">Transaction</th>
+      <th class="d-none d-md-block" style="width: 20%;">Type</th>
+      <th style="width: 20%;">Amount</th>
+      <th style="width: 20%;">Confirmed</th>
+      <th class="d-none d-md-block" style="width: 20%;">Height</th>
+    </thead>
+    <tbody *ngIf="!isLoading; else loadingTmpl">
+      <tr *ngFor="let tx of transactions; trackBy: trackByFn">
+        <td><a [routerLink]="['/tx/' | relativeUrl, tx.id]" [state]="{ data: tx }">{{ tx.id | slice : 0 : 8 }}</a></td>
+        <td class="d-none d-md-block">
+          <app-bisq-icon class="mr-1" [txType]="tx.txType"></app-bisq-icon>
+          <span class="d-none d-md-inline"> {{ tx.txTypeDisplayString }}</span>
+        </td>
+        <td>
+          <app-bisq-icon class="d-inline d-md-none mr-1" [txType]="tx.txType"></app-bisq-icon>
+          <ng-template [ngIf]="tx.txType === 'PAY_TRADE_FEE'" [ngIfElse]="defaultTxType">
+            {{ tx.burntFee / 100 | number: '1.2-2' }}<span class="d-none d-md-inline"> BSQ</span>
+          </ng-template>
+          <ng-template #defaultTxType>
+            {{ calculateTotalOutput(tx.outputs) / 100 | number: '1.2-2' }}<span class="d-none d-md-inline"> BSQ</span>
+          </ng-template>
+        </td>
+        <td><app-time-since [time]="tx.time / 1000" [fastRender]="true"></app-time-since> ago</td>
+        <td class="d-none d-md-block"><a [routerLink]="['/block/' | relativeUrl, tx.blockHash]" [state]="{ data: { blockHeight: tx.blockHeight } }">{{ tx.blockHeight }}</a></td>
+      </tr> 
+    </tbody>
+  </table>
 
   <br>
 
