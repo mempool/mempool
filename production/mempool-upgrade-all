@@ -10,7 +10,7 @@ cd "$HOME/mempool"
 git pull origin master
 cd "$HOME/"
 
-for site in mainnet liquid testnet
+for site in mainnet liquid testnet bisq
 do
     cd "$HOME/${site}"
     git pull origin master

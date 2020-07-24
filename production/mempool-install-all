@@ -1,5 +1,5 @@
 #!/usr/local/bin/zsh
-for site in mainnet liquid testnet
+for site in mainnet liquid testnet bisq
 do
     git clone https://github.com/mempool/mempool "${HOME}/${site}"
     mkdir -p "${HOME}/public_html/${site}/"

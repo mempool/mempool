@@ -1,5 +1,5 @@
 #!/usr/local/bin/zsh
-for site in mainnet liquid testnet
+for site in mainnet liquid testnet bisq
 do
     cd "${HOME}/${site}/backend/"
     screen -dmS "${site}" sh -c 'while true;do npm run start;sleep 1;done'
