@@ -1,7 +1,7 @@
 <form [formGroup]="searchForm" (submit)="searchForm.valid && search()" class="mr-4" novalidate>
   <div class="form-row">
     <div style="width: 350px;" class="mr-2">
-      <input formControlName="searchText" type="text" class="form-control" placeholder="Transaction, block height, hash or address">
+      <input #instance="ngbTypeahead" [ngbTypeahead]="typeaheadSearch" (focus)="focus$.next($any($event).target.value)" (click)="click$.next($any($event).target.value)" formControlName="searchText" type="text" class="form-control" placeholder="Transaction, block height, hash or address">
     </div>
     <div>
       <button type="submit" class="btn btn-block btn-primary">Search</button>

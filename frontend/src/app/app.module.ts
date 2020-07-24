@@ -39,6 +39,7 @@ import { AssetsComponent } from './assets/assets.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
 import { MinerComponent } from './components/miner/miner.component';
 import { SharedModule } from './shared/shared.module';
+import { NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -76,6 +77,7 @@ import { SharedModule } from './shared/shared.module';
     HttpClientModule,
     BrowserAnimationsModule,
     InfiniteScrollModule,
+    NgbTypeaheadModule,
     SharedModule,
   ],
   providers: [

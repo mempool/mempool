@@ -1,8 +1,12 @@
-import { Component, OnInit, ChangeDetectionStrategy, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, EventEmitter, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AssetsService } from 'src/app/services/assets.service';
 import { StateService } from 'src/app/services/state.service';
+import { Observable, of, Subject, merge } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, filter } from 'rxjs/operators';
+import { ElectrsApiService } from 'src/app/services/electrs-api.service';
+import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-search-form',
@@ -22,11 +26,30 @@ export class SearchFormComponent implements OnInit {
   regexTransaction = /^[a-fA-F0-9]{64}$/;
   regexBlockheight = /^[0-9]+$/;
 
+  @ViewChild('instance', {static: true}) instance: NgbTypeahead;
+  focus$ = new Subject<string>();
+  click$ = new Subject<string>();
+
+  typeaheadSearch = (text$: Observable<string>) => {
+    const debouncedText$ = text$.pipe(debounceTime(200), distinctUntilChanged());
+    const clicksWithClosedPopup$ = this.click$.pipe(filter(() => !this.instance.isPopupOpen()));
+    const inputFocus$ = this.focus$;
+
+    return merge(debouncedText$, inputFocus$, clicksWithClosedPopup$)
+      .pipe(
+        switchMap((text) => {
+          if (!text.length) { return of([]); }
+          return this.electrsApiService.getAddressesByPrefix$(text);
+        })
+      );
+    }
+
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
     private assetsService: AssetsService,
     private stateService: StateService,
+    private electrsApiService: ElectrsApiService,
   ) { }
 
   ngOnInit() {

@@ -81,4 +81,7 @@ export class ElectrsApiService {
     return this.httpClient.get<Transaction[]>(this.apiBaseUrl + '/asset/' + assetId + '/txs/chain/' + txid);
   }
 
+  getAddressesByPrefix$(prefix: string): Observable<string[]> {
+    return this.httpClient.get<string[]>(this.apiBaseUrl + '/address-prefix/' + prefix);
+  }
 }
