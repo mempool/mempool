@@ -16,7 +16,6 @@ import { NgbNavModule, NgbTooltipModule, NgbButtonsModule, NgbPaginationModule, 
 import { TxFeaturesComponent } from '../components/tx-features/tx-features.component';
 import { TxFeeRatingComponent } from '../components/tx-fee-rating/tx-fee-rating.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown';
 
 @NgModule({
   declarations: [
