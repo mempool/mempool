@@ -7,21 +7,21 @@ touch $HOME/lock
 echo 'rebuilding mempool sites'|wall
 
 cd "$HOME/mempool"
-git pull origin master
+git pull --rebase origin master
 cd "$HOME/"
 
 for site in mainnet liquid testnet bisq
 do
     cd "$HOME/${site}"
-    git pull origin master
+    git pull --rebase origin master
     hash=$(git rev-parse HEAD)
 
     if [ "${site}" = "mainnet" ]
     then
-	    cd "$HOME/${site}/frontend"
-	    npm install
-	    npm run build
-	    rsync -av ./dist/mempool/* "${HOME}/public_html/${site}/"
+        cd "$HOME/${site}/frontend"
+        npm install
+        npm run build
+        rsync -av ./dist/mempool/* "${HOME}/public_html/${site}/"
     fi
 
     cd "$HOME/${site}/backend"
