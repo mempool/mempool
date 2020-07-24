@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription, pipe } from 'rxjs';
 import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
-import { take } from 'rxjs/operators';
+import { take, map } from 'rxjs/operators';
 import { feeLevels, mempoolFeeColors } from 'src/app/app.constants';
 
 @Component({
@@ -42,6 +42,14 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
 
     this.mempoolBlocksSubscription = this.stateService.mempoolBlocks$
+      .pipe(
+        map((blocks) => {
+          if (!blocks.length) {
+            return [{ index: 0, blockSize: 0, blockVSize: 0, feeRange: [0, 0], medianFee: 0, nTx: 0, totalFees: 0 }];
+          }
+          return blocks;
+        }),
+      )
       .subscribe((blocks) => {
         blocks.forEach((block, i) => {
           block.index = this.blockIndex + i;
