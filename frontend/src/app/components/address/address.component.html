@@ -15,32 +15,18 @@
       <div class="row">
         <div class="col">
           <table class="table table-borderless table-striped">
-            <tbody *ngIf="network !== 'liquid'">
+            <tbody>
               <tr>
                 <td>Total received</td>
-                <td>{{ receieved / 100000000 | number: '1.8-8' }} <ng-template [ngIf]="network === 'liquid'">L-</ng-template>BTC</td>
+                <td><app-amount [satoshis]="receieved"></app-amount></td>
               </tr>
               <tr>
                 <td>Total sent</td>
-                <td>{{ sent / 100000000 | number: '1.8-8' }} <ng-template [ngIf]="network === 'liquid'">L-</ng-template>BTC</td>
+                <td><app-amount [satoshis]="sent"></app-amount></td>
               </tr>
               <tr>
                 <td>Balance</td>
-                <td>{{ (receieved - sent) / 100000000 | number: '1.8-8' }} <ng-template [ngIf]="network === 'liquid'">L-</ng-template>BTC (<app-fiat [value]="receieved - sent"></app-fiat>)</td>
-              </tr>
-            </tbody>
-            <tbody *ngIf="network === 'liquid'">
-              <tr>
-                <td>Total received</td>
-                <td>Confidential</td>
-              </tr>
-              <tr>
-                <td>Total sent</td>
-                <td>Confidential</td>
-              </tr>
-              <tr>
-                <td>Balance</td>
-                <td>Confidential</td>
+                <td><app-amount [satoshis]="receieved - sent"></app-amount> (<app-fiat [value]="receieved - sent"></app-fiat>)</td>
               </tr>
             </tbody>
           </table>
