@@ -109,14 +109,15 @@ class Routes {
 
   public getBisqTransactions(req: Request, res: Response) {
     const types: string[] = [];
-    if (req.query.types && !Array.isArray(req.query.types)) {
+    req.query.types = req.query.types || [];
+    if (!Array.isArray(req.query.types)) {
       res.status(500).send('Types is not an array');
       return;
-    } else {
-      for (const _type in req.query.types) {
-        if (typeof req.query.types[_type] === 'string') {
-          types.push(req.query.types[_type].toString());
-        }
+    }
+
+    for (const _type in req.query.types) {
+      if (typeof req.query.types[_type] === 'string') {
+        types.push(req.query.types[_type].toString());
       }
     }
 
