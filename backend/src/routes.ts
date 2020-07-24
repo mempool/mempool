@@ -108,9 +108,21 @@ class Routes {
   }
 
   public getBisqTransactions(req: Request, res: Response) {
+    const types: string[] = [];
+    if (req.query.types && !Array.isArray(req.query.types)) {
+      res.status(500).send('Types is not an array');
+      return;
+    } else {
+      for (const _type in req.query.types) {
+        if (typeof req.query.types[_type] === 'string') {
+          types.push(req.query.types[_type].toString());
+        }
+      }
+    }
+
     const index = parseInt(req.params.index, 10) || 0;
     const length = parseInt(req.params.length, 10) > 100 ? 100 : parseInt(req.params.length, 10) || 25;
-    const [transactions, count] = bisq.getTransactions(index, length);
+    const [transactions, count] = bisq.getTransactions(index, length, types);
     res.header('X-Total-Count', count.toString());
     res.json(transactions);
   }

@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { BisqTransaction, BisqOutput } from '../bisq.interfaces';
-import { Subject } from 'rxjs';
-import { switchMap, tap } from 'rxjs/operators';
+import { Subject, merge } from 'rxjs';
+import { switchMap, tap, map } from 'rxjs/operators';
 import { BisqApiService } from '../bisq-api.service';
 import { SeoService } from 'src/app/services/seo.service';
+import { FormGroup, FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'app-bisq-transactions',
@@ -20,6 +21,8 @@ export class BisqTransactionsComponent implements OnInit {
   isLoading = true;
   loadingItems: number[];
   pageSubject$ = new Subject<number>();
+  radioGroupForm: FormGroup;
+  types: string[] = [];
 
   // @ts-ignore
   paginationSize: 'sm' | 'lg' = 'md';
@@ -28,10 +31,28 @@ export class BisqTransactionsComponent implements OnInit {
   constructor(
     private bisqApiService: BisqApiService,
     private seoService: SeoService,
+    private formBuilder: FormBuilder,
   ) { }
 
   ngOnInit(): void {
     this.seoService.setTitle('Transactions', true);
+
+    this.radioGroupForm = this.formBuilder.group({
+      UNVERIFIED: false,
+      INVALID: false,
+      GENESIS: false,
+      TRANSFER_BSQ: false,
+      PAY_TRADE_FEE: false,
+      PROPOSAL: false,
+      COMPENSATION_REQUEST: false,
+      REIMBURSEMENT_REQUEST: false,
+      BLIND_VOTE: false,
+      VOTE_REVEAL: false,
+      LOCKUP: false,
+      UNLOCK: false,
+      ASSET_LISTING_FEE: false,
+      PROOF_OF_BURN: false,
+    });
 
     this.itemsPerPage = Math.max(Math.round(this.contentSpace / this.fiveItemsPxSize) * 5, 10);
     this.loadingItems = Array(this.itemsPerPage);
@@ -41,10 +62,25 @@ export class BisqTransactionsComponent implements OnInit {
       this.paginationMaxSize = 3;
     }
 
-    this.pageSubject$
+    merge(
+      this.pageSubject$,
+      this.radioGroupForm.valueChanges
+        .pipe(
+          map((data) => {
+            const types: string[] = [];
+            for (const i in data) {
+              if (data[i]) {
+                types.push(i);
+              }
+            }
+            this.types = types;
+            return 1;
+          })
+        )
+      )
       .pipe(
         tap(() => this.isLoading = true),
-        switchMap((page) => this.bisqApiService.listTransactions$((page - 1) * this.itemsPerPage, this.itemsPerPage))
+        switchMap((page) => this.bisqApiService.listTransactions$((page - 1) * this.itemsPerPage, this.itemsPerPage, this.types))
       )
       .subscribe((response) => {
         this.isLoading = false;

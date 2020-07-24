@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { BisqTransaction, BisqBlock, BisqStats } from './bisq.interfaces';
 
@@ -23,8 +23,12 @@ export class BisqApiService {
     return this.httpClient.get<BisqTransaction>(API_BASE_URL + '/tx/' + txId);
   }
 
-  listTransactions$(start: number, length: number): Observable<HttpResponse<BisqTransaction[]>> {
-    return this.httpClient.get<BisqTransaction[]>(API_BASE_URL + `/txs/${start}/${length}`, { observe: 'response' });
+  listTransactions$(start: number, length: number, types: string[]): Observable<HttpResponse<BisqTransaction[]>> {
+    let params = new HttpParams();
+    types.forEach((t: string) => {
+      params = params.append('types[]', t);
+    });
+    return this.httpClient.get<BisqTransaction[]>(API_BASE_URL + `/txs/${start}/${length}`, { params, observe: 'response' });
   }
 
   getBlock$(hash: string): Observable<BisqBlock> {
