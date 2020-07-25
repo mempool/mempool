@@ -1,0 +1,6 @@
+:host ::ng-deep .dropdown-item {
+  white-space: nowrap;
+  overflow: hidden;
+  width: 375px;
+  text-overflow: ellipsis;
+}
