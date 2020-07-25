@@ -66,6 +66,10 @@ export class SearchFormComponent implements OnInit {
     }
   }
 
+  itemSelected() {
+    setTimeout(() => this.search());
+  }
+
   search() {
     const searchText = this.searchForm.value.searchText.trim();
     if (searchText) {
