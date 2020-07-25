@@ -4,6 +4,7 @@ import { WebsocketResponse } from '../interfaces/websocket.interface';
 import { StateService } from './state.service';
 import { Block, Transaction } from '../interfaces/electrs.interface';
 import { Subscription } from 'rxjs';
+import { env } from '../app.constants';
 
 const WEB_SOCKET_PROTOCOL = (document.location.protocol === 'https:') ? 'wss:' : 'ws:';
 const WEB_SOCKET_URL = WEB_SOCKET_PROTOCOL + '//' + document.location.hostname + ':' + document.location.port + '{network}/api/v1/ws';
@@ -29,12 +30,12 @@ export class WebsocketService {
   constructor(
     private stateService: StateService,
   ) {
-    this.network = this.stateService.network === 'bisq' ? '' : this.stateService.network;
+    this.network = this.stateService.network === 'bisq' && !env.BISQ_SEPARATE_BACKEND ? '' : this.stateService.network;
     this.websocketSubject = webSocket<WebsocketResponse>(WEB_SOCKET_URL.replace('{network}', this.network ? '/' + this.network : ''));
     this.startSubscription();
 
     this.stateService.networkChanged$.subscribe((network) => {
-      if (network === 'bisq') {
+      if (network === 'bisq' && !env.BISQ_SEPARATE_BACKEND) {
         network = '';
       }
       if (network === this.network) {

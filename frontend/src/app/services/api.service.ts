@@ -3,6 +3,7 @@ import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { Observable } from 'rxjs';
 import { StateService } from './state.service';
+import { env } from '../app.constants';
 
 const API_BASE_URL = '{network}/api/v1';
 
@@ -18,7 +19,7 @@ export class ApiService {
   ) {
     this.apiBaseUrl = API_BASE_URL.replace('{network}', '');
     this.stateService.networkChanged$.subscribe((network) => {
-      if (network === 'bisq') {
+      if (network === 'bisq' && !env.BISQ_SEPARATE_BACKEND) {
         network = '';
       }
       this.apiBaseUrl = API_BASE_URL.replace('{network}', network ? '/' + network : '');

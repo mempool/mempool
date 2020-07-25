@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Block, Transaction, Address, Outspend, Recent, Asset } from '../interfaces/electrs.interface';
 import { StateService } from './state.service';
+import { env } from '../app.constants';
 
 const API_BASE_URL = '{network}/api';
 
@@ -18,7 +19,7 @@ export class ElectrsApiService {
   ) {
     this.apiBaseUrl = API_BASE_URL.replace('{network}', '');
     this.stateService.networkChanged$.subscribe((network) => {
-      if (network === 'bisq') {
+      if (network === 'bisq' && !env.BISQ_SEPARATE_BACKEND) {
         network = '';
       }
       this.apiBaseUrl = API_BASE_URL.replace('{network}', network ? '/' + network : '');
