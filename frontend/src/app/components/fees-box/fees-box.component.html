@@ -5,9 +5,9 @@
     <td style="border-top: 0px; width: 33%;">Next block</td>
   </tr>
   <tr *ngIf="(feeEstimations$ | async) as feeEstimations; else loadingFees">
-    <td>{{ feeEstimations.fastestFee }} sat/vB (<app-fiat [value]="feeEstimations.fastestFee * 250"></app-fiat>)</td>
-    <td>{{ feeEstimations.halfHourFee }} sat/vB (<app-fiat [value]="feeEstimations.halfHourFee * 250"></app-fiat>)</td>
     <td>{{ feeEstimations.hourFee }} sat/vB (<app-fiat [value]="feeEstimations.hourFee * 250"></app-fiat>)</td>
+    <td>{{ feeEstimations.halfHourFee }} sat/vB (<app-fiat [value]="feeEstimations.halfHourFee * 250"></app-fiat>)</td>
+    <td>{{ feeEstimations.fastestFee }} sat/vB (<app-fiat [value]="feeEstimations.fastestFee * 250"></app-fiat>)</td>
   </tr>
   <ng-template #loadingFees>
     <tr>
