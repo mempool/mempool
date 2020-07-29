@@ -1,17 +1,17 @@
-<table class="table mx-auto text-center" style="width: 500px">
+<table class="table mx-auto text-center" style="max-width: 550px">
   <tr>
-    <td style="border-top: 0px; width: 33%;">1 hour</td>
-    <td style="border-top: 0px; width: 33%;">30 minutes</td>
-    <td style="border-top: 0px; width: 33%;">Next block</td>
+    <td class="d-none d-md-table-cell border-top-0">1 hour</td>
+    <td class="border-top-0">30 minutes</td>
+    <td class="border-top-0">Next block</td>
   </tr>
   <tr *ngIf="(feeEstimations$ | async) as feeEstimations; else loadingFees">
-    <td>{{ feeEstimations.hourFee }} sat/vB (<app-fiat [value]="feeEstimations.hourFee * 250"></app-fiat>)</td>
+    <td class="d-none d-md-table-cell">{{ feeEstimations.hourFee }} sat/vB (<app-fiat [value]="feeEstimations.hourFee * 250"></app-fiat>)</td>
     <td>{{ feeEstimations.halfHourFee }} sat/vB (<app-fiat [value]="feeEstimations.halfHourFee * 250"></app-fiat>)</td>
     <td>{{ feeEstimations.fastestFee }} sat/vB (<app-fiat [value]="feeEstimations.fastestFee * 250"></app-fiat>)</td>
   </tr>
   <ng-template #loadingFees>
     <tr>
-      <td><span class="skeleton-loader"></span></td>
+      <td class="d-none d-md-table-cell"><span class="skeleton-loader"></span></td>
       <td><span class="skeleton-loader"></span></td>
       <td><span class="skeleton-loader"></span></td>
     </tr>
