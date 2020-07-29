@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { StateService } from 'src/app/services/state.service';
-import { map } from 'rxjs/operators';
+import { map, filter } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 interface FeeEstimations {
@@ -25,6 +25,7 @@ export class FeesBoxComponent implements OnInit {
   ngOnInit(): void {
     this.feeEstimations$ = this.stateService.mempoolBlocks$
       .pipe(
+        filter((blocks) => !!blocks.length),
         map((pBlocks) => {
           let firstMedianFee = Math.ceil(pBlocks[0].medianFee);
 
