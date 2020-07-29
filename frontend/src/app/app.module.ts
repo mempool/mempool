@@ -40,6 +40,7 @@ import { StatusViewComponent } from './components/status-view/status-view.compon
 import { MinerComponent } from './components/miner/miner.component';
 import { SharedModule } from './shared/shared.module';
 import { NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
+import { FeesBoxComponent } from './components/fees-box/fees-box.component';
 
 @NgModule({
   declarations: [
@@ -70,6 +71,7 @@ import { NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
     AssetsComponent,
     MinerComponent,
     StatusViewComponent,
+    FeesBoxComponent,
   ],
   imports: [
     BrowserModule,
