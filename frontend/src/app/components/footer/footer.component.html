@@ -1,24 +1,24 @@
 <footer class="footer">
   <div class="container-xl">
-    <div class="row text-center" *ngIf="memPoolInfo">
+    <div class="row text-center" *ngIf="mempoolInfoData$ | async as mempoolInfoData">
       <div class="col d-none d-sm-block">
         <span class="txPerSecond">Tx weight per second:</span>
-        <span class="" *ngIf="memPoolInfo?.vBytesPerSecond === 0; else inSync">
+        <span *ngIf="mempoolInfoData.memPoolInfo.vBytesPerSecond === 0; else inSync">
           &nbsp;<span class="badge badge-pill badge-warning">Backend is synchronizing</span>
         </span>
         <ng-template #inSync>
           <div class="progress sub-text">
-            <div class="progress-bar {{ progressClass }}" role="progressbar" [ngStyle]="{'width': progressWidth}">{{ memPoolInfo?.vBytesPerSecond | ceil | number }} vBytes/s</div>
+            <div class="progress-bar {{ mempoolInfoData.progressClass }}" role="progressbar" [ngStyle]="{'width': mempoolInfoData.progressWidth}">{{ mempoolInfoData.memPoolInfo.vBytesPerSecond | ceil | number }} vBytes/s</div>
           </div>
         </ng-template>    
       </div>
       <div class="col">
         <span class="unconfirmedTx">Unconfirmed<span class="extra-text"> transactions</span>:</span>
-        <div class="sub-text">{{ memPoolInfo?.memPoolInfo?.size | number }}</div>
+        <div class="sub-text">{{ mempoolInfoData.memPoolInfo.memPoolInfo.size | number }}</div>
       </div>
       <div class="col">
         <span class="mempoolSize">Mempool size:</span>
-        <div class="sub-text">{{ mempoolSize | bytes }} ({{ mempoolBlocks }} block<span [hidden]="mempoolBlocks <= 1">s</span>)</div>
+        <div class="sub-text" *ngIf="(mempoolBlocksData$ | async) as mempoolBlocksData">{{ mempoolBlocksData.size | bytes }} ({{ mempoolBlocksData.blocks }} block<span [hidden]="mempoolBlocksData.blocks <= 1">s</span>)</div>
       </div>
     </div>
   </div>
