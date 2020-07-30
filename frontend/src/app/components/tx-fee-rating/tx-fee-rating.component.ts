@@ -1,14 +1,18 @@
-import { Component, ChangeDetectionStrategy, OnChanges, Input, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnChanges, Input, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Transaction, Block } from 'src/app/interfaces/electrs.interface';
 import { StateService } from 'src/app/services/state.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-tx-fee-rating',
   templateUrl: './tx-fee-rating.component.html',
   styleUrls: ['./tx-fee-rating.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TxFeeRatingComponent implements OnInit, OnChanges {
+export class TxFeeRatingComponent implements OnInit, OnChanges, OnDestroy {
   @Input() tx: Transaction;
+
+  blocksSubscription: Subscription;
 
   medianFeeNeeded: number;
   overpaidTimes: number;
@@ -18,13 +22,15 @@ export class TxFeeRatingComponent implements OnInit, OnChanges {
 
   constructor(
     private stateService: StateService,
+    private cd: ChangeDetectorRef,
   ) { }
 
   ngOnInit() {
-    this.stateService.blocks$.subscribe(([block]) => {
+    this.blocksSubscription = this.stateService.blocks$.subscribe(([block]) => {
       this.blocks.push(block);
       if (this.tx.status.confirmed && this.tx.status.block_height === block.height) {
         this.calculateRatings(block);
+        this.cd.markForCheck();
       }
     });
   }
@@ -39,6 +45,10 @@ export class TxFeeRatingComponent implements OnInit, OnChanges {
     if (foundBlock) {
       this.calculateRatings(foundBlock);
     }
+  }
+
+  ngOnDestroy() {
+    this.blocksSubscription.unsubscribe();
   }
 
   calculateRatings(block: Block) {

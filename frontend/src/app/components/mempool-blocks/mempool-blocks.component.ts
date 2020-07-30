@@ -1,27 +1,32 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { Subscription, pipe } from 'rxjs';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Subscription, Observable, fromEvent, merge, of } from 'rxjs';
 import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
-import { take, map } from 'rxjs/operators';
+import { take, map, switchMap } from 'rxjs/operators';
 import { feeLevels, mempoolFeeColors } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-mempool-blocks',
   templateUrl: './mempool-blocks.component.html',
   styleUrls: ['./mempool-blocks.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MempoolBlocksComponent implements OnInit, OnDestroy {
   mempoolBlocks: MempoolBlock[];
+  mempoolBlocks$: Observable<MempoolBlock[]>;
+
   mempoolBlocksFull: MempoolBlock[];
   mempoolBlockStyles = [];
-  mempoolBlocksSubscription: Subscription;
+  markBlocksSubscription: Subscription;
+  blockSubscription: Subscription;
+  networkSubscription: Subscription;
   network = '';
 
   blockWidth = 125;
   blockPadding = 30;
   arrowVisible = false;
-  tabHidden = true;
+  tabHidden = false;
 
   rightPosition = 0;
   transition = '2s';
@@ -36,21 +41,25 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private stateService: StateService,
+    private cd: ChangeDetectorRef,
   ) { }
 
   ngOnInit() {
     this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
 
-    this.mempoolBlocksSubscription = this.stateService.mempoolBlocks$
-      .pipe(
-        map((blocks) => {
-          if (!blocks.length) {
-            return [{ index: 0, blockSize: 0, blockVSize: 0, feeRange: [0, 0], medianFee: 0, nTx: 0, totalFees: 0 }];
-          }
-          return blocks;
-        }),
-      )
-      .subscribe((blocks) => {
+    this.mempoolBlocks$ = merge(
+      of(true),
+      fromEvent(window, 'resize')
+    )
+    .pipe(
+      switchMap(() => this.stateService.mempoolBlocks$),
+      map((blocks) => {
+        if (!blocks.length) {
+          return [{ index: 0, blockSize: 0, blockVSize: 0, feeRange: [0, 0], medianFee: 0, nTx: 0, totalFees: 0 }];
+        }
+        return blocks;
+      }),
+      map((blocks) => {
         blocks.forEach((block, i) => {
           block.index = this.blockIndex + i;
         });
@@ -59,9 +68,11 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
         this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(stringifiedBlocks));
         this.updateMempoolBlockStyles();
         this.calculateTransactionPosition();
-      });
+        return this.mempoolBlocks;
+      })
+    );
 
-    this.stateService.markBlock$
+    this.markBlocksSubscription = this.stateService.markBlock$
       .subscribe((state) => {
         this.markIndex = undefined;
         this.txFeePerVSize = undefined;
@@ -72,16 +83,17 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
           this.txFeePerVSize = state.txFeePerVSize;
         }
         this.calculateTransactionPosition();
+        this.cd.markForCheck();
       });
 
-    this.stateService.blocks$
+    this.blockSubscription = this.stateService.blocks$
       .subscribe(([block]) => {
         if (block.matchRate >= 66 && !this.tabHidden) {
           this.blockIndex++;
         }
       });
 
-    this.stateService.networkChanged$
+    this.networkSubscription = this.stateService.networkChanged$
       .subscribe((network) => this.network = network);
 
     this.stateService.keyNavigation$.subscribe((event) => {
@@ -109,15 +121,11 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     });
   }
 
-  @HostListener('window:resize', ['$event'])
-  onResize() {
-    if (this.mempoolBlocks && this.mempoolBlocks.length) {
-      this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(JSON.stringify(this.mempoolBlocksFull)));
-    }
-  }
-
   ngOnDestroy() {
-    this.mempoolBlocksSubscription.unsubscribe();
+    this.markBlocksSubscription.unsubscribe();
+    this.blockSubscription.unsubscribe();
+    this.networkSubscription.unsubscribe();
+    clearTimeout(this.resetTransitionTimeout);
   }
 
   trackByFn(index: number, block: MempoolBlock) {
@@ -192,7 +200,11 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
       this.transition = 'inherit';
       this.rightPosition = this.markIndex * (this.blockWidth + this.blockPadding) + 0.5 * this.blockWidth;
       this.arrowVisible = true;
-      this.resetTransitionTimeout = window.setTimeout(() => this.transition = '2s', 100);
+
+      this.resetTransitionTimeout = window.setTimeout(() => {
+        this.transition = '2s';
+        this.cd.markForCheck();
+      }, 100);
       return;
     }
 

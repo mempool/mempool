@@ -1,24 +1,27 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Block } from 'src/app/interfaces/electrs.interface';
 import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
-import { AudioService } from 'src/app/services/audio.service';
 import { env } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-blockchain-blocks',
   templateUrl: './blockchain-blocks.component.html',
-  styleUrls: ['./blockchain-blocks.component.scss']
+  styleUrls: ['./blockchain-blocks.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   network = '';
   blocks: Block[] = [];
   markHeight: number;
   blocksSubscription: Subscription;
+  networkSubscriotion: Subscription;
+  tabHiddenSubscription: Subscription;
+  markBlockSubscription: Subscription;
   blockStyles = [];
   interval: any;
-  tabHidden = true;
+  tabHidden = false;
 
   arrowVisible = false;
   arrowLeftPx = 30;
@@ -35,11 +38,12 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   constructor(
     private stateService: StateService,
     private router: Router,
+    private cd: ChangeDetectorRef,
   ) { }
 
   ngOnInit() {
-    this.stateService.networkChanged$.subscribe((network) => this.network = network);
-    this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
+    this.networkSubscriotion = this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.tabHiddenSubscription = this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
 
     this.blocksSubscription = this.stateService.blocks$
       .subscribe(([block, txConfirmed]) => {
@@ -71,20 +75,23 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
         setTimeout(() => {
           this.blockStyles = [];
           this.blocks.forEach((b) => this.blockStyles.push(this.getStyleForBlock(b)));
+          this.cd.markForCheck();
         }, 50);
 
         if (this.blocks.length === env.KEEP_BLOCKS_AMOUNT) {
           this.blocksFilled = true;
         }
+        this.cd.markForCheck();
       });
 
-    this.stateService.markBlock$
+    this.markBlockSubscription = this.stateService.markBlock$
       .subscribe((state) => {
         this.markHeight = undefined;
         if (state.blockHeight) {
           this.markHeight = state.blockHeight;
         }
         this.moveArrowToPosition(false);
+        this.cd.markForCheck();
       });
 
     this.stateService.keyNavigation$.subscribe((event) => {
@@ -112,6 +119,9 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.blocksSubscription.unsubscribe();
+    this.networkSubscriotion.unsubscribe();
+    this.tabHiddenSubscription.unsubscribe();
+    this.markBlockSubscription.unsubscribe();
     clearInterval(this.interval);
   }
 
@@ -131,11 +141,15 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
         setTimeout(() => {
           this.transition = '2s';
           this.arrowLeftPx = blockindex * 155 + 30;
+          this.cd.markForCheck();
         }, 50);
       } else {
         this.arrowLeftPx = blockindex * 155 + 30;
         if (!animate) {
-          setTimeout(() => this.transition = '2s');
+          setTimeout(() => {
+            this.transition = '2s';
+            this.cd.markForCheck();
+          });
         }
       }
     }

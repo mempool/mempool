@@ -1,28 +1,21 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { StateService } from 'src/app/services/state.service';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-blockchain',
   templateUrl: './blockchain.component.html',
-  styleUrls: ['./blockchain.component.scss']
+  styleUrls: ['./blockchain.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BlockchainComponent implements OnInit, OnDestroy {
-  txTrackingLoading = false;
-  txShowTxNotFound = false;
-  isLoading = true;
-  subscription: Subscription;
+export class BlockchainComponent implements OnInit {
+  isLoading$: Observable<boolean>;
 
   constructor(
     private stateService: StateService,
   ) {}
 
   ngOnInit() {
-    this.subscription = this.stateService.isLoadingWebSocket$
-      .subscribe((isLoading) => this.isLoading = isLoading);
-  }
-
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
+    this.isLoading$ = this.stateService.isLoadingWebSocket$;
   }
 }

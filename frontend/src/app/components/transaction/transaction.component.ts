@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { switchMap, filter, take, catchError, flatMap } from 'rxjs/operators';
+import { switchMap, filter, catchError } from 'rxjs/operators';
 import { Transaction, Block } from '../../interfaces/electrs.interface';
 import { of, merge, Subscription, Observable } from 'rxjs';
 import { StateService } from '../../services/state.service';
@@ -9,7 +9,6 @@ import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
-import { BisqTransaction } from 'src/app/bisq/bisq.interfaces';
 
 @Component({
   selector: 'app-transaction',
