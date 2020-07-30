@@ -1,7 +1,7 @@
 <div class="container-xl" *ngIf="mempoolBlock$ | async as mempoolBlock">
 
   <div class="title-block">
-    <h1 class="float-left">{{ ordinal }}</h1>
+    <h1 class="float-left">{{ ordinal$ | async }}</h1>
     <button [routerLink]="['/' | relativeUrl]" class="btn btn-sm float-right mr-2 mt-2">&#10005;</button>
   </div>
 
@@ -32,7 +32,7 @@
               <td>Filled</td>
               <td>
                 <div class="progress position-relative">
-                  <div class="progress-bar progress-mempool {{ network }}" role="progressbar" [ngStyle]="{'width': (mempoolBlock.blockVSize / 1000000) * 100 + '%' }"></div>
+                  <div class="progress-bar progress-mempool {{ (network$ | async) }}" role="progressbar" [ngStyle]="{'width': (mempoolBlock.blockVSize / 1000000) * 100 + '%' }"></div>
                   <div class="progress-text">{{ mempoolBlock.blockSize | bytes: 2 }}</div>
                 </div>
               </td>
