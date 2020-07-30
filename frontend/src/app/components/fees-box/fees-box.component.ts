@@ -17,12 +17,14 @@ interface FeeEstimations {
 })
 export class FeesBoxComponent implements OnInit {
   feeEstimations$: Observable<FeeEstimations>;
+  isLoadingWebSocket$: Observable<boolean>;
 
   constructor(
     private stateService: StateService,
   ) { }
 
   ngOnInit(): void {
+    this.isLoadingWebSocket$ = this.stateService.isLoadingWebSocket$;
     this.feeEstimations$ = this.stateService.mempoolBlocks$
       .pipe(
         filter((blocks) => !!blocks.length),
