@@ -28,7 +28,10 @@
 
 @media (max-width: 767.98px) {
   .position-container {
-    left: 97%;
+    left: 95%;
+  }
+  .position-container.loading {
+    left: 50%;
   }
 }
 

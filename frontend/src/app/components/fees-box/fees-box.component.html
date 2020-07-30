@@ -4,7 +4,7 @@
     <td class="border-top-0">30 minutes</td>
     <td class="border-top-0">Next block</td>
   </tr>
-  <tr *ngIf="(feeEstimations$ | async) as feeEstimations; else loadingFees">
+  <tr *ngIf="(isLoadingWebSocket$ | async) === false && (feeEstimations$ | async) as feeEstimations; else loadingFees">
     <td class="d-none d-md-table-cell">{{ feeEstimations.hourFee }} sat/vB (<app-fiat [value]="feeEstimations.hourFee * 250"></app-fiat>)</td>
     <td>{{ feeEstimations.halfHourFee }} sat/vB (<app-fiat [value]="feeEstimations.halfHourFee * 250"></app-fiat>)</td>
     <td>{{ feeEstimations.fastestFee }} sat/vB (<app-fiat [value]="feeEstimations.fastestFee * 250"></app-fiat>)</td>
