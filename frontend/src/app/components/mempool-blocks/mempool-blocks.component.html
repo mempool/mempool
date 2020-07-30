@@ -3,7 +3,7 @@
     <ng-template ngFor let-projectedBlock [ngForOf]="mempoolBlocks" let-i="index" [ngForTrackBy]="trackByFn">
       <div class="bitcoin-block text-center mempool-block" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]">
         <a [routerLink]="['/mempool-block/' | relativeUrl, i]" class="blockLink">&nbsp;</a>
-        <div class="block-body" *ngIf="mempoolBlocks?.length">
+        <div class="block-body">
           <div class="fees">
             ~{{ projectedBlock.medianFee | number:'1.0-0' }} sat/vB
           </div>
