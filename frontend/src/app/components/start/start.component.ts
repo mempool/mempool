@@ -5,7 +5,6 @@ import { WebsocketService } from 'src/app/services/websocket.service';
   selector: 'app-start',
   templateUrl: './start.component.html',
   styleUrls: ['./start.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StartComponent implements OnInit {
   constructor(
