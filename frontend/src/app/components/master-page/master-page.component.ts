@@ -1,34 +1,27 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { StateService } from '../../services/state.service';
 import { env } from 'src/app/app.constants';
+import { Observable, merge, of } from 'rxjs';
 
 @Component({
   selector: 'app-master-page',
   templateUrl: './master-page.component.html',
-  styleUrls: ['./master-page.component.scss']
+  styleUrls: ['./master-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MasterPageComponent implements OnInit {
-  network = '';
-  tvViewRoute = '/tv';
   env = env;
-
+  network$: Observable<string>;
+  connectionState$: Observable<number>;
   navCollapsed = false;
-  connectionState = 2;
 
   constructor(
     private stateService: StateService,
   ) { }
 
   ngOnInit() {
-    this.stateService.connectionState$
-      .subscribe((state) => {
-        this.connectionState = state;
-      });
-
-    this.stateService.networkChanged$
-      .subscribe((network) => {
-        this.network = network;
-      });
+    this.connectionState$ = this.stateService.connectionState$;
+    this.network$ = merge(of(''), this.stateService.networkChanged$);
   }
 
   collapse(): void {

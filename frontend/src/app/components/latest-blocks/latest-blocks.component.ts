@@ -1,17 +1,18 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { StateService } from '../../services/state.service';
 import { Block } from '../../interfaces/electrs.interface';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable, merge, of } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
 
 @Component({
   selector: 'app-latest-blocks',
   templateUrl: './latest-blocks.component.html',
   styleUrls: ['./latest-blocks.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LatestBlocksComponent implements OnInit, OnDestroy {
-  network = '';
+  network$: Observable<string>;
 
   blocks: any[] = [];
   blockSubscription: Subscription;
@@ -27,11 +28,12 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
     private electrsApiService: ElectrsApiService,
     private stateService: StateService,
     private seoService: SeoService,
+    private cd: ChangeDetectorRef,
   ) { }
 
   ngOnInit() {
     this.seoService.resetTitle();
-    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.network$ = merge(of(''), this.stateService.networkChanged$);
 
     this.blockSubscription = this.stateService.blocks$
       .subscribe(([block]) => {
@@ -57,6 +59,7 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
 
         this.blocks.pop();
         this.blocks.unshift(block);
+        this.cd.markForCheck();
       });
 
     this.loadInitialBlocks();
@@ -80,6 +83,7 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
         if (chunks > 0) {
           this.loadMore(chunks);
         }
+        this.cd.markForCheck();
       });
   }
 
@@ -97,6 +101,7 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
         if (chunksLeft > 0) {
           this.loadMore(chunksLeft);
         }
+        this.cd.markForCheck();
       });
   }
 
