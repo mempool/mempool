@@ -8,6 +8,35 @@
     "secure": false,
     "ws": true
   },
+  "/api": {
+    "target": "http://localhost:50001/",
+    "secure": false,
+    "pathRewrite": {
+      "^/api": ""
+    }
+  },
+  "/testnet/api/v1": {
+    "target": "http://localhost:8999/",
+    "secure": false,
+    "pathRewrite": {
+      "^/testnet/api/v1": "/api/v1"
+    }
+  },
+  "/testnet/api/v1/ws": {
+    "target": "http://localhost:8999/",
+    "secure": false,
+    "ws": true,
+    "pathRewrite": {
+      "^/testnet/api": "/api/v1/ws"
+    }
+  },
+  "/testnet/api": {
+    "target": "http://localhost:50001/",
+    "secure": false,
+    "pathRewrite": {
+      "^/testnet/api": ""
+    }
+  },
   "/bisq/api": {
     "target": "http://localhost:8999/",
     "secure": false,
@@ -15,11 +44,12 @@
       "^/bisq/api": "/api/v1/bisq"
     }
   },
-  "/api": {
-    "target": "http://localhost:50001/",
+  "/bisq/api/v1/ws": {
+    "target": "http://localhost:8999/",
     "secure": false,
+    "ws": true,
     "pathRewrite": {
-      "^/api": ""
+      "^/testnet/api": "/api/v1/ws"
     }
   }
 }
