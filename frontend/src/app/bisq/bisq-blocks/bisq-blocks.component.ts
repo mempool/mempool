@@ -1,18 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BisqApiService } from '../bisq-api.service';
-import { switchMap, tap } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
+import { Subject, Observable, of, merge } from 'rxjs';
 import { BisqBlock, BisqOutput, BisqTransaction } from '../bisq.interfaces';
 import { SeoService } from 'src/app/services/seo.service';
 
 @Component({
   selector: 'app-bisq-blocks',
   templateUrl: './bisq-blocks.component.html',
-  styleUrls: ['./bisq-blocks.component.scss']
+  styleUrls: ['./bisq-blocks.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BisqBlocksComponent implements OnInit {
-  blocks: BisqBlock[];
-  totalCount: number;
+  blocks$: Observable<[BisqBlock[], number]>;
   page = 1;
   itemsPerPage: number;
   contentSpace = window.innerHeight - (165 + 75);
@@ -39,20 +39,11 @@ export class BisqBlocksComponent implements OnInit {
       this.paginationMaxSize = 3;
     }
 
-    this.pageSubject$
+    this.blocks$ = merge(of(1), this.pageSubject$)
       .pipe(
-        tap(() => this.isLoading = true),
-        switchMap((page) => this.bisqApiService.listBlocks$((page - 1) * this.itemsPerPage, this.itemsPerPage))
-      )
-      .subscribe((response) => {
-        this.isLoading = false;
-        this.blocks = response.body;
-        this.totalCount = parseInt(response.headers.get('x-total-count'), 10);
-      }, (error) => {
-        console.log(error);
-      });
-
-    this.pageSubject$.next(1);
+        switchMap((page) => this.bisqApiService.listBlocks$((page - 1) * this.itemsPerPage, this.itemsPerPage)),
+        map((response) => [response.body, parseInt(response.headers.get('x-total-count'), 10)]),
+      );
   }
 
   calculateTotalOutput(block: BisqBlock): number {

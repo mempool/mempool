@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BisqTransaction, BisqOutput } from '../bisq.interfaces';
-import { Subject, merge } from 'rxjs';
-import { switchMap, tap, map } from 'rxjs/operators';
+import { Subject, merge, Observable, of } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
 import { BisqApiService } from '../bisq-api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
@@ -9,11 +9,11 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 @Component({
   selector: 'app-bisq-transactions',
   templateUrl: './bisq-transactions.component.html',
-  styleUrls: ['./bisq-transactions.component.scss']
+  styleUrls: ['./bisq-transactions.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BisqTransactionsComponent implements OnInit {
-  transactions: BisqTransaction[];
-  totalCount: number;
+  transactions$: Observable<[BisqTransaction[], number]>;
   page = 1;
   itemsPerPage: number;
   contentSpace = window.innerHeight - (165 + 75);
@@ -62,7 +62,8 @@ export class BisqTransactionsComponent implements OnInit {
       this.paginationMaxSize = 3;
     }
 
-    merge(
+    this.transactions$ = merge(
+      of(1),
       this.pageSubject$,
       this.radioGroupForm.valueChanges
         .pipe(
@@ -79,18 +80,9 @@ export class BisqTransactionsComponent implements OnInit {
         )
       )
       .pipe(
-        tap(() => this.isLoading = true),
-        switchMap((page) => this.bisqApiService.listTransactions$((page - 1) * this.itemsPerPage, this.itemsPerPage, this.types))
-      )
-      .subscribe((response) => {
-        this.isLoading = false;
-        this.transactions = response.body;
-        this.totalCount = parseInt(response.headers.get('x-total-count'), 10);
-      }, (error) => {
-        console.log(error);
-      });
-
-    this.pageSubject$.next(1);
+        switchMap((page) => this.bisqApiService.listTransactions$((page - 1) * this.itemsPerPage, this.itemsPerPage, this.types)),
+        map((response) =>  [response.body, parseInt(response.headers.get('x-total-count'), 10)])
+      );
   }
 
   pageChange(page: number) {
