@@ -1,10 +1,11 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BisqTransaction, BisqOutput } from '../bisq.interfaces';
-import { Subject, merge, Observable, of } from 'rxjs';
+import { Subject, merge, Observable } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { BisqApiService } from '../bisq-api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-bisq-transactions',
@@ -20,7 +21,6 @@ export class BisqTransactionsComponent implements OnInit {
   fiveItemsPxSize = 250;
   isLoading = true;
   loadingItems: number[];
-  pageSubject$ = new Subject<number>();
   radioGroupForm: FormGroup;
   types: string[] = [];
 
@@ -32,6 +32,8 @@ export class BisqTransactionsComponent implements OnInit {
     private bisqApiService: BisqApiService,
     private seoService: SeoService,
     private formBuilder: FormBuilder,
+    private route: ActivatedRoute,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
@@ -63,8 +65,16 @@ export class BisqTransactionsComponent implements OnInit {
     }
 
     this.transactions$ = merge(
-      of(1),
-      this.pageSubject$,
+      this.route.queryParams
+        .pipe(
+          map((queryParams) => {
+            if (queryParams.page) {
+              this.page = parseInt(queryParams.page, 10);
+              return parseInt(queryParams.page, 10);
+            }
+            return 1;
+          })
+        ),
       this.radioGroupForm.valueChanges
         .pipe(
           map((data) => {
@@ -75,6 +85,9 @@ export class BisqTransactionsComponent implements OnInit {
               }
             }
             this.types = types;
+            if (this.page !== 1) {
+              this.pageChange(1);
+            }
             return 1;
           })
         )
@@ -86,7 +99,11 @@ export class BisqTransactionsComponent implements OnInit {
   }
 
   pageChange(page: number) {
-    this.pageSubject$.next(page);
+    this.router.navigate([], {
+      queryParams: { page: page },
+      replaceUrl: true,
+      queryParamsHandling: 'merge',
+    });
   }
 
   calculateTotalOutput(outputs: BisqOutput[]): number {

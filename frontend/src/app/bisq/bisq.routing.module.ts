@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AboutComponent } from '../components/about/about.component';
-import { AddressComponent } from '../components/address/address.component';
 import { BisqTransactionsComponent } from './bisq-transactions/bisq-transactions.component';
 import { BisqTransactionComponent } from './bisq-transaction/bisq-transaction.component';
 import { BisqBlockComponent } from './bisq-block/bisq-block.component';
