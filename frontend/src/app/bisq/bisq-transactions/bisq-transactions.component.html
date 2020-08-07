@@ -94,7 +94,7 @@
 
   <br>
 
-  <ngb-pagination [size]="paginationSize" [collectionSize]="transactions.value ? transactions.value[1] : 0" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true"></ngb-pagination>
+  <ngb-pagination *ngIf="transactions.value" [size]="paginationSize" [collectionSize]="transactions.value[1]" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true"></ngb-pagination>
 
   </ng-container>
 </div>

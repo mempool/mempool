@@ -53,7 +53,7 @@ export class StateService {
   }
 
   setNetworkBasedonUrl(url: string) {
-    switch (url.split('/')[1]) {
+    switch (url.split(/\/|\?|#/)[1]) {
       case 'liquid':
         if (this.network !== 'liquid') {
           this.network = 'liquid';

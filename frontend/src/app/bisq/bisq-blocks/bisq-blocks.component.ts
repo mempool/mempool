@@ -4,6 +4,7 @@ import { switchMap, map } from 'rxjs/operators';
 import { Subject, Observable, of, merge } from 'rxjs';
 import { BisqBlock, BisqOutput, BisqTransaction } from '../bisq.interfaces';
 import { SeoService } from 'src/app/services/seo.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-bisq-blocks',
@@ -23,11 +24,11 @@ export class BisqBlocksComponent implements OnInit {
   paginationSize: 'sm' | 'lg' = 'md';
   paginationMaxSize = 10;
 
-  pageSubject$ = new Subject<number>();
-
   constructor(
     private bisqApiService: BisqApiService,
     private seoService: SeoService,
+    private route: ActivatedRoute,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
@@ -39,8 +40,15 @@ export class BisqBlocksComponent implements OnInit {
       this.paginationMaxSize = 3;
     }
 
-    this.blocks$ = merge(of(1), this.pageSubject$)
+    this.blocks$ = this.route.queryParams
       .pipe(
+        map((queryParams) => {
+          if (queryParams.page) {
+            this.page = parseInt(queryParams.page, 10);
+            return parseInt(queryParams.page, 10);
+          }
+          return 1;
+        }),
         switchMap((page) => this.bisqApiService.listBlocks$((page - 1) * this.itemsPerPage, this.itemsPerPage)),
         map((response) => [response.body, parseInt(response.headers.get('x-total-count'), 10)]),
       );
@@ -57,6 +65,10 @@ export class BisqBlocksComponent implements OnInit {
   }
 
   pageChange(page: number) {
-    this.pageSubject$.next(page);
+    this.router.navigate([], {
+      queryParams: { page: page },
+      replaceUrl: true,
+      queryParamsHandling: 'merge',
+    });
   }
 }
