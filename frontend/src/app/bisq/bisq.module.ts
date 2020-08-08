@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { BisqRoutingModule } from './bisq.routing.module';
 import { SharedModule } from '../shared/shared.module';
+import { NgxBootstrapMultiselectModule } from 'ngx-bootrap-multiselect';
+
 import { BisqTransactionsComponent } from './bisq-transactions/bisq-transactions.component';
 import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { BisqTransactionComponent } from './bisq-transaction/bisq-transaction.component';
@@ -38,6 +40,7 @@ import { BsqAmountComponent } from './bsq-amount/bsq-amount.component';
     SharedModule,
     NgbPaginationModule,
     FontAwesomeModule,
+    NgxBootstrapMultiselectModule,
   ],
   providers: [
     BisqApiService,
