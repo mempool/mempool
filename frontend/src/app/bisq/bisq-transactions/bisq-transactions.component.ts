@@ -1,11 +1,12 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BisqTransaction, BisqOutput } from '../bisq.interfaces';
-import { Subject, merge, Observable } from 'rxjs';
+import { merge, Observable } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { BisqApiService } from '../bisq-api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { IMultiSelectOption, IMultiSelectSettings, IMultiSelectTexts } from 'ngx-bootrap-multiselect';
 
 @Component({
   selector: 'app-bisq-transactions',
@@ -24,9 +25,40 @@ export class BisqTransactionsComponent implements OnInit {
   radioGroupForm: FormGroup;
   types: string[] = [];
 
+  txTypeOptions: IMultiSelectOption[] = [
+      { id: 1, name: 'Asset listing fee' },
+      { id: 2, name: 'Blind vote' },
+      { id: 3, name: 'Compensation request' },
+      { id: 4, name: 'Genesis' },
+      { id: 5, name: 'Lockup' },
+      { id: 6, name: 'Pay trade fee' },
+      { id: 7, name: 'Proof of burn' },
+      { id: 8, name: 'Proposal' },
+      { id: 9, name: 'Reimbursement request' },
+      { id: 10, name: 'Transfer BSQ' },
+      { id: 11, name: 'Unlock' },
+      { id: 12, name: 'Vote reveal' },
+  ];
+
+  txTypeDropdownSettings: IMultiSelectSettings = {
+    buttonClasses: 'btn btn-primary btn-sm',
+    displayAllSelectedText: true,
+    showCheckAll: true,
+    showUncheckAll: true,
+    maxHeight: '500px',
+    fixedTitle: true,
+  };
+
+  txTypeDropdownTexts: IMultiSelectTexts = {
+    defaultTitle: 'Filter',
+  };
+
   // @ts-ignore
   paginationSize: 'sm' | 'lg' = 'md';
   paginationMaxSize = 10;
+
+  txTypes = ['ASSET_LISTING_FEE', 'BLIND_VOTE', 'COMPENSATION_REQUEST', 'GENESIS', 'LOCKUP', 'PAY_TRADE_FEE',
+    'PROOF_OF_BURN', 'PROPOSAL', 'REIMBURSEMENT_REQUEST', 'TRANSFER_BSQ', 'UNLOCK', 'VOTE_REVEAL'];
 
   constructor(
     private bisqApiService: BisqApiService,
@@ -40,20 +72,7 @@ export class BisqTransactionsComponent implements OnInit {
     this.seoService.setTitle('Transactions', true);
 
     this.radioGroupForm = this.formBuilder.group({
-      UNVERIFIED: false,
-      INVALID: false,
-      GENESIS: false,
-      TRANSFER_BSQ: false,
-      PAY_TRADE_FEE: false,
-      PROPOSAL: false,
-      COMPENSATION_REQUEST: false,
-      REIMBURSEMENT_REQUEST: false,
-      BLIND_VOTE: false,
-      VOTE_REVEAL: false,
-      LOCKUP: false,
-      UNLOCK: false,
-      ASSET_LISTING_FEE: false,
-      PROOF_OF_BURN: false,
+      txTypes: [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]],
     });
 
     this.itemsPerPage = Math.max(Math.round(this.contentSpace / this.fiveItemsPxSize) * 5, 10);
@@ -78,13 +97,10 @@ export class BisqTransactionsComponent implements OnInit {
       this.radioGroupForm.valueChanges
         .pipe(
           map((data) => {
-            const types: string[] = [];
-            for (const i in data) {
-              if (data[i]) {
-                types.push(i);
-              }
+            this.types = data.txTypes.map((id: number) => this.txTypes[id - 1]);
+            if (this.types.length === this.txTypes.length) {
+              this.types = [];
             }
-            this.types = types;
             if (this.page !== 1) {
               this.pageChange(1);
             }
@@ -93,7 +109,7 @@ export class BisqTransactionsComponent implements OnInit {
         )
       )
       .pipe(
-        switchMap((page) => this.bisqApiService.listTransactions$((page - 1) * this.itemsPerPage, this.itemsPerPage, this.types)),
+        switchMap(() => this.bisqApiService.listTransactions$((this.page - 1) * this.itemsPerPage, this.itemsPerPage, this.types)),
         map((response) =>  [response.body, parseInt(response.headers.get('x-total-count'), 10)])
       );
   }

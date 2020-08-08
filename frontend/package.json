@@ -21,6 +21,7 @@
   "main": "index.ts",
   "scripts": {
     "ng": "ng",
+    "serve": "ng serve --proxy-config proxy.conf.json",
     "start": "npm run generate-config && npm run sync-assets-dev && ng serve --proxy-config proxy.conf.json",
     "build": "npm run generate-config && ng build --prod && npm run sync-assets",
     "sync-assets": "node sync-assets.js",
@@ -49,6 +50,7 @@
     "bootstrap": "4.5.0",
     "chartist": "^0.11.4",
     "clipboard": "^2.0.4",
+    "ngx-bootrap-multiselect": "^2.0.0",
     "ngx-infinite-scroll": "^9.0.0",
     "qrcode": "^1.4.4",
     "rxjs": "^6.6.0",
