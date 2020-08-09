@@ -39,10 +39,18 @@
             <table class="table table-borderless table-striped">
               <tbody>
                 <tr>
+                  <td>Timestamp</td>
+                  <td>
+                    {{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}
+                    <div class="lg-inline">
+                      <i>(<app-time-since [time]="tx.status.block_time" [fastRender]="true"></app-time-since> ago)</i>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
                   <td class="td-width">Included in block</td>
                   <td>
                     <a [routerLink]="['/block/' | relativeUrl, tx.status.block_hash]" [state]="{ data: { blockHeight: tx.status.block_height } }">{{ tx.status.block_height }}</a>
-                    <i> (<app-time-since [time]="tx.status.block_time" [fastRender]="true"></app-time-since> ago)</i>
                   </td>
                 </tr>
                 <ng-template [ngIf]="transactionTime > 0">

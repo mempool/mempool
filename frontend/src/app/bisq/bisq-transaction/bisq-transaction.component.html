@@ -21,10 +21,18 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
+                <td>Timestamp</td>
+                <td>
+                  {{ bisqTx.time | date:'yyyy-MM-dd HH:mm' }}
+                  <div class="lg-inline">
+                    <i>(<app-time-since [time]="bisqTx.time / 1000" [fastRender]="true"></app-time-since> ago)</i>
+                  </div>
+                </td>
+              </tr>
+              <tr>
                 <td class="td-width">Included in block</td>
                 <td>
                   <a [routerLink]="['/block/' | relativeUrl, bisqTx.blockHash]" [state]="{ data: { blockHeight: bisqTx.blockHeight } }">{{ bisqTx.blockHeight }}</a>
-                  <i> (<app-time-since [time]="bisqTx.time / 1000" [fastRender]="true"></app-time-since> ago)</i>
                 </td>
               </tr>
               <tr>
