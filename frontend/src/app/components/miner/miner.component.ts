@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { AssetsService } from 'src/app/services/assets.service';
 import { Transaction } from 'src/app/interfaces/electrs.interface';
 
@@ -6,6 +6,7 @@ import { Transaction } from 'src/app/interfaces/electrs.interface';
   selector: 'app-miner',
   templateUrl: './miner.component.html',
   styleUrls: ['./miner.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MinerComponent implements OnChanges {
   @Input() coinbaseTransaction: Transaction;
@@ -16,6 +17,7 @@ export class MinerComponent implements OnChanges {
 
   constructor(
     private assetsService: AssetsService,
+    private cd: ChangeDetectorRef,
   ) { }
 
   ngOnChanges() {
@@ -56,6 +58,7 @@ export class MinerComponent implements OnChanges {
       }
 
       this.loading = false;
+      this.cd.markForCheck();
     });
   }
 
