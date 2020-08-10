@@ -173,4 +173,8 @@ export class BisqTransactionsComponent implements OnInit {
   calculateTotalOutput(outputs: BisqOutput[]): number {
     return outputs.reduce((acc: number, output: BisqOutput) => acc + output.bsqAmount, 0);
   }
+
+  trackByFn(index: number) {
+    return index;
+  }
 }
