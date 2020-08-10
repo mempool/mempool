@@ -1,7 +1,8 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { BisqTransaction, BisqOutput } from '../bisq.interfaces';
-import { merge, Observable } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
+
+import { merge, Observable, Subject } from 'rxjs';
+import { switchMap, map, tap, filter } from 'rxjs/operators';
 import { BisqApiService } from '../bisq-api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
@@ -17,13 +18,13 @@ import { IMultiSelectOption, IMultiSelectSettings, IMultiSelectTexts } from 'ngx
 export class BisqTransactionsComponent implements OnInit {
   transactions$: Observable<[BisqTransaction[], number]>;
   page = 1;
-  itemsPerPage: number;
-  contentSpace = window.innerHeight - (165 + 75);
+  itemsPerPage = 50;
   fiveItemsPxSize = 250;
   isLoading = true;
   loadingItems: number[];
   radioGroupForm: FormGroup;
   types: string[] = [];
+  pageSubject$ = new Subject<any>();
 
   txTypeOptions: IMultiSelectOption[] = [
       { id: 1, name: 'Asset listing fee' },
@@ -66,6 +67,7 @@ export class BisqTransactionsComponent implements OnInit {
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
+    private cd: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
@@ -75,7 +77,6 @@ export class BisqTransactionsComponent implements OnInit {
       txTypes: [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]],
     });
 
-    this.itemsPerPage = Math.max(Math.round(this.contentSpace / this.fiveItemsPxSize) * 5, 10);
     this.loadingItems = Array(this.itemsPerPage);
 
     if (document.body.clientWidth < 768) {
@@ -83,50 +84,89 @@ export class BisqTransactionsComponent implements OnInit {
       this.paginationMaxSize = 3;
     }
 
+    this.route.queryParams.subscribe(() => console.log('changed'));
+
     this.transactions$ = merge(
       this.route.queryParams
         .pipe(
-          map((queryParams) => {
-            if (queryParams.page) {
-              this.page = parseInt(queryParams.page, 10);
-              return parseInt(queryParams.page, 10);
+          filter((queryParams) => {
+            const newPage = parseInt(queryParams.page, 10);
+            const types = queryParams.types;
+            if (newPage !== this.page || types !== this.types.map((type) => this.txTypes.indexOf(type) + 1).join(',')) {
+              return true;
             }
-            return 1;
+            return false;
+          }),
+          tap((queryParams) => {
+            if (queryParams.page) {
+              const newPage = parseInt(queryParams.page, 10);
+              this.page = newPage;
+              this.cd.markForCheck();
+            }
+            if (queryParams.types) {
+              const types = queryParams.types.split(',').map((str: string) => parseInt(str, 10));
+              this.types = types.map((id: number) => this.txTypes[id - 1]);
+              this.radioGroupForm.get('txTypes').setValue(types, { emitEvent: false });
+            }
           })
         ),
       this.radioGroupForm.valueChanges
         .pipe(
-          map((data) => {
+          tap((data) => {
             this.types = data.txTypes.map((id: number) => this.txTypes[id - 1]);
             if (this.types.length === this.txTypes.length) {
               this.types = [];
             }
-            if (this.page !== 1) {
-              this.pageChange(1);
-            }
-            return 1;
+            this.page = 1;
+            this.typesChanged(data.txTypes);
+            this.cd.markForCheck();
           })
-        )
+        ),
+        this.pageSubject$,
       )
       .pipe(
         switchMap(() => this.bisqApiService.listTransactions$((this.page - 1) * this.itemsPerPage, this.itemsPerPage, this.types)),
         map((response) =>  [response.body, parseInt(response.headers.get('x-total-count'), 10)])
       );
+
+    this.radioGroupForm.valueChanges
+      .subscribe((data) => {
+        const types: string[] = [];
+        for (const i in data) {
+          if (data[i]) {
+            types.push(i);
+          }
+        }
+        this.types = types;
+        if (this.page !== 1) {
+          this.pageChange(1, true);
+        }
+        return 1;
+      });
   }
 
-  pageChange(page: number) {
+  pageChange(page: number, noTrigger?: boolean) {
+    this.page = page;
     this.router.navigate([], {
+      relativeTo: this.route,
       queryParams: { page: page },
-      replaceUrl: true,
+      queryParamsHandling: 'merge',
+    });
+
+    if (!noTrigger) {
+      this.pageSubject$.next();
+    }
+  }
+
+  typesChanged(types: number[]) {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { types: types.join(','), page: 1 },
       queryParamsHandling: 'merge',
     });
   }
 
   calculateTotalOutput(outputs: BisqOutput[]): number {
     return outputs.reduce((acc: number, output: BisqOutput) => acc + output.bsqAmount, 0);
-  }
-
-  trackByFn(index: number) {
-    return index;
   }
 }
