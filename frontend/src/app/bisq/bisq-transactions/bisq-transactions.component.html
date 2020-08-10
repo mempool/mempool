@@ -22,7 +22,7 @@
       <th class="d-none d-md-block">Height</th>
     </thead>
     <tbody *ngIf="transactions.value; else loadingTmpl">
-      <tr *ngFor="let tx of transactions.value[0]; trackBy: trackByFn">
+      <tr *ngFor="let tx of transactions.value[0]">
         <td><a [routerLink]="['/tx/' | relativeUrl, tx.id]" [state]="{ data: tx }">{{ tx.id | slice : 0 : 8 }}</a></td>
         <td class="d-none d-md-block">
           <app-bisq-icon class="mr-1" [txType]="tx.txType"></app-bisq-icon>
