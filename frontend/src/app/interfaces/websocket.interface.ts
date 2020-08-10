@@ -31,6 +31,7 @@ export interface MempoolBlock {
 export interface MemPoolState {
   memPoolInfo: MempoolInfo;
   vBytesPerSecond: number;
+  gitCommit: string;
 }
 
 export interface MempoolInfo {
