@@ -10,7 +10,7 @@
           ~{{ block.medianFee | number:'1.0-0' }} sat/vB
         </div>
         <div class="fee-span">
-          {{ block.feeRange[1] | number:'1.0-0' }} - {{ block.feeRange[block.feeRange.length - 1] | number:'1.0-0' }} sat/vB
+          {{ block.feeRange[0] | number:'1.0-0' }} - {{ block.feeRange[block.feeRange.length - 1] | number:'1.0-0' }} sat/vB
         </div>
         <div class="block-size">{{ block.size | bytes: 2 }}</div>
         <div class="transaction-count">{{ block.tx_count | number }} transactions</div>
