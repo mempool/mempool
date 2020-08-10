@@ -18,8 +18,8 @@ class FeeApi {
       firstMedianFee = 1;
     }
 
-    const secondMedianFee = pBlocks[1] ? Math.ceil(pBlocks[1].medianFee) : firstMedianFee;
-    const thirdMedianFee = pBlocks[2] ? Math.ceil(pBlocks[2].medianFee) : secondMedianFee;
+    const secondMedianFee = pBlocks[1] ? Math.ceil(pBlocks[1].medianFee) : 1;
+    const thirdMedianFee = pBlocks[2] ? Math.ceil(pBlocks[2].medianFee) : 1;
 
     return {
       'fastestFee': firstMedianFee,
