@@ -47,7 +47,7 @@
                     </div>
                   </td>
                 </tr>
-                <tr>
+                <tr *ngIf="tx.status.block_height <= latestBlock.height - 8">
                   <td class="td-width">Included in block</td>
                   <td>
                     <a [routerLink]="['/block/' | relativeUrl, tx.status.block_hash]" [state]="{ data: { blockHeight: tx.status.block_height } }">{{ tx.status.block_height }}</a>
