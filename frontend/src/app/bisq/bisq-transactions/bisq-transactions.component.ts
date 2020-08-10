@@ -40,6 +40,7 @@ export class BisqTransactionsComponent implements OnInit {
       { id: 11, name: 'Unlock' },
       { id: 12, name: 'Vote reveal' },
   ];
+  txTypesDefaultChecked = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
   txTypeDropdownSettings: IMultiSelectSettings = {
     buttonClasses: 'btn btn-primary btn-sm',
@@ -74,7 +75,7 @@ export class BisqTransactionsComponent implements OnInit {
     this.seoService.setTitle('Transactions', true);
 
     this.radioGroupForm = this.formBuilder.group({
-      txTypes: [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]],
+      txTypes: [this.txTypesDefaultChecked],
     });
 
     this.loadingItems = Array(this.itemsPerPage);
@@ -83,8 +84,6 @@ export class BisqTransactionsComponent implements OnInit {
       this.paginationSize = 'sm';
       this.paginationMaxSize = 3;
     }
-
-    this.route.queryParams.subscribe(() => console.log('changed'));
 
     this.transactions$ = merge(
       this.route.queryParams
@@ -101,13 +100,18 @@ export class BisqTransactionsComponent implements OnInit {
             if (queryParams.page) {
               const newPage = parseInt(queryParams.page, 10);
               this.page = newPage;
-              this.cd.markForCheck();
+            } else {
+              this.page = 1;
             }
             if (queryParams.types) {
               const types = queryParams.types.split(',').map((str: string) => parseInt(str, 10));
               this.types = types.map((id: number) => this.txTypes[id - 1]);
               this.radioGroupForm.get('txTypes').setValue(types, { emitEvent: false });
+            } else {
+              this.types = [];
+              this.radioGroupForm.get('txTypes').setValue(this.txTypesDefaultChecked, { emitEvent: false });
             }
+            this.cd.markForCheck();
           })
         ),
       this.radioGroupForm.valueChanges
