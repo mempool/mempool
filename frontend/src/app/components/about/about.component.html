@@ -112,6 +112,15 @@
 
   <div [ngbNavOutlet]="nav" class="mt-2"></div>
 
-  <br> <br>
+  <br>
+
+  <div class="text-small text-center">
+    Git commit: 
+    <ng-container *ngIf="(mempoolStats$ | async) as mempoolStats">
+      {{ mempoolStats.gitCommit }}
+    </ng-container>
+  </div>
+
+  <br>
 
 </div>

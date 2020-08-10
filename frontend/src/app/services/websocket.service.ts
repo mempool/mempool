@@ -137,6 +137,7 @@ export class WebsocketService {
           this.stateService.mempoolStats$.next({
             memPoolInfo: response.mempoolInfo,
             vBytesPerSecond: response.vBytesPerSecond,
+            gitCommit: response['git-commit']
           });
         }
 
