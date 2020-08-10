@@ -13,7 +13,7 @@
   "KEEP_BLOCK_AMOUNT": 24,
   "INITIAL_BLOCK_AMOUNT": 8,
   "TX_PER_SECOND_SPAN_SECONDS": 150,
-  "ELECTRS_API_URL": "https://www.blockstream.info/testnet/api",
+  "ELECTRS_API_URL": "http://localhost:50001",
   "BISQ_ENABLED": false,
   "BSQ_BLOCKS_DATA_PATH": "/bisq/data",
   "SSL": false,
