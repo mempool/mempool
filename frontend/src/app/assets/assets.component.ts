@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AssetsService } from '../services/assets.service';
 import { environment } from 'src/environments/environment';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -32,7 +32,6 @@ export class AssetsComponent implements OnInit {
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private cd: ChangeDetectorRef,
   ) { }
 
   ngOnInit() {
@@ -89,7 +88,6 @@ export class AssetsComponent implements OnInit {
                 } else {
                   this.page = 1;
                 }
-                this.cd.markForCheck();
                 if (this.searchForm.get('searchText').value !== (queryParams.search || '')) {
                   this.searchTextChanged(queryParams.search);
                 }

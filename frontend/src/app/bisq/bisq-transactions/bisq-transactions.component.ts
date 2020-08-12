@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { BisqTransaction, BisqOutput } from '../bisq.interfaces';
 
-import { merge, Observable, Subject } from 'rxjs';
+import { merge, Observable } from 'rxjs';
 import { switchMap, map, tap, filter } from 'rxjs/operators';
 import { BisqApiService } from '../bisq-api.service';
 import { SeoService } from 'src/app/services/seo.service';
