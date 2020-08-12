@@ -24,7 +24,6 @@ export class BisqTransactionsComponent implements OnInit {
   loadingItems: number[];
   radioGroupForm: FormGroup;
   types: string[] = [];
-  pageSubject$ = new Subject<any>();
 
   txTypeOptions: IMultiSelectOption[] = [
       { id: 1, name: 'Asset listing fee' },
@@ -126,40 +125,21 @@ export class BisqTransactionsComponent implements OnInit {
             this.cd.markForCheck();
           })
         ),
-        this.pageSubject$,
       )
       .pipe(
         switchMap(() => this.bisqApiService.listTransactions$((this.page - 1) * this.itemsPerPage, this.itemsPerPage, this.types)),
         map((response) =>  [response.body, parseInt(response.headers.get('x-total-count'), 10)])
       );
-
-    this.radioGroupForm.valueChanges
-      .subscribe((data) => {
-        const types: string[] = [];
-        for (const i in data) {
-          if (data[i]) {
-            types.push(i);
-          }
-        }
-        this.types = types;
-        if (this.page !== 1) {
-          this.pageChange(1, true);
-        }
-        return 1;
-      });
   }
 
-  pageChange(page: number, noTrigger?: boolean) {
-    this.page = page;
+  pageChange(page: number) {
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { page: page },
       queryParamsHandling: 'merge',
     });
-
-    if (!noTrigger) {
-      this.pageSubject$.next();
-    }
+    // trigger queryParams change
+    this.page = -1;
   }
 
   typesChanged(types: number[]) {
