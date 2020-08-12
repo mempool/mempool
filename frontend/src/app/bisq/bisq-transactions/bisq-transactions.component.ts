@@ -72,7 +72,7 @@ export class BisqTransactionsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.seoService.setTitle('Transactions', true);
+    this.seoService.setTitle('Transactions');
 
     this.radioGroupForm = this.formBuilder.group({
       txTypes: [this.txTypesDefaultChecked],

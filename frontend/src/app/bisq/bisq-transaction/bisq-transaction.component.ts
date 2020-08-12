@@ -43,7 +43,7 @@ export class BisqTransactionComponent implements OnInit, OnDestroy {
         this.error = null;
         document.body.scrollTo(0, 0);
         this.txId = params.get('id') || '';
-        this.seoService.setTitle('Transaction: ' + this.txId, true);
+        this.seoService.setTitle('Transaction: ' + this.txId);
         if (history.state.data) {
           return of(history.state.data);
         }

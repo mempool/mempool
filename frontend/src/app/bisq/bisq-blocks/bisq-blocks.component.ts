@@ -33,7 +33,7 @@ export class BisqBlocksComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.seoService.setTitle('Blocks', true);
+    this.seoService.setTitle('Blocks');
     this.itemsPerPage = Math.max(Math.round(this.contentSpace / this.fiveItemsPxSize) * 5, 10);
     this.loadingItems = Array(this.itemsPerPage);
     if (document.body.clientWidth < 768) {
