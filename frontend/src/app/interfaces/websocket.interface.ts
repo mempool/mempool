@@ -28,12 +28,6 @@ export interface MempoolBlock {
   index: number;
 }
 
-export interface MemPoolState {
-  memPoolInfo: MempoolInfo;
-  vBytesPerSecond: number;
-  gitCommit: string;
-}
-
 export interface MempoolInfo {
   size: number;
   bytes: number;

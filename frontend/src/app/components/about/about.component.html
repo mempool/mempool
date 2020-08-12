@@ -115,10 +115,7 @@
   <br>
 
   <div class="text-small text-center">
-    Git commit: 
-    <ng-container *ngIf="(mempoolStats$ | async) as mempoolStats">
-      {{ mempoolStats.gitCommit }}
-    </ng-container>
+    Git commit: {{ gitCommit$ | async }}
   </div>
 
   <br>

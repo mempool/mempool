@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject, fromEvent } from 'rxjs';
 import { Block, Transaction } from '../interfaces/electrs.interface';
-import { MempoolBlock, MemPoolState } from '../interfaces/websocket.interface';
+import { MempoolBlock, MempoolInfo } from '../interfaces/websocket.interface';
 import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { env } from '../app.constants';
@@ -24,12 +24,14 @@ export class StateService {
   blocks$ = new ReplaySubject<[Block, boolean]>(env.KEEP_BLOCKS_AMOUNT);
   conversions$ = new ReplaySubject<any>(1);
   bsqPrice$ = new ReplaySubject<number>(1);
-  mempoolStats$ = new ReplaySubject<MemPoolState>(1);
+  mempoolInfo$ = new ReplaySubject<MempoolInfo>(1);
   mempoolBlocks$ = new ReplaySubject<MempoolBlock[]>(1);
   txReplaced$ = new Subject<Transaction>();
   mempoolTransactions$ = new Subject<Transaction>();
   blockTransactions$ = new Subject<Transaction>();
   isLoadingWebSocket$ = new ReplaySubject<boolean>(1);
+  vbytesPerSecond$ = new ReplaySubject<number>(1);
+  gitCommit$ = new ReplaySubject<string>(1);
 
   live2Chart$ = new Subject<OptimizedMempoolStats>();
 

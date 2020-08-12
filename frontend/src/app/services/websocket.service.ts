@@ -134,11 +134,15 @@ export class WebsocketService {
         }
 
         if (response.mempoolInfo) {
-          this.stateService.mempoolStats$.next({
-            memPoolInfo: response.mempoolInfo,
-            vBytesPerSecond: response.vBytesPerSecond,
-            gitCommit: response['git-commit']
-          });
+          this.stateService.mempoolInfo$.next(response.mempoolInfo);
+        }
+
+        if (response.vBytesPerSecond !== undefined) {
+          this.stateService.vbytesPerSecond$.next(response.vBytesPerSecond);
+        }
+
+        if (response['git-commit']) {
+          this.stateService.gitCommit$.next(response['git-commit']);
         }
 
         if (this.goneOffline === true) {
