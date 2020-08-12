@@ -1,8 +1,8 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { StateService } from 'src/app/services/state.service';
-import { MemPoolState } from 'src/app/interfaces/websocket.interface';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { MempoolInfo } from 'src/app/interfaces/websocket.interface';
 
 interface MempoolBlocksData {
   blocks: number;
@@ -10,7 +10,8 @@ interface MempoolBlocksData {
 }
 
 interface MempoolInfoData {
-  memPoolInfo: MemPoolState;
+  memPoolInfo: MempoolInfo;
+  vBytesPerSecond: number;
   progressWidth: string;
   progressClass: string;
 }
@@ -30,31 +31,35 @@ export class FooterComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.mempoolInfoData$ = this.stateService.mempoolStats$
-      .pipe(
-        map((mempoolState) => {
-          const vBytesPerSecondLimit = 1667;
-          let vBytesPerSecond = mempoolState.vBytesPerSecond;
-          if (vBytesPerSecond > 1667) {
-            vBytesPerSecond = 1667;
-          }
+    this.mempoolInfoData$ = combineLatest([
+      this.stateService.mempoolInfo$,
+      this.stateService.vbytesPerSecond$
+    ])
+    .pipe(
+      map(([mempoolInfo, vbytesPerSecond]) => {
+        const vBytesPerSecondLimit = 1667;
+        let vBytesPerSecond = vbytesPerSecond;
+        if (vBytesPerSecond > 1667) {
+          vBytesPerSecond = 1667;
+        }
 
-          const percent = Math.round((vBytesPerSecond / vBytesPerSecondLimit) * 100);
+        const percent = Math.round((vBytesPerSecond / vBytesPerSecondLimit) * 100);
 
-          let progressClass = 'bg-danger';
-          if (percent <= 75) {
-            progressClass = 'bg-success';
-          } else if (percent <= 99) {
-            progressClass = 'bg-warning';
-          }
+        let progressClass = 'bg-danger';
+        if (percent <= 75) {
+          progressClass = 'bg-success';
+        } else if (percent <= 99) {
+          progressClass = 'bg-warning';
+        }
 
-          return {
-            memPoolInfo: mempoolState,
-            progressWidth: percent + '%',
-            progressClass: progressClass,
-          };
-        })
-      );
+        return {
+          memPoolInfo: mempoolInfo,
+          vBytesPerSecond: vBytesPerSecond,
+          progressWidth: percent + '%',
+          progressClass: progressClass,
+        };
+      })
+    );
 
     this.mempoolBlocksData$ = this.stateService.mempoolBlocks$
       .pipe(

@@ -57,6 +57,11 @@ class Routes {
   }
 
   public async getRecommendedFees(req: Request, res: Response) {
+    if (!mempool.isInSync()) {
+      res.statusCode = 503;
+      res.send('Service Unavailable');
+      return;
+    }
     const result = feeApi.getRecommendedFee();
     res.json(result);
   }

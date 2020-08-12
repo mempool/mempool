@@ -3,7 +3,6 @@ import { WebsocketService } from '../../services/websocket.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { StateService } from 'src/app/services/state.service';
 import { Observable } from 'rxjs';
-import { MemPoolState } from 'src/app/interfaces/websocket.interface';
 
 @Component({
   selector: 'app-about',
@@ -14,7 +13,7 @@ import { MemPoolState } from 'src/app/interfaces/websocket.interface';
 export class AboutComponent implements OnInit {
   active = 1;
   hostname = document.location.hostname;
-  mempoolStats$: Observable<MemPoolState>;
+  gitCommit$: Observable<string>;
 
   constructor(
     private websocketService: WebsocketService,
@@ -23,7 +22,7 @@ export class AboutComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.mempoolStats$ = this.stateService.mempoolStats$;
+    this.gitCommit$ = this.stateService.gitCommit$;
     this.seoService.setTitle('Contributors');
     this.websocketService.want(['blocks']);
     if (this.stateService.network === 'bisq') {
