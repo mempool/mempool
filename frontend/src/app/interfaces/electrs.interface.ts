@@ -137,6 +137,19 @@ export interface Asset {
   mempool_stats: AssetStats;
 }
 
+export interface AssetExtended extends Asset {
+  name: string;
+  ticker: string;
+  precision: number;
+  entity: Entity;
+  version: number;
+  issuer_pubkey: string;
+}
+
+export interface Entity {
+  domain: string;
+}
+
 interface IssuanceTxin {
   txid: string;
   vin: number;

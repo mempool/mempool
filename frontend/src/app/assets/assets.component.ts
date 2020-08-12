@@ -1,22 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { AssetsService } from '../services/assets.service';
 import { environment } from 'src/environments/environment';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { distinctUntilChanged } from 'rxjs/operators';
+import { distinctUntilChanged, map, filter, mergeMap, tap, take } from 'rxjs/operators';
+import { ActivatedRoute, Router } from '@angular/router';
+import { merge, combineLatest, Observable } from 'rxjs';
+import { AssetExtended } from '../interfaces/electrs.interface';
 
 @Component({
   selector: 'app-assets',
   templateUrl: './assets.component.html',
-  styleUrls: ['./assets.component.scss']
+  styleUrls: ['./assets.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AssetsComponent implements OnInit {
   nativeAssetId = environment.nativeAssetId;
-  assets: any[];
-  assetsCache: any[];
-  filteredAssets: any[];
+  assets: AssetExtended[];
+  assetsCache: AssetExtended[];
   searchForm: FormGroup;
+  assets$: Observable<AssetExtended[]>;
 
-  isLoading = true;
   error: any;
 
   page = 1;
@@ -27,6 +30,9 @@ export class AssetsComponent implements OnInit {
   constructor(
     private assetsService: AssetsService,
     private formBuilder: FormBuilder,
+    private route: ActivatedRoute,
+    private router: Router,
+    private cd: ChangeDetectorRef,
   ) { }
 
   ngOnInit() {
@@ -36,30 +42,15 @@ export class AssetsComponent implements OnInit {
       searchText: [{ value: '', disabled: true }, Validators.required]
     });
 
-    this.searchForm.get('searchText').valueChanges
-      .pipe(
-        distinctUntilChanged(),
-      )
-      .subscribe((searchText) => {
-        this.page = 1;
-        if (searchText.length ) {
-          this.filteredAssets = this.assetsCache.filter((asset) => asset.name.toLowerCase().indexOf(searchText.toLowerCase()) > -1
-            || asset.ticker.toLowerCase().indexOf(searchText.toLowerCase()) > -1);
-          this.assets = this.filteredAssets;
-          this.filteredAssets = this.filteredAssets.slice(0, this.itemsPerPage);
-        } else {
-          this.assets = this.assetsCache;
-          this.filteredAssets = this.assets.slice(0, this.itemsPerPage);
-        }
-      });
-
-    this.getAssets();
-  }
-
-  getAssets() {
-    this.assetsService.getAssetsJson$
-      .subscribe((assets) => {
+    this.assets$ = combineLatest([
+      this.assetsService.getAssetsJson$,
+      this.route.queryParams
+    ])
+    .pipe(
+      take(1),
+      mergeMap(([assets, qp]) => {
         this.assets = Object.values(assets);
+        // @ts-ignore
         this.assets.push({
           name: 'Liquid Bitcoin',
           ticker: 'L-BTC',
@@ -68,19 +59,93 @@ export class AssetsComponent implements OnInit {
         this.assets = this.assets.sort((a: any, b: any) => a.name.localeCompare(b.name));
         this.assetsCache = this.assets;
         this.searchForm.get('searchText').enable();
-        this.filteredAssets = this.assets.slice(0, this.itemsPerPage);
-        this.isLoading = false;
-      },
-      (error) => {
-        console.log(error);
-        this.error = error;
-        this.isLoading = false;
-      });
+
+        if (qp.search) {
+          this.searchForm.get('searchText').setValue(qp.search, { emitEvent: false });
+        }
+
+        return merge(
+          this.searchForm.get('searchText').valueChanges
+            .pipe(
+              distinctUntilChanged(),
+              tap((text) => {
+                this.page = 1;
+                this.searchTextChanged(text);
+              })
+            ),
+          this.route.queryParams
+            .pipe(
+              filter((queryParams) => {
+                const newPage = parseInt(queryParams.page, 10);
+                if (newPage !== this.page || queryParams.search !== this.searchForm.get('searchText').value) {
+                  return true;
+                }
+                return false;
+              }),
+              map((queryParams) => {
+                if (queryParams.page) {
+                  const newPage = parseInt(queryParams.page, 10);
+                  this.page = newPage;
+                } else {
+                  this.page = 1;
+                }
+                this.cd.markForCheck();
+                if (this.searchForm.get('searchText').value !== (queryParams.search || '')) {
+                  this.searchTextChanged(queryParams.search);
+                }
+                if (queryParams.search) {
+                  this.searchForm.get('searchText').setValue(queryParams.search, { emitEvent: false });
+                  return queryParams.search;
+                }
+                return '';
+              })
+            ),
+        );
+      }),
+      map((searchText) => {
+        const start = (this.page - 1) * this.itemsPerPage;
+        if (searchText.length ) {
+          const filteredAssets = this.assetsCache.filter((asset) => asset.name.toLowerCase().indexOf(searchText.toLowerCase()) > -1
+            || asset.ticker.toLowerCase().indexOf(searchText.toLowerCase()) > -1);
+          this.assets = filteredAssets;
+          return filteredAssets.slice(start, this.itemsPerPage + start);
+        } else {
+          this.assets = this.assetsCache;
+          return this.assets.slice(start, this.itemsPerPage + start);
+        }
+      })
+    );
   }
 
   pageChange(page: number) {
-    const start = (page - 1) * this.itemsPerPage;
-    this.filteredAssets = this.assets.slice(start, this.itemsPerPage + start);
+    const queryParams = { page: page, search: this.searchForm.get('searchText').value };
+    if (queryParams.search === '') {
+      queryParams.search = null;
+    }
+    if (queryParams.page === 1) {
+      queryParams.page = null;
+    }
+    this.page = -1;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: queryParams,
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  searchTextChanged(text: string) {
+    const queryParams = { search: text, page: 1 };
+    if (queryParams.search === '') {
+      queryParams.search = null;
+    }
+    if (queryParams.page === 1) {
+      queryParams.page = null;
+    }
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: queryParams,
+      queryParamsHandling: 'merge',
+    });
   }
 
   trackByAsset(index: number, asset: any) {
