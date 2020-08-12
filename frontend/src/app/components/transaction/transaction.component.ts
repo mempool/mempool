@@ -44,7 +44,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
     this.subscription = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         this.txId = params.get('id') || '';
-        this.seoService.setTitle('Transaction: ' + this.txId, true);
+        this.seoService.setTitle('Transaction: ' + this.txId);
         this.resetTransaction();
         return merge(
           of(true),

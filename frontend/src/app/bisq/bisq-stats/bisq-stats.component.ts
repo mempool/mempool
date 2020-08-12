@@ -21,7 +21,7 @@ export class BisqStatsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.seoService.setTitle('BSQ Statistics', false);
+    this.seoService.setTitle('BSQ Statistics');
 
     this.stateService.bsqPrice$
       .subscribe((bsqPrice) => {

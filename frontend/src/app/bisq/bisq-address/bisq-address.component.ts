@@ -36,7 +36,7 @@ export class BisqAddressComponent implements OnInit, OnDestroy {
           this.transactions = null;
           document.body.scrollTo(0, 0);
           this.addressString = params.get('id') || '';
-          this.seoService.setTitle('Address: ' + this.addressString, true);
+          this.seoService.setTitle('Address: ' + this.addressString);
 
           return this.bisqApiService.getAddress$(this.addressString)
             .pipe(

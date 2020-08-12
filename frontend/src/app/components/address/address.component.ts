@@ -61,7 +61,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.transactions = null;
           document.body.scrollTo(0, 0);
           this.addressString = params.get('id') || '';
-          this.seoService.setTitle('Address: ' + this.addressString, true);
+          this.seoService.setTitle('Address: ' + this.addressString);
 
           return merge(
             of(true),
