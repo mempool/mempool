@@ -1,6 +1,6 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BisqApiService } from '../bisq-api.service';
-import { switchMap, map } from 'rxjs/operators';
+import { switchMap, map, take, mergeMap, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { BisqBlock, BisqOutput, BisqTransaction } from '../bisq.interfaces';
 import { SeoService } from 'src/app/services/seo.service';
@@ -29,7 +29,6 @@ export class BisqBlocksComponent implements OnInit {
     private seoService: SeoService,
     private route: ActivatedRoute,
     private router: Router,
-    private cd: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
@@ -43,12 +42,20 @@ export class BisqBlocksComponent implements OnInit {
 
     this.blocks$ = this.route.queryParams
       .pipe(
+        take(1),
+        tap((qp) => {
+          if (qp.page) {
+            this.page = parseInt(qp.page, 10);
+          }
+        }),
+        mergeMap(() => this.route.queryParams),
         map((queryParams) => {
           if (queryParams.page) {
             const newPage = parseInt(queryParams.page, 10);
             this.page = newPage;
-            this.cd.markForCheck();
             return newPage;
+          } else {
+            this.page = 1;
           }
           return 1;
         }),
