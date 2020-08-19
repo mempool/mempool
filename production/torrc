@@ -1,0 +1,12 @@
+RunAsDaemon 1
+SOCKSPort 9050
+ControlPort 9051
+Log notice syslog
+
+CookieAuthentication 1
+CookieAuthFileGroupReadable 1
+DataDirectoryGroupReadable 1
+
+HiddenServiceDir /var/db/tor/mempool
+HiddenServicePort 80 127.0.0.1:81
+HiddenServiceVersion 3

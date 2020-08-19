@@ -1,0 +1,513 @@
+#!/bin/sh
+set -e
+
+echo "[*] Mempool installation script for Debian/Ubuntu"
+
+########################################
+##### mempool installation options #####
+########################################
+
+TOR_ONLY=true
+#HOSTNAME=
+
+TOR_INSTALL=true
+BITCOIN_INSTALL=true
+BISQ_INSTALL=true
+ELEMENTS_INSTALL=true
+
+BITCOIN_ELECTRS_LIGHT_MODE=true
+ELEMENTS_ELECTRS_LIGHT_MODE=true
+
+BITCOIN_MAINNET_ENABLE=true
+BITCOIN_TESTNET_ENABLE=true
+BISQ_MAINNET_ENABLE=true
+ELEMENTS_LIQUID_ENABLE=true
+
+################################################
+##### end of mempool configuration options #####
+################################################
+
+##### P2P / RPC / HTTP network communication
+
+# used for bisq and firewall configuration
+BITCOIN_MAINNET_P2P_HOST=127.0.0.1
+BITCOIN_MAINNET_P2P_PORT=8333
+# used for RPC communication
+BITCOIN_MAINNET_RPC_HOST=127.0.0.1
+BITCOIN_MAINNET_RPC_PORT=8332
+# leave blank to generate random credentials
+#BITCOIN_MAINNET_RPC_USER=
+#BITCOIN_MAINNET_RPC_PASS=
+
+# used for firewall configuration
+BITCOIN_TESTNET_P2P_HOST=127.0.0.1
+BITCOIN_TESTNET_P2P_PORT=18333
+# used for RPC communication
+BITCOIN_TESTNET_RPC_HOST=127.0.0.1
+BITCOIN_TESTNET_RPC_PORT=18332
+# leave blank to generate random credentials
+#BITCOIN_TESTNET_RPC_USER=
+#BITCOIN_TESTNET_RPC_PASS=
+
+# used by bisq to receive notifications from bitcoind about new blocks
+BISQ_BLOCKNOTIFY_HOST=127.0.0.1
+BISQ_BLOCKNOTIFY_PORT=5120
+
+# used for firewall configuration
+ELEMENTS_LIQUID_P2P_HOST=127.0.0.1
+ELEMENTS_LIQUID_P2P_PORT=7042
+# used for RPC communication
+ELEMENTS_LIQUID_RPC_HOST=127.0.0.1
+ELEMENTS_LIQUID_RPC_PORT=7041
+# leave blank to generate random credentials
+#ELEMENTS_LIQUID_RPC_USER=
+#ELEMENTS_LIQUID_RPC_PASS=
+
+# set either socket or TCP host/port, not both
+ELECTRS_MAINNET_HTTP_SOCK=/tmp/bitcoin.mainnet.electrs
+#ELECTRS_MAINNET_HTTP_HOST=127.0.0.1
+#ELECTRS_MAINNET_HTTP_PORT=3000
+
+# set either socket or TCP host/port, not both
+ELECTRS_TESTNET_HTTP_SOCK=/tmp/bitcoin.testnet.electrs
+#ELECTRS_TESTNET_HTTP_HOST=127.0.0.1
+#ELECTRS_TESTNET_HTTP_PORT=3002
+
+# set either socket or TCP host/port, not both
+ELECTRS_LIQUID_HTTP_SOCK=/tmp/elements.liquid.electrs
+#ELECTRS_LIQUID_HTTP_HOST=127.0.0.1
+#ELECTRS_LIQUID_HTTP_PORT=3001
+
+# set either socket or TCP host/port, not both
+MEMPOOL_MAINNET_HTTP_SOCK=/tmp/bitcoin.mainnet.mempool
+#MEMPOOL_MAINNET_HTTP_HOST=127.0.0.1
+#MEMPOOL_MAINNET_HTTP_PORT=8999
+
+# set either socket or TCP host/port, not both
+MEMPOOL_TESTNET_HTTP_SOCK=/tmp/bitcoin.testnet.mempool
+#MEMPOOL_TESTNET_HTTP_HOST=127.0.0.1
+#MEMPOOL_TESTNET_HTTP_PORT=8997
+
+# set either socket or TCP host/port, not both
+MEMPOOL_BISQ_HTTP_SOCK=/tmp/bitcoin.bisq.mempool
+#MEMPOOL_BISQ_HTTP_HOST=127.0.0.1
+#MEMPOOL_BISQ_HTTP_PORT=8996
+
+# set either socket or TCP host/port, not both
+MEMPOOL_LIQUID_HTTP_SOCK=/tmp/elements.liquid.mempool
+#MEMPOOL_LIQUID_HTTP_HOST=127.0.0.1
+#MEMPOOL_LIQUID_HTTP_PORT=8998
+
+##### OS options, should be automatically detected
+
+# where systemd services get installed
+OS_SERVICE_HOME=/etc/systemd/system
+# where environment variables for services are set
+OS_ENV_HOME=/etc/default
+
+# package needed for just certbot test before full install
+CERTBOT_PKG=(python-certbot)
+
+# packages needed for mempool ecosystem
+OS_PKG=(vim curl screen zsh openssl python3)
+OS_PKG+=(build-essential git git-lfs clang cmake)
+OS_PKG+=(autotools-dev autoconf automake pkg-config bsdmainutils)
+OS_PKG+=(libevent-dev libdb-dev libssl-dev libtool-dev autotools-dev)
+OS_PKG+=(libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-test-dev libboost-thread-dev)
+OS_PKG+=(nodejs npm mariadb-server nginx-core python-certbot-nginx rsync ufw)
+
+# mempool data folder and user/group
+MEMPOOL_HOME=/mempool
+MEMPOOL_USER=mempool
+MEMPOOL_GROUP=mempool
+# name of Tor hidden service in torrc
+MEMPOOL_TOR_HS=mempool
+
+# bitcoin user/group
+BITCOIN_USER=bitcoin
+BITCOIN_GROUP=bitcoin
+# bitcoin core data folder, needs about 300GB
+BITCOIN_HOME=/bitcoin
+# bitcoin electrs source/binaries
+BITCOIN_ELECTRS_HOME=${BITCOIN_HOME}/electrs
+# bitcoin electrs data, needs about 350GB
+BITCOIN_ELECTRS_DATA=/electrs
+
+# bisq user/group
+BISQ_USER=bisq
+BISQ_GROUP=bisq
+# bisq home folder, needs about 1GB
+BISQ_HOME=/bisq
+
+# liquid user/group
+ELEMENTS_USER=elements
+ELEMENTS_GROUP=elements
+# liquid home/data/blockchain folder, needs about 10GB
+ELEMENTS_HOME=/elements
+# elements electrs source/binaries
+ELEMENTS_ELECTRS_HOME=${ELEMENTS_HOME}/electrs
+# liquid electrs data, needs about 5GB
+ELEMENTS_ELECTRS_DATA=/electrs
+
+# tor user/group
+TOR_USER=debian-tor
+TOR_GROUP=debian-tor
+# tor package from apt-get or pkg
+TOR_PKG=tor
+
+NGINX_CONFIGURATION=/etc/nginx/nginx.conf
+
+TOR_HOME=/etc/tor
+TOR_CONFIGURATION=/etc/tor/torrc
+TOR_RESOURCES=/var/lib/tor
+
+ROOT_USER=root
+ROOT_GROUP=root
+ROOT_HOME=/root
+
+##### git repo settings, shouldn't need changing
+
+MEMPOOL_REPO_URL=https://github.com/mempool/mempool
+MEMPOOL_REPO_NAME=mempool
+MEMPOOL_REPO_BRANCH=master
+MEMPOOL_LATEST_RELEASE=master
+
+BITCOIN_REPO_URL=https://github.com/bitcoin/bitcoin
+BITCOIN_REPO_NAME=bitcoin
+BITCOIN_REPO_BRANCH=master
+BITCOIN_LATEST_RELEASE=$(curl -s https://api.github.com/repos/bitcoin/bitcoin/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
+
+BISQ_REPO_URL=https://github.com/bisq-network/bisq
+BISQ_REPO_NAME=bisq
+BISQ_REPO_BRANCH=master
+BISQ_LATEST_RELEASE=$(curl -s https://api.github.com/repos/bisq-network/bisq/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
+
+ELEMENTS_REPO_URL=https://github.com/ElementsProject/elements
+ELEMENTS_REPO_NAME=elements
+ELEMENTS_REPO_BRANCH=master
+ELEMENTS_LATEST_RELEASE=$(curl -s https://api.github.com/repos/ElementsProject/elements/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
+
+BITCOIN_ELECTRS_REPO_URL=https://github.com/mempool/electrs
+BITCOIN_ELECTRS_REPO_NAME=electrs
+BITCOIN_ELECTRS_REPO_BRANCH=new-index
+BITCOIN_ELECTRS_LATEST_RELEASE=new-index
+
+ELEMENTS_ELECTRS_REPO_URL=https://github.com/mempool/electrs
+ELEMENTS_ELECTRS_REPO_NAME=electrs
+ELEMENTS_ELECTRS_REPO_BRANCH=new-index
+ELEMENTS_ELECTRS_LATEST_RELEASE=new-index
+
+##### Perform sanity checks before trying anything
+
+# what OS running, what FS partitions, etc.
+# how much free disk space available?
+# is something listening on port 80 already?
+# is nginx or apache running?
+
+##### Determine what actually needs to be installed
+
+# does bitcoin exist?
+
+# 
+certbot certonly --dry-run --standalone --agree-tos --register-unsafely-without-email -d
+
+##### OS packages
+
+echo "[*] Updating OS apt sources"
+sudo -H -i -u "${ROOT_USER}" DEBIAN_FRONTEND=noninteractive apt-get update -q
+echo "[*] Upgrading OS packages"
+sudo -H -i -u "${ROOT_USER}" DEBIAN_FRONTEND=noninteractive apt-get upgrade -qq -y
+echo "[*] Installing OS packages"
+sudo -H -i -u "${ROOT_USER}" DEBIAN_FRONTEND=noninteractive apt-get install -qq -y ${OS_PKG[@]}
+
+##### Mempool top-level repo
+
+echo "[*] Creating Mempool user with Tor access"
+sudo -H -i -u "${ROOT_USER}" useradd -d "${MEMPOOL_HOME}" -G "${TOR_GROUP}" "${MEMPOOL_USER}"
+id "${MEMPOOL_USER}"
+echo "[*] Creating Mempool data folder"
+sudo -H -i -u "${ROOT_USER}" mkdir -p "${MEMPOOL_HOME}"
+sudo -H -i -u "${ROOT_USER}" chown "${MEMPOOL_USER}:${MEMPOOL_GROUP}" "${MEMPOOL_HOME}"
+echo "[*] Cloning Mempool repo from ${MEMPOOL_REPO_URL}"
+sudo -H -i -u "${MEMPOOL_USER}" git config --global advice.detachedHead false
+sudo -H -i -u "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}"
+
+##### Tor installation
+
+if [ "${TOR_INSTALL}" = true ];then
+
+	echo "[*] Installing Tor package"
+	sudo -H -i -u "${ROOT_USER}" DEBIAN_FRONTEND=noninteractive apt-get install -qq -y "${TOR_PKG}"
+
+	echo "[*] Installing Tor base configuration"
+	sudo -H -i -u "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/torrc" "${TOR_HOME}/torrc"
+
+	echo "[*] Adding Tor HS configuration"
+	if ! grep "${MEMPOOL_TOR_HS}" /etc/tor/torrc >/dev/null 2>&1;then
+		sudo -H -i -u "${ROOT_USER}" /bin/sh -c "echo HiddenServiceDir ${TOR_RESOURCES}/${MEMPOOL_TOR_HS}/ >> ${TOR_CONFIGURATION}"
+		sudo -H -i -u "${ROOT_USER}" /bin/sh -c "echo HiddenServicePort 80 127.0.0.1:81 >> ${TOR_CONFIGURATION}"
+		sudo -H -i -u "${ROOT_USER}" /bin/sh -c "echo HiddenServiceVersion 3 >> ${TOR_CONFIGURATION}"
+	fi
+
+	# start tor now so it can bootstrap in time for bitcoin starting a few mins later
+	echo "[*] Starting Tor service"
+	sudo -H -i -u "${ROOT_USER}" service tor start
+fi
+
+##### Bitcoin installation
+
+if [ "${BITCOIN_INSTALL}" = true ];then
+
+	echo "[*] Creating Bitcoin user with Tor access"
+	sudo -H -i -u "${ROOT_USER}" useradd -d "${BITCOIN_HOME}" -G "${TOR_GROUP}" "${BITCOIN_USER}"
+	echo "[*] Creating Bitcoin data folder"
+	sudo -H -i -u "${ROOT_USER}" mkdir -p "${BITCOIN_HOME}"
+	sudo -H -i -u "${ROOT_USER}" chown "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_HOME}"
+	sudo -H -i -u "${BITCOIN_USER}" ln -s . .bitcoin
+	echo "[*] Cloning Bitcoin repo from ${BITCOIN_REPO_URL}"
+	sudo -H -i -u "${BITCOIN_USER}" git config --global advice.detachedHead false
+	sudo -H -i -u "${BITCOIN_USER}" git clone --branch "${BITCOIN_REPO_BRANCH}" "${BITCOIN_REPO_URL}" "${BITCOIN_HOME}/${BITCOIN_REPO_NAME}"
+
+	echo "[*] Building Bitcoin from source repo"
+	sudo -H -i -u "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && ./autogen.sh --quiet && ./configure --quiet --disable-wallet --with-incompatible-bdb && make -j4"
+	echo "[*] Installing Bitcoin binaries into OS"
+	sudo -H -i -u "${ROOT_USER}" sh -c "cd ${BITCOIN_HOME}/${BITCOIN_REPO_NAME} && make install"
+	echo "[*] Installing Bitcoin configuration"
+	sudo -H -i -u "${ROOT_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.conf" "${BITCOIN_HOME}/bitcoin.conf"
+
+fi
+
+##### Elements installation
+
+if [ "${ELEMENTS_INSTALL}" = true ];then
+
+	echo "[*] Creating Elements user with Tor access"
+	sudo -H -i -u "${ROOT_USER}" useradd -d "${ELEMENTS_HOME}" -G "${TOR_GROUP}" "${ELEMENTS_USER}"
+	echo "[*] Creating Elements data folder"
+	sudo -H -i -u "${ROOT_USER}" mkdir -p "${ELEMENTS_HOME}"
+	sudo -H -i -u "${ROOT_USER}" chown "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_HOME}"
+	sudo -H -i -u "${ELEMENTS_USER}" ln -s . .elements
+	echo "[*] Cloning Elements repo from ${ELEMENTS_REPO_URL}"
+	sudo -H -i -u "${ELEMENTS_USER}" git config --global advice.detachedHead false
+	sudo -H -i -u "${ELEMENTS_USER}" git clone --branch "${ELEMENTS_REPO_BRANCH}" "${ELEMENTS_REPO_URL}" "${ELEMENTS_HOME}/${ELEMENTS_REPO_NAME}"
+
+	echo "[*] Building Elements from source repo"
+	sudo -H -i -u "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_REPO_NAME} && ./autogen.sh --quiet && ./configure --quiet --disable-wallet --with-incompatible-bdb && make -j4"
+	echo "[*] Installing Elements binaries into OS"
+	sudo -H -i -u "${ROOT_USER}" sh -c "cd ${ELEMENTS_HOME}/${ELEMENTS_REPO_NAME} && make install"
+	echo "[*] Installing Elements configuration"
+	sudo -H -i -u "${ROOT_USER}" install -c -o "${ELEMENTS_USER}" -g "${ELEMENTS_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.conf" "${ELEMENTS_HOME}/bitcoin.conf"
+
+fi
+
+##### Bitcoin -> Electrs installation
+
+echo "[*] Creating Bitcoin Electrs data folder"
+sudo -H -i -u "${ROOT_USER}" mkdir -p "${BITCOIN_ELECTRS_HOME}"
+sudo -H -i -u "${ROOT_USER}" chown "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_ELECTRS_HOME}"
+
+echo "[*] Cloning Bitcoin Electrs repo from ${BITCOIN_ELECTRS_REPO_URL}"
+sudo -H -i -u "${BITCOIN_USER}" git config --global advice.detachedHead false
+sudo -H -i -u "${BITCOIN_USER}" git clone --branch "${ELECTRS_REPO_BRANCH}" "${ELECTRS_REPO_URL}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}"
+
+echo "[*] Installing Rust from rustup.rs"
+sudo -H -i -u "${BITCOIN_USER}" sh -c "cd ${BITCOIN_ELECTRS_HOME} && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+
+echo "[*] Building Bitcoin Electrs release binary"
+sudo -H -i -u "${BITCOIN_USER}" sh -c "cd ${BITCOIN_ELECTRS_HOME} && cargo run --release --bin electrs -- --version"
+
+##### Liquid -> Electrs installation
+
+echo "[*] Creating Liquid Electrs data folder"
+sudo -H -i -u "${ROOT_USER}" mkdir -p "${ELEMENTS_ELECTRS_HOME}"
+sudo -H -i -u "${ROOT_USER}" chown "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_ELECTRS_HOME}"
+
+echo "[*] Cloning Liquid Electrs repo from ${ELEMENTS_ELECTRS_REPO_URL}"
+sudo -H -i -u "${ELEMENTS_USER}" git config --global advice.detachedHead false
+sudo -H -i -u "${ELEMENTS_USER}" git clone --branch "${ELECTRS_REPO_BRANCH}" "${ELECTRS_REPO_URL}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}"
+
+echo "[*] Installing Rust from rustup.rs"
+sudo -H -i -u "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_ELECTRS_HOME} && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+
+echo "[*] Building Liquid Electrs release binary"
+sudo -H -i -u "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_ELECTRS_HOME} && cargo run --release --features liquid --bin electrs -- --network liquid --version"
+
+##### Bisq installation
+
+if [ "${BISQ_INSTALL}" = true ];then
+
+	echo "[*] Creating Bisq user with Tor access"
+	sudo -H -i -u "${BISQ_USER}" useradd -d "${BISQ_HOME}" -G "${TOR_GROUP}" "${BISQ_USER}"
+
+	echo "[*] Creating Bisq data folder"
+	sudo -H -i -u "${BISQ_USER}" mkdir -p "${BISQ_HOME}"
+	sudo -H -i -u "${BISQ_USER}" chown "${BISQ_USER}:${BISQ_GROUP}" "${BISQ_HOME}"
+
+	echo "[*] Cloning Bisq top-level repo"
+	sudo -H -i -u "${BISQ_USER}" git clone --branch "${BISQ_REPO_BRANCH}" "${BISQ_REPO_URL}" "${BISQ_HOME}/${BISQ_REPO_NAME}"
+
+	echo "[*] Installing OpenJDK 10.0.2 from Bisq install_java.sh script"
+	sudo -H -i -u "${ROOT_USER}" "${BISQ_HOME}/${BISQ_REPO_NAME}/scripts/install_java.sh"
+fi
+
+##### Bitcoin -> Mainnet instance
+
+if [ "${BITCOIN_MAINNET_ENABLE}" = true ];then
+	echo "[*] Generating Bitcoin Mainnet RPC credentials"
+	BITCOIN_MAINNET_RPC_USER=$(head -150 /dev/urandom | md5sum | awk '{print $1}')
+	sudo sed -i -e "s/__BITCOIN_MAINNET_RPC_USER__/${BITCOIN_MAINNET_RPC_USER}/" "${BITCOIN_HOME}/bitcoin.conf"
+	BITCOIN_MAINNET_RPC_PASS=$(head -150 /dev/urandom | md5sum | awk '{print $1}')
+	sudo sed -i -e "s/__BITCOIN_MAINNET_RPC_PASS__/${BITCOIN_MAINNET_RPC_PASS}/" "${BITCOIN_HOME}/bitcoin.conf"
+
+	echo "[*] Installing Bitcoin Mainnet service"
+	sudo -H -i -u "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin-mainnet.service" "${OS_SERVICE_HOME}"
+fi
+
+##### Bitcoin -> Testnet instance
+
+if [ "${BITCOIN_TESTNET_ENABLE}" = true ];then
+	echo "[*] Generating Bitcoin Testnet RPC credentials"
+	BITCOIN_TESTNET_RPC_USER=$(head -150 /dev/urandom | md5sum | awk '{print $1}')
+	sudo sed -i -e "s/__BITCOIN_TESTNET_RPC_USER__/${BITCOIN_TESTNET_RPC_USER}/" "${BITCOIN_HOME}/testnet3/bitcoin.conf"
+	BITCOIN_TESTNET_RPC_PASS=$(head -150 /dev/urandom | md5sum | awk '{print $1}')
+	sudo sed -i -e "s/__BITCOIN_TESTNET_RPC_PASS__/${BITCOIN_TESTNET_RPC_PASS}/" "${BITCOIN_HOME}/testnet3/bitcoin.conf"
+
+	echo "[*] Installing Bitcoin Testnet service"
+	sudo -H -i -u "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin-testnet.service" "${OS_SERVICE_HOME}"
+fi
+
+##### Electrs -> Bitcoin Mainnet instance
+
+##### Electrs -> Bitcoin Testnet instance
+
+##### Electrs -> Elements Liquid instance
+
+##### Bisq -> Bitcoin Mainnet instance
+
+if [ "${BISQ_MAINNET_ENABLE}" = true ];then
+	echo "[*] Installing Bisq service"
+	sudo -H -i -u "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${BISQ_HOME}/${BISQ_REPO_NAME}/seednode/bisq.service" "${OS_SERVICE_HOME}/bisq.service"
+	sudo sed -i -e "s/#Requires=bitcoin.service/Requires=bitcoin.service/" "${OS_SERVICE_HOME}/bisq.service"
+	sudo sed -i -e "s/#BindsTo=bitcoin.service/BindsTo=bitcoin.service/" "${OS_SERVICE_HOME}/bisq.service"
+	sudo sed -i -e "s/__BISQ_REPO_NAME__/${BISQ_REPO_NAME}/" "${OS_SERVICE_HOME}/bisq.service"
+	sudo sed -i -e "s!__BISQ_HOME__!${BISQ_HOME}!" "${OS_SERVICE_HOME}/bisq.service"
+
+	echo "[*] Installing Bisq environment file"
+	sudo -H -i -u "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${BISQ_HOME}/${BISQ_REPO_NAME}/seednode/bisq.env" "${OS_ENV_HOME}/bisq.env"
+	sudo sed -i -e "s!__BISQ_APP_NAME__!${BISQ_APP_NAME}!" "${OS_ENV_HOME}/bisq.env"
+	sudo sed -i -e "s!__BISQ_HOME__!${BISQ_HOME}!" "${OS_ENV_HOME}/bisq.env"
+
+	echo "[*] Configuring Bisq environment file with Bitcoin RPC credentials"
+	sudo sed -i -e "s/__BITCOIN_P2P_HOST__/${BITCOIN_MAINNET_P2P_HOST}/" "${OS_ENV_HOME}/bisq.env"
+	sudo sed -i -e "s/__BITCOIN_P2P_PORT__/${BITCOIN_MAINNET_P2P_PORT}/" "${OS_ENV_HOME}/bisq.env"
+	sudo sed -i -e "s/__BITCOIN_RPC_HOST__/${BITCOIN_MAINNET_RPC_HOST}/" "${OS_ENV_HOME}/bisq.env"
+	sudo sed -i -e "s/__BITCOIN_RPC_PORT__/${BITCOIN_MAINNET_RPC_PORT}/" "${OS_ENV_HOME}/bisq.env"
+	sudo sed -i -e "s/__BITCOIN_RPC_USER__/${BITCOIN_MAINNET_RPC_USER}/" "${OS_ENV_HOME}/bisq.env"
+	sudo sed -i -e "s/__BITCOIN_RPC_PASS__/${BITCOIN_MAINNET_RPC_PASS}/" "${OS_ENV_HOME}/bisq.env"
+
+	echo "[*] Checking out Bisq ${BISQ_LATEST_RELEASE}"
+	sudo -H -i -u "${BISQ_USER}" sh -c "cd ${BISQ_HOME}/${BISQ_REPO_NAME} && git checkout ${BISQ_LATEST_RELEASE}"
+
+	echo "[*] Performing Git LFS pull"
+	sudo -H -i -u "${BISQ_USER}" sh -c "cd ${BISQ_HOME}/${BISQ_REPO_NAME} && git lfs pull"
+
+	echo "[*] Building Bisq from source"
+	sudo -H -i -u "${BISQ_USER}" sh -c "cd ${BISQ_HOME}/${BISQ_REPO_NAME} && ./gradlew build -x test < /dev/null" # redirect from /dev/null is necessary to workaround gradlew non-interactive shell hanging issue
+
+	echo "[*] Updating Bitcoin configuration for Bisq"
+	sudo sed -i -e "s/#blocknotify/blocknotify/" "${BITCOIN_HOME}/bitcoin.conf"
+	sudo -H -i -u "${BITCOIN_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${BISQ_HOME}/${BISQ_REPO_NAME}/seednode/blocknotify.sh" "${BITCOIN_HOME}/blocknotify.sh"
+fi
+
+##### Mempool -> Bitcoin Mainnet instance
+
+if [ "${BITCOIN_MAINNET_ENABLE}" = true ];then
+	echo "[*] Creating Mempool instance for Bitcoin Mainnet"
+	sudo -H -i -u "${MEMPOOL_USER}" git config --global advice.detachedHead false
+	sudo -H -i -u "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/mainnet"
+fi
+
+##### nginx
+
+echo "[*] Adding Nginx configuration"
+sudo -H -i -u "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/nginx.conf" "${NGINX_CONFIGURATION}"
+
+echo "[*] Restarting Nginx"
+sudo -H -i -u "${ROOT_USER}" service nginx restart
+
+##### OS systemd
+
+echo "[*] Updating systemd daemon configuration"
+sudo -H -i -u "${ROOT_USER}" systemctl daemon-reload
+if [ "${TOR_ENABLE}" = true ];then
+	sudo -H -i -u "${ROOT_USER}" systemctl enable tor.service
+fi
+if [ "${BITCOIN_MAINNET_ENABLE}" = true ];then
+	sudo -H -i -u "${ROOT_USER}" systemctl enable bitcoin.service
+	sudo -H -i -u "${ROOT_USER}" systemctl enable electrs.service
+	sudo -H -i -u "${ROOT_USER}" systemctl enable mempool.service
+fi
+if [ "${BITCOIN_TESTNET_ENABLE}" = true ];then
+	sudo -H -i -u "${ROOT_USER}" systemctl enable bitcoin-testnet.service
+	sudo -H -i -u "${ROOT_USER}" systemctl enable electrs-testnet.service
+	sudo -H -i -u "${ROOT_USER}" systemctl enable mempool-testnet.service
+fi
+if [ "${BISQ_MAINNET_ENABLE}" = true ];then
+	sudo -H -i -u "${ROOT_USER}" systemctl enable bisq.service
+	sudo -H -i -u "${ROOT_USER}" systemctl enable mempool-bisq.service
+fi
+if [ "${ELEMENTS_LIQUID_ENABLE}" = true ];then
+	sudo -H -i -u "${ROOT_USER}" systemctl enable liquid.service
+	sudo -H -i -u "${ROOT_USER}" systemctl enable electrs-liquid.service
+	sudo -H -i -u "${ROOT_USER}" systemctl enable mempool-liquid.service
+fi
+
+##### OS services
+
+if [ "${BITCOIN_MAINNET_ENABLE}" = true ];then
+	echo "[*] Starting Bitcoin Mainnet"
+	sudo -H -i -u "${ROOT_USER}" systemctl start bitcoin
+	sudo -H -i -u "${ROOT_USER}" systemctl start electrs
+	sudo -H -i -u "${ROOT_USER}" journalctl --no-pager --unit bitcoin
+fi
+
+if [ "${BITCOIN_TESTNET_ENABLE}" = true ];then
+	echo "[*] Starting Bitcoin Testnet"
+	sudo -H -i -u "${ROOT_USER}" systemctl start bitcoin-testnet
+	sudo -H -i -u "${ROOT_USER}" systemctl start electrs-testnet
+	sudo -H -i -u "${ROOT_USER}" journalctl --no-pager --unit bitcoin-testnet
+fi
+if [ "${ELEMENTS_LIQUID_ENABLE}" = true ];then
+	echo "[*] Starting Elements Liquid"
+	sudo -H -i -u "${ROOT_USER}" systemctl start liquid
+	sudo -H -i -u "${ROOT_USER}" systemctl start electrs-liquid
+	sudo -H -i -u "${ROOT_USER}" journalctl --no-pager --unit liquid
+fi
+
+sudo -H -i -u "${ROOT_USER}" tail "${BITCOIN_HOME}/debug.log"
+
+##### OS notes
+
+echo "[*] Adding notes to motd"
+sudo -H -i -u "${ROOT_USER}" sh -c 'echo " " >> /etc/motd'
+
+##### OS firewall
+
+echo "[*] Preparing firewall"
+sudo -H -i -u "${ROOT_USER}" ufw default deny incoming
+sudo -H -i -u "${ROOT_USER}" ufw default allow outgoing
+sudo -H -i -u "${ROOT_USER}" ufw allow from any to any port ${BITCOIN_MAINNET_P2P_PORT} proto tcp
+sudo -H -i -u "${ROOT_USER}" ufw allow from any to any port ${BITCOIN_TESTNET_P2P_PORT} proto tcp
+sudo -H -i -u "${ROOT_USER}" ufw allow from any to any port ${ELEMENTS_LIQUID_P2P_PORT} proto tcp
+
+##### finish
+
+echo '[*] Done!'
+
+echo '  '
+echo '[*] Follow all the README instructions!'
+echo '[*] AND DONT FORGET TO ENABLE FIREWALL!!!11'
+echo '[*] type "ufw enable" to enable firewall'
+echo '  '
+
+exit 0
