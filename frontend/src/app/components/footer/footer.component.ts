@@ -25,6 +25,7 @@ interface MempoolInfoData {
 export class FooterComponent implements OnInit {
   mempoolBlocksData$: Observable<MempoolBlocksData>;
   mempoolInfoData$: Observable<MempoolInfoData>;
+  vBytesPerSecondLimit = 1667;
 
   constructor(
     private stateService: StateService,
@@ -37,13 +38,7 @@ export class FooterComponent implements OnInit {
     ])
     .pipe(
       map(([mempoolInfo, vbytesPerSecond]) => {
-        const vBytesPerSecondLimit = 1667;
-        let vBytesPerSecond = vbytesPerSecond;
-        if (vBytesPerSecond > 1667) {
-          vBytesPerSecond = 1667;
-        }
-
-        const percent = Math.round((vBytesPerSecond / vBytesPerSecondLimit) * 100);
+        const percent = Math.round((Math.min(vbytesPerSecond, this.vBytesPerSecondLimit) / this.vBytesPerSecondLimit) * 100);
 
         let progressClass = 'bg-danger';
         if (percent <= 75) {
@@ -54,7 +49,7 @@ export class FooterComponent implements OnInit {
 
         return {
           memPoolInfo: mempoolInfo,
-          vBytesPerSecond: vBytesPerSecond,
+          vBytesPerSecond: vbytesPerSecond,
           progressWidth: percent + '%',
           progressClass: progressClass,
         };
