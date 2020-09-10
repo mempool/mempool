@@ -5,7 +5,10 @@ import feeApi from './api/fee-api';
 import backendInfo from './api/backend-info';
 import mempoolBlocks from './api/mempool-blocks';
 import mempool from './api/mempool';
-import bisq from './api/bisq';
+import bisq from './api/bisq/bisq';
+import bisqMarket from './api/bisq/markets-api';
+import { RequiredSpec } from './interfaces';
+import { MarketsApiError } from './api/bisq/interfaces';
 
 class Routes {
   private cache = {};
@@ -161,6 +164,258 @@ class Routes {
       res.status(404).send('Bisq address not found');
     }
   }
+
+  public getBisqMarketCurrencies(req: Request, res: Response) {
+    const constraints: RequiredSpec = {
+      'type': {
+        required: false,
+        types: ['crypto', 'fiat', 'all']
+      },
+    };
+
+    const p = this.parseRequestParameters(req, constraints);
+    if (p.error) {
+      res.status(501).json(this.getBisqMarketErrorResponse(p.error));
+      return;
+    }
+
+    const result = bisqMarket.getCurrencies(p.type);
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(500).json(this.getBisqMarketErrorResponse('getBisqMarketCurrencies error'));
+    }
+  }
+
+  public getBisqMarketDepth(req: Request, res: Response) {
+    const constraints: RequiredSpec = {
+      'market': {
+        required: true,
+        types: ['@string']
+      },
+    };
+
+    const p = this.parseRequestParameters(req, constraints);
+    if (p.error) {
+      res.status(501).json(this.getBisqMarketErrorResponse(p.error));
+      return;
+    }
+
+    const result = bisqMarket.getDepth(p.market);
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(500).json(this.getBisqMarketErrorResponse('getBisqMarketDepth error'));
+    }
+  }
+
+  public getBisqMarketMarkets(req: Request, res: Response) {
+    const result = bisqMarket.getMarkets();
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(500).json(this.getBisqMarketErrorResponse('getBisqMarketMarkets error'));
+    }
+  }
+
+  public getBisqMarketTrades(req: Request, res: Response) {
+    const constraints: RequiredSpec = {
+      'market': {
+        required: true,
+        types: ['@string']
+      },
+      'timestamp_from': {
+        required: false,
+        types: ['@number']
+      },
+      'timestamp_to': {
+        required: false,
+        types: ['@number']
+      },
+      'trade_id_to': {
+        required: false,
+        types: ['@string']
+      },
+      'trade_id_from': {
+        required: false,
+        types: ['@string']
+      },
+      'direction': {
+        required: false,
+        types: ['buy', 'sell']
+      },
+      'limit': {
+        required: false,
+        types: ['@number']
+      },
+      'sort': {
+        required: false,
+        types: ['asc', 'desc']
+      }
+    };
+
+    const p = this.parseRequestParameters(req, constraints);
+    if (p.error) {
+      res.status(501).json(this.getBisqMarketErrorResponse(p.error));
+      return;
+    }
+
+    const result = bisqMarket.getTrades(p.market, p.timestamp_from,
+      p.timestamp_to, p.trade_id_from, p.trade_id_to, p.direction, p.limit, p.sort);
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(500).json(this.getBisqMarketErrorResponse('getBisqMarketTrades error'));
+    }
+  }
+
+  public getBisqMarketOffers(req: Request, res: Response) {
+    const constraints: RequiredSpec = {
+      'market': {
+        required: true,
+        types: ['@string']
+      },
+      'direction': {
+        required: false,
+        types: ['BUY', 'SELL']
+      },
+    };
+
+    const p = this.parseRequestParameters(req, constraints);
+    if (p.error) {
+      res.status(501).json(this.getBisqMarketErrorResponse(p.error));
+      return;
+    }
+
+    const result = bisqMarket.getCurrencies(p.type);
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(500).json(this.getBisqMarketErrorResponse('getBisqMarketOffers error'));
+    }
+  }
+
+  private parseRequestParameters(req: Request, params: RequiredSpec): { [name: string]: any; } {
+    const final = {};
+    for (const i in params) {
+      if (params.hasOwnProperty(i)) {
+        if (params[i].required && !req.query[i]) {
+          return { error: i + ' parameter missing'};
+        }
+        if (typeof req.query[i] === 'string') {
+          if (params[i].types.indexOf('@number') > -1) {
+            const number = parseInt((req.query[i] || '0').toString(), 10);
+            final[i] = number;
+          } else if (params[i].types.indexOf('@string') > -1) {
+            final[i] = req.query[i];
+          } else if (params[i].types.indexOf((req.query[i] || '').toString()) > -1) {
+            final[i] = req.query[i];
+          } else {
+            return { error: i + ' parameter invalid'};
+          }
+        }
+      }
+    }
+    return final;
+  }
+
+  public getBisqMarketVolumes(req: Request, res: Response) {
+    const constraints: RequiredSpec = {
+      'market': {
+        required: true,
+        types: ['@string']
+      },
+      'interval': {
+        required: false,
+        types: ['minute', 'half_hour', 'hour', 'half_day', 'day', 'week', 'month', 'year', 'auto']
+      },
+      'timestamp_from': {
+        required: false,
+        types: ['@number']
+      },
+      'timestamp_to': {
+        required: false,
+        types: ['@number']
+      },
+    };
+
+    const p = this.parseRequestParameters(req, constraints);
+    if (p.error) {
+      res.status(501).json(this.getBisqMarketErrorResponse(p.error));
+      return;
+    }
+
+    const result = bisqMarket.getVolumes(p.timestamp_from, p.timestamp_to, p.interval, p.market);
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(500).json(this.getBisqMarketErrorResponse('getBisqMarketVolumes error'));
+    }
+  }
+
+  public getBisqMarketHloc(req: Request, res: Response) {
+    const constraints: RequiredSpec = {
+      'market': {
+        required: true,
+        types: ['@string']
+      },
+      'interval': {
+        required: false,
+        types: ['minute', 'half_hour', 'hour', 'half_day', 'day', 'week', 'month', 'year', 'auto']
+      },
+      'timestamp_from': {
+        required: false,
+        types: ['@number']
+      },
+      'timestamp_to': {
+        required: false,
+        types: ['@number']
+      },
+    };
+
+    const p = this.parseRequestParameters(req, constraints);
+    if (p.error) {
+      res.status(501).json(this.getBisqMarketErrorResponse(p.error));
+      return;
+    }
+
+    const result = bisqMarket.getHloc(p.market, p.interval, p.timestamp_from, p.timestamp_to);
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(500).json(this.getBisqMarketErrorResponse('getBisqMarketHloc error'));
+    }
+  }
+
+  public getBisqMarketTicker(req: Request, res: Response) {
+    const constraints: RequiredSpec = {
+      'market': {
+        required: false,
+        types: ['@string']
+      },
+    };
+
+    const p = this.parseRequestParameters(req, constraints);
+    if (p.error) {
+      res.status(501).json(this.getBisqMarketErrorResponse(p.error));
+      return;
+    }
+
+    const result = bisqMarket.getCurrencies(p.market);
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(500).json(this.getBisqMarketErrorResponse('getBisqMarketTicker error'));
+    }
+  }
+
+  private getBisqMarketErrorResponse(message: string): MarketsApiError {
+    return {
+      'success': 0,
+      'error': message
+    };
+  }
+
 }
 
 export default new Routes();

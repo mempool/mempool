@@ -1,8 +1,8 @@
-const config = require('../../mempool-config.json');
+const config = require('../../../mempool-config.json');
 import * as fs from 'fs';
 import * as request from 'request';
-import { BisqBlocks, BisqBlock, BisqTransaction, BisqStats, BisqTrade } from '../interfaces';
-import { Common } from './common';
+import { BisqBlocks, BisqBlock, BisqTransaction, BisqStats, BisqTrade } from './interfaces';
+import { Common } from '../common';
 
 class Bisq {
   private static BLOCKS_JSON_FILE_PATH = '/all/blocks.json';
