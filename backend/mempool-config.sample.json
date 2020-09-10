@@ -15,7 +15,9 @@
   "TX_PER_SECOND_SPAN_SECONDS": 150,
   "ELECTRS_API_URL": "http://localhost:50001",
   "BISQ_ENABLED": false,
+  "BISQ_MARKET_ENABLED": false,
   "BSQ_BLOCKS_DATA_PATH": "/bisq/data",
+  "BSQ_MARKETS_DATA_PATH": "/bisq-markets/data",
   "SSL": false,
   "SSL_CERT_FILE_PATH": "/etc/letsencrypt/live/mysite/fullchain.pem",
   "SSL_KEY_FILE_PATH": "/etc/letsencrypt/live/mysite/privkey.pem"
