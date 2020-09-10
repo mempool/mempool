@@ -1,7 +1,7 @@
 <div class="container-xl">
 
   <div class="title-block">
-    <h1 class="float-left">Block <ng-template [ngIf]="blockHeight"><a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a></ng-template></h1>
+    <h1 class="float-left"><ng-template [ngIf]="blockHeight === 0">Genesis </ng-template>Block <ng-template [ngIf]="blockHeight"><a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a></ng-template></h1>
     <button [routerLink]="['/' | relativeUrl]" class="btn btn-sm float-right mr-2 mt-2">&#10005;</button>
   </div>
 
@@ -82,7 +82,7 @@
 
     <br>
 
-    <h2 class="float-left">{{ block.tx_count | number }} transactions</h2>
+    <h2 class="float-left">{{ block.tx_count | number }} transaction<ng-template [ngIf]="block.tx_count !== 1">s</ng-template></h2>
 
     <ngb-pagination class="float-right" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true"></ngb-pagination>
 

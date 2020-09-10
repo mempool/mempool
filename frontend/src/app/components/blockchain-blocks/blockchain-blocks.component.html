@@ -13,7 +13,7 @@
           {{ block.feeRange[1] | number:'1.0-0' }} - {{ block.feeRange[block.feeRange.length - 1] | number:'1.0-0' }} sat/vB
         </div>
         <div class="block-size">{{ block.size | bytes: 2 }}</div>
-        <div class="transaction-count">{{ block.tx_count | number }} transactions</div>
+        <div class="transaction-count">{{ block.tx_count | number }} transaction<ng-template [ngIf]="block.tx_count !== 1">s</ng-template></div>
         <div class="time-difference"><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since> ago</div>
       </div>
     </div>
