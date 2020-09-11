@@ -89,6 +89,7 @@ export interface BisqTrade {
   payment_method: string;
   trade_id: string;
   trade_date: number;
+  market?: string;
 }
 
 export interface Currencies { [txid: string]: Currency; }
@@ -97,7 +98,8 @@ export interface Currency {
   code: string;
   name: string;
   precision: number;
-  type: string;
+
+  _type: string;
 }
 
 export interface Depth { [market: string]: Market; }
