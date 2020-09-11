@@ -277,7 +277,7 @@ class Routes {
       },
       'direction': {
         required: false,
-        types: ['BUY', 'SELL']
+        types: ['buy', 'sell']
       },
     };
 
@@ -287,36 +287,12 @@ class Routes {
       return;
     }
 
-    const result = bisqMarket.getCurrencies(p.type);
+    const result = bisqMarket.getOffers(p.market, p.direction);
     if (result) {
       res.json(result);
     } else {
       res.status(500).json(this.getBisqMarketErrorResponse('getBisqMarketOffers error'));
     }
-  }
-
-  private parseRequestParameters(req: Request, params: RequiredSpec): { [name: string]: any; } {
-    const final = {};
-    for (const i in params) {
-      if (params.hasOwnProperty(i)) {
-        if (params[i].required && !req.query[i]) {
-          return { error: i + ' parameter missing'};
-        }
-        if (typeof req.query[i] === 'string') {
-          if (params[i].types.indexOf('@number') > -1) {
-            const number = parseInt((req.query[i] || '0').toString(), 10);
-            final[i] = number;
-          } else if (params[i].types.indexOf('@string') > -1) {
-            final[i] = req.query[i];
-          } else if (params[i].types.indexOf((req.query[i] || '').toString()) > -1) {
-            final[i] = req.query[i];
-          } else {
-            return { error: i + ' parameter invalid'};
-          }
-        }
-      }
-    }
-    return final;
   }
 
   public getBisqMarketVolumes(req: Request, res: Response) {
@@ -407,6 +383,31 @@ class Routes {
     } else {
       res.status(500).json(this.getBisqMarketErrorResponse('getBisqMarketTicker error'));
     }
+  }
+
+  private parseRequestParameters(req: Request, params: RequiredSpec): { [name: string]: any; } {
+    const final = {};
+    for (const i in params) {
+      if (params.hasOwnProperty(i)) {
+        if (params[i].required && !req.query[i]) {
+          return { error: i + ' parameter missing'};
+        }
+        if (typeof req.query[i] === 'string') {
+          const str = (req.query[i] || '').toString().toLowerCase();
+          if (params[i].types.indexOf('@number') > -1) {
+            const number = parseInt((str).toString(), 10);
+            final[i] = number;
+          } else if (params[i].types.indexOf('@string') > -1) {
+            final[i] = str;
+          } else if (params[i].types.indexOf(str) > -1) {
+            final[i] = str;
+          } else {
+            return { error: i + ' parameter invalid'};
+          }
+        }
+      }
+    }
+    return final;
   }
 
   private getBisqMarketErrorResponse(message: string): MarketsApiError {

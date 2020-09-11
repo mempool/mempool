@@ -15,8 +15,8 @@ class BisqMarketsApi {
     this.offersData = offers;
     this.tradesData = trades;
 
-    this.fiatCurrencyData.forEach((currency) => currency.type = 'fiat');
-    this.cryptoCurrencyData.forEach((currency) => currency.type = 'crypto');
+    this.fiatCurrencyData.forEach((currency) => currency._type = 'fiat');
+    this.cryptoCurrencyData.forEach((currency) => currency._type = 'crypto');
     this.tradesData.forEach((trade) => {
       trade._market = trade.currencyPair.toLowerCase().replace('/', '_');
     });
@@ -51,13 +51,13 @@ class BisqMarketsApi {
     const currencyPair = market.replace('_', '/').toUpperCase();
 
     const buys = this.offersData
-      .filter((offer) =>  offer.currencyPair === currencyPair && offer.direction === 'BUY')
+      .filter((offer) => offer.currencyPair === currencyPair && offer.primaryMarketDirection === 'BUY')
       .map((offer) => offer.price)
       .sort((a, b) => b - a)
       .map((price) => this.intToBtc(price));
 
     const sells = this.offersData
-      .filter((offer) =>  offer.currencyPair === currencyPair && offer.direction === 'SELL')
+      .filter((offer) => offer.currencyPair === currencyPair && offer.primaryMarketDirection === 'SELL')
       .map((offer) => offer.price)
       .sort((a, b) => a - b)
       .map((price) => this.intToBtc(price));
@@ -72,22 +72,24 @@ class BisqMarketsApi {
 
   getOffers(
     market: string,
-    direction?: 'BUY' | 'SELL',
+    direction?: 'buy' | 'sell',
   ): Offers {
     const currencyPair = market.replace('_', '/').toUpperCase();
 
     let buys: Offer[] | null = null;
     let sells: Offer[] | null = null;
 
-    if (!direction || direction === 'BUY') {
+    if (!direction || direction === 'buy') {
       buys = this.offersData
-        .filter((offer) =>  offer.currencyPair === currencyPair && offer.direction === 'BUY')
+        .filter((offer) => offer.currencyPair === currencyPair && offer.primaryMarketDirection === 'BUY')
+        .sort((a, b) => b.price - a.price)
         .map((offer) => this.offerDataToOffer(offer));
     }
 
-    if (!direction || direction === 'SELL') {
+    if (!direction || direction === 'sell') {
       sells = this.offersData
-        .filter((offer) =>  offer.currencyPair === currencyPair && offer.direction === 'SELL')
+        .filter((offer) => offer.currencyPair === currencyPair && offer.primaryMarketDirection === 'SELL')
+        .sort((a, b) => a.price - b.price)
         .map((offer) => this.offerDataToOffer(offer));
     }
 
@@ -108,14 +110,14 @@ class BisqMarketsApi {
         continue;
       }
 
-      const isFiat = allCurrencies[currency].type === 'fiat';
+      const isFiat = allCurrencies[currency]._type === 'fiat';
       const pmarketname = allCurrencies['BTC']['name'];
 
       const lsymbol = isFiat ? 'BTC' : currency;
       const rsymbol = isFiat ? currency : 'BTC';
       const lname = isFiat ? pmarketname : allCurrencies[currency].name;
       const rname = isFiat ? allCurrencies[currency].name : pmarketname;
-      const ltype = isFiat ? 'crypto' : allCurrencies[currency].type;
+      const ltype = isFiat ? 'crypto' : allCurrencies[currency]._type;
       const rtype = isFiat ? 'fiat' : 'crypto';
       const lprecision = 8;
       const rprecision = isFiat ? 2 : 8;
@@ -155,9 +157,13 @@ class BisqMarketsApi {
 
       if (!timestamp_from) {
         timestamp_from = new Date('2016-01-01').getTime();
+      } else {
+        timestamp_from = timestamp_from * 1000;
       }
       if (!timestamp_to) {
         timestamp_to = new Date().getTime();
+      } else {
+        timestamp_to = timestamp_to * 1000;
       }
 
       const allCurrencies = this.getCurrencies();
@@ -206,12 +212,16 @@ class BisqMarketsApi {
         const currencyLeft = allCurrencies[currencyPairs[0]];
         const currencyRight = allCurrencies[currencyPairs[1]];
 
-        trade.tradePrice = trade.primaryMarketTradePrice * Math.pow(10, 8 - currencyRight.precision);
-        trade.tradeAmount = trade.primaryMarketTradeAmount * Math.pow(10, 8 - currencyLeft.precision);
+        if (!currencyLeft || !currencyRight) {
+          continue;
+        }
+
+        const tradePrice = trade.primaryMarketTradePrice * Math.pow(10, 8 - currencyRight.precision);
+        const tradeAmount = trade.primaryMarketTradeAmount * Math.pow(10, 8 - currencyLeft.precision);
         const tradeVolume = trade.primaryMarketTradeVolume * Math.pow(10, 8 - currencyRight.precision);
 
-        trade._tradePrice = this.intToBtc(trade.tradePrice);
-        trade._tradeAmount = this.intToBtc(trade.tradeAmount);
+        trade._tradePrice = this.intToBtc(tradePrice);
+        trade._tradeAmount = this.intToBtc(tradeAmount);
         trade._tradeVolume = this.intToBtc(tradeVolume);
         trade._offerAmount = this.intToBtc(trade.offerAmount);
 
@@ -226,17 +236,27 @@ class BisqMarketsApi {
           matches = [];
       }
 
-    return matches.map((trade) => {
-      return {
-        direction: trade.direction,
-        price: trade._tradePrice,
-        amount: trade._tradeAmount,
-        volume: trade._tradeVolume,
-        payment_method: trade.paymentMethod,
-        trade_id: trade.offerId,
-        trade_date: trade.tradeDate,
-      };
-    });
+      if (sort === 'asc') {
+        matches.sort((a, b) => a.tradeDate - b.tradeDate);
+      } else {
+        matches.sort((a, b) => b.tradeDate - a.tradeDate);
+      }
+
+      return matches.map((trade) => {
+        const bsqTrade: BisqTrade = {
+          direction: trade.primaryMarketDirection,
+          price: trade._tradePrice,
+          amount: trade._tradeAmount,
+          volume: trade._tradeVolume,
+          payment_method: trade.paymentMethod,
+          trade_id: trade.offerId,
+          trade_date: trade.tradeDate,
+        };
+        if (market === 'all') {
+          bsqTrade.market = trade._market;
+        }
+        return bsqTrade;
+      });
   }
 
   getVolumes(
@@ -262,9 +282,13 @@ class BisqMarketsApi {
   ): HighLowOpenClose[] {
     if (!timestamp_from) {
       timestamp_from = new Date('2016-01-01').getTime();
+    } else {
+      timestamp_from = timestamp_from * 1000;
     }
     if (!timestamp_to) {
       timestamp_to = new Date().getTime();
+    } else {
+      timestamp_to = timestamp_to * 1000;
     }
     return [];
   }
