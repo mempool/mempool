@@ -347,6 +347,10 @@ class Routes {
         required: false,
         types: ['@number']
       },
+      'milliseconds': {
+        required: false,
+        types: ['@boolean']
+      },
     };
 
     const p = this.parseRequestParameters(req, constraints);
@@ -355,7 +359,7 @@ class Routes {
       return;
     }
 
-    const result = bisqMarket.getHloc(p.market, p.interval, p.timestamp_from, p.timestamp_to);
+    const result = bisqMarket.getHloc(p.market, p.interval, p.timestamp_from, p.timestamp_to, p.milliseconds);
     if (result) {
       res.json(result);
     } else {
@@ -399,6 +403,8 @@ class Routes {
             final[i] = number;
           } else if (params[i].types.indexOf('@string') > -1) {
             final[i] = str;
+          } else if (params[i].types.indexOf('@boolean') > -1) {
+            final[i] = str === 'true' || str === 'yes';
           } else if (params[i].types.indexOf(str) > -1) {
             final[i] = str;
           } else {

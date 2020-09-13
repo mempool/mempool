@@ -19,7 +19,7 @@ class Bisq {
   startBisqService(): void {
     this.checkForBisqDataFolder();
     this.loadBisqDumpFile();
-    this.startSubDirectoryWatcher();
+    this.startBisqDirectoryWatcher();
   }
 
   private checkForBisqDataFolder() {
@@ -29,13 +29,13 @@ class Bisq {
     }
   }
 
-  private startSubDirectoryWatcher() {
+  private startBisqDirectoryWatcher() {
     if (this.subdirectoryWatcher) {
       this.subdirectoryWatcher.close();
     }
     if (!fs.existsSync(Bisq.MARKET_JSON_PATH + Bisq.MARKET_JSON_FILE_PATHS.cryptoCurrency)) {
       console.log(Bisq.MARKET_JSON_PATH + Bisq.MARKET_JSON_FILE_PATHS.cryptoCurrency + ` doesn't exist. Trying to restart sub directory watcher again in 3 minutes.`);
-      setTimeout(() => this.startSubDirectoryWatcher(), 180000);
+      setTimeout(() => this.startBisqDirectoryWatcher(), 180000);
       return;
     }
     let fsWait: NodeJS.Timeout | null = null;

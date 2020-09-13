@@ -222,10 +222,14 @@ export interface TradesData {
   primaryMarketTradeVolume: number;
 
   _market: string;
-  _tradePrice: string;
-  _tradeAmount: string;
-  _tradeVolume: string;
-  _offerAmount: string;
+  _tradePriceStr: string;
+  _tradeAmountStr: string;
+  _tradeVolumeStr: string;
+  _offerAmountStr: string;
+  _tradePrice: number;
+  _tradeAmount: number;
+  _tradeVolume: number;
+  _offerAmount: number;
 }
 
 export interface MarketVolume {
