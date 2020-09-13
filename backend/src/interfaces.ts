@@ -235,5 +235,5 @@ export interface RequiredSpec { [name: string]: RequiredParams; }
 
 interface RequiredParams {
   required: boolean;
-  types: ('@string' | '@number' | string)[];
+  types: ('@string' | '@number' | '@boolean' | string)[];
 }

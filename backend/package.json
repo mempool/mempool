@@ -29,6 +29,7 @@
     "express": "^4.17.1",
     "mysql2": "^1.6.1",
     "request": "^2.88.2",
+    "locutus": "^2.0.12",
     "ws": "^7.3.1"
   },
   "devDependencies": {
@@ -36,6 +37,7 @@
     "@types/express": "^4.17.2",
     "@types/request": "^2.48.2",
     "@types/ws": "^6.0.4",
+    "@types/locutus": "^0.0.6",
     "tslint": "~6.1.0",
     "typescript": "~3.9.7"
   }
