@@ -15,7 +15,8 @@ import diskCache from './api/disk-cache';
 import statistics from './api/statistics';
 import websocketHandler from './api/websocket-handler';
 import fiatConversion from './api/fiat-conversion';
-import bisq from './api/bisq';
+import bisq from './api/bisq/bisq';
+import bisqMarkets from './api/bisq/markets';
 
 class Server {
   wss: WebSocket.Server;
@@ -59,6 +60,10 @@ class Server {
     if (config.BISQ_ENABLED) {
       bisq.startBisqService();
       bisq.setPriceCallbackFunction((price) => websocketHandler.setExtraInitProperties('bsq-price', price));
+    }
+
+    if (config.BISQ_MARKET_ENABLED) {
+      bisqMarkets.startBisqService();
     }
 
     this.server.listen(config.HTTP_PORT, () => {
@@ -106,6 +111,19 @@ class Server {
         .get(config.API_ENDPOINT + 'bisq/address/:address', routes.getBisqAddress)
         .get(config.API_ENDPOINT + 'bisq/txs/:index/:length', routes.getBisqTransactions)
       ;
+    }
+
+    if (config.BISQ_MARKET_ENABLED) {
+      this.app
+        .get(config.API_ENDPOINT + 'bisq/markets/currencies', routes.getBisqMarketCurrencies.bind(routes))
+        .get(config.API_ENDPOINT + 'bisq/markets/depth', routes.getBisqMarketDepth.bind(routes))
+        .get(config.API_ENDPOINT + 'bisq/markets/hloc', routes.getBisqMarketHloc.bind(routes))
+        .get(config.API_ENDPOINT + 'bisq/markets/markets', routes.getBisqMarketMarkets.bind(routes))
+        .get(config.API_ENDPOINT + 'bisq/markets/offers', routes.getBisqMarketOffers.bind(routes))
+        .get(config.API_ENDPOINT + 'bisq/markets/ticker', routes.getBisqMarketTicker.bind(routes))
+        .get(config.API_ENDPOINT + 'bisq/markets/trades', routes.getBisqMarketTrades.bind(routes))
+        .get(config.API_ENDPOINT + 'bisq/markets/volumes', routes.getBisqMarketVolumes.bind(routes))
+        ;
     }
   }
 }
