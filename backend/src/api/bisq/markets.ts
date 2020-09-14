@@ -4,7 +4,7 @@ import { OffsersData, TradesData, Currency } from './interfaces';
 import bisqMarket from './markets-api';
 
 class Bisq {
-  private static MARKET_JSON_PATH = config.BSQ_MARKETS_DATA_PATH + '/btc_mainnet/db';
+  private static MARKET_JSON_PATH = config.BISQ_MARKETS_DATA_PATH + '/btc_mainnet/db';
   private static MARKET_JSON_FILE_PATHS = {
     cryptoCurrency: '/crypto_currency_list.json',
     fiatCurrency: '/fiat_currency_list.json',

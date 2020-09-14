@@ -1,5 +1,5 @@
 import { Currencies, OffsersData, TradesData, Depth, Currency, Interval, HighLowOpenClose,
-  Markets, Offers, Offer, BisqTrade, MarketVolume, Tickers } from './interfaces';
+  Markets, Offers, Offer, BisqTrade, MarketVolume, Tickers, Ticker, SummarizedIntervals, SummarizedInterval } from './interfaces';
 
 import * as datetime from 'locutus/php/datetime';
 
@@ -8,6 +8,8 @@ class BisqMarketsApi {
   private fiatCurrencyData: Currency[] = [];
   private offersData: OffsersData[] = [];
   private tradesData: TradesData[] = [];
+  private fiatCurrenciesIndexed: { [code: string]: true } = {};
+  private tradeDataByMarket: { [market: string]: TradesData[] } = {};
 
   constructor() { }
 
@@ -17,10 +19,18 @@ class BisqMarketsApi {
     this.offersData = offers;
     this.tradesData = trades;
 
-    this.fiatCurrencyData.forEach((currency) => currency._type = 'fiat');
+    // Handle data for smarter memory caching
+    this.fiatCurrencyData.forEach((currency) => {
+      currency._type = 'fiat';
+      this.fiatCurrenciesIndexed[currency.code] = true;
+    });
     this.cryptoCurrencyData.forEach((currency) => currency._type = 'crypto');
     this.tradesData.forEach((trade) => {
       trade._market = trade.currencyPair.toLowerCase().replace('/', '_');
+      if (!this.tradeDataByMarket[trade._market]) {
+        this.tradeDataByMarket[trade._market] = [];
+      }
+      this.tradeDataByMarket[trade._market].push(trade);
     });
   }
 
@@ -153,7 +163,7 @@ class BisqMarketsApi {
     sort: 'asc' | 'desc' = 'desc',
   ): BisqTrade[] {
       limit = Math.min(limit, 2000);
-      const _market = market === 'all' ? null : market;
+      const _market = market === 'all' ? undefined : market;
 
       if (!timestamp_from) {
         timestamp_from = new Date('2016-01-01').getTime() / 1000;
@@ -188,18 +198,149 @@ class BisqMarketsApi {
   }
 
   getVolumes(
-    timestamp_from: number,
-    timestamp_to: number,
-    interval: Interval,
     market?: string,
-    ): MarketVolume[] {
-    return [];
+    timestamp_from?: number,
+    timestamp_to?: number,
+    interval: Interval = 'auto',
+    milliseconds?: boolean,
+  ): MarketVolume[] {
+    if (milliseconds) {
+      timestamp_from = timestamp_from ? timestamp_from / 1000 : timestamp_from;
+      timestamp_to = timestamp_to ? timestamp_to / 1000 : timestamp_to;
+    }
+    if (!timestamp_from) {
+      timestamp_from = new Date('2016-01-01').getTime() / 1000;
+    }
+    if (!timestamp_to) {
+      timestamp_to = new Date().getTime() / 1000;
+    }
+
+    const trades = this.getTradesByCriteria(market, timestamp_to, timestamp_from,
+      undefined, undefined, undefined, 'asc', Number.MAX_SAFE_INTEGER);
+
+    if (interval === 'auto') {
+      const range = timestamp_to - timestamp_from;
+      interval = this.getIntervalFromRange(range);
+    }
+
+    const intervals: any = {};
+    const marketVolumes: MarketVolume[] = [];
+
+    for (const trade of trades) {
+      const traded_at = trade['tradeDate'] / 1000;
+      const interval_start = this.intervalStart(traded_at, interval);
+
+      if (!intervals[interval_start]) {
+        intervals[interval_start] = {
+          'volume': 0,
+          'num_trades': 0,
+        };
+      }
+
+      const period = intervals[interval_start];
+      period['period_start'] = interval_start;
+      period['volume'] += this.fiatCurrenciesIndexed[trade.currency] ? trade._tradeAmount : trade._tradeVolume;
+      period['num_trades']++;
+    }
+
+    for (const p in intervals) {
+      if (intervals.hasOwnProperty(p)) {
+        const period = intervals[p];
+        marketVolumes.push({
+          period_start: period['period_start'],
+          num_trades: period['num_trades'],
+          volume: this.intToBtc(period['volume']),
+        });
+      }
+    }
+
+    return intervals;
   }
 
   getTicker(
     market?: string,
-  ): Tickers {
-    return {};
+  ): Tickers | Ticker | null {
+    if (market) {
+      return this.getTickerFromMarket(market);
+    }
+
+    const allMarkets = this.getMarkets();
+    const tickers = {};
+    for (const m in allMarkets) {
+      if (allMarkets.hasOwnProperty(m)) {
+        tickers[allMarkets[m].pair] = this.getTickerFromMarket(allMarkets[m].pair);
+      }
+    }
+
+    return tickers;
+  }
+
+  getTickerFromMarket(market: string): Ticker | null {
+    let ticker: Ticker;
+    const timestamp_from = datetime.strtotime('-24 hour');
+    const timestamp_to = new Date().getTime() / 1000;
+    const trades = this.getTradesByCriteria(market, timestamp_to, timestamp_from,
+      undefined, undefined, undefined, 'asc', Number.MAX_SAFE_INTEGER);
+
+    const periods: SummarizedInterval[] = Object.values(this.getTradesSummarized(trades, timestamp_from));
+
+    const allCurrencies = this.getCurrencies();
+    const currencyRight = allCurrencies[market.split('_')[1].toUpperCase()];
+
+    if (periods[0]) {
+      ticker = {
+        'last': this.intToBtc(periods[0].close),
+        'high': this.intToBtc(periods[0].high),
+        'low': this.intToBtc(periods[0].low),
+        'volume_left': this.intToBtc(periods[0].volume_left),
+        'volume_right': this.intToBtc(periods[0].volume_right),
+        'buy': null,
+        'sell': null,
+      };
+    } else {
+      const lastTrade = this.tradeDataByMarket[market];
+      if (!lastTrade) {
+        return null;
+      }
+      const tradePrice = lastTrade[0].primaryMarketTradePrice * Math.pow(10, 8 - currencyRight.precision);
+
+      const lastTradePrice = this.intToBtc(tradePrice);
+      ticker = {
+        'last': lastTradePrice,
+        'high': lastTradePrice,
+        'low': lastTradePrice,
+        'volume_left': '0',
+        'volume_right': '0',
+        'buy': null,
+        'sell': null,
+      };
+    }
+
+    const timestampFromMilli = timestamp_from * 1000;
+    const timestampToMilli = timestamp_to * 1000;
+
+    const currencyPair = market.replace('_', '/').toUpperCase();
+    const offersData = this.offersData.slice().sort((a, b) => a.price - b.price);
+
+    const buy = offersData.find((offer) => offer.currencyPair === currencyPair
+                                          && offer.primaryMarketDirection === 'BUY'
+                                          && offer.date >= timestampFromMilli
+                                          && offer.date <= timestampToMilli
+                                        );
+    const sell = offersData.find((offer) => offer.currencyPair === currencyPair
+                                            && offer.primaryMarketDirection === 'SELL'
+                                            && offer.date >= timestampFromMilli
+                                            && offer.date <= timestampToMilli
+                                          );
+
+    if (buy) {
+      ticker.buy = this.intToBtc(buy.primaryMarketPrice * Math.pow(10, 8 - currencyRight.precision));
+    }
+    if (sell) {
+      ticker.sell = this.intToBtc(sell.primaryMarketPrice * Math.pow(10, 8 - currencyRight.precision));
+    }
+
+    return ticker;
   }
 
   getHloc(
@@ -220,53 +361,73 @@ class BisqMarketsApi {
       timestamp_to = new Date().getTime() / 1000;
     }
 
-    const range = timestamp_to - timestamp_from;
-
     const trades = this.getTradesByCriteria(market, timestamp_to, timestamp_from,
       undefined, undefined, undefined, 'asc', Number.MAX_SAFE_INTEGER);
 
     if (interval === 'auto') {
-        // two days range loads minute data
-        if (range <= 3600) {
-          // up to one hour range loads minutely data
-          interval = 'minute';
-        } else if (range <= 1 * 24 * 3600) {
-          // up to one day range loads half-hourly data
-          interval = 'half_hour';
-        } else if (range <= 3 * 24 * 3600) {
-          // up to 3 day range loads hourly data
-          interval = 'hour';
-        } else if (range <= 7 * 24 * 3600) {
-          // up to 7 day range loads half-daily data
-          interval = 'half_day';
-        } else if (range <= 60 * 24 * 3600) {
-          // up to 2 month range loads daily data
-          interval = 'day';
-        } else if (range <= 12 * 31 * 24 * 3600) {
-          // up to one year range loads weekly data
-          interval = 'week';
-        } else if (range <= 12 * 31 * 24 * 3600) {
-          // up to 5 year range loads monthly data
-          interval = 'month';
-        } else {
-          // greater range loads yearly data
-          interval = 'year';
-        }
+      const range = timestamp_to - timestamp_from;
+      interval = this.getIntervalFromRange(range);
     }
 
-    const hlocs = this.getTradesSummarized(trades, timestamp_from, interval);
+    const intervals = this.getTradesSummarized(trades, timestamp_from, interval);
 
-    return hlocs;
+    const hloc: HighLowOpenClose[] = [];
+
+    for (const p in intervals) {
+      if (intervals.hasOwnProperty(p)) {
+        const period = intervals[p];
+        hloc.push({
+          period_start: period['period_start'],
+          open: this.intToBtc(period['open']),
+          close: this.intToBtc(period['close']),
+          high: this.intToBtc(period['high']),
+          low: this.intToBtc(period['low']),
+          avg: this.intToBtc(period['avg']),
+          volume_right: this.intToBtc(period['volume_right']),
+          volume_left: this.intToBtc(period['volume_left']),
+        });
+      }
+    }
+
+    return hloc;
   }
 
-  private getTradesSummarized(trades: TradesData[], timestamp_from, interval: string): HighLowOpenClose[] {
+  private getIntervalFromRange(range: number): Interval {
+    // two days range loads minute data
+    if (range <= 3600) {
+      // up to one hour range loads minutely data
+      return 'minute';
+    } else if (range <= 1 * 24 * 3600) {
+      // up to one day range loads half-hourly data
+      return 'half_hour';
+    } else if (range <= 3 * 24 * 3600) {
+      // up to 3 day range loads hourly data
+      return 'hour';
+    } else if (range <= 7 * 24 * 3600) {
+      // up to 7 day range loads half-daily data
+      return 'half_day';
+    } else if (range <= 60 * 24 * 3600) {
+      // up to 2 month range loads daily data
+      return 'day';
+    } else if (range <= 12 * 31 * 24 * 3600) {
+      // up to one year range loads weekly data
+      return 'week';
+    } else if (range <= 12 * 31 * 24 * 3600) {
+      // up to 5 year range loads monthly data
+      return 'month';
+    } else {
+      // greater range loads yearly data
+      return 'year';
+    }
+  }
+
+  private getTradesSummarized(trades: TradesData[], timestamp_from: number, interval?: string): SummarizedIntervals {
     const intervals: any = {};
     const intervals_prices: any = {};
-    const one_period = false;
 
     for (const trade of trades) {
       const traded_at = trade.tradeDate / 1000;
-      const interval_start = one_period ? timestamp_from : this.intervalStart(traded_at, interval);
+      const interval_start = !interval ? timestamp_from : this.intervalStart(traded_at, interval);
 
       if (!intervals[interval_start]) {
           intervals[interval_start] = {
@@ -306,30 +467,11 @@ class BisqMarketsApi {
           period['volume_right'] += trade._tradeVolume;
       }
     }
-
-    const hloc: HighLowOpenClose[] = [];
-
-    for (const p in intervals) {
-      if (intervals.hasOwnProperty(p)) {
-        const period = intervals[p];
-        hloc.push({
-          period_start: period['period_start'],
-          open: this.intToBtc(period['open']),
-          close: this.intToBtc(period['close']),
-          high: this.intToBtc(period['high']),
-          low: this.intToBtc(period['low']),
-          avg: this.intToBtc(period['avg']),
-          volume_right: this.intToBtc(period['volume_right']),
-          volume_left: this.intToBtc(period['volume_left']),
-        });
-      }
-    }
-
-    return hloc;
+    return intervals;
   }
 
   private getTradesByCriteria(
-    market: string | null,
+    market: string | undefined,
     timestamp_to: number,
     timestamp_from: number,
     trade_id_to: string | undefined,
@@ -422,7 +564,7 @@ class BisqMarketsApi {
     return matches;
   }
 
-  private intervalStart(ts: number, interval: string) {
+  private intervalStart(ts: number, interval: string): number {
     switch (interval) {
         case 'minute':
             return (ts - (ts % 60));
