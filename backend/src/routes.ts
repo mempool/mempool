@@ -175,7 +175,7 @@ class Routes {
 
     const p = this.parseRequestParameters(req, constraints);
     if (p.error) {
-      res.status(501).json(this.getBisqMarketErrorResponse(p.error));
+      res.status(400).json(this.getBisqMarketErrorResponse(p.error));
       return;
     }
 
@@ -197,7 +197,7 @@ class Routes {
 
     const p = this.parseRequestParameters(req, constraints);
     if (p.error) {
-      res.status(501).json(this.getBisqMarketErrorResponse(p.error));
+      res.status(400).json(this.getBisqMarketErrorResponse(p.error));
       return;
     }
 
@@ -256,7 +256,7 @@ class Routes {
 
     const p = this.parseRequestParameters(req, constraints);
     if (p.error) {
-      res.status(501).json(this.getBisqMarketErrorResponse(p.error));
+      res.status(400).json(this.getBisqMarketErrorResponse(p.error));
       return;
     }
 
@@ -283,7 +283,7 @@ class Routes {
 
     const p = this.parseRequestParameters(req, constraints);
     if (p.error) {
-      res.status(501).json(this.getBisqMarketErrorResponse(p.error));
+      res.status(400).json(this.getBisqMarketErrorResponse(p.error));
       return;
     }
 
@@ -298,7 +298,7 @@ class Routes {
   public getBisqMarketVolumes(req: Request, res: Response) {
     const constraints: RequiredSpec = {
       'market': {
-        required: true,
+        required: false,
         types: ['@string']
       },
       'interval': {
@@ -313,15 +313,19 @@ class Routes {
         required: false,
         types: ['@number']
       },
+      'milliseconds': {
+        required: false,
+        types: ['@boolean']
+      },
     };
 
     const p = this.parseRequestParameters(req, constraints);
     if (p.error) {
-      res.status(501).json(this.getBisqMarketErrorResponse(p.error));
+      res.status(400).json(this.getBisqMarketErrorResponse(p.error));
       return;
     }
 
-    const result = bisqMarket.getVolumes(p.timestamp_from, p.timestamp_to, p.interval, p.market);
+    const result = bisqMarket.getVolumes(p.market, p.timestamp_from, p.timestamp_to, p.interval, p.milliseconds);
     if (result) {
       res.json(result);
     } else {
@@ -355,7 +359,7 @@ class Routes {
 
     const p = this.parseRequestParameters(req, constraints);
     if (p.error) {
-      res.status(501).json(this.getBisqMarketErrorResponse(p.error));
+      res.status(400).json(this.getBisqMarketErrorResponse(p.error));
       return;
     }
 
@@ -377,11 +381,11 @@ class Routes {
 
     const p = this.parseRequestParameters(req, constraints);
     if (p.error) {
-      res.status(501).json(this.getBisqMarketErrorResponse(p.error));
+      res.status(400).json(this.getBisqMarketErrorResponse(p.error));
       return;
     }
 
-    const result = bisqMarket.getCurrencies(p.market);
+    const result = bisqMarket.getTicker(p.market);
     if (result) {
       res.json(result);
     } else {

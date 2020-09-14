@@ -234,8 +234,8 @@ export interface TradesData {
 
 export interface MarketVolume {
   period_start: number;
-  volume: string;
   num_trades: number;
+  volume: string;
 }
 
 export interface MarketsApiError {
@@ -244,3 +244,15 @@ export interface MarketsApiError {
 }
 
 export type Interval = 'minute' | 'half_hour' | 'hour' | 'half_day' | 'day' | 'week' | 'month' | 'year' | 'auto';
+
+export interface SummarizedIntervals { [market: string]: SummarizedInterval; }
+export interface SummarizedInterval {
+  'period_start': number;
+  'open': number;
+  'close': number;
+  'high': number;
+  'low': number;
+  'avg': number;
+  'volume_right': number;
+  'volume_left': number;
+}
