@@ -20,11 +20,13 @@ class BisqMarketsApi {
     this.tradesData = trades;
 
     // Handle data for smarter memory caching
+    this.fiatCurrenciesIndexed = {};
     this.fiatCurrencyData.forEach((currency) => {
       currency._type = 'fiat';
       this.fiatCurrenciesIndexed[currency.code] = true;
     });
     this.cryptoCurrencyData.forEach((currency) => currency._type = 'crypto');
+    this.tradeDataByMarket = {};
     this.tradesData.forEach((trade) => {
       trade._market = trade.currencyPair.toLowerCase().replace('/', '_');
       if (!this.tradeDataByMarket[trade._market]) {
