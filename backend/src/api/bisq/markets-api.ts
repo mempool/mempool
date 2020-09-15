@@ -172,7 +172,8 @@ class BisqMarketsApi {
         timestamp_to = new Date().getTime() / 1000;
       }
 
-      const matches = this.getTradesByCriteria(_market, timestamp_to, timestamp_from, trade_id_to, trade_id_from, direction, sort, limit);
+      const matches = this.getTradesByCriteria(_market, timestamp_to, timestamp_from,
+        trade_id_to, trade_id_from, direction, sort, limit, false);
 
       if (sort === 'asc') {
         matches.sort((a, b) => a.tradeDate - b.tradeDate);
