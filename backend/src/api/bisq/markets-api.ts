@@ -9,6 +9,7 @@ class BisqMarketsApi {
   private offersData: OffsersData[] = [];
   private tradesData: TradesData[] = [];
   private fiatCurrenciesIndexed: { [code: string]: true } = {};
+  private allCurrenciesIndexed: { [code: string]: Currency } = {};
   private tradeDataByMarket: { [market: string]: TradesData[] } = {};
 
   constructor() { }
@@ -21,11 +22,16 @@ class BisqMarketsApi {
 
     // Handle data for smarter memory caching
     this.fiatCurrenciesIndexed = {};
+    this.allCurrenciesIndexed = {};
     this.fiatCurrencyData.forEach((currency) => {
       currency._type = 'fiat';
       this.fiatCurrenciesIndexed[currency.code] = true;
+      this.allCurrenciesIndexed[currency.code] = currency;
     });
-    this.cryptoCurrencyData.forEach((currency) => currency._type = 'crypto');
+    this.cryptoCurrencyData.forEach((currency) => {
+       currency._type = 'crypto';
+       this.allCurrenciesIndexed[currency.code] = currency;
+    });
     this.tradeDataByMarket = {};
     this.tradesData.forEach((trade) => {
       trade._market = trade.currencyPair.toLowerCase().replace('/', '_');
@@ -97,14 +103,14 @@ class BisqMarketsApi {
       buys = this.offersData
         .filter((offer) => offer.currencyPair === currencyPair && offer.primaryMarketDirection === 'BUY')
         .sort((a, b) => b.price - a.price)
-        .map((offer) => this.offerDataToOffer(offer));
+        .map((offer) => this.offerDataToOffer(offer, market));
     }
 
     if (!direction || direction === 'sell') {
       sells = this.offersData
         .filter((offer) => offer.currencyPair === currencyPair && offer.primaryMarketDirection === 'SELL')
         .sort((a, b) => a.price - b.price)
-        .map((offer) => this.offerDataToOffer(offer));
+        .map((offer) => this.offerDataToOffer(offer, market));
     }
 
     const result: Offers = {};
@@ -592,15 +598,22 @@ class BisqMarketsApi {
     }
 }
 
-  private offerDataToOffer(offer: OffsersData): Offer {
+  private offerDataToOffer(offer: OffsersData, market: string): Offer {
+    const currencyPairs = market.split('_');
+    const currencyRight = this.allCurrenciesIndexed[currencyPairs[1].toUpperCase()];
+    const currencyLeft = this.allCurrenciesIndexed[currencyPairs[0].toUpperCase()];
+    const price = offer['primaryMarketPrice'] * Math.pow( 10, 8 - currencyRight['precision']);
+    const amount = offer['primaryMarketAmount'] * Math.pow( 10, 8 - currencyLeft['precision']);
+    const volume = offer['primaryMarketVolume'] * Math.pow( 10, 8 - currencyRight['precision']);
+
     return {
       offer_id: offer.id,
       offer_date: offer.date,
-      direction: offer.direction,
+      direction: offer.primaryMarketDirection,
       min_amount: this.intToBtc(offer.minAmount),
-      amount: this.intToBtc(offer.amount),
-      price: this.intToBtc(offer.price),
-      volume: this.intToBtc(offer.primaryMarketVolume),
+      amount: this.intToBtc(amount),
+      price: this.intToBtc(price),
+      volume: this.intToBtc(volume),
       payment_method: offer.paymentMethod,
       offer_fee_txid: null,
     };
