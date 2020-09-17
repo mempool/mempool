@@ -110,7 +110,7 @@ interface Market {
 }
 
 export interface HighLowOpenClose {
-  period_start: number;
+  period_start: number | string;
   open: string;
   high: string;
   low: string;

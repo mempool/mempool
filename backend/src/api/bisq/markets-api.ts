@@ -212,6 +212,7 @@ class BisqMarketsApi {
     timestamp_to?: number,
     interval: Interval = 'auto',
     milliseconds?: boolean,
+    timestamp: 'no' | 'yes' = 'yes',
   ): MarketVolume[] {
     if (milliseconds) {
       timestamp_from = timestamp_from ? timestamp_from / 1000 : timestamp_from;
@@ -256,7 +257,7 @@ class BisqMarketsApi {
       if (intervals.hasOwnProperty(p)) {
         const period = intervals[p];
         marketVolumes.push({
-          period_start: period['period_start'],
+          period_start: timestamp === 'no' ? new Date(period['period_start'] * 1000).toISOString() : period['period_start'],
           num_trades: period['num_trades'],
           volume: this.intToBtc(period['volume']),
         });
@@ -358,6 +359,7 @@ class BisqMarketsApi {
     timestamp_from?: number,
     timestamp_to?: number,
     milliseconds?: boolean,
+    timestamp: 'no' | 'yes' = 'yes',
   ): HighLowOpenClose[] {
     if (milliseconds) {
       timestamp_from = timestamp_from ? timestamp_from / 1000 : timestamp_from;
@@ -386,7 +388,7 @@ class BisqMarketsApi {
       if (intervals.hasOwnProperty(p)) {
         const period = intervals[p];
         hloc.push({
-          period_start: period['period_start'],
+          period_start: timestamp === 'no' ? new Date(period['period_start'] * 1000).toISOString() : period['period_start'],
           open: this.intToBtc(period['open']),
           close: this.intToBtc(period['close']),
           high: this.intToBtc(period['high']),
