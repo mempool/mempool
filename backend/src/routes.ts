@@ -317,6 +317,10 @@ class Routes {
         required: false,
         types: ['@boolean']
       },
+      'timestamp': {
+        required: false,
+        types: ['no', 'yes']
+      },
     };
 
     const p = this.parseRequestParameters(req, constraints);
@@ -325,7 +329,7 @@ class Routes {
       return;
     }
 
-    const result = bisqMarket.getVolumes(p.market, p.timestamp_from, p.timestamp_to, p.interval, p.milliseconds);
+    const result = bisqMarket.getVolumes(p.market, p.timestamp_from, p.timestamp_to, p.interval, p.milliseconds, p.timestamp);
     if (result) {
       res.json(result);
     } else {
@@ -355,6 +359,10 @@ class Routes {
         required: false,
         types: ['@boolean']
       },
+      'timestamp': {
+        required: false,
+        types: ['no', 'yes']
+      },
     };
 
     const p = this.parseRequestParameters(req, constraints);
@@ -363,7 +371,7 @@ class Routes {
       return;
     }
 
-    const result = bisqMarket.getHloc(p.market, p.interval, p.timestamp_from, p.timestamp_to, p.milliseconds);
+    const result = bisqMarket.getHloc(p.market, p.interval, p.timestamp_from, p.timestamp_to, p.milliseconds, p.timestamp);
     if (result) {
       res.json(result);
     } else {
