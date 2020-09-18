@@ -142,7 +142,7 @@ interface OffersMarket {
   sells: Offer[] | null;
 }
 
-export interface OffsersData {
+export interface OffersData {
   direction: string;
   currencyCode: string;
   minAmount: number;

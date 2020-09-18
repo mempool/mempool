@@ -1,9 +1,10 @@
 const config = require('../../../mempool-config.json');
 import * as fs from 'fs';
-import { OffsersData, TradesData, Currency } from './interfaces';
+import { OffersData as OffersData, TradesData, Currency } from './interfaces';
 import bisqMarket from './markets-api';
 
 class Bisq {
+  private static FOLDER_WATCH_CHANGE_DETECTION_DEBOUNCE = 4000;
   private static MARKET_JSON_PATH = config.BISQ_MARKETS_DATA_PATH + '/btc_mainnet/db';
   private static MARKET_JSON_FILE_PATHS = {
     cryptoCurrency: '/crypto_currency_list.json',
@@ -11,6 +12,11 @@ class Bisq {
     offers: '/offers_statistics.json',
     trades: '/trade_statistics.json',
   };
+
+  private cryptoCurrencyLastMtime = new Date('2016-01-01');
+  private fiatCurrencyLastMtime = new Date('2016-01-01');
+  private offersLastMtime = new Date('2016-01-01');
+  private tradesLastMtime = new Date('2016-01-01');
 
   private subdirectoryWatcher: fs.FSWatcher | undefined;
 
@@ -46,32 +52,61 @@ class Bisq {
       fsWait = setTimeout(() => {
         console.log(`Change detected in the Bisq market data folder.`);
         this.loadBisqDumpFile();
-      }, 2000);
+      }, Bisq.FOLDER_WATCH_CHANGE_DETECTION_DEBOUNCE);
     });
   }
 
   private async loadBisqDumpFile(): Promise<void> {
     const start = new Date().getTime();
-    console.log('Processing Bisq market data...');
     try {
-      const cryptoCurrencyData = await this.loadData<Currency[]>(Bisq.MARKET_JSON_FILE_PATHS.cryptoCurrency);
-      const fiatCurrencyData = await this.loadData<Currency[]>(Bisq.MARKET_JSON_FILE_PATHS.fiatCurrency);
-      const offersData = await this.loadData<OffsersData[]>(Bisq.MARKET_JSON_FILE_PATHS.offers);
-      const tradesData = await this.loadData<TradesData[]>(Bisq.MARKET_JSON_FILE_PATHS.trades);
-
-      bisqMarket.setData(cryptoCurrencyData, fiatCurrencyData, offersData, tradesData);
+      let marketsDataUpdated = false;
+      const cryptoMtime = this.getFileMtime(Bisq.MARKET_JSON_FILE_PATHS.cryptoCurrency);
+      const fiatMtime = this.getFileMtime(Bisq.MARKET_JSON_FILE_PATHS.fiatCurrency);
+      if (cryptoMtime > this.cryptoCurrencyLastMtime || fiatMtime > this.fiatCurrencyLastMtime) {
+        const cryptoCurrencyData = await this.loadData<Currency[]>(Bisq.MARKET_JSON_FILE_PATHS.cryptoCurrency);
+        const fiatCurrencyData = await this.loadData<Currency[]>(Bisq.MARKET_JSON_FILE_PATHS.fiatCurrency);
+        console.log('Updating Bisq Market Currency Data');
+        bisqMarket.setCurrencyData(cryptoCurrencyData, fiatCurrencyData);
+        if (cryptoMtime > this.cryptoCurrencyLastMtime) {
+          this.cryptoCurrencyLastMtime = cryptoMtime;
+        }
+        if (fiatMtime > this.fiatCurrencyLastMtime) {
+          this.fiatCurrencyLastMtime = fiatMtime;
+        }
+        marketsDataUpdated = true;
+      }
+      const offersMtime = this.getFileMtime(Bisq.MARKET_JSON_FILE_PATHS.offers);
+      if (offersMtime > this.offersLastMtime) {
+        const offersData = await this.loadData<OffersData[]>(Bisq.MARKET_JSON_FILE_PATHS.offers);
+        console.log('Updating Bisq Market Offers Data');
+        bisqMarket.setOffersData(offersData);
+        this.offersLastMtime = offersMtime;
+        marketsDataUpdated = true;
+      }
+      const tradesMtime = this.getFileMtime(Bisq.MARKET_JSON_FILE_PATHS.trades);
+      if (tradesMtime > this.tradesLastMtime) {
+        const tradesData = await this.loadData<TradesData[]>(Bisq.MARKET_JSON_FILE_PATHS.trades);
+        console.log('Updating Bisq Market Trades Data');
+        bisqMarket.setTradesData(tradesData);
+        this.tradesLastMtime = tradesMtime;
+        marketsDataUpdated = true;
+      }
       const time = new Date().getTime() - start;
-      console.log('Bisq market data processed in ' + time + ' ms');
+      if (marketsDataUpdated) {
+        console.log('Bisq market data updated in ' + time + ' ms');
+      }
     } catch (e) {
       console.log('loadBisqMarketDataDumpFile() error.', e.message);
     }
   }
 
+  private getFileMtime(path: string): Date {
+    const stats = fs.statSync(Bisq.MARKET_JSON_PATH + path);
+    return stats.mtime;
+  }
+
   private loadData<T>(path: string): Promise<T> {
     return new Promise((resolve, reject) => {
-      if (!fs.existsSync(Bisq.MARKET_JSON_PATH + path)) {
-        return reject(path + ` doesn't exist`);
-      }
       fs.readFile(Bisq.MARKET_JSON_PATH + path, 'utf8', (err, data) => {
         if (err) {
           reject(err);
