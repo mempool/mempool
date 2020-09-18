@@ -1,10 +1,17 @@
 #!/usr/local/bin/zsh -x
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:$HOME/bin
 
-[ -f $HOME/lock ] && exit 1
+if [ -f $HOME/lock ];then
+    echo "check lockfile"
+    exit 1
+fi
+
 touch $HOME/lock
 
-echo 'rebuilding mempool sites'|wall
+export NVM_DIR="$HOME/.nvm"
+source "$NVM_DIR/nvm.sh"
+
+echo 'upgrading mempool'|wall
 
 cd "$HOME/mempool"
 git pull --rebase origin master
