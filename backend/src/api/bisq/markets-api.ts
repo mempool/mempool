@@ -1,4 +1,4 @@
-import { Currencies, OffsersData, TradesData, Depth, Currency, Interval, HighLowOpenClose,
+import { Currencies, OffersData, TradesData, Depth, Currency, Interval, HighLowOpenClose,
   Markets, Offers, Offer, BisqTrade, MarketVolume, Tickers, Ticker, SummarizedIntervals, SummarizedInterval } from './interfaces';
 
 import * as datetime from 'locutus/php/datetime';
@@ -6,7 +6,7 @@ import * as datetime from 'locutus/php/datetime';
 class BisqMarketsApi {
   private cryptoCurrencyData: Currency[] = [];
   private fiatCurrencyData: Currency[] = [];
-  private offersData: OffsersData[] = [];
+  private offersData: OffersData[] = [];
   private tradesData: TradesData[] = [];
   private fiatCurrenciesIndexed: { [code: string]: true } = {};
   private allCurrenciesIndexed: { [code: string]: Currency } = {};
@@ -14,15 +14,30 @@ class BisqMarketsApi {
 
   constructor() { }
 
-  public setData(cryptoCurrency: Currency[], fiatCurrency: Currency[], offers: OffsersData[], trades: TradesData[]) {
+  setOffersData(offers: OffersData[]) {
+    this.offersData = offers;
+  }
+
+  setTradesData(trades: TradesData[]) {
+    this.tradesData = trades;
+    this.tradeDataByMarket = {};
+
+    this.tradesData.forEach((trade) => {
+      trade._market = trade.currencyPair.toLowerCase().replace('/', '_');
+      if (!this.tradeDataByMarket[trade._market]) {
+        this.tradeDataByMarket[trade._market] = [];
+      }
+      this.tradeDataByMarket[trade._market].push(trade);
+    });
+  }
+
+  setCurrencyData(cryptoCurrency: Currency[], fiatCurrency: Currency[]) {
     this.cryptoCurrencyData = cryptoCurrency,
     this.fiatCurrencyData = fiatCurrency;
-    this.offersData = offers;
-    this.tradesData = trades;
 
-    // Handle data for smarter memory caching
     this.fiatCurrenciesIndexed = {};
     this.allCurrenciesIndexed = {};
+
     this.fiatCurrencyData.forEach((currency) => {
       currency._type = 'fiat';
       this.fiatCurrenciesIndexed[currency.code] = true;
@@ -31,14 +46,6 @@ class BisqMarketsApi {
     this.cryptoCurrencyData.forEach((currency) => {
        currency._type = 'crypto';
        this.allCurrenciesIndexed[currency.code] = currency;
-    });
-    this.tradeDataByMarket = {};
-    this.tradesData.forEach((trade) => {
-      trade._market = trade.currencyPair.toLowerCase().replace('/', '_');
-      if (!this.tradeDataByMarket[trade._market]) {
-        this.tradeDataByMarket[trade._market] = [];
-      }
-      this.tradeDataByMarket[trade._market].push(trade);
     });
   }
 
@@ -600,7 +607,7 @@ class BisqMarketsApi {
     }
 }
 
-  private offerDataToOffer(offer: OffsersData, market: string): Offer {
+  private offerDataToOffer(offer: OffersData, market: string): Offer {
     const currencyPairs = market.split('_');
     const currencyRight = this.allCurrenciesIndexed[currencyPairs[1].toUpperCase()];
     const currencyLeft = this.allCurrenciesIndexed[currencyPairs[0].toUpperCase()];
