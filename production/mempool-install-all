@@ -10,13 +10,13 @@ do
     cp "../production/mempool-config.${site}.json" "mempool-config.json"
     touch cache.json
 
-    npm install
+    npm install --only=prod
     npm run build
 
     if [ "${site}" = "mainnet" ]
     then
         cd "${HOME}/${site}/frontend/"
-        npm install
+        npm install --only=prod
         npm run build
         rsync -av ./dist/mempool/* "${HOME}/public_html/${site}/"
     fi
