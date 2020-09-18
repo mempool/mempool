@@ -29,7 +29,7 @@ do
     npm run build
 done
 
-ps uaxw|grep 'node dist/index'|grep -v grep|awk '{print $2}'|xargs -n 1 kill
+ps uaxw|grep 'dist/index'|grep -v grep|awk '{print $2}'|xargs -n 1 kill
 
 hostname=$(hostname)
 keybase chat send --channel dev mempool "${hostname} updated to ${hash}"
