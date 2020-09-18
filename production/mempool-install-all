@@ -1,4 +1,6 @@
 #!/usr/local/bin/zsh
+export NVM_DIR="$HOME/.nvm"
+source "$NVM_DIR/nvm.sh"
 for site in mainnet liquid testnet bisq
 do
     git clone https://github.com/mempool/mempool "${HOME}/${site}"

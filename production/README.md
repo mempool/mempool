@@ -68,6 +68,16 @@ pkg install -y boost-libs autoconf automake gmake gcc libevent libtool pkgconf
 pkg install -y mariadb55-server mariadb55-client nginx py37-certbot-nginx npm
 ```
 
+### NodeJS / npm
+
+I recommend to build nodejs / npm from source using nvm:
+```
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | zsh
+source $HOME/.zshrc
+nvm install node
+nvm alias default node
+```
+
 ### Rust
 
 I recommend to build rust from latest source:
