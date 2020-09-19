@@ -271,7 +271,7 @@ class BisqMarketsApi {
       }
     }
 
-    return intervals;
+    return marketVolumes;
   }
 
   getTicker(
