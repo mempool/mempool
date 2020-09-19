@@ -11,6 +11,7 @@ class BisqMarketsApi {
   private fiatCurrenciesIndexed: { [code: string]: true } = {};
   private allCurrenciesIndexed: { [code: string]: Currency } = {};
   private tradeDataByMarket: { [market: string]: TradesData[] } = {};
+  private tickersCache: Ticker | Tickers | null = null;
 
   constructor() { }
 
@@ -47,6 +48,11 @@ class BisqMarketsApi {
        currency._type = 'crypto';
        this.allCurrenciesIndexed[currency.code] = currency;
     });
+  }
+
+  updateCache() {
+    this.tickersCache = null;
+    this.tickersCache = this.getTicker();
   }
 
   getCurrencies(
@@ -279,6 +285,10 @@ class BisqMarketsApi {
   ): Tickers | Ticker | null {
     if (market) {
       return this.getTickerFromMarket(market);
+    }
+
+    if (this.tickersCache) {
+      return this.tickersCache;
     }
 
     const allMarkets = this.getMarkets();

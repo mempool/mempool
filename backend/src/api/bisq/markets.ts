@@ -93,6 +93,7 @@ class Bisq {
       }
       const time = new Date().getTime() - start;
       if (marketsDataUpdated) {
+        bisqMarket.updateCache();
         console.log('Bisq market data updated in ' + time + ' ms');
       }
     } catch (e) {
