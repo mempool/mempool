@@ -124,17 +124,12 @@ daemon=1
 listen=1
 discover=1
 txindex=1
-par=16
 dbcache=3700
 maxconnections=1337
-timeout=30000
 onion=127.0.0.1:9050
 rpcallowip=127.0.0.1
 rpcuser=0cd862dce678b830bd2aa36f10b9b6b2
 rpcpassword=2d89d36cac4a13c87b5d19ef8f577e37
-rpcworkqueue=128
-rpcthreads=32
-rpctimeout=60
 
 [main]
 bind=127.0.0.1:8333
