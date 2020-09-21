@@ -6,6 +6,10 @@ li.nav-item {
   padding: 10px;
 }
 
+fa-icon {
+  font-size: 1.5em;
+}
+
 .navbar {
   z-index: 100;
 }
@@ -13,6 +17,9 @@ li.nav-item {
 @media (min-width: 768px) {
   .navbar {
     padding: 0rem 1rem;
+  }
+  fa-icon {
+    font-size: 1.2em;
   }
 }
 
