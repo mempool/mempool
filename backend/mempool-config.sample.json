@@ -14,6 +14,7 @@
   "INITIAL_BLOCK_AMOUNT": 8,
   "TX_PER_SECOND_SPAN_SECONDS": 150,
   "ELECTRS_API_URL": "http://localhost:50001",
+  "CLUSTER_NUM_CORES": 1,
   "BISQ_ENABLED": false,
   "BISQ_BLOCKS_DATA_PATH": "/bisq/seednode-data/btc_mainnet/db/json",
   "BISQ_MARKET_ENABLED": false,

@@ -505,7 +505,8 @@ class BisqMarketsApi {
     trade_id_to: string | undefined,
     trade_id_from: string | undefined,
     direction: 'buy' | 'sell' | undefined,
-    sort: string, limit: number,
+    sort: string,
+    limit: number,
     integerAmounts: boolean = true,
  ): TradesData[] {
     let trade_id_from_ts: number | null = null;
