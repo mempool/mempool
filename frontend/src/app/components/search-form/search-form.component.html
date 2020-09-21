@@ -1,6 +1,6 @@
-<form [formGroup]="searchForm" (submit)="searchForm.valid && search()" class="mr-4" novalidate>
-  <div class="form-row">
-    <div style="width: 350px;" class="mr-2">
+<form [formGroup]="searchForm" (submit)="searchForm.valid && search()" novalidate>
+  <div class="d-flex">
+    <div class="search-box-container mr-2">
       <input #instance="ngbTypeahead" [ngbTypeahead]="typeaheadSearch" (selectItem)="itemSelected()" (focus)="focus$.next($any($event).target.value)" (click)="click$.next($any($event).target.value)" formControlName="searchText" type="text" class="form-control" placeholder="Transaction, block height, hash or address">
     </div>
     <div>
