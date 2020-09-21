@@ -1,0 +1,51 @@
+<app-fees-box *ngIf="(network$ | async) === ''" class="d-block mr-2 ml-2 mb-5"></app-fees-box>
+
+<div class="container-xl">
+
+  <div class="row row-cols-1 row-cols-md-2" *ngIf="mempoolInfoData$ | async as mempoolInfoData">
+    <div class="col mb-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title mempoolSize">Mempool size</h5>
+          <p class="card-text" *ngIf="(mempoolBlocksData$ | async) as mempoolBlocksData">{{ mempoolBlocksData.size | bytes }} ({{ mempoolBlocksData.blocks }} block<span [hidden]="mempoolBlocksData.blocks <= 1">s</span>)</p>
+        </div>
+      </div>
+    </div>
+    <div class="col mb-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title unconfirmedTx">Unconfirmed transactions</h5>
+          <p class="card-text">{{ mempoolInfoData.memPoolInfo.size | number }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col mb-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title txWeightPerSecond">Tx weight per second</h5>
+            <span *ngIf="mempoolInfoData.vBytesPerSecond === 0; else inSync">
+              &nbsp;<span class="badge badge-pill badge-warning">Backend is synchronizing</span>
+            </span>
+            <ng-template #inSync>
+              <div class="progress sub-text">
+                <div class="progress-bar {{ mempoolInfoData.progressClass }}" style="padding: 4px;" role="progressbar" [ngStyle]="{'width': mempoolInfoData.progressWidth}">{{ mempoolInfoData.vBytesPerSecond | ceil | number }} vB/s</div>
+              </div>
+            </ng-template>
+        </div>
+      </div>
+    </div>
+    <div class="col mb-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title txPerSecond">Difficulty Epoch</h5>
+          <div class="progress" *ngIf="(difficultyEpoch$ | async) as epochData">
+            <div class="progress-bar" role="progressbar" style="width: 15%; background-color: #105fb0" [ngStyle]="{'width': epochData.base}"></div>
+            <div class="progress-bar bg-success" role="progressbar" style="width: 0%" [ngStyle]="{'width': epochData.green}"></div>
+            <div class="progress-bar bg-danger" role="progressbar" style="width: 1%; background-color: #f14d80;" [ngStyle]="{'width': epochData.red}"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -16,7 +16,6 @@ import { StateService } from './services/state.service';
 import { BlockComponent } from './components/block/block.component';
 import { AddressComponent } from './components/address/address.component';
 import { SearchFormComponent } from './components/search-form/search-form.component';
-import { LatestBlocksComponent } from './components/latest-blocks/latest-blocks.component';
 import { WebsocketService } from './services/websocket.service';
 import { AddressLabelsComponent } from './components/address-labels/address-labels.component';
 import { MempoolBlocksComponent } from './components/mempool-blocks/mempool-blocks.component';
@@ -41,6 +40,7 @@ import { MinerComponent } from './components/miner/miner.component';
 import { SharedModule } from './shared/shared.module';
 import { NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { FeesBoxComponent } from './components/fees-box/fees-box.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +58,6 @@ import { FeesBoxComponent } from './components/fees-box/fees-box.component';
     AddressComponent,
     AmountComponent,
     SearchFormComponent,
-    LatestBlocksComponent,
     TimespanComponent,
     AddressLabelsComponent,
     MempoolBlocksComponent,
@@ -72,6 +71,7 @@ import { FeesBoxComponent } from './components/fees-box/fees-box.component';
     MinerComponent,
     StatusViewComponent,
     FeesBoxComponent,
+    DashboardComponent,
   ],
   imports: [
     BrowserModule,

@@ -31,6 +31,7 @@ export class StateService {
   blockTransactions$ = new Subject<Transaction>();
   isLoadingWebSocket$ = new ReplaySubject<boolean>(1);
   vbytesPerSecond$ = new ReplaySubject<number>(1);
+  lastDifficultyAdjustment$ = new ReplaySubject<number>(1);
   gitCommit$ = new ReplaySubject<string>(1);
 
   live2Chart$ = new Subject<OptimizedMempoolStats>();

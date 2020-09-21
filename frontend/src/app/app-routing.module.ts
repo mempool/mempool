@@ -9,10 +9,10 @@ import { AboutComponent } from './components/about/about.component';
 import { TelevisionComponent } from './components/television/television.component';
 import { StatisticsComponent } from './components/statistics/statistics.component';
 import { MempoolBlockComponent } from './components/mempool-block/mempool-block.component';
-import { LatestBlocksComponent } from './components/latest-blocks/latest-blocks.component';
 import { AssetComponent } from './components/asset/asset.component';
 import { AssetsComponent } from './assets/assets.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 const routes: Routes = [
   {
@@ -25,7 +25,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            component: LatestBlocksComponent
+            component: DashboardComponent,
           },
           {
             path: 'tx/:id',
@@ -69,7 +69,7 @@ const routes: Routes = [
             children: [
               {
                 path: '',
-                component: LatestBlocksComponent
+                component: DashboardComponent
               },
               {
                 path: 'tx/:id',
@@ -134,7 +134,7 @@ const routes: Routes = [
             children: [
               {
                 path: '',
-                component: LatestBlocksComponent
+                component: DashboardComponent
               },
               {
                 path: 'tx/:id',

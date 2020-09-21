@@ -48,7 +48,7 @@ export class AddressComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
-    this.websocketService.want(['blocks', 'stats', 'mempool-blocks']);
+    this.websocketService.want(['blocks', 'mempool-blocks']);
 
     this.mainSubscription = this.route.paramMap
       .pipe(
