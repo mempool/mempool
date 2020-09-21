@@ -16,6 +16,7 @@ import { StateService } from './services/state.service';
 import { BlockComponent } from './components/block/block.component';
 import { AddressComponent } from './components/address/address.component';
 import { SearchFormComponent } from './components/search-form/search-form.component';
+import { LatestBlocksComponent } from './components/latest-blocks/latest-blocks.component';
 import { WebsocketService } from './services/websocket.service';
 import { AddressLabelsComponent } from './components/address-labels/address-labels.component';
 import { MempoolBlocksComponent } from './components/mempool-blocks/mempool-blocks.component';
@@ -41,6 +42,8 @@ import { SharedModule } from './shared/shared.module';
 import { NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { FeesBoxComponent } from './components/fees-box/fees-box.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { faChartArea, faCube, faDatabase, faInfo, faInfoCircle, faList, faQuestion, faQuestionCircle, faTachometerAlt, faThList, faTv } from '@fortawesome/free-solid-svg-icons';
 
 @NgModule({
   declarations: [
@@ -57,6 +60,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     TransactionsListComponent,
     AddressComponent,
     AmountComponent,
+    LatestBlocksComponent,
     SearchFormComponent,
     TimespanComponent,
     AddressLabelsComponent,
@@ -80,6 +84,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     BrowserAnimationsModule,
     InfiniteScrollModule,
     NgbTypeaheadModule,
+    FontAwesomeModule,
     SharedModule,
   ],
   providers: [
@@ -91,4 +96,15 @@ import { DashboardComponent } from './dashboard/dashboard.component';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+  constructor(library: FaIconLibrary) {
+    library.addIcons(faInfoCircle);
+    library.addIcons(faChartArea);
+    library.addIcons(faTv);
+    library.addIcons(faCube);
+    library.addIcons(faThList);
+    library.addIcons(faList);
+    library.addIcons(faTachometerAlt);
+    library.addIcons(faDatabase);
+  }
+}

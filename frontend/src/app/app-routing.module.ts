@@ -13,6 +13,7 @@ import { AssetComponent } from './components/asset/asset.component';
 import { AssetsComponent } from './assets/assets.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { LatestBlocksComponent } from './components/latest-blocks/latest-blocks.component';
 
 const routes: Routes = [
   {
@@ -40,6 +41,10 @@ const routes: Routes = [
             component: MempoolBlockComponent
           },
         ],
+      },
+      {
+        path: 'blocks',
+        component: LatestBlocksComponent,
       },
       {
         path: 'graphs',
@@ -84,6 +89,10 @@ const routes: Routes = [
                 component: MempoolBlockComponent
               },
             ],
+          },
+          {
+            path: 'blocks',
+            component: LatestBlocksComponent,
           },
           {
             path: 'graphs',
@@ -149,6 +158,10 @@ const routes: Routes = [
                 component: MempoolBlockComponent
               },
             ],
+          },
+          {
+            path: 'blocks',
+            component: LatestBlocksComponent,
           },
           {
             path: 'graphs',
