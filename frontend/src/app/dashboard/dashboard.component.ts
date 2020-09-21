@@ -13,6 +13,7 @@ interface EpochProgress {
   base: string;
   green: string;
   red: string;
+  change: number;
 }
 
 interface MempoolInfoData {
@@ -77,6 +78,7 @@ export class DashboardComponent implements OnInit {
         const diff = now - DATime;
         const blocksInEpoch = block.height % 2016;
         const estimatedBlocks = Math.round(diff / 60 / 10);
+        const difficultyChange = blocksInEpoch / (diff / 60 / 10) - 1;
 
         let base = 0;
         let green = 0;
@@ -94,6 +96,7 @@ export class DashboardComponent implements OnInit {
           base: base + '%',
           green: green + '%',
           red: red + '%',
+          change: difficultyChange,
         };
       })
     );
