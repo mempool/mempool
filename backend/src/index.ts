@@ -7,7 +7,6 @@ import * as http from 'http';
 import * as https from 'https';
 import * as WebSocket from 'ws';
 import * as cluster from 'cluster';
-import * as os from 'os';
 
 import { checkDbConnection } from './database';
 import routes from './routes';

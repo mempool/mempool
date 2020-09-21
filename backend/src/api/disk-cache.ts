@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as cluster from 'cluster';
 import memPool from './mempool';
 import blocks from './blocks';
 
@@ -6,15 +7,17 @@ class DiskCache {
   static FILE_NAME = './cache.json';
 
   constructor() {
-    process.on('SIGINT', () => {
-      this.saveCacheToDisk();
-      process.exit(2);
-    });
+    if (cluster.isMaster) {
+      process.on('SIGINT', () => {
+        this.saveCacheToDisk();
+        process.exit(2);
+      });
 
-    process.on('SIGTERM', () => {
-      this.saveCacheToDisk();
-      process.exit(2);
-    });
+      process.on('SIGTERM', () => {
+        this.saveCacheToDisk();
+        process.exit(2);
+      });
+    }
   }
 
   saveCacheToDisk() {
