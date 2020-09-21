@@ -2,10 +2,6 @@ li.nav-item.active {
   background-color: #653b9c;
 }
 
-li.nav-item {
-  padding: 10px;
-}
-
 fa-icon {
   font-size: 1.5em;
 }
@@ -14,17 +10,24 @@ fa-icon {
   z-index: 100;
 }
 
+li.nav-item {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
 @media (min-width: 768px) {
   .navbar {
-    padding: 0rem 1rem;
+    padding: 0rem 2rem;
   }
   fa-icon {
     font-size: 1.2em;
   }
-}
-
-.logo {
-  margin-left: 30px;
+  .dropdown-container {
+    margin-right: 16px;
+  }
+  li.nav-item {
+    padding: 10px;
+  }
 }
 
 li.nav-item a {

@@ -9,8 +9,7 @@
     </ng-container>
   </a>
 
-
-  <div ngbDropdown display="dynamic" style="margin-right: 16px;" *ngIf="env.TESTNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED">
+  <div ngbDropdown display="dynamic" class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED">
     <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split" aria-haspopup="true">
       <img src="./resources/{{ network.val === '' ? 'bitcoin' : network.val }}-logo.png" style="width: 25px; height: 25px;" class="mr-1">
     </button>
