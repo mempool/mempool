@@ -141,6 +141,10 @@ export class WebsocketService {
           this.stateService.vbytesPerSecond$.next(response.vBytesPerSecond);
         }
 
+        if (response.lastDifficultyAdjustment !== undefined) {
+          this.stateService.lastDifficultyAdjustment$.next(response.lastDifficultyAdjustment);
+        }
+
         if (response['git-commit']) {
           this.stateService.gitCommit$.next(response['git-commit']);
         }

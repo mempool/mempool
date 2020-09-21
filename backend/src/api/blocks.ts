@@ -7,6 +7,7 @@ import { Common } from './common';
 class Blocks {
   private blocks: Block[] = [];
   private currentBlockHeight = 0;
+  private lastDifficultyAdjustmentTime = 0;
   private newBlockCallback: ((block: Block, txIds: string[], transactions: TransactionExtended[]) => void) | undefined;
 
   constructor() { }
@@ -36,6 +37,13 @@ class Blocks {
       if (blockHeightTip - this.currentBlockHeight > config.INITIAL_BLOCK_AMOUNT * 2) {
         console.log(`${blockHeightTip - this.currentBlockHeight} blocks since tip. Fast forwarding to the ${config.INITIAL_BLOCK_AMOUNT} recent blocks`);
         this.currentBlockHeight = blockHeightTip - config.INITIAL_BLOCK_AMOUNT;
+      }
+
+      if (!this.lastDifficultyAdjustmentTime) {
+        const heightDiff = blockHeightTip % 2016;
+        const blockHash = await bitcoinApi.getBlockHash(blockHeightTip - heightDiff);
+        const block = await bitcoinApi.getBlock(blockHash);
+        this.lastDifficultyAdjustmentTime = block.timestamp;
       }
 
       while (this.currentBlockHeight < blockHeightTip) {
@@ -78,6 +86,10 @@ class Blocks {
         block.medianFee = transactions.length > 1 ? Common.median(transactions.map((tx) => tx.feePerVsize)) : 0;
         block.feeRange = transactions.length > 1 ? Common.getFeesInRange(transactions.slice(0, transactions.length - 1), 8) : [0, 0];
 
+        if (block.height % 2016 === 0) {
+          this.lastDifficultyAdjustmentTime = block.timestamp;
+        }
+
         this.blocks.push(block);
         if (this.blocks.length > config.KEEP_BLOCK_AMOUNT) {
           this.blocks.shift();
@@ -91,6 +103,10 @@ class Blocks {
     } catch (err) {
       console.log('updateBlocks error', err);
     }
+  }
+
+  public getLastDifficultyAdjustmentTime(): number {
+    return this.lastDifficultyAdjustmentTime;
   }
 
   private stripCoinbaseTransaction(tx: TransactionExtended): TransactionMinerInfo {

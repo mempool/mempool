@@ -8,6 +8,7 @@ export interface WebsocketResponse {
   historicalDate?: string;
   mempoolInfo?: MempoolInfo;
   vBytesPerSecond?: number;
+  lastDifficultyAdjustment?: number;
   action?: string;
   data?: string[];
   tx?: Transaction;
@@ -31,8 +32,4 @@ export interface MempoolBlock {
 export interface MempoolInfo {
   size: number;
   bytes: number;
-  usage?: number;
-  maxmempool?: number;
-  mempoolminfee?: number;
-  minrelaytxfee?: number;
 }

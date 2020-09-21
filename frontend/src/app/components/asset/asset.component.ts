@@ -53,7 +53,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.websocketService.want(['blocks', 'stats', 'mempool-blocks']);
+    this.websocketService.want(['blocks', 'mempool-blocks']);
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     this.mainSubscription = this.route.paramMap

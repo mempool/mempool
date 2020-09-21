@@ -1,0 +1,36 @@
+.card {
+  background-color: #1d1f31;
+}
+
+.txWeightPerSecond {
+  color: #4a9ff4;
+}
+
+.mempoolSize {
+  color: #4a68b9;
+}
+
+.txPerSecond {
+  color: #f4bb4a;;
+}
+
+.unconfirmedTx {
+  color: #f14d80;
+}
+
+.info-block {
+  float: left;
+  width: 350px;
+  line-height: 25px;
+}
+
+.progress {
+  display: inline-flex;
+  width: 250px;
+  background-color: #2d3348;
+  height: 1.1rem;
+}
+
+.bg-warning {
+  background-color: #b58800 !important;
+}
