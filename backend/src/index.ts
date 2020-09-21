@@ -6,6 +6,8 @@ import * as compression from 'compression';
 import * as http from 'http';
 import * as https from 'https';
 import * as WebSocket from 'ws';
+import * as cluster from 'cluster';
+import * as os from 'os';
 
 import { checkDbConnection } from './database';
 import routes from './routes';
@@ -19,13 +21,36 @@ import bisq from './api/bisq/bisq';
 import bisqMarkets from './api/bisq/markets';
 
 class Server {
-  wss: WebSocket.Server;
-  server: https.Server | http.Server;
-  app: Express;
+  private wss: WebSocket.Server | undefined;
+  private server: https.Server | http.Server | undefined;
+  private app: Express;
 
   constructor() {
     this.app = express();
 
+    if (!config.CLUSTER_NUM_CORES || config.CLUSTER_NUM_CORES === 1) {
+      this.startServer();
+      return;
+    }
+
+    if (cluster.isMaster) {
+      console.log(`Mempool Server is running on port ${config.HTTP_PORT}`);
+
+      const numCPUs = config.CLUSTER_NUM_CORES;
+      for (let i = 0; i < numCPUs; i++) {
+        cluster.fork();
+      }
+
+      cluster.on('exit', (worker, code, signal) => {
+        console.log(`Mempool Worker #${worker.process.pid} died. Restarting...`, signal || code);
+        cluster.fork();
+      });
+    } else {
+      this.startServer(true);
+    }
+  }
+
+  startServer(worker = false) {
     this.app
       .use((req: Request, res: Response, next: NextFunction) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
@@ -67,7 +92,11 @@ class Server {
     }
 
     this.server.listen(config.HTTP_PORT, () => {
-      console.log(`Server started on port ${config.HTTP_PORT}`);
+      if (worker) {
+        console.log(`Mempool Server worker #${process.pid} started`);
+      } else {
+        console.log(`Mempool Server is running on port ${config.HTTP_PORT}`);
+      }
     });
   }
 
@@ -79,7 +108,9 @@ class Server {
   }
 
   setUpWebsocketHandling() {
-    websocketHandler.setWebsocketServer(this.wss);
+    if (this.wss) {
+      websocketHandler.setWebsocketServer(this.wss);
+    }
     websocketHandler.setupConnectionHandling();
     statistics.setNewStatisticsEntryCallback(websocketHandler.handleNewStatistic.bind(websocketHandler));
     blocks.setNewBlockCallback(websocketHandler.handleNewBlock.bind(websocketHandler));
