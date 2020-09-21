@@ -41,8 +41,8 @@ class Server {
       }
 
       cluster.on('exit', (worker, code, signal) => {
-        console.log(`Mempool Worker #${worker.process.pid} died. Restarting...`, signal || code);
-        cluster.fork();
+        console.log(`Mempool Worker #${worker.process.pid} died. Restarting in 10 seconds...`, signal || code);
+        setTimeout(() => { cluster.fork(); }, 10000);
       });
     } else {
       this.startServer(true);
