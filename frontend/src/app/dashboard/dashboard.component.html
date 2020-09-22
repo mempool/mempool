@@ -34,7 +34,7 @@
         </div>
       </div>
     </div>
-    <div class="col mb-4">
+    <div class="col mb-4" *ngIf="(network$ | async) !== 'liquid'">
       <div class="card text-center">
         <div class="card-body">
           <h5 class="card-title txPerSecond">Difficulty epoch</h5>
