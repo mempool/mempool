@@ -37,9 +37,9 @@
     <div class="col mb-4">
       <div class="card text-center">
         <div class="card-body">
-          <h5 class="card-title txPerSecond">Difficulty Epoch</h5>
+          <h5 class="card-title txPerSecond">Difficulty epoch</h5>
           <div class="progress" *ngIf="(difficultyEpoch$ | async) as epochData">
-            <div class="progress-bar" role="progressbar" style="width: 15%; background-color: #105fb0" [ngStyle]="{'width': epochData.base}"><ng-template [ngIf]="epochData.change > 0">+</ng-template>{{ epochData.change | number: '1.2-2' }}%</div>
+            <div class="progress-bar" role="progressbar" style="width: 15%; background-color: #105fb0" [ngStyle]="{'width': epochData.base}"><ng-template [ngIf]="epochData.change > 0">+</ng-template>{{ epochData.change | number: '1.0-2' }}%</div>
             <div class="progress-bar bg-success" role="progressbar" style="width: 0%" [ngStyle]="{'width': epochData.green}"></div>
             <div class="progress-bar bg-danger" role="progressbar" style="width: 1%; background-color: #f14d80;" [ngStyle]="{'width': epochData.red}"></div>
           </div>

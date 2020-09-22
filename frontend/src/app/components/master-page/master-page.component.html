@@ -45,7 +45,7 @@
         <li class="nav-item" routerLinkActive="active">
           <a class="nav-link" [routerLink]="['/graphs' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'chart-area']" [fixedWidth]="true" title="Graphs"></fa-icon></a>
         </li>
-        <li class="nav-item" routerLinkActive="active">
+        <li class="nav-item d-none d-sm-block" routerLinkActive="active">
           <a class="nav-link" [routerLink]="['/tv' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'tv']" [fixedWidth]="true" title="Full screen TV view"></fa-icon></a>
         </li>
       </ng-template>
