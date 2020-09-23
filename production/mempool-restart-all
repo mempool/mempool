@@ -1,0 +1,5 @@
+#!/usr/bin/env zsh
+
+ps uaxw|grep 'dist/index'|grep -v grep|awk '{print $2}'|xargs -n 1 kill
+
+exit 0
