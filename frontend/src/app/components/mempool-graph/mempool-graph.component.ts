@@ -17,6 +17,8 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   mempoolVsizeFeesOptions: any;
   mempoolVsizeFeesData: any;
 
+  isMobile = window.innerWidth <= 767.98;
+
   constructor(
     private vbytesPipe: VbytesPipe,
     private stateService: StateService,
@@ -56,7 +58,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         labelInterpolationFnc: (value: number): any => {
           return this.vbytesPipe.transform(value, 2);
         },
-        offset: 160
+        offset: this.isMobile ? 60 : 160
       },
       plugins: [
         Chartist.plugins.ctTargetLine({

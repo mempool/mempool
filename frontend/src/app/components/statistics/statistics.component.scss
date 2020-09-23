@@ -14,3 +14,13 @@
   height: 22px;
   margin-right: 10px;
 }
+
+@media (max-width: 767.98px) {
+ .container-xl {
+    padding: 0;
+  }
+  .card-body {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
