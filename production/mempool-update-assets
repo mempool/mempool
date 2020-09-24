@@ -1,0 +1,7 @@
+#!/usr/bin/env zsh
+set -e
+
+wget -O /mempool/public_html/mainnet/resources/assets.json https://raw.githubusercontent.com/mempool/asset_registry_db/master/index.json
+wget -O /mempool/public_html/mainnet/resources/assets.minimal.json https://raw.githubusercontent.com/mempool/asset_registry_db/master/index.minimal.json
+
+exit 0
