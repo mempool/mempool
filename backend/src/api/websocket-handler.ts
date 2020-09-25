@@ -88,6 +88,7 @@ class WebsocketHandler {
               'blocks': _blocks.slice(Math.max(_blocks.length - config.INITIAL_BLOCK_AMOUNT, 0)),
               'conversions': fiatConversion.getTickers()['BTCUSD'],
               'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
+              'transactions': memPool.getLatestTransactions(),
               'git-commit': backendInfo.gitCommitHash,
               'hostname': backendInfo.hostname,
               ...this.extraInitProperties
@@ -150,6 +151,7 @@ class WebsocketHandler {
       if (client['want-stats']) {
         response['mempoolInfo'] = mempoolInfo;
         response['vBytesPerSecond'] = vBytesPerSecond;
+        response['transactions'] = newTransactions.splice(0, 6).map((tx) => Common.stripTransaction(tx));
       }
 
       if (client['want-mempool-blocks']) {

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject, fromEvent } from 'rxjs';
 import { Block, Transaction } from '../interfaces/electrs.interface';
-import { MempoolBlock, MempoolInfo } from '../interfaces/websocket.interface';
+import { MempoolBlock, MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
 import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { env } from '../app.constants';
@@ -22,6 +22,7 @@ export class StateService {
 
   networkChanged$ = new ReplaySubject<string>(1);
   blocks$ = new ReplaySubject<[Block, boolean]>(env.KEEP_BLOCKS_AMOUNT);
+  transactions$ = new ReplaySubject<TransactionStripped>(6);
   conversions$ = new ReplaySubject<any>(1);
   bsqPrice$ = new ReplaySubject<number>(1);
   mempoolInfo$ = new ReplaySubject<MempoolInfo>(1);
