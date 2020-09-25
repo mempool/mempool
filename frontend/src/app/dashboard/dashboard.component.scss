@@ -2,20 +2,8 @@
   background-color: #1d1f31;
 }
 
-.txWeightPerSecond {
-  color: #4a9ff4;
-}
-
-.mempoolSize {
+.card-title {
   color: #4a68b9;
-}
-
-.txPerSecond {
-  color: #f4bb4a;;
-}
-
-.unconfirmedTx {
-  color: #f14d80;
 }
 
 .info-block {
@@ -37,4 +25,8 @@
 
 .skeleton-loader {
   width: 200px;
+}
+
+.card-body {
+  padding: 1.5rem;
 }
