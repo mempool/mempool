@@ -1,6 +1,7 @@
 const config = require('../../mempool-config.json');
 import bitcoinApi from './bitcoin/electrs-api';
 import { MempoolInfo, TransactionExtended, Transaction, VbytesPerSecond } from '../interfaces';
+import { Common } from './common';
 
 class Mempool {
   private inSync: boolean = false;
@@ -15,6 +16,7 @@ class Mempool {
   private vBytesPerSecondArray: VbytesPerSecond[] = [];
   private vBytesPerSecond: number = 0;
   private mempoolProtection = 0;
+  private latestTransactions: any[] = [];
 
   constructor() {
     setInterval(this.updateTxPerSecond.bind(this), 1000);
@@ -22,6 +24,10 @@ class Mempool {
 
   public isInSync() {
     return this.inSync;
+  }
+
+  public getLatestTransactions() {
+    return this.latestTransactions;
   }
 
   public setMempoolChangedCallback(fn: (newMempool: { [txId: string]: TransactionExtended; },
@@ -158,6 +164,9 @@ class Mempool {
       } else {
         newMempool = this.mempoolCache;
       }
+
+      const newTransactionsStripped = newTransactions.map((tx) => Common.stripTransaction(tx));
+      this.latestTransactions = newTransactionsStripped.concat(this.latestTransactions).slice(0, 6);
 
       if (!this.inSync && transactions.length === Object.keys(newMempool).length) {
         this.inSync = true;

@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { combineLatest, merge, Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { MempoolInfo } from '../interfaces/websocket.interface';
+import { map, reduce, scan, tap } from 'rxjs/operators';
+import { Block } from '../interfaces/electrs.interface';
+import { MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
 import { StateService } from '../services/state.service';
 
 interface MempoolBlocksData {
@@ -32,10 +33,12 @@ interface MempoolInfoData {
 export class DashboardComponent implements OnInit {
   network$: Observable<string>;
   mempoolBlocksData$: Observable<MempoolBlocksData>;
-  latestBlockHeight$: Observable<number>;
   mempoolInfoData$: Observable<MempoolInfoData>;
   difficultyEpoch$: Observable<EpochProgress>;
   vBytesPerSecondLimit = 1667;
+  blocks$: Observable<Block[]>;
+  transactions$: Observable<TransactionStripped[]>;
+  latestBlockHeight: number;
 
   constructor(
     private stateService: StateService,
@@ -113,5 +116,30 @@ export class DashboardComponent implements OnInit {
           };
         })
       );
+
+    this.blocks$ = this.stateService.blocks$
+      .pipe(
+        tap(([block]) => {
+          this.latestBlockHeight = block.height;
+        }),
+        scan((acc, [block]) => {
+          acc.unshift(block);
+          return acc;
+        }, []),
+        map((blocks) => blocks.slice(0, 6)),
+      );
+
+    this.transactions$ = this.stateService.transactions$
+      .pipe(
+        scan((acc, tx) => {
+          acc.unshift(tx);
+          return acc;
+        }, []),
+        map((txs) => txs.slice(0, 6)),
+      );
+  }
+
+  trackByBlock(index: number, block: Block) {
+    return block.height;
   }
 }

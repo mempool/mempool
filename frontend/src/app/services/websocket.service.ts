@@ -101,6 +101,10 @@ export class WebsocketService {
           this.stateService.mempoolBlocks$.next(response['mempool-blocks']);
         }
 
+        if (response.transactions) {
+          response.transactions.forEach((tx) => this.stateService.transactions$.next(tx));
+        }
+
         if (response['bsq-price']) {
           this.stateService.bsqPrice$.next(response['bsq-price']);
         }

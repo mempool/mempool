@@ -52,6 +52,13 @@ export interface TransactionExtended extends Transaction {
   firstSeen: number;
 }
 
+export interface TransactionStripped {
+  txid: string;
+  fee: number;
+  weight: number;
+  value: number;
+}
+
 export interface Vin {
   txid: string;
   vout: number;

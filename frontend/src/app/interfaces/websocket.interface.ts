@@ -13,6 +13,7 @@ export interface WebsocketResponse {
   data?: string[];
   tx?: Transaction;
   rbfTransaction?: Transaction;
+  transactions?: TransactionStripped[];
   'track-tx'?: string;
   'track-address'?: string;
   'track-asset'?: string;
@@ -33,3 +34,11 @@ export interface MempoolInfo {
   size: number;
   bytes: number;
 }
+
+export interface TransactionStripped {
+  txid: string;
+  fee: number;
+  weight: number;
+  value: number;
+}
+
