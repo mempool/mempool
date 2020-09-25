@@ -51,6 +51,28 @@
     <div class="col mb-4">
       <div class="card text-center">
         <div class="card-body">
+          <h5 class="card-title txWeightPerSecond">Latest transactions</h5>
+          <table class="table table-borderless text-left">
+            <thead>
+              <th style="width: 25%;">TXID</th>
+              <th style="width: 50%;" class="text-right">Amount (BTC)</th>
+              <th style="width: 25%;" class="text-right">Fee</th>
+            </thead>
+            <tbody>
+              <tr *ngFor="let transaction of transactions$ | async; let i = index;">
+                <td><a [routerLink]="['/tx' | relativeUrl, transaction.txid]">{{ transaction.txid | shortenString : 12 }}</a></td>
+                <td class="text-right"><app-amount [satoshis]="transaction.value" digitsInfo="1.2-2" [noFiat]="true"></app-amount> (<app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat>)</td>
+                <td class="text-right">{{ transaction.fee / (transaction.weight / 4) | number : '1.1-1' }} sat/vB</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="text-center">&nbsp;</div>
+        </div>
+      </div>
+    </div>
+    <div class="col mb-4">
+      <div class="card text-center">
+        <div class="card-body">
           <h5 class="card-title txWeightPerSecond">Latest blocks</h5>
           <table class="table table-borderless text-left">
             <thead>
@@ -74,28 +96,6 @@
             </tbody>
           </table>
           <div class="text-center"><a href="" [routerLink]="['/blocks' | relativeUrl]">View all &raquo;</a></div>
-        </div>
-      </div>
-    </div>
-    <div class="col mb-4">
-      <div class="card text-center">
-        <div class="card-body">
-          <h5 class="card-title txWeightPerSecond">Latest transactions</h5>
-          <table class="table table-borderless text-left">
-            <thead>
-              <th style="width: 25%;">TXID</th>
-              <th style="width: 50%;" class="text-right">Amount (BTC)</th>
-              <th style="width: 25%;" class="text-right">Fee</th>
-            </thead>
-            <tbody>
-              <tr *ngFor="let transaction of transactions$ | async; let i = index;">
-                <td><a [routerLink]="['/tx' | relativeUrl, transaction.txid]">{{ transaction.txid | shortenString : 12 }}</a></td>
-                <td class="text-right"><app-amount [satoshis]="transaction.value" digitsInfo="1.2-2" [noFiat]="true"></app-amount> (<app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat>)</td>
-                <td class="text-right">{{ transaction.fee / (transaction.weight / 4) | number : '1.1-1' }} sat/vB</td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="text-center">&nbsp;</div>
         </div>
       </div>
     </div>
