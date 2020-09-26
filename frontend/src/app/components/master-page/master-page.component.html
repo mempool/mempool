@@ -5,7 +5,7 @@
     <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
       <img src="./resources/mempool-logo.png" height="35" width="140" class="logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }">
       <div class="badge badge-warning connection-badge" *ngIf="connectionState.val === 0">Offline</div>
-      <div class="badge badge-warning connection-badge" style="left: 30px;" *ngIf="connectionState.val === 1">Reconnecting...</div>
+      <div class="badge badge-warning connection-badge" style="left: 0px;" *ngIf="connectionState.val === 1">Reconnecting...</div>
     </ng-container>
   </a>
 
