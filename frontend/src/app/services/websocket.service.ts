@@ -216,6 +216,9 @@ export class WebsocketService {
   }
 
   want(data: string[]) {
+    if (data === this.lastWant) {
+      return;
+    }
     this.websocketSubject.next({action: 'want', data: data});
     this.lastWant = data;
   }

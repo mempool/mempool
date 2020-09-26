@@ -6,6 +6,7 @@ import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
 import { env } from 'src/app/app.constants';
+import { WebsocketService } from 'src/app/services/websocket.service';
 
 @Component({
   selector: 'app-mempool-block',
@@ -23,9 +24,12 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private stateService: StateService,
     private seoService: SeoService,
+    private websocketService: WebsocketService,
   ) { }
 
   ngOnInit(): void {
+    this.websocketService.want(['blocks', 'mempool-blocks']);
+
     this.mempoolBlock$ = this.route.paramMap
       .pipe(
         switchMap((params: ParamMap) => {

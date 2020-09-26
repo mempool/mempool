@@ -1,9 +1,14 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
 import { combineLatest, merge, Observable, of } from 'rxjs';
-import { map, reduce, scan, tap } from 'rxjs/operators';
+import { map, scan, switchMap, take, tap } from 'rxjs/operators';
 import { Block } from '../interfaces/electrs.interface';
+import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
+import { ApiService } from '../services/api.service';
 import { StateService } from '../services/state.service';
+import * as Chartist from 'chartist';
+import { formatDate } from '@angular/common';
+import { WebsocketService } from '../services/websocket.service';
 
 interface MempoolBlocksData {
   blocks: number;
@@ -24,6 +29,11 @@ interface MempoolInfoData {
   progressClass: string;
 }
 
+interface MempoolStatsData {
+  mempool: OptimizedMempoolStats[];
+  weightPerSecond: any;
+}
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -39,12 +49,19 @@ export class DashboardComponent implements OnInit {
   blocks$: Observable<Block[]>;
   transactions$: Observable<TransactionStripped[]>;
   latestBlockHeight: number;
+  mempoolTransactionsWeightPerSecondData: any;
+  mempoolStats$: Observable<MempoolStatsData>;
+  transactionsWeightPerSecondOptions: any;
 
   constructor(
+    @Inject(LOCALE_ID) private locale: string,
     private stateService: StateService,
+    private apiService: ApiService,
+    private websocketService: WebsocketService,
   ) { }
 
   ngOnInit(): void {
+    this.websocketService.want(['blocks', 'stats', 'mempool-blocks', 'live-2h-chart']);
     this.network$ = merge(of(''), this.stateService.networkChanged$);
 
     this.mempoolInfoData$ = combineLatest([
@@ -137,6 +154,59 @@ export class DashboardComponent implements OnInit {
         }, []),
         map((txs) => txs.slice(0, 6)),
       );
+
+    this.mempoolStats$ = this.apiService.list2HStatistics$()
+      .pipe(
+        switchMap((mempoolStats) => {
+          return merge(
+            this.stateService.live2Chart$
+              .pipe(
+                scan((acc, stats) => {
+                  acc.unshift(stats);
+                  acc = acc.slice(0, acc.length - 1);
+                  return acc;
+                }, mempoolStats)
+              ),
+            of(mempoolStats)
+          );
+        }),
+        map((mempoolStats) => {
+          return {
+            mempool: mempoolStats,
+            weightPerSecond: this.handleNewMempoolData(mempoolStats.concat([])),
+          };
+        })
+      );
+
+    this.transactionsWeightPerSecondOptions = {
+        showArea: false,
+        showLine: true,
+        fullWidth: true,
+        showPoint: false,
+        low: 0,
+        axisY: {
+          offset: 40
+        },
+        axisX: {
+          labelInterpolationFnc: (value: any, index: any) => index % 12  === 0 ? formatDate(value, 'HH:mm', this.locale) : null,
+          offset: 10
+        },
+        plugins: [
+          Chartist.plugins.ctTargetLine({
+            value: 1667
+          }),
+        ]
+      };
+  }
+
+  handleNewMempoolData(mempoolStats: OptimizedMempoolStats[]) {
+    mempoolStats.reverse();
+    const labels = mempoolStats.map(stats => stats.added);
+
+    return {
+      labels: labels,
+      series: [mempoolStats.map((stats) => stats.vbytes_per_second)],
+    };
   }
 
   trackByBlock(index: number, block: Block) {

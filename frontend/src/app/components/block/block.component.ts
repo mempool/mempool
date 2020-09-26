@@ -8,6 +8,7 @@ import { of, Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { env } from 'src/app/app.constants';
+import { WebsocketService } from 'src/app/services/websocket.service';
 
 @Component({
   selector: 'app-block',
@@ -39,9 +40,11 @@ export class BlockComponent implements OnInit, OnDestroy {
     private electrsApiService: ElectrsApiService,
     private stateService: StateService,
     private seoService: SeoService,
+    private websocketService: WebsocketService,
   ) { }
 
   ngOnInit() {
+    this.websocketService.want(['blocks', 'mempool-blocks']);
     this.paginationMaxSize = window.matchMedia('(max-width: 700px)').matches ? 3 : 5;
     this.network = this.stateService.network;
 

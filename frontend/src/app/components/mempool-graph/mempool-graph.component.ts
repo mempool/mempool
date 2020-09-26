@@ -13,6 +13,9 @@ import { StateService } from 'src/app/services/state.service';
 export class MempoolGraphComponent implements OnInit, OnChanges {
   @Input() data;
   @Input() dateSpan = '2h';
+  @Input() showLegend = true;
+  @Input() offsetX = 40;
+  @Input() offsetY = 40;
 
   mempoolVsizeFeesOptions: any;
   mempoolVsizeFeesData: any;
@@ -26,6 +29,9 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
+    const showLegend = !this.isMobile && this.showLegend;
+    const labelHops = this.isMobile || !this.showLegend ? 12 : 6;
+
     const labelInterpolationFnc = (value: any, index: any) => {
       switch (this.dateSpan) {
         case '2h':
@@ -41,7 +47,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         case '1y':
           value = formatDate(value, 'dd/MM', this.locale);
       }
-      return index % 6  === 0 ? value : null;
+      return index % labelHops  === 0 ? value : null;
     };
 
     this.mempoolVsizeFeesOptions = {
@@ -52,23 +58,28 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       low: 0,
       axisX: {
         labelInterpolationFnc: labelInterpolationFnc,
-        offset: 40
+        offset: this.offsetX,
       },
       axisY: {
         labelInterpolationFnc: (value: number): any => {
           return this.vbytesPipe.transform(value, 2);
         },
-        offset: this.isMobile ? 60 : 160
+        offset: showLegend ? 160 : 60,
       },
       plugins: [
         Chartist.plugins.ctTargetLine({
           value: 1000000
         }),
+      ]
+    };
+
+    if (showLegend) {
+      this.mempoolVsizeFeesOptions.plugins.push(
         Chartist.plugins.legend({
           legendNames: [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
             250, 300, 350, 400].map((sat, i, arr) => {
               if (sat === 400) {
-               return '350+';
+              return '350+';
               }
               if (i === 0) {
                 if (this.stateService.network === 'liquid') {
@@ -79,8 +90,8 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
               return arr[i - 1] + ' - ' + sat;
             })
         })
-      ]
-    };
+      );
+    }
   }
 
   ngOnChanges() {

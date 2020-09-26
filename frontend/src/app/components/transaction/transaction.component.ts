@@ -39,6 +39,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.websocketService.want(['blocks', 'mempool-blocks']);
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     this.subscription = this.route.paramMap.pipe(
