@@ -15,8 +15,8 @@ class Routes {
 
   constructor() {
     if (!config.DB_DISABLED) {
-      // this.createCache();
-      // setInterval(this.createCache.bind(this), 600000);
+      this.createCache();
+      setInterval(this.createCache.bind(this), 600000);
     }
   }
 
