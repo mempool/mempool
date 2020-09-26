@@ -1,19 +1,39 @@
-<table class="table mx-auto text-center" style="max-width: 550px">
-  <tr>
-    <td class="d-none d-md-table-cell border-top-0">Low priority</td>
-    <td class="border-top-0">Medium priority</td>
-    <td class="border-top-0">High priority</td>
-  </tr>
+<table style="width: 100%;">
   <tr *ngIf="(isLoadingWebSocket$ | async) === false && (feeEstimations$ | async) as feeEstimations; else loadingFees">
-    <td class="d-none d-md-table-cell">{{ feeEstimations.hourFee }} sat/vB (<app-fiat [value]="feeEstimations.hourFee * 250"></app-fiat>)</td>
-    <td>{{ feeEstimations.halfHourFee }} sat/vB (<app-fiat [value]="feeEstimations.halfHourFee * 250"></app-fiat>)</td>
-    <td>{{ feeEstimations.fastestFee }} sat/vB (<app-fiat [value]="feeEstimations.fastestFee * 250"></app-fiat>)</td>
+    <td class="d-none d-md-block">
+      <h5 class="card-title">Low priority</h5>
+      <p class="card-text">
+        {{ feeEstimations.hourFee }} sat/vB (<app-fiat [value]="feeEstimations.hourFee * 250"></app-fiat>)
+      </p>
+    </td>
+    <td>
+      <h5 class="card-title">Medium priority</h5>
+      <p class="card-text">
+        {{ feeEstimations.halfHourFee }} sat/vB (<app-fiat [value]="feeEstimations.halfHourFee * 250"></app-fiat>)
+      </p>
+    </td>
+    <td>
+      <h5 class="card-title">High priority</h5>
+      <p class="card-text">
+        {{ feeEstimations.fastestFee }} sat/vB (<app-fiat [value]="feeEstimations.fastestFee * 250"></app-fiat>)
+      </p>
+    </td>
   </tr>
-  <ng-template #loadingFees>
-    <tr>
-      <td class="d-none d-md-table-cell"><span class="skeleton-loader"></span></td>
-      <td><span class="skeleton-loader"></span></td>
-      <td><span class="skeleton-loader"></span></td>
-    </tr>
-  </ng-template>
 </table>
+
+<ng-template #loadingFees>
+  <tr>
+    <td class="d-none d-md-block">
+      <h5 class="card-title">Low priority</h5>
+      <p class="card-text"><span class="skeleton-loader"></span></p>
+    </td>
+    <td>
+      <h5 class="card-title">Medium priority</h5>
+      <p class="card-text"><span class="skeleton-loader"></span></p>
+    </td>
+    <td>
+      <h5 class="card-title">High priority</h5>
+      <p class="card-text"><span class="skeleton-loader"></span></p>
+    </td>
+  </tr>
+</ng-template>

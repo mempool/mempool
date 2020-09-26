@@ -1,21 +1,33 @@
-<app-fees-box *ngIf="(network$ | async) === ''" class="d-block mr-2 ml-2 mb-5"></app-fees-box>
 
-<div class="container-xl">
+<div class="container-xl mt-2">
 
   <div class="row row-cols-1 row-cols-md-2" *ngIf="{ value: (mempoolInfoData$ | async) } as mempoolInfoData">
     <div class="col mb-4">
       <div class="card text-center">
         <div class="card-body">
-          <h5 class="card-title">Mempool size</h5>
-          <p class="card-text" *ngIf="(mempoolBlocksData$ | async) as mempoolBlocksData; else loading">{{ mempoolBlocksData.size | bytes }} ({{ mempoolBlocksData.blocks }} block<span [hidden]="mempoolBlocksData.blocks <= 1">s</span>)</p>
+          <app-fees-box *ngIf="(network$ | async) === ''" class="d-block mr-2 ml-2"></app-fees-box>
         </div>
       </div>
     </div>
     <div class="col mb-4">
       <div class="card text-center">
         <div class="card-body">
-          <h5 class="card-title unconfirmedTx">Unconfirmed transactions</h5>
-          <p class="card-text" *ngIf="mempoolInfoData.value; else loading">{{ mempoolInfoData.value.memPoolInfo.size | number }}</p>
+          <table style="width: 100%;">
+            <tr>
+              <td>
+                <h5 class="card-title">Mempool size</h5>
+                <p class="card-text" *ngIf="(mempoolBlocksData$ | async) as mempoolBlocksData; else loading">
+                  {{ mempoolBlocksData.size | bytes }} ({{ mempoolBlocksData.blocks }} block<span [hidden]="mempoolBlocksData.blocks <= 1">s</span>)
+                </p>
+              </td>
+              <td>
+                <h5 class="card-title">Unconfirmed</h5>
+                <p class="card-text" *ngIf="mempoolInfoData.value; else loading">
+                  {{ mempoolInfoData.value.memPoolInfo.size | number }}
+                </p>
+              </td>
+            </tr>
+          </table>
         </div>
       </div>
     </div>
@@ -51,7 +63,7 @@
 
     <div class="col mb-4">
       <div class="card text-center">
-        <div class="card-body">
+        <div class="card-body pl-0">
           <div style="height: 250px;" *ngIf="(mempoolStats$ | async) as mempoolStats">
             <app-mempool-graph [data]="mempoolStats.mempool" [showLegend]="false" [offsetX]="10"></app-mempool-graph>
           </div>

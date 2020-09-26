@@ -64,7 +64,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         labelInterpolationFnc: (value: number): any => {
           return this.vbytesPipe.transform(value, 2);
         },
-        offset: showLegend ? 160 : 60,
+        offset: showLegend ? 160 : 80,
       },
       plugins: [
         Chartist.plugins.ctTargetLine({
