@@ -5,7 +5,7 @@
     <div class="col mb-4">
       <div class="card text-center">
         <div class="card-body">
-          <app-fees-box *ngIf="(network$ | async) === ''" class="d-block mr-2 ml-2"></app-fees-box>
+          <app-fees-box *ngIf="(network$ | async) === ''" class="d-block"></app-fees-box>
         </div>
       </div>
     </div>
@@ -64,6 +64,7 @@
     <div class="col mb-4">
       <div class="card text-center">
         <div class="card-body pl-0">
+          <h5 class="card-title">Mempool by vBytes</h5>
           <div style="height: 250px;" *ngIf="(mempoolStats$ | async) as mempoolStats">
             <app-mempool-graph [data]="mempoolStats.mempool" [showLegend]="false" [offsetX]="10"></app-mempool-graph>
           </div>
@@ -74,6 +75,7 @@
     <div class="col mb-4">
       <div class="card text-center">
         <div class="card-body">
+          <h5 class="card-title">Tx weight per second</h5>
           <div style="height: 250px;" *ngIf="(mempoolStats$ | async) as mempoolStats">
             <app-chartist
                 [data]="mempoolStats.weightPerSecond"
