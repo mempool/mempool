@@ -9,28 +9,51 @@
         </div>
       </div>
     </div>
-    <div class="col mb-4">
+
+    <div class="col mb-4" *ngIf="(network$ | async) !== 'liquid'; else emptyBlock">
       <div class="card text-center">
-        <div class="card-body">
-          <table style="width: 100%;">
-            <tr>
-              <td>
-                <h5 class="card-title">Mempool size</h5>
-                <p class="card-text" *ngIf="(mempoolBlocksData$ | async) as mempoolBlocksData; else loading">
-                  {{ mempoolBlocksData.size | bytes }} ({{ mempoolBlocksData.blocks }} block<span [hidden]="mempoolBlocksData.blocks <= 1">s</span>)
-                </p>
-              </td>
-              <td>
-                <h5 class="card-title">Unconfirmed</h5>
-                <p class="card-text" *ngIf="mempoolInfoData.value; else loading">
-                  {{ mempoolInfoData.value.memPoolInfo.size | number }}
-                </p>
-              </td>
-            </tr>
-          </table>
+        <div class="card-body more-padding">
+          <h5 class="card-title">Difficulty adjustment</h5>
+          <div class="progress" *ngIf="(difficultyEpoch$ | async) as epochData; else loading">
+            <div class="progress-bar" role="progressbar" style="width: 15%; background-color: #105fb0" [ngStyle]="{'width': epochData.base}"><ng-template [ngIf]="epochData.change > 0">+</ng-template>{{ epochData.change | number: '1.0-2' }}%</div>
+            <div class="progress-bar bg-success" role="progressbar" style="width: 0%" [ngStyle]="{'width': epochData.green}"></div>
+            <div class="progress-bar bg-danger" role="progressbar" style="width: 1%; background-color: #f14d80;" [ngStyle]="{'width': epochData.red}"></div>
+          </div>
         </div>
       </div>
     </div>
+    
+    <div class="col mb-4">
+      <div class="card text-center">
+        <div class="card-body pl-0">
+          <div style="padding-left: 1.25rem;">
+            <table style="width: 100%;">
+              <tr>
+                <td>
+                  <h5 class="card-title">Mempool size</h5>
+                  <p class="card-text" *ngIf="(mempoolBlocksData$ | async) as mempoolBlocksData; else loading">
+                    {{ mempoolBlocksData.size | bytes }} ({{ mempoolBlocksData.blocks }} block<span [hidden]="mempoolBlocksData.blocks <= 1">s</span>)
+                  </p>
+                </td>
+                <td>
+                  <h5 class="card-title">Unconfirmed</h5>
+                  <p class="card-text" *ngIf="mempoolInfoData.value; else loading">
+                    {{ mempoolInfoData.value.memPoolInfo.size | number }}
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <br>
+
+          <div style="height: 250px;" *ngIf="(mempoolStats$ | async) as mempoolStats">
+            <app-mempool-graph [data]="mempoolStats.mempool" [showLegend]="false" [offsetX]="10"></app-mempool-graph>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="col mb-4">
       <div class="card text-center">
         <div class="card-body more-padding">
@@ -45,44 +68,16 @@
                 </div>
               </ng-template>
             </ng-template>
-        </div>
-      </div>
-    </div>
-    <div class="col mb-4" *ngIf="(network$ | async) !== 'liquid'; else emptyBlock">
-      <div class="card text-center">
-        <div class="card-body more-padding">
-          <h5 class="card-title">Difficulty adjustment</h5>
-          <div class="progress" *ngIf="(difficultyEpoch$ | async) as epochData; else loading">
-            <div class="progress-bar" role="progressbar" style="width: 15%; background-color: #105fb0" [ngStyle]="{'width': epochData.base}"><ng-template [ngIf]="epochData.change > 0">+</ng-template>{{ epochData.change | number: '1.0-2' }}%</div>
-            <div class="progress-bar bg-success" role="progressbar" style="width: 0%" [ngStyle]="{'width': epochData.green}"></div>
-            <div class="progress-bar bg-danger" role="progressbar" style="width: 1%; background-color: #f14d80;" [ngStyle]="{'width': epochData.red}"></div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <div class="col mb-4">
-      <div class="card text-center">
-        <div class="card-body pl-0">
-          <h5 class="card-title">Mempool by vBytes</h5>
-          <div style="height: 250px;" *ngIf="(mempoolStats$ | async) as mempoolStats">
-            <app-mempool-graph [data]="mempoolStats.mempool" [showLegend]="false" [offsetX]="10"></app-mempool-graph>
-          </div>
-        </div>
-      </div>
-    </div>
+            <br><br>
 
-    <div class="col mb-4">
-      <div class="card text-center">
-        <div class="card-body">
-          <h5 class="card-title">Tx weight per second</h5>
-          <div style="height: 250px;" *ngIf="(mempoolStats$ | async) as mempoolStats">
-            <app-chartist
-                [data]="mempoolStats.weightPerSecond"
-                [type]="'Line'"
-                [options]="transactionsWeightPerSecondOptions">
-              </app-chartist>
-          </div>
+            <div style="height: 250px;" *ngIf="(mempoolStats$ | async) as mempoolStats">
+              <app-chartist
+                  [data]="mempoolStats.weightPerSecond"
+                  [type]="'Line'"
+                  [options]="transactionsWeightPerSecondOptions">
+                </app-chartist>
+            </div>
         </div>
       </div>
     </div>
