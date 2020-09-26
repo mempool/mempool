@@ -55,15 +55,15 @@
           <table class="table table-borderless text-left">
             <thead>
               <th style="width: 15%;">Height</th>
-              <th style="width: 30%;">Mined</th>
-              <th style="width: 25%;">Txs</th>
+              <th style="width: 35%;">Mined</th>
+              <th style="width: 20%;" class="d-none d-lg-block">Txs</th>
               <th style="width: 30%;">Filled</th>
             </thead>
             <tbody>
               <tr *ngFor="let block of blocks$ | async; let i = index; trackBy: trackByBlock">
                 <td><a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
                 <td><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since> ago</td>
-                <td>{{ block.tx_count | number }}</td>
+                <td class="d-none d-lg-block">{{ block.tx_count | number }}</td>
                 <td>
                   <div class="progress position-relative">
                     <div class="progress-bar progress-mempool {{ network$ | async }}" role="progressbar" [ngStyle]="{'width': (block.weight / 4000000)*100 + '%' }"></div>
@@ -84,13 +84,13 @@
           <table class="table table-borderless text-left">
             <thead>
               <th style="width: 25%;">TXID</th>
-              <th style="width: 50%;" class="text-right">Amount (BTC)</th>
+              <th style="width: 50%;" class="text-right d-none d-lg-block">Amount (BTC)</th>
               <th style="width: 25%;" class="text-right">Fee</th>
             </thead>
             <tbody>
               <tr *ngFor="let transaction of transactions$ | async; let i = index;">
                 <td><a [routerLink]="['/tx' | relativeUrl, transaction.txid]">{{ transaction.txid | shortenString : 12 }}</a></td>
-                <td class="text-right"><app-amount [satoshis]="transaction.value" digitsInfo="1.2-2" [noFiat]="true"></app-amount> (<app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat>)</td>
+                <td class="text-right d-none d-lg-block"><app-amount [satoshis]="transaction.value" digitsInfo="1.2-2" [noFiat]="true"></app-amount> (<app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat>)</td>
                 <td class="text-right">{{ transaction.fee / (transaction.weight / 4) | number : '1.1-1' }} sat/vB</td>
               </tr>
             </tbody>
