@@ -52,10 +52,10 @@ export class StatisticsComponent implements OnInit {
   ngOnInit() {
     this.seoService.setTitle('Graphs');
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    const isMobile = window.innerWidth <= 767.98;
+    const labelHops = isMobile ? 12 : 6;
 
     const labelInterpolationFnc = (value: any, index: any) => {
-      const nr = 6;
-
       switch (this.radioGroupForm.controls.dateSpan.value) {
         case '2h':
         case '24h':
@@ -71,7 +71,7 @@ export class StatisticsComponent implements OnInit {
           value = formatDate(value, 'dd/MM', this.locale);
       }
 
-      return index % nr  === 0 ? value : null;
+      return index % labelHops === 0 ? value : null;
     };
 
     this.transactionsWeightPerSecondOptions = {

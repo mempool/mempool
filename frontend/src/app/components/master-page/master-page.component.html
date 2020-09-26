@@ -29,7 +29,7 @@
           <a class="nav-link" [routerLink]="['/bisq']" (click)="collapse()"><fa-icon [icon]="['fas', 'list']" [fixedWidth]="true" title="Transactions"></fa-icon></a>
         </li>
         <li class="nav-item" routerLinkActive="active">
-          <a class="nav-link" [routerLink]="['/bisq/blocks']" (click)="collapse()"><fa-icon [icon]="['fas', 'th-list']" [fixedWidth]="true" title="Blocks"></fa-icon></a>
+          <a class="nav-link" [routerLink]="['/bisq/blocks']" (click)="collapse()"><fa-icon [icon]="['fas', 'cubes']" [fixedWidth]="true" title="Blocks"></fa-icon></a>
         </li>
         <li class="nav-item" routerLinkActive="active">
           <a class="nav-link" [routerLink]="['/bisq/stats']" (click)="collapse()"><fa-icon [icon]="['fas', 'tachometer-alt']" [fixedWidth]="true" title="Stats"></fa-icon></a>
@@ -37,10 +37,10 @@
       </ng-template>
       <ng-template #notBisq>
         <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-          <a class="nav-link" [routerLink]="['/' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'cube']" [fixedWidth]="true" title="Dashboard"></fa-icon></a>
+          <a class="nav-link" [routerLink]="['/' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'tachometer-alt']" [fixedWidth]="true" title="Dashboard"></fa-icon></a>
         </li>
         <li class="nav-item" routerLinkActive="active">
-          <a class="nav-link" [routerLink]="['/blocks' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'th-list']" [fixedWidth]="true" title="Blocks"></fa-icon></a>
+          <a class="nav-link" [routerLink]="['/blocks' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'cubes']" [fixedWidth]="true" title="Blocks"></fa-icon></a>
         </li>
         <li class="nav-item" routerLinkActive="active">
           <a class="nav-link" [routerLink]="['/graphs' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'chart-area']" [fixedWidth]="true" title="Graphs"></fa-icon></a>

@@ -21,7 +21,7 @@
     </div>
     <div class="col mb-4">
       <div class="card text-center">
-        <div class="card-body">
+        <div class="card-body more-padding">
           <h5 class="card-title">Tx weight per second</h5>
             <ng-template [ngIf]="mempoolInfoData.value" [ngIfElse]="loading">
               <span *ngIf="mempoolInfoData.value.vBytesPerSecond === 0; else inSync">
@@ -38,7 +38,7 @@
     </div>
     <div class="col mb-4" *ngIf="(network$ | async) !== 'liquid'; else emptyBlock">
       <div class="card text-center">
-        <div class="card-body">
+        <div class="card-body more-padding">
           <h5 class="card-title">Difficulty adjustment</h5>
           <div class="progress" *ngIf="(difficultyEpoch$ | async) as epochData; else loading">
             <div class="progress-bar" role="progressbar" style="width: 15%; background-color: #105fb0" [ngStyle]="{'width': epochData.base}"><ng-template [ngIf]="epochData.change > 0">+</ng-template>{{ epochData.change | number: '1.0-2' }}%</div>
@@ -48,6 +48,31 @@
         </div>
       </div>
     </div>
+
+    <div class="col mb-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <div style="height: 250px;" *ngIf="(mempoolStats$ | async) as mempoolStats">
+            <app-mempool-graph [data]="mempoolStats.mempool" [showLegend]="false" [offsetX]="10"></app-mempool-graph>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col mb-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <div style="height: 250px;" *ngIf="(mempoolStats$ | async) as mempoolStats">
+            <app-chartist
+                [data]="mempoolStats.weightPerSecond"
+                [type]="'Line'"
+                [options]="transactionsWeightPerSecondOptions">
+              </app-chartist>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="col mb-4">
       <div class="card text-center">
         <div class="card-body">
@@ -56,14 +81,14 @@
             <thead>
               <th style="width: 15%;">Height</th>
               <th style="width: 35%;">Mined</th>
-              <th style="width: 20%;" class="d-none d-lg-block">Txs</th>
+              <th style="width: 20%;" class="d-none d-lg-table-cell">Txs</th>
               <th style="width: 30%;">Filled</th>
             </thead>
             <tbody>
               <tr *ngFor="let block of blocks$ | async; let i = index; trackBy: trackByBlock">
                 <td><a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
                 <td><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since> ago</td>
-                <td class="d-none d-lg-block">{{ block.tx_count | number }}</td>
+                <td class="d-none d-lg-table-cell">{{ block.tx_count | number }}</td>
                 <td>
                   <div class="progress position-relative">
                     <div class="progress-bar progress-mempool {{ network$ | async }}" role="progressbar" [ngStyle]="{'width': (block.weight / 4000000)*100 + '%' }"></div>
@@ -84,13 +109,13 @@
           <table class="table table-borderless text-left">
             <thead>
               <th style="width: 25%;">TXID</th>
-              <th style="width: 50%;" class="text-right d-none d-lg-block">Amount (BTC)</th>
+              <th style="width: 50%;" class="text-right d-none d-lg-table-cell">Amount (BTC)</th>
               <th style="width: 25%;" class="text-right">Fee</th>
             </thead>
             <tbody>
               <tr *ngFor="let transaction of transactions$ | async; let i = index;">
                 <td><a [routerLink]="['/tx' | relativeUrl, transaction.txid]">{{ transaction.txid | shortenString : 12 }}</a></td>
-                <td class="text-right d-none d-lg-block"><app-amount [satoshis]="transaction.value" digitsInfo="1.2-2" [noFiat]="true"></app-amount> (<app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat>)</td>
+                <td class="text-right d-none d-lg-table-cell"><app-amount [satoshis]="transaction.value" digitsInfo="1.2-2" [noFiat]="true"></app-amount> (<app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat>)</td>
                 <td class="text-right">{{ transaction.fee / (transaction.weight / 4) | number : '1.1-1' }} sat/vB</td>
               </tr>
             </tbody>
