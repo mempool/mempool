@@ -9,7 +9,6 @@
         </div>
       </div>
     </div>
-
     <div class="col mb-4" *ngIf="(network$ | async) !== 'liquid'; else emptyBlock">
       <div class="card text-center">
         <div class="card-body more-padding">
@@ -22,7 +21,6 @@
         </div>
       </div>
     </div>
-    
     <div class="col mb-4">
       <div class="card text-center">
         <div class="card-body pl-0">
@@ -43,17 +41,14 @@
                 </td>
               </tr>
             </table>
+            <hr>
           </div>
-
-          <br>
-
           <div style="height: 250px;" *ngIf="(mempoolStats$ | async) as mempoolStats">
             <app-mempool-graph [data]="mempoolStats.mempool" [showLegend]="false" [offsetX]="10"></app-mempool-graph>
           </div>
         </div>
       </div>
     </div>
-
     <div class="col mb-4">
       <div class="card text-center">
         <div class="card-body more-padding">
@@ -63,14 +58,13 @@
                 &nbsp;<span class="badge badge-pill badge-warning">Backend is synchronizing</span>
               </span>
               <ng-template #inSync>
-                <div class="progress sub-text">
+                <div class="progress sub-text" style="max-width: 250px;">
                   <div class="progress-bar {{ mempoolInfoData.value.progressClass }}" style="padding: 4px;" role="progressbar" [ngStyle]="{'width': mempoolInfoData.value.progressWidth}">{{ mempoolInfoData.value.vBytesPerSecond | ceil | number }} vB/s</div>
                 </div>
               </ng-template>
             </ng-template>
-
-            <br><br>
-
+            <br>
+            <hr>
             <div style="height: 250px;" *ngIf="(mempoolStats$ | async) as mempoolStats">
               <app-chartist
                   [data]="mempoolStats.weightPerSecond"
@@ -81,7 +75,6 @@
         </div>
       </div>
     </div>
-
     <div class="col mb-4">
       <div class="card text-center">
         <div class="card-body">
