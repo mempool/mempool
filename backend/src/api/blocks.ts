@@ -8,7 +8,7 @@ class Blocks {
   private blocks: Block[] = [];
   private currentBlockHeight = 0;
   private lastDifficultyAdjustmentTime = 0;
-  private newBlockCallback: ((block: Block, txIds: string[], transactions: TransactionExtended[]) => void) | undefined;
+  private newBlockCallbacks: ((block: Block, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
 
   constructor() { }
 
@@ -21,7 +21,7 @@ class Blocks {
   }
 
   public setNewBlockCallback(fn: (block: Block, txIds: string[], transactions: TransactionExtended[]) => void) {
-    this.newBlockCallback = fn;
+    this.newBlockCallbacks.push(fn);
   }
 
   public async updateBlocks() {
@@ -95,8 +95,8 @@ class Blocks {
           this.blocks.shift();
         }
 
-        if (this.newBlockCallback) {
-          this.newBlockCallback(block, txIds, transactions);
+        if (this.newBlockCallbacks.length) {
+          this.newBlockCallbacks.forEach((cb) => cb(block, txIds, transactions));
         }
       }
 
