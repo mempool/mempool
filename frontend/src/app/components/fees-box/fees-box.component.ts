@@ -24,6 +24,8 @@ export class FeesBoxComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    const defaultFee = this.stateService.network === 'liquid' ? 0.1 : 1;
+
     this.isLoadingWebSocket$ = this.stateService.isLoadingWebSocket$;
     this.feeEstimations$ = this.stateService.mempoolBlocks$
       .pipe(
@@ -32,11 +34,11 @@ export class FeesBoxComponent implements OnInit {
           let firstMedianFee = Math.ceil(pBlocks[0].medianFee);
 
           if (pBlocks.length === 1 && pBlocks[0].blockVSize <= 500000) {
-            firstMedianFee = 1;
+            firstMedianFee = defaultFee;
           }
 
-          const secondMedianFee = pBlocks[1] ? Math.ceil(pBlocks[1].medianFee) : 1;
-          const thirdMedianFee = pBlocks[2] ? Math.ceil(pBlocks[2].medianFee) : 1;
+          const secondMedianFee = pBlocks[1] ? Math.ceil(pBlocks[1].medianFee) : defaultFee;
+          const thirdMedianFee = pBlocks[2] ? Math.ceil(pBlocks[2].medianFee) : defaultFee;
 
           return {
             'fastestFee': firstMedianFee,
