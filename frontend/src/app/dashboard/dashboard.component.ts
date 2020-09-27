@@ -189,7 +189,7 @@ export class DashboardComponent implements OnInit {
           offset: 40
         },
         axisX: {
-          labelInterpolationFnc: (value: any, index: any) => index % 12  === 0 ? formatDate(value, 'HH:mm', this.locale) : null,
+          labelInterpolationFnc: (value: any, index: any) => index % 24 === 0 ? formatDate(value, 'HH:mm', this.locale) : null,
           offset: 10
         },
         plugins: [
