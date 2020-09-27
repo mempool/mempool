@@ -84,6 +84,7 @@ class Server {
     if (config.BISQ_ENABLED) {
       bisq.startBisqService();
       bisq.setPriceCallbackFunction((price) => websocketHandler.setExtraInitProperties('bsq-price', price));
+      blocks.setNewBlockCallback(bisq.handleNewBitcoinBlock.bind(bisq));
     }
 
     if (config.BISQ_MARKET_ENABLED) {

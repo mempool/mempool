@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as request from 'request';
 import { BisqBlocks, BisqBlock, BisqTransaction, BisqStats, BisqTrade } from './interfaces';
 import { Common } from '../common';
+import { Block } from '../../interfaces';
 
 class Bisq {
   private static BLOCKS_JSON_FILE_PATH = '/all/blocks.json';
@@ -33,6 +34,14 @@ class Bisq {
     this.updatePrice();
     this.startTopDirectoryWatcher();
     this.startSubDirectoryWatcher();
+  }
+
+  handleNewBitcoinBlock(block: Block): void {
+    if (block.height - 2 > this.latestBlockHeight && this.latestBlockHeight !== 0) {
+      console.log(`Bitcoin block height (#${block.height}) has diverged from the latest Bisq block height (#${this.latestBlockHeight}). Restarting watchers...`);
+      this.startTopDirectoryWatcher();
+      this.startSubDirectoryWatcher();
+    }
   }
 
   getTransaction(txId: string): BisqTransaction | undefined {
