@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
 import { combineLatest, merge, Observable, of } from 'rxjs';
-import { map, scan, switchMap, take, tap } from 'rxjs/operators';
+import { map, scan, share, switchMap, tap } from 'rxjs/operators';
 import { Block } from '../interfaces/electrs.interface';
 import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
@@ -175,7 +175,8 @@ export class DashboardComponent implements OnInit {
             mempool: mempoolStats,
             weightPerSecond: this.handleNewMempoolData(mempoolStats.concat([])),
           };
-        })
+        }),
+        share(),
       );
 
     this.transactionsWeightPerSecondOptions = {
