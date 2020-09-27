@@ -1,7 +1,10 @@
+const config = require('../../mempool-config.json');
 import projectedBlocks from './mempool-blocks';
 
 class FeeApi {
   constructor() { }
+
+  defaultFee = config.LIQUID ? 0.1 : 1;
 
   public getRecommendedFee() {
     const pBlocks = projectedBlocks.getMempoolBlocks();
@@ -15,11 +18,11 @@ class FeeApi {
     let firstMedianFee = Math.ceil(pBlocks[0].medianFee);
 
     if (pBlocks.length === 1 && pBlocks[0].blockVSize <= 500000) {
-      firstMedianFee = 1;
+      firstMedianFee = this.defaultFee;
     }
 
-    const secondMedianFee = pBlocks[1] ? Math.ceil(pBlocks[1].medianFee) : 1;
-    const thirdMedianFee = pBlocks[2] ? Math.ceil(pBlocks[2].medianFee) : 1;
+    const secondMedianFee = pBlocks[1] ? Math.ceil(pBlocks[1].medianFee) : this.defaultFee;
+    const thirdMedianFee = pBlocks[2] ? Math.ceil(pBlocks[2].medianFee) : this.defaultFee;
 
     return {
       'fastestFee': firstMedianFee,
