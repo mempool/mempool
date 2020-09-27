@@ -15,7 +15,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   @Input() dateSpan = '2h';
   @Input() showLegend = true;
   @Input() offsetX = 40;
-  @Input() offsetY = 40;
+  @Input() small = false;
 
   mempoolVsizeFeesOptions: any;
   mempoolVsizeFeesData: any;
@@ -30,7 +30,10 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     const showLegend = !this.isMobile && this.showLegend;
-    const labelHops = this.isMobile || !this.showLegend ? 12 : 6;
+    let labelHops = !this.showLegend ? 12 : 6;
+    if (this.small) {
+      labelHops = labelHops * 2;
+    }
 
     const labelInterpolationFnc = (value: any, index: any) => {
       switch (this.dateSpan) {
@@ -61,9 +64,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         offset: this.offsetX,
       },
       axisY: {
-        labelInterpolationFnc: (value: number): any => {
-          return this.vbytesPipe.transform(value, 2);
-        },
+        labelInterpolationFnc: (value: number): any => this.vbytesPipe.transform(value, 2),
         offset: showLegend ? 160 : 80,
       },
       plugins: [
