@@ -36,7 +36,7 @@
                 <td>
                   <h5 class="card-title">Unconfirmed</h5>
                   <p class="card-text" *ngIf="mempoolInfoData.value; else loading">
-                    {{ mempoolInfoData.value.memPoolInfo.size | number }}
+                    {{ mempoolInfoData.value.memPoolInfo.size | number }} txs
                   </p>
                 </td>
               </tr>
