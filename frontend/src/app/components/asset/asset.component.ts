@@ -11,6 +11,7 @@ import { of, merge, Subscription, combineLatest } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
 import { environment } from 'src/environments/environment';
 import { AssetsService } from 'src/app/services/assets.service';
+import { formatNumber, moveDec } from 'src/app/bitcoin.utils';
 
 @Component({
   selector: 'app-asset',
@@ -187,6 +188,10 @@ export class AssetComponent implements OnInit, OnDestroy {
     // this.sent = this.asset.chain_stats.spent_txo_sum + this.asset.mempool_stats.spent_txo_sum;
     this.txCount = this.asset.chain_stats.tx_count + this.asset.mempool_stats.tx_count;
     this.totalConfirmedTxCount = this.asset.chain_stats.tx_count;
+  }
+
+  formatAmount(value: number, precision = 0): number | string {
+    return moveDec(value, -precision);
   }
 
   ngOnDestroy() {
