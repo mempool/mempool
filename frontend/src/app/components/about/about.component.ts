@@ -23,7 +23,7 @@ export class AboutComponent implements OnInit {
 
   ngOnInit() {
     this.gitCommit$ = this.stateService.gitCommit$;
-    this.seoService.setTitle('Contributors');
+    this.seoService.setTitle('About');
     this.websocketService.want(['blocks']);
     if (this.stateService.network === 'bisq') {
       this.active = 2;

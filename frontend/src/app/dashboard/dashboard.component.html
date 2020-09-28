@@ -111,15 +111,15 @@
           <table class="table table-borderless text-left">
             <thead>
               <th style="width: 20%;">TXID</th>
-              <th style="width: 35%;" class="text-right d-none d-lg-table-cell">Amount (BTC)</th>
-              <th style="width: 20%;" class="text-right d-none d-lg-table-cell">USD</th>
+              <th style="width: 35%;" class="text-right d-none d-lg-table-cell">Amount</th>
+              <th *ngIf="(network$ | async) !== 'liquid'" style="width: 20%;" class="text-right d-none d-lg-table-cell">USD</th>
               <th style="width: 25%;" class="text-right">Fee</th>
             </thead>
             <tbody>
               <tr *ngFor="let transaction of transactions$ | async; let i = index;">
                 <td><a [routerLink]="['/tx' | relativeUrl, transaction.txid]">{{ transaction.txid | shortenString : 10 }}</a></td>
                 <td class="text-right d-none d-lg-table-cell"><app-amount [satoshis]="transaction.value" digitsInfo="1.8-8" [noFiat]="true"></app-amount></td>
-                <td class="text-right d-none d-lg-table-cell"><app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat></td>
+                <td *ngIf="(network$ | async) !== 'liquid'" class="text-right d-none d-lg-table-cell"><app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat></td>
                 <td class="text-right">{{ transaction.fee / (transaction.weight / 4) | number : '1.1-1' }} sat/vB</td>
               </tr>
             </tbody>

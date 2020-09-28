@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { StateService } from 'src/app/services/state.service';
 import { map, filter } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { merge, Observable } from 'rxjs';
 
 interface FeeEstimations {
   fastestFee: number;
@@ -29,8 +29,14 @@ export class FeesBoxComponent implements OnInit {
     this.isLoadingWebSocket$ = this.stateService.isLoadingWebSocket$;
     this.feeEstimations$ = this.stateService.mempoolBlocks$
       .pipe(
-        filter((blocks) => !!blocks.length),
         map((pBlocks) => {
+          if (!pBlocks.length) {
+            return {
+              'fastestFee': defaultFee,
+              'halfHourFee': defaultFee,
+              'hourFee': defaultFee,
+            };
+          }
           let firstMedianFee = Math.ceil(pBlocks[0].medianFee);
 
           if (pBlocks.length === 1 && pBlocks[0].blockVSize <= 500000) {
