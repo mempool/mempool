@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
 import { combineLatest, merge, Observable, of } from 'rxjs';
-import { map, scan, share, switchMap, tap } from 'rxjs/operators';
+import { filter, map, scan, share, switchMap, tap } from 'rxjs/operators';
 import { Block } from '../interfaces/electrs.interface';
 import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
@@ -158,29 +158,30 @@ export class DashboardComponent implements OnInit {
         map((txs) => txs.slice(0, 6)),
       );
 
-    this.mempoolStats$ = this.apiService.list2HStatistics$()
-      .pipe(
-        switchMap((mempoolStats) => {
-          return merge(
-            this.stateService.live2Chart$
-              .pipe(
-                scan((acc, stats) => {
-                  acc.unshift(stats);
-                  acc = acc.slice(0, acc.length - 1);
-                  return acc;
-                }, mempoolStats)
-              ),
-            of(mempoolStats)
-          );
-        }),
-        map((mempoolStats) => {
-          return {
-            mempool: mempoolStats,
-            weightPerSecond: this.handleNewMempoolData(mempoolStats.concat([])),
-          };
-        }),
-        share(),
-      );
+    this.mempoolStats$ = this.stateService.connectionState$.pipe(
+      filter((state) => state === 2),
+      switchMap(() => this.apiService.list2HStatistics$()),
+      switchMap((mempoolStats) => {
+        return merge(
+          this.stateService.live2Chart$
+            .pipe(
+              scan((acc, stats) => {
+                acc.unshift(stats);
+                acc = acc.slice(0, acc.length - 1);
+                return acc;
+              }, mempoolStats)
+            ),
+          of(mempoolStats)
+        );
+      }),
+      map((mempoolStats) => {
+        return {
+          mempool: mempoolStats,
+          weightPerSecond: this.handleNewMempoolData(mempoolStats.concat([])),
+        };
+      }),
+      share(),
+    );
 
     this.transactionsWeightPerSecondOptions = {
         showArea: false,

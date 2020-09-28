@@ -22,7 +22,7 @@
       </div>
     </div>
     <div class="col mb-4">
-      <div class="card text-center">
+      <div class="card text-center graph-card">
         <div class="card-body pl-0">
           <div style="padding-left: 1.25rem;">
             <table style="width: 100%;">
@@ -50,8 +50,8 @@
       </div>
     </div>
     <div class="col mb-4">
-      <div class="card text-center">
-        <div class="card-body more-padding">
+      <div class="card text-center graph-card">
+        <div class="card-body ">
           <h5 class="card-title">Tx weight per second</h5>
             <ng-template [ngIf]="mempoolInfoData.value" [ngIfElse]="loading">
               <span *ngIf="mempoolInfoData.value.vBytesPerSecond === 0; else inSync">
@@ -112,14 +112,14 @@
             <thead>
               <th style="width: 20%;">TXID</th>
               <th style="width: 35%;" class="text-right d-none d-lg-table-cell">Amount</th>
-              <th *ngIf="(network$ | async) !== 'liquid'" style="width: 20%;" class="text-right d-none d-lg-table-cell">USD</th>
+              <th *ngIf="(network$ | async) === ''" style="width: 20%;" class="text-right d-none d-lg-table-cell">USD</th>
               <th style="width: 25%;" class="text-right">Fee</th>
             </thead>
             <tbody>
               <tr *ngFor="let transaction of transactions$ | async; let i = index;">
                 <td><a [routerLink]="['/tx' | relativeUrl, transaction.txid]">{{ transaction.txid | shortenString : 10 }}</a></td>
                 <td class="text-right d-none d-lg-table-cell"><app-amount [satoshis]="transaction.value" digitsInfo="1.8-8" [noFiat]="true"></app-amount></td>
-                <td *ngIf="(network$ | async) !== 'liquid'" class="text-right d-none d-lg-table-cell"><app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat></td>
+                <td *ngIf="(network$ | async) === ''" class="text-right d-none d-lg-table-cell"><app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat></td>
                 <td class="text-right">{{ transaction.fee / (transaction.weight / 4) | number : '1.1-1' }} sat/vB</td>
               </tr>
             </tbody>
