@@ -10,9 +10,9 @@ class FeeApi {
     const pBlocks = projectedBlocks.getMempoolBlocks();
     if (!pBlocks.length) {
       return {
-        'fastestFee': 0,
-        'halfHourFee': 0,
-        'hourFee': 0,
+        'fastestFee': this.defaultFee,
+        'halfHourFee': this.defaultFee,
+        'hourFee': this.defaultFee,
       };
     }
     let firstMedianFee = Math.ceil(pBlocks[0].medianFee);

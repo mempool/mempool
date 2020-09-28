@@ -9,6 +9,7 @@ import { StateService } from '../services/state.service';
 import * as Chartist from 'chartist';
 import { formatDate } from '@angular/common';
 import { WebsocketService } from '../services/websocket.service';
+import { SeoService } from '../services/seo.service';
 
 interface MempoolBlocksData {
   blocks: number;
@@ -58,9 +59,11 @@ export class DashboardComponent implements OnInit {
     private stateService: StateService,
     private apiService: ApiService,
     private websocketService: WebsocketService,
+    private seoService: SeoService,
   ) { }
 
   ngOnInit(): void {
+    this.seoService.resetTitle();
     this.websocketService.want(['blocks', 'stats', 'mempool-blocks', 'live-2h-chart']);
     this.network$ = merge(of(''), this.stateService.networkChanged$);
 

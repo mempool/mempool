@@ -110,6 +110,8 @@ export class WebsocketService {
         }
 
         if (response['git-commit']) {
+          this.stateService.gitCommit$.next(response['git-commit']);
+
           if (!this.latestGitCommit) {
             this.latestGitCommit = response['git-commit'];
           } else {

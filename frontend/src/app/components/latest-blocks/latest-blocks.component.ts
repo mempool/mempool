@@ -34,7 +34,7 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.seoService.resetTitle();
+    this.seoService.setTitle('Blocks');
     this.websocketService.want(['blocks']);
 
     this.network$ = merge(of(''), this.stateService.networkChanged$);
