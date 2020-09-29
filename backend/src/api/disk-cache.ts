@@ -7,17 +7,15 @@ class DiskCache {
   static FILE_NAME = './cache.json';
 
   constructor() {
-    if (cluster.isMaster) {
-      process.on('SIGINT', () => {
-        this.saveCacheToDisk();
-        process.exit(2);
-      });
+    process.on('SIGINT', () => {
+      this.saveCacheToDisk();
+      process.exit(2);
+    });
 
-      process.on('SIGTERM', () => {
-        this.saveCacheToDisk();
-        process.exit(2);
-      });
-    }
+    process.on('SIGTERM', () => {
+      this.saveCacheToDisk();
+      process.exit(2);
+    });
   }
 
   saveCacheToDisk() {
@@ -33,12 +31,8 @@ class DiskCache {
     if (cacheData) {
       console.log('Restoring mempool and blocks data from disk cache');
       const data = JSON.parse(cacheData);
-      if (data.mempool) {
-        memPool.setMempool(data.mempool);
-        blocks.setBlocks(data.blocks);
-      } else {
-        memPool.setMempool(data);
-      }
+      memPool.setMempool(data.mempool);
+      blocks.setBlocks(data.blocks);
     }
   }
 
