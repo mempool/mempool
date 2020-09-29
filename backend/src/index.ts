@@ -37,12 +37,19 @@ class Server {
 
       const numCPUs = config.CLUSTER_NUM_CORES;
       for (let i = 0; i < numCPUs; i++) {
-        cluster.fork();
+        const env = { workerId: i };
+        const worker = cluster.fork(env);
+        worker.process['env'] = env;
       }
 
       cluster.on('exit', (worker, code, signal) => {
-        console.log(`Mempool Worker #${worker.process.pid} died. Restarting in 10 seconds...`, signal || code);
-        setTimeout(() => { cluster.fork(); }, 10000);
+        const workerId = worker.process['env'].workerId;
+        console.log(`Mempool Worker PID #${worker.process.pid} workerId: ${workerId} died. Restarting in 10 seconds...`, signal || code);
+        setTimeout(() => {
+          const env = { workerId: workerId };
+          const newWorker = cluster.fork(env);
+          newWorker.process['env'] = env;
+        }, 10000);
       });
     } else {
       this.startServer(true);
