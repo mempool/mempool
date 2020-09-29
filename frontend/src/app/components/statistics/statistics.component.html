@@ -13,7 +13,7 @@
 
       <div class="card mb-3" *ngIf="mempoolStats.length">
         <div class="card-header">
-          <i class="fa fa-area-chart"></i> Mempool by vbytes (satoshis/vbyte)
+          <i class="fa fa-area-chart"></i> Mempool by vBytes (sat/vByte)
 
           <form [formGroup]="radioGroupForm" style="float: right;">
             <div class="spinner-border text-light bootstrap-spinner" *ngIf="spinnerLoading"></div>
@@ -53,7 +53,7 @@
     <div class="col-lg-12">
       <div class="card mb-3" *ngIf="mempoolTransactionsWeightPerSecondData">
         <div class="card-header">
-          <i class="fa fa-area-chart"></i> Transactions weight per second (vBytes/s)</div>
+          <i class="fa fa-area-chart"></i> Transaction vBytes per second (vB/s)</div>
         <div class="card-body">
           <div style="height: 600px;">
             <app-chartist
