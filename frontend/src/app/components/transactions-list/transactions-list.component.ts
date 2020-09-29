@@ -51,8 +51,8 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     }
     const observableObject = {};
     this.transactions.forEach((tx, i) => {
-      tx['@voutLength'] = 10;
-      tx['@vinLength'] = 10;
+      tx['@voutLimit'] = true;
+      tx['@vinLimit'] = true;
       if (this.outspends[i]) {
         return;
       }
@@ -88,26 +88,8 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     this.stateService.viewFiat$.next(oldvalue);
   }
 
-  trackByFn(index: number, tx: Transaction) {
+  trackByFn(index: number, tx: Transaction): string {
     return tx.txid + tx.status.confirmed;
-  }
-
-  loadMoreVin(tx: Transaction) {
-    tx['@vinLength'] += 10;
-    this.ref.markForCheck();
-  }
-
-  loadMoreVout(tx: Transaction) {
-    tx['@voutLength'] += 10;
-    this.ref.markForCheck();
-  }
-
-  getFilteredTxVin(tx: Transaction) {
-    return tx.vin.slice(0, tx['@vinLength']);
-  }
-
-  getFilteredTxVout(tx: Transaction) {
-    return tx.vout.slice(0, tx['@voutLength']);
   }
 
   trackByIndexFn(index: number) {
