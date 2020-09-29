@@ -158,7 +158,7 @@ export class WebsocketService {
         if (this.goneOffline === true) {
           this.goneOffline = false;
           if (this.lastWant) {
-            this.want(this.lastWant);
+            this.want(this.lastWant, true);
           }
           this.stateService.connectionState$.next(2);
         }
@@ -217,8 +217,8 @@ export class WebsocketService {
     this.websocketSubject.next({ historicalDate });
   }
 
-  want(data: string[]) {
-    if (data === this.lastWant) {
+  want(data: string[], force = false) {
+    if (data === this.lastWant && !force) {
       return;
     }
     this.websocketSubject.next({action: 'want', data: data});
