@@ -17,7 +17,7 @@
       <div class="col">
         <table class="table table-borderless smaller-text table-xs" style="margin: 0;">
           <tbody>
-            <tr *ngFor="let vin of getFilteredTxVin(tx); trackBy: trackByIndexFn">
+            <tr *ngFor="let vin of (tx['@vinLimit'] ? tx.vin.slice(0, 10) : tx.vin); trackBy: trackByIndexFn">
               <td class="arrow-td">
                 <ng-template [ngIf]="vin.prevout === null && !vin.is_pegin" [ngIfElse]="hasPrevout">
                   <i class="arrow grey"></i>
@@ -61,9 +61,9 @@
                 </ng-template>
               </td>
             </tr>
-            <tr *ngIf="tx.vin.length > tx['@vinLength']">
+            <tr *ngIf="tx.vin.length > 10 && tx['@vinLimit']">
               <td colspan="3" class="text-center">
-                <button class="btn btn-sm btn-primary mt-2" (click)="loadMoreVin(tx)">Load more ({{ tx.vin.length - tx['@vinLength'] }})</button>
+                <button class="btn btn-sm btn-primary mt-2" (click)="tx['@vinLimit'] = false;">Load all ({{ tx.vin.length - 10 }})</button>
               </td>
             </tr>
           </tbody>
@@ -73,7 +73,7 @@
       <div class="col mobile-bottomcol">
         <table class="table table-borderless smaller-text table-xs"  style="margin: 0;">
           <tbody>
-            <tr *ngFor="let vout of getFilteredTxVout(tx); let vindex = index; trackBy: trackByIndexFn">
+            <tr *ngFor="let vout of (tx['@voutLimit'] ? tx.vout.slice(0, 10) : tx.vout); let vindex = index; trackBy: trackByIndexFn">
               <td>
                 <a *ngIf="vout.scriptpubkey_address; else scriptpubkey_type" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">
                   <span class="d-block d-lg-none">{{ vout.scriptpubkey_address | shortenString : 16 }}</span>
@@ -111,9 +111,9 @@
                 </ng-template>
               </td>
             </tr>
-            <tr *ngIf="tx.vout.length > tx['@voutLength']">
+            <tr *ngIf="tx.vout.length > 10 && tx['@voutLimit']">
               <td colspan="3" class="text-center">
-                <button class="btn btn-sm btn-primary mt-2" (click)="loadMoreVout(tx)">Load more ({{ tx.vout.length - tx['@voutLength'] }})</button>
+                <button class="btn btn-sm btn-primary mt-2" (click)="tx['@voutLimit'] = false;">Load all ({{ tx.vout.length - 10 }})</button>
               </td>
             </tr>
           </tbody>
