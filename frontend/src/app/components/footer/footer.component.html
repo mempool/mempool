@@ -2,7 +2,7 @@
   <div class="container-xl">
     <div class="row text-center" *ngIf="mempoolInfoData$ | async as mempoolInfoData">
       <div class="col d-none d-sm-block">
-        <span class="txPerSecond">Tx weight per second:</span>
+        <span class="txPerSecond">Tx vBytes per second:</span>
         <span *ngIf="mempoolInfoData.vBytesPerSecond === 0; else inSync">
           &nbsp;<span class="badge badge-pill badge-warning">Backend is synchronizing</span>
         </span>

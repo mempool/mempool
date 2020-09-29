@@ -52,7 +52,7 @@
     <div class="col mb-4">
       <div class="card text-center graph-card">
         <div class="card-body ">
-          <h5 class="card-title">Tx weight per second</h5>
+          <h5 class="card-title">Tx vBytes per second</h5>
             <ng-template [ngIf]="mempoolInfoData.value" [ngIfElse]="loading">
               <span *ngIf="mempoolInfoData.value.vBytesPerSecond === 0; else inSync">
                 &nbsp;<span class="badge badge-pill badge-warning">Backend is synchronizing</span>
