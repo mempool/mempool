@@ -91,9 +91,9 @@ class Bisq {
         this.tradesLastMtime = tradesMtime;
         marketsDataUpdated = true;
       }
-      const time = new Date().getTime() - start;
       if (marketsDataUpdated) {
         bisqMarket.updateCache();
+        const time = new Date().getTime() - start;
         console.log('Bisq market data updated in ' + time + ' ms');
       }
     } catch (e) {
