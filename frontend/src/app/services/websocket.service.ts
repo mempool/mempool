@@ -11,7 +11,7 @@ const WEB_SOCKET_URL = WEB_SOCKET_PROTOCOL + '//' + document.location.hostname +
 
 const OFFLINE_RETRY_AFTER_MS = 10000;
 const OFFLINE_PING_CHECK_AFTER_MS = 30000;
-const EXPECT_PING_RESPONSE_AFTER_MS = 1000;
+const EXPECT_PING_RESPONSE_AFTER_MS = 4000;
 
 @Injectable({
   providedIn: 'root'
