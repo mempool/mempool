@@ -12,7 +12,7 @@ import { BisqTransactionDetailsComponent } from './bisq-transaction-details/bisq
 import { BisqTransfersComponent } from './bisq-transfers/bisq-transfers.component';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faLeaf, faQuestion, faExclamationTriangle, faRocket, faRetweet, faFileAlt, faMoneyBill,
-  faEye, faEyeSlash, faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons';
+  faEye, faEyeSlash, faLock, faLockOpen, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { BisqBlocksComponent } from './bisq-blocks/bisq-blocks.component';
 import { BisqExplorerComponent } from './bisq-explorer/bisq-explorer.component';
 import { BisqApiService } from './bisq-api.service';
@@ -49,6 +49,7 @@ import { BsqAmountComponent } from './bsq-amount/bsq-amount.component';
 export class BisqModule {
   constructor(library: FaIconLibrary) {
     library.addIcons(faQuestion);
+    library.addIcons(faExclamationCircle);
     library.addIcons(faExclamationTriangle);
     library.addIcons(faRocket);
     library.addIcons(faRetweet);
