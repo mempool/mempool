@@ -73,6 +73,10 @@ export class BisqIconComponent implements OnChanges {
         this.iconProp[1] = 'file-alt';
         this.color = '6c8b3b';
         break;
+      case 'IRREGULAR':
+        this.iconProp[1] = 'exclamation-circle';
+        this.color = 'ffd700';
+        break;
       default:
         this.iconProp[1] = 'question';
         this.color = 'ffac00';

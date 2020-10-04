@@ -30,6 +30,7 @@ export class BisqTransactionsComponent implements OnInit {
       { id: 2, name: 'Blind vote' },
       { id: 3, name: 'Compensation request' },
       { id: 4, name: 'Genesis' },
+      { id: 13, name: 'Irregular' },
       { id: 5, name: 'Lockup' },
       { id: 6, name: 'Pay trade fee' },
       { id: 7, name: 'Proof of burn' },
@@ -39,7 +40,7 @@ export class BisqTransactionsComponent implements OnInit {
       { id: 11, name: 'Unlock' },
       { id: 12, name: 'Vote reveal' },
   ];
-  txTypesDefaultChecked = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  txTypesDefaultChecked = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 
   txTypeDropdownSettings: IMultiSelectSettings = {
     buttonClasses: 'btn btn-primary btn-sm',
@@ -59,7 +60,7 @@ export class BisqTransactionsComponent implements OnInit {
   paginationMaxSize = 10;
 
   txTypes = ['ASSET_LISTING_FEE', 'BLIND_VOTE', 'COMPENSATION_REQUEST', 'GENESIS', 'LOCKUP', 'PAY_TRADE_FEE',
-    'PROOF_OF_BURN', 'PROPOSAL', 'REIMBURSEMENT_REQUEST', 'TRANSFER_BSQ', 'UNLOCK', 'VOTE_REVEAL'];
+    'PROOF_OF_BURN', 'PROPOSAL', 'REIMBURSEMENT_REQUEST', 'TRANSFER_BSQ', 'UNLOCK', 'VOTE_REVEAL', 'IRREGULAR'];
 
   constructor(
     private bisqApiService: BisqApiService,
