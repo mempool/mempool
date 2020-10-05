@@ -54,7 +54,7 @@ export class FeesBoxComponent implements OnInit {
   }
 
   optimizeMedianFee(pBlock: MempoolBlock, previousFee?: number): number {
-    const useFee = previousFee ? (pBlock.medianFee + previousFee / 2) : pBlock.medianFee;
+    const useFee = previousFee ? (pBlock.medianFee + previousFee) / 2 : pBlock.medianFee;
     if (pBlock.blockVSize <= 500000) {
       return this.defaultFee;
     }
