@@ -1,4 +1,5 @@
 const config = require('../../mempool-config.json');
+import { MempoolBlock } from '../interfaces';
 import projectedBlocks from './mempool-blocks';
 
 class FeeApi {
@@ -8,6 +9,7 @@ class FeeApi {
 
   public getRecommendedFee() {
     const pBlocks = projectedBlocks.getMempoolBlocks();
+
     if (!pBlocks.length) {
       return {
         'fastestFee': this.defaultFee,
@@ -15,20 +17,28 @@ class FeeApi {
         'hourFee': this.defaultFee,
       };
     }
-    let firstMedianFee = Math.ceil(pBlocks[0].medianFee);
 
-    if (pBlocks.length === 1 && pBlocks[0].blockVSize <= 500000) {
-      firstMedianFee = this.defaultFee;
-    }
-
-    const secondMedianFee = pBlocks[1] ? Math.ceil(pBlocks[1].medianFee) : this.defaultFee;
-    const thirdMedianFee = pBlocks[2] ? Math.ceil(pBlocks[2].medianFee) : this.defaultFee;
+    const firstMedianFee = this.optimizeMedianFee(pBlocks[0]);
+    const secondMedianFee = pBlocks[1] ? this.optimizeMedianFee(pBlocks[1], firstMedianFee) : this.defaultFee;
+    const thirdMedianFee = pBlocks[2] ? this.optimizeMedianFee(pBlocks[2], secondMedianFee) : this.defaultFee;
 
     return {
       'fastestFee': firstMedianFee,
       'halfHourFee': secondMedianFee,
       'hourFee': thirdMedianFee,
     };
+  }
+
+  private optimizeMedianFee(pBlock: MempoolBlock, previousFee?: number): number {
+    const useFee = previousFee ? (pBlock.medianFee + previousFee / 2) : pBlock.medianFee;
+    if (pBlock.blockVSize <= 500000) {
+      return this.defaultFee;
+    }
+    if (pBlock.blockVSize <= 950000) {
+      const multiplier = (pBlock.blockVSize - 500000) / 500000;
+      return Math.max(Math.round(useFee * multiplier), this.defaultFee);
+    }
+    return Math.round(useFee);
   }
 }
 
