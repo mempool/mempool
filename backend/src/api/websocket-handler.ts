@@ -151,7 +151,7 @@ class WebsocketHandler {
       if (client['want-stats']) {
         response['mempoolInfo'] = mempoolInfo;
         response['vBytesPerSecond'] = vBytesPerSecond;
-        response['transactions'] = newTransactions.splice(0, 6).map((tx) => Common.stripTransaction(tx));
+        response['transactions'] = newTransactions.slice(0, 6).map((tx) => Common.stripTransaction(tx));
       }
 
       if (client['want-mempool-blocks']) {
