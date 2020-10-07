@@ -14,3 +14,17 @@ tr {
 .nowrap {
   white-space: nowrap;
 }
+
+.qr-wrapper {
+  background-color: #FFF;
+  padding: 10px;
+  display: inline-block;
+}
+
+.profile_photo {
+  width: 80px;
+  height: 80px;
+  background-size: 100%, 100%;
+  border-radius: 50%;
+  cursor: pointer;
+}
