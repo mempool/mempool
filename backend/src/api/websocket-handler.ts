@@ -99,6 +99,10 @@ class WebsocketHandler {
             response['pong'] = true;
           }
 
+          if (parsedMessage['track-donation'] && parsedMessage['track-donation'].length === 22) {
+            client['track-donation'] = parsedMessage['track-donation'];
+          }
+
           if (Object.keys(response).length) {
             client.send(JSON.stringify(response));
           }
@@ -106,6 +110,21 @@ class WebsocketHandler {
           console.log(e);
         }
       });
+    });
+  }
+
+  handleNewDonation(id: string) {
+    if (!this.wss) {
+      throw new Error('WebSocket.Server is not set');
+    }
+
+    this.wss.clients.forEach((client: WebSocket) => {
+      if (client.readyState !== WebSocket.OPEN) {
+        return;
+      }
+      if (client['track-donation'] === id) {
+        client.send(JSON.stringify({ donationConfirmed: true }));
+      }
     });
   }
 

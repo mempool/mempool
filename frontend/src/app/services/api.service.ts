@@ -61,4 +61,16 @@ export class ApiService {
     });
     return this.httpClient.get<number[]>(this.apiBaseUrl + '/transaction-times', { params });
   }
+
+  requestDonation$(amount: number, orderId: string): Observable<any> {
+    const params = {
+      amount: amount,
+      orderId: orderId,
+    };
+    return this.httpClient.post<any>(this.apiBaseUrl + '/donations', params);
+  }
+
+  getDonation$(): Observable<any[]> {
+    return this.httpClient.get<any[]>(this.apiBaseUrl + '/donations');
+  }
 }

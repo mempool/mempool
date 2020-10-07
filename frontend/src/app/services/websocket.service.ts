@@ -155,6 +155,10 @@ export class WebsocketService {
           this.stateService.gitCommit$.next(response['git-commit']);
         }
 
+        if (response.donationConfirmed) {
+          this.stateService.donationConfirmed$.next(true);
+        }
+
         if (this.goneOffline === true) {
           this.goneOffline = false;
           if (this.lastWant) {
@@ -187,6 +191,10 @@ export class WebsocketService {
   startMultiTrackTransaction(txId: string) {
     this.websocketSubject.next({ 'track-tx': txId, 'watch-mempool': true });
     this.isTrackingTx = true;
+  }
+
+  trackDonation(id: string) {
+    this.websocketSubject.next({ 'track-donation': id });
   }
 
   stopTrackingTransaction() {

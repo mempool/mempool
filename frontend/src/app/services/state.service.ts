@@ -34,6 +34,7 @@ export class StateService {
   vbytesPerSecond$ = new ReplaySubject<number>(1);
   lastDifficultyAdjustment$ = new ReplaySubject<number>(1);
   gitCommit$ = new ReplaySubject<string>(1);
+  donationConfirmed$ = new Subject();
 
   live2Chart$ = new Subject<OptimizedMempoolStats>();
 

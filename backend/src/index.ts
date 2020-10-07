@@ -18,6 +18,7 @@ import websocketHandler from './api/websocket-handler';
 import fiatConversion from './api/fiat-conversion';
 import bisq from './api/bisq/bisq';
 import bisqMarkets from './api/bisq/markets';
+import donations from './api/donations';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -62,7 +63,9 @@ class Server {
         res.setHeader('Access-Control-Allow-Origin', '*');
         next();
       })
-      .use(compression());
+      .use(compression())
+      .use(express.urlencoded({ extended: true }))
+      .use(express.json());
 
     if (config.SSL === true) {
       const credentials = {
@@ -122,6 +125,7 @@ class Server {
     statistics.setNewStatisticsEntryCallback(websocketHandler.handleNewStatistic.bind(websocketHandler));
     blocks.setNewBlockCallback(websocketHandler.handleNewBlock.bind(websocketHandler));
     memPool.setMempoolChangedCallback(websocketHandler.handleMempoolChange.bind(websocketHandler));
+    donations.setNotfyDonationStatusCallback(websocketHandler.handleNewDonation.bind(websocketHandler));
   }
 
   setUpHttpApiRoutes() {
@@ -162,6 +166,14 @@ class Server {
         .get(config.API_ENDPOINT + 'bisq/markets/trades', routes.getBisqMarketTrades.bind(routes))
         .get(config.API_ENDPOINT + 'bisq/markets/volumes', routes.getBisqMarketVolumes.bind(routes))
         ;
+    }
+
+    if (config.BTCPAY_URL) {
+      this.app
+        .get(config.API_ENDPOINT + 'donations', routes.getDonations.bind(routes))
+        .post(config.API_ENDPOINT + 'donations', routes.createDonationRequest.bind(routes))
+        .post(config.API_ENDPOINT + 'donations-webhook', routes.donationWebhook.bind(routes))
+      ;
     }
   }
 }
