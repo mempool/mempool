@@ -40,7 +40,7 @@ export class AboutComponent implements OnInit {
     }
 
     this.donationForm = this.formBuilder.group({
-      amount: [0.001],
+      amount: [0.01],
       handle: [''],
     });
 
