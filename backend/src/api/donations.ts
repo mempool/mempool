@@ -24,7 +24,7 @@ class Donations {
       'orderId': orderId,
       'currency': 'BTC',
       'itemDesc': 'Sponsor mempool.space',
-      'notificationUrl': 'https://mempool.space/api/v1/donations-webhook',
+      'notificationUrl': config.BTCPAY_WEBHOOK_URL,
       'redirectURL': 'https://mempool.space/about'
     };
     return new Promise((resolve, reject) => {
