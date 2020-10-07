@@ -11,16 +11,23 @@ touch $HOME/lock
 export NVM_DIR="$HOME/.nvm"
 source "$NVM_DIR/nvm.sh"
 
-echo 'upgrading mempool'|wall
+REPO=origin
+BRANCH=master
+if [ ! -z "$1" ];then
+    BRANCH=$1
+fi
+echo "upgrading mempool to ${BRANCH}" | wall
 
 cd "$HOME/mempool"
-git pull --rebase origin master
+git fetch "${REPO}"
+git reset --hard "${REPO}/${BRANCH}"
 cd "$HOME/"
 
 for site in mainnet liquid testnet bisq
 do
     cd "$HOME/${site}"
-    git pull --rebase origin master
+    git fetch "${REPO}"
+    git reset --hard "${REPO}/${BRANCH}"
     hash=$(git rev-parse HEAD)
 
     if [ "${site}" = "mainnet" ]
