@@ -48,23 +48,30 @@ class Donations {
     if (!data || !data.id) {
       return;
     }
+
     const response = await this.getStatus(data.id);
-    if (response.status === 'complete') {
-      if (this.notifyDonationStatusCallback) {
-        this.notifyDonationStatusCallback(data.id);
-      }
-
-      let imageUrl = '';
-      if (response.orderId !== '') {
-        try {
-          imageUrl = await this.$getTwitterImageUrl(response.orderId);
-        } catch (e) {
-          console.log('Error fetching twitter image from Hive', e.message);
-        }
-      }
-
-      this.$addDonationToDatabase(response, imageUrl);
+    if (response.status !== 'complete') {
+      return;
     }
+
+    if (this.notifyDonationStatusCallback) {
+      this.notifyDonationStatusCallback(data.id);
+    }
+
+    if (parseFloat(response.btcPaid) < 0.001) {
+      return;
+    }
+
+    let imageUrl = '';
+    if (response.orderId !== '') {
+      try {
+        imageUrl = await this.$getTwitterImageUrl(response.orderId);
+      } catch (e) {
+        console.log('Error fetching twitter image', e.message);
+      }
+    }
+
+    this.$addDonationToDatabase(response, imageUrl);
   }
 
   private getStatus(id: string): Promise<any> {

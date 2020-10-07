@@ -117,8 +117,8 @@ class Routes {
       return;
     }
 
-    if (p.amount < 0.01) {
-      res.status(400).send('Amount needs to be at least 0.01');
+    if (p.amount < 0.001) {
+      res.status(400).send('Amount needs to be at least 0.001');
       return;
     }
 
