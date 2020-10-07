@@ -56,7 +56,7 @@
 
     <br><br>
 
-    <h2>GitHub</h2>
+    <h2>Open source</h2>
 
     <a target="_blank" class="b2812e30 f2874b88 fw6 mb3 mt2 truncate black-80 f4 link" rel="noopener noreferrer nofollow" href="https://github.com/mempool/mempool">
       <span class="_9e13d83d dib v-mid">
@@ -70,98 +70,10 @@
       <span>github.com/mempool/mempool</span></a>
   </div>
 
-  <br><br>
-
-  <div class="text-center">
-    <h2>API</h2>
-  </div>
-
-  <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
-    <li [ngbNavItem]="1">
-      <a ngbNavLink>Mainnet</a>
-      <ng-template ngbNavContent>
-
-        <table class="table">
-          <tr>
-            <th style="border-top: 0;">Endpoint</th>
-            <th style="border-top: 0;">Description</th>
-          </tr>
-          <tr>
-            <td class="nowrap"><a href="/api/v1/fees/recommended" target="_blank">GET /api/v1/fees/recommended</a></td>
-            <td>Recommended fees</td>
-          </tr>
-          <tr>
-            <td class="nowrap"><a href="/api/v1/fees/mempool-blocks" target="_blank">GET /api/v1/fees/mempool-blocks</a></td>
-            <td>The current mempool blocks</td>
-          </tr>
-          <tr>
-            <td class="nowrap">wss://{{ hostname }}/api/v1/ws</td>
-            <td>
-              <span class="text-small">
-                Default push: <span class="code">{{ '{' }} action: 'want', data: ['blocks', ...] {{ '}' }}</span>
-                to express what you want pushed. Available: 'blocks', 'mempool-blocks', 'live-2h-chart' and 'stats'.
-              </span>
-              <br><br>
-              <span class="text-small">
-                Push transactions related to address: <span class="code">{{ '{' }} 'track-address': '3PbJ...bF9B' {{ '}' }}</span>
-                to receive all new transactions containing that address as input or output. Returns an array of transactions. 'address-transactions' for new mempool transactions and 'block-transactions' for new block confirmed transactions.
-              </span>
-            </td>
-          </tr>
-        </table>
-
-      </ng-template>
-    </li>
-    <li [ngbNavItem]="2">
-      <a ngbNavLink>Bisq</a>
-      <ng-template ngbNavContent>
-        
-        <table class="table">
-          <tr>
-            <th style="border-top: 0;">Endpoint</th>
-            <th style="border-top: 0;">Description</th>
-          </tr>
-          <tr>
-            <td class="nowrap"><a href="/bisq/api/stats" target="_blank">GET /bisq/api/stats</a></td>
-            <td>Stats</td>
-          </tr>
-          <tr>
-            <td class="nowrap"><a href="/bisq/api/tx/4b5417ec5ab6112bedf539c3b4f5a806ed539542d8b717e1c4470aa3180edce5" target="_blank">GET /bisq/api/tx/:txId</a></td>
-            <td>Transaction</td>
-          </tr>
-          <tr>
-            <td class="nowrap"><a href="/bisq/api/txs/0/25" target="_blank">GET /bisq/api/txs/:index/:length</a></td>
-            <td>Transactions</td>
-          </tr>
-          <tr>
-            <td class="nowrap"><a href="/bisq/api/block/000000000000000000079aa6bfa46eb8fc20474e8673d6e8a123b211236bf82d" target="_blank">GET /bisq/api/block/:hash</a></td>
-            <td>Block</td>
-          </tr>
-          <tr>
-            <td class="nowrap"><a href="/bisq/api/blocks/0/25" target="_blank">GET /bisq/api/blocks/:index/:length</a></td>
-            <td>Blocks</td>
-          </tr>
-          <tr>
-            <td class="nowrap"><a href="/bisq/api/blocks/tip/height" target="_blank">GET /bisq/api/blocks/tip/height</a></td>
-            <td>Latest block height</td>
-          </tr>
-          <tr>
-            <td class="nowrap"><a href="/bisq/api/address/B1DgwRN92rdQ9xpEVCdXRfgeqGw9X4YtrZz" target="_blank">GET /bisq/api/address/:address</a></td>
-            <td>Address</td>
-          </tr>
-        </table>
-      </ng-template>
-    </li>
-  </ul>
-
-  <div [ngbNavOutlet]="nav" class="mt-2"></div>
-
   <br>
 
   <div class="text-small text-center">
     Git commit: {{ gitCommit$ | async }}
   </div>
-
-  <br>
 
 </div>

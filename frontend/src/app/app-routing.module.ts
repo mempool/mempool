@@ -14,6 +14,7 @@ import { AssetsComponent } from './assets/assets.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LatestBlocksComponent } from './components/latest-blocks/latest-blocks.component';
+import { ApiDocsComponent } from './components/api-docs/api-docs.component';
 
 const routes: Routes = [
   {
@@ -53,6 +54,10 @@ const routes: Routes = [
       {
         path: 'about',
         component: AboutComponent,
+      },
+      {
+        path: 'api',
+        component: ApiDocsComponent,
       },
       {
         path: 'address/:id',
@@ -109,6 +114,10 @@ const routes: Routes = [
           {
             path: 'assets',
             component: AssetsComponent,
+          },
+          {
+            path: 'api',
+            component: ApiDocsComponent,
           },
         ],
       },
@@ -167,6 +176,10 @@ const routes: Routes = [
             path: 'address/:id',
             children: [],
             component: AddressComponent
+          },
+          {
+            path: 'api',
+            component: ApiDocsComponent,
           },
         ],
       },
