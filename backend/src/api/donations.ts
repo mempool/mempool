@@ -50,7 +50,7 @@ class Donations {
     }
 
     const response = await this.getStatus(data.id);
-    if (response.status !== 'complete') {
+    if (response.status !== 'complete' && response.status !== 'confirmed') {
       return;
     }
 
