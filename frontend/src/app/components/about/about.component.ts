@@ -5,6 +5,7 @@ import { StateService } from 'src/app/services/state.service';
 import { Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApiService } from 'src/app/services/api.service';
+import { env } from '../../app.constants';
 
 @Component({
   selector: 'app-about',
@@ -17,6 +18,7 @@ export class AboutComponent implements OnInit {
   donationStatus = 1;
   sponsors$: Observable<any>;
   donationObj: any;
+  sponsorsEnabled = env.SPONSORS_ENABLED;
 
   constructor(
     private websocketService: WebsocketService,
