@@ -99,10 +99,6 @@ const routes: Routes = [
             component: StatisticsComponent,
           },
           {
-            path: 'about',
-            component: AboutComponent,
-          },
-          {
             path: 'address/:id',
             component: AddressComponent
           },
@@ -166,10 +162,6 @@ const routes: Routes = [
           {
             path: 'graphs',
             component: StatisticsComponent,
-          },
-          {
-            path: 'about',
-            component: AboutComponent,
           },
           {
             path: 'address/:id',
