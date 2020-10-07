@@ -12,49 +12,53 @@
 
     <br><br>
 
-    <h2>❤️ Sponsors</h2>
+    <ng-template [ngIf]="sponsorsEnabled">
 
-    <div *ngFor="let sponsor of sponsors$ | async; let i = index" (click)="openTwitterProfile(sponsor.handle)" class="profile_photo d-inline-block" [class.ml-3]="i > 0" [ngStyle]="{'background-image': 'url(' + sponsor.imageUrl + ')'}" [title]="sponsor.handle"></div>
-    <br><br>
-    
-    <button type="button" class="btn btn-primary" (click)="donationStatus = 2" [hidden]="donationStatus !== 1">Become a sponsor</button>
+      <h2>❤️ Sponsors</h2>
 
-    <div style="max-width: 300px;" class="mx-auto" [hidden]="donationStatus !== 2">
-      <form [formGroup]="donationForm" (submit)="submitDonation()" class="form">
-        <div class="input-group mb-2">
-          <div class="input-group-prepend" style="width: 42px;">
-            <span class="input-group-text">₿</span>
+      <div *ngFor="let sponsor of sponsors$ | async; let i = index" (click)="openTwitterProfile(sponsor.handle)" class="profile_photo d-inline-block" [class.ml-3]="i > 0" [ngStyle]="{'background-image': 'url(' + sponsor.imageUrl + ')'}" [title]="sponsor.handle"></div>
+      <br><br>
+      
+      <button type="button" class="btn btn-primary" (click)="donationStatus = 2" [hidden]="donationStatus !== 1">Become a sponsor</button>
+
+      <div style="max-width: 300px;" class="mx-auto" [hidden]="donationStatus !== 2">
+        <form [formGroup]="donationForm" (submit)="submitDonation()" class="form">
+          <div class="input-group mb-2">
+            <div class="input-group-prepend" style="width: 42px;">
+              <span class="input-group-text">₿</span>
+            </div>
+            <input formControlName="amount" class="form-control" type="number" min="0.01" step="1E-03">
           </div>
-          <input formControlName="amount" class="form-control" type="number" min="0.01" step="1E-03">
-        </div>
-        <div class="input-group mb-4">
-          <div class="input-group-prepend" style="width: 42px;">
-            <span class="input-group-text">@</span>
+          <div class="input-group mb-4">
+            <div class="input-group-prepend" style="width: 42px;">
+              <span class="input-group-text">@</span>
+            </div>
+            <input formControlName="handle" class="form-control" type="text" placeholder="Twitter handle (Optional)">
           </div>
-          <input formControlName="handle" class="form-control" type="text" placeholder="Twitter handle (Optional)">
-        </div>
-        <div class="input-group">
-          <button class="btn btn-primary mx-auto" type="submit">Request invoice</button>
-        </div>
-      </form>
-    </div>
-
-    <div *ngIf="donationStatus === 3" class="text-center">
-      <div class="qr-wrapper mt-4 mb-2">
-        <app-qrcode [data]="donationObj.address + '?amount=' + donationObj.amount"></app-qrcode>
+          <div class="input-group">
+            <button class="btn btn-primary mx-auto" type="submit">Request invoice</button>
+          </div>
+        </form>
       </div>
-      <br>
-      <p style="font-size: 10px;">{{ donationObj.address }}</p>
-      <p>Waiting for transaction... </p>
-      <div class="spinner-border text-light"></div>
-    </div>
 
-    <div *ngIf="donationStatus === 4" class="text-center">
-      <h2>Donation confirmed!<br>Thank you!</h2>
-      <p>If you specified a Twitter handle, the profile photo should now be visible on this page when you reload.</p>
-    </div>
+      <div *ngIf="donationStatus === 3" class="text-center">
+        <div class="qr-wrapper mt-4 mb-2">
+          <app-qrcode [data]="donationObj.address + '?amount=' + donationObj.amount"></app-qrcode>
+        </div>
+        <br>
+        <p style="font-size: 10px;">{{ donationObj.address }}</p>
+        <p>Waiting for transaction... </p>
+        <div class="spinner-border text-light"></div>
+      </div>
 
-    <br><br>
+      <div *ngIf="donationStatus === 4" class="text-center">
+        <h2>Donation confirmed!<br>Thank you!</h2>
+        <p>If you specified a Twitter handle, the profile photo should now be visible on this page when you reload.</p>
+      </div>
+
+      <br><br>
+
+    </ng-template>
 
     <h2>Open source</h2>
 
