@@ -24,5 +24,6 @@
   "SSL_CERT_FILE_PATH": "/etc/letsencrypt/live/mysite/fullchain.pem",
   "SSL_KEY_FILE_PATH": "/etc/letsencrypt/live/mysite/privkey.pem",
   "BTCPAY_URL": "",
+  "BTCPAY_WEBHOOK_URL": "",
   "BTCPAY_AUTH": ""
 }
