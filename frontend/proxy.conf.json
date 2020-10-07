@@ -8,11 +8,11 @@
     "secure": false,
     "ws": true
   },
-  "/api": {
+  "/api/": {
     "target": "http://localhost:50001/",
     "secure": false,
     "pathRewrite": {
-      "^/api": ""
+      "^/api/": ""
     }
   },
   "/testnet/api/v1": {
@@ -30,7 +30,7 @@
       "^/testnet/api": "/api/v1/ws"
     }
   },
-  "/testnet/api": {
+  "/testnet/api/": {
     "target": "http://localhost:50001/",
     "secure": false,
     "pathRewrite": {
@@ -45,18 +45,18 @@
       "^/liquid/api": "/api/v1/ws"
     }
   },
-  "/liquid/api": {
+  "/liquid/api/": {
     "target": "http://localhost:50001/",
     "secure": false,
     "pathRewrite": {
-      "^/liquid/api": ""
+      "^/liquid/api/": ""
     }
   },
-  "/bisq/api": {
+  "/bisq/api/": {
     "target": "http://localhost:8999/",
     "secure": false,
     "pathRewrite": {
-      "^/bisq/api": "/api/v1/bisq"
+      "^/bisq/api/": "/api/v1/bisq"
     }
   },
   "/bisq/api/v1/ws": {
@@ -64,7 +64,7 @@
     "secure": false,
     "ws": true,
     "pathRewrite": {
-      "^/testnet/api": "/api/v1/ws"
+      "^/bisq/api": "/api/v1/ws"
     }
   }
 }

@@ -9,6 +9,7 @@ import bisq from './api/bisq/bisq';
 import bisqMarket from './api/bisq/markets-api';
 import { RequiredSpec } from './interfaces';
 import { MarketsApiError } from './api/bisq/interfaces';
+import donations from './api/donations';
 
 class Routes {
   private cache = {};
@@ -98,6 +99,55 @@ class Routes {
     res.json(backendInfo.getBackendInfo());
   }
 
+  public async createDonationRequest(req: Request, res: Response) {
+    const constraints: RequiredSpec = {
+      'amount': {
+        required: true,
+        types: ['@float']
+      },
+      'orderId': {
+        required: true,
+        types: ['@string']
+      }
+    };
+
+    const p = this.parseRequestParameters(req.body, constraints);
+    if (p.error) {
+      res.status(400).send(p.error);
+      return;
+    }
+
+    if (p.amount < 0.001) {
+      res.status(400).send('Amount needs to be at least 0.001');
+      return;
+    }
+
+    try {
+      const result = await donations.createRequest(p.amount, p.orderId);
+      res.json(result);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
+  }
+
+  public async getDonations(req: Request, res: Response) {
+    try {
+      const result = await donations.$getDonationsFromDatabase();
+      res.json(result);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
+  }
+
+  public async donationWebhook(req: Request, res: Response) {
+    try {
+      donations.$handleWebhookRequest(req.body);
+      res.end();
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  }
+
   public getBisqStats(req: Request, res: Response) {
     const result = bisq.getStats();
     res.json(result);
@@ -173,7 +223,7 @@ class Routes {
       },
     };
 
-    const p = this.parseRequestParameters(req, constraints);
+    const p = this.parseRequestParameters(req.query, constraints);
     if (p.error) {
       res.status(400).json(this.getBisqMarketErrorResponse(p.error));
       return;
@@ -195,7 +245,7 @@ class Routes {
       },
     };
 
-    const p = this.parseRequestParameters(req, constraints);
+    const p = this.parseRequestParameters(req.query, constraints);
     if (p.error) {
       res.status(400).json(this.getBisqMarketErrorResponse(p.error));
       return;
@@ -254,7 +304,7 @@ class Routes {
       }
     };
 
-    const p = this.parseRequestParameters(req, constraints);
+    const p = this.parseRequestParameters(req.query, constraints);
     if (p.error) {
       res.status(400).json(this.getBisqMarketErrorResponse(p.error));
       return;
@@ -281,7 +331,7 @@ class Routes {
       },
     };
 
-    const p = this.parseRequestParameters(req, constraints);
+    const p = this.parseRequestParameters(req.query, constraints);
     if (p.error) {
       res.status(400).json(this.getBisqMarketErrorResponse(p.error));
       return;
@@ -323,7 +373,7 @@ class Routes {
       },
     };
 
-    const p = this.parseRequestParameters(req, constraints);
+    const p = this.parseRequestParameters(req.query, constraints);
     if (p.error) {
       res.status(400).json(this.getBisqMarketErrorResponse(p.error));
       return;
@@ -365,7 +415,7 @@ class Routes {
       },
     };
 
-    const p = this.parseRequestParameters(req, constraints);
+    const p = this.parseRequestParameters(req.query, constraints);
     if (p.error) {
       res.status(400).json(this.getBisqMarketErrorResponse(p.error));
       return;
@@ -387,7 +437,7 @@ class Routes {
       },
     };
 
-    const p = this.parseRequestParameters(req, constraints);
+    const p = this.parseRequestParameters(req.query, constraints);
     if (p.error) {
       res.status(400).json(this.getBisqMarketErrorResponse(p.error));
       return;
@@ -401,15 +451,15 @@ class Routes {
     }
   }
 
-  private parseRequestParameters(req: Request, params: RequiredSpec): { [name: string]: any; } {
+  private parseRequestParameters(requestParams: object, params: RequiredSpec): { [name: string]: any; } {
     const final = {};
     for (const i in params) {
       if (params.hasOwnProperty(i)) {
-        if (params[i].required && !req.query[i]) {
+        if (params[i].required && requestParams[i] === undefined) {
           return { error: i + ' parameter missing'};
         }
-        if (typeof req.query[i] === 'string') {
-          const str = (req.query[i] || '').toString().toLowerCase();
+        if (typeof requestParams[i] === 'string') {
+          const str = (requestParams[i] || '').toString().toLowerCase();
           if (params[i].types.indexOf('@number') > -1) {
             const number = parseInt((str).toString(), 10);
             final[i] = number;
@@ -422,6 +472,8 @@ class Routes {
           } else {
             return { error: i + ' parameter invalid'};
           }
+        } else if (typeof requestParams[i] === 'number') {
+          final[i] = requestParams[i];
         }
       }
     }

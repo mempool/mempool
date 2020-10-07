@@ -12,9 +12,63 @@
 
     <br><br>
 
-    <iframe src='https://btcpay.wiz.biz/apps/4XrJdGCE2a8FMEkRd52YwoiwzJqP/pos' style='height: 600px; width: 400px; border: 0;'></iframe>
+    <ng-template [ngIf]="sponsorsEnabled">
 
-    <h2>GitHub</h2>
+      <h2>❤️ Sponsors</h2>
+
+      <div *ngFor="let sponsor of sponsors$ | async; let i = index" (click)="openTwitterProfile(sponsor.handle)" class="profile_photo d-inline-block" [class.ml-3]="i > 0" [ngStyle]="{'background-image': 'url(' + sponsor.imageUrl + ')'}" [title]="sponsor.handle"></div>
+      <br><br>
+      
+      <button type="button" class="btn btn-primary" (click)="donationStatus = 2" [hidden]="donationStatus !== 1">Become a sponsor</button>
+
+      <div style="max-width: 300px;" class="mx-auto" [hidden]="donationStatus !== 2">
+        <form [formGroup]="donationForm" (submit)="submitDonation()" class="form">
+          <div class="input-group mb-2">
+            <div class="input-group-prepend" style="width: 42px;">
+              <span class="input-group-text">₿</span>
+            </div>
+            <input formControlName="amount" class="form-control" type="number" min="0.001" step="1E-03">
+          </div>
+          <div class="input-group mb-4" *ngIf="donationForm.get('amount').value >= 0.01; else lowAmount">
+            <div class="input-group-prepend" style="width: 42px;">
+              <span class="input-group-text">@</span>
+            </div>
+            <input formControlName="handle" class="form-control" type="text" placeholder="Twitter handle (Optional)">
+          </div>
+          <div class="input-group">
+            <button class="btn btn-primary mx-auto" type="submit">Request invoice</button>
+          </div>
+        </form>
+      </div>
+
+      <ng-template #lowAmount>
+        <div class="input-group mb-4 text-small">
+          If you donate 0.01 BTC or more, your profile photo will be added to the list of sponsors above :)
+        </div>
+      </ng-template>
+
+      <div *ngIf="donationStatus === 3" class="text-center">
+        <div class="qr-wrapper mt-2 mb-2">
+          <app-qrcode [data]="donationObj.address + '?amount=' + donationObj.amount"></app-qrcode>
+        </div>
+        <br>
+        <p style="font-size: 10px;">{{ donationObj.address }}</p>
+        <p style="font-size: 12px;">{{ donationObj.amount }} BTC</p>
+
+        <p>Waiting for transaction... </p>
+        <div class="spinner-border text-light"></div>
+      </div>
+
+      <div *ngIf="donationStatus === 4" class="text-center">
+        <h2>Donation confirmed!<br>Thank you!</h2>
+        <p>If you specified a Twitter handle, the profile photo should now be visible on this page when you reload.</p>
+      </div>
+
+      <br><br>
+
+    </ng-template>
+
+    <h2>Open source</h2>
 
     <a target="_blank" class="b2812e30 f2874b88 fw6 mb3 mt2 truncate black-80 f4 link" rel="noopener noreferrer nofollow" href="https://github.com/mempool/mempool">
       <span class="_9e13d83d dib v-mid">
@@ -28,98 +82,10 @@
       <span>github.com/mempool/mempool</span></a>
   </div>
 
-  <br><br>
-
-  <div class="text-center">
-    <h2>API</h2>
-  </div>
-
-  <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
-    <li [ngbNavItem]="1">
-      <a ngbNavLink>Mainnet</a>
-      <ng-template ngbNavContent>
-
-        <table class="table">
-          <tr>
-            <th style="border-top: 0;">Endpoint</th>
-            <th style="border-top: 0;">Description</th>
-          </tr>
-          <tr>
-            <td class="nowrap"><a href="/api/v1/fees/recommended" target="_blank">GET /api/v1/fees/recommended</a></td>
-            <td>Recommended fees</td>
-          </tr>
-          <tr>
-            <td class="nowrap"><a href="/api/v1/fees/mempool-blocks" target="_blank">GET /api/v1/fees/mempool-blocks</a></td>
-            <td>The current mempool blocks</td>
-          </tr>
-          <tr>
-            <td class="nowrap">wss://{{ hostname }}/api/v1/ws</td>
-            <td>
-              <span class="text-small">
-                Default push: <span class="code">{{ '{' }} action: 'want', data: ['blocks', ...] {{ '}' }}</span>
-                to express what you want pushed. Available: 'blocks', 'mempool-blocks', 'live-2h-chart' and 'stats'.
-              </span>
-              <br><br>
-              <span class="text-small">
-                Push transactions related to address: <span class="code">{{ '{' }} 'track-address': '3PbJ...bF9B' {{ '}' }}</span>
-                to receive all new transactions containing that address as input or output. Returns an array of transactions. 'address-transactions' for new mempool transactions and 'block-transactions' for new block confirmed transactions.
-              </span>
-            </td>
-          </tr>
-        </table>
-
-      </ng-template>
-    </li>
-    <li [ngbNavItem]="2">
-      <a ngbNavLink>Bisq</a>
-      <ng-template ngbNavContent>
-        
-        <table class="table">
-          <tr>
-            <th style="border-top: 0;">Endpoint</th>
-            <th style="border-top: 0;">Description</th>
-          </tr>
-          <tr>
-            <td class="nowrap"><a href="/bisq/api/stats" target="_blank">GET /bisq/api/stats</a></td>
-            <td>Stats</td>
-          </tr>
-          <tr>
-            <td class="nowrap"><a href="/bisq/api/tx/4b5417ec5ab6112bedf539c3b4f5a806ed539542d8b717e1c4470aa3180edce5" target="_blank">GET /bisq/api/tx/:txId</a></td>
-            <td>Transaction</td>
-          </tr>
-          <tr>
-            <td class="nowrap"><a href="/bisq/api/txs/0/25" target="_blank">GET /bisq/api/txs/:index/:length</a></td>
-            <td>Transactions</td>
-          </tr>
-          <tr>
-            <td class="nowrap"><a href="/bisq/api/block/000000000000000000079aa6bfa46eb8fc20474e8673d6e8a123b211236bf82d" target="_blank">GET /bisq/api/block/:hash</a></td>
-            <td>Block</td>
-          </tr>
-          <tr>
-            <td class="nowrap"><a href="/bisq/api/blocks/0/25" target="_blank">GET /bisq/api/blocks/:index/:length</a></td>
-            <td>Blocks</td>
-          </tr>
-          <tr>
-            <td class="nowrap"><a href="/bisq/api/blocks/tip/height" target="_blank">GET /bisq/api/blocks/tip/height</a></td>
-            <td>Latest block height</td>
-          </tr>
-          <tr>
-            <td class="nowrap"><a href="/bisq/api/address/B1DgwRN92rdQ9xpEVCdXRfgeqGw9X4YtrZz" target="_blank">GET /bisq/api/address/:address</a></td>
-            <td>Address</td>
-          </tr>
-        </table>
-      </ng-template>
-    </li>
-  </ul>
-
-  <div [ngbNavOutlet]="nav" class="mt-2"></div>
-
   <br>
 
   <div class="text-small text-center">
     Git commit: {{ gitCommit$ | async }}
   </div>
-
-  <br>
 
 </div>

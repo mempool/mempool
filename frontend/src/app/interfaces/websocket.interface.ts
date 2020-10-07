@@ -14,10 +14,12 @@ export interface WebsocketResponse {
   tx?: Transaction;
   rbfTransaction?: Transaction;
   transactions?: TransactionStripped[];
+  donationConfirmed?: boolean;
   'track-tx'?: string;
   'track-address'?: string;
   'track-asset'?: string;
   'watch-mempool'?: boolean;
+  'track-donation'?: string;
 }
 
 export interface MempoolBlock {

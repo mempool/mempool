@@ -39,6 +39,7 @@ interface Env {
   LIQUID_ENABLED: boolean;
   BISQ_ENABLED: boolean;
   BISQ_SEPARATE_BACKEND: boolean;
+  SPONSORS_ENABLED: boolean;
   ELCTRS_ITEMS_PER_PAGE: number;
   KEEP_BLOCKS_AMOUNT: number;
 }
@@ -48,6 +49,7 @@ const defaultEnv: Env = {
   'LIQUID_ENABLED': false,
   'BISQ_ENABLED': false,
   'BISQ_SEPARATE_BACKEND': false,
+  'SPONSORS_ENABLED': false,
   'ELCTRS_ITEMS_PER_PAGE': 25,
   'KEEP_BLOCKS_AMOUNT': 8
 };
