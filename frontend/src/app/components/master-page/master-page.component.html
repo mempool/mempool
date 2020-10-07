@@ -52,7 +52,7 @@
       <li *ngIf="network.val === 'liquid'" class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/liquid/assets']" (click)="collapse()"><fa-icon [icon]="['fas', 'database']" [fixedWidth]="true" title="Assets"></fa-icon></a>
       </li>
-      <li class="nav-item" routerLinkActive="active">
+      <li *ngIf="network.val === ''" class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/about' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true" title="About"></fa-icon></a>
       </li>
     </ul>
