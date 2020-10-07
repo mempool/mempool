@@ -1,20 +1,3 @@
-.text-small {
-  font-size: 12px;
-}
-
-.code {
-  background-color: #1d1f31;
-  font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;
-}
-
-tr {
-  white-space: inherit;
-}
-
-.nowrap {
-  white-space: nowrap;
-}
-
 .qr-wrapper {
   background-color: #FFF;
   padding: 10px;
@@ -27,4 +10,8 @@ tr {
   background-size: 100%, 100%;
   border-radius: 50%;
   cursor: pointer;
+}
+
+.text-small {
+  font-size: 12px;
 }

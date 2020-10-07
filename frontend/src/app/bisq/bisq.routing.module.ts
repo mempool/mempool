@@ -8,6 +8,7 @@ import { BisqBlocksComponent } from './bisq-blocks/bisq-blocks.component';
 import { BisqExplorerComponent } from './bisq-explorer/bisq-explorer.component';
 import { BisqAddressComponent } from './bisq-address/bisq-address.component';
 import { BisqStatsComponent } from './bisq-stats/bisq-stats.component';
+import { ApiDocsComponent } from '../components/api-docs/api-docs.component';
 
 const routes: Routes = [
   {
@@ -42,6 +43,10 @@ const routes: Routes = [
       {
         path: 'about',
         component: AboutComponent,
+      },
+      {
+        path: 'api',
+        component: ApiDocsComponent,
       },
       {
         path: '**',

@@ -12,8 +12,6 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrls: ['./about.component.scss'],
 })
 export class AboutComponent implements OnInit {
-  active = 1;
-  hostname = document.location.hostname;
   gitCommit$: Observable<string>;
   donationForm: FormGroup;
   donationStatus = 1;
@@ -32,12 +30,6 @@ export class AboutComponent implements OnInit {
     this.gitCommit$ = this.stateService.gitCommit$;
     this.seoService.setTitle('About');
     this.websocketService.want(['blocks']);
-    if (this.stateService.network === 'bisq') {
-      this.active = 2;
-    }
-    if (document.location.port !== '') {
-      this.hostname = this.hostname + ':' + document.location.port;
-    }
 
     this.donationForm = this.formBuilder.group({
       amount: [0.01],
