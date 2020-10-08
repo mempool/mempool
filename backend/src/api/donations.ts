@@ -63,15 +63,18 @@ class Donations {
     }
 
     let imageUrl = '';
+    let handle = '';
     if (response.orderId !== '') {
       try {
-        imageUrl = await this.$getTwitterImageUrl(response.orderId);
+        const hiveData = await this.$getTwitterImageUrl(response.orderId);
+        imageUrl = hiveData.imageUrl;
+        handle = hiveData.screenName;
       } catch (e) {
         console.log('Error fetching twitter image', e.message);
       }
     }
 
-    this.$addDonationToDatabase(response, imageUrl);
+    this.$addDonationToDatabase(response.btcPaid, handle, response.id, imageUrl);
   }
 
   private getStatus(id: string): Promise<any> {
@@ -90,7 +93,7 @@ class Donations {
   async $getDonationsFromDatabase() {
     try {
       const connection = await DB.pool.getConnection();
-      const query = `SELECT handle, imageUrl FROM donations WHERE handle != ''`;
+      const query = `SELECT handle, imageUrl FROM donations WHERE handle != '' ORDER BY id ASC`;
       const [rows] = await connection.query<any>(query);
       connection.release();
       return rows;
@@ -99,14 +102,14 @@ class Donations {
     }
   }
 
-  private async $addDonationToDatabase(response: any, imageUrl: string): Promise<void> {
+  private async $addDonationToDatabase(btcPaid: number, handle: string, orderId: string, imageUrl: string): Promise<void> {
     try {
       const connection = await DB.pool.getConnection();
       const query = `INSERT INTO donations(added, amount, handle, order_id, imageUrl) VALUES (NOW(), ?, ?, ?, ?)`;
       const params: (string | number)[] = [
-        response.btcPaid,
-        response.orderId,
-        response.id,
+        btcPaid,
+        handle,
+        orderId,
         imageUrl,
       ];
       const [result]: any = await connection.query(query, params);
@@ -116,14 +119,14 @@ class Donations {
     }
   }
 
-  private async $getTwitterImageUrl(handle: string): Promise<string> {
+  private async $getTwitterImageUrl(handle: string): Promise<any> {
     return new Promise((resolve, reject) => {
       request.get({
         uri: `https://api.hive.one/v1/influencers/screen_name/${handle}/?format=json`,
         json: true,
       }, (err, res, body) => {
         if (err) { return reject(err); }
-        resolve(body.data.imageUrl);
+        resolve(body.data);
       });
     });
   }

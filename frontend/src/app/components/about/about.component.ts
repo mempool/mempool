@@ -19,6 +19,7 @@ export class AboutComponent implements OnInit {
   sponsors$: Observable<any>;
   donationObj: any;
   sponsorsEnabled = env.SPONSORS_ENABLED;
+  sponsors = null;
 
   constructor(
     private websocketService: WebsocketService,
@@ -38,7 +39,12 @@ export class AboutComponent implements OnInit {
       handle: [''],
     });
 
-    this.sponsors$ = this.apiService.getDonation$();
+    (this.sponsorsEnabled ? this.apiService.getDonation$() : this.apiService.getDonationRemote$())
+      .subscribe((sponsors) => {
+        this.sponsors = sponsors;
+      });
+
+    this.apiService.getDonation$()
     this.stateService.donationConfirmed$.subscribe(() => this.donationStatus = 4);
   }
 
