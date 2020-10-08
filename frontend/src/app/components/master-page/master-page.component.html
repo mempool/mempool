@@ -52,11 +52,11 @@
       <li *ngIf="network.val === 'liquid'" class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/liquid/assets']" (click)="collapse()"><fa-icon [icon]="['fas', 'database']" [fixedWidth]="true" title="Assets"></fa-icon></a>
       </li>
-      <li *ngIf="network.val === ''" class="nav-item" routerLinkActive="active">
-        <a class="nav-link" [routerLink]="['/about' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true" title="About"></fa-icon></a>
-      </li>
       <li class="nav-item mr-2" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/api' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'cogs']" [fixedWidth]="true" title="API"></fa-icon></a>
+      </li>
+      <li class="nav-item" routerLinkActive="active">
+        <a class="nav-link" [routerLink]="['/about']" (click)="collapse()"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true" title="About"></fa-icon></a>
       </li>
     </ul>
     <app-search-form location="top" (searchTriggered)="collapse()"></app-search-form>
