@@ -1,14 +1,13 @@
 # mempool
 ## a mempool visualizer and explorer for Bitcoin
 
-![mempool](https://pbs.twimg.com/media/EAETXWCU4AAv2v-?format=jpg&name=4096x4096)
-![blockchain](https://pbs.twimg.com/media/EAETXWAU8AAj4IP?format=jpg&name=4096x4096)
+![mempool](https://pbs.twimg.com/media/Ei8p_flUcAEjfXE?format=jpg&name=4096x4096)
 
-## Pick the right version for your use case
+## Mempool V1 vs Mempool V2
 
-Mempool V1 has basic explorer functionality and can run from a Bitcoin Core full node on a Raspberry Pi (no pruning, txindex=1).
+Mempool V1 features basic mempool visualization, fee estimation, and transaction tracking and can run directly off a Bitcoin Core full node on a Raspberry Pi.
 
-Mempool V2 is what runs on https://mempool.space and has advanced explorer functionality, but requires a fully synced electrs backend running on powerful server hardware.
+Mempool V2 is the fully featured explorer running on [mempool.space](https://mempool.space/), but it requires a fully synced electrs backend running on powerful server hardware. [Guide to install Mempool V2](https://github.com/mempool/mempool/tree/master/production)
 
 # Mempool V1 using Docker (easy)
 
