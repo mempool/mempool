@@ -106,7 +106,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
       .subscribe(([block, txConfirmed]) => {
         this.latestBlock = block;
 
-        if (txConfirmed) {
+        if (txConfirmed && this.tx) {
           this.tx.status = {
             confirmed: true,
             block_height: block.height,
