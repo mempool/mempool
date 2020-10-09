@@ -93,7 +93,7 @@ class Donations {
   async $getDonationsFromDatabase() {
     try {
       const connection = await DB.pool.getConnection();
-      const query = `SELECT handle, imageUrl FROM donations WHERE handle != '' ORDER BY id ASC`;
+      const query = `SELECT handle, imageUrl FROM donations WHERE handle != '' ORDER BY id DESC`;
       const [rows] = await connection.query<any>(query);
       connection.release();
       return rows;
