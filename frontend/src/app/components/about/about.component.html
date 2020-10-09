@@ -1,10 +1,8 @@
 <div class="container-xl">
   <div class="text-center">
     <br />
-    <img src="./resources/mempool-tube.png" width="63" height="63" />
+    <img src="./resources/mempool-logo-bigger.png" height="67.5" width="251">
     <br /><br />
-
-    <h1>Mempool Open Source Project</h1>
 
     <br>
 
@@ -31,24 +29,25 @@
     <h2>Maintainers</h2>
 
     <div class="container text-center">
-      <div class="row">
-        <div class="col-sm-2 offset-md-4">
-          <div class="profile_photo mx-auto" style="background-image: url(/resources/profile_softsimon.jpg)"></div>
-
-          <a href="https://twitter.com/softsimon_">@softsimon_</a>
+      <div class="row row-cols-2">
+        <div class="col col-md-2 offset-md-4">
+          <a href="https://twitter.com/softsimon_">
+            <div class="profile_photo mx-auto" style="background-image: url(/resources/profile_softsimon.jpg)"></div>
+            @softsimon_
+          </a>
           <br>
           Development
         </div>
-        <div class="col-sm-2">
-          <div class="profile_photo mx-auto" style="background-image: url(/resources/profile_wiz.png)"></div>
-
-          <a href="https://twitter.com/wiz">@wiz</a>
+        <div class="col col-md-2">
+          <a href="https://twitter.com/wiz">
+            <div class="profile_photo mx-auto" style="background-image: url(/resources/profile_wiz.png)"></div>
+            @wiz
+          </a>
           <br>
           Operations
         </div>
       </div>
     </div>
-
 
     <br><br>
 
@@ -58,10 +57,15 @@
       <br>
       <div class="spinner-border text-light"></div>
     </div>
-    <div *ngFor="let sponsor of sponsors" (click)="openTwitterProfile(sponsor.handle)" class="profile_photo d-inline-block" [ngStyle]="{'background-image': 'url(' + sponsor.imageUrl + ')'}" [title]="sponsor.handle"></div>
+
+    <ng-template ngFor let-sponsor [ngForOf]="sponsors">
+      <a [href]="'https://twitter.com/' + sponsor.handle" target="_blank">
+        <div class="profile_photo d-inline-block" [ngStyle]="{'background-image': 'url(' + sponsor.imageUrl + ')'}" [title]="sponsor.handle"></div>
+      </a>
+    </ng-template>
     <br><br>
     
-    <button type="button" class="btn btn-primary" (click)="donationStatus = 2" [hidden]="donationStatus !== 1">Become a sponsor</button>
+    <button type="button" class="btn btn-primary" (click)="donationStatus = 2" [hidden]="donationStatus !== 1">Become a sponsor ❤️</button>
     <p *ngIf="donationStatus === 2 && !sponsorsEnabled">
       Navigate to <a href="https://mempool.space/about" target="_blank">https://mempool.space/about</a> to sponsor
     </p>
@@ -94,7 +98,9 @@
 
     <div *ngIf="donationStatus === 3" class="text-center">
       <div class="qr-wrapper mt-2 mb-2">
-        <app-qrcode [data]="'bitcoin:' + donationObj.address + '?amount=' + donationObj.amount"></app-qrcode>
+        <a [href]="bitcoinUrl" target="_blank">
+          <app-qrcode [data]="'bitcoin:' + donationObj.address + '?amount=' + donationObj.amount"></app-qrcode>
+        </a>
       </div>
       <br>
       <p style="font-size: 10px;">{{ donationObj.address }}</p>

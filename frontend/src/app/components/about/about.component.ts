@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApiService } from 'src/app/services/api.service';
 import { env } from '../../app.constants';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-about',
@@ -20,6 +21,7 @@ export class AboutComponent implements OnInit {
   donationObj: any;
   sponsorsEnabled = env.SPONSORS_ENABLED;
   sponsors = null;
+  bitcoinUrl: SafeUrl;
 
   constructor(
     private websocketService: WebsocketService,
@@ -27,6 +29,7 @@ export class AboutComponent implements OnInit {
     private stateService: StateService,
     private formBuilder: FormBuilder,
     private apiService: ApiService,
+    private sanitizer: DomSanitizer,
   ) { }
 
   ngOnInit() {
@@ -59,11 +62,8 @@ export class AboutComponent implements OnInit {
     .subscribe((response) => {
       this.websocketService.trackDonation(response.id);
       this.donationObj = response;
+      this.bitcoinUrl = this.sanitizer.bypassSecurityTrustUrl('bitcoin:' + this.donationObj.address + '?amount=' + this.donationObj.amount);
       this.donationStatus = 3;
     });
-  }
-
-  openTwitterProfile(handle: string) {
-    window.open('https://twitter.com/' + handle, '_blank');
   }
 }

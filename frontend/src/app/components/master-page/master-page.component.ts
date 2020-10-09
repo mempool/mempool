@@ -13,6 +13,7 @@ export class MasterPageComponent implements OnInit {
   network$: Observable<string>;
   connectionState$: Observable<number>;
   navCollapsed = false;
+  isMobile = window.innerWidth <= 767.98;
 
   constructor(
     private stateService: StateService,
