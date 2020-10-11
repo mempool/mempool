@@ -7,6 +7,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApiService } from 'src/app/services/api.service';
 import { env } from '../../app.constants';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-about',
@@ -33,7 +34,7 @@ export class AboutComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.gitCommit$ = this.stateService.gitCommit$;
+    this.gitCommit$ = this.stateService.gitCommit$.pipe(map((str) => str.substr(0, 8)));
     this.seoService.setTitle('About');
     this.websocketService.want(['blocks']);
 
