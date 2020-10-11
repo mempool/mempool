@@ -15,6 +15,7 @@ import { StatusViewComponent } from './components/status-view/status-view.compon
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LatestBlocksComponent } from './components/latest-blocks/latest-blocks.component';
 import { ApiDocsComponent } from './components/api-docs/api-docs.component';
+import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 
 const routes: Routes = [
   {
@@ -58,6 +59,10 @@ const routes: Routes = [
       {
         path: 'api',
         component: ApiDocsComponent,
+      },
+      {
+        path: 'terms-of-service',
+        component: TermsOfServiceComponent
       },
       {
         path: 'address/:id',

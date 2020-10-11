@@ -45,6 +45,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faChartArea, faCogs, faCubes, faDatabase, faInfoCircle, faList, faSearch, faTachometerAlt, faThList, faTv } from '@fortawesome/free-solid-svg-icons';
 import { ApiDocsComponent } from './components/api-docs/api-docs.component';
+import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 
 @NgModule({
   declarations: [
@@ -78,6 +79,7 @@ import { ApiDocsComponent } from './components/api-docs/api-docs.component';
     FeesBoxComponent,
     DashboardComponent,
     ApiDocsComponent,
+    TermsOfServiceComponent,
   ],
   imports: [
     BrowserModule,
