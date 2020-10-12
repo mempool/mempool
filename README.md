@@ -33,9 +33,10 @@ You should see mempool starting up, which takes over an hour (needs 8 blocks). W
 
 ## Checking out release tag
 ```bash
-  git clone https://github.com/mempool-space/mempool.space
-  cd mempool.space
-  git checkout v1.0.0 # put latest release tag here
+  git clone https://github.com/mempool/mempool
+  cd mempool
+  latestrelease=$(curl -s https://api.github.com/repos/mempool/mempool/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+  git checkout $latestrelease
 ```
 
 ## Bitcoin Core (bitcoind)
