@@ -178,7 +178,7 @@ class Server {
     } else {
       this.app
         .get(config.API_ENDPOINT + 'donations', (req, res) => {
-          req.pipe(request('http://mempool.space/api/v1/donations')).pipe(res);
+          req.pipe(request('https://mempool.space/api/v1/donations')).pipe(res);
         });
     }
   }
