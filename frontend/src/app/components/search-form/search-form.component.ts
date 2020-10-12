@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { AssetsService } from 'src/app/services/assets.service';
 import { StateService } from 'src/app/services/state.service';
 import { Observable, of, Subject, merge } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap, filter } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, switchMap, filter, catchError } from 'rxjs/operators';
 import { ElectrsApiService } from 'src/app/services/electrs-api.service';
 import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
 
@@ -39,7 +39,8 @@ export class SearchFormComponent implements OnInit {
       .pipe(
         switchMap((text) => {
           if (!text.length) { return of([]); }
-          return this.electrsApiService.getAddressesByPrefix$(text);
+          return this.electrsApiService.getAddressesByPrefix$(text)
+            .pipe(catchError(() => of([])));
         })
       );
     }
