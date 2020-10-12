@@ -1,9 +1,9 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { WebsocketService } from '../../services/websocket.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { StateService } from 'src/app/services/state.service';
 import { Observable } from 'rxjs';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { ApiService } from 'src/app/services/api.service';
 import { env } from '../../app.constants';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
@@ -43,7 +43,7 @@ export class AboutComponent implements OnInit {
       handle: [''],
     });
 
-    (this.sponsorsEnabled ? this.apiService.getDonation$() : this.apiService.getDonationRemote$())
+    this.apiService.getDonation$()
       .subscribe((sponsors) => {
         this.sponsors = sponsors;
       });

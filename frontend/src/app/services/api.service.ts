@@ -73,8 +73,4 @@ export class ApiService {
   getDonation$(): Observable<any[]> {
     return this.httpClient.get<any[]>(this.apiBaseUrl + '/donations');
   }
-
-  getDonationRemote$(): Observable<any[]> {
-    return this.httpClient.get<any[]>('http://mempool.space/api/v1/donations');
-  }
 }
