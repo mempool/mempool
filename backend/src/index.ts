@@ -7,6 +7,7 @@ import * as http from 'http';
 import * as https from 'https';
 import * as WebSocket from 'ws';
 import * as cluster from 'cluster';
+import * as request from 'request';
 
 import { checkDbConnection } from './database';
 import routes from './routes';
@@ -174,6 +175,11 @@ class Server {
         .post(config.API_ENDPOINT + 'donations', routes.createDonationRequest.bind(routes))
         .post(config.API_ENDPOINT + 'donations-webhook', routes.donationWebhook.bind(routes))
       ;
+    } else {
+      this.app
+        .get(config.API_ENDPOINT + 'donations', (req, res) => {
+          req.pipe(request('http://mempool.space/api/v1/donations')).pipe(res);
+        });
     }
   }
 }
