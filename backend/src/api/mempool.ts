@@ -88,7 +88,7 @@ class Mempool {
         firstSeen: Math.round((new Date().getTime() / 1000)),
       }, transaction);
     } catch (e) {
-      logger.warn(txId + ' not found');
+      logger.debug(txId + ' not found');
       return false;
     }
   }
@@ -125,7 +125,7 @@ class Mempool {
             }
             newTransactions.push(transaction);
           } else {
-            logger.err('Error finding transaction in mempool.');
+            logger.debug('Error finding transaction in mempool.');
           }
         }
 
@@ -138,7 +138,7 @@ class Mempool {
       if (this.mempoolProtection === 0 && transactions.length / currentMempoolSize <= 0.80) {
         this.mempoolProtection = 1;
         this.inSync = false;
-        logger.warn('Mempool clear protection triggered.');
+        logger.warn(`Mempool clear protection triggered because transactions.length: ${transactions.length} and currentMempoolSize: ${currentMempoolSize}.`);
         setTimeout(() => {
           this.mempoolProtection = 2;
           logger.warn('Mempool clear protection resumed.');
