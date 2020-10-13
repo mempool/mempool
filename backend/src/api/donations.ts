@@ -20,6 +20,8 @@ class Donations {
   }
 
   createRequest(amount: number, orderId: string): Promise<any> {
+    logger.notice('New invoice request. Handle: ' + orderId + ' Amount: ' + amount + ' BTC');
+
     const postData = {
       'price': amount,
       'orderId': orderId,
@@ -46,12 +48,11 @@ class Donations {
   }
 
   async $handleWebhookRequest(data: any) {
-    logger.notice('Received BTCPayServer webhook data: ' + JSON.stringify(data));
     if (!data || !data.id) {
       return;
     }
-
     const response = await this.getStatus(data.id);
+    logger.notice(`Received BTCPayServer webhook. Invoice ID: ${data.id} Status: ${response.status} BTC Paid: ${response.btcPaid}`);
     if (response.status !== 'complete' && response.status !== 'confirmed' && response.status !== 'paid') {
       return;
     }
