@@ -1,0 +1,7 @@
+#!/bin/sh
+trap "" PIPE
+while read input;do
+	if [ ! -z "${input}" ];then
+		echo "\`\`\`${input}\`\`\`" | /usr/local/bin/keybase chat send --nonblock mempool.syslog
+	fi
+done
