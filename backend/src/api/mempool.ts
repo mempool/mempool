@@ -138,10 +138,10 @@ class Mempool {
       if (this.mempoolProtection === 0 && transactions.length / currentMempoolSize <= 0.80) {
         this.mempoolProtection = 1;
         this.inSync = false;
-        logger.info('Mempool clear protection triggered.');
+        logger.warn('Mempool clear protection triggered.');
         setTimeout(() => {
           this.mempoolProtection = 2;
-          logger.info('Mempool clear protection resumed.');
+          logger.warn('Mempool clear protection resumed.');
         }, 1000 * 60 * 2);
       }
 

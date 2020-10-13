@@ -47,7 +47,7 @@ class Server {
 
       cluster.on('exit', (worker, code, signal) => {
         const workerId = worker.process['env'].workerId;
-        logger.info(`Mempool Worker PID #${worker.process.pid} workerId: ${workerId} died. Restarting in 10 seconds... ${signal || code}`);
+        logger.warn(`Mempool Worker PID #${worker.process.pid} workerId: ${workerId} died. Restarting in 10 seconds... ${signal || code}`);
         setTimeout(() => {
           const env = { workerId: workerId };
           const newWorker = cluster.fork(env);

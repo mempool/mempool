@@ -46,7 +46,7 @@ class Donations {
   }
 
   async $handleWebhookRequest(data: any) {
-    logger.debug('Received BTCPayServer webhook data: ' + JSON.stringify(data));
+    logger.notice('Received BTCPayServer webhook data: ' + JSON.stringify(data));
     if (!data || !data.id) {
       return;
     }
