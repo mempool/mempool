@@ -94,7 +94,7 @@ class Mempool {
   }
 
   public async updateMempool() {
-    logger.info('Updating mempool');
+    logger.debug('Updating mempool');
     const start = new Date().getTime();
     let hasChange: boolean = false;
     const currentMempoolSize = Object.keys(this.mempoolCache).length;
@@ -119,9 +119,9 @@ class Mempool {
             }
             hasChange = true;
             if (diff > 0) {
-              logger.info('Fetched transaction ' + txCount + ' / ' + diff);
+              logger.debug('Fetched transaction ' + txCount + ' / ' + diff);
             } else {
-              logger.info('Fetched transaction ' + txCount);
+              logger.debug('Fetched transaction ' + txCount);
             }
             newTransactions.push(transaction);
           } else {
@@ -181,8 +181,8 @@ class Mempool {
 
       const end = new Date().getTime();
       const time = end - start;
-      logger.info(`New mempool size: ${Object.keys(newMempool).length} Change: ${diff}`);
-      logger.info('Mempool updated in ' + time / 1000 + ' seconds');
+      logger.debug(`New mempool size: ${Object.keys(newMempool).length} Change: ${diff}`);
+      logger.debug('Mempool updated in ' + time / 1000 + ' seconds');
     } catch (err) {
       logger.err('getRawMempool error. ' + err.message || err);
     }
