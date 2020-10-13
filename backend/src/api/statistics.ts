@@ -1,5 +1,6 @@
 import memPool from './mempool';
 import { DB } from '../database';
+import logger from '../logger';
 
 import { Statistic, TransactionExtended, OptimizedStatistic } from '../interfaces';
 
@@ -14,7 +15,7 @@ class Statistics {
   constructor() { }
 
   public startStatistics(): void {
-    console.log('Starting statistics service');
+    logger.info('Starting statistics service');
 
     const now = new Date();
     const nextInterval = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(),
@@ -37,7 +38,7 @@ class Statistics {
     const txPerSecond = memPool.getTxPerSecond();
     const vBytesPerSecond = memPool.getVBytesPerSecond();
 
-    console.log('Running statistics');
+    logger.info('Running statistics');
 
     let memPoolArray: TransactionExtended[] = [];
     for (const i in currentMempool) {
@@ -233,7 +234,7 @@ class Statistics {
       connection.release();
       return result.insertId;
     } catch (e) {
-      console.log('$create() error', e);
+      logger.err('$create() error' + e);
     }
   }
 
@@ -292,7 +293,7 @@ class Statistics {
         return this.mapStatisticToOptimizedStatistic([rows[0]])[0];
       }
     } catch (e) {
-      console.log('$list2H() error', e);
+      logger.err('$list2H() error' + e);
     }
   }
 
@@ -304,7 +305,7 @@ class Statistics {
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
-      console.log('$list2H() error', e);
+      logger.err('$list2H() error' + e);
       return [];
     }
   }
@@ -329,7 +330,7 @@ class Statistics {
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
-      console.log('$list1W() error', e);
+      logger.err('$list1W() error' + e);
       return [];
     }
   }
@@ -342,7 +343,7 @@ class Statistics {
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
-      console.log('$list1M() error', e);
+      logger.err('$list1M() error' + e);
       return [];
     }
   }
@@ -355,7 +356,7 @@ class Statistics {
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
-      console.log('$list3M() error', e);
+      logger.err('$list3M() error' + e);
       return [];
     }
   }
@@ -368,7 +369,7 @@ class Statistics {
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
-      console.log('$list6M() error', e);
+      logger.err('$list6M() error' + e);
       return [];
     }
   }
@@ -381,7 +382,7 @@ class Statistics {
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
-      console.log('$list6M() error', e);
+      logger.err('$list6M() error' + e);
       return [];
     }
   }

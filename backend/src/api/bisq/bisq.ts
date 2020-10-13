@@ -4,7 +4,7 @@ import * as request from 'request';
 import { BisqBlocks, BisqBlock, BisqTransaction, BisqStats, BisqTrade } from './interfaces';
 import { Common } from '../common';
 import { Block } from '../../interfaces';
-
+import logger from '../../logger';
 class Bisq {
   private static BLOCKS_JSON_FILE_PATH = '/all/blocks.json';
   private latestBlockHeight = 0;
@@ -38,7 +38,7 @@ class Bisq {
 
   handleNewBitcoinBlock(block: Block): void {
     if (block.height - 2 > this.latestBlockHeight && this.latestBlockHeight !== 0) {
-      console.log(`Bitcoin block height (#${block.height}) has diverged from the latest Bisq block height (#${this.latestBlockHeight}). Restarting watchers...`);
+      logger.info(`Bitcoin block height (#${block.height}) has diverged from the latest Bisq block height (#${this.latestBlockHeight}). Restarting watchers...`);
       this.startTopDirectoryWatcher();
       this.startSubDirectoryWatcher();
     }
@@ -82,7 +82,7 @@ class Bisq {
 
   private checkForBisqDataFolder() {
     if (!fs.existsSync(config.BISQ_BLOCKS_DATA_PATH + Bisq.BLOCKS_JSON_FILE_PATH)) {
-      console.log(config.BISQ_BLOCKS_DATA_PATH + Bisq.BLOCKS_JSON_FILE_PATH + ` doesn't exist. Make sure Bisq is running and the config is correct before starting the server.`);
+      logger.info(config.BISQ_BLOCKS_DATA_PATH + Bisq.BLOCKS_JSON_FILE_PATH + ` doesn't exist. Make sure Bisq is running and the config is correct before starting the server.`);
       return process.exit(1);
     }
   }
@@ -100,7 +100,7 @@ class Bisq {
         this.subdirectoryWatcher.close();
       }
       fsWait = setTimeout(() => {
-        console.log(`Bisq restart detected. Resetting both watchers in 3 minutes.`);
+        logger.info(`Bisq restart detected. Resetting both watchers in 3 minutes.`);
         setTimeout(() => {
           this.startTopDirectoryWatcher();
           this.startSubDirectoryWatcher();
@@ -115,7 +115,7 @@ class Bisq {
       this.subdirectoryWatcher.close();
     }
     if (!fs.existsSync(config.BISQ_BLOCKS_DATA_PATH + Bisq.BLOCKS_JSON_FILE_PATH)) {
-      console.log(config.BISQ_BLOCKS_DATA_PATH + Bisq.BLOCKS_JSON_FILE_PATH + ` doesn't exist. Trying to restart sub directory watcher again in 3 minutes.`);
+      logger.warn(config.BISQ_BLOCKS_DATA_PATH + Bisq.BLOCKS_JSON_FILE_PATH + ` doesn't exist. Trying to restart sub directory watcher again in 3 minutes.`);
       setTimeout(() => this.startSubDirectoryWatcher(), 180000);
       return;
     }
@@ -125,7 +125,7 @@ class Bisq {
         clearTimeout(fsWait);
       }
       fsWait = setTimeout(() => {
-        console.log(`Change detected in the Bisq data folder.`);
+        logger.info(`Change detected in the Bisq data folder.`);
         this.loadBisqDumpFile();
       }, 2000);
     });
@@ -133,7 +133,7 @@ class Bisq {
 
   private updatePrice() {
     request('https://markets.bisq.network/api/trades/?market=bsq_btc', { json: true }, (err, res, trades: BisqTrade[]) => {
-      if (err) { return console.log(err); }
+      if (err) { return logger.err(err); }
 
       const prices: number[] = [];
       trades.forEach((trade) => {
@@ -154,7 +154,7 @@ class Bisq {
       this.buildIndex();
       this.calculateStats();
     } catch (e) {
-      console.log('loadBisqDumpFile() error.', e.message);
+      logger.err('loadBisqDumpFile() error.' + e.message);
     }
   }
 
@@ -198,7 +198,7 @@ class Bisq {
     });
 
     const time = new Date().getTime() - start;
-    console.log('Bisq data index rebuilt in ' + time + ' ms');
+    logger.info('Bisq data index rebuilt in ' + time + ' ms');
   }
 
   private calculateStats() {
@@ -236,14 +236,14 @@ class Bisq {
   private async loadBisqBlocksDump(cacheData: string): Promise<void> {
     const start = new Date().getTime();
     if (cacheData && cacheData.length !== 0) {
-      console.log('Processing Bisq data dump...');
+      logger.info('Processing Bisq data dump...');
       const data: BisqBlocks = JSON.parse(cacheData);
       if (data.blocks && data.blocks.length !== this.blocks.length) {
         this.blocks = data.blocks.filter((block) => block.txs.length > 0);
         this.blocks.reverse();
         this.latestBlockHeight = data.chainHeight;
         const time = new Date().getTime() - start;
-        console.log('Bisq dump processed in ' + time + ' ms');
+        logger.info('Bisq dump processed in ' + time + ' ms');
       } else {
         throw new Error(`Bisq dump didn't contain any blocks`);
       }

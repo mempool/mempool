@@ -1,6 +1,7 @@
 const config = require('../../mempool-config.json');
 import * as request from 'request';
 import { DB } from '../database';
+import logger from '../logger';
 
 class Donations {
   private notifyDonationStatusCallback: ((invoiceId: string) => void) | undefined;
@@ -45,6 +46,7 @@ class Donations {
   }
 
   async $handleWebhookRequest(data: any) {
+    logger.debug('Received BTCPayServer webhook data: ' + JSON.stringify(data));
     if (!data || !data.id) {
       return;
     }
@@ -70,21 +72,24 @@ class Donations {
         imageUrl = hiveData.imageUrl;
         handle = hiveData.screenName;
       } catch (e) {
-        console.log('Error fetching twitter image', e.message);
+        logger.err('Error fetching twitter image' + e.message);
       }
     }
 
+    logger.debug('Creating database entry for donation with invoice id: ' + response.id);
     this.$addDonationToDatabase(response.btcPaid, handle, response.id, imageUrl);
   }
 
   private getStatus(id: string): Promise<any> {
     return new Promise((resolve, reject) => {
+      logger.debug('Fetching status for invoice: ' + id);
       request.get({
         uri: '/invoices/' + id,
         json: true,
         ...this.options,
       }, (err, res, body) => {
         if (err) { return reject(err); }
+        logger.debug('Invoice status received: ' + JSON.stringify(body.data));
         resolve(body.data);
       });
     });
@@ -98,7 +103,7 @@ class Donations {
       connection.release();
       return rows;
     } catch (e) {
-      console.log('$getDonationsFromDatabase() error', e);
+      logger.err('$getDonationsFromDatabase() error' + e);
     }
   }
 
@@ -115,17 +120,19 @@ class Donations {
       const [result]: any = await connection.query(query, params);
       connection.release();
     } catch (e) {
-      console.log('$addDonationToDatabase() error', e);
+      logger.err('$addDonationToDatabase() error' + e);
     }
   }
 
   private async $getTwitterImageUrl(handle: string): Promise<any> {
     return new Promise((resolve, reject) => {
+      logger.debug('Fetching Hive.one data...');
       request.get({
         uri: `https://api.hive.one/v1/influencers/screen_name/${handle}/?format=json`,
         json: true,
       }, (err, res, body) => {
         if (err) { return reject(err); }
+        logger.debug('Hive.one data fetched:' + JSON.stringify(body.data));
         resolve(body.data);
       });
     });

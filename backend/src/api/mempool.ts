@@ -1,6 +1,7 @@
 const config = require('../../mempool-config.json');
 import bitcoinApi from './bitcoin/electrs-api';
 import { MempoolInfo, TransactionExtended, Transaction, VbytesPerSecond } from '../interfaces';
+import logger from '../logger';
 import { Common } from './common';
 
 class Mempool {
@@ -49,8 +50,8 @@ class Mempool {
   public async updateMemPoolInfo() {
     try {
       this.mempoolInfo = await bitcoinApi.getMempoolInfo();
-    } catch (err) {
-      console.log('Error getMempoolInfo', err);
+    } catch (e) {
+      logger.err('Error getMempoolInfo ' + e.message || e);
     }
   }
 
@@ -87,13 +88,13 @@ class Mempool {
         firstSeen: Math.round((new Date().getTime() / 1000)),
       }, transaction);
     } catch (e) {
-      console.log(txId + ' not found');
+      logger.warn(txId + ' not found');
       return false;
     }
   }
 
   public async updateMempool() {
-    console.log('Updating mempool');
+    logger.info('Updating mempool');
     const start = new Date().getTime();
     let hasChange: boolean = false;
     const currentMempoolSize = Object.keys(this.mempoolCache).length;
@@ -118,13 +119,13 @@ class Mempool {
             }
             hasChange = true;
             if (diff > 0) {
-              console.log('Fetched transaction ' + txCount + ' / ' + diff);
+              logger.info('Fetched transaction ' + txCount + ' / ' + diff);
             } else {
-              console.log('Fetched transaction ' + txCount);
+              logger.info('Fetched transaction ' + txCount);
             }
             newTransactions.push(transaction);
           } else {
-            console.log('Error finding transaction in mempool.');
+            logger.err('Error finding transaction in mempool.');
           }
         }
 
@@ -137,10 +138,10 @@ class Mempool {
       if (this.mempoolProtection === 0 && transactions.length / currentMempoolSize <= 0.80) {
         this.mempoolProtection = 1;
         this.inSync = false;
-        console.log('Mempool clear protection triggered.');
+        logger.info('Mempool clear protection triggered.');
         setTimeout(() => {
           this.mempoolProtection = 2;
-          console.log('Mempool clear protection resumed.');
+          logger.info('Mempool clear protection resumed.');
         }, 1000 * 60 * 2);
       }
 
@@ -170,7 +171,7 @@ class Mempool {
 
       if (!this.inSync && transactions.length === Object.keys(newMempool).length) {
         this.inSync = true;
-        console.log('The mempool is now in sync!');
+        logger.info('The mempool is now in sync!');
       }
 
       if (this.mempoolChangedCallback && (hasChange || deletedTransactions.length)) {
@@ -180,10 +181,10 @@ class Mempool {
 
       const end = new Date().getTime();
       const time = end - start;
-      console.log(`New mempool size: ${Object.keys(newMempool).length} Change: ${diff}`);
-      console.log('Mempool updated in ' + time / 1000 + ' seconds');
+      logger.info(`New mempool size: ${Object.keys(newMempool).length} Change: ${diff}`);
+      logger.info('Mempool updated in ' + time / 1000 + ' seconds');
     } catch (err) {
-      console.log('getRawMempool error.', err);
+      logger.err('getRawMempool error. ' + err.message || err);
     }
   }
 

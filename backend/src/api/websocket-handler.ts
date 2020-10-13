@@ -1,5 +1,5 @@
 const config = require('../../mempool-config.json');
-
+import logger from '../logger';
 import * as WebSocket from 'ws';
 import { Block, TransactionExtended, WebsocketResponse, MempoolBlock, OptimizedStatistic } from '../interfaces';
 import blocks from './blocks';
@@ -107,7 +107,7 @@ class WebsocketHandler {
             client.send(JSON.stringify(response));
           }
         } catch (e) {
-          console.log(e);
+          logger.err(e);
         }
       });
     });

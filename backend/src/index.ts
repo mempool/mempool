@@ -20,6 +20,7 @@ import fiatConversion from './api/fiat-conversion';
 import bisq from './api/bisq/bisq';
 import bisqMarkets from './api/bisq/markets';
 import donations from './api/donations';
+import logger from './logger';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -35,7 +36,7 @@ class Server {
     }
 
     if (cluster.isMaster) {
-      console.log(`Mempool Server is running on port ${config.HTTP_PORT}`);
+      logger.info(`Mempool Server is running on port ${config.HTTP_PORT}`);
 
       const numCPUs = config.CLUSTER_NUM_CORES;
       for (let i = 0; i < numCPUs; i++) {
@@ -46,7 +47,7 @@ class Server {
 
       cluster.on('exit', (worker, code, signal) => {
         const workerId = worker.process['env'].workerId;
-        console.log(`Mempool Worker PID #${worker.process.pid} workerId: ${workerId} died. Restarting in 10 seconds...`, signal || code);
+        logger.info(`Mempool Worker PID #${worker.process.pid} workerId: ${workerId} died. Restarting in 10 seconds... ${signal || code}`);
         setTimeout(() => {
           const env = { workerId: workerId };
           const newWorker = cluster.fork(env);
@@ -104,9 +105,9 @@ class Server {
 
     this.server.listen(config.HTTP_PORT, () => {
       if (worker) {
-        console.log(`Mempool Server worker #${process.pid} started`);
+        logger.info(`Mempool Server worker #${process.pid} started`);
       } else {
-        console.log(`Mempool Server is running on port ${config.HTTP_PORT}`);
+        logger.info(`Mempool Server is running on port ${config.HTTP_PORT}`);
       }
     });
   }
