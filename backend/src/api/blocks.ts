@@ -52,7 +52,7 @@ class Blocks {
           this.currentBlockHeight = blockHeightTip;
         } else {
           this.currentBlockHeight++;
-          logger.info(`New block found (#${this.currentBlockHeight})!`);
+          logger.debug(`New block found (#${this.currentBlockHeight})!`);
         }
 
         const blockHash = await bitcoinApi.getBlockHash(this.currentBlockHeight);
