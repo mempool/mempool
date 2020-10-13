@@ -70,7 +70,7 @@ class Blocks {
             transactions.push(mempool[txIds[i]]);
             found++;
           } else {
-            logger.info(`Fetching block tx ${i} of ${txIds.length}`);
+            logger.debug(`Fetching block tx ${i} of ${txIds.length}`);
             const tx = await memPool.getTransactionExtended(txIds[i]);
             if (tx) {
               transactions.push(tx);
