@@ -100,3 +100,5 @@ ALTER TABLE `donations`
 
 ALTER TABLE `donations`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `donations` ADD UNIQUE(`order_id`);

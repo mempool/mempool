@@ -105,7 +105,7 @@ class Donations {
   private async $addDonationToDatabase(btcPaid: number, handle: string, orderId: string, imageUrl: string): Promise<void> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = `INSERT INTO donations(added, amount, handle, order_id, imageUrl) VALUES (NOW(), ?, ?, ?, ?)`;
+      const query = `INSERT IGNORE INTO donations(added, amount, handle, order_id, imageUrl) VALUES (NOW(), ?, ?, ?, ?)`;
       const params: (string | number)[] = [
         btcPaid,
         handle,
