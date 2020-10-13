@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as process from 'process';
 import memPool from './mempool';
 import blocks from './blocks';
+import logger from '../logger';
 
 class DiskCache {
   static FILE_NAME = './cache.json';
@@ -26,13 +27,13 @@ class DiskCache {
       mempool: memPool.getMempool(),
       blocks: blocks.getBlocks(),
     }));
-    console.log('Mempool and blocks data saved to disk cache');
+    logger.info('Mempool and blocks data saved to disk cache');
   }
 
   loadMempoolCache() {
     const cacheData = this.loadData();
     if (cacheData) {
-      console.log('Restoring mempool and blocks data from disk cache');
+      logger.info('Restoring mempool and blocks data from disk cache');
       const data = JSON.parse(cacheData);
       memPool.setMempool(data.mempool);
       blocks.setBlocks(data.blocks);

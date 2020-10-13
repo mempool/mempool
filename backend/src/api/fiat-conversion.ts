@@ -1,4 +1,5 @@
 import * as request from 'request';
+import logger from '../logger';
 
 class FiatConversion {
   private tickers = {
@@ -10,7 +11,7 @@ class FiatConversion {
   constructor() { }
 
   public startService() {
-    console.log('Starting currency rates service');
+    logger.info('Starting currency rates service');
     setInterval(this.updateCurrency.bind(this), 1000 * 60 * 60);
     this.updateCurrency();
   }
@@ -21,7 +22,7 @@ class FiatConversion {
 
   private updateCurrency() {
     request('https://api.opennode.co/v1/rates', { json: true }, (err, res, body) => {
-      if (err) { return console.log(err); }
+      if (err) { return logger.info(err); }
       if (body && body.data) {
         this.tickers = body.data;
       }

@@ -10,6 +10,7 @@ import bisqMarket from './api/bisq/markets-api';
 import { RequiredSpec } from './interfaces';
 import { MarketsApiError } from './api/bisq/interfaces';
 import donations from './api/donations';
+import logger from './logger';
 
 class Routes {
   private cache = {};
@@ -28,7 +29,7 @@ class Routes {
     this.cache['3m'] = await statistics.$list3M();
     this.cache['6m'] = await statistics.$list6M();
     this.cache['1y'] = await statistics.$list1Y();
-    console.log('Statistics cache created');
+    logger.info('Statistics cache created');
   }
 
   public async get2HStatistics(req: Request, res: Response) {

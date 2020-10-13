@@ -1,5 +1,6 @@
 const config = require('../../mempool-config.json');
 import bitcoinApi from './bitcoin/electrs-api';
+import logger from '../logger';
 import memPool from './mempool';
 import { Block, TransactionExtended, TransactionMinerInfo } from '../interfaces';
 import { Common } from './common';
@@ -35,7 +36,7 @@ class Blocks {
       }
 
       if (blockHeightTip - this.currentBlockHeight > config.INITIAL_BLOCK_AMOUNT * 2) {
-        console.log(`${blockHeightTip - this.currentBlockHeight} blocks since tip. Fast forwarding to the ${config.INITIAL_BLOCK_AMOUNT} recent blocks`);
+        logger.info(`${blockHeightTip - this.currentBlockHeight} blocks since tip. Fast forwarding to the ${config.INITIAL_BLOCK_AMOUNT} recent blocks`);
         this.currentBlockHeight = blockHeightTip - config.INITIAL_BLOCK_AMOUNT;
       }
 
@@ -51,7 +52,7 @@ class Blocks {
           this.currentBlockHeight = blockHeightTip;
         } else {
           this.currentBlockHeight++;
-          console.log(`New block found (#${this.currentBlockHeight})!`);
+          logger.info(`New block found (#${this.currentBlockHeight})!`);
         }
 
         const blockHash = await bitcoinApi.getBlockHash(this.currentBlockHeight);
@@ -69,7 +70,7 @@ class Blocks {
             transactions.push(mempool[txIds[i]]);
             found++;
           } else {
-            console.log(`Fetching block tx ${i} of ${txIds.length}`);
+            logger.info(`Fetching block tx ${i} of ${txIds.length}`);
             const tx = await memPool.getTransactionExtended(txIds[i]);
             if (tx) {
               transactions.push(tx);
@@ -78,7 +79,7 @@ class Blocks {
           }
         }
 
-        console.log(`${found} of ${txIds.length} found in mempool. ${notFound} not found.`);
+        logger.info(`${found} of ${txIds.length} found in mempool. ${notFound} not found.`);
 
         block.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
         block.coinbaseTx = this.stripCoinbaseTransaction(transactions[0]);
@@ -101,7 +102,7 @@ class Blocks {
       }
 
     } catch (err) {
-      console.log('updateBlocks error', err);
+      logger.err('updateBlocks error' + err);
     }
   }
 

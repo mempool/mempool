@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as os from 'os';
+import logger from '../logger';
 
 class BackendInfo {
   gitCommitHash = '';
@@ -21,7 +22,7 @@ class BackendInfo {
     try {
       this.gitCommitHash = fs.readFileSync('../.git/refs/heads/master').toString().trim();
     } catch (e) {
-      console.log('Could not load git commit info, skipping.');
+      logger.err('Could not load git commit info, skipping.');
     }
   }
 }

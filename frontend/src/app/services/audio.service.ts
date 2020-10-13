@@ -17,7 +17,7 @@ export class AudioService {
     this.audio.src = '../../../resources/sounds/' + name + '.mp3';
     this.audio.load();
     this.audio.play().catch((e) => {
-      console.log('Play sound failed', e);
+      console.log('Play sound failed' + e);
     });
     setTimeout(() => this.isPlaying = false, 100);
   }

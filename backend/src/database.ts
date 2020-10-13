@@ -1,5 +1,6 @@
 const config = require('../mempool-config.json');
 import { createPool } from 'mysql2/promise';
+import logger from './logger';
 
 export class DB {
   static pool = createPool({
@@ -16,11 +17,11 @@ export class DB {
 export async function checkDbConnection() {
   try {
     const connection = await DB.pool.getConnection();
-    console.log('Database connection established.');
+    logger.info('Database connection established.');
     connection.release();
   } catch (e) {
-    console.log('Could not connect to database.');
-    console.log(e);
+    logger.err('Could not connect to database.');
+    logger.err(e);
     process.exit(1);
   }
 }
