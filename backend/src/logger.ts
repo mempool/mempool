@@ -75,25 +75,6 @@ class Logger {
     })(this);
   }
 
-  private tag() {
-    let e, stack, stacklevel, tag;
-    stacklevel = 4;
-    try {
-      const err = new Error().stack;
-      if (err) {
-        stack = err.replace(/^\s+at\s+/gm, '').replace(/^Object.<anonymous>\s*\(/gm, '{anonymous}()@').split('\n');
-        tag = stack[stacklevel].split(' ')[1];
-        tag = '(' + tag.split('/').reverse()[0];
-      } else {
-        tag = '';
-      }
-    } catch (_error) {
-      e = _error;
-      tag = '';
-    }
-    return tag;
-  }
-
   private msg(priority, msg) {
     let consolemsg, prionum, syslogmsg;
     if (typeof msg === 'string' && msg.length > 0) {
@@ -102,8 +83,7 @@ class Logger {
       }
     }
     prionum = Logger.priorities[priority] || Logger.priorities.info;
-    const tag = this.tag();
-    syslogmsg = `<${(this.fac * 8 + prionum)}> ${this.name}[${process.pid}]: ${tag}: ${priority.toUpperCase()} ${msg}`;
+    syslogmsg = `<${(this.fac * 8 + prionum)}> ${this.name}[${process.pid}]: ${priority.toUpperCase()} ${msg}`;
     consolemsg = `${this.ts()} [${process.pid}] ${priority.toUpperCase()}: ${msg}`;
 
     this.syslog(syslogmsg);
