@@ -18,6 +18,10 @@ class BackendInfo {
     };
   }
 
+  public getShortCommitHash() {
+    return this.gitCommitHash.slice(0, 7);
+  }
+
   private setLatestCommitHash(): void {
     try {
       this.gitCommitHash = fs.readFileSync('../.git/refs/heads/master').toString().trim();

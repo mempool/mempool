@@ -21,6 +21,7 @@ import bisq from './api/bisq/bisq';
 import bisqMarkets from './api/bisq/markets';
 import donations from './api/donations';
 import logger from './logger';
+import backendInfo from './api/backend-info';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -36,7 +37,7 @@ class Server {
     }
 
     if (cluster.isMaster) {
-      logger.info(`Mempool Server is running on port ${config.HTTP_PORT}`);
+      logger.notice(`Mempool Server is running on port ${config.HTTP_PORT} (${backendInfo.getShortCommitHash()})`);
 
       const numCPUs = config.CLUSTER_NUM_CORES;
       for (let i = 0; i < numCPUs; i++) {
@@ -107,7 +108,7 @@ class Server {
       if (worker) {
         logger.info(`Mempool Server worker #${process.pid} started`);
       } else {
-        logger.info(`Mempool Server is running on port ${config.HTTP_PORT}`);
+        logger.notice(`Mempool Server is running on port ${config.HTTP_PORT} (${backendInfo.getShortCommitHash()})`);
       }
     });
   }
