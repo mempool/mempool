@@ -52,6 +52,7 @@ class Logger {
   private fac: any;
   private loghost: string;
   private logport: number;
+  private client: dgram.Socket;
 
   constructor(fac) {
     let prio;
@@ -63,6 +64,7 @@ class Logger {
         this.addprio(prio);
       }
     }
+    this.client = dgram.createSocket('udp4');
   }
 
   private addprio(prio): void {
@@ -118,14 +120,12 @@ class Logger {
   }
 
   private syslog(msg) {
-    let client, msgbuf;
+    let msgbuf;
     msgbuf = Buffer.from(msg);
-    client = dgram.createSocket('udp4');
-    client.send(msgbuf, 0, msgbuf.length, this.logport, this.loghost, function(err, bytes) {
+    this.client.send(msgbuf, 0, msgbuf.length, this.logport, this.loghost, function(err, bytes) {
       if (err) {
         console.log(err);
       }
-      client.close();
     });
   }
 
