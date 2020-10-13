@@ -29,7 +29,7 @@ class Routes {
     this.cache['3m'] = await statistics.$list3M();
     this.cache['6m'] = await statistics.$list6M();
     this.cache['1y'] = await statistics.$list1Y();
-    logger.info('Statistics cache created');
+    logger.debug('Statistics cache created');
   }
 
   public async get2HStatistics(req: Request, res: Response) {

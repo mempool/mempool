@@ -79,7 +79,7 @@ class Blocks {
           }
         }
 
-        logger.info(`${found} of ${txIds.length} found in mempool. ${notFound} not found.`);
+        logger.debug(`${found} of ${txIds.length} found in mempool. ${notFound} not found.`);
 
         block.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
         block.coinbaseTx = this.stripCoinbaseTransaction(transactions[0]);

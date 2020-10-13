@@ -51,7 +51,7 @@ class Bisq {
         clearTimeout(fsWait);
       }
       fsWait = setTimeout(() => {
-        logger.info(`Change detected in the Bisq market data folder.`);
+        logger.debug(`Change detected in the Bisq market data folder.`);
         this.loadBisqDumpFile();
       }, Bisq.FOLDER_WATCH_CHANGE_DETECTION_DEBOUNCE);
     });
@@ -66,7 +66,7 @@ class Bisq {
       if (cryptoMtime > this.cryptoCurrencyLastMtime || fiatMtime > this.fiatCurrencyLastMtime) {
         const cryptoCurrencyData = await this.loadData<Currency[]>(Bisq.MARKET_JSON_FILE_PATHS.cryptoCurrency);
         const fiatCurrencyData = await this.loadData<Currency[]>(Bisq.MARKET_JSON_FILE_PATHS.fiatCurrency);
-        logger.info('Updating Bisq Market Currency Data');
+        logger.debug('Updating Bisq Market Currency Data');
         bisqMarket.setCurrencyData(cryptoCurrencyData, fiatCurrencyData);
         if (cryptoMtime > this.cryptoCurrencyLastMtime) {
           this.cryptoCurrencyLastMtime = cryptoMtime;
@@ -79,7 +79,7 @@ class Bisq {
       const offersMtime = this.getFileMtime(Bisq.MARKET_JSON_FILE_PATHS.offers);
       if (offersMtime > this.offersLastMtime) {
         const offersData = await this.loadData<OffersData[]>(Bisq.MARKET_JSON_FILE_PATHS.offers);
-        logger.info('Updating Bisq Market Offers Data');
+        logger.debug('Updating Bisq Market Offers Data');
         bisqMarket.setOffersData(offersData);
         this.offersLastMtime = offersMtime;
         marketsDataUpdated = true;
@@ -87,7 +87,7 @@ class Bisq {
       const tradesMtime = this.getFileMtime(Bisq.MARKET_JSON_FILE_PATHS.trades);
       if (tradesMtime > this.tradesLastMtime) {
         const tradesData = await this.loadData<TradesData[]>(Bisq.MARKET_JSON_FILE_PATHS.trades);
-        logger.info('Updating Bisq Market Trades Data');
+        logger.debug('Updating Bisq Market Trades Data');
         bisqMarket.setTradesData(tradesData);
         this.tradesLastMtime = tradesMtime;
         marketsDataUpdated = true;
@@ -95,7 +95,7 @@ class Bisq {
       if (marketsDataUpdated) {
         bisqMarket.updateCache();
         const time = new Date().getTime() - start;
-        logger.info('Bisq market data updated in ' + time + ' ms');
+        logger.debug('Bisq market data updated in ' + time + ' ms');
       }
     } catch (e) {
       logger.err('loadBisqMarketDataDumpFile() error.' + e.message);
