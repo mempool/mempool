@@ -61,7 +61,7 @@ class Donations {
       this.notifyDonationStatusCallback(data.id);
     }
 
-    if (parseFloat(response.btcPaid) < 0.001) {
+    if (parseFloat(response.btcPaid) < 0.01) {
       return;
     }
 

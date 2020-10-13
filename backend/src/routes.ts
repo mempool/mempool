@@ -118,8 +118,18 @@ class Routes {
       return;
     }
 
+    if (p.orderId !== '' && !/^(@|)[a-zA-Z0-9_]{1,15}$/.test(p.orderId)) {
+      res.status(400).send('Invalid Twitter handle');
+      return;
+    }
+
     if (p.amount < 0.001) {
       res.status(400).send('Amount needs to be at least 0.001');
+      return;
+    }
+
+    if (p.amount > 1000) {
+      res.status(400).send('Amount too large');
       return;
     }
 
