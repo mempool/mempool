@@ -5,7 +5,7 @@ import projectedBlocks from './mempool-blocks';
 class FeeApi {
   constructor() { }
 
-  defaultFee = config.LIQUID ? 0.1 : 1;
+  defaultFee = config.NETWORK === 'liquid' ? 0.1 : 1;
 
   public getRecommendedFee() {
     const pBlocks = projectedBlocks.getMempoolBlocks();

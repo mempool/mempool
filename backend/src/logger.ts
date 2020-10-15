@@ -1,3 +1,4 @@
+const config = require('../mempool-config.json');
 import * as dgram from 'dgram';
 
 class Logger {
@@ -82,9 +83,10 @@ class Logger {
         msg = msg.slice(0, msg.length - 1);
       }
     }
+    const network = (config.NETWORK === 'mainnet' || !config.NETWORK) ? '' : ' <' + config.NETWORK + '>';
     prionum = Logger.priorities[priority] || Logger.priorities.info;
-    syslogmsg = `<${(this.fac * 8 + prionum)}> ${this.name}[${process.pid}]: ${priority.toUpperCase()} ${msg}`;
-    consolemsg = `${this.ts()} [${process.pid}] ${priority.toUpperCase()}: ${msg}`;
+    syslogmsg = `<${(this.fac * 8 + prionum)}> ${this.name}[${process.pid}]: ${priority.toUpperCase()}${network} ${msg}`;
+    consolemsg = `${this.ts()} [${process.pid}] ${priority.toUpperCase()}:${network} ${msg}`;
 
     this.syslog(syslogmsg);
     if (priority === 'warning') {
