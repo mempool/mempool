@@ -22,7 +22,7 @@ class FiatConversion {
 
   private updateCurrency() {
     request('https://api.opennode.co/v1/rates', { json: true }, (err, res, body) => {
-      if (err) { return logger.err(err); }
+      if (err) { return logger.err('Error updating currency from OpenNode: ' + err); }
       if (body && body.data) {
         this.tickers = body.data;
       }
