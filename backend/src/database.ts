@@ -21,7 +21,6 @@ export async function checkDbConnection() {
     connection.release();
   } catch (e) {
     logger.err('Could not connect to database.');
-    logger.err(e);
     process.exit(1);
   }
 }
