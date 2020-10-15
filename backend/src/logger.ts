@@ -54,6 +54,7 @@ class Logger {
   private loghost: string;
   private logport: number;
   private client: dgram.Socket;
+  private network: string;
 
   constructor(fac) {
     let prio;
@@ -66,6 +67,7 @@ class Logger {
       }
     }
     this.client = dgram.createSocket('udp4');
+    this.network = this.getNetwork();
   }
 
   private addprio(prio): void {
@@ -76,6 +78,16 @@ class Logger {
     })(this);
   }
 
+  private getNetwork(): string {
+    if (config.BISQ_ENABLED) {
+      return 'bisq';
+    }
+    if (config.NETWORK && config.NETWORK !== 'mainnet') {
+      return config.NETWORK;
+    }
+    return '';
+  }
+
   private msg(priority, msg) {
     let consolemsg, prionum, syslogmsg;
     if (typeof msg === 'string' && msg.length > 0) {
@@ -83,7 +95,7 @@ class Logger {
         msg = msg.slice(0, msg.length - 1);
       }
     }
-    const network = (config.NETWORK === 'mainnet' || !config.NETWORK) ? '' : ' <' + config.NETWORK + '>';
+    const network = this.network ? ' <' + this.network + '>' : '';
     prionum = Logger.priorities[priority] || Logger.priorities.info;
     syslogmsg = `<${(this.fac * 8 + prionum)}> ${this.name}[${process.pid}]: ${priority.toUpperCase()}${network} ${msg}`;
     consolemsg = `${this.ts()} [${process.pid}] ${priority.toUpperCase()}:${network} ${msg}`;
