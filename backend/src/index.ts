@@ -94,7 +94,7 @@ class Server {
     fiatConversion.startService();
     diskCache.loadMempoolCache();
 
-    if (config.NETWORK === 'bisq') {
+    if (config.BISQ_ENABLED) {
       bisq.startBisqService();
       bisq.setPriceCallbackFunction((price) => websocketHandler.setExtraInitProperties('bsq-price', price));
       blocks.setNewBlockCallback(bisq.handleNewBitcoinBlock.bind(bisq));
@@ -146,7 +146,7 @@ class Server {
       .get(config.API_ENDPOINT + 'backend-info', routes.getBackendInfo)
     ;
 
-    if (config.NETWORK === 'bisq') {
+    if (config.BISQ_ENABLED) {
       this.app
         .get(config.API_ENDPOINT + 'bisq/stats', routes.getBisqStats)
         .get(config.API_ENDPOINT + 'bisq/tx/:txId', routes.getBisqTransaction)
