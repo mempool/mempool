@@ -135,7 +135,8 @@ class Mempool {
       }
 
       // Prevent mempool from clear on bitcoind restart by delaying the deletion
-      if (this.mempoolProtection === 0 && transactions.length / currentMempoolSize <= 0.80) {
+      if ((config.NETWORK === 'mainnet' || !config.NETWORK)
+        && this.mempoolProtection === 0 && transactions.length / currentMempoolSize <= 0.80) {
         this.mempoolProtection = 1;
         this.inSync = false;
         logger.warn(`Mempool clear protection triggered because transactions.length: ${transactions.length} and currentMempoolSize: ${currentMempoolSize}.`);
