@@ -22,7 +22,6 @@ export class AboutComponent implements OnInit {
   donationObj: any;
   sponsorsEnabled = env.SPONSORS_ENABLED;
   sponsors = null;
-  bitcoinUrl: SafeUrl;
 
   constructor(
     private websocketService: WebsocketService,
@@ -63,8 +62,11 @@ export class AboutComponent implements OnInit {
     .subscribe((response) => {
       this.websocketService.trackDonation(response.id);
       this.donationObj = response;
-      this.bitcoinUrl = this.sanitizer.bypassSecurityTrustUrl('bitcoin:' + this.donationObj.address + '?amount=' + this.donationObj.amount);
       this.donationStatus = 3;
     });
+  }
+
+  bypassSecurityTrustUrl(text: string): SafeUrl {
+    return this.sanitizer.bypassSecurityTrustUrl(text);
   }
 }
