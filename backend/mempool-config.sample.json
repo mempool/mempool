@@ -25,5 +25,6 @@
   "SSL_KEY_FILE_PATH": "/etc/letsencrypt/live/mysite/privkey.pem",
   "BTCPAY_URL": "",
   "BTCPAY_WEBHOOK_URL": "",
-  "BTCPAY_AUTH": ""
+  "BTCPAY_AUTH": "",
+  "TWITTER_BEARER_AUTH": ""
 }

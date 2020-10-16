@@ -102,3 +102,6 @@ ALTER TABLE `donations`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `donations` ADD UNIQUE(`order_id`);
+
+ALTER TABLE `donations` ADD `image` BLOB NULL AFTER `imageUrl`;
+ALTER TABLE `donations` ADD `twitter_id` INT NULL AFTER `handle`;

@@ -44,7 +44,9 @@
 
     <ng-template ngFor let-sponsor [ngForOf]="sponsors">
       <a [href]="'https://twitter.com/' + sponsor.handle" target="_blank">
-        <div class="profile_photo d-inline-block" [ngStyle]="{'background-image': 'url(' + sponsor.imageUrl + ')'}" [title]="sponsor.handle"></div>
+        <div class="profile_photo d-inline-block" [title]="sponsor.handle">
+          <img class="profile_img" [src]="bypassSecurityTrustUrl('data:image/jpeg;base64,' + sponsor.image_64)" />
+        </div>
       </a>
     </ng-template>
     <br><br>
@@ -82,7 +84,7 @@
 
     <div *ngIf="donationStatus === 3" class="text-center">
       <div class="qr-wrapper mt-2 mb-2">
-        <a [href]="bitcoinUrl" target="_blank">
+        <a [href]="bypassSecurityTrustUrl('bitcoin:' + donationObj.address + '?amount=' + donationObj.amount)" target="_blank">
           <app-qrcode [data]="'bitcoin:' + donationObj.address + '?amount=' + donationObj.amount"></app-qrcode>
         </a>
       </div>

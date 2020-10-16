@@ -13,7 +13,9 @@ class Donations {
     },
   };
 
-  constructor() { }
+  constructor() {
+    this.runMigration();
+  }
 
   setNotfyDonationStatusCallback(fn: any) {
     this.notifyDonationStatusCallback = fn;
@@ -65,20 +67,48 @@ class Donations {
       return;
     }
 
-    let imageUrl = '';
+    let imageBlob = '';
     let handle = '';
+    let imageUrl = '';
+    let twitter_id = null;
     if (response.orderId !== '') {
       try {
-        const hiveData = await this.$getTwitterImageUrl(response.orderId);
-        imageUrl = hiveData.imageUrl;
-        handle = hiveData.screenName;
+        const userData = await this.$getTwitterUserData(response.orderId);
+        imageUrl = userData.profile_image_url.replace('normal', '200x200');
+        imageBlob = await this.$downloadProfileImageBlob(imageUrl);
+        handle = userData.screen_name;
+        twitter_id = userData.id;
       } catch (e) {
-        logger.err('Error fetching twitter image' + e.message);
+        logger.err('Error fetching twitter data: ' + e.message);
       }
     }
 
     logger.debug('Creating database entry for donation with invoice id: ' + response.id);
-    this.$addDonationToDatabase(response.btcPaid, handle, response.id, imageUrl);
+    this.$addDonationToDatabase(response.btcPaid, handle, twitter_id, response.id, imageUrl, imageBlob);
+  }
+
+  async $getDonationsFromDatabase() {
+    try {
+      const connection = await DB.pool.getConnection();
+      const query = `SELECT handle, imageUrl, TO_BASE64(image) AS image_64 FROM donations WHERE handle != '' ORDER BY id DESC`;
+      const [rows] = await connection.query<any>(query);
+      connection.release();
+      return rows;
+    } catch (e) {
+      logger.err('$getDonationsFromDatabase() error' + e);
+    }
+  }
+
+  private async $getLegacyDonations() {
+    try {
+      const connection = await DB.pool.getConnection();
+      const query = `SELECT * FROM donations WHERE twitter_id IS NULL AND handle != ''`;
+      const [rows] = await connection.query<any>(query);
+      connection.release();
+      return rows;
+    } catch (e) {
+      logger.err('$getLegacyDonations() error' + e);
+    }
   }
 
   private getStatus(id: string): Promise<any> {
@@ -96,27 +126,18 @@ class Donations {
     });
   }
 
-  async $getDonationsFromDatabase() {
+  private async $addDonationToDatabase(btcPaid: number, handle: string, twitter_id: number | null,
+    orderId: string, imageUrl: string, image: string): Promise<void> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = `SELECT handle, imageUrl FROM donations WHERE handle != '' ORDER BY id DESC`;
-      const [rows] = await connection.query<any>(query);
-      connection.release();
-      return rows;
-    } catch (e) {
-      logger.err('$getDonationsFromDatabase() error' + e);
-    }
-  }
-
-  private async $addDonationToDatabase(btcPaid: number, handle: string, orderId: string, imageUrl: string): Promise<void> {
-    try {
-      const connection = await DB.pool.getConnection();
-      const query = `INSERT IGNORE INTO donations(added, amount, handle, order_id, imageUrl) VALUES (NOW(), ?, ?, ?, ?)`;
-      const params: (string | number)[] = [
+      const query = `INSERT IGNORE INTO donations(added, amount, handle, twitter_id, order_id, imageUrl, image) VALUES (NOW(), ?, ?, ?, ?, ?, FROM_BASE64(?))`;
+      const params: (string | number | null)[] = [
         btcPaid,
         handle,
+        twitter_id,
         orderId,
         imageUrl,
+        image,
       ];
       const [result]: any = await connection.query(query, params);
       connection.release();
@@ -125,17 +146,67 @@ class Donations {
     }
   }
 
-  private async $getTwitterImageUrl(handle: string): Promise<any> {
+  private async $updateDonation(id: number, handle: string, twitterId: number, imageUrl: string, image: string): Promise<void> {
+    try {
+      const connection = await DB.pool.getConnection();
+      const query = `UPDATE donations SET handle = ?, twitter_id = ?, imageUrl = ?, image = FROM_BASE64(?) WHERE id = ?`;
+      const params: (string | number)[] = [
+        handle,
+        twitterId,
+        imageUrl,
+        image,
+        id,
+      ];
+      const [result]: any = await connection.query(query, params);
+      connection.release();
+    } catch (e) {
+      logger.err('$updateDonation() error' + e);
+    }
+  }
+
+  private async $getTwitterUserData(handle: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      logger.debug('Fetching Hive.one data...');
+      logger.debug('Fetching Twitter API data...');
       request.get({
-        uri: `https://api.hive.one/v1/influencers/screen_name/${handle}/?format=json`,
+        uri: `https://api.twitter.com/1.1/users/show.json?screen_name=${handle}`,
         json: true,
+        headers: {
+          Authorization: 'Bearer ' + config.TWITTER_BEARER_AUTH
+        },
       }, (err, res, body) => {
         if (err) { return reject(err); }
-        logger.debug('Hive.one data fetched:' + JSON.stringify(body.data));
-        resolve(body.data);
+        logger.debug('Twitter user data fetched:' + JSON.stringify(body.data));
+        resolve(body);
       });
+    });
+  }
+
+  private async $downloadProfileImageBlob(url: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      logger.debug('Fetching image blob...');
+      request.get({
+        uri: url,
+        encoding: null,
+      }, (err, res, body) => {
+        if (err) { return reject(err); }
+        logger.debug('Image downloaded.');
+        resolve(Buffer.from(body, 'utf8').toString('base64'));
+      });
+    });
+  }
+
+  private async runMigration() {
+    const legacyDonations = await this.$getLegacyDonations();
+    legacyDonations.forEach(async (donation: any) => {
+      logger.debug('Migrating donation for handle: ' + donation.handle);
+      try {
+        const twitterData = await this.$getTwitterUserData(donation.handle);
+        const imageUrl = twitterData.profile_image_url.replace('normal', '200x200');
+        const imageBlob = await this.$downloadProfileImageBlob(imageUrl);
+        await this.$updateDonation(donation.id, twitterData.screen_name, twitterData.id, imageUrl, imageBlob);
+      } catch (e) {
+        logger.err('Failed to migrate donation for handle: ' + donation.handle + '. ' + (e.message || e));
+      }
     });
   }
 }
