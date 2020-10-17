@@ -4,7 +4,9 @@ import * as request from 'request';
 import { BisqBlocks, BisqBlock, BisqTransaction, BisqStats, BisqTrade } from './interfaces';
 import { Common } from '../common';
 import { Block } from '../../interfaces';
+import { StaticPool } from 'node-worker-threads-pool';
 import logger from '../../logger';
+
 class Bisq {
   private static BLOCKS_JSON_FILE_PATH = '/all/blocks.json';
   private latestBlockHeight = 0;
@@ -24,6 +26,10 @@ class Bisq {
   private priceUpdateCallbackFunction: ((price: number) => void) | undefined;
   private topDirectoryWatcher: fs.FSWatcher | undefined;
   private subdirectoryWatcher: fs.FSWatcher | undefined;
+  private jsonParsePool = new StaticPool({
+    size: 4,
+    task: (blob: string) => JSON.parse(blob),
+  });
 
   constructor() {}
 
@@ -237,7 +243,7 @@ class Bisq {
     const start = new Date().getTime();
     if (cacheData && cacheData.length !== 0) {
       logger.debug('Processing Bisq data dump...');
-      const data: BisqBlocks = JSON.parse(cacheData);
+      const data: BisqBlocks = await this.jsonParsePool.exec(cacheData);
       if (data.blocks && data.blocks.length !== this.blocks.length) {
         this.blocks = data.blocks.filter((block) => block.txs.length > 0);
         this.blocks.reverse();

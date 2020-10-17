@@ -27,9 +27,10 @@
   "dependencies": {
     "compression": "^1.7.4",
     "express": "^4.17.1",
-    "mysql2": "^1.6.1",
-    "request": "^2.88.2",
     "locutus": "^2.0.12",
+    "mysql2": "^1.6.1",
+    "node-worker-threads-pool": "^1.4.2",
+    "request": "^2.88.2",
     "ws": "^7.3.1"
   },
   "devDependencies": {
