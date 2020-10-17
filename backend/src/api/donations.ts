@@ -14,10 +14,9 @@ class Donations {
   };
 
   constructor() {
-    this.runMigration();
   }
 
-  setNotfyDonationStatusCallback(fn: any) {
+  setNotfyDonationStatusCallback(fn: any): void {
     this.notifyDonationStatusCallback = fn;
   }
 
@@ -49,7 +48,7 @@ class Donations {
     });
   }
 
-  async $handleWebhookRequest(data: any) {
+  async $handleWebhookRequest(data: any): Promise<void> {
     if (!data || !data.id) {
       return;
     }
@@ -67,27 +66,21 @@ class Donations {
       return;
     }
 
-    let imageBlob = '';
-    let handle = '';
-    let imageUrl = '';
-    let twitter_id = null;
     if (response.orderId !== '') {
       try {
         const userData = await this.$getTwitterUserData(response.orderId);
-        imageUrl = userData.profile_image_url.replace('normal', '200x200');
-        imageBlob = await this.$downloadProfileImageBlob(imageUrl);
-        handle = userData.screen_name;
-        twitter_id = userData.id;
+        const imageUrl = userData.profile_image_url.replace('normal', '200x200');
+        const imageBlob = await this.$downloadProfileImageBlob(imageUrl);
+
+        logger.debug('Creating database entry for donation with invoice id: ' + response.id);
+        this.$addDonationToDatabase(response.btcPaid, userData.screen_name, userData.id, response.id, imageUrl, imageBlob);
       } catch (e) {
-        logger.err('Error fetching twitter data: ' + e.message);
+        logger.err(`Error fetching twitter data for handle ${response.orderId}: ${e.message}`);
       }
     }
-
-    logger.debug('Creating database entry for donation with invoice id: ' + response.id);
-    this.$addDonationToDatabase(response.btcPaid, handle, twitter_id, response.id, imageUrl, imageBlob);
   }
 
-  async $getDonationsFromDatabase() {
+  async $getDonationsFromDatabase(): Promise<any[]> {
     try {
       const connection = await DB.pool.getConnection();
       const query = `SELECT handle, imageUrl, TO_BASE64(image) AS image_64 FROM donations WHERE handle != '' ORDER BY id DESC`;
@@ -96,10 +89,11 @@ class Donations {
       return rows;
     } catch (e) {
       logger.err('$getDonationsFromDatabase() error' + e);
+      return [];
     }
   }
 
-  private async $getLegacyDonations() {
+  private async $getOldDonations(): Promise<any[]> {
     try {
       const connection = await DB.pool.getConnection();
       const query = `SELECT * FROM donations WHERE twitter_id IS NULL AND handle != ''`;
@@ -108,6 +102,7 @@ class Donations {
       return rows;
     } catch (e) {
       logger.err('$getLegacyDonations() error' + e);
+      return [];
     }
   }
 
@@ -195,9 +190,9 @@ class Donations {
     });
   }
 
-  private async runMigration() {
-    const legacyDonations = await this.$getLegacyDonations();
-    legacyDonations.forEach(async (donation: any) => {
+  private async refreshSponsors(): Promise<void> {
+    const oldDonations = await this.$getOldDonations();
+    oldDonations.forEach(async (donation: any) => {
       logger.debug('Migrating donation for handle: ' + donation.handle);
       try {
         const twitterData = await this.$getTwitterUserData(donation.handle);
