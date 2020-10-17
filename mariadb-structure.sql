@@ -103,5 +103,5 @@ ALTER TABLE `donations`
 
 ALTER TABLE `donations` ADD UNIQUE(`order_id`);
 
-ALTER TABLE `donations` ADD `image` BLOB NULL AFTER `imageUrl`;
-ALTER TABLE `donations` ADD `twitter_id` INT NULL AFTER `handle`;
+ALTER TABLE `donations` ADD `image` MEDIUMBLOB NULL AFTER `imageUrl`;
+ALTER TABLE `donations` ADD `twitter_id` VARCHAR(250) NULL AFTER `handle`;
