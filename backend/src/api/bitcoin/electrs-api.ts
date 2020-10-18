@@ -11,7 +11,7 @@ class ElectrsApi {
     return new Promise((resolve, reject) => {
       request(config.ELECTRS_API_URL + '/mempool', { json: true, timeout: 10000 }, (err, res, response) => {
         if (err) {
-          reject(err);
+          reject('getMempoolInfo error: ' + err.message || err);
         } else if (res.statusCode !== 200) {
           reject(response);
         } else {
@@ -32,7 +32,7 @@ class ElectrsApi {
     return new Promise((resolve, reject) => {
       request(config.ELECTRS_API_URL + '/mempool/txids', { json: true, timeout: 10000, forever: true }, (err, res, response) => {
         if (err) {
-          reject(err);
+          reject('getRawMempool error: ' + err.message || err);
         } else if (res.statusCode !== 200) {
           reject(response);
         } else {
@@ -50,7 +50,7 @@ class ElectrsApi {
     return new Promise((resolve, reject) => {
       request(config.ELECTRS_API_URL + '/tx/' + txId, { json: true, timeout: 10000, forever: true }, (err, res, response) => {
         if (err) {
-          reject(err);
+          reject('getRawTransaction error: ' + err.message || err);
         } else if (res.statusCode !== 200) {
           reject(response);
         } else {
@@ -68,7 +68,7 @@ class ElectrsApi {
     return new Promise((resolve, reject) => {
       request(config.ELECTRS_API_URL + '/blocks/tip/height', { json: true, timeout: 10000 }, (err, res, response) => {
         if (err) {
-          reject(err);
+          reject('getBlockHeightTip error: ' + err.message || err);
         } else if (res.statusCode !== 200) {
           reject(response);
         } else {
@@ -82,7 +82,7 @@ class ElectrsApi {
     return new Promise((resolve, reject) => {
       request(config.ELECTRS_API_URL + '/block/' + hash + '/txids', { json: true, timeout: 10000 }, (err, res, response) => {
         if (err) {
-          reject(err);
+          reject('getTxIdsForBlock error: ' + err.message || err);
         } else if (res.statusCode !== 200) {
           reject(response);
         } else {
@@ -100,7 +100,7 @@ class ElectrsApi {
     return new Promise((resolve, reject) => {
       request(config.ELECTRS_API_URL + '/block-height/' + height, { json: true, timeout: 10000 }, (err, res, response) => {
         if (err) {
-          reject(err);
+          reject('getBlockHash error: ' + err.message || err);
         } else if (res.statusCode !== 200) {
           reject(response);
         } else  {
@@ -114,7 +114,7 @@ class ElectrsApi {
     return new Promise((resolve, reject) => {
       request(config.ELECTRS_API_URL + '/blocks/' + height, { json: true, timeout: 10000 }, (err, res, response) => {
         if (err) {
-          reject(err);
+          reject('getBlocksFromHeight error: ' + err.message || err);
         } else if (res.statusCode !== 200) {
           reject(response);
         } else  {
@@ -128,7 +128,7 @@ class ElectrsApi {
     return new Promise((resolve, reject) => {
       request(config.ELECTRS_API_URL + '/block/' + hash, { json: true, timeout: 10000 }, (err, res, response) => {
         if (err) {
-          reject(err);
+          reject('getBlock error: ' + err.message || err);
         } else if (res.statusCode !== 200) {
           reject(response);
         } else {
