@@ -122,10 +122,10 @@ class Server {
       setTimeout(this.runMempoolIntervalFunctions.bind(this), config.ELECTRS_POLL_RATE_MS);
       this.retryOnElectrsErrorAfterSeconds = 5;
     } catch (e) {
-      this.retryOnElectrsErrorAfterSeconds *= 2;
-      this.retryOnElectrsErrorAfterSeconds = Math.min(this.retryOnElectrsErrorAfterSeconds, 3600);
       logger.warn(`runMempoolIntervalFunctions error: ${(e.message || e)}. Retrying in ${this.retryOnElectrsErrorAfterSeconds} sec.`);
       setTimeout(this.runMempoolIntervalFunctions.bind(this), 1000 * this.retryOnElectrsErrorAfterSeconds);
+      this.retryOnElectrsErrorAfterSeconds *= 2;
+      this.retryOnElectrsErrorAfterSeconds = Math.min(this.retryOnElectrsErrorAfterSeconds, 60);
     }
   }
 
