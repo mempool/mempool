@@ -16,17 +16,7 @@
           </tr>
           <tr>
             <td class="nowrap">wss://{{ hostname }}{{ network.val === '' ? '' : '/' + network.val }}/api/v1/ws</td>
-            <td>
-              <span class="text-small">
-                Default push: <code>{{ '{' }} action: 'want', data: ['blocks', ...] {{ '}' }}</code>
-                to express what you want pushed. Available: 'blocks', 'mempool-blocks', 'live-2h-chart' and 'stats'.
-              </span>
-              <br><br>
-              <span class="text-small">
-                Push transactions related to address: <code>{{ '{' }} 'track-address': '3PbJ...bF9B' {{ '}' }}</code>
-                to receive all new transactions containing that address as input or output. Returns an array of transactions. 'address-transactions' for new mempool transactions and 'block-transactions' for new block confirmed transactions.
-              </span>
-            </td>
+            <td>Default push: <code>{{ '{' }} action: 'want', data: ['blocks', ...] {{ '}' }}</code> to express what you want pushed. Available: <code>blocks</code>, <code>mempool-block</code>, <code>live-2h-chart</code>, and <code>stats</code>.<br><br>Push transactions related to address: <code>{{ '{' }} 'track-address': '3PbJ...bF9B' {{ '}' }}</code> to receive all new transactions containing that address as input or output. Returns an array of transactions. <code>address-transactions</code> for new mempool transactions, and <code>block-transactions</code> for new block confirmed transactions.</td>
           </tr>
         </table>
 
@@ -48,11 +38,11 @@
           </tr>
           <tr>
             <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/mempool/txids" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/mempool/txids</a></td>
-            <td>Get the full list of txids in the mempool as an array. The order of the txids is arbitrary and does not match bitcoind's.</td>
+            <td>Get the full list of txids in the mempool as an array. The order of the txids is arbitrary and does not match bitcoind.</td>
           </tr>
           <tr>
             <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/mempool/recent" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/mempool/recent</a></td>
-            <td>Get a list of the last 10 transactions to enter the mempool. Each transaction object contains simplified overview data, with the following fields: <code>txid</code>, <code>fee</code>, <code>vsize</code> and <code>value</code>.</td>
+            <td>Get a list of the last 10 transactions to enter the mempool. Each transaction object contains simplified overview data, with the following fields: <code>txid</code>, <code>fee</code>, <code>vsize</code>, and <code>value</code>.</td>
           </tr>
           <tr>
             <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/v1/fees/recommended" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/v1/fees/recommended</a></td>
@@ -78,7 +68,7 @@
           </tr>
           <tr>
             <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/block/000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/block/:hash</a></td>
-            <td>Returns details about a block. Available fields: <code>id</code>, <code>height</code>, <code>version</code>, <code>timestamp</code>, <code>bits</code>, <code>nonce</code>, <code>merkle_root</code>, <code>tx_count</code>, <code>size</code>, <code>weight</code>, <ng-container *ngIf="network.val === 'liquid'"><code>proof</code>,</ng-container> and <code>previousblockhash</code>.</td>
+            <td>Returns details about a block. Available fields: <code>id</code>, <code>height</code>, <code>version</code>, <code>timestamp</code>, <code>bits</code>, <code>nonce</code>, <code>merkle_root</code>, <code>tx_count</code>, <code>size</code>, <code>weight</code>,<ng-container *ngIf="network.val === 'liquid'"> <code>proof</code>,</ng-container> and <code>previousblockhash</code>.</td>
           </tr>
           <tr>
             <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/block/000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce/status" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/block/:hash/status</a></td>
@@ -220,7 +210,7 @@
           </tr>
           <tr>
             <td class="nowrap"><a href="/liquid/api/asset/4b5417ec5ab6112bedf539c3b4f5a806ed539542d8b717e1c4470aa3180edce5/txs" target="_blank">GET /liquid/api/asset/:asset_id/txs[/mempool|/chain]</a></td>
-            <td>Returns transactions associated with the specified Liquid asset. For the network's native asset, returns a list of peg in, peg out and burn transactions. For user-issued assets, returns a list of issuance, reissuance and burn transactions. Does not include regular transactions transferring this asset.</td>
+            <td>Returns transactions associated with the specified Liquid asset. For the network's native asset, returns a list of peg in, peg out, and burn transactions. For user-issued assets, returns a list of issuance, reissuance, and burn transactions. Does not include regular transactions transferring this asset.</td>
           </tr>
           <tr>
             <td class="nowrap"><a href="/liquid/api/asset/4b5417ec5ab6112bedf539c3b4f5a806ed539542d8b717e1c4470aa3180edce5/supply" target="_blank">GET /liquid/api/asset/:asset_id/supply[/decimal]</a></td>
@@ -275,6 +265,10 @@
   <div [ngbNavOutlet]="nav" class="mt-2"></div>
 
   <br>
+
+  <div class="text-center">
+    <a [routerLink]="['/terms-of-service']">Terms of Service</a>
+  </div>
 
 </div>
 </ng-container>
