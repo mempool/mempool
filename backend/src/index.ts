@@ -182,6 +182,9 @@ class Server {
       this.app
         .get(config.API_ENDPOINT + 'donations', (req, res) => {
           req.pipe(request('https://mempool.space/api/v1/donations')).pipe(res);
+        })
+        .get(config.API_ENDPOINT + 'donations/images/:id', (req, res) => {
+          req.pipe(request('https://mempool.space/api/v1/donations/images/' + req.params.id)).pipe(res);
         });
     }
   }
