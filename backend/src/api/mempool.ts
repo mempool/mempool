@@ -47,12 +47,8 @@ class Mempool {
     }
   }
 
-  public async updateMemPoolInfo() {
-    try {
-      this.mempoolInfo = await bitcoinApi.getMempoolInfo();
-    } catch (e) {
-      logger.err('Error getMempoolInfo ' + e.message || e);
-    }
+  public async $updateMemPoolInfo() {
+    this.mempoolInfo = await bitcoinApi.getMempoolInfo();
   }
 
   public getMempoolInfo(): MempoolInfo | undefined {
@@ -93,100 +89,96 @@ class Mempool {
     }
   }
 
-  public async updateMempool() {
+  public async $updateMempool() {
     logger.debug('Updating mempool');
     const start = new Date().getTime();
     let hasChange: boolean = false;
     const currentMempoolSize = Object.keys(this.mempoolCache).length;
     let txCount = 0;
-    try {
-      const transactions = await bitcoinApi.getRawMempool();
-      const diff = transactions.length - currentMempoolSize;
-      const newTransactions: TransactionExtended[] = [];
+    const transactions = await bitcoinApi.getRawMempool();
+    const diff = transactions.length - currentMempoolSize;
+    const newTransactions: TransactionExtended[] = [];
 
-      for (const txid of transactions) {
-        if (!this.mempoolCache[txid]) {
-          const transaction = await this.getTransactionExtended(txid);
-          if (transaction) {
-            this.mempoolCache[txid] = transaction;
-            txCount++;
-            if (this.inSync) {
-              this.txPerSecondArray.push(new Date().getTime());
-              this.vBytesPerSecondArray.push({
-                unixTime: new Date().getTime(),
-                vSize: transaction.vsize,
-              });
-            }
-            hasChange = true;
-            if (diff > 0) {
-              logger.debug('Fetched transaction ' + txCount + ' / ' + diff);
-            } else {
-              logger.debug('Fetched transaction ' + txCount);
-            }
-            newTransactions.push(transaction);
-          } else {
-            logger.debug('Error finding transaction in mempool.');
+    for (const txid of transactions) {
+      if (!this.mempoolCache[txid]) {
+        const transaction = await this.getTransactionExtended(txid);
+        if (transaction) {
+          this.mempoolCache[txid] = transaction;
+          txCount++;
+          if (this.inSync) {
+            this.txPerSecondArray.push(new Date().getTime());
+            this.vBytesPerSecondArray.push({
+              unixTime: new Date().getTime(),
+              vSize: transaction.vsize,
+            });
           }
-        }
-
-        if ((new Date().getTime()) - start > config.MEMPOOL_REFRESH_RATE_MS * 10) {
-          break;
-        }
-      }
-
-      // Prevent mempool from clear on bitcoind restart by delaying the deletion
-      if ((config.NETWORK === 'mainnet' || !config.NETWORK)
-        && this.mempoolProtection === 0 && transactions.length / currentMempoolSize <= 0.80) {
-        this.mempoolProtection = 1;
-        this.inSync = false;
-        logger.warn(`Mempool clear protection triggered because transactions.length: ${transactions.length} and currentMempoolSize: ${currentMempoolSize}.`);
-        setTimeout(() => {
-          this.mempoolProtection = 2;
-          logger.warn('Mempool clear protection resumed.');
-        }, 1000 * 60 * 2);
-      }
-
-      let newMempool = {};
-      const deletedTransactions: TransactionExtended[] = [];
-
-      if (this.mempoolProtection !== 1) {
-        this.mempoolProtection = 0;
-        // Index object for faster search
-        const transactionsObject = {};
-        transactions.forEach((txId) => transactionsObject[txId] = true);
-
-        // Replace mempool to separate deleted transactions
-        for (const tx in this.mempoolCache) {
-          if (transactionsObject[tx]) {
-            newMempool[tx] = this.mempoolCache[tx];
+          hasChange = true;
+          if (diff > 0) {
+            logger.debug('Fetched transaction ' + txCount + ' / ' + diff);
           } else {
-            deletedTransactions.push(this.mempoolCache[tx]);
+            logger.debug('Fetched transaction ' + txCount);
           }
+          newTransactions.push(transaction);
+        } else {
+          logger.debug('Error finding transaction in mempool.');
         }
-      } else {
-        newMempool = this.mempoolCache;
       }
 
-      const newTransactionsStripped = newTransactions.map((tx) => Common.stripTransaction(tx));
-      this.latestTransactions = newTransactionsStripped.concat(this.latestTransactions).slice(0, 6);
-
-      if (!this.inSync && transactions.length === Object.keys(newMempool).length) {
-        this.inSync = true;
-        logger.info('The mempool is now in sync!');
+      if ((new Date().getTime()) - start > config.MEMPOOL_REFRESH_RATE_MS * 10) {
+        break;
       }
-
-      if (this.mempoolChangedCallback && (hasChange || deletedTransactions.length)) {
-        this.mempoolCache = newMempool;
-        this.mempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
-      }
-
-      const end = new Date().getTime();
-      const time = end - start;
-      logger.debug(`New mempool size: ${Object.keys(newMempool).length} Change: ${diff}`);
-      logger.debug('Mempool updated in ' + time / 1000 + ' seconds');
-    } catch (err) {
-      logger.err('getRawMempool error. ' + err.message || err);
     }
+
+    // Prevent mempool from clear on bitcoind restart by delaying the deletion
+    if ((config.NETWORK === 'mainnet' || !config.NETWORK)
+      && this.mempoolProtection === 0 && transactions.length / currentMempoolSize <= 0.80) {
+      this.mempoolProtection = 1;
+      this.inSync = false;
+      logger.warn(`Mempool clear protection triggered because transactions.length: ${transactions.length} and currentMempoolSize: ${currentMempoolSize}.`);
+      setTimeout(() => {
+        this.mempoolProtection = 2;
+        logger.warn('Mempool clear protection resumed.');
+      }, 1000 * 60 * 2);
+    }
+
+    let newMempool = {};
+    const deletedTransactions: TransactionExtended[] = [];
+
+    if (this.mempoolProtection !== 1) {
+      this.mempoolProtection = 0;
+      // Index object for faster search
+      const transactionsObject = {};
+      transactions.forEach((txId) => transactionsObject[txId] = true);
+
+      // Replace mempool to separate deleted transactions
+      for (const tx in this.mempoolCache) {
+        if (transactionsObject[tx]) {
+          newMempool[tx] = this.mempoolCache[tx];
+        } else {
+          deletedTransactions.push(this.mempoolCache[tx]);
+        }
+      }
+    } else {
+      newMempool = this.mempoolCache;
+    }
+
+    const newTransactionsStripped = newTransactions.map((tx) => Common.stripTransaction(tx));
+    this.latestTransactions = newTransactionsStripped.concat(this.latestTransactions).slice(0, 6);
+
+    if (!this.inSync && transactions.length === Object.keys(newMempool).length) {
+      this.inSync = true;
+      logger.info('The mempool is now in sync!');
+    }
+
+    if (this.mempoolChangedCallback && (hasChange || deletedTransactions.length)) {
+      this.mempoolCache = newMempool;
+      this.mempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
+    }
+
+    const end = new Date().getTime();
+    const time = end - start;
+    logger.debug(`New mempool size: ${Object.keys(newMempool).length} Change: ${diff}`);
+    logger.debug('Mempool updated in ' + time / 1000 + ' seconds');
   }
 
   private updateTxPerSecond() {

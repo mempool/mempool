@@ -27,6 +27,7 @@ class Server {
   private wss: WebSocket.Server | undefined;
   private server: https.Server | http.Server | undefined;
   private app: Express;
+  private retryOnElectrsErrorAfterSeconds = 5;
 
   constructor() {
     this.app = express();
@@ -114,10 +115,18 @@ class Server {
   }
 
   async runMempoolIntervalFunctions() {
-    await memPool.updateMemPoolInfo();
-    await blocks.updateBlocks();
-    await memPool.updateMempool();
-    setTimeout(this.runMempoolIntervalFunctions.bind(this), config.ELECTRS_POLL_RATE_MS);
+    try {
+      await memPool.$updateMemPoolInfo();
+      await blocks.$updateBlocks();
+      await memPool.$updateMempool();
+      setTimeout(this.runMempoolIntervalFunctions.bind(this), config.ELECTRS_POLL_RATE_MS);
+      this.retryOnElectrsErrorAfterSeconds = 5;
+    } catch (e) {
+      this.retryOnElectrsErrorAfterSeconds *= 2;
+      this.retryOnElectrsErrorAfterSeconds = Math.min(this.retryOnElectrsErrorAfterSeconds, 3600);
+      logger.warn(`runMempoolIntervalFunctions error: ${(e.message || e)}. Retrying in ${this.retryOnElectrsErrorAfterSeconds} sec.`);
+      setTimeout(this.runMempoolIntervalFunctions.bind(this), 1000 * this.retryOnElectrsErrorAfterSeconds);
+    }
   }
 
   setUpWebsocketHandling() {
