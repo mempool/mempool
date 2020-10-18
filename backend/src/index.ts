@@ -174,6 +174,7 @@ class Server {
     if (config.BTCPAY_URL) {
       this.app
         .get(config.API_ENDPOINT + 'donations', routes.getDonations.bind(routes))
+        .get(config.API_ENDPOINT + 'donations/images/:id', routes.getSponsorImage.bind(routes))
         .post(config.API_ENDPOINT + 'donations', routes.createDonationRequest.bind(routes))
         .post(config.API_ENDPOINT + 'donations-webhook', routes.donationWebhook.bind(routes))
       ;
