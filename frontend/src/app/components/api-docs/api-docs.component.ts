@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { StateService } from 'src/app/services/state.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
+import { Observable, merge, of } from 'rxjs';
 
 @Component({
   selector: 'app-api-docs',
@@ -9,6 +10,7 @@ import { WebsocketService } from 'src/app/services/websocket.service';
 })
 export class ApiDocsComponent implements OnInit {
   hostname = document.location.hostname;
+  network$: Observable<string>;
   active = 1;
 
   constructor(
@@ -17,6 +19,7 @@ export class ApiDocsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.network$ = merge(of(''), this.stateService.networkChanged$);
     this.websocketService.want(['blocks']);
 
     if (this.stateService.network === 'bisq') {

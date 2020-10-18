@@ -1,11 +1,12 @@
+<ng-container *ngIf="{ val: network$ | async } as network">
 <div class="container-xl">
   <div class="text-center">
-    <h2>API documentation</h2>
+    <h2>{{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} API Service</h2>
   </div>
 
   <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
-    <li [ngbNavItem]="1">
-      <a ngbNavLink>Mainnet</a>
+    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="0">
+      <a ngbNavLink>Websocket</a>
       <ng-template ngbNavContent>
 
         <table class="table">
@@ -14,23 +15,15 @@
             <th style="border-top: 0;">Description</th>
           </tr>
           <tr>
-            <td class="nowrap"><a href="/api/v1/fees/recommended" target="_blank">GET /api/v1/fees/recommended</a></td>
-            <td>Recommended fees</td>
-          </tr>
-          <tr>
-            <td class="nowrap"><a href="/api/v1/fees/mempool-blocks" target="_blank">GET /api/v1/fees/mempool-blocks</a></td>
-            <td>The current mempool blocks</td>
-          </tr>
-          <tr>
-            <td class="nowrap">wss://{{ hostname }}/api/v1/ws</td>
+            <td class="nowrap">wss://{{ hostname }}{{ network.val === '' ? '' : '/' + network.val }}/api/v1/ws</td>
             <td>
               <span class="text-small">
-                Default push: <span class="code">{{ '{' }} action: 'want', data: ['blocks', ...] {{ '}' }}</span>
+                Default push: <code>{{ '{' }} action: 'want', data: ['blocks', ...] {{ '}' }}</code>
                 to express what you want pushed. Available: 'blocks', 'mempool-blocks', 'live-2h-chart' and 'stats'.
               </span>
               <br><br>
               <span class="text-small">
-                Push transactions related to address: <span class="code">{{ '{' }} 'track-address': '3PbJ...bF9B' {{ '}' }}</span>
+                Push transactions related to address: <code>{{ '{' }} 'track-address': '3PbJ...bF9B' {{ '}' }}</code>
                 to receive all new transactions containing that address as input or output. Returns an array of transactions. 'address-transactions' for new mempool transactions and 'block-transactions' for new block confirmed transactions.
               </span>
             </td>
@@ -39,10 +32,208 @@
 
       </ng-template>
     </li>
-    <li [ngbNavItem]="2">
-      <a ngbNavLink>Bisq</a>
+
+    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="1">
+      <a ngbNavLink>Mempool</a>
       <ng-template ngbNavContent>
-        
+
+        <table class="table">
+          <tr>
+            <th style="border-top: 0;">Endpoint</th>
+            <th style="border-top: 0;">Description</th>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/mempool" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/mempool</a></td>
+            <td>Returns current mempool backlog statistics.</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/mempool/txids" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/mempool/txids</a></td>
+            <td>Get the full list of txids in the mempool as an array. The order of the txids is arbitrary and does not match bitcoind's.</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/mempool/recent" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/mempool/recent</a></td>
+            <td>Get a list of the last 10 transactions to enter the mempool. Each transaction object contains simplified overview data, with the following fields: <code>txid</code>, <code>fee</code>, <code>vsize</code> and <code>value</code>.</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/v1/fees/recommended" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/v1/fees/recommended</a></td>
+            <td>Returns our currently suggested fees for new transactions.</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/v1/fees/mempool-blocks" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/v1/fees/mempool-blocks</a></td>
+            <td>Returns current mempool as projected blocks.</td>
+          </tr>
+        </table>
+
+      </ng-template>
+    </li>
+
+    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="2">
+      <a ngbNavLink>Blocks</a>
+      <ng-template ngbNavContent>
+
+        <table class="table">
+          <tr>
+            <th style="border-top: 0;">Endpoint</th>
+            <th style="border-top: 0;">Description</th>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/block/000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/block/:hash</a></td>
+            <td>Returns details about a block. Available fields: <code>id</code>, <code>height</code>, <code>version</code>, <code>timestamp</code>, <code>bits</code>, <code>nonce</code>, <code>merkle_root</code>, <code>tx_count</code>, <code>size</code>, <code>weight</code>, <ng-container *ngIf="network.val === 'liquid'"><code>proof</code>,</ng-container> and <code>previousblockhash</code>.</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/block/000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce/status" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/block/:hash/status</a></td>
+            <td>Returns the confirmation status of a block. Available fields: <code>in_best_chain</code> (boolean, false for orphaned blocks), <code>next_best</code> (the hash of the next block, only available for blocks in the best chain).</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/block/000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce/txs" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/block/:hash/txs[/:start_index]</a></td>
+            <td>Returns a list of transactions in the block (up to 25 transactions beginning at <code>start_index</code>). Transactions returned here do not have the <code>status</code> field, since all the transactions share the same block and confirmation status.</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/block/000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce/txids" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/block/:hash/txids</a></td>
+            <td>Returns a list of all txids in the block.</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/block/000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce/txid/218" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/block/:hash/txid/:index</a></td>
+            <td>Returns the transaction at index <code>:index</code> within the specified block.</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/block/000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce/raw" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/block/:hash/txid/raw</a></td>
+            <td>Returns the raw block representation in binary.</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/block-height/0" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/block-height/:height</a></td>
+            <td>Returns the hash of the block currently at <code>:height</code>.</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/blocks" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/blocks[/:start_height]</a></td>
+            <td>Returns the 10 newest blocks starting at the tip or at <code>:start_height</code> if specified.</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/blocks/tip/height" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/blocks/tip/height</a></td>
+            <td>Returns the height of the last block.</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/blocks/tip/hash" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/blocks/tip/hash</a></td>
+            <td>Returns the hash of the last block.</td>
+          </tr>
+        </table>
+
+      </ng-template>
+    </li>
+
+    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="3">
+      <a ngbNavLink>Transactions</a>
+      <ng-template ngbNavContent>
+
+        <table class="table">
+          <tr>
+            <th style="border-top: 0;">Endpoint</th>
+            <th style="border-top: 0;">Description</th>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/tx/15e10745f15593a899cef391191bdd3d7c12412cc4696b7bcb669d0feadc8521" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/tx/:txid</a></td>
+            <td>Returns details about a transaction. Available fields: <code>txid</code>, <code>version</code>, <code>locktime</code>, <code>size</code>, <code>weight</code>, <code>fee</code>, <code>vin</code>, <code>vout</code>, and <code>status</code>.</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/tx/15e10745f15593a899cef391191bdd3d7c12412cc4696b7bcb669d0feadc8521/status" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/tx/:txid/status</a></td>
+            <td>Returns the confirmation status of a transaction. Available fields: <code>confirmed</code> (boolean), <code>block_height</code> (optional), and <code>block_hash</code> (optional).</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/tx/15e10745f15593a899cef391191bdd3d7c12412cc4696b7bcb669d0feadc8521/hex" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/tx/:txid/hex</a></td>
+            <td>Returns a transaction serialized as hex.</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/tx/15e10745f15593a899cef391191bdd3d7c12412cc4696b7bcb669d0feadc8521/raw" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/tx/:txid/raw</a></td>
+            <td>Returns a transaction as binary data.</td>
+          </tr>
+          <tr *ngIf="network.val !== 'liquid'">
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/tx/15e10745f15593a899cef391191bdd3d7c12412cc4696b7bcb669d0feadc8521/merkleblock-proof" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/tx/:txid/merkleblock-proof</a></td>
+            <td>Returns a merkle inclusion proof for the transaction using <a href="https://bitcoin.org/en/glossary/merkle-block">bitcoind's merkleblock</a> format.</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/tx/15e10745f15593a899cef391191bdd3d7c12412cc4696b7bcb669d0feadc8521/merkle-proof" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/tx/:txid/merkle-proof</a></td>
+            <td>Returns a merkle inclusion proof for the transaction using <a href="https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle">Electrum's blockchain.transaction.get_merkle format.</a></td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/tx/15e10745f15593a899cef391191bdd3d7c12412cc4696b7bcb669d0feadc8521/outspend/3" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/tx/:txid/outspend/:vout</a></td>
+            <td>Returns the spending status of a transaction output. Available fields: <code>spent</code> (boolean), <code>txid</code> (optional), <code>vin</code> (optional), and <code>status</code> (optional, the status of the spending tx).</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/tx/15e10745f15593a899cef391191bdd3d7c12412cc4696b7bcb669d0feadc8521/outspends" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/tx/:txid/outspends</a></td>
+            <td>Returns the spending status of all transaction outputs.</td>
+          </tr>
+          <tr>
+            <td class="nowrap">POST {{ network.val === '' ? '' : '/' + network.val }}/api/tx</td>
+            <td>Broadcast a raw transaction to the network. The transaction should be provided as hex in the request body. The <code>txid</code> will be returned on success.</td>
+          </tr>
+        </table>
+
+      </ng-template>
+    </li>
+
+    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="4">
+      <a ngbNavLink>Addresses</a>
+      <ng-template ngbNavContent>
+
+        <table class="table">
+          <tr>
+            <th style="border-top: 0;">Endpoint</th>
+            <th style="border-top: 0;">Description</th>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/address/1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/address/:address</a></td>
+            <td>Returns details about an address. Available fields: <code>address</code>, <code>chain_stats</code>, and <code>mempool_stats</code>. {{ '{' }}chain,mempool{{ '}' }}_stats each contain an object with <code>tx_count</code>, <code>funded_txo_count</code>, <code>funded_txo_sum</code>, <code>spent_txo_count</code>, and <code>spent_txo_sum</code>.</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/address/1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC/txs" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/address/:address/txs</a></td>
+            <td>Get transaction history for the specified address/scripthash, sorted with newest first. Returns up to 50 mempool transactions plus the first 25 confirmed transactions. You can request more confirmed transactions using <code>:last_seen_txid</code> (see below).
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/address/1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC/txs/chain" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/address/:address/txs/chain</a></td>
+            <td>Get confirmed transaction history for the specified address/scripthash, sorted with newest first. Returns 25 transactions per page. More can be requested by specifying the last txid seen by the previous query.</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/address/1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC/txs/mempool" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/address/:address/txs/mempool</a></td>
+            <td>Get unconfirmed transaction history for the specified address/scripthash. Returns up to 50 transactions (no paging).</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/address/1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC/utxo" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/address/:address/utxo</a></td>
+            <td>Get the list of unspent transaction outputs associated with the address/scripthash. Available fields: <code>txid</code>, <code>vout</code>, <code>value</code>, and <code>status</code> (with the status of the funding tx).<ng-container *ngIf="network.val === 'liquid'">There is also a <code>valuecommitment</code> field that may appear in place of <code>value</code>, plus the following additional fields: <code>asset</code>/<code>assetcommitment</code>, <code>nonce</code>/<code>noncecommitment</code>, <code>surjection_proof</code>, and <code>range_proof</code>.</ng-container></td>
+          </tr>
+        </table>
+
+      </ng-template>
+    </li>
+
+    <li *ngIf="network.val === 'liquid'" [ngbNavItem]="5">
+      <a ngbNavLink>Assets</a>
+      <ng-template ngbNavContent>
+
+        <table class="table">
+          <tr>
+            <th style="border-top: 0;">Endpoint</th>
+            <th style="border-top: 0;">Description</th>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="/liquid/api/asset/6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d" target="_blank">GET /liquid/api/asset/:asset_id</a></td>
+            <td>Returns information about a Liquid asset.</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="/liquid/api/asset/4b5417ec5ab6112bedf539c3b4f5a806ed539542d8b717e1c4470aa3180edce5/txs" target="_blank">GET /liquid/api/asset/:asset_id/txs[/mempool|/chain]</a></td>
+            <td>Returns transactions associated with the specified Liquid asset. For the network's native asset, returns a list of peg in, peg out and burn transactions. For user-issued assets, returns a list of issuance, reissuance and burn transactions. Does not include regular transactions transferring this asset.</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="/liquid/api/asset/4b5417ec5ab6112bedf539c3b4f5a806ed539542d8b717e1c4470aa3180edce5/supply" target="_blank">GET /liquid/api/asset/:asset_id/supply[/decimal]</a></td>
+            <td>Get the current total supply of the specified asset. For the native asset (L-BTC), this is calculated as [chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount. For issued assets, this is calculated as [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount. Not available for assets with blinded issuances. If /decimal is specified, returns the supply as a decimal according to the asset's divisibility. Otherwise, returned in base units.</td>
+          </tr>
+        </table>
+      </ng-template>
+    </li>
+
+    <li *ngIf="network.val === 'bisq'" [ngbNavItem]="1">
+      <a ngbNavLink>BSQ</a>
+      <ng-template ngbNavContent>
+
         <table class="table">
           <tr>
             <th style="border-top: 0;">Endpoint</th>
@@ -50,31 +241,31 @@
           </tr>
           <tr>
             <td class="nowrap"><a href="/bisq/api/stats" target="_blank">GET /bisq/api/stats</a></td>
-            <td>Stats</td>
+            <td>Returns statistics about all Bisq transactions.</td>
           </tr>
           <tr>
-            <td class="nowrap"><a href="/bisq/api/tx/4b5417ec5ab6112bedf539c3b4f5a806ed539542d8b717e1c4470aa3180edce5" target="_blank">GET /bisq/api/tx/:txId</a></td>
-            <td>Transaction</td>
+            <td class="nowrap"><a href="/bisq/api/tx/4b5417ec5ab6112bedf539c3b4f5a806ed539542d8b717e1c4470aa3180edce5" target="_blank">GET /bisq/api/tx/:txid</a></td>
+            <td>Returns details about a Bisq transaction.</td>
           </tr>
           <tr>
             <td class="nowrap"><a href="/bisq/api/txs/0/25" target="_blank">GET /bisq/api/txs/:index/:length</a></td>
-            <td>Transactions</td>
+            <td>Returns :length of latest Bisq transactions, starting from :index.</td>
           </tr>
           <tr>
             <td class="nowrap"><a href="/bisq/api/block/000000000000000000079aa6bfa46eb8fc20474e8673d6e8a123b211236bf82d" target="_blank">GET /bisq/api/block/:hash</a></td>
-            <td>Block</td>
+            <td>Returns all Bisq transactions that exist in a Bitcoin block.</td>
           </tr>
           <tr>
             <td class="nowrap"><a href="/bisq/api/blocks/0/25" target="_blank">GET /bisq/api/blocks/:index/:length</a></td>
-            <td>Blocks</td>
+            <td>Returns :length Bitcoin blocks that contain Bisq transactions, starting from :index.</td>
           </tr>
           <tr>
             <td class="nowrap"><a href="/bisq/api/blocks/tip/height" target="_blank">GET /bisq/api/blocks/tip/height</a></td>
-            <td>Latest block height</td>
+            <td>Returns the most recently processed Bitcoin block height processed by Bisq.</td>
           </tr>
           <tr>
             <td class="nowrap"><a href="/bisq/api/address/B1DgwRN92rdQ9xpEVCdXRfgeqGw9X4YtrZz" target="_blank">GET /bisq/api/address/:address</a></td>
-            <td>Address</td>
+            <td>Returns all Bisq transactions belonging to a Bitcoin address, with 'B' prefixed in front of the address.</td>
           </tr>
         </table>
       </ng-template>
@@ -85,4 +276,5 @@
 
   <br>
 
-  </div>
+</div>
+</ng-container>
