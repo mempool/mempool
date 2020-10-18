@@ -143,8 +143,22 @@ class Routes {
 
   public async getDonations(req: Request, res: Response) {
     try {
-      const result = await donations.$getDonationsFromDatabase();
+      const result = await donations.$getDonationsFromDatabase('handle, imageUrl');
       res.json(result);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
+  }
+
+  public async getSponsorImage(req: Request, res: Response) {
+    try {
+      const result = await donations.getSponsorImage(req.params.id);
+      if (result) {
+        res.set('Content-Type', 'image/jpeg');
+        res.send(result);
+      } else {
+        res.status(404).end();
+      }
     } catch (e) {
       res.status(500).send(e.message);
     }

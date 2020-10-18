@@ -54,7 +54,7 @@
     <ng-template ngFor let-sponsor [ngForOf]="sponsors">
       <a [href]="'https://twitter.com/' + sponsor.handle" target="_blank" rel="sponsored">
         <div class="profile_photo d-inline-block" [title]="sponsor.handle">
-          <img class="profile_img" [src]="bypassSecurityTrustUrl('data:image/jpeg;base64,' + sponsor.image_64)" />
+          <img class="profile_img" [src]="'/api/v1/donations/images/' + sponsor.handle" />
         </div>
       </a>
     </ng-template>

@@ -13,7 +13,18 @@ class Donations {
     },
   };
 
+  sponsorsCache: any[] = [];
+
   constructor() {
+    this.$updateCache();
+  }
+
+  async $updateCache() {
+    try {
+      this.sponsorsCache = await this.$getDonationsFromDatabase('handle, image');
+    } catch (e) {
+      logger.warn('Setting sponsorsCache failed ' + e.message || e);
+    }
   }
 
   setNotfyDonationStatusCallback(fn: any): void {
@@ -73,17 +84,25 @@ class Donations {
         const imageBlob = await this.$downloadProfileImageBlob(imageUrl);
 
         logger.debug('Creating database entry for donation with invoice id: ' + response.id);
-        this.$addDonationToDatabase(response.btcPaid, userData.screen_name, userData.id, response.id, imageUrl, imageBlob);
+        await this.$addDonationToDatabase(response.btcPaid, userData.screen_name, userData.id, response.id, imageUrl, imageBlob);
+        this.$updateCache();
       } catch (e) {
         logger.err(`Error fetching twitter data for handle ${response.orderId}: ${e.message}`);
       }
     }
   }
 
-  async $getDonationsFromDatabase(): Promise<any[]> {
+  getSponsorImage(id: string): any | undefined {
+    const sponsor = this.sponsorsCache.find((s) => s.handle === id);
+    if (sponsor) {
+      return sponsor.image;
+    }
+  }
+
+  async $getDonationsFromDatabase(fields: string): Promise<any[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = `SELECT handle, imageUrl, TO_BASE64(image) AS image_64 FROM donations WHERE handle != '' ORDER BY id DESC`;
+      const query = `SELECT ${fields} FROM donations ORDER BY id DESC`;
       const [rows] = await connection.query<any>(query);
       connection.release();
       return rows;
