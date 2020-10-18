@@ -22,9 +22,6 @@ export class ApiDocsComponent implements OnInit {
     this.network$ = merge(of(''), this.stateService.networkChanged$);
     this.websocketService.want(['blocks']);
 
-    if (this.stateService.network === 'bisq') {
-      this.active = 2;
-    }
     if (document.location.port !== '') {
       this.hostname = this.hostname + ':' + document.location.port;
     }
