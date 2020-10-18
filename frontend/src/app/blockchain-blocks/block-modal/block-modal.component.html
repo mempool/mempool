@@ -1,6 +1,6 @@
 <div class="modal-header">
   <h4 class="modal-title">Fee distribution for block 
-    <a *ngIf="!isElectrsEnabled" href="https://www.blockstream.info/block-height/{{ block.height }}" target="_blank">#{{ block.height }}</a>
+    <a *ngIf="!isElectrsEnabled" href="https://mempool.space/block-height/{{ block.height }}" target="_blank">#{{ block.height }}</a>
     <a *ngIf="isElectrsEnabled" (click)="activeModal.dismiss()" [routerLink]="['/explorer/block/', block.hash]">#{{ block.height }}</a>
   </h4>
   <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">

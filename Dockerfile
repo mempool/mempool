@@ -43,7 +43,7 @@ ENV BITCOIN_NODE_USER bitcoinuser
 ENV BITCOIN_NODE_PASS bitcoinpass
 ENV TX_PER_SECOND_SPAN_SECONDS 150
 ENV BACKEND_API bitcoind
-ENV ELECTRS_API_URL https://www.blockstream.info/api
+ENV ELECTRS_API_URL https://mempool.space/api
 
 RUN cd /mempool.space/frontend/ && \
     npm run build && \

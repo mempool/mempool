@@ -4,7 +4,7 @@
         <tr>
             <td class="text-left"><b>Transaction hash</b></td>
             <td class="text-right">
-              <a *ngIf="!isElectrsEnabled" href="https://www.blockstream.info/tx/{{ tx?.txid }}" target="_blank">{{ tx?.txid | shortenString }}</a>
+              <a *ngIf="!isElectrsEnabled" href="https://mempool.space/tx/{{ tx?.txid }}" target="_blank">{{ tx?.txid | shortenString }}</a>
               <a *ngIf="isElectrsEnabled" [routerLink]="['/explorer/tx/', tx?.txid]">{{ tx?.txid | shortenString }}</a>
             </td>
         </tr>
