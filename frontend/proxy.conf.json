@@ -56,7 +56,7 @@
     "target": "http://localhost:8999/",
     "secure": false,
     "pathRewrite": {
-      "^/bisq/api/": "/api/v1/bisq"
+      "^/bisq/api/": "/api/v1/bisq/"
     }
   },
   "/bisq/api/v1/ws": {

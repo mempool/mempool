@@ -1,8 +1,8 @@
-const config = require('../../mempool-config.json');
 import { MempoolBlock, TransactionExtended, MempoolBlockWithTransactions } from '../interfaces';
 import { Common } from './common';
 
 class MempoolBlocks {
+  private static DEFAULT_PROJECTED_BLOCKS_AMOUNT = 8;
   private mempoolBlocks: MempoolBlockWithTransactions[] = [];
 
   constructor() {}
@@ -43,7 +43,7 @@ class MempoolBlocks {
     let blockSize = 0;
     let transactions: TransactionExtended[] = [];
     transactionsSorted.forEach((tx) => {
-      if (blockVSize + tx.vsize <= 1000000 || mempoolBlocks.length === config.DEFAULT_PROJECTED_BLOCKS_AMOUNT - 1) {
+      if (blockVSize + tx.vsize <= 1000000 || mempoolBlocks.length === MempoolBlocks.DEFAULT_PROJECTED_BLOCKS_AMOUNT - 1) {
         blockVSize += tx.vsize;
         blockSize += tx.size;
         transactions.push(tx);

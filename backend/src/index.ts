@@ -1,6 +1,4 @@
-const config = require('../mempool-config.json');
 import { Express, Request, Response, NextFunction } from 'express';
-import * as fs from 'fs';
 import * as express from 'express';
 import * as compression from 'compression';
 import * as http from 'http';
@@ -10,6 +8,7 @@ import * as cluster from 'cluster';
 import * as request from 'request';
 
 import { checkDbConnection } from './database';
+import config from './config';
 import routes from './routes';
 import blocks from './api/blocks';
 import memPool from './api/mempool';
@@ -32,15 +31,15 @@ class Server {
   constructor() {
     this.app = express();
 
-    if (!config.CLUSTER_NUM_CORES || config.CLUSTER_NUM_CORES === 1) {
+    if (!config.MEMPOOL.SPAWN_CLUSTER_PROCS) {
       this.startServer();
       return;
     }
 
     if (cluster.isMaster) {
-      logger.notice(`Mempool Server is running on port ${config.HTTP_PORT} (${backendInfo.getShortCommitHash()})`);
+      logger.notice(`Mempool Server (Master) is running on port ${config.MEMPOOL.HTTP_PORT} (${backendInfo.getShortCommitHash()})`);
 
-      const numCPUs = config.CLUSTER_NUM_CORES;
+      const numCPUs = config.MEMPOOL.SPAWN_CLUSTER_PROCS;
       for (let i = 0; i < numCPUs; i++) {
         const env = { workerId: i };
         const worker = cluster.fork(env);
@@ -71,20 +70,14 @@ class Server {
       .use(express.urlencoded({ extended: true }))
       .use(express.json());
 
-    if (config.SSL === true) {
-      const credentials = {
-        cert: fs.readFileSync(config.SSL_CERT_FILE_PATH),
-        key: fs.readFileSync(config.SSL_KEY_FILE_PATH),
-      };
-      this.server = https.createServer(credentials, this.app);
-      this.wss = new WebSocket.Server({ server: this.server });
-    } else {
-      this.server = http.createServer(this.app);
-      this.wss = new WebSocket.Server({ server: this.server });
+    this.server = http.createServer(this.app);
+    this.wss = new WebSocket.Server({ server: this.server });
+
+    if (config.DATABASE.ENABLED) {
+      checkDbConnection();
     }
 
-    if (!config.DB_DISABLED) {
-      checkDbConnection();
+    if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
       statistics.startStatistics();
     }
 
@@ -95,21 +88,21 @@ class Server {
     fiatConversion.startService();
     diskCache.loadMempoolCache();
 
-    if (config.BISQ_ENABLED) {
+    if (config.BISQ_BLOCKS.ENABLED) {
       bisq.startBisqService();
       bisq.setPriceCallbackFunction((price) => websocketHandler.setExtraInitProperties('bsq-price', price));
       blocks.setNewBlockCallback(bisq.handleNewBitcoinBlock.bind(bisq));
     }
 
-    if (config.BISQ_MARKET_ENABLED) {
+    if (config.BISQ_MARKETS.ENABLED) {
       bisqMarkets.startBisqService();
     }
 
-    this.server.listen(config.HTTP_PORT, () => {
+    this.server.listen(config.MEMPOOL.HTTP_PORT, () => {
       if (worker) {
         logger.info(`Mempool Server worker #${process.pid} started`);
       } else {
-        logger.notice(`Mempool Server is running on port ${config.HTTP_PORT} (${backendInfo.getShortCommitHash()})`);
+        logger.notice(`Mempool Server is running on port ${config.MEMPOOL.HTTP_PORT} (${backendInfo.getShortCommitHash()})`);
       }
     });
   }
@@ -119,7 +112,7 @@ class Server {
       await memPool.$updateMemPoolInfo();
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
-      setTimeout(this.runMempoolIntervalFunctions.bind(this), config.ELECTRS_POLL_RATE_MS);
+      setTimeout(this.runMempoolIntervalFunctions.bind(this), config.ELECTRS.POLL_RATE_MS);
       this.retryOnElectrsErrorAfterSeconds = 5;
     } catch (e) {
       logger.warn(`runMempoolIntervalFunctions error: ${(e.message || e)}. Retrying in ${this.retryOnElectrsErrorAfterSeconds} sec.`);
@@ -142,57 +135,57 @@ class Server {
 
   setUpHttpApiRoutes() {
     this.app
-      .get(config.API_ENDPOINT + 'transaction-times', routes.getTransactionTimes)
-      .get(config.API_ENDPOINT + 'fees/recommended', routes.getRecommendedFees)
-      .get(config.API_ENDPOINT + 'fees/mempool-blocks', routes.getMempoolBlocks)
-      .get(config.API_ENDPOINT + 'statistics/2h', routes.get2HStatistics)
-      .get(config.API_ENDPOINT + 'statistics/24h', routes.get24HStatistics.bind(routes))
-      .get(config.API_ENDPOINT + 'statistics/1w', routes.get1WHStatistics.bind(routes))
-      .get(config.API_ENDPOINT + 'statistics/1m', routes.get1MStatistics.bind(routes))
-      .get(config.API_ENDPOINT + 'statistics/3m', routes.get3MStatistics.bind(routes))
-      .get(config.API_ENDPOINT + 'statistics/6m', routes.get6MStatistics.bind(routes))
-      .get(config.API_ENDPOINT + 'statistics/1y', routes.get1YStatistics.bind(routes))
-      .get(config.API_ENDPOINT + 'backend-info', routes.getBackendInfo)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'transaction-times', routes.getTransactionTimes)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'fees/recommended', routes.getRecommendedFees)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'fees/mempool-blocks', routes.getMempoolBlocks)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/2h', routes.get2HStatistics)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/24h', routes.get24HStatistics.bind(routes))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/1w', routes.get1WHStatistics.bind(routes))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/1m', routes.get1MStatistics.bind(routes))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/3m', routes.get3MStatistics.bind(routes))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/6m', routes.get6MStatistics.bind(routes))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/1y', routes.get1YStatistics.bind(routes))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'backend-info', routes.getBackendInfo)
     ;
 
-    if (config.BISQ_ENABLED) {
+    if (config.BISQ_BLOCKS.ENABLED) {
       this.app
-        .get(config.API_ENDPOINT + 'bisq/stats', routes.getBisqStats)
-        .get(config.API_ENDPOINT + 'bisq/tx/:txId', routes.getBisqTransaction)
-        .get(config.API_ENDPOINT + 'bisq/block/:hash', routes.getBisqBlock)
-        .get(config.API_ENDPOINT + 'bisq/blocks/tip/height', routes.getBisqTip)
-        .get(config.API_ENDPOINT + 'bisq/blocks/:index/:length', routes.getBisqBlocks)
-        .get(config.API_ENDPOINT + 'bisq/address/:address', routes.getBisqAddress)
-        .get(config.API_ENDPOINT + 'bisq/txs/:index/:length', routes.getBisqTransactions)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/stats', routes.getBisqStats)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/tx/:txId', routes.getBisqTransaction)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/block/:hash', routes.getBisqBlock)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/blocks/tip/height', routes.getBisqTip)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/blocks/:index/:length', routes.getBisqBlocks)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/address/:address', routes.getBisqAddress)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/txs/:index/:length', routes.getBisqTransactions)
       ;
     }
 
-    if (config.BISQ_MARKET_ENABLED) {
+    if (config.BISQ_MARKETS.ENABLED) {
       this.app
-        .get(config.API_ENDPOINT + 'bisq/markets/currencies', routes.getBisqMarketCurrencies.bind(routes))
-        .get(config.API_ENDPOINT + 'bisq/markets/depth', routes.getBisqMarketDepth.bind(routes))
-        .get(config.API_ENDPOINT + 'bisq/markets/hloc', routes.getBisqMarketHloc.bind(routes))
-        .get(config.API_ENDPOINT + 'bisq/markets/markets', routes.getBisqMarketMarkets.bind(routes))
-        .get(config.API_ENDPOINT + 'bisq/markets/offers', routes.getBisqMarketOffers.bind(routes))
-        .get(config.API_ENDPOINT + 'bisq/markets/ticker', routes.getBisqMarketTicker.bind(routes))
-        .get(config.API_ENDPOINT + 'bisq/markets/trades', routes.getBisqMarketTrades.bind(routes))
-        .get(config.API_ENDPOINT + 'bisq/markets/volumes', routes.getBisqMarketVolumes.bind(routes))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/currencies', routes.getBisqMarketCurrencies.bind(routes))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/depth', routes.getBisqMarketDepth.bind(routes))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/hloc', routes.getBisqMarketHloc.bind(routes))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/markets', routes.getBisqMarketMarkets.bind(routes))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/offers', routes.getBisqMarketOffers.bind(routes))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/ticker', routes.getBisqMarketTicker.bind(routes))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/trades', routes.getBisqMarketTrades.bind(routes))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/volumes', routes.getBisqMarketVolumes.bind(routes))
         ;
     }
 
-    if (config.BTCPAY_URL) {
+    if (config.SPONSORS.ENABLED) {
       this.app
-        .get(config.API_ENDPOINT + 'donations', routes.getDonations.bind(routes))
-        .get(config.API_ENDPOINT + 'donations/images/:id', routes.getSponsorImage.bind(routes))
-        .post(config.API_ENDPOINT + 'donations', routes.createDonationRequest.bind(routes))
-        .post(config.API_ENDPOINT + 'donations-webhook', routes.donationWebhook.bind(routes))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'donations', routes.getDonations.bind(routes))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'donations/images/:id', routes.getSponsorImage.bind(routes))
+        .post(config.MEMPOOL.API_URL_PREFIX + 'donations', routes.createDonationRequest.bind(routes))
+        .post(config.MEMPOOL.API_URL_PREFIX + 'donations-webhook', routes.donationWebhook.bind(routes))
       ;
     } else {
       this.app
-        .get(config.API_ENDPOINT + 'donations', (req, res) => {
+        .get(config.MEMPOOL.API_URL_PREFIX + 'donations', (req, res) => {
           req.pipe(request('https://mempool.space/api/v1/donations')).pipe(res);
         })
-        .get(config.API_ENDPOINT + 'donations/images/:id', (req, res) => {
+        .get(config.MEMPOOL.API_URL_PREFIX + 'donations/images/:id', (req, res) => {
           req.pipe(request('https://mempool.space/api/v1/donations/images/' + req.params.id)).pipe(res);
         });
     }

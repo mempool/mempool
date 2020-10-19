@@ -1,30 +1,41 @@
 {
-  "HTTP_PORT": 8999,
-  "DB_HOST": "localhost",
-  "DB_PORT": 3306,
-  "DB_USER": "mempool",
-  "DB_PASSWORD": "mempool",
-  "DB_DATABASE": "mempool",
-  "DB_DISABLED": false,
-  "API_ENDPOINT": "/api/v1/",
-  "ELECTRS_POLL_RATE_MS": 2000,
-  "NETWORK": "mainnet",
-  "MEMPOOL_REFRESH_RATE_MS": 2000,
-  "DEFAULT_PROJECTED_BLOCKS_AMOUNT": 8,
-  "KEEP_BLOCK_AMOUNT": 24,
-  "INITIAL_BLOCK_AMOUNT": 8,
-  "TX_PER_SECOND_SPAN_SECONDS": 150,
-  "ELECTRS_API_URL": "http://localhost:50001",
-  "CLUSTER_NUM_CORES": 1,
-  "BISQ_ENABLED": false,
-  "BISQ_BLOCKS_DATA_PATH": "/bisq/seednode-data/btc_mainnet/db/json",
-  "BISQ_MARKET_ENABLED": false,
-  "BISQ_MARKETS_DATA_PATH": "/bisq/seednode-data/btc_mainnet/db",
-  "SSL": false,
-  "SSL_CERT_FILE_PATH": "/etc/letsencrypt/live/mysite/fullchain.pem",
-  "SSL_KEY_FILE_PATH": "/etc/letsencrypt/live/mysite/privkey.pem",
-  "BTCPAY_URL": "",
-  "BTCPAY_WEBHOOK_URL": "",
-  "BTCPAY_AUTH": "",
-  "TWITTER_BEARER_AUTH": ""
+  "MEMPOOL": {
+    "NETWORK": "mainnet",
+    "HTTP_PORT": 8999,
+    "MINED_BLOCKS_CACHE": 144,
+    "SPAWN_CLUSTER_PROCS": 0,
+    "API_URL_PREFIX": "/api/v1/",
+    "WEBSOCKET_REFRESH_RATE_MS": 2000
+  },
+  "ELECTRS": {
+    "REST_API_URL": "http://localhost:50001",
+    "POLL_RATE_MS": 2000
+  },
+  "DATABASE": {
+    "ENABLED": true,
+    "HOST": "localhost",
+    "PORT": 3306,
+    "DATABASE": "mempool",
+    "USERNAME": "mempool",
+    "PASSWORD": "mempool"
+  },
+  "STATISTICS": {
+    "ENABLED": true,
+    "TX_PER_SECOND_SAMPLE_PERIOD": 150
+  },
+  "BISQ_BLOCKS": {
+    "ENABLED": true,
+    "DATA_PATH": "/bisq/statsnode-data/btc_mainnet/db/json"
+  },
+  "BISQ_MARKETS": {
+    "ENABLED": true,
+    "DATA_PATH": "/bisq/statsnode-data/btc_mainnet/db"
+  },
+  "SPONSORS": {
+    "ENABLED": true,
+    "BTCPAY_URL": "",
+    "BTCPAY_AUTH": "",
+    "BTCPAY_WEBHOOK_URL": "",
+    "TWITTER_BEARER_AUTH": ""
+  } 
 }

@@ -1,4 +1,4 @@
-const config = require('../../mempool-config.json');
+import config from '../config';
 import * as fs from 'fs';
 import * as process from 'process';
 import memPool from './mempool';
@@ -9,7 +9,7 @@ class DiskCache {
   static FILE_NAME = './cache.json';
 
   constructor() {
-    if (process.env.workerId === '0' || !config.CLUSTER_NUM_CORES || config.CLUSTER_NUM_CORES === 1) {
+    if (process.env.workerId === '0' || !config.MEMPOOL.SPAWN_CLUSTER_PROCS) {
       process.on('SIGINT', () => {
         this.saveCacheToDisk();
         process.exit(2);

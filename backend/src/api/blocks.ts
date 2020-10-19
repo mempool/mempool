@@ -1,4 +1,3 @@
-const config = require('../../mempool-config.json');
 import bitcoinApi from './bitcoin/electrs-api';
 import logger from '../logger';
 import memPool from './mempool';
@@ -6,6 +5,8 @@ import { Block, TransactionExtended, TransactionMinerInfo } from '../interfaces'
 import { Common } from './common';
 
 class Blocks {
+  private static INITIAL_BLOCK_AMOUNT = 8;
+  private static KEEP_BLOCK_AMOUNT = 24;
   private blocks: Block[] = [];
   private currentBlockHeight = 0;
   private lastDifficultyAdjustmentTime = 0;
@@ -29,14 +30,14 @@ class Blocks {
     const blockHeightTip = await bitcoinApi.getBlockHeightTip();
 
     if (this.blocks.length === 0) {
-      this.currentBlockHeight = blockHeightTip - config.INITIAL_BLOCK_AMOUNT;
+      this.currentBlockHeight = blockHeightTip - Blocks.INITIAL_BLOCK_AMOUNT;
     } else {
       this.currentBlockHeight = this.blocks[this.blocks.length - 1].height;
     }
 
-    if (blockHeightTip - this.currentBlockHeight > config.INITIAL_BLOCK_AMOUNT * 2) {
-      logger.info(`${blockHeightTip - this.currentBlockHeight} blocks since tip. Fast forwarding to the ${config.INITIAL_BLOCK_AMOUNT} recent blocks`);
-      this.currentBlockHeight = blockHeightTip - config.INITIAL_BLOCK_AMOUNT;
+    if (blockHeightTip - this.currentBlockHeight > Blocks.INITIAL_BLOCK_AMOUNT * 2) {
+      logger.info(`${blockHeightTip - this.currentBlockHeight} blocks since tip. Fast forwarding to the ${Blocks.INITIAL_BLOCK_AMOUNT} recent blocks`);
+      this.currentBlockHeight = blockHeightTip - Blocks.INITIAL_BLOCK_AMOUNT;
     }
 
     if (!this.lastDifficultyAdjustmentTime) {
@@ -91,7 +92,7 @@ class Blocks {
       }
 
       this.blocks.push(block);
-      if (this.blocks.length > config.KEEP_BLOCK_AMOUNT) {
+      if (this.blocks.length > Blocks.KEEP_BLOCK_AMOUNT) {
         this.blocks.shift();
       }
 
