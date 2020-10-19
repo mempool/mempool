@@ -16,7 +16,7 @@ class Routes {
   private cache = {};
 
   constructor() {
-    if (!config.DATABASE.ENABLED) {
+    if (config.DATABASE.ENABLED && config.STATISTICS.ENABLED) {
       this.createCache();
       setInterval(this.createCache.bind(this), 600000);
     }
