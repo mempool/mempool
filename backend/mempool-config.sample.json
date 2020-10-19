@@ -8,12 +8,12 @@
     "WEBSOCKET_REFRESH_RATE_MS": 2000
   },
   "ELECTRS": {
-    "REST_API_URL": "http://localhost:50001",
+    "REST_API_URL": "http://127.0.0.1:3000",
     "POLL_RATE_MS": 2000
   },
   "DATABASE": {
     "ENABLED": true,
-    "HOST": "localhost",
+    "HOST": "127.0.0.1",
     "PORT": 3306,
     "DATABASE": "mempool",
     "USERNAME": "mempool",
@@ -24,18 +24,18 @@
     "TX_PER_SECOND_SAMPLE_PERIOD": 150
   },
   "BISQ_BLOCKS": {
-    "ENABLED": true,
+    "ENABLED": false,
     "DATA_PATH": "/bisq/statsnode-data/btc_mainnet/db/json"
   },
   "BISQ_MARKETS": {
-    "ENABLED": true,
+    "ENABLED": false,
     "DATA_PATH": "/bisq/statsnode-data/btc_mainnet/db"
   },
   "SPONSORS": {
-    "ENABLED": true,
+    "ENABLED": false,
     "BTCPAY_URL": "",
     "BTCPAY_AUTH": "",
     "BTCPAY_WEBHOOK_URL": "",
     "TWITTER_BEARER_AUTH": ""
-  } 
+  }
 }

@@ -1,6 +1,6 @@
 const configFile = require('../mempool-config.json');
 
-export interface IConfig {
+interface IConfig {
   MEMPOOL: {
     NETWORK: 'mainnet' | 'testnet' | 'liquid';
     HTTP_PORT: number;
@@ -42,6 +42,48 @@ export interface IConfig {
   };
 }
 
+const defaults: IConfig = {
+  'MEMPOOL': {
+    'NETWORK': 'mainnet',
+    'HTTP_PORT': 8999,
+    'MINED_BLOCKS_CACHE': 144,
+    'SPAWN_CLUSTER_PROCS': 0,
+    'API_URL_PREFIX': '/api/v1/',
+    'WEBSOCKET_REFRESH_RATE_MS': 2000
+  },
+  'ELECTRS': {
+    'REST_API_URL': 'http://127.0.0.1:3000',
+    'POLL_RATE_MS': 2000
+  },
+  'DATABASE': {
+    'ENABLED': true,
+    'HOST': 'localhost',
+    'PORT': 3306,
+    'DATABASE': 'mempool',
+    'USERNAME': 'mempool',
+    'PASSWORD': 'mempool'
+  },
+  'STATISTICS': {
+    'ENABLED': true,
+    'TX_PER_SECOND_SAMPLE_PERIOD': 150
+  },
+  'BISQ_BLOCKS': {
+    'ENABLED': false,
+    'DATA_PATH': '/bisq/statsnode-data/btc_mainnet/db/json'
+  },
+  'BISQ_MARKETS': {
+    'ENABLED': false,
+    'DATA_PATH': '/bisq/statsnode-data/btc_mainnet/db'
+  },
+  'SPONSORS': {
+    'ENABLED': false,
+    'BTCPAY_URL': '',
+    'BTCPAY_AUTH': '',
+    'BTCPAY_WEBHOOK_URL': '',
+    'TWITTER_BEARER_AUTH': ''
+  }
+};
+
 class Config implements IConfig {
   MEMPOOL: IConfig['MEMPOOL'];
   ELECTRS: IConfig['ELECTRS'];
@@ -52,13 +94,24 @@ class Config implements IConfig {
   SPONSORS: IConfig['SPONSORS'];
 
   constructor() {
-    this.MEMPOOL = configFile.MEMPOOL;
-    this.ELECTRS = configFile.ELECTRS;
-    this.DATABASE = configFile.DATABASE;
-    this.STATISTICS = configFile.STATISTICS;
-    this.BISQ_BLOCKS = configFile.BISQ_BLOCKS;
-    this.BISQ_MARKETS = configFile.BISQ_MARKETS;
-    this.SPONSORS = configFile.SPONSORS;
+    const configs = this.merge(configFile, defaults);
+    this.MEMPOOL = configs.MEMPOOL;
+    this.ELECTRS = configs.ELECTRS;
+    this.DATABASE = configs.DATABASE;
+    this.STATISTICS = configs.STATISTICS;
+    this.BISQ_BLOCKS = configs.BISQ_BLOCKS;
+    this.BISQ_MARKETS = configs.BISQ_MARKETS;
+    this.SPONSORS = configs.SPONSORS;
+  }
+
+  merge = (...objects: object[]): IConfig => {
+    // @ts-ignore
+    return objects.reduce((prev, next) => {
+      Object.keys(prev).forEach(key => {
+        next[key] = { ...next[key], ...prev[key] };
+      });
+      return next;
+    });
   }
 }
 
