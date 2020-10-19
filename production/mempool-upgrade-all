@@ -28,7 +28,7 @@ for site in mainnet liquid testnet bisq
 do
     cd "$HOME/${site}"
     git fetch "${REPO}"
-    git reset --hard "${REPO}/${BRANCH}"
+    git reset --hard "${TAG}"
     hash=$(git rev-parse HEAD)
 
     if [ "${site}" = "mainnet" ]
