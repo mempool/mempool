@@ -1,4 +1,4 @@
-const config = require('../../mempool-config.json');
+import config from '../config';
 import * as request from 'request';
 import { DB } from '../database';
 import logger from '../logger';
@@ -6,16 +6,19 @@ import logger from '../logger';
 class Donations {
   private notifyDonationStatusCallback: ((invoiceId: string) => void) | undefined;
   private options = {
-    baseUrl: config.BTCPAY_URL,
+    baseUrl: config.SPONSORS.BTCPAY_URL,
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': config.BTCPAY_AUTH,
+      'Authorization': config.SPONSORS.BTCPAY_AUTH,
     },
   };
 
   sponsorsCache: any[] = [];
 
   constructor() {
+    if (!config.SPONSORS.ENABLED) {
+      return;
+    }
     this.$updateCache();
   }
 
@@ -39,7 +42,7 @@ class Donations {
       'orderId': orderId,
       'currency': 'BTC',
       'itemDesc': 'Sponsor mempool.space',
-      'notificationUrl': config.BTCPAY_WEBHOOK_URL,
+      'notificationUrl': config.SPONSORS.BTCPAY_WEBHOOK_URL,
       'redirectURL': 'https://mempool.space/about'
     };
     return new Promise((resolve, reject) => {
@@ -185,7 +188,7 @@ class Donations {
         uri: `https://api.twitter.com/1.1/users/show.json?screen_name=${handle}`,
         json: true,
         headers: {
-          Authorization: 'Bearer ' + config.TWITTER_BEARER_AUTH
+          Authorization: 'Bearer ' + config.SPONSORS.TWITTER_BEARER_AUTH
         },
       }, (err, res, body) => {
         if (err) { return reject(err); }

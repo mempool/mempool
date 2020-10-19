@@ -1,4 +1,4 @@
-const config = require('../mempool-config.json');
+import config from './config';
 import * as dgram from 'dgram';
 
 class Logger {
@@ -79,11 +79,11 @@ class Logger {
   }
 
   private getNetwork(): string {
-    if (config.BISQ_ENABLED) {
+    if (config.BISQ_BLOCKS.ENABLED) {
       return 'bisq';
     }
-    if (config.NETWORK && config.NETWORK !== 'mainnet') {
-      return config.NETWORK;
+    if (config.MEMPOOL.NETWORK && config.MEMPOOL.NETWORK !== 'mainnet') {
+      return config.MEMPOOL.NETWORK;
     }
     return '';
   }

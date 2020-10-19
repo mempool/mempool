@@ -1,4 +1,4 @@
-const config = require('../../mempool-config.json');
+import config from '../config';
 import bitcoinApi from './bitcoin/electrs-api';
 import { MempoolInfo, TransactionExtended, Transaction, VbytesPerSecond } from '../interfaces';
 import logger from '../logger';
@@ -124,14 +124,13 @@ class Mempool {
         }
       }
 
-      if ((new Date().getTime()) - start > config.MEMPOOL_REFRESH_RATE_MS * 10) {
+      if ((new Date().getTime()) - start > config.MEMPOOL.WEBSOCKET_REFRESH_RATE_MS * 10) {
         break;
       }
     }
 
     // Prevent mempool from clear on bitcoind restart by delaying the deletion
-    if ((config.NETWORK === 'mainnet' || !config.NETWORK)
-      && this.mempoolProtection === 0 && transactions.length / currentMempoolSize <= 0.80) {
+    if (config.MEMPOOL.NETWORK === 'mainnet' && this.mempoolProtection === 0 && transactions.length / currentMempoolSize <= 0.80) {
       this.mempoolProtection = 1;
       this.inSync = false;
       logger.warn(`Mempool clear protection triggered because transactions.length: ${transactions.length} and currentMempoolSize: ${currentMempoolSize}.`);
@@ -182,14 +181,14 @@ class Mempool {
   }
 
   private updateTxPerSecond() {
-    const nowMinusTimeSpan = new Date().getTime() - (1000 * config.TX_PER_SECOND_SPAN_SECONDS);
+    const nowMinusTimeSpan = new Date().getTime() - (1000 * config.STATISTICS.TX_PER_SECOND_SAMPLE_PERIOD);
     this.txPerSecondArray = this.txPerSecondArray.filter((unixTime) => unixTime > nowMinusTimeSpan);
-    this.txPerSecond = this.txPerSecondArray.length / config.TX_PER_SECOND_SPAN_SECONDS || 0;
+    this.txPerSecond = this.txPerSecondArray.length / config.STATISTICS.TX_PER_SECOND_SAMPLE_PERIOD || 0;
 
     this.vBytesPerSecondArray = this.vBytesPerSecondArray.filter((data) => data.unixTime > nowMinusTimeSpan);
     if (this.vBytesPerSecondArray.length) {
       this.vBytesPerSecond = Math.round(
-        this.vBytesPerSecondArray.map((data) => data.vSize).reduce((a, b) => a + b) / config.TX_PER_SECOND_SPAN_SECONDS
+        this.vBytesPerSecondArray.map((data) => data.vSize).reduce((a, b) => a + b) / config.STATISTICS.TX_PER_SECOND_SAMPLE_PERIOD
       );
     }
   }

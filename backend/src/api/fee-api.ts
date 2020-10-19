@@ -1,11 +1,11 @@
-const config = require('../../mempool-config.json');
+import config from '../config';
 import { MempoolBlock } from '../interfaces';
 import projectedBlocks from './mempool-blocks';
 
 class FeeApi {
   constructor() { }
 
-  defaultFee = config.NETWORK === 'liquid' ? 0.1 : 1;
+  defaultFee = config.MEMPOOL.NETWORK === 'liquid' ? 0.1 : 1;
 
   public getRecommendedFee() {
     const pBlocks = projectedBlocks.getMempoolBlocks();

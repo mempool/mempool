@@ -1,4 +1,4 @@
-const config = require('../mempool-config.json');
+import config from './config';
 import { Request, Response } from 'express';
 import statistics from './api/statistics';
 import feeApi from './api/fee-api';
@@ -16,7 +16,7 @@ class Routes {
   private cache = {};
 
   constructor() {
-    if (!config.DB_DISABLED) {
+    if (!config.DATABASE.ENABLED) {
       this.createCache();
       setInterval(this.createCache.bind(this), 600000);
     }
