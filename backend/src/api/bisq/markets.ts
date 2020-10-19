@@ -6,7 +6,7 @@ import logger from '../../logger';
 
 class Bisq {
   private static FOLDER_WATCH_CHANGE_DETECTION_DEBOUNCE = 4000;
-  private static MARKET_JSON_PATH = config.BISQ_MARKETS.DATA_PATH + '/btc_mainnet/db';
+  private static MARKET_JSON_PATH = config.BISQ_MARKETS.DATA_PATH;
   private static MARKET_JSON_FILE_PATHS = {
     cryptoCurrency: '/crypto_currency_list.json',
     fiatCurrency: '/fiat_currency_list.json',
