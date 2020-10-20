@@ -35,7 +35,7 @@ You should see mempool starting up, which takes over an hour (needs 8 blocks). W
 ```bash
   git clone https://github.com/mempool/mempool
   cd mempool
-  latestrelease=$(curl -s https://api.github.com/repos/mempool/mempool/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+  latestrelease=$(curl -s https://api.github.com/repos/mempool/mempool/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
   git checkout $latestrelease
 ```
 
