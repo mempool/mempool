@@ -1,0 +1,172 @@
+#!/bin/sh
+# $FreeBSD: branches/2020Q2/net-p2p/bitcoin/files/bitcoind.in 488524 2018-12-27 09:53:37Z ale $
+
+# PROVIDE: bitcoind
+# REQUIRE: LOGIN cleanvar
+# KEYWORD: shutdown
+
+#
+# Add the following lines to /etc/rc.conf to enable :
+# bitcoind_enable (bool):	Set to "NO" by default.
+#				Set it to "YES" to enable bitcoind
+# bitcoind_user (str)		Set to "bitcoin" by default.
+# bitcoind_group (str)		Set to "bitcoin" by default.
+# bitcoind_conf (str)		Set to "/usr/local/etc/bitcoind.conf" by default.
+# bitcoind_data_dir (str)	Set to "/var/db/bitcoin" by default.
+# bitcoindlimits_enable (bool)	Set to "NO" by default.
+#				Set it to "YES" to enable bitcoindlimits
+# bitcoindlimits_args		Set to "-e -U ${bitcoind_user}" by default
+
+
+. /etc/rc.subr
+
+name="bitcoind"
+rcvar=bitcoind_enable
+
+start_precmd="bitcoind_precmd"
+start_cmd="bitcoind_start"
+restart_precmd="bitcoind_checkconfig"
+reload_precmd="bitcoind_checkconfig"
+configtest_cmd="bitcoind_checkconfig"
+status_cmd="bitcoind_status"
+stop_cmd="bitcoind_stop"
+stop_postcmd="bitcoind_wait"
+command="/usr/local/bin/bitcoind"
+daemon_command="/usr/sbin/daemon"
+pidfile="/var/run/${name}.pid"
+extra_commands="configtest"
+
+
+: ${bitcoind_enable:="NO"}
+: ${bitcoindlimits_enable:="NO"}
+
+load_rc_config ${name}
+
+: ${bitcoind_user:="bitcoin"}
+: ${bitcoind_group:="bitcoin"}
+: ${bitcoind_data_dir:="/var/db/bitcoin"}
+: ${bitcoind_config_file:="/usr/local/etc/bitcoin.conf"}
+: ${bitcoindlimits_args:="-e -U ${bitcoind_user}"}
+
+# set up dependant variables
+procname="${command}"
+#pidfile="${bitcoind_data_dir}/bitcoind.pid"
+required_files="${bitcoind_config_file}"
+
+
+bitcoind_checkconfig()
+{
+  echo "Performing sanity check on bitcoind configuration:"
+  if [ ! -d "${bitcoind_data_dir}" ]
+  then
+    echo "Missing data directory: ${bitcoind_data_dir}"
+    exit 1
+  fi
+  chown -R "${bitcoind_user}:${bitcoind_group}" "${bitcoind_data_dir}"
+
+  if [ ! -f "${bitcoind_config_file}" ]
+  then
+    echo "Missing configuration file: ${bitcoind_config_file}"
+    exit 1
+  fi
+  if [ ! -x "${command}" ]
+  then
+    echo "Missing executable: ${command}"
+    exit 1
+  fi
+  return 0
+}
+
+bitcoind_cleanup()
+{
+  rm -f "${pidfile}"
+}
+
+bitcoind_precmd()
+{
+  bitcoind_checkconfig
+
+  pid=$(check_pidfile "${pidfile}" "${procname}")
+  if [ -z "${pid}" ]
+  then
+    echo "Bitcoind is not running"
+    rm -f "${pidfile}"
+  fi
+
+  if checkyesno bitcoindlimits_enable
+  then
+    eval $(/usr/bin/limits ${bitcoindlimits_args}) 2>/dev/null
+  else
+    return 0
+  fi
+}
+
+bitcoind_status()
+{
+  local pid
+  pid=$(check_pidfile "${pidfile}" "${procname}")
+  if [ -z "${pid}" ]
+  then
+    echo "Bitcoind is not running"
+    return 1
+  else
+    echo "Bitcoind running, pid: ${pid}"
+  fi
+}
+
+bitcoind_start()
+{
+  echo "Starting bitcoind:"
+  cd "${bitcoind_data_dir}" || return 1
+  ${daemon_command} -u "${bitcoind_user}" -p "${pidfile}" -f \
+    ${command} \
+    -conf="${bitcoind_config_file}" \
+    -datadir="${bitcoind_data_dir}"
+}
+
+bitcoind_stop()
+{
+  echo "Stopping bitcoind:"
+  pid=$(check_pidfile "${pidfile}" "${procname}")
+  if [ -z "${pid}" ]
+  then
+    echo "Bitcoind is not running"
+    return 1
+  else
+    kill ${pid}
+  fi
+}
+
+bitcoind_wait()
+{
+  local n=60
+  echo "Waiting for bitcoind shutdown:"
+  while :
+  do
+    printf '.'
+    pid=$(check_pidfile "${pidfile}" "${procname}")
+    if [ -z "${pid}" ]
+    then
+      printf '\n'
+      break
+    fi
+    sleep 1
+    n=$((${n} - 1))
+    if [ ${n} -eq 0 -a -f "${pidfile}" ]
+    then
+      printf "\nForce shutdown"
+      kill -9 $(cat "${pidfile}")
+      for n in 1 2 3
+      do
+        printf '.'
+        sleep 1
+      done
+      printf '\n'
+      break
+    fi
+  done
+  rm -f "${pidfile}"
+  echo "Shutdown complete"
+}
+
+run_rc_command "$1"
