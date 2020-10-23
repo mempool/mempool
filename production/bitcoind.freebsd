@@ -1,6 +1,4 @@
 #!/bin/sh
-# $FreeBSD: branches/2020Q2/net-p2p/bitcoin/files/bitcoind.in 488524 2018-12-27 09:53:37Z ale $
-
 # PROVIDE: bitcoind
 # REQUIRE: LOGIN cleanvar
 # KEYWORD: shutdown
@@ -11,8 +9,10 @@
 #				Set it to "YES" to enable bitcoind
 # bitcoind_user (str)		Set to "bitcoin" by default.
 # bitcoind_group (str)		Set to "bitcoin" by default.
-# bitcoind_conf (str)		Set to "/usr/local/etc/bitcoind.conf" by default.
+# bitcoind_conf (str)		Set to "/bitcoin/bitcoind.conf" by default.
 # bitcoind_data_dir (str)	Set to "/var/db/bitcoin" by default.
+# bitcoind_syslog_facility(str)	Set to "local0" by default.
+# bitcoind_syslog_priority(str)	Set to "info" by default.
 # bitcoindlimits_enable (bool)	Set to "NO" by default.
 #				Set it to "YES" to enable bitcoindlimits
 # bitcoindlimits_args		Set to "-e -U ${bitcoind_user}" by default
@@ -33,7 +33,7 @@ stop_cmd="bitcoind_stop"
 stop_postcmd="bitcoind_wait"
 command="/usr/local/bin/bitcoind"
 daemon_command="/usr/sbin/daemon"
-pidfile="/var/run/${name}.pid"
+pidfile="/bitcoin/bitcoind.pid"
 extra_commands="configtest"
 
 
@@ -44,13 +44,17 @@ load_rc_config ${name}
 
 : ${bitcoind_user:="bitcoin"}
 : ${bitcoind_group:="bitcoin"}
-: ${bitcoind_data_dir:="/var/db/bitcoin"}
-: ${bitcoind_config_file:="/usr/local/etc/bitcoin.conf"}
+: ${bitcoind_data_dir:="/bitcoin"}
+: ${bitcoind_config_file:="/bitcoin/bitcoin.conf"}
+: ${bitcoind_syslog_facility:="local0"}
+: ${bitcoind_syslog_priority:="info"}
+: ${bitcoind_syslog_tag:="bitcoind"}
+: ${bitcoind_kill_after:="300"}
 : ${bitcoindlimits_args:="-e -U ${bitcoind_user}"}
 
 # set up dependant variables
 procname="${command}"
-#pidfile="${bitcoind_data_dir}/bitcoind.pid"
+pidfile="${bitcoind_data_dir}/bitcoind.pid"
 required_files="${bitcoind_config_file}"
 
 
@@ -118,8 +122,13 @@ bitcoind_start()
 {
   echo "Starting bitcoind:"
   cd "${bitcoind_data_dir}" || return 1
-  ${daemon_command} -u "${bitcoind_user}" -p "${pidfile}" -f \
+  ${daemon_command} \
+    -u "${bitcoind_user}" \
+    -l "${bitcoind_syslog_facility}" \
+    -s "${bitcoind_syslog_priority}" \
+    -T "${bitcoind_syslog_tag}" \
     ${command} \
+    -printtoconsole=1 \
     -conf="${bitcoind_config_file}" \
     -datadir="${bitcoind_data_dir}"
 }
@@ -139,7 +148,7 @@ bitcoind_stop()
 
 bitcoind_wait()
 {
-  local n=60
+  local n="${bitcoind_kill_after}"
   echo "Waiting for bitcoind shutdown:"
   while :
   do
