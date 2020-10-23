@@ -314,6 +314,13 @@ Chartist.plugins.legend = function (options: any) {
 
     return function legend(chart: any) {
 
+      var isClicked = false;
+
+      chart.on('created', function (data: any) {
+
+        if (isClicked)
+            return;
+
         function removeLegendElement() {
           const legendElement = chart.container.querySelector('.ct-legend');
             if (legendElement) {
@@ -442,7 +449,9 @@ Chartist.plugins.legend = function (options: any) {
                     chart.data.labels = newLabels;
                 }
 
+                isClicked = true;
                 chart.update();
+                isClicked = false;
 
                 if (options.onClick) {
                     options.onClick(chart, e);
@@ -480,14 +489,13 @@ Chartist.plugins.legend = function (options: any) {
             });
         });
 
-        chart.on('created', function (data: any) {
-            appendLegendToDOM(legendElement);
-        });
+        appendLegendToDOM(legendElement);
 
         if (options.clickable) {
             setSeriesClassNames();
             addClickHandler(legendElement, legends, seriesMetadata, useLabels);
         }
+      });
     };
 };
 
