@@ -83,7 +83,7 @@ class Server {
 
     this.setUpHttpApiRoutes();
     this.setUpWebsocketHandling();
-    this.runMempoolIntervalFunctions();
+    this.runMainUpdateLoop();
 
     fiatConversion.startService();
     diskCache.loadMempoolCache();
@@ -107,16 +107,21 @@ class Server {
     });
   }
 
-  async runMempoolIntervalFunctions() {
+  async runMainUpdateLoop() {
     try {
       await memPool.$updateMemPoolInfo();
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
-      setTimeout(this.runMempoolIntervalFunctions.bind(this), config.ELECTRS.POLL_RATE_MS);
+      setTimeout(this.runMainUpdateLoop.bind(this), config.ELECTRS.POLL_RATE_MS);
       this.retryOnElectrsErrorAfterSeconds = 5;
     } catch (e) {
-      logger.warn(`runMempoolIntervalFunctions error: ${(e.message || e)}. Retrying in ${this.retryOnElectrsErrorAfterSeconds} sec.`);
-      setTimeout(this.runMempoolIntervalFunctions.bind(this), 1000 * this.retryOnElectrsErrorAfterSeconds);
+      const loggerMsg = `runMainLoop error: ${(e.message || e)}. Retrying in ${this.retryOnElectrsErrorAfterSeconds} sec.`;
+      if (this.retryOnElectrsErrorAfterSeconds > 5) {
+        logger.warn(loggerMsg);
+      } else {
+        logger.debug(loggerMsg);
+      }
+      setTimeout(this.runMainUpdateLoop.bind(this), 1000 * this.retryOnElectrsErrorAfterSeconds);
       this.retryOnElectrsErrorAfterSeconds *= 2;
       this.retryOnElectrsErrorAfterSeconds = Math.min(this.retryOnElectrsErrorAfterSeconds, 60);
     }
