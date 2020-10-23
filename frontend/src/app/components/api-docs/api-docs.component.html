@@ -24,6 +24,28 @@
     </li>
 
     <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="1">
+      <a ngbNavLink>Fee Estimates</a>
+      <ng-template ngbNavContent>
+
+        <table class="table">
+          <tr>
+            <th style="border-top: 0;">Endpoint</th>
+            <th style="border-top: 0;">Description</th>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/v1/fees/recommended" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/v1/fees/recommended</a></td>
+            <td>Returns our currently suggested fees for new transactions.</td>
+          </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/v1/fees/mempool-blocks" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/v1/fees/mempool-blocks</a></td>
+            <td>Returns current mempool as projected blocks.</td>
+          </tr>
+        </table>
+
+      </ng-template>
+    </li>
+
+    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="2">
       <a ngbNavLink>Mempool</a>
       <ng-template ngbNavContent>
 
@@ -44,20 +66,12 @@
             <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/mempool/recent" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/mempool/recent</a></td>
             <td>Get a list of the last 10 transactions to enter the mempool. Each transaction object contains simplified overview data, with the following fields: <code>txid</code>, <code>fee</code>, <code>vsize</code>, and <code>value</code>.</td>
           </tr>
-          <tr>
-            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/v1/fees/recommended" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/v1/fees/recommended</a></td>
-            <td>Returns our currently suggested fees for new transactions.</td>
-          </tr>
-          <tr>
-            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/v1/fees/mempool-blocks" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/v1/fees/mempool-blocks</a></td>
-            <td>Returns current mempool as projected blocks.</td>
-          </tr>
         </table>
 
       </ng-template>
     </li>
 
-    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="2">
+    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="3">
       <a ngbNavLink>Blocks</a>
       <ng-template ngbNavContent>
 
@@ -111,7 +125,7 @@
       </ng-template>
     </li>
 
-    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="3">
+    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="4">
       <a ngbNavLink>Transactions</a>
       <ng-template ngbNavContent>
 
@@ -161,7 +175,7 @@
       </ng-template>
     </li>
 
-    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="4">
+    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="5">
       <a ngbNavLink>Addresses</a>
       <ng-template ngbNavContent>
 
@@ -195,7 +209,7 @@
       </ng-template>
     </li>
 
-    <li *ngIf="network.val === 'liquid'" [ngbNavItem]="5">
+    <li *ngIf="network.val === 'liquid'" [ngbNavItem]="6">
       <a ngbNavLink>Assets</a>
       <ng-template ngbNavContent>
 
