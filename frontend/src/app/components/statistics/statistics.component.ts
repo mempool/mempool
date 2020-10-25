@@ -53,7 +53,11 @@ export class StatisticsComponent implements OnInit {
     this.seoService.setTitle('Graphs');
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
     const isMobile = window.innerWidth <= 767.98;
-    const labelHops = isMobile ? 12 : 6;
+    let labelHops = isMobile ? 48 : 24;
+
+    if (isMobile) {
+      labelHops = 96;
+    }
 
     const labelInterpolationFnc = (value: any, index: any) => {
       switch (this.radioGroupForm.controls.dateSpan.value) {
