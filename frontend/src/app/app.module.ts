@@ -46,6 +46,7 @@ import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontaweso
 import { faBolt, faChartArea, faCogs, faCubes, faDatabase, faInfoCircle, faLink, faList, faSearch, faTachometerAlt, faThList, faTv } from '@fortawesome/free-solid-svg-icons';
 import { ApiDocsComponent } from './components/api-docs/api-docs.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
+import { StorageService } from './services/storage.service';
 
 @NgModule({
   declarations: [
@@ -97,6 +98,7 @@ import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-
     WebsocketService,
     AudioService,
     SeoService,
+    StorageService,
   ],
   bootstrap: [AppComponent]
 })
