@@ -25,19 +25,21 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "express": "4.17.1",
-    "locutus": "2.0.12",
-    "mysql2": "1.6.1",
-    "node-worker-threads-pool": "1.4.3",
-    "request": "2.88.2",
-    "ws": "7.3.1"
+    "compression": "^1.7.4",
+    "express": "^4.17.1",
+    "locutus": "^2.0.12",
+    "mysql2": "^1.6.1",
+    "node-worker-threads-pool": "^1.4.2",
+    "request": "^2.88.2",
+    "ws": "^7.3.1"
   },
   "devDependencies": {
-    "@types/express": "4.17.2",
-    "@types/locutus": "0.0.6",
-    "@types/request": "2.48.2",
-    "@types/ws": "6.0.4",
-    "tslint": "6.1.0",
-    "typescript": "3.9.7"
+    "@types/compression": "^1.0.1",
+    "@types/express": "^4.17.2",
+    "@types/request": "^2.48.2",
+    "@types/ws": "^6.0.4",
+    "@types/locutus": "^0.0.6",
+    "tslint": "~6.1.0",
+    "typescript": "~3.9.7"
   }
 }
