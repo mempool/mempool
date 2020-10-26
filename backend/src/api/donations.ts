@@ -34,7 +34,7 @@ class Donations {
     this.notifyDonationStatusCallback = fn;
   }
 
-  createRequest(amount: number, orderId: string): Promise<any> {
+  $createRequest(amount: number, orderId: string): Promise<any> {
     logger.notice('New invoice request. Handle: ' + orderId + ' Amount: ' + amount + ' BTC');
 
     const postData = {
@@ -55,7 +55,7 @@ class Donations {
         const formattedBody = {
           id: body.data.id,
           amount: parseFloat(body.data.btcPrice),
-          address: body.data.bitcoinAddress,
+          addresses: body.data.addresses,
         };
         resolve(formattedBody);
       });

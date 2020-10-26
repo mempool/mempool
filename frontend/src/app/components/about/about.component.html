@@ -92,14 +92,59 @@
     </ng-template>
 
     <div *ngIf="donationStatus === 3" class="text-center">
-      <div class="qr-wrapper mt-2 mb-2">
-        <a [href]="bypassSecurityTrustUrl('bitcoin:' + donationObj.address + '?amount=' + donationObj.amount)" target="_blank">
-          <app-qrcode [data]="'bitcoin:' + donationObj.address + '?amount=' + donationObj.amount"></app-qrcode>
-        </a>
-      </div>
-      <br>
-      <p style="font-size: 10px;">{{ donationObj.address }}</p>
-      <p style="font-size: 12px;">{{ donationObj.amount }} BTC</p>
+
+      <form [formGroup]="paymentForm">
+        <div class="btn-group btn-group-toggle mb-2" ngbRadioGroup formControlName="method">
+          <label ngbButtonLabel class="btn-primary">
+            <input ngbButton type="radio" value="chain"> <fa-icon [icon]="['fas', 'link']" [fixedWidth]="true" title="Onchain"></fa-icon>
+          </label>
+          <label ngbButtonLabel class="btn-primary">
+            <input ngbButton type="radio" value="lightning"> <fa-icon [icon]="['fas', 'bolt']" [fixedWidth]="true" title="Lightning"></fa-icon>
+          </label>
+        </div>
+      </form>
+
+      <ng-template [ngIf]="paymentForm.get('method').value === 'chain'">
+        <div class="qr-wrapper mt-2 mb-2">
+          <a [href]="bypassSecurityTrustUrl('bitcoin:' + donationObj.addresses.BTC + '?amount=' + donationObj.amount)" target="_blank">
+            <app-qrcode [size]="200" [data]="'bitcoin:' + donationObj.addresses.BTC + '?amount=' + donationObj.amount"></app-qrcode>
+          </a>
+        </div>
+        <br>
+        <div class="input-group input-group-sm mb-3 mt-3 info-group mx-auto">
+          <input type="text" class="form-control" readonly [value]="donationObj.addresses.BTC">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button" ><app-clipboard [text]="donationObj.addresses.BTC"></app-clipboard></button>
+          </div>
+        </div>
+        <p style="font-size: 12px;">{{ donationObj.amount }} BTC</p>
+      </ng-template>
+
+      <ng-template [ngIf]="paymentForm.get('method').value === 'lightning'">
+        <div class="qr-wrapper mt-2 mb-2">
+          <a [href]="bypassSecurityTrustUrl('lightning:' + donationObj.addresses.BTC_LightningLike)" target="_blank">
+            <app-qrcode [size]="200" [data]="donationObj.addresses.BTC_LightningLike.toUpperCase()"></app-qrcode>
+          </a>
+        </div>
+        <br>
+
+        <div class="input-group input-group-sm mb-3 mt-3 info-group mx-auto">
+          <input type="text" class="form-control" readonly [value]="donationObj.addresses.BTC_LightningLike">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button"><app-clipboard [text]="donationObj.addresses.BTC_LightningLike"></app-clipboard></button>
+          </div>
+        </div>
+
+        <div class="input-group input-group-sm mb-3 mt-3 info-group mx-auto">
+          <input type="text" class="form-control" readonly value="02837c62c092fbde1fed68774700ef0c0eeec6a370d64d64fd43a0d43798192687@103.99.170.180:9735">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button"><app-clipboard [text]="'02837c62c092fbde1fed68774700ef0c0eeec6a370d64d64fd43a0d43798192687@103.99.170.180:9735'"></app-clipboard></button>
+          </div>
+        </div>
+
+        <p style="font-size: 10px;"></p>
+        <p style="font-size: 12px;">{{ donationObj.amount }} BTC</p>
+      </ng-template>
 
       <p>Waiting for transaction... </p>
       <div class="spinner-border text-light"></div>

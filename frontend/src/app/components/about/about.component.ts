@@ -17,6 +17,7 @@ import { map } from 'rxjs/operators';
 export class AboutComponent implements OnInit {
   gitCommit$: Observable<string>;
   donationForm: FormGroup;
+  paymentForm: FormGroup;
   donationStatus = 1;
   sponsors$: Observable<any>;
   donationObj: any;
@@ -40,6 +41,10 @@ export class AboutComponent implements OnInit {
     this.donationForm = this.formBuilder.group({
       amount: [0.01],
       handle: [''],
+    });
+
+    this.paymentForm = this.formBuilder.group({
+      'method': 'chain'
     });
 
     this.apiService.getDonation$()
