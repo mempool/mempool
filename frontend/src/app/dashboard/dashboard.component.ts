@@ -10,6 +10,7 @@ import * as Chartist from 'chartist';
 import { formatDate } from '@angular/common';
 import { WebsocketService } from '../services/websocket.service';
 import { SeoService } from '../services/seo.service';
+import { StorageService } from '../services/storage.service';
 
 interface MempoolBlocksData {
   blocks: number;
@@ -42,6 +43,7 @@ interface MempoolStatsData {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent implements OnInit {
+  collapsed = true;
   network$: Observable<string>;
   mempoolBlocksData$: Observable<MempoolBlocksData>;
   mempoolInfoData$: Observable<MempoolInfoData>;
@@ -60,12 +62,14 @@ export class DashboardComponent implements OnInit {
     private apiService: ApiService,
     private websocketService: WebsocketService,
     private seoService: SeoService,
+    private storageService: StorageService,
   ) { }
 
   ngOnInit(): void {
     this.seoService.resetTitle();
     this.websocketService.want(['blocks', 'stats', 'mempool-blocks', 'live-2h-chart']);
     this.network$ = merge(of(''), this.stateService.networkChanged$);
+    this.collapsed = this.storageService.getValue('dashboard-collapsed') === 'true' || false;
 
     this.mempoolInfoData$ = combineLatest([
       this.stateService.mempoolInfo$,
@@ -216,5 +220,10 @@ export class DashboardComponent implements OnInit {
 
   trackByBlock(index: number, block: Block) {
     return block.height;
+  }
+
+  toggleCollapsed() {
+    this.collapsed = !this.collapsed;
+    this.storageService.setValue('dashboard-collapsed', this.collapsed);
   }
 }
