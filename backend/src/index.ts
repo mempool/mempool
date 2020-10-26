@@ -1,6 +1,5 @@
 import { Express, Request, Response, NextFunction } from 'express';
 import * as express from 'express';
-import * as compression from 'compression';
 import * as http from 'http';
 import * as https from 'https';
 import * as WebSocket from 'ws';
@@ -66,7 +65,6 @@ class Server {
         res.setHeader('Access-Control-Allow-Origin', '*');
         next();
       })
-      .use(compression())
       .use(express.urlencoded({ extended: true }))
       .use(express.json());
 
