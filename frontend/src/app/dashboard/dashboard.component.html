@@ -44,7 +44,7 @@
             <hr>
           </div>
           <div style="height: 250px;" *ngIf="(mempoolStats$ | async) as mempoolStats">
-            <app-mempool-graph [data]="mempoolStats.mempool" [showLegend]="false" [offsetX]="10" [small]="true"></app-mempool-graph>
+            <app-mempool-graph [data]="mempoolStats.mempool" [showLegend]="false" [offsetX]="20" [small]="true"></app-mempool-graph>
           </div>
         </div>
       </div>
