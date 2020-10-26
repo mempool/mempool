@@ -73,14 +73,16 @@
           </div>
           <input formControlName="amount" class="form-control" type="number" min="0.001" step="1E-03">
         </div>
-        <div class="input-group mb-4" *ngIf="donationForm.get('amount').value >= 0.01; else lowAmount">
+        <div class="input-group" *ngIf="donationForm.get('amount').value >= 0.01; else lowAmount">
           <div class="input-group-prepend" style="width: 42px;">
             <span class="input-group-text">@</span>
           </div>
           <input formControlName="handle" class="form-control" type="text" placeholder="Twitter handle (Optional)">
         </div>
-        <div class="input-group">
-          <button class="btn btn-primary mx-auto" type="submit">Request invoice</button>
+        <div class="required" *ngIf="donationForm.get('amount').hasError('required')">Amount required</div>
+        <div class="required" *ngIf="donationForm.get('amount').hasError('min')">Minimum amount is 0.001 BTC</div>
+        <div class="input-group mt-4">
+          <button class="btn btn-primary mx-auto" type="submit" [disabled]="donationForm.invalid">Request invoice</button>
         </div>
       </form>
     </div>

@@ -3,7 +3,7 @@ import { WebsocketService } from '../../services/websocket.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { StateService } from 'src/app/services/state.service';
 import { Observable } from 'rxjs';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApiService } from 'src/app/services/api.service';
 import { env } from '../../app.constants';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
@@ -39,7 +39,7 @@ export class AboutComponent implements OnInit {
     this.websocketService.want(['blocks']);
 
     this.donationForm = this.formBuilder.group({
-      amount: [0.01],
+      amount: [0.01, [Validators.min(0.001), Validators.required]],
       handle: [''],
     });
 
