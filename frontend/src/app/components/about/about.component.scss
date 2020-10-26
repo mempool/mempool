@@ -2,6 +2,7 @@
   background-color: #FFF;
   padding: 10px;
   display: inline-block;
+  padding-bottom: 5px;
 }
 
 .profile_photo {
@@ -21,4 +22,8 @@
 
 .text-small {
   font-size: 12px;
+}
+
+.info-group {
+  max-width: 400px;
 }

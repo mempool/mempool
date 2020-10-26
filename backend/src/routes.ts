@@ -136,7 +136,7 @@ class Routes {
     }
 
     try {
-      const result = await donations.createRequest(p.amount, p.orderId);
+      const result = await donations.$createRequest(p.amount, p.orderId);
       res.json(result);
     } catch (e) {
       res.status(500).send(e.message);
