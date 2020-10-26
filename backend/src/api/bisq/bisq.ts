@@ -139,7 +139,7 @@ class Bisq {
 
   private updatePrice() {
     request('https://markets.bisq.network/api/trades/?market=bsq_btc', { json: true }, (err, res, trades: BisqTrade[]) => {
-      if (err) { return logger.err('Error updating Bisq market price: ' + err); }
+      if (err || !Array.isArray(trades)) { return logger.err('Error updating Bisq market price: ' + err); }
 
       const prices: number[] = [];
       trades.forEach((trade) => {
