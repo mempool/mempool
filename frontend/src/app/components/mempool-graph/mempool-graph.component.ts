@@ -54,7 +54,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         case '1y':
           value = formatDate(value, 'dd/MM', this.locale);
       }
-      return index % labelHops  === 0 ? value : null;
+      return index % labelHops === 0 ? value : null;
     };
 
     this.mempoolVsizeFeesOptions = {

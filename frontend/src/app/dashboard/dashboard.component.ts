@@ -194,7 +194,7 @@ export class DashboardComponent implements OnInit {
         },
         axisX: {
           labelInterpolationFnc: (value: any, index: any) => index % 24 === 0 ? formatDate(value, 'HH:mm', this.locale) : null,
-          offset: 10
+          offset: 20
         },
         plugins: [
           Chartist.plugins.ctTargetLine({
