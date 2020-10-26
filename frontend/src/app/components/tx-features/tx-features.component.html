@@ -1,4 +1,8 @@
-<span *ngIf="segwitGains.realizedGains && !segwitGains.potentialBech32Gains" class="badge badge-success mr-1" ngbTooltip="This transaction saved {{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}% on fees by using native SegWit-Bech32" placement="bottom">SegWit</span>
-<span *ngIf="segwitGains.realizedGains && segwitGains.potentialBech32Gains" class="badge badge-warning mr-1" ngbTooltip="This transaction saved {{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}% on fees by using SegWit and could save {{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}% more by fully upgrading to native SegWit-Bech32" placement="bottom">SegWit</span>
-<span *ngIf="segwitGains.potentialP2shGains" class="badge badge-danger mr-1" ngbTooltip="This transaction could save {{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}% on fees by upgrading to native SegWit-Bech32 or {{ segwitGains.potentialP2shGains * 100 | number:  '1.0-0' }}% by upgrading to SegWit-P2SH" placement="bottom"><del>SegWit</del></span>
+<span *ngIf="segwitGains.realizedGains && !segwitGains.potentialBech32Gains; else segwitTwo" class="badge badge-success mr-1" ngbTooltip="This transaction saved {{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}% on fees by using native SegWit-Bech32" placement="bottom">SegWit</span>
+<ng-template #segwitTwo>
+  <span *ngIf="segwitGains.realizedGains && segwitGains.potentialBech32Gains else potentialP2shGains" class="badge badge-warning mr-1" ngbTooltip="This transaction saved {{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}% on fees by using SegWit and could save {{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}% more by fully upgrading to native SegWit-Bech32" placement="bottom">SegWit</span>
+  <ng-template #potentialP2shGains>
+    <span *ngIf="segwitGains.potentialP2shGains" class="badge badge-danger mr-1" ngbTooltip="This transaction could save {{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}% on fees by upgrading to native SegWit-Bech32 or {{ segwitGains.potentialP2shGains * 100 | number:  '1.0-0' }}% by upgrading to SegWit-P2SH" placement="bottom"><del>SegWit</del></span>
+  </ng-template>
+</ng-template>
 <span *ngIf="isRbfTransaction" class="badge badge-success" ngbTooltip="This transaction support Replace-By-Fee (RBF) allowing fee bumping" placement="bottom">RBF</span>
