@@ -9,6 +9,7 @@ import * as QRCode from 'qrcode/build/qrcode.js';
 export class QrcodeComponent implements AfterViewInit {
   @Input() data: string;
   @Input() size = 125;
+  @Input() imageUrl: string;
   @ViewChild('canvas') canvas: ElementRef;
 
   qrcodeObject: any;
