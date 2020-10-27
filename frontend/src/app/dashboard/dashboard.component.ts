@@ -43,7 +43,7 @@ interface MempoolStatsData {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent implements OnInit {
-  collapsed = true;
+  collapseLevel: string;
   network$: Observable<string>;
   mempoolBlocksData$: Observable<MempoolBlocksData>;
   mempoolInfoData$: Observable<MempoolInfoData>;
@@ -69,7 +69,7 @@ export class DashboardComponent implements OnInit {
     this.seoService.resetTitle();
     this.websocketService.want(['blocks', 'stats', 'mempool-blocks', 'live-2h-chart']);
     this.network$ = merge(of(''), this.stateService.networkChanged$);
-    this.collapsed = this.storageService.getValue('dashboard-collapsed') === 'true' || false;
+    this.collapseLevel = this.storageService.getValue('dashboard-collapsed') || 'one';
 
     this.mempoolInfoData$ = combineLatest([
       this.stateService.mempoolInfo$,
@@ -223,7 +223,13 @@ export class DashboardComponent implements OnInit {
   }
 
   toggleCollapsed() {
-    this.collapsed = !this.collapsed;
-    this.storageService.setValue('dashboard-collapsed', this.collapsed);
+    if (this.collapseLevel === 'one') {
+      this.collapseLevel = 'two';
+    } else if (this.collapseLevel === 'two') {
+      this.collapseLevel = 'three';
+    } else {
+      this.collapseLevel = 'one';
+    }
+    this.storageService.setValue('dashboard-collapsed', this.collapseLevel);
   }
 }

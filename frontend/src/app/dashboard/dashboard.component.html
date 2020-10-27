@@ -2,7 +2,7 @@
 <div class="container-xl mt-2">
 
   <div class="row row-cols-1 row-cols-md-2" *ngIf="{ value: (mempoolInfoData$ | async) } as mempoolInfoData">
-    <ng-template [ngIf]="collapsed" [ngIfElse]="expanded">
+    <ng-template [ngIf]="collapseLevel === 'three'" [ngIfElse]="expanded">
       <div class="col mb-4">
         <div class="card text-center">
           <div class="card-body">
@@ -68,6 +68,7 @@
           </div>
         </div>
       </div>
+      <ng-template [ngIf]="collapseLevel === 'one'">
       <div class="col mb-4">
         <div class="card text-center">
           <div class="card-body">
@@ -122,9 +123,15 @@
         </div>
       </div>
     </ng-template>
+    </ng-template>
   </div>
 
-  <button type="button" class="btn btn-secondary btn-sm d-block mx-auto" (click)="toggleCollapsed()">{{ collapsed ? 'Expand' : 'Collapse' }}</button>
+  <button type="button" class="btn btn-secondary btn-sm d-block mx-auto" (click)="toggleCollapsed()">
+    <div [ngSwitch]="collapseLevel">
+      <fa-icon *ngSwitchCase="'three'" [icon]="['fas', 'angle-down']" [fixedWidth]="true" title="Collapse"></fa-icon>
+      <fa-icon *ngSwitchDefault [icon]="['fas', 'angle-up']" [fixedWidth]="true" title="Expand"></fa-icon>
+    </div>
+  </button>
 
   <br>
 

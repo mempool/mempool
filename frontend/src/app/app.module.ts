@@ -43,7 +43,7 @@ import { NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { FeesBoxComponent } from './components/fees-box/fees-box.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faBolt, faChartArea, faCogs, faCubes, faDatabase, faInfoCircle,
+import { faAngleDoubleDown, faAngleDoubleUp, faAngleDown, faAngleUp, faBolt, faChartArea, faCogs, faCubes, faDatabase, faInfoCircle,
   faLink, faList, faSearch, faTachometerAlt, faThList, faTint, faTv } from '@fortawesome/free-solid-svg-icons';
 import { ApiDocsComponent } from './components/api-docs/api-docs.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
@@ -119,5 +119,7 @@ export class AppModule {
     library.addIcons(faLink);
     library.addIcons(faBolt);
     library.addIcons(faTint);
+    library.addIcons(faAngleDown);
+    library.addIcons(faAngleUp);
   }
 }
