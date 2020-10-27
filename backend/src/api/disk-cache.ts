@@ -39,7 +39,7 @@ class DiskCache {
         mempool: memPool.getMempool(),
         blocks: blocks.getBlocks(),
       }));
-      logger.info('Mempool and blocks data saved to disk cache');
+      logger.debug('Mempool and blocks data saved to disk cache');
     } catch (e) {
       logger.warn('Error writing to cache file asynchronously');
     }
