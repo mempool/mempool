@@ -26,7 +26,7 @@ class BackendInfo {
     try {
       this.gitCommitHash = fs.readFileSync('../.git/refs/heads/master').toString().trim();
     } catch (e) {
-      logger.err('Could not load git commit info, skipping.');
+      logger.err('Could not load git commit info: ' + e.message || e);
     }
   }
 }

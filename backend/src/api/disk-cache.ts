@@ -41,7 +41,7 @@ class DiskCache {
       }));
       logger.debug('Mempool and blocks data saved to disk cache');
     } catch (e) {
-      logger.warn('Error writing to cache file asynchronously');
+      logger.warn('Error writing to cache file asynchronously: ' + e.message || e);
     }
   }
 

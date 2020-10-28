@@ -160,7 +160,7 @@ class Bisq {
       this.buildIndex();
       this.calculateStats();
     } catch (e) {
-      logger.err('loadBisqDumpFile() error.' + e.message);
+      logger.err('loadBisqDumpFile() error.' + e.message || e);
     }
   }
 
