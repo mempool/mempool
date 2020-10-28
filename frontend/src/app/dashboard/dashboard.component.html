@@ -169,7 +169,7 @@
 </ng-template>
 
 <ng-template #txPerSecond let-mempoolInfoData>
-  <h5 class="card-title">Tx vBytes per second</h5>
+  <h5 class="card-title">Incoming transactions</h5>
   <ng-template [ngIf]="mempoolInfoData.value" [ngIfElse]="loading">
     <span *ngIf="mempoolInfoData.value.vBytesPerSecond === 0; else inSync">
       &nbsp;<span class="badge badge-pill badge-warning">Backend is synchronizing</span>
