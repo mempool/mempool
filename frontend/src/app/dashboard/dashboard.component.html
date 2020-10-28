@@ -2,67 +2,60 @@
 <div class="container-xl mt-2">
 
   <div class="row row-cols-1 row-cols-md-2" *ngIf="{ value: (mempoolInfoData$ | async) } as mempoolInfoData">
-    <div class="col mb-4">
-      <div class="card text-center">
-        <div class="card-body">
-          <app-fees-box class="d-block"></app-fees-box>
-        </div>
-      </div>
-    </div>
-    <div class="col mb-4" *ngIf="(network$ | async) !== 'liquid'; else emptyBlock">
-      <div class="card text-center">
-        <div class="card-body more-padding">
-          <h5 class="card-title">Difficulty adjustment</h5>
-          <div class="progress" *ngIf="(difficultyEpoch$ | async) as epochData; else loading">
-            <div class="progress-bar" role="progressbar" style="width: 15%; background-color: #105fb0" [ngStyle]="{'width': epochData.base}"><ng-template [ngIf]="epochData.change > 0">+</ng-template>{{ epochData.change | number: '1.0-2' }}%</div>
-            <div class="progress-bar bg-success" role="progressbar" style="width: 0%" [ngStyle]="{'width': epochData.green}"></div>
-            <div class="progress-bar bg-danger" role="progressbar" style="width: 1%; background-color: #f14d80;" [ngStyle]="{'width': epochData.red}"></div>
+    <ng-template [ngIf]="collapseLevel === 'three'" [ngIfElse]="expanded">
+      <div class="col mb-4">
+        <div class="card text-center">
+          <div class="card-body">
+            <app-fees-box class="d-block"></app-fees-box>
           </div>
         </div>
       </div>
-    </div>
-    <div class="col mb-4">
-      <div class="card text-center graph-card">
-        <div class="card-body pl-0">
-          <div style="padding-left: 1.25rem;">
-            <table style="width: 100%;">
-              <tr>
-                <td>
-                  <h5 class="card-title">Mempool size</h5>
-                  <p class="card-text" *ngIf="(mempoolBlocksData$ | async) as mempoolBlocksData; else loading">
-                    {{ mempoolBlocksData.size | bytes }} ({{ mempoolBlocksData.blocks }} block<span [hidden]="mempoolBlocksData.blocks <= 1">s</span>)
-                  </p>
-                </td>
-                <td>
-                  <h5 class="card-title">Unconfirmed</h5>
-                  <p class="card-text" *ngIf="mempoolInfoData.value; else loading">
-                    {{ mempoolInfoData.value.memPoolInfo.size | number }} TXs
-                  </p>
-                </td>
-              </tr>
-            </table>
-            <hr>
-          </div>
-          <div style="height: 250px;" *ngIf="(mempoolStats$ | async) as mempoolStats">
-            <app-mempool-graph [data]="mempoolStats.mempool" [showLegend]="false" [offsetX]="10" [small]="true"></app-mempool-graph>
+      <div class="col mb-4">
+        <div class="card text-center">
+          <div class="card-body">
+            <ng-container *ngTemplateOutlet="mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
           </div>
         </div>
       </div>
-    </div>
-    <div class="col mb-4">
-      <div class="card text-center graph-card">
-        <div class="card-body ">
-          <h5 class="card-title">Tx vBytes per second</h5>
-            <ng-template [ngIf]="mempoolInfoData.value" [ngIfElse]="loading">
-              <span *ngIf="mempoolInfoData.value.vBytesPerSecond === 0; else inSync">
-                &nbsp;<span class="badge badge-pill badge-warning">Backend is synchronizing</span>
-              </span>
-              <ng-template #inSync>
-                <div class="progress sub-text" style="max-width: 250px;">
-                  <div class="progress-bar {{ mempoolInfoData.value.progressClass }}" style="padding: 4px;" role="progressbar" [ngStyle]="{'width': mempoolInfoData.value.progressWidth}">{{ mempoolInfoData.value.vBytesPerSecond | ceil | number }} vB/s</div>
-                </div>
-              </ng-template>
-            </ng-template>
+      <div class="col mb-4">
+        <div class="card text-center">
+          <div class="card-body">
+            <ng-container *ngTemplateOutlet="txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
+          </div>
+        </div>
+      </div>
+      <div class="col mb-4" *ngIf="(network$ | async) !== 'liquid'; else emptyBlock">
+        <ng-container *ngTemplateOutlet="difficultyEpoch"></ng-container>
+      </div>
+    </ng-template>
+    <ng-template #expanded>
+      <div class="col mb-4">
+        <div class="card text-center">
+          <div class="card-body">
+            <app-fees-box class="d-block"></app-fees-box>
+          </div>
+        </div>
+      </div>
+      <div class="col mb-4" *ngIf="(network$ | async) !== 'liquid'; else emptyBlock">
+        <ng-container *ngTemplateOutlet="difficultyEpoch"></ng-container>
+      </div>
+      <div class="col mb-4">
+        <div class="card text-center graph-card">
+          <div class="card-body pl-0">
+            <div style="padding-left: 1.25rem;">
+              <ng-container *ngTemplateOutlet="mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
+              <hr>
+            </div>
+            <div style="height: 250px;" *ngIf="(mempoolStats$ | async) as mempoolStats">
+              <app-mempool-graph [data]="mempoolStats.mempool" [showLegend]="false" [offsetX]="20" [small]="true"></app-mempool-graph>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col mb-4">
+        <div class="card text-center graph-card">
+          <div class="card-body">
+            <ng-container *ngTemplateOutlet="txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
             <br>
             <hr>
             <div style="height: 250px;" *ngIf="(mempoolStats$ | async) as mempoolStats">
@@ -72,67 +65,75 @@
                   [options]="transactionsWeightPerSecondOptions">
                 </app-chartist>
             </div>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="col mb-4">
-      <div class="card text-center">
-        <div class="card-body">
-          <h5 class="card-title">Latest blocks</h5>
-          <table class="table table-borderless text-left">
-            <thead>
-              <th style="width: 15%;">Height</th>
-              <th style="width: 35%;">Mined</th>
-              <th style="width: 20%;" class="d-none d-lg-table-cell">Txs</th>
-              <th style="width: 30%;">Filled</th>
-            </thead>
-            <tbody>
-              <tr *ngFor="let block of blocks$ | async; let i = index; trackBy: trackByBlock">
-                <td><a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
-                <td><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since> ago</td>
-                <td class="d-none d-lg-table-cell">{{ block.tx_count | number }}</td>
-                <td>
-                  <div class="progress position-relative">
-                    <div class="progress-bar progress-mempool {{ network$ | async }}" role="progressbar" [ngStyle]="{'width': (block.weight / 4000000)*100 + '%' }"></div>
-                    <div class="progress-text">{{ block.size | bytes: 2 }}</div>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="text-center"><a href="" [routerLink]="['/blocks' | relativeUrl]">View all &raquo;</a></div>
+      <ng-template [ngIf]="collapseLevel === 'one'">
+      <div class="col mb-4">
+        <div class="card text-center">
+          <div class="card-body">
+            <h5 class="card-title">Latest blocks</h5>
+            <table class="table table-borderless text-left">
+              <thead>
+                <th style="width: 15%;">Height</th>
+                <th style="width: 35%;">Mined</th>
+                <th style="width: 20%;" class="d-none d-lg-table-cell">Txs</th>
+                <th style="width: 30%;">Filled</th>
+              </thead>
+              <tbody>
+                <tr *ngFor="let block of blocks$ | async; let i = index; trackBy: trackByBlock">
+                  <td><a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
+                  <td><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since> ago</td>
+                  <td class="d-none d-lg-table-cell">{{ block.tx_count | number }}</td>
+                  <td>
+                    <div class="progress position-relative">
+                      <div class="progress-bar progress-mempool {{ network$ | async }}" role="progressbar" [ngStyle]="{'width': (block.weight / 4000000)*100 + '%' }"></div>
+                      <div class="progress-text">{{ block.size | bytes: 2 }}</div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="text-center"><a href="" [routerLink]="['/blocks' | relativeUrl]">View all &raquo;</a></div>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="col mb-4">
-      <div class="card text-center">
-        <div class="card-body">
-          <h5 class="card-title">Latest transactions</h5>
-          <table class="table table-borderless text-left">
-            <thead>
-              <th style="width: 20%;">TXID</th>
-              <th style="width: 35%;" class="text-right d-none d-lg-table-cell">Amount</th>
-              <th *ngIf="(network$ | async) === ''" style="width: 20%;" class="text-right d-none d-lg-table-cell">USD</th>
-              <th style="width: 25%;" class="text-right">Fee</th>
-            </thead>
-            <tbody>
-              <tr *ngFor="let transaction of transactions$ | async; let i = index;">
-                <td><a [routerLink]="['/tx' | relativeUrl, transaction.txid]">{{ transaction.txid | shortenString : 10 }}</a></td>
-                <td class="text-right d-none d-lg-table-cell"><app-amount [satoshis]="transaction.value" digitsInfo="1.8-8" [noFiat]="true"></app-amount></td>
-                <td *ngIf="(network$ | async) === ''" class="text-right d-none d-lg-table-cell"><app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat></td>
-                <td class="text-right">{{ transaction.fee / (transaction.weight / 4) | number : '1.1-1' }} sat/vB</td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="text-center">&nbsp;</div>
+      <div class="col mb-4">
+        <div class="card text-center">
+          <div class="card-body">
+            <h5 class="card-title">Latest transactions</h5>
+            <table class="table table-borderless text-left">
+              <thead>
+                <th style="width: 20%;">TXID</th>
+                <th style="width: 35%;" class="text-right d-none d-lg-table-cell">Amount</th>
+                <th *ngIf="(network$ | async) === ''" style="width: 20%;" class="text-right d-none d-lg-table-cell">USD</th>
+                <th style="width: 25%;" class="text-right">Fee</th>
+              </thead>
+              <tbody>
+                <tr *ngFor="let transaction of transactions$ | async; let i = index;">
+                  <td><a [routerLink]="['/tx' | relativeUrl, transaction.txid]">{{ transaction.txid | shortenString : 10 }}</a></td>
+                  <td class="text-right d-none d-lg-table-cell"><app-amount [satoshis]="transaction.value" digitsInfo="1.8-8" [noFiat]="true"></app-amount></td>
+                  <td *ngIf="(network$ | async) === ''" class="text-right d-none d-lg-table-cell"><app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat></td>
+                  <td class="text-right">{{ transaction.fee / (transaction.weight / 4) | number : '1.1-1' }} sat/vB</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="text-center">&nbsp;</div>
+          </div>
         </div>
       </div>
-    </div>
+    </ng-template>
+    </ng-template>
   </div>
 
-  <br>
+  <button type="button" class="btn btn-secondary btn-sm d-block mx-auto" (click)="toggleCollapsed()">
+    <div [ngSwitch]="collapseLevel">
+      <fa-icon *ngSwitchCase="'three'" [icon]="['fas', 'angle-down']" [fixedWidth]="true" title="Collapse"></fa-icon>
+      <fa-icon *ngSwitchDefault [icon]="['fas', 'angle-up']" [fixedWidth]="true" title="Expand"></fa-icon>
+    </div>
+  </button>
 
-  <div class="text-small text-center">
+  <div class="text-small text-center mt-3">
     <a [routerLink]="['/terms-of-service']">Terms of Service</a>
   </div>
 
@@ -145,5 +146,51 @@
 <ng-template #emptyBlock>
   <div class="col mb-4">
 
+  </div>
+</ng-template>
+
+<ng-template #mempoolTable let-mempoolInfoData>
+  <table style="width: 100%;">
+    <tr>
+      <td>
+        <h5 class="card-title">Mempool size</h5>
+        <p class="card-text" *ngIf="(mempoolBlocksData$ | async) as mempoolBlocksData; else loading">
+          {{ mempoolBlocksData.size | bytes }} ({{ mempoolBlocksData.blocks }} block<span [hidden]="mempoolBlocksData.blocks <= 1">s</span>)
+        </p>
+      </td>
+      <td>
+        <h5 class="card-title">Unconfirmed</h5>
+        <p class="card-text" *ngIf="mempoolInfoData.value; else loading">
+          {{ mempoolInfoData.value.memPoolInfo.size | number }} TXs
+        </p>
+      </td>
+    </tr>
+  </table>
+</ng-template>
+
+<ng-template #txPerSecond let-mempoolInfoData>
+  <h5 class="card-title">Incoming transactions</h5>
+  <ng-template [ngIf]="mempoolInfoData.value" [ngIfElse]="loading">
+    <span *ngIf="mempoolInfoData.value.vBytesPerSecond === 0; else inSync">
+      &nbsp;<span class="badge badge-pill badge-warning">Backend is synchronizing</span>
+    </span>
+    <ng-template #inSync>
+      <div class="progress sub-text" style="max-width: 250px;">
+        <div class="progress-bar {{ mempoolInfoData.value.progressClass }}" style="padding: 4px;" role="progressbar" [ngStyle]="{'width': mempoolInfoData.value.progressWidth}">{{ mempoolInfoData.value.vBytesPerSecond | ceil | number }} vB/s</div>
+      </div>
+    </ng-template>
+  </ng-template>
+</ng-template>
+
+<ng-template #difficultyEpoch>
+  <div class="card text-center">
+    <div class="card-body more-padding">
+      <h5 class="card-title">Difficulty adjustment</h5>
+      <div class="progress" *ngIf="(difficultyEpoch$ | async) as epochData; else loading">
+        <div class="progress-bar" role="progressbar" style="width: 15%; background-color: #105fb0" [ngStyle]="{'width': epochData.base}"><ng-template [ngIf]="epochData.change > 0">+</ng-template>{{ epochData.change | number: '1.0-2' }}%</div>
+        <div class="progress-bar bg-success" role="progressbar" style="width: 0%" [ngStyle]="{'width': epochData.green}"></div>
+        <div class="progress-bar bg-danger" role="progressbar" style="width: 1%; background-color: #f14d80;" [ngStyle]="{'width': epochData.red}"></div>
+      </div>
+    </div>
   </div>
 </ng-template>

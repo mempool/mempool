@@ -8,6 +8,8 @@ import * as QRCode from 'qrcode/build/qrcode.js';
 })
 export class QrcodeComponent implements AfterViewInit {
   @Input() data: string;
+  @Input() size = 125;
+  @Input() imageUrl: string;
   @ViewChild('canvas') canvas: ElementRef;
 
   qrcodeObject: any;
@@ -22,8 +24,8 @@ export class QrcodeComponent implements AfterViewInit {
         dark: '#000',
         light: '#fff'
       },
-      width: 125,
-      height: 125,
+      width: this.size,
+      height: this.size,
     };
 
     if (!this.data) {

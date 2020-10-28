@@ -234,53 +234,52 @@ class Statistics {
       connection.release();
       return result.insertId;
     } catch (e) {
-      logger.err('$create() error' + e);
+      logger.err('$create() error' + e.message || e);
     }
   }
 
-  private getQueryForDays(days: number, groupBy: number) {
-
+  private getQueryForDays(div: number) {
     return `SELECT id, added, unconfirmed_transactions,
-            AVG(tx_per_second) AS tx_per_second,
-            AVG(vbytes_per_second) AS vbytes_per_second,
-            AVG(vsize_1) AS vsize_1,
-            AVG(vsize_2) AS vsize_2,
-            AVG(vsize_3) AS vsize_3,
-            AVG(vsize_4) AS vsize_4,
-            AVG(vsize_5) AS vsize_5,
-            AVG(vsize_6) AS vsize_6,
-            AVG(vsize_8) AS vsize_8,
-            AVG(vsize_10) AS vsize_10,
-            AVG(vsize_12) AS vsize_12,
-            AVG(vsize_15) AS vsize_15,
-            AVG(vsize_20) AS vsize_20,
-            AVG(vsize_30) AS vsize_30,
-            AVG(vsize_40) AS vsize_40,
-            AVG(vsize_50) AS vsize_50,
-            AVG(vsize_60) AS vsize_60,
-            AVG(vsize_70) AS vsize_70,
-            AVG(vsize_80) AS vsize_80,
-            AVG(vsize_90) AS vsize_90,
-            AVG(vsize_100) AS vsize_100,
-            AVG(vsize_125) AS vsize_125,
-            AVG(vsize_150) AS vsize_150,
-            AVG(vsize_175) AS vsize_175,
-            AVG(vsize_200) AS vsize_200,
-            AVG(vsize_250) AS vsize_250,
-            AVG(vsize_300) AS vsize_300,
-            AVG(vsize_350) AS vsize_350,
-            AVG(vsize_400) AS vsize_400,
-            AVG(vsize_500) AS vsize_500,
-            AVG(vsize_600) AS vsize_600,
-            AVG(vsize_700) AS vsize_700,
-            AVG(vsize_800) AS vsize_800,
-            AVG(vsize_900) AS vsize_900,
-            AVG(vsize_1000) AS vsize_1000,
-            AVG(vsize_1200) AS vsize_1200,
-            AVG(vsize_1400) AS vsize_1400,
-            AVG(vsize_1600) AS vsize_1600,
-            AVG(vsize_1800) AS vsize_1800,
-            AVG(vsize_2000) AS vsize_2000 FROM statistics GROUP BY UNIX_TIMESTAMP(added) DIV ${groupBy} ORDER BY id DESC LIMIT ${days}`;
+      tx_per_second,
+      vbytes_per_second,
+      vsize_1,
+      vsize_2,
+      vsize_3,
+      vsize_4,
+      vsize_5,
+      vsize_6,
+      vsize_8,
+      vsize_10,
+      vsize_12,
+      vsize_15,
+      vsize_20,
+      vsize_30,
+      vsize_40,
+      vsize_50,
+      vsize_60,
+      vsize_70,
+      vsize_80,
+      vsize_90,
+      vsize_100,
+      vsize_125,
+      vsize_150,
+      vsize_175,
+      vsize_200,
+      vsize_250,
+      vsize_300,
+      vsize_350,
+      vsize_400,
+      vsize_500,
+      vsize_600,
+      vsize_700,
+      vsize_800,
+      vsize_900,
+      vsize_1000,
+      vsize_1200,
+      vsize_1400,
+      vsize_1600,
+      vsize_1800,
+      vsize_2000 FROM statistics GROUP BY UNIX_TIMESTAMP(added) DIV ${div} ORDER BY id DESC LIMIT 480`;
   }
 
   public async $get(id: number): Promise<OptimizedStatistic | undefined> {
@@ -293,7 +292,7 @@ class Statistics {
         return this.mapStatisticToOptimizedStatistic([rows[0]])[0];
       }
     } catch (e) {
-      logger.err('$list2H() error' + e);
+      logger.err('$list2H() error' + e.message || e);
     }
   }
 
@@ -305,7 +304,7 @@ class Statistics {
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
-      logger.err('$list2H() error' + e);
+      logger.err('$list2H() error' + e.message || e);
       return [];
     }
   }
@@ -313,11 +312,12 @@ class Statistics {
   public async $list24H(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(120, 720);
+      const query = this.getQueryForDays(180);
       const [rows] = await connection.query<any>(query);
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
+      logger.err('$list24h() error' + e.message || e);
       return [];
     }
   }
@@ -325,7 +325,7 @@ class Statistics {
   public async $list1W(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(120, 5040);
+      const query = this.getQueryForDays(1260);
       const [rows] = await connection.query<any>(query);
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
@@ -338,7 +338,7 @@ class Statistics {
   public async $list1M(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(120, 20160);
+      const query = this.getQueryForDays(5040);
       const [rows] = await connection.query<any>(query);
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
@@ -351,7 +351,7 @@ class Statistics {
   public async $list3M(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(120, 60480);
+      const query = this.getQueryForDays(15120);
       const [rows] = await connection.query<any>(query);
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
@@ -364,7 +364,7 @@ class Statistics {
   public async $list6M(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(120, 120960);
+      const query = this.getQueryForDays(30240);
       const [rows] = await connection.query<any>(query);
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
@@ -377,7 +377,7 @@ class Statistics {
   public async $list1Y(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(120, 241920);
+      const query = this.getQueryForDays(60480);
       const [rows] = await connection.query<any>(query);
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);

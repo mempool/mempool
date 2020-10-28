@@ -21,11 +21,10 @@
   "main": "index.ts",
   "scripts": {
     "build": "tsc",
-    "start": "npm run build && node --max-old-space-size=4096 dist/index.js",
+    "start": "node --max-old-space-size=4096 dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "compression": "^1.7.4",
     "express": "^4.17.1",
     "locutus": "^2.0.12",
     "mysql2": "^1.6.1",

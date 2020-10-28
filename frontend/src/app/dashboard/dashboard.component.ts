@@ -10,6 +10,7 @@ import * as Chartist from 'chartist';
 import { formatDate } from '@angular/common';
 import { WebsocketService } from '../services/websocket.service';
 import { SeoService } from '../services/seo.service';
+import { StorageService } from '../services/storage.service';
 
 interface MempoolBlocksData {
   blocks: number;
@@ -42,6 +43,7 @@ interface MempoolStatsData {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent implements OnInit {
+  collapseLevel: string;
   network$: Observable<string>;
   mempoolBlocksData$: Observable<MempoolBlocksData>;
   mempoolInfoData$: Observable<MempoolInfoData>;
@@ -60,12 +62,14 @@ export class DashboardComponent implements OnInit {
     private apiService: ApiService,
     private websocketService: WebsocketService,
     private seoService: SeoService,
+    private storageService: StorageService,
   ) { }
 
   ngOnInit(): void {
     this.seoService.resetTitle();
     this.websocketService.want(['blocks', 'stats', 'mempool-blocks', 'live-2h-chart']);
     this.network$ = merge(of(''), this.stateService.networkChanged$);
+    this.collapseLevel = this.storageService.getValue('dashboard-collapsed') || 'one';
 
     this.mempoolInfoData$ = combineLatest([
       this.stateService.mempoolInfo$,
@@ -194,7 +198,7 @@ export class DashboardComponent implements OnInit {
         },
         axisX: {
           labelInterpolationFnc: (value: any, index: any) => index % 24 === 0 ? formatDate(value, 'HH:mm', this.locale) : null,
-          offset: 10
+          offset: 20
         },
         plugins: [
           Chartist.plugins.ctTargetLine({
@@ -216,5 +220,16 @@ export class DashboardComponent implements OnInit {
 
   trackByBlock(index: number, block: Block) {
     return block.height;
+  }
+
+  toggleCollapsed() {
+    if (this.collapseLevel === 'one') {
+      this.collapseLevel = 'two';
+    } else if (this.collapseLevel === 'two') {
+      this.collapseLevel = 'three';
+    } else {
+      this.collapseLevel = 'one';
+    }
+    this.storageService.setValue('dashboard-collapsed', this.collapseLevel);
   }
 }

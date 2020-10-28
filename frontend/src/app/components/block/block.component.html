@@ -43,7 +43,7 @@
             <tbody>
               <tr *ngIf="block.medianFee !== undefined">
                 <td class="td-width">Median fee</td>
-                <td>~{{ block.medianFee | number:'1.0-0' }} sat/vB (<app-fiat [value]="block.medianFee * 250" digitsInfo="1.2-2"></app-fiat>)</td>
+                <td>~{{ block.medianFee | number:'1.0-0' }} sat/vB (<app-fiat [value]="block.medianFee * 140" digitsInfo="1.2-2" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat>)</td>
               </tr>
               <ng-template [ngIf]="fees !== undefined" [ngIfElse]="loadingFees">
                 <tr>

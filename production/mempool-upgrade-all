@@ -34,13 +34,13 @@ do
     if [ "${site}" = "mainnet" ]
     then
         cd "$HOME/${site}/frontend"
-        npm install --only=prod
+        npm install
         npm run build
         rsync -av ./dist/mempool/* "${HOME}/public_html/${site}/"
     fi
 
     cd "$HOME/${site}/backend"
-    npm install --only=prod
+    npm install
     npm run build
 done
 

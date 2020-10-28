@@ -34,7 +34,7 @@ class Donations {
     this.notifyDonationStatusCallback = fn;
   }
 
-  createRequest(amount: number, orderId: string): Promise<any> {
+  $createRequest(amount: number, orderId: string): Promise<any> {
     logger.notice('New invoice request. Handle: ' + orderId + ' Amount: ' + amount + ' BTC');
 
     const postData = {
@@ -55,7 +55,7 @@ class Donations {
         const formattedBody = {
           id: body.data.id,
           amount: parseFloat(body.data.btcPrice),
-          address: body.data.bitcoinAddress,
+          addresses: body.data.addresses,
         };
         resolve(formattedBody);
       });
@@ -110,7 +110,7 @@ class Donations {
       connection.release();
       return rows;
     } catch (e) {
-      logger.err('$getDonationsFromDatabase() error' + e);
+      logger.err('$getDonationsFromDatabase() error: ' + e.message || e);
       return [];
     }
   }
@@ -123,7 +123,7 @@ class Donations {
       connection.release();
       return rows;
     } catch (e) {
-      logger.err('$getLegacyDonations() error' + e);
+      logger.err('$getLegacyDonations() error' + e.message || e);
       return [];
     }
   }
@@ -159,7 +159,7 @@ class Donations {
       const [result]: any = await connection.query(query, params);
       connection.release();
     } catch (e) {
-      logger.err('$addDonationToDatabase() error' + e);
+      logger.err('$addDonationToDatabase() error' + e.message || e);
     }
   }
 
@@ -177,7 +177,7 @@ class Donations {
       const [result]: any = await connection.query(query, params);
       connection.release();
     } catch (e) {
-      logger.err('$updateDonation() error' + e);
+      logger.err('$updateDonation() error' + e.message || e);
     }
   }
 

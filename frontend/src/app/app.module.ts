@@ -43,9 +43,11 @@ import { NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { FeesBoxComponent } from './components/fees-box/fees-box.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faChartArea, faCogs, faCubes, faDatabase, faInfoCircle, faList, faSearch, faTachometerAlt, faThList, faTv } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDoubleDown, faAngleDoubleUp, faAngleDown, faAngleUp, faBolt, faChartArea, faCogs, faCubes, faDatabase, faInfoCircle,
+  faLink, faList, faSearch, faTachometerAlt, faThList, faTint, faTv } from '@fortawesome/free-solid-svg-icons';
 import { ApiDocsComponent } from './components/api-docs/api-docs.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
+import { StorageService } from './services/storage.service';
 
 @NgModule({
   declarations: [
@@ -97,6 +99,7 @@ import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-
     WebsocketService,
     AudioService,
     SeoService,
+    StorageService,
   ],
   bootstrap: [AppComponent]
 })
@@ -113,5 +116,10 @@ export class AppModule {
     library.addIcons(faTachometerAlt);
     library.addIcons(faDatabase);
     library.addIcons(faSearch);
+    library.addIcons(faLink);
+    library.addIcons(faBolt);
+    library.addIcons(faTint);
+    library.addIcons(faAngleDown);
+    library.addIcons(faAngleUp);
   }
 }

@@ -3,19 +3,19 @@
     <td class="d-none d-md-block">
       <h5 class="card-title">Low priority</h5>
       <p class="card-text">
-        {{ feeEstimations.hourFee }} sat/vB (<app-fiat [value]="feeEstimations.hourFee * 250"></app-fiat>)
+        {{ feeEstimations.hourFee }} sat/vB (<app-fiat [value]="feeEstimations.hourFee * 140" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat>)
       </p>
     </td>
     <td>
       <h5 class="card-title">Medium priority</h5>
       <p class="card-text">
-        {{ feeEstimations.halfHourFee }} sat/vB (<app-fiat [value]="feeEstimations.halfHourFee * 250"></app-fiat>)
+        {{ feeEstimations.halfHourFee }} sat/vB (<app-fiat [value]="feeEstimations.halfHourFee * 140" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat>)
       </p>
     </td>
     <td>
       <h5 class="card-title">High priority</h5>
       <p class="card-text">
-        {{ feeEstimations.fastestFee }} sat/vB (<app-fiat [value]="feeEstimations.fastestFee * 250"></app-fiat>)
+        {{ feeEstimations.fastestFee }} sat/vB (<app-fiat [value]="feeEstimations.fastestFee * 140" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat>)
       </p>
     </td>
   </tr>

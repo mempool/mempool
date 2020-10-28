@@ -7,13 +7,15 @@ import mempoolBlocks from './api/mempool-blocks';
 import mempool from './api/mempool';
 import bisq from './api/bisq/bisq';
 import bisqMarket from './api/bisq/markets-api';
-import { RequiredSpec } from './interfaces';
+import { OptimizedStatistic, RequiredSpec } from './interfaces';
 import { MarketsApiError } from './api/bisq/interfaces';
 import donations from './api/donations';
 import logger from './logger';
 
 class Routes {
-  private cache = {};
+  private cache: { [date: string]: OptimizedStatistic[] } = {
+    '24h': [], '1w': [], '1m': [], '3m': [], '6m': [], '1y': [],
+  };
 
   constructor() {
     if (config.DATABASE.ENABLED && config.STATISTICS.ENABLED) {
@@ -134,7 +136,7 @@ class Routes {
     }
 
     try {
-      const result = await donations.createRequest(p.amount, p.orderId);
+      const result = await donations.$createRequest(p.amount, p.orderId);
       res.json(result);
     } catch (e) {
       res.status(500).send(e.message);
