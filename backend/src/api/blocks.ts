@@ -3,6 +3,7 @@ import logger from '../logger';
 import memPool from './mempool';
 import { Block, TransactionExtended, TransactionMinerInfo } from '../interfaces';
 import { Common } from './common';
+import diskCache from './disk-cache';
 
 class Blocks {
   private static INITIAL_BLOCK_AMOUNT = 8;
@@ -99,6 +100,7 @@ class Blocks {
       if (this.newBlockCallbacks.length) {
         this.newBlockCallbacks.forEach((cb) => cb(block, txIds, transactions));
       }
+      diskCache.$saveCacheToDiskAsync();
     }
   }
 
