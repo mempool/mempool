@@ -9,7 +9,6 @@ import fiatConversion from './fiat-conversion';
 import { Common } from './common';
 
 class WebsocketHandler {
-  private static INITIAL_BLOCK_AMOUNT = 8;
   private wss: WebSocket.Server | undefined;
   private nativeAssetId = '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
   private extraInitProperties = {};
@@ -85,7 +84,7 @@ class WebsocketHandler {
               'mempoolInfo': memPool.getMempoolInfo(),
               'vBytesPerSecond': memPool.getVBytesPerSecond(),
               'lastDifficultyAdjustment': blocks.getLastDifficultyAdjustmentTime(),
-              'blocks': _blocks.slice(Math.max(_blocks.length - WebsocketHandler.INITIAL_BLOCK_AMOUNT, 0)),
+              'blocks': _blocks,
               'conversions': fiatConversion.getTickers()['BTCUSD'],
               'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
               'transactions': memPool.getLatestTransactions(),

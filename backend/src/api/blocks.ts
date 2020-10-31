@@ -6,8 +6,7 @@ import { Common } from './common';
 import diskCache from './disk-cache';
 
 class Blocks {
-  private static INITIAL_BLOCK_AMOUNT = 8;
-  private static KEEP_BLOCK_AMOUNT = 24;
+  private static KEEP_BLOCK_AMOUNT = 8;
   private blocks: Block[] = [];
   private currentBlockHeight = 0;
   private lastDifficultyAdjustmentTime = 0;
@@ -31,14 +30,14 @@ class Blocks {
     const blockHeightTip = await bitcoinApi.getBlockHeightTip();
 
     if (this.blocks.length === 0) {
-      this.currentBlockHeight = blockHeightTip - Blocks.INITIAL_BLOCK_AMOUNT;
+      this.currentBlockHeight = blockHeightTip - Blocks.KEEP_BLOCK_AMOUNT;
     } else {
       this.currentBlockHeight = this.blocks[this.blocks.length - 1].height;
     }
 
-    if (blockHeightTip - this.currentBlockHeight > Blocks.INITIAL_BLOCK_AMOUNT * 2) {
-      logger.info(`${blockHeightTip - this.currentBlockHeight} blocks since tip. Fast forwarding to the ${Blocks.INITIAL_BLOCK_AMOUNT} recent blocks`);
-      this.currentBlockHeight = blockHeightTip - Blocks.INITIAL_BLOCK_AMOUNT;
+    if (blockHeightTip - this.currentBlockHeight > Blocks.KEEP_BLOCK_AMOUNT * 2) {
+      logger.info(`${blockHeightTip - this.currentBlockHeight} blocks since tip. Fast forwarding to the ${Blocks.KEEP_BLOCK_AMOUNT} recent blocks`);
+      this.currentBlockHeight = blockHeightTip - Blocks.KEEP_BLOCK_AMOUNT;
     }
 
     if (!this.lastDifficultyAdjustmentTime) {
