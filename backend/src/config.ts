@@ -4,7 +4,6 @@ interface IConfig {
   MEMPOOL: {
     NETWORK: 'mainnet' | 'testnet' | 'liquid';
     HTTP_PORT: number;
-    MINED_BLOCKS_CACHE: number;
     SPAWN_CLUSTER_PROCS: number;
     API_URL_PREFIX: string;
     WEBSOCKET_REFRESH_RATE_MS: number;
@@ -46,7 +45,6 @@ const defaults: IConfig = {
   'MEMPOOL': {
     'NETWORK': 'mainnet',
     'HTTP_PORT': 8999,
-    'MINED_BLOCKS_CACHE': 144,
     'SPAWN_CLUSTER_PROCS': 0,
     'API_URL_PREFIX': '/api/v1/',
     'WEBSOCKET_REFRESH_RATE_MS': 2000
