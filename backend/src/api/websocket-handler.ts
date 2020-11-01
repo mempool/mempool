@@ -106,7 +106,7 @@ class WebsocketHandler {
             client.send(JSON.stringify(response));
           }
         } catch (e) {
-          logger.err('Error parsing websocket message: ' + e.message || e);
+          logger.debug('Error parsing websocket message: ' + e.message || e);
         }
       });
     });
