@@ -292,6 +292,7 @@ const defaultOptions = {
 
 Chartist.plugins.legend = function (options: any) {
     let cachedDOMPosition;
+    let cacheInactiveLegends: any = [];
     // Catch invalid options
     if (options && options.position) {
         if (!(options.position === 'top' || options.position === 'bottom' || options.position instanceof HTMLElement)) {
@@ -314,11 +315,11 @@ Chartist.plugins.legend = function (options: any) {
 
     return function legend(chart: any) {
 
-      var isClicked = false;
+      var isSelfUpdate = false;
 
       chart.on('created', function (data: any) {
 
-        if (isClicked)
+        if (isSelfUpdate)
             return;
 
         function removeLegendElement() {
@@ -406,6 +407,17 @@ Chartist.plugins.legend = function (options: any) {
             }
         }
 
+        function updateChart(newSeries: any, newLabels:any, useLabels: any) {
+            chart.data.series = newSeries;
+            if (useLabels) {
+                chart.data.labels = newLabels;
+            }
+
+            isSelfUpdate = true;
+            chart.update();
+            isSelfUpdate = false;
+        }
+
         function addClickHandler(legendElement: any, legends: any, seriesMetadata: any, useLabels: any) {
             legendElement.addEventListener('click', function(e: any) {
                 const li = e.target;
@@ -419,9 +431,16 @@ Chartist.plugins.legend = function (options: any) {
                 if (!legend.active) {
                     legend.active = true;
                     li.classList.remove('inactive');
+
+                    var indexOfInactiveLegend = cacheInactiveLegends.indexOf(legendIndex, 0)
+                    if (indexOfInactiveLegend > -1) {
+                      cacheInactiveLegends.splice(indexOfInactiveLegend, 1);
+                    }
+
                 } else {
                     legend.active = false;
                     li.classList.add('inactive');
+                    cacheInactiveLegends.push(legendIndex);
 
                     const activeCount = legends.filter(function(legend: any) { return legend.active; }).length;
                     if (!options.removeAll && activeCount == 0) {
@@ -431,6 +450,8 @@ Chartist.plugins.legend = function (options: any) {
                             legends[i].active = true;
                             legendElement.childNodes[i].classList.remove('inactive');
                         }
+
+                        cacheInactiveLegends = [];
                     }
                 }
 
@@ -444,14 +465,7 @@ Chartist.plugins.legend = function (options: any) {
                     }
                 }
 
-                chart.data.series = newSeries;
-                if (useLabels) {
-                    chart.data.labels = newLabels;
-                }
-
-                isClicked = true;
-                chart.update();
-                isClicked = false;
+                updateChart(newSeries, newLabels, useLabels);
 
                 if (options.onClick) {
                     options.onClick(chart, e);
@@ -470,12 +484,22 @@ Chartist.plugins.legend = function (options: any) {
         // Check if given class names are viable to append to legends
         const classNamesViable = Array.isArray(options.classNames) && options.classNames.length === legendNames.length;
 
+        var activeSeries = [];
+        var activeLabels = [];
+
         // Loop through all legends to set each name in a list item.
         legendNames.forEach(function (legend: any, i: any) {
             const legendText = legend.name || legend;
             const legendSeries = legend.series || [i];
 
             const li = createNameElement(i, legendText, classNamesViable);
+            const isActive: boolean = !(cacheInactiveLegends.indexOf(i) > -1);
+            if (isActive) {
+              activeSeries.push(seriesMetadata[i].data);
+              activeLabels.push(seriesMetadata[i].label);
+            } else {
+              li.classList.add('inactive');
+            }
             legendElement.appendChild(li);
 
             legendSeries.forEach(function(seriesIndex: any) {
@@ -485,8 +509,9 @@ Chartist.plugins.legend = function (options: any) {
             legends.push({
                 text: legendText,
                 series: legendSeries,
-                active: true
+                active: isActive
             });
+
         });
 
         appendLegendToDOM(legendElement);
@@ -495,6 +520,9 @@ Chartist.plugins.legend = function (options: any) {
             setSeriesClassNames();
             addClickHandler(legendElement, legends, seriesMetadata, useLabels);
         }
+
+        updateChart(activeSeries, activeLabels, useLabels);
+
       });
     };
 };
