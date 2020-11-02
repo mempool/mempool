@@ -58,10 +58,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     };
 
     this.mempoolVsizeFeesOptions = {
-      showArea: true,
-      showLine: false,
-      fullWidth: true,
-      showPoint: false,
+      stackBars: true,
       low: 0,
       axisX: {
         labelInterpolationFnc: labelInterpolationFnc,
@@ -134,9 +131,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           feesArray.push(0);
         }
       });
-      if (finalArray.length) {
-        feesArray = feesArray.map((value, i) => value + finalArray[finalArray.length - 1][i]);
-      }
       finalArray.push(feesArray);
     }
     finalArray.reverse();

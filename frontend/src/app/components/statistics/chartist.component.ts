@@ -78,6 +78,14 @@ export class ChartistComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     return this.renderChart().then((chart) => {
+      chart.on('draw', function(data){
+        if(data.type === 'bar') {
+          data.element.attr({
+            style: 'stroke-width: max'
+          });
+        }
+      });
+
       if (this.events !== undefined) {
         this.bindEvents(chart);
       }
