@@ -9,23 +9,17 @@ import logger from '../logger';
 class DiskCache {
   private static FILE_NAME = './cache.json';
   private static FILE_NAME_2 = './cache2.json';
+  private static CHUNK_SIZE = 50000;
   constructor() {
     if (!cluster.isMaster) {
       return;
     }
-    /*
-    if (!fs.existsSync(DiskCache.FILE_NAME)) {
-      fs.closeSync(fs.openSync(DiskCache.FILE_NAME, 'w'));
-      logger.info('Disk cache file created');
-    }
-    */
-    process.on('SIGINT', async () => {
-      await this.$saveCacheToDisk();
+    process.on('SIGINT', () => {
+      this.saveCacheToDiskSync();
       process.exit(2);
     });
-
-    process.on('SIGTERM', async () => {
-      await this.$saveCacheToDisk();
+    process.on('SIGTERM', () => {
+      this.saveCacheToDiskSync();
       process.exit(2);
     });
   }
@@ -35,14 +29,32 @@ class DiskCache {
       return;
     }
     try {
-      logger.debug('Writing mempool and blocks data to disk cache...');
-      const mempoolChunk_1 = Object.fromEntries(Object.entries(memPool.getMempool()).splice(0, 50000));
-      const mempoolChunk_2 = Object.fromEntries(Object.entries(memPool.getMempool()).splice(50000));
+      logger.debug('Writing mempool and blocks data to disk cache (async)...');
+      const mempoolChunk_1 = Object.fromEntries(Object.entries(memPool.getMempool()).splice(0, DiskCache.CHUNK_SIZE));
+      const mempoolChunk_2 = Object.fromEntries(Object.entries(memPool.getMempool()).splice(DiskCache.CHUNK_SIZE));
       await fsPromises.writeFile(DiskCache.FILE_NAME, JSON.stringify({
         blocks: blocks.getBlocks(),
         mempool: mempoolChunk_1
       }), {flag: 'w'});
       await fsPromises.writeFile(DiskCache.FILE_NAME_2, JSON.stringify({
+        mempool: mempoolChunk_2
+      }), {flag: 'w'});
+      logger.debug('Mempool and blocks data saved to disk cache');
+    } catch (e) {
+      logger.warn('Error writing to cache file: ' + e.message || e);
+    }
+  }
+
+  saveCacheToDiskSync(): void {
+    try {
+      logger.debug('Writing mempool and blocks data to disk cache...');
+      const mempoolChunk_1 = Object.fromEntries(Object.entries(memPool.getMempool()).splice(0, DiskCache.CHUNK_SIZE));
+      const mempoolChunk_2 = Object.fromEntries(Object.entries(memPool.getMempool()).splice(DiskCache.CHUNK_SIZE));
+      fs.writeFileSync(DiskCache.FILE_NAME, JSON.stringify({
+        blocks: blocks.getBlocks(),
+        mempool: mempoolChunk_1
+      }), {flag: 'w'});
+      fs.writeFileSync(DiskCache.FILE_NAME_2, JSON.stringify({
         mempool: mempoolChunk_2
       }), {flag: 'w'});
       logger.debug('Mempool and blocks data saved to disk cache');
