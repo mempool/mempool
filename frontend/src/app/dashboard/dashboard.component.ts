@@ -116,7 +116,7 @@ export class DashboardComponent implements OnInit {
           green = (blocksInEpoch - estimatedBlocks) / 2016 * 100;
         } else {
           base = blocksInEpoch / 2016 * 100;
-          red = (estimatedBlocks - blocksInEpoch) / 2016 * 100;
+          red = Math.min((estimatedBlocks - blocksInEpoch) / 2016 * 100, 100 - base);
         }
 
         return {
