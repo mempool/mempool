@@ -93,7 +93,7 @@ class Blocks {
 
       this.blocks.push(block);
       if (this.blocks.length > Blocks.KEEP_BLOCK_AMOUNT) {
-        this.blocks.shift();
+        this.blocks = this.blocks.slice(-Blocks.KEEP_BLOCK_AMOUNT);
       }
 
       if (this.newBlockCallbacks.length) {
