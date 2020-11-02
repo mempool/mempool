@@ -99,7 +99,7 @@ class Blocks {
       if (this.newBlockCallbacks.length) {
         this.newBlockCallbacks.forEach((cb) => cb(block, txIds, transactions));
       }
-      diskCache.$saveCacheToDiskAsync();
+      diskCache.$saveCacheToDisk();
     }
   }
 
