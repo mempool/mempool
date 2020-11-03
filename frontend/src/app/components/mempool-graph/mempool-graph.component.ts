@@ -19,6 +19,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
   mempoolVsizeFeesOptions: any;
   mempoolVsizeFeesData: any;
+  chartEvents: any;
 
   isMobile = window.innerWidth <= 767.98;
 
@@ -74,6 +75,16 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         }),
       ]
     };
+
+    this.chartEvents = Chartist.ChartEvent = {
+      draw: (data) => {
+        if (data.type === 'bar') {
+          data.element.attr({
+            style: 'stroke-width: ' + (120/data.series.length) + '%'
+          });
+        }
+      }
+    }
 
     if (showLegend) {
       this.mempoolVsizeFeesOptions.plugins.push(

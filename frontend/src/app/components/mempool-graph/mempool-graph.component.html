@@ -1,6 +1,7 @@
 <app-chartist
   *ngIf="mempoolVsizeFeesData"
   [data]="mempoolVsizeFeesData"
+  [events]="chartEvents"
   [type]="'Bar'"
   [options]="mempoolVsizeFeesOptions">
 </app-chartist>
