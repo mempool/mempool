@@ -155,7 +155,7 @@
       <td>
         <h5 class="card-title">Mempool size</h5>
         <p class="card-text" *ngIf="(mempoolBlocksData$ | async) as mempoolBlocksData; else loading">
-          {{ mempoolInfoData.value.memPoolInfo.bytes | bytes }} ({{ mempoolBlocksData.blocks }} block<span [hidden]="mempoolBlocksData.blocks <= 1">s</span>)
+          {{ mempoolBlocksData.size | bytes }} ({{ mempoolBlocksData.blocks }} block<span [hidden]="mempoolBlocksData.blocks <= 1">s</span>)
         </p>
       </td>
       <td>
