@@ -81,7 +81,7 @@ export class ChartistComponent implements OnInit, OnChanges, OnDestroy {
       chart.on('draw', function(data){
         if(data.type === 'bar') {
           data.element.attr({
-            style: 'stroke-width: max'
+            style: 'stroke-width: ' + (120/data.series.length) + '%'
           });
         }
       });
