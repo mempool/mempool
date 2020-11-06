@@ -1,13 +1,16 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
 import { StateService } from './state.service';
 import { Block, Transaction } from '../interfaces/electrs.interface';
 import { Subscription } from 'rxjs';
 import { env } from '../app.constants';
+import { isPlatformBrowser } from '@angular/common';
+import { ApiService } from './api.service';
+import { take } from 'rxjs/operators';
 
-const WEB_SOCKET_PROTOCOL = (document.location.protocol === 'https:') ? 'wss:' : 'ws:';
-const WEB_SOCKET_URL = WEB_SOCKET_PROTOCOL + '//' + document.location.hostname + ':' + document.location.port + '{network}/api/v1/ws';
+const WEB_SOCKET_PROTOCOL = 'ws:';
+const WEB_SOCKET_URL = WEB_SOCKET_PROTOCOL + '//localhost:8999{network}/api/v1/ws';
 
 const OFFLINE_RETRY_AFTER_MS = 10000;
 const OFFLINE_PING_CHECK_AFTER_MS = 30000;
@@ -26,33 +29,44 @@ export class WebsocketService {
   private onlineCheckTimeoutTwo: number;
   private subscription: Subscription;
   private network = '';
+  private isBrowser: boolean = isPlatformBrowser(this.platformId);
 
   constructor(
     private stateService: StateService,
+    private apiService: ApiService,
+    @Inject(PLATFORM_ID) private platformId: any,
   ) {
-    this.network = this.stateService.network === 'bisq' && !env.BISQ_SEPARATE_BACKEND ? '' : this.stateService.network;
-    this.websocketSubject = webSocket<WebsocketResponse>(WEB_SOCKET_URL.replace('{network}', this.network ? '/' + this.network : ''));
-    this.startSubscription();
+    if (!this.isBrowser) {
+      this.stateService.isLoadingWebSocket$.next(false);
+      this.apiService.getInitData$()
+        .pipe(take(1))
+        .subscribe((response) => this.handleResponse(response));
 
-    this.stateService.networkChanged$.subscribe((network) => {
-      if (network === 'bisq' && !env.BISQ_SEPARATE_BACKEND) {
-        network = '';
-      }
-      if (network === this.network) {
-        return;
-      }
-      this.network = network;
-      clearTimeout(this.onlineCheckTimeout);
-      clearTimeout(this.onlineCheckTimeoutTwo);
-
-      this.stateService.latestBlockHeight = 0;
-
-      this.websocketSubject.complete();
-      this.subscription.unsubscribe();
+    } else {
+      this.network = this.stateService.network === 'bisq' && !env.BISQ_SEPARATE_BACKEND ? '' : this.stateService.network;
       this.websocketSubject = webSocket<WebsocketResponse>(WEB_SOCKET_URL.replace('{network}', this.network ? '/' + this.network : ''));
-
       this.startSubscription();
-    });
+
+      this.stateService.networkChanged$.subscribe((network) => {
+        if (network === 'bisq' && !env.BISQ_SEPARATE_BACKEND) {
+          network = '';
+        }
+        if (network === this.network) {
+          return;
+        }
+        this.network = network;
+        clearTimeout(this.onlineCheckTimeout);
+        clearTimeout(this.onlineCheckTimeoutTwo);
+
+        this.stateService.latestBlockHeight = 0;
+
+        this.websocketSubject.complete();
+        this.subscription.unsubscribe();
+        this.websocketSubject = webSocket<WebsocketResponse>(WEB_SOCKET_URL.replace('{network}', this.network ? '/' + this.network : ''));
+
+        this.startSubscription();
+      });
+    }
   }
 
   startSubscription(retrying = false) {
@@ -64,100 +78,7 @@ export class WebsocketService {
     this.subscription = this.websocketSubject
       .subscribe((response: WebsocketResponse) => {
         this.stateService.isLoadingWebSocket$.next(false);
-        if (response.blocks && response.blocks.length) {
-          const blocks = response.blocks;
-          blocks.forEach((block: Block) => {
-            if (block.height > this.stateService.latestBlockHeight) {
-              this.stateService.latestBlockHeight = block.height;
-              this.stateService.blocks$.next([block, false]);
-            }
-          });
-        }
-
-        if (response.tx) {
-          this.stateService.mempoolTransactions$.next(response.tx);
-        }
-
-        if (response.block) {
-          if (response.block.height > this.stateService.latestBlockHeight) {
-            this.stateService.latestBlockHeight = response.block.height;
-            this.stateService.blocks$.next([response.block, !!response.txConfirmed]);
-          }
-
-          if (response.txConfirmed) {
-            this.isTrackingTx = false;
-          }
-        }
-
-        if (response.conversions) {
-          this.stateService.conversions$.next(response.conversions);
-        }
-
-        if (response.rbfTransaction) {
-          this.stateService.txReplaced$.next(response.rbfTransaction);
-        }
-
-        if (response['mempool-blocks']) {
-          this.stateService.mempoolBlocks$.next(response['mempool-blocks']);
-        }
-
-        if (response.transactions) {
-          response.transactions.forEach((tx) => this.stateService.transactions$.next(tx));
-        }
-
-        if (response['bsq-price']) {
-          this.stateService.bsqPrice$.next(response['bsq-price']);
-        }
-
-        if (response['git-commit']) {
-          this.stateService.gitCommit$.next(response['git-commit']);
-
-          if (!this.latestGitCommit) {
-            this.latestGitCommit = response['git-commit'];
-          } else {
-            if (this.latestGitCommit !== response['git-commit']) {
-              setTimeout(() => {
-                window.location.reload();
-              }, Math.floor(Math.random() * 60000) + 60000);
-            }
-          }
-        }
-
-        if (response['address-transactions']) {
-          response['address-transactions'].forEach((addressTransaction: Transaction) => {
-            this.stateService.mempoolTransactions$.next(addressTransaction);
-          });
-        }
-
-        if (response['block-transactions']) {
-          response['block-transactions'].forEach((addressTransaction: Transaction) => {
-            this.stateService.blockTransactions$.next(addressTransaction);
-          });
-        }
-
-        if (response['live-2h-chart']) {
-          this.stateService.live2Chart$.next(response['live-2h-chart']);
-        }
-
-        if (response.mempoolInfo) {
-          this.stateService.mempoolInfo$.next(response.mempoolInfo);
-        }
-
-        if (response.vBytesPerSecond !== undefined) {
-          this.stateService.vbytesPerSecond$.next(response.vBytesPerSecond);
-        }
-
-        if (response.lastDifficultyAdjustment !== undefined) {
-          this.stateService.lastDifficultyAdjustment$.next(response.lastDifficultyAdjustment);
-        }
-
-        if (response['git-commit']) {
-          this.stateService.gitCommit$.next(response['git-commit']);
-        }
-
-        if (response.donationConfirmed) {
-          this.stateService.donationConfirmed$.next(true);
-        }
+        this.handleResponse(response);
 
         if (this.goneOffline === true) {
           this.goneOffline = false;
@@ -226,6 +147,9 @@ export class WebsocketService {
   }
 
   want(data: string[], force = false) {
+    if (!this.isBrowser) {
+      return;
+    }
     if (data === this.lastWant && !force) {
       return;
     }
@@ -256,5 +180,102 @@ export class WebsocketService {
         }
       }, EXPECT_PING_RESPONSE_AFTER_MS);
     }, OFFLINE_PING_CHECK_AFTER_MS);
+  }
+
+  handleResponse(response: WebsocketResponse) {
+    if (response.blocks && response.blocks.length) {
+      const blocks = response.blocks;
+      blocks.forEach((block: Block) => {
+        if (block.height > this.stateService.latestBlockHeight) {
+          this.stateService.latestBlockHeight = block.height;
+          this.stateService.blocks$.next([block, false]);
+        }
+      });
+    }
+
+    if (response.tx) {
+      this.stateService.mempoolTransactions$.next(response.tx);
+    }
+
+    if (response.block) {
+      if (response.block.height > this.stateService.latestBlockHeight) {
+        this.stateService.latestBlockHeight = response.block.height;
+        this.stateService.blocks$.next([response.block, !!response.txConfirmed]);
+      }
+
+      if (response.txConfirmed) {
+        this.isTrackingTx = false;
+      }
+    }
+
+    if (response.conversions) {
+      this.stateService.conversions$.next(response.conversions);
+    }
+
+    if (response.rbfTransaction) {
+      this.stateService.txReplaced$.next(response.rbfTransaction);
+    }
+
+    if (response['mempool-blocks']) {
+      this.stateService.mempoolBlocks$.next(response['mempool-blocks']);
+    }
+
+    if (response.transactions) {
+      response.transactions.forEach((tx) => this.stateService.transactions$.next(tx));
+    }
+
+    if (response['bsq-price']) {
+      this.stateService.bsqPrice$.next(response['bsq-price']);
+    }
+
+    if (response['git-commit']) {
+      this.stateService.gitCommit$.next(response['git-commit']);
+
+      if (!this.latestGitCommit) {
+        this.latestGitCommit = response['git-commit'];
+      } else {
+        if (this.latestGitCommit !== response['git-commit']) {
+          setTimeout(() => {
+            window.location.reload();
+          }, Math.floor(Math.random() * 60000) + 60000);
+        }
+      }
+    }
+
+    if (response['address-transactions']) {
+      response['address-transactions'].forEach((addressTransaction: Transaction) => {
+        this.stateService.mempoolTransactions$.next(addressTransaction);
+      });
+    }
+
+    if (response['block-transactions']) {
+      response['block-transactions'].forEach((addressTransaction: Transaction) => {
+        this.stateService.blockTransactions$.next(addressTransaction);
+      });
+    }
+
+    if (response['live-2h-chart']) {
+      this.stateService.live2Chart$.next(response['live-2h-chart']);
+    }
+
+    if (response.mempoolInfo) {
+      this.stateService.mempoolInfo$.next(response.mempoolInfo);
+    }
+
+    if (response.vBytesPerSecond !== undefined) {
+      this.stateService.vbytesPerSecond$.next(response.vBytesPerSecond);
+    }
+
+    if (response.lastDifficultyAdjustment !== undefined) {
+      this.stateService.lastDifficultyAdjustment$.next(response.lastDifficultyAdjustment);
+    }
+
+    if (response['git-commit']) {
+      this.stateService.gitCommit$.next(response['git-commit']);
+    }
+
+    if (response.donationConfirmed) {
+      this.stateService.donationConfirmed$.next(true);
+    }
   }
 }

@@ -194,7 +194,7 @@ export class ChartistComponent implements OnInit, OnChanges, OnDestroy {
     };
   };
 
-}(window, document, Chartist));
+}(null, null, Chartist));
 
 
 /**
@@ -278,7 +278,7 @@ export class ChartistComponent implements OnInit, OnChanges, OnDestroy {
     };
   };
 
-}(window, document, Chartist));
+}(null, null, Chartist));
 
 const defaultOptions = {
     className: '',

@@ -84,7 +84,7 @@ import { StorageService } from './services/storage.service';
     TermsOfServiceComponent,
   ],
   imports: [
-    BrowserModule,
+    BrowserModule.withServerTransition({ appId: 'serverApp' }),
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,

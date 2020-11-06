@@ -1,22 +1,27 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Block, Transaction, Address, Outspend, Recent, Asset } from '../interfaces/electrs.interface';
 import { StateService } from './state.service';
-import { env } from '../app.constants';
 
-const API_BASE_URL = '{network}/api';
+let API_BASE_URL = '{network}/api';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ElectrsApiService {
-  apiBaseUrl: string;
+  private apiBaseUrl: string;
+  private isBrowser: boolean = isPlatformBrowser(this.platformId);
 
   constructor(
     private httpClient: HttpClient,
     private stateService: StateService,
+    @Inject(PLATFORM_ID) private platformId: any,
   ) {
+    if (!this.isBrowser) {
+      API_BASE_URL = 'http://localhost:4200/api';
+    }
     this.apiBaseUrl = API_BASE_URL.replace('{network}', '');
     this.stateService.networkChanged$.subscribe((network) => {
       if (network === 'bisq') {

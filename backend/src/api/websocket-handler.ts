@@ -80,18 +80,7 @@ class WebsocketHandler {
             if (!_blocks) {
               return;
             }
-            client.send(JSON.stringify({
-              'mempoolInfo': memPool.getMempoolInfo(),
-              'vBytesPerSecond': memPool.getVBytesPerSecond(),
-              'lastDifficultyAdjustment': blocks.getLastDifficultyAdjustmentTime(),
-              'blocks': _blocks,
-              'conversions': fiatConversion.getTickers()['BTCUSD'],
-              'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
-              'transactions': memPool.getLatestTransactions(),
-              'git-commit': backendInfo.gitCommitHash,
-              'hostname': backendInfo.hostname,
-              ...this.extraInitProperties
-            }));
+            client.send(JSON.stringify(this.getInitData(_blocks)));
           }
 
           if (parsedMessage.action === 'ping') {
@@ -125,6 +114,24 @@ class WebsocketHandler {
         client.send(JSON.stringify({ donationConfirmed: true }));
       }
     });
+  }
+
+  getInitData(_blocks?: Block[]) {
+    if (!_blocks) {
+      _blocks = blocks.getBlocks();
+    }
+    return {
+      'mempoolInfo': memPool.getMempoolInfo(),
+      'vBytesPerSecond': memPool.getVBytesPerSecond(),
+      'lastDifficultyAdjustment': blocks.getLastDifficultyAdjustmentTime(),
+      'blocks': _blocks,
+      'conversions': fiatConversion.getTickers()['BTCUSD'],
+      'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
+      'transactions': memPool.getLatestTransactions(),
+      'git-commit': backendInfo.gitCommitHash,
+      'hostname': backendInfo.hostname,
+      ...this.extraInitProperties
+    };
   }
 
   handleNewStatistic(stats: OptimizedStatistic) {
