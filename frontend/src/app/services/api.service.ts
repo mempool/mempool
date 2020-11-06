@@ -1,9 +1,11 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { Observable } from 'rxjs';
+import { isPlatformBrowser } from '@angular/common';
 import { StateService } from './state.service';
 import { env } from '../app.constants';
+import { WebsocketResponse } from '../interfaces/websocket.interface';
 
 const API_BASE_URL = '{network}/api/v1';
 
@@ -11,19 +13,28 @@ const API_BASE_URL = '{network}/api/v1';
   providedIn: 'root'
 })
 export class ApiService {
-  apiBaseUrl: string;
+  private apiBaseUrl: string;
+  private isBrowser: boolean = isPlatformBrowser(this.platformId);
 
   constructor(
     private httpClient: HttpClient,
     private stateService: StateService,
+    @Inject(PLATFORM_ID) private platformId: any,
   ) {
-    this.apiBaseUrl = API_BASE_URL.replace('{network}', '');
     this.stateService.networkChanged$.subscribe((network) => {
       if (network === 'bisq' && !env.BISQ_SEPARATE_BACKEND) {
         network = '';
       }
       this.apiBaseUrl = API_BASE_URL.replace('{network}', network ? '/' + network : '');
+      if (!this.isBrowser) {
+        this.apiBaseUrl = 'http://localhost:8999' + this.apiBaseUrl;
+      }
     });
+
+    this.apiBaseUrl = API_BASE_URL.replace('{network}', '');
+    if (!this.isBrowser) {
+      this.apiBaseUrl = 'http://localhost:8999' + this.apiBaseUrl;
+    }
   }
 
   list2HStatistics$(): Observable<OptimizedMempoolStats[]> {
@@ -72,5 +83,9 @@ export class ApiService {
 
   getDonation$(): Observable<any[]> {
     return this.httpClient.get<any[]>(this.apiBaseUrl + '/donations');
+  }
+
+  getInitData$(): Observable<WebsocketResponse> {
+    return this.httpClient.get<WebsocketResponse>(this.apiBaseUrl + '/init-data');
   }
 }

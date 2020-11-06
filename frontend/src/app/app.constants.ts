@@ -54,7 +54,7 @@ const defaultEnv: Env = {
   'KEEP_BLOCKS_AMOUNT': 8
 };
 
-const browserWindow = window || {};
+const browserWindow = {};
 // @ts-ignore
 const browserWindowEnv = browserWindow.__env || {};
 export const env: Env = Object.assign(defaultEnv, browserWindowEnv);

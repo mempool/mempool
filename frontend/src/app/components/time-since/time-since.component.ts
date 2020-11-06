@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnChanges } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnChanges, PLATFORM_ID, Inject } from '@angular/core';
 
 @Component({
   selector: 'app-time-since',
@@ -6,6 +7,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, ChangeDet
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
+  isBrowser: boolean = isPlatformBrowser(this.platformId);
   interval: number;
   text: string;
   intervals = {};
@@ -14,7 +16,8 @@ export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
   @Input() fastRender = false;
 
   constructor(
-    private ref: ChangeDetectorRef
+    private ref: ChangeDetectorRef,
+    @Inject(PLATFORM_ID) private platformId: any,
   ) {
     if (document.body.clientWidth < 768) {
       this.intervals = {
@@ -40,6 +43,11 @@ export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
+    if (!this.isBrowser) {
+      this.text = this.calculate();
+      this.ref.markForCheck();
+      return;
+    }
     this.interval = window.setInterval(() => {
       this.text = this.calculate();
       this.ref.markForCheck();

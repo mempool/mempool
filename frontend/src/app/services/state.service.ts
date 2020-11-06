@@ -1,11 +1,12 @@
-import { Injectable } from '@angular/core';
-import { ReplaySubject, BehaviorSubject, Subject, fromEvent } from 'rxjs';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable } from 'rxjs';
 import { Block, Transaction } from '../interfaces/electrs.interface';
 import { MempoolBlock, MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
 import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { env } from '../app.constants';
-import { shareReplay, map } from 'rxjs/operators';
+import { isPlatformBrowser } from '@angular/common';
+import { map, shareReplay } from 'rxjs/operators';
 
 interface MarkBlockState {
   blockHeight?: number;
@@ -17,6 +18,7 @@ interface MarkBlockState {
   providedIn: 'root'
 })
 export class StateService {
+  isBrowser: boolean = isPlatformBrowser(this.platformId);
   network = '';
   latestBlockHeight = 0;
 
@@ -40,21 +42,28 @@ export class StateService {
 
   viewFiat$ = new BehaviorSubject<boolean>(false);
   connectionState$ = new BehaviorSubject<0 | 1 | 2>(2);
-  isTabHidden$ = fromEvent(document, 'visibilitychange').pipe(map((event) => this.isHidden()), shareReplay());
+  isTabHidden$: Observable<boolean>;
 
   markBlock$ = new ReplaySubject<MarkBlockState>();
   keyNavigation$ = new Subject<KeyboardEvent>();
 
   constructor(
+    @Inject(PLATFORM_ID) private platformId: any,
     private router: Router,
   ) {
-    this.setNetworkBasedonUrl(window.location.pathname);
-
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         this.setNetworkBasedonUrl(event.url);
       }
     });
+
+    if (this.isBrowser) {
+      this.setNetworkBasedonUrl(window.location.pathname);
+      this.isTabHidden$ = fromEvent(document, 'visibilitychange').pipe(map(() => this.isHidden()), shareReplay());
+    } else {
+      this.setNetworkBasedonUrl('/');
+      this.isTabHidden$ = new BehaviorSubject(false);
+    }
   }
 
   setNetworkBasedonUrl(url: string) {

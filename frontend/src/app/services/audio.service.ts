@@ -4,13 +4,17 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class AudioService {
-  audio = new Audio();
+  audio: HTMLAudioElement;
   isPlaying = false;
 
-  constructor() { }
+  constructor() {
+    try {
+      this.audio = new Audio();
+    } catch (e) {}
+  }
 
   public playSound(name: 'magic' | 'chime' | 'cha-ching' | 'bright-harmony') {
-    if (this.isPlaying) {
+    if (this.isPlaying || !this.audio) {
       return;
     }
     this.isPlaying = true;
