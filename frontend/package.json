@@ -32,7 +32,7 @@
     "e2e": "ng e2e",
     "dev:ssr": "ng run mempool:serve-ssr",
     "serve:ssr": "node dist/mempool/server/main.js",
-    "build:ssr": "ng build --prod && ng run mempool:server:production",
+    "build:ssr": "npm run build && ng run mempool:server:production",
     "prerender": "ng run mempool:prerender"
   },
   "dependencies": {
