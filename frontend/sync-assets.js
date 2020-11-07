@@ -1,7 +1,7 @@
 var https = require('https');
 var fs = require('fs');
 
-var PATH = 'dist/mempool/resources/';
+var PATH = 'dist/mempool/browser/resources/';
 if (process.argv[2] && process.argv[2] === 'dev') {
   PATH = 'src/resources/';
 }

@@ -12,7 +12,7 @@ import { AppServerModule } from './src/main.server';
 import { APP_BASE_HREF } from '@angular/common';
 import { existsSync } from 'fs';
 
-const template = fs.readFileSync(path.join(__dirname, '../../mempool', 'index.html')).toString();
+const template = fs.readFileSync(path.join(__dirname, '../../mempool/browser/', 'index.html')).toString();
 
 const win = domino.createWindow(template);
 
