@@ -6,7 +6,7 @@ import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
 import { ApiService } from '../services/api.service';
 import { StateService } from '../services/state.service';
-import * as Chartist from 'chartist';
+import * as Chartist from '@mempool/chartist';
 import { formatDate } from '@angular/common';
 import { WebsocketService } from '../services/websocket.service';
 import { SeoService } from '../services/seo.service';

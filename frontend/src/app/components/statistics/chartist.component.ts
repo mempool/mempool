@@ -9,7 +9,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 
-import * as Chartist from 'chartist';
+import * as Chartist from '@mempool/chartist';
 
 /**
  * Possible chart types
