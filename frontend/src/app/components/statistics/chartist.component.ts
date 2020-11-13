@@ -488,7 +488,7 @@ Chartist.plugins.legend = function (options: any) {
         var activeLabels = [];
 
         // Loop through all legends to set each name in a list item.
-        legendNames.forEach(function (legend: any, i: any) {
+        legendNames.slice().reverse().forEach(function (legend: any, i: any) {
             const legendText = legend.name || legend;
             const legendSeries = legend.series || [i];
 
