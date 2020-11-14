@@ -368,9 +368,10 @@ Chartist.plugins.legend = function (options: any) {
         function initSeriesMetadata(useLabels: any) {
             const seriesMetadata = new Array(chart.data.series.length);
             for (let i = 0; i < chart.data.series.length; i++) {
+                const inv = chart.data.series.length - 1 - i;
                 seriesMetadata[i] = {
-                    data: chart.data.series[i],
-                    label: useLabels ? chart.data.labels[i] : null,
+                    data: chart.data.series[inv],
+                    label: useLabels ? chart.data.labels[inv] : null,
                     legend: -1
                 };
             }
