@@ -9,7 +9,7 @@ import { OptimizedMempoolStats } from '../../interfaces/node-api.interface';
 import { WebsocketService } from '../../services/websocket.service';
 import { ApiService } from '../../services/api.service';
 
-import * as Chartist from 'chartist';
+import * as Chartist from '@mempool/chartist';
 import { StateService } from 'src/app/services/state.service';
 import { SeoService } from 'src/app/services/seo.service';
 
@@ -30,7 +30,6 @@ export class StatisticsComponent implements OnInit {
   mempoolUnconfirmedTransactionsData: any;
   mempoolTransactionsWeightPerSecondData: any;
 
-  mempoolVsizeFeesOptions: any;
   transactionsWeightPerSecondOptions: any;
 
   radioGroupForm: FormGroup;

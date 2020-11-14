@@ -9,7 +9,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 
-import * as Chartist from 'chartist';
+import * as Chartist from '@mempool/chartist';
 
 /**
  * Possible chart types
@@ -319,7 +319,11 @@ Chartist.plugins.legend = function (options: any) {
 
       chart.on('created', function (data: any) {
 
-        if (isSelfUpdate)
+        const useLabels = chart instanceof Chartist.Pie && chart.data.labels && chart.data.labels.length;
+        const legendNames = getLegendNames(useLabels);
+        var dirtyChartData = (chart.data.series.length < legendNames.length);
+
+        if (isSelfUpdate || dirtyChartData)
             return;
 
         function removeLegendElement() {
@@ -476,8 +480,6 @@ Chartist.plugins.legend = function (options: any) {
         removeLegendElement();
 
         const legendElement = createLegendElement();
-        const useLabels = chart instanceof Chartist.Pie && chart.data.labels && chart.data.labels.length;
-        const legendNames = getLegendNames(useLabels);
         const seriesMetadata = initSeriesMetadata(useLabels);
         const legends: any = [];
 
