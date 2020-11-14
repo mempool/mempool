@@ -237,7 +237,7 @@ $ct-series-colors: (
   #6188e2,
 );
 
-@import "../node_modules/chartist/dist/scss/chartist.scss";
+@import "../node_modules/@mempool/chartist/dist/scss/chartist.scss";
 
 .ct-bar-label {
   font-size: 20px;

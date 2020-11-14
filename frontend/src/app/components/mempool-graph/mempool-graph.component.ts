@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnChanges } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { VbytesPipe } from 'src/app/shared/pipes/bytes-pipe/vbytes.pipe';
-import * as Chartist from 'chartist';
+import * as Chartist from '@mempool/chartist';
 import { OptimizedMempoolStats } from 'src/app/interfaces/node-api.interface';
 import { StateService } from 'src/app/services/state.service';
 
@@ -62,6 +62,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       showLine: false,
       fullWidth: true,
       showPoint: false,
+      stackedLine: true,
       low: 0,
       axisX: {
         labelInterpolationFnc: labelInterpolationFnc,
@@ -71,11 +72,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         labelInterpolationFnc: (value: number): any => this.vbytesPipe.transform(value, 2),
         offset: showLegend ? 160 : 60,
       },
-      plugins: [
-        Chartist.plugins.ctTargetLine({
-          value: 1000000
-        }),
-      ]
+      plugins: []
     };
 
     if (showLegend) {
@@ -134,9 +131,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           feesArray.push(0);
         }
       });
-      if (finalArray.length) {
-        feesArray = feesArray.map((value, i) => value + finalArray[finalArray.length - 1][i]);
-      }
       finalArray.push(feesArray);
     }
     finalArray.reverse();

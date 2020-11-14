@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, ChangeDetectionStrategy } from '@angular/core';
-import * as Chartist from 'chartist';
+import * as Chartist from '@mempool/chartist';
 
 @Component({
   selector: 'app-fee-distribution-graph',
