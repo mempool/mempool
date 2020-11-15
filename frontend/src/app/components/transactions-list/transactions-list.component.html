@@ -63,39 +63,38 @@
                 </td>
               </tr>
               <tr *ngIf="displayDetails">
-                <td></td>
-                <td colspan="2">
+                <td colspan="3">
                   <table class="table table-striped table-borderless details-table mb-3">
                     <tbody>
                       <ng-template [ngIf]="vin.scriptsig">
                         <tr>
                           <td>ScriptSig (ASM)</td>
-                          <td class="script-details">{{ vin.scriptsig_asm }}</td>
+                          <td>{{ vin.scriptsig_asm }}</td>
                         </tr>
                         <tr>
                           <td>ScriptSig (HEX)</td>
-                          <td class="script-details">{{ vin.scriptsig }}</td>
+                          <td>{{ vin.scriptsig }}</td>
                         </tr>
                       </ng-template>
                       <tr *ngIf="vin.witness">
                         <td>Witness</td>
-                        <td class="script-details">{{ vin.witness.join(' ') }}</td>
+                        <td>{{ vin.witness.join(' ') }}</td>
                       </tr>
                       <tr *ngIf="vin.inner_redeemscript_asm">
                         <td>P2SH redeem script</td>
-                        <td class="script-details">{{ vin.inner_redeemscript_asm }}</td>
+                        <td>{{ vin.inner_redeemscript_asm }}</td>
                       </tr>
                       <tr *ngIf="vin.inner_witnessscript_asm">
                         <td>P2WSH witness script</td>
-                        <td class="script-details">{{ vin.inner_witnessscript_asm }}</td>
+                        <td>{{ vin.inner_witnessscript_asm }}</td>
                       </tr>
                       <tr>
                         <td>nSequence</td>
-                        <td class="script-details">{{ formatHex(vin.sequence) }}</td>
+                        <td>{{ formatHex(vin.sequence) }}</td>
                       </tr>
                       <tr *ngIf="vin.prevout">
                         <td>Previous output script</td>
-                        <td class="script-details">{{ vin.prevout.scriptpubkey_asm }} {{ vin.prevout.scriptpubkey_type ? ('(' + vin.prevout.scriptpubkey_type + ')') : '' }}</td>
+                        <td>{{ vin.prevout.scriptpubkey_asm }} {{ vin.prevout.scriptpubkey_type ? ('(' + vin.prevout.scriptpubkey_type + ')') : '' }}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -154,24 +153,24 @@
                 </td>
               </tr>
               <tr *ngIf="displayDetails">
-                <td colspan="2">
+                <td colspan="3">
                   <table class="table table-striped table-borderless details-table mb-3">
                     <tbody>
                       <tr *ngIf="vout.scriptpubkey_type">
                         <td>Type</td>
-                        <td class="script-details">{{ vout.scriptpubkey_type.toUpperCase() }}</td>
+                        <td>{{ vout.scriptpubkey_type.toUpperCase() }}</td>
                       </tr>
                       <tr>
                         <td>scriptPubKey (ASM)</td>
-                        <td class="script-details">{{ vout.scriptpubkey_asm }}</td>
+                        <td>{{ vout.scriptpubkey_asm }}</td>
                       </tr>
                       <tr>
                         <td>scriptPubKey (HEX)</td>
-                        <td class="script-details">{{ vout.scriptpubkey }}</td>
+                        <td>{{ vout.scriptpubkey }}</td>
                       </tr>
                       <tr *ngIf="vout.scriptpubkey_type == 'op_return'">
                         <td>OP_RETURN data</td>
-                        <td class="script-details">{{ vout.scriptpubkey_asm | hex2ascii }}</td>
+                        <td>{{ vout.scriptpubkey_asm | hex2ascii }}</td>
                       </tr>
                     </tbody>
                   </table>
