@@ -1,12 +1,12 @@
 import config from '../config';
-import * as request from 'request';
+import axios from 'axios';
 import { DB } from '../database';
 import logger from '../logger';
 
 class Donations {
   private notifyDonationStatusCallback: ((invoiceId: string) => void) | undefined;
   private options = {
-    baseUrl: config.SPONSORS.BTCPAY_URL,
+    baseURL: config.SPONSORS.BTCPAY_URL,
     headers: {
       'Content-Type': 'application/json',
       'Authorization': config.SPONSORS.BTCPAY_AUTH,
@@ -34,7 +34,7 @@ class Donations {
     this.notifyDonationStatusCallback = fn;
   }
 
-  $createRequest(amount: number, orderId: string): Promise<any> {
+  async $createRequest(amount: number, orderId: string): Promise<any> {
     logger.notice('New invoice request. Handle: ' + orderId + ' Amount: ' + amount + ' BTC');
 
     const postData = {
@@ -43,30 +43,21 @@ class Donations {
       'currency': 'BTC',
       'itemDesc': 'Sponsor mempool.space',
       'notificationUrl': config.SPONSORS.BTCPAY_WEBHOOK_URL,
-      'redirectURL': 'https://mempool.space/about'
+      'redirectURL': 'https://mempool.space/about',
     };
-    return new Promise((resolve, reject) => {
-      request.post({
-        uri: '/invoices',
-        json: postData,
-        ...this.options,
-      }, (err, res, body) => {
-        if (err) { return reject(err); }
-        const formattedBody = {
-          id: body.data.id,
-          amount: parseFloat(body.data.btcPrice),
-          addresses: body.data.addresses,
-        };
-        resolve(formattedBody);
-      });
-    });
+    const response = await axios.post('/invoices', postData, this.options);
+    return {
+      id: response.data.data.id,
+      amount: parseFloat(response.data.data.btcPrice),
+      addresses: response.data.data.addresses,
+    };
   }
 
   async $handleWebhookRequest(data: any): Promise<void> {
     if (!data || !data.id) {
       return;
     }
-    const response = await this.getStatus(data.id);
+    const response = await this.$getStatus(data.id);
     logger.notice(`Received BTCPayServer webhook. Invoice ID: ${data.id} Status: ${response.status} BTC Paid: ${response.btcPaid}`);
     if (response.status !== 'complete' && response.status !== 'confirmed' && response.status !== 'paid') {
       return;
@@ -128,19 +119,11 @@ class Donations {
     }
   }
 
-  private getStatus(id: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      logger.debug('Fetching status for invoice: ' + id);
-      request.get({
-        uri: '/invoices/' + id,
-        json: true,
-        ...this.options,
-      }, (err, res, body) => {
-        if (err) { return reject(err); }
-        logger.debug('Invoice status received: ' + JSON.stringify(body.data));
-        resolve(body.data);
-      });
-    });
+  private async $getStatus(id: string): Promise<any> {
+    logger.debug('Fetching status for invoice: ' + id);
+    const response = await axios.get('/invoices/' + id, this.options);
+    logger.debug('Invoice status received: ' + JSON.stringify(response.data));
+    return response.data.data;
   }
 
   private async $addDonationToDatabase(btcPaid: number, handle: string, twitter_id: number | null,
@@ -182,34 +165,21 @@ class Donations {
   }
 
   private async $getTwitterUserData(handle: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      logger.debug('Fetching Twitter API data...');
-      request.get({
-        uri: `https://api.twitter.com/1.1/users/show.json?screen_name=${handle}`,
-        json: true,
-        headers: {
-          Authorization: 'Bearer ' + config.SPONSORS.TWITTER_BEARER_AUTH
-        },
-      }, (err, res, body) => {
-        if (err) { return reject(err); }
-        logger.debug('Twitter user data fetched:' + JSON.stringify(body.data));
-        resolve(body);
-      });
+    logger.debug('Fetching Twitter API data...');
+    const res = await axios.get(`https://api.twitter.com/1.1/users/show.json?screen_name=${handle}`, {
+      headers: {
+        Authorization: 'Bearer ' + config.SPONSORS.TWITTER_BEARER_AUTH
+      }
     });
+    logger.debug('Twitter user data fetched:' + JSON.stringify(res.data));
+    return res.data;
   }
 
   private async $downloadProfileImageBlob(url: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      logger.debug('Fetching image blob...');
-      request.get({
-        uri: url,
-        encoding: null,
-      }, (err, res, body) => {
-        if (err) { return reject(err); }
-        logger.debug('Image downloaded.');
-        resolve(Buffer.from(body, 'utf8').toString('base64'));
-      });
-    });
+    logger.debug('Fetching image blob...');
+    const res = await axios.get(url, { responseType: 'arraybuffer' });
+    logger.debug('Image downloaded.');
+    return Buffer.from(res.data, 'utf8').toString('base64');
   }
 
   private async refreshSponsors(): Promise<void> {
