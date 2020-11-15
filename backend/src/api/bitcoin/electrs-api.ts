@@ -1,6 +1,6 @@
 import config from '../../config';
 import { Transaction, Block, MempoolInfo } from '../../interfaces';
-import * as request from 'request';
+import axios from 'axios';
 
 class ElectrsApi {
 
@@ -8,138 +8,48 @@ class ElectrsApi {
   }
 
   getMempoolInfo(): Promise<MempoolInfo> {
-    return new Promise((resolve, reject) => {
-      request(config.ELECTRS.REST_API_URL + '/mempool', { json: true, timeout: 10000 }, (err, res, response) => {
-        if (err) {
-          reject('getMempoolInfo error: ' + err.message || err);
-        } else if (res.statusCode !== 200) {
-          reject(response);
-        } else {
-          if (typeof response.count !== 'number') {
-            reject('Empty data');
-            return;
-          }
-          resolve({
-            size: response.count,
-            bytes: response.vsize,
-          });
-        }
+    return axios.get<any>(config.ELECTRS.REST_API_URL + '/mempool', { timeout: 10000 })
+      .then((response) => {
+        return {
+          size: response.data.count,
+          bytes: response.data.vsize,
+        };
       });
-    });
   }
 
   getRawMempool(): Promise<Transaction['txid'][]> {
-    return new Promise((resolve, reject) => {
-      request(config.ELECTRS.REST_API_URL + '/mempool/txids', { json: true, timeout: 10000, forever: true }, (err, res, response) => {
-        if (err) {
-          reject('getRawMempool error: ' + err.message || err);
-        } else if (res.statusCode !== 200) {
-          reject(response);
-        } else {
-          if (response.constructor === Array) {
-            resolve(response);
-          } else {
-            reject('returned invalid data');
-          }
-        }
-      });
-    });
+    return axios.get<Transaction['txid'][]>(config.ELECTRS.REST_API_URL + '/mempool/txids')
+      .then((response) => response.data);
   }
 
   getRawTransaction(txId: string): Promise<Transaction> {
-    return new Promise((resolve, reject) => {
-      request(config.ELECTRS.REST_API_URL + '/tx/' + txId, { json: true, timeout: 10000, forever: true }, (err, res, response) => {
-        if (err) {
-          reject('getRawTransaction error: ' + err.message || err);
-        } else if (res.statusCode !== 200) {
-          reject(response);
-        } else {
-          if (response.constructor === Object) {
-            resolve(response);
-          } else {
-            reject('returned invalid data');
-          }
-        }
-      });
-    });
+    return axios.get<Transaction>(config.ELECTRS.REST_API_URL + '/tx/' + txId)
+      .then((response) => response.data);
   }
 
   getBlockHeightTip(): Promise<number> {
-    return new Promise((resolve, reject) => {
-      request(config.ELECTRS.REST_API_URL + '/blocks/tip/height', { json: true, timeout: 10000 }, (err, res, response) => {
-        if (err) {
-          reject('getBlockHeightTip error: ' + err.message || err);
-        } else if (res.statusCode !== 200) {
-          reject(response);
-        } else {
-          resolve(response);
-        }
-      });
-    });
+    return axios.get<number>(config.ELECTRS.REST_API_URL + '/blocks/tip/height')
+      .then((response) => response.data);
   }
 
   getTxIdsForBlock(hash: string): Promise<string[]> {
-    return new Promise((resolve, reject) => {
-      request(config.ELECTRS.REST_API_URL + '/block/' + hash + '/txids', { json: true, timeout: 10000 }, (err, res, response) => {
-        if (err) {
-          reject('getTxIdsForBlock error: ' + err.message || err);
-        } else if (res.statusCode !== 200) {
-          reject(response);
-        } else {
-          if (response.constructor === Array) {
-            resolve(response);
-          } else {
-            reject('returned invalid data');
-          }
-        }
-      });
-    });
+    return axios.get<string[]>(config.ELECTRS.REST_API_URL + '/block/' + hash + '/txids')
+      .then((response) => response.data);
   }
 
   getBlockHash(height: number): Promise<string> {
-    return new Promise((resolve, reject) => {
-      request(config.ELECTRS.REST_API_URL + '/block-height/' + height, { json: true, timeout: 10000 }, (err, res, response) => {
-        if (err) {
-          reject('getBlockHash error: ' + err.message || err);
-        } else if (res.statusCode !== 200) {
-          reject(response);
-        } else  {
-          resolve(response);
-        }
-      });
-    });
+    return axios.get<string>(config.ELECTRS.REST_API_URL + '/block-height/' + height)
+      .then((response) => response.data);
   }
 
   getBlocksFromHeight(height: number): Promise<string> {
-    return new Promise((resolve, reject) => {
-      request(config.ELECTRS.REST_API_URL + '/blocks/' + height, { json: true, timeout: 10000 }, (err, res, response) => {
-        if (err) {
-          reject('getBlocksFromHeight error: ' + err.message || err);
-        } else if (res.statusCode !== 200) {
-          reject(response);
-        } else  {
-          resolve(response);
-        }
-      });
-    });
+    return axios.get<string>(config.ELECTRS.REST_API_URL + '/blocks/' + height)
+      .then((response) => response.data);
   }
 
   getBlock(hash: string): Promise<Block> {
-    return new Promise((resolve, reject) => {
-      request(config.ELECTRS.REST_API_URL + '/block/' + hash, { json: true, timeout: 10000 }, (err, res, response) => {
-        if (err) {
-          reject('getBlock error: ' + err.message || err);
-        } else if (res.statusCode !== 200) {
-          reject(response);
-        } else {
-          if (response.constructor === Object) {
-            resolve(response);
-          } else {
-            reject('getBlock returned invalid data');
-          }
-        }
-      });
-    });
+    return axios.get<Block>(config.ELECTRS.REST_API_URL + '/block/' + hash)
+      .then((response) => response.data);
   }
 }
 

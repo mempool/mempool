@@ -4,7 +4,7 @@ import * as http from 'http';
 import * as https from 'https';
 import * as WebSocket from 'ws';
 import * as cluster from 'cluster';
-import * as request from 'request';
+import axios from 'axios';
 
 import { checkDbConnection } from './database';
 import config from './config';
@@ -190,11 +190,21 @@ class Server {
       ;
     } else {
       this.app
-        .get(config.MEMPOOL.API_URL_PREFIX + 'donations', (req, res) => {
-          req.pipe(request('https://mempool.space/api/v1/donations')).pipe(res);
+        .get(config.MEMPOOL.API_URL_PREFIX + 'donations', async (req, res) => {
+          try {
+            const response = await axios.get('https://mempool.space/api/v1/donations', { responseType: 'stream' });
+            response.data.pipe(res);
+          } catch (e) {
+            res.status(500).end();
+          }
         })
-        .get(config.MEMPOOL.API_URL_PREFIX + 'donations/images/:id', (req, res) => {
-          req.pipe(request('https://mempool.space/api/v1/donations/images/' + req.params.id)).pipe(res);
+        .get(config.MEMPOOL.API_URL_PREFIX + 'donations/images/:id', async (req, res) => {
+          try {
+            const response = await axios.get('https://mempool.space/api/v1/donations/images/' + req.params.id, { responseType: 'stream' });
+            response.data.pipe(res);
+          } catch (e) {
+            res.status(500).end();
+          }
         });
     }
   }
