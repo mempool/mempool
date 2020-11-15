@@ -1,6 +1,6 @@
 import config from '../../config';
 import * as fs from 'fs';
-import * as request from 'request';
+import axios from 'axios';
 import { BisqBlocks, BisqBlock, BisqTransaction, BisqStats, BisqTrade } from './interfaces';
 import { Common } from '../common';
 import { Block } from '../../interfaces';
@@ -138,18 +138,19 @@ class Bisq {
   }
 
   private updatePrice() {
-    request('https://bisq.markets/api/trades/?market=bsq_btc', { json: true }, (err, res, trades: BisqTrade[]) => {
-      if (err || !Array.isArray(trades)) { return logger.err('Error updating Bisq market price: ' + err); }
-
-      const prices: number[] = [];
-      trades.forEach((trade) => {
-        prices.push(parseFloat(trade.price) * 100000000);
-      });
-      prices.sort((a, b) => a - b);
-      this.price = Common.median(prices);
-      if (this.priceUpdateCallbackFunction) {
-        this.priceUpdateCallbackFunction(this.price);
-      }
+    axios.get<BisqTrade[]>('https://bisq.markets/api/trades/?market=bsq_btc')
+      .then((response) => {
+        const prices: number[] = [];
+        response.data.forEach((trade) => {
+          prices.push(parseFloat(trade.price) * 100000000);
+        });
+        prices.sort((a, b) => a - b);
+        this.price = Common.median(prices);
+        if (this.priceUpdateCallbackFunction) {
+          this.priceUpdateCallbackFunction(this.price);
+        }
+    }).catch((err) => {
+      logger.err('Error updating Bisq market price: ' + err);
     });
   }
 
