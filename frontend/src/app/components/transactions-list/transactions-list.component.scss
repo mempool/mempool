@@ -82,3 +82,19 @@
 		max-width: 280px !important;
 	}
 }
+
+.details-table {
+	margin-top: 5px;
+	max-width: 500px;
+}
+
+.details-table td {
+	padding: 0.75rem;
+}
+
+.script-details {
+	word-break: break-all;
+	white-space: normal;
+	font-family: "Courier New", Courier, monospace;
+	font-size: 12px;
+}
