@@ -65,7 +65,7 @@
               <tr *ngIf="displayDetails">
                 <td></td>
                 <td colspan="2">
-                  <table class="table table-striped table-borderless details-table">
+                  <table class="table table-striped table-borderless details-table mb-3">
                     <tbody>
                       <ng-template [ngIf]="vin.scriptsig">
                         <tr>
@@ -92,6 +92,10 @@
                       <tr>
                         <td>nSequence</td>
                         <td class="script-details">{{ formatHex(vin.sequence) }}</td>
+                      </tr>
+                      <tr *ngIf="vin.prevout">
+                        <td>Previous output script</td>
+                        <td class="script-details">{{ vin.prevout.scriptpubkey_asm }} {{ vin.prevout.scriptpubkey_type ? ('(' + vin.prevout.scriptpubkey_type + ')') : '' }}</td>
                       </tr>
                     </tbody>
                   </table>
