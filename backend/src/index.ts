@@ -191,12 +191,20 @@ class Server {
     } else {
       this.app
         .get(config.MEMPOOL.API_URL_PREFIX + 'donations', async (req, res) => {
-          const response = await axios.get('https://mempool.space/api/v1/donations', { responseType: 'stream' });
-          response.data.pipe(res);
+          try {
+            const response = await axios.get('https://mempool.space/api/v1/donations', { responseType: 'stream' });
+            response.data.pipe(res);
+          } catch (e) {
+            res.status(500).end();
+          }
         })
         .get(config.MEMPOOL.API_URL_PREFIX + 'donations/images/:id', async (req, res) => {
-          const response = await axios.get('https://mempool.space/api/v1/donations/images/' + req.params.id, { responseType: 'stream' });
-          response.data.pipe(res);
+          try {
+            const response = await axios.get('https://mempool.space/api/v1/donations/images/' + req.params.id, { responseType: 'stream' });
+            response.data.pipe(res);
+          } catch (e) {
+            res.status(500).end();
+          }
         });
     }
   }
