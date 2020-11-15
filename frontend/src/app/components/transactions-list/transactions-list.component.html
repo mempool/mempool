@@ -17,50 +17,87 @@
       <div class="col">
         <table class="table table-borderless smaller-text table-xs" style="margin: 0;">
           <tbody>
-            <tr *ngFor="let vin of (tx['@vinLimit'] ? tx.vin.slice(0, 10) : tx.vin); trackBy: trackByIndexFn">
-              <td class="arrow-td">
-                <ng-template [ngIf]="vin.prevout === null && !vin.is_pegin" [ngIfElse]="hasPrevout">
-                  <i class="arrow grey"></i>
-                </ng-template>
-                <ng-template #hasPrevout>
-                  <a *ngIf="vin.is_pegin; else defaultPrevout" [routerLink]="['/tx/', vin.txid]">
-                    <i class="arrow red"></i>
-                  </a>
-                  <ng-template #defaultPrevout>
-                    <a [routerLink]="['/tx/' | relativeUrl, vin.txid]">
+            <ng-template ngFor let-vin [ngForOf]="tx['@vinLimit'] ? tx.vin.slice(0, 10) : tx.vin" [ngForTrackBy]="trackByIndexFn">
+              <tr>
+                <td class="arrow-td">
+                  <ng-template [ngIf]="vin.prevout === null && !vin.is_pegin" [ngIfElse]="hasPrevout">
+                    <i class="arrow grey"></i>
+                  </ng-template>
+                  <ng-template #hasPrevout>
+                    <a *ngIf="vin.is_pegin; else defaultPrevout" [routerLink]="['/tx/', vin.txid]">
                       <i class="arrow red"></i>
                     </a>
+                    <ng-template #defaultPrevout>
+                      <a [routerLink]="['/tx/' | relativeUrl, vin.txid]">
+                        <i class="arrow red"></i>
+                      </a>
+                    </ng-template>
                   </ng-template>
-                </ng-template>
-              </td>
-              <td>
-                <div [ngSwitch]="true">
-                  <ng-container *ngSwitchCase="vin.is_coinbase"><a placement="bottom" [ngbTooltip]="vin.scriptsig | hex2ascii">Coinbase<ng-template [ngIf]="network !== 'liquid'"> (Newly Generated Coins)</ng-template></a><br><span class="badge badge-secondary scriptmessage longer">{{ vin.scriptsig | hex2ascii }}</span></ng-container>
-                  <ng-container *ngSwitchCase="vin.is_pegin">
-                    Peg-in
-                  </ng-container>
-                  <ng-container *ngSwitchDefault>
-                    <a [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">
-                      <span class="d-block d-lg-none">{{ vin.prevout.scriptpubkey_address | shortenString : 16 }}</span>
-                      <span class="d-none d-lg-block">{{ vin.prevout.scriptpubkey_address | shortenString : 35 }}</span>
-                    </a>
-                    <div>
-                      <app-address-labels [vin]="vin"></app-address-labels>
-                    </div>
-                  </ng-container>
-                </div>
-              </td>
-              <td class="text-right nowrap">
-                <ng-template [ngIf]="vin.prevout && vin.prevout.asset && vin.prevout.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
-                  <div *ngIf="assetsMinimal && assetsMinimal[vin.prevout.asset]">
-                    <ng-container *ngTemplateOutlet="assetBox; context:{ $implicit: vin.prevout }"></ng-container>
+                </td>
+                <td>
+                  <div [ngSwitch]="true">
+                    <ng-container *ngSwitchCase="vin.is_coinbase"><a placement="bottom" [ngbTooltip]="vin.scriptsig | hex2ascii">Coinbase<ng-template [ngIf]="network !== 'liquid'"> (Newly Generated Coins)</ng-template></a><br><span class="badge badge-secondary scriptmessage longer">{{ vin.scriptsig | hex2ascii }}</span></ng-container>
+                    <ng-container *ngSwitchCase="vin.is_pegin">
+                      Peg-in
+                    </ng-container>
+                    <ng-container *ngSwitchDefault>
+                      <a [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">
+                        <span class="d-block d-lg-none">{{ vin.prevout.scriptpubkey_address | shortenString : 16 }}</span>
+                        <span class="d-none d-lg-block">{{ vin.prevout.scriptpubkey_address | shortenString : 35 }}</span>
+                      </a>
+                      <div>
+                        <app-address-labels [vin]="vin"></app-address-labels>
+                      </div>
+                    </ng-container>
                   </div>
-                </ng-template>
-                <ng-template #defaultOutput>
-                  <app-amount *ngIf="vin.prevout" [satoshis]="vin.prevout.value"></app-amount>
-                </ng-template>
-              </td>
-            </tr>
+                </td>
+                <td class="text-right nowrap">
+                  <ng-template [ngIf]="vin.prevout && vin.prevout.asset && vin.prevout.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
+                    <div *ngIf="assetsMinimal && assetsMinimal[vin.prevout.asset]">
+                      <ng-container *ngTemplateOutlet="assetBox; context:{ $implicit: vin.prevout }"></ng-container>
+                    </div>
+                  </ng-template>
+                  <ng-template #defaultOutput>
+                    <app-amount *ngIf="vin.prevout" [satoshis]="vin.prevout.value"></app-amount>
+                  </ng-template>
+                </td>
+              </tr>
+              <tr *ngIf="displayDetails">
+                <td></td>
+                <td colspan="2">
+                  <table class="table table-striped table-borderless details-table">
+                    <tbody>
+                      <ng-template [ngIf]="vin.scriptsig">
+                        <tr>
+                          <td>ScriptSig (ASM)</td>
+                          <td class="script-details">{{ vin.scriptsig_asm }}</td>
+                        </tr>
+                        <tr>
+                          <td>ScriptSig (HEX)</td>
+                          <td class="script-details">{{ vin.scriptsig }}</td>
+                        </tr>
+                      </ng-template>
+                      <tr *ngIf="vin.witness">
+                        <td>Witness</td>
+                        <td class="script-details">{{ vin.witness.join(' ') }}</td>
+                      </tr>
+                      <tr *ngIf="vin.inner_redeemscript_asm">
+                        <td>P2SH redeem script</td>
+                        <td class="script-details">{{ vin.inner_redeemscript_asm }}</td>
+                      </tr>
+                      <tr *ngIf="vin.inner_witnessscript_asm">
+                        <td>P2WSH witness script</td>
+                        <td class="script-details">{{ vin.inner_witnessscript_asm }}</td>
+                      </tr>
+                      <tr>
+                        <td>nSequence</td>
+                        <td class="script-details">{{ formatHex(vin.sequence) }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </ng-template>
             <tr *ngIf="tx.vin.length > 10 && tx['@vinLimit']">
               <td colspan="3" class="text-center">
                 <button class="btn btn-sm btn-primary mt-2" (click)="tx['@vinLimit'] = false;">Load all ({{ tx.vin.length - 10 }})</button>
@@ -73,44 +110,70 @@
       <div class="col mobile-bottomcol">
         <table class="table table-borderless smaller-text table-xs"  style="margin: 0;">
           <tbody>
-            <tr *ngFor="let vout of (tx['@voutLimit'] ? tx.vout.slice(0, 10) : tx.vout); let vindex = index; trackBy: trackByIndexFn">
-              <td>
-                <a *ngIf="vout.scriptpubkey_address; else scriptpubkey_type" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">
-                  <span class="d-block d-lg-none">{{ vout.scriptpubkey_address | shortenString : 16 }}</span>
-                  <span class="d-none d-lg-block">{{ vout.scriptpubkey_address | shortenString : 35 }}</span>
-                </a>
-                <ng-template #scriptpubkey_type>
-                  <ng-template [ngIf]="vout.pegout" [ngIfElse]="defaultscriptpubkey_type">
-                    Peg-out to <a [routerLink]="['/address/', vout.pegout.scriptpubkey_address]" title="{{ vout.pegout.scriptpubkey_address }}">
-                      <span class="d-block d-lg-none">{{ vout.pegout.scriptpubkey_address | shortenString : 16 }}</span>
-                      <span class="d-none d-lg-block">{{ vout.pegout.scriptpubkey_address | shortenString : 35 }}</span>
-                    </a>
+            <ng-template ngFor let-vout let-vindex="index"  [ngForOf]="tx['@voutLimit'] ? tx.vout.slice(0, 10) : tx.vout" [ngForTrackBy]="trackByIndexFn">
+              <tr>
+                <td>
+                  <a *ngIf="vout.scriptpubkey_address; else scriptpubkey_type" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">
+                    <span class="d-block d-lg-none">{{ vout.scriptpubkey_address | shortenString : 16 }}</span>
+                    <span class="d-none d-lg-block">{{ vout.scriptpubkey_address | shortenString : 35 }}</span>
+                  </a>
+                  <ng-template #scriptpubkey_type>
+                    <ng-template [ngIf]="vout.pegout" [ngIfElse]="defaultscriptpubkey_type">
+                      Peg-out to <a [routerLink]="['/address/', vout.pegout.scriptpubkey_address]" title="{{ vout.pegout.scriptpubkey_address }}">
+                        <span class="d-block d-lg-none">{{ vout.pegout.scriptpubkey_address | shortenString : 16 }}</span>
+                        <span class="d-none d-lg-block">{{ vout.pegout.scriptpubkey_address | shortenString : 35 }}</span>
+                      </a>
+                    </ng-template>
+                    <ng-template #defaultscriptpubkey_type>
+                      <a placement="bottom" [ngbTooltip]="vout.scriptpubkey | hex2ascii">{{ vout.scriptpubkey_type | scriptpubkeyType }}</a>&nbsp;<span class="badge badge-secondary scriptmessage">{{ vout.scriptpubkey_asm | hex2ascii }}</span>
+                    </ng-template>
                   </ng-template>
-                  <ng-template #defaultscriptpubkey_type>
-                    <a placement="bottom" [ngbTooltip]="vout.scriptpubkey | hex2ascii">{{ vout.scriptpubkey_type | scriptpubkeyType }}</a>&nbsp;<span class="badge badge-secondary scriptmessage">{{ vout.scriptpubkey_asm | hex2ascii }}</span>
+                </td>
+                <td class="text-right nowrap">
+                  <ng-template [ngIf]="vout.asset && vout.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
+                    <div *ngIf="assetsMinimal && assetsMinimal[vout.asset]">
+                      <ng-container *ngTemplateOutlet="assetBox; context:{ $implicit: vout }"></ng-container>
+                  </div>
                   </ng-template>
-                </ng-template>
-              </td>
-              <td class="text-right nowrap">
-                <ng-template [ngIf]="vout.asset && vout.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
-                  <div *ngIf="assetsMinimal && assetsMinimal[vout.asset]">
-                    <ng-container *ngTemplateOutlet="assetBox; context:{ $implicit: vout }"></ng-container>
-                </div>
-                </ng-template>
-                <ng-template #defaultOutput>
-                  <app-amount [satoshis]="vout.value"></app-amount>
-                </ng-template>
-              </td>
-              <td class="pl-1 arrow-td">
-                <i *ngIf="!outspends[i] || vout.scriptpubkey_type === 'op_return' || vout.scriptpubkey_type === 'fee' ; else outspend" class="arrow grey"></i>
-                <ng-template #outspend>
-                  <i *ngIf="!outspends[i][vindex] || !outspends[i][vindex].spent; else spent" class="arrow green"></i>
-                  <ng-template #spent>
-                    <a [routerLink]="['/tx/' | relativeUrl, outspends[i][vindex].txid]"><i class="arrow red"></i></a>
+                  <ng-template #defaultOutput>
+                    <app-amount [satoshis]="vout.value"></app-amount>
                   </ng-template>
-                </ng-template>
-              </td>
-            </tr>
+                </td>
+                <td class="pl-1 arrow-td">
+                  <i *ngIf="!outspends[i] || vout.scriptpubkey_type === 'op_return' || vout.scriptpubkey_type === 'fee' ; else outspend" class="arrow grey"></i>
+                  <ng-template #outspend>
+                    <i *ngIf="!outspends[i][vindex] || !outspends[i][vindex].spent; else spent" class="arrow green"></i>
+                    <ng-template #spent>
+                      <a [routerLink]="['/tx/' | relativeUrl, outspends[i][vindex].txid]"><i class="arrow red"></i></a>
+                    </ng-template>
+                  </ng-template>
+                </td>
+              </tr>
+              <tr *ngIf="displayDetails">
+                <td colspan="2">
+                  <table class="table table-striped table-borderless details-table mb-3">
+                    <tbody>
+                      <tr *ngIf="vout.scriptpubkey_type">
+                        <td>Type</td>
+                        <td class="script-details">{{ vout.scriptpubkey_type.toUpperCase() }}</td>
+                      </tr>
+                      <tr>
+                        <td>scriptPubKey (ASM)</td>
+                        <td class="script-details">{{ vout.scriptpubkey_asm }}</td>
+                      </tr>
+                      <tr>
+                        <td>scriptPubKey (HEX)</td>
+                        <td class="script-details">{{ vout.scriptpubkey }}</td>
+                      </tr>
+                      <tr *ngIf="vout.scriptpubkey_type == 'op_return'">
+                        <td>OP_RETURN data</td>
+                        <td class="script-details">{{ vout.scriptpubkey_asm | hex2ascii }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </ng-template>
             <tr *ngIf="tx.vout.length > 10 && tx['@voutLimit']">
               <td colspan="3" class="text-center">
                 <button class="btn btn-sm btn-primary mt-2" (click)="tx['@voutLimit'] = false;">Load all ({{ tx.vout.length - 10 }})</button>
