@@ -1,5 +1,5 @@
-import * as request from 'request';
 import logger from '../logger';
+import axios from 'axios';
 
 class FiatConversion {
   private tickers = {
@@ -20,13 +20,13 @@ class FiatConversion {
     return this.tickers;
   }
 
-  private updateCurrency() {
-    request('https://api.opennode.co/v1/rates', { json: true }, (err, res, body) => {
-      if (err) { return logger.err('Error updating currency from OpenNode: ' + err); }
-      if (body && body.data) {
-        this.tickers = body.data;
-      }
-    });
+  private async updateCurrency(): Promise<void> {
+    try {
+      const response = await axios.get('https://api.opennode.co/v1/rates');
+      this.tickers = response.data.data;
+    } catch (e) {
+      logger.err('Error updating currency from OpenNode: ' + e);
+    }
   }
 }
 
