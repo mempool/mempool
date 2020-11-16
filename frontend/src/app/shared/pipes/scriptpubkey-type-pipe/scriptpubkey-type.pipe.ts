@@ -9,9 +9,12 @@ export class ScriptpubkeyTypePipe implements PipeTransform {
     switch (value) {
       case 'fee':
         return 'Transaction fee';
+      case 'p2pk':
+        return 'P2PK';
       case 'op_return':
+        return 'OP_RETURN';
       default:
-          return 'OP_RETURN';
+        return value.toUpperCase();
     }
   }
 
