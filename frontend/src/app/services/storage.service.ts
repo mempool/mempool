@@ -9,6 +9,7 @@ export class StorageService {
       return localStorage.getItem(key);
     } catch (e) {
       console.log(e);
+      return '';
     }
   }
 
