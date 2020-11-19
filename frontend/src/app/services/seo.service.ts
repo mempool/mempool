@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { Title, Meta } from '@angular/platform-browser';
 import { StateService } from './state.service';
 
 @Injectable({
@@ -10,6 +10,7 @@ export class SeoService {
 
   constructor(
     private titleService: Title,
+    private metaService: Meta,
     private stateService: StateService,
   ) {
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
@@ -17,10 +18,12 @@ export class SeoService {
 
   setTitle(newTitle: string): void {
     this.titleService.setTitle(newTitle + ' - ' + this.getTitle());
+    this.metaService.updateTag({ property: 'og:title', content: newTitle});
   }
 
   resetTitle(): void {
     this.titleService.setTitle(this.getTitle());
+    this.metaService.updateTag({ property: 'og:title', content: this.getTitle()});
   }
 
   getTitle(): string {
