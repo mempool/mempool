@@ -69,7 +69,7 @@
                       <ng-template [ngIf]="vin.scriptsig">
                         <tr>
                           <td>ScriptSig (ASM)</td>
-                          <td>{{ vin.scriptsig_asm }}</td>
+                          <td [innerHTML]="vin.scriptsig_asm | asmStyler"></td>
                         </tr>
                         <tr>
                           <td>ScriptSig (HEX)</td>
@@ -82,11 +82,11 @@
                       </tr>
                       <tr *ngIf="vin.inner_redeemscript_asm">
                         <td>P2SH redeem script</td>
-                        <td>{{ vin.inner_redeemscript_asm }}</td>
+                        <td [innerHTML]="vin.inner_redeemscript_asm | asmStyler"></td>
                       </tr>
                       <tr *ngIf="vin.inner_witnessscript_asm">
                         <td>P2WSH witness script</td>
-                        <td>{{ vin.inner_witnessscript_asm }}</td>
+                        <td [innerHTML]="vin.inner_witnessscript_asm | asmStyler"></td>
                       </tr>
                       <tr>
                         <td>nSequence</td>
@@ -94,7 +94,7 @@
                       </tr>
                       <tr *ngIf="vin.prevout">
                         <td>Previous output script</td>
-                        <td>{{ vin.prevout.scriptpubkey_asm }} {{ vin.prevout.scriptpubkey_type ? ('(' + vin.prevout.scriptpubkey_type + ')') : '' }}</td>
+                        <td [innerHTML]="vin.prevout.scriptpubkey_asm | asmStyler">{{ vin.prevout.scriptpubkey_type ? ('(' + vin.prevout.scriptpubkey_type + ')') : '' }}"</td>
                       </tr>
                     </tbody>
                   </table>
@@ -165,7 +165,7 @@
                       </tr>
                       <tr>
                         <td>scriptPubKey (ASM)</td>
-                        <td>{{ vout.scriptpubkey_asm }}</td>
+                        <td [innerHTML]="vout.scriptpubkey_asm | asmStyler"></td>
                       </tr>
                       <tr>
                         <td>scriptPubKey (HEX)</td>

@@ -4,6 +4,7 @@ import { VbytesPipe } from './pipes/bytes-pipe/vbytes.pipe';
 import { ShortenStringPipe } from './pipes/shorten-string-pipe/shorten-string.pipe';
 import { CeilPipe } from './pipes/math-ceil/math-ceil.pipe';
 import { Hex2asciiPipe } from './pipes/hex2ascii/hex2ascii.pipe';
+import { AsmStylerPipe } from './pipes/asm-styler/asm-styler.pipe';
 import { RelativeUrlPipe } from './pipes/relative-url/relative-url.pipe';
 import { ScriptpubkeyTypePipe } from './pipes/scriptpubkey-type-pipe/scriptpubkey-type.pipe';
 import { BytesPipe } from './pipes/bytes-pipe/bytes.pipe';
@@ -28,6 +29,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     Hex2asciiPipe,
+    AsmStylerPipe,
     BytesPipe,
     VbytesPipe,
     WuBytesPipe,
@@ -63,6 +65,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     Hex2asciiPipe,
+    AsmStylerPipe,
     BytesPipe,
     VbytesPipe,
     WuBytesPipe,
