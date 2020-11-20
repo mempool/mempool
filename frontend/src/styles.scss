@@ -429,3 +429,41 @@ h1, h2, h3 {
 th {
   white-space: nowrap;
 }
+
+// ASM opcode colors
+
+.constants {
+    color: #ff8c00
+}
+
+.control {
+    color: #87ceeb
+}
+
+.stack {
+    color: #ffa500
+}
+
+.splice {
+    color: #46b5e2
+}
+
+.logic {
+    color: #46b5e2
+}
+
+.arithmetic {
+    color: #cae8d0
+}
+
+.crypto {
+    color: #b22222
+}
+
+.locktime {
+    color: #ff8c00
+}
+
+.reserved {
+    color: #ff8c00
+}
