@@ -24,7 +24,7 @@
                 <td>Precision</td>
                 <td>{{ assetContract[3] }}</td>
               </tr>
-              <tr *ngIf="!isNativeAsset">
+              <tr *ngIf="!isNativeAsset && assetContract[0]">
                 <td>Issuer</td>
                 <td><a target="_blank" href="{{ 'http://' + assetContract[0] }}">{{ assetContract[0] }}</a></td>
               </tr>
