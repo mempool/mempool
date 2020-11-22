@@ -45,6 +45,6 @@ do
 done
 
 hostname=$(hostname)
-keybase chat send --channel dev mempool "${hostname} updated to ${hash}"
+keybase chat send mempool.space "${hostname} updated to ${TAG} @ ${hash}"
 
 rm "$HOME/lock"

@@ -162,9 +162,13 @@
 
     <br>
 
-    <h2>Inputs & Outputs</h2>
+    <h2 class="float-left">Inputs & Outputs</h2>
 
-    <app-transactions-list [transactions]="[tx]" [transactionPage]="true"></app-transactions-list>
+    <button type="button" class="btn btn-outline-info btn-sm float-right mr-1 mt-0 mt-md-2" (click)="txList.toggleDetails()">Details</button>
+
+    <div class="clearfix"></div>
+
+    <app-transactions-list #txList [transactions]="[tx]" [transactionPage]="true"></app-transactions-list>
 
     <h2>Details</h2>
     <div class="box">

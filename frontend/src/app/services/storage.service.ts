@@ -7,12 +7,17 @@ export class StorageService {
   getValue(key: string): string {
     try {
       return localStorage.getItem(key);
-    } catch (e) { }
+    } catch (e) {
+      console.log(e);
+      return '';
+    }
   }
 
   setValue(key: string, value: any): void {
     try {
       localStorage.setItem(key, value);
-    } catch (e) { }
+    } catch (e) {
+      console.log(e);
+    }
   }
 }

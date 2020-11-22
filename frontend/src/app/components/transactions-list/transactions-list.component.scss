@@ -81,4 +81,23 @@
 	.scriptmessage.longer {
 		max-width: 280px !important;
 	}
+
+	.details-table td:first-child {
+		white-space: pre-wrap;
+	}
+}
+
+.details-table {
+	margin-top: 5px;
+}
+
+.details-table td {
+	padding: 0.75rem;
+}
+
+.details-table td:nth-child(2) {
+	word-break: break-all;
+	white-space: normal;
+	font-family: "Courier New", Courier, monospace;
+	font-size: 12px;
 }
