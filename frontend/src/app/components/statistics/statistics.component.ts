@@ -12,6 +12,7 @@ import { ApiService } from '../../services/api.service';
 import * as Chartist from '@mempool/chartist';
 import { StateService } from 'src/app/services/state.service';
 import { SeoService } from 'src/app/services/seo.service';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-statistics',
@@ -33,6 +34,7 @@ export class StatisticsComponent implements OnInit {
   transactionsWeightPerSecondOptions: any;
 
   radioGroupForm: FormGroup;
+  inverted: boolean;
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
@@ -42,6 +44,7 @@ export class StatisticsComponent implements OnInit {
     private apiService: ApiService,
     private stateService: StateService,
     private seoService: SeoService,
+    private storageService: StorageService,
   ) {
     this.radioGroupForm = this.formBuilder.group({
       dateSpan: '2h'
@@ -51,6 +54,7 @@ export class StatisticsComponent implements OnInit {
   ngOnInit() {
     this.seoService.setTitle('Graphs');
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.inverted = this.storageService.getValue('inverted-graph') === 'true';
     const isMobile = window.innerWidth <= 767.98;
     let labelHops = isMobile ? 48 : 24;
 
@@ -156,5 +160,10 @@ export class StatisticsComponent implements OnInit {
       labels: labels,
       series: [mempoolStats.map((stats) => stats.vbytes_per_second)],
     };
+  }
+
+  invertGraph() {
+    this.storageService.setValue('inverted-graph', !this.inverted);
+    document.location.reload();
   }
 }

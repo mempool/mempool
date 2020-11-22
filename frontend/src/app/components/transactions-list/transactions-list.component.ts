@@ -16,6 +16,7 @@ import { map } from 'rxjs/operators';
 export class TransactionsListComponent implements OnInit, OnChanges {
   network = '';
   nativeAssetId = environment.nativeAssetId;
+  displayDetails = false;
 
   @Input() transactions: Transaction[];
   @Input() showConfirmations = false;
@@ -94,5 +95,15 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
   trackByIndexFn(index: number) {
     return index;
+  }
+
+  formatHex(num: number): string {
+    const str = num.toString(16);
+    return '0x' + (str.length % 2 ? '0' : '') + str;
+  }
+
+  toggleDetails() {
+    this.displayDetails = !this.displayDetails;
+    this.ref.markForCheck();
   }
 }

@@ -4,6 +4,7 @@ import { VbytesPipe } from 'src/app/shared/pipes/bytes-pipe/vbytes.pipe';
 import * as Chartist from '@mempool/chartist';
 import { OptimizedMempoolStats } from 'src/app/interfaces/node-api.interface';
 import { StateService } from 'src/app/services/state.service';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-mempool-graph',
@@ -21,11 +22,13 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   mempoolVsizeFeesData: any;
 
   isMobile = window.innerWidth <= 767.98;
+  inverted: boolean;
 
   constructor(
     private vbytesPipe: VbytesPipe,
     private stateService: StateService,
     @Inject(LOCALE_ID) private locale: string,
+    private storageService: StorageService,
   ) { }
 
   ngOnInit(): void {
@@ -62,7 +65,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       showLine: false,
       fullWidth: true,
       showPoint: false,
-      stackedLine: true,
+      stackedLine: !this.inverted,
       low: 0,
       axisX: {
         labelInterpolationFnc: labelInterpolationFnc,
@@ -72,7 +75,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         labelInterpolationFnc: (value: number): any => this.vbytesPipe.transform(value, 2),
         offset: showLegend ? 160 : 60,
       },
-      plugins: []
+      plugins: this.inverted ? [Chartist.plugins.ctTargetLine({ value: 1000000 })] : []
     };
 
     if (showLegend) {
@@ -97,6 +100,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
+    this.inverted = this.storageService.getValue('inverted-graph') === 'true';
     this.mempoolVsizeFeesData = this.handleNewMempoolData(this.data.concat([]));
   }
 
@@ -131,10 +135,12 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           feesArray.push(0);
         }
       });
+      if (this.inverted && finalArray.length) {
+        feesArray = feesArray.map((value, i) => value + finalArray[finalArray.length - 1][i]);
+      }
       finalArray.push(feesArray);
     }
     finalArray.reverse();
     return finalArray;
   }
-
 }
