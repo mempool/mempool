@@ -11,7 +11,7 @@ import { of, merge, Subscription, combineLatest } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
 import { environment } from 'src/environments/environment';
 import { AssetsService } from 'src/app/services/assets.service';
-import { formatNumber, moveDec } from 'src/app/bitcoin.utils';
+import { moveDec } from 'src/app/bitcoin.utils';
 
 @Component({
   selector: 'app-asset',
@@ -23,6 +23,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   nativeAssetId = environment.nativeAssetId;
 
   asset: Asset;
+  blindedIssuance: boolean;
   assetContract: any;
   assetString: string;
   isLoadingAsset = true;
@@ -101,6 +102,7 @@ export class AssetComponent implements OnInit, OnDestroy {
           if (!this.assetContract) {
             this.assetContract = [null, '?', 'Unknown', 0];
           }
+          this.blindedIssuance = this.asset.chain_stats.has_blinded_issuances || this.asset.mempool_stats.has_blinded_issuances;
           this.isNativeAsset = asset.asset_id === this.nativeAssetId;
           this.updateChainStats();
           this.websocketService.startTrackAsset(asset.asset_id);
