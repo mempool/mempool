@@ -1,13 +1,17 @@
 import {
   Component,
   ElementRef,
+  Inject,
   Input,
   OnChanges,
   OnDestroy,
   OnInit,
+  PLATFORM_ID,
   SimpleChanges,
   ViewEncapsulation
 } from '@angular/core';
+
+import { isPlatformBrowser } from '@angular/common';
 
 import * as Chartist from '@mempool/chartist';
 
@@ -63,16 +67,25 @@ export class ChartistComponent implements OnInit, OnChanges, OnDestroy {
   // @ts-ignore
   @Input() public events: ChartEvent;
 
+  isBrowser: boolean = isPlatformBrowser(this.platformId);
+
   // @ts-ignore
   public chart: ChartInterfaces;
 
   private element: HTMLElement;
 
-  constructor(element: ElementRef) {
+  constructor(
+    element: ElementRef,
+    @Inject(PLATFORM_ID) private platformId: any,
+  ) {
     this.element = element.nativeElement;
   }
 
   public ngOnInit(): Promise<ChartInterfaces> {
+    if (!this.isBrowser) {
+      return;
+    }
+
     if (!this.type || !this.data) {
       Promise.reject('Expected at least type and data.');
     }
@@ -87,6 +100,10 @@ export class ChartistComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
     this.update(changes);
   }
 

@@ -1,8 +1,7 @@
-import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { Observable } from 'rxjs';
-import { isPlatformBrowser } from '@angular/common';
 import { StateService } from './state.service';
 import { env } from '../app.constants';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
@@ -14,25 +13,23 @@ const API_BASE_URL = '{network}/api/v1';
 })
 export class ApiService {
   private apiBaseUrl: string;
-  private isBrowser: boolean = isPlatformBrowser(this.platformId);
 
   constructor(
     private httpClient: HttpClient,
     private stateService: StateService,
-    @Inject(PLATFORM_ID) private platformId: any,
   ) {
     this.stateService.networkChanged$.subscribe((network) => {
       if (network === 'bisq' && !env.BISQ_SEPARATE_BACKEND) {
         network = '';
       }
       this.apiBaseUrl = API_BASE_URL.replace('{network}', network ? '/' + network : '');
-      if (!this.isBrowser) {
+      if (!stateService.isBrowser) {
         this.apiBaseUrl = 'http://localhost:8999' + this.apiBaseUrl;
       }
     });
 
     this.apiBaseUrl = API_BASE_URL.replace('{network}', '');
-    if (!this.isBrowser) {
+    if (!stateService.isBrowser) {
       this.apiBaseUrl = 'http://localhost:8999' + this.apiBaseUrl;
     }
   }

@@ -1,5 +1,6 @@
 import { Component, Input, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import * as QRCode from 'qrcode/build/qrcode.js';
+import { StateService } from 'src/app/services/state.service';
 
 @Component({
   selector: 'app-qrcode',
@@ -14,9 +15,14 @@ export class QrcodeComponent implements AfterViewInit {
 
   qrcodeObject: any;
 
-  constructor() { }
+  constructor(
+    private stateService: StateService,
+  ) { }
 
   ngAfterViewInit() {
+    if (!this.stateService.isBrowser) {
+      return;
+    }
     const opts = {
       errorCorrectionLevel: 'H',
       margin: 0,

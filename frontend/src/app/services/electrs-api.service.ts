@@ -1,5 +1,4 @@
-import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Block, Transaction, Address, Outspend, Recent, Asset } from '../interfaces/electrs.interface';
@@ -12,14 +11,12 @@ let API_BASE_URL = '{network}/api';
 })
 export class ElectrsApiService {
   private apiBaseUrl: string;
-  private isBrowser: boolean = isPlatformBrowser(this.platformId);
 
   constructor(
     private httpClient: HttpClient,
     private stateService: StateService,
-    @Inject(PLATFORM_ID) private platformId: any,
   ) {
-    if (!this.isBrowser) {
+    if (!stateService.isBrowser) {
       API_BASE_URL = 'http://localhost:4200/api';
     }
     this.apiBaseUrl = API_BASE_URL.replace('{network}', '');

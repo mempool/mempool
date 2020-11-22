@@ -1,11 +1,10 @@
-import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
 import { StateService } from './state.service';
 import { Block, Transaction } from '../interfaces/electrs.interface';
 import { Subscription } from 'rxjs';
 import { env } from '../app.constants';
-import { isPlatformBrowser } from '@angular/common';
 import { ApiService } from './api.service';
 import { take } from 'rxjs/operators';
 
@@ -29,14 +28,14 @@ export class WebsocketService {
   private onlineCheckTimeoutTwo: number;
   private subscription: Subscription;
   private network = '';
-  private isBrowser: boolean = isPlatformBrowser(this.platformId);
 
   constructor(
     private stateService: StateService,
     private apiService: ApiService,
-    @Inject(PLATFORM_ID) private platformId: any,
   ) {
-    if (!this.isBrowser) {
+    if (!this.stateService.isBrowser) {
+      // @ts-ignore
+      this.websocketSubject = { next: () => {}};
       this.stateService.isLoadingWebSocket$.next(false);
       this.apiService.getInitData$()
         .pipe(take(1))
@@ -147,7 +146,7 @@ export class WebsocketService {
   }
 
   want(data: string[], force = false) {
-    if (!this.isBrowser) {
+    if (!this.stateService.isBrowser) {
       return;
     }
     if (data === this.lastWant && !force) {

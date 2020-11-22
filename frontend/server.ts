@@ -26,10 +26,20 @@ win.matchMedia = () => {
 // @ts-ignore
 win.setTimeout = (fn) => { fn(); };
 win.document.body.scrollTo = (() => {});
-
+// @ts-ignore
 global['window'] = win;
 global['document'] = win.document;
-global['history'] = { state: { data: {} } };
+// @ts-ignore
+global['history'] = { state: { } };
+
+global['localStorage'] = {
+  getItem: () => '',
+  setItem: () => {},
+  removeItem: () => {},
+  clear: () => {},
+  length: 0,
+  key: () => '',
+};
 
 
 // The Express app is exported so that it can be used by serverless Functions.
