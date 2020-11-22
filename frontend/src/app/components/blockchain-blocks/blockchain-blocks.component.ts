@@ -3,7 +3,6 @@ import { Subscription } from 'rxjs';
 import { Block } from 'src/app/interfaces/electrs.interface';
 import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
-import { env } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-blockchain-blocks',
@@ -78,7 +77,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
           this.cd.markForCheck();
         }, 50);
 
-        if (this.blocks.length === env.KEEP_BLOCKS_AMOUNT) {
+        if (this.blocks.length === this.stateService.env.KEEP_BLOCKS_AMOUNT) {
           this.blocksFilled = true;
         }
         this.cd.markForCheck();

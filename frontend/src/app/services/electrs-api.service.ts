@@ -17,7 +17,7 @@ export class ElectrsApiService {
     private stateService: StateService,
   ) {
     if (!stateService.isBrowser) {
-      API_BASE_URL = 'http://localhost:4200/api';
+      API_BASE_URL = this.stateService.env.ELECTRS_ABSOLUTE_URL + '/api';
     }
     this.apiBaseUrl = API_BASE_URL.replace('{network}', '');
     this.stateService.networkChanged$.subscribe((network) => {

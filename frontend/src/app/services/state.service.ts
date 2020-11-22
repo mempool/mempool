@@ -4,7 +4,6 @@ import { Block, Transaction } from '../interfaces/electrs.interface';
 import { MempoolBlock, MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
 import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
-import { env } from '../app.constants';
 import { isPlatformBrowser } from '@angular/common';
 import { map, shareReplay } from 'rxjs/operators';
 
@@ -14,16 +13,39 @@ interface MarkBlockState {
   txFeePerVSize?: number;
 }
 
+export interface Env {
+  TESTNET_ENABLED: boolean;
+  LIQUID_ENABLED: boolean;
+  BISQ_ENABLED: boolean;
+  BISQ_SEPARATE_BACKEND: boolean;
+  SPONSORS_ENABLED: boolean;
+  ELECTRS_ITEMS_PER_PAGE: number;
+  KEEP_BLOCKS_AMOUNT: number;
+  BACKEND_ABSOLUTE_URL?: string;
+  ELECTRS_ABSOLUTE_URL?: string;
+}
+
+const defaultEnv: Env = {
+  'TESTNET_ENABLED': false,
+  'LIQUID_ENABLED': false,
+  'BISQ_ENABLED': false,
+  'BISQ_SEPARATE_BACKEND': false,
+  'SPONSORS_ENABLED': false,
+  'ELECTRS_ITEMS_PER_PAGE': 25,
+  'KEEP_BLOCKS_AMOUNT': 8,
+};
+
 @Injectable({
   providedIn: 'root'
 })
 export class StateService {
   isBrowser: boolean = isPlatformBrowser(this.platformId);
   network = '';
+  env: Env;
   latestBlockHeight = 0;
 
   networkChanged$ = new ReplaySubject<string>(1);
-  blocks$ = new ReplaySubject<[Block, boolean]>(env.KEEP_BLOCKS_AMOUNT);
+  blocks$: ReplaySubject<[Block, boolean]>;
   transactions$ = new ReplaySubject<TransactionStripped>(6);
   conversions$ = new ReplaySubject<any>(1);
   bsqPrice$ = new ReplaySubject<number>(1);
@@ -64,6 +86,13 @@ export class StateService {
       this.setNetworkBasedonUrl('/');
       this.isTabHidden$ = new BehaviorSubject(false);
     }
+
+    const browserWindow = window || {};
+    // @ts-ignore
+    const browserWindowEnv = browserWindow.__env || {};
+    this.env = Object.assign(defaultEnv, browserWindowEnv);
+
+    this.blocks$ = new ReplaySubject<[Block, boolean]>(this.env.KEEP_BLOCKS_AMOUNT);
   }
 
   setNetworkBasedonUrl(url: string) {

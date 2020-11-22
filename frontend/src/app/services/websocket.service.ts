@@ -4,12 +4,9 @@ import { WebsocketResponse } from '../interfaces/websocket.interface';
 import { StateService } from './state.service';
 import { Block, Transaction } from '../interfaces/electrs.interface';
 import { Subscription } from 'rxjs';
-import { env } from '../app.constants';
 import { ApiService } from './api.service';
 import { take } from 'rxjs/operators';
 
-const WEB_SOCKET_PROTOCOL = 'ws:';
-const WEB_SOCKET_URL = WEB_SOCKET_PROTOCOL + '//localhost:8999{network}/api/v1/ws';
 
 const OFFLINE_RETRY_AFTER_MS = 10000;
 const OFFLINE_PING_CHECK_AFTER_MS = 30000;
@@ -19,6 +16,9 @@ const EXPECT_PING_RESPONSE_AFTER_MS = 4000;
   providedIn: 'root'
 })
 export class WebsocketService {
+  private webSocketProtocol = (document.location.protocol === 'https:') ? 'wss:' : 'ws:';
+  private webSocketUrl = this.webSocketProtocol + '//' + document.location.hostname + ':' + document.location.port + '{network}/api/v1/ws';
+
   private websocketSubject: WebSocketSubject<WebsocketResponse>;
   private goneOffline = false;
   private lastWant: string[] | null = null;
@@ -42,12 +42,12 @@ export class WebsocketService {
         .subscribe((response) => this.handleResponse(response));
 
     } else {
-      this.network = this.stateService.network === 'bisq' && !env.BISQ_SEPARATE_BACKEND ? '' : this.stateService.network;
-      this.websocketSubject = webSocket<WebsocketResponse>(WEB_SOCKET_URL.replace('{network}', this.network ? '/' + this.network : ''));
+      this.network = this.stateService.network === 'bisq' && !this.stateService.env.BISQ_SEPARATE_BACKEND ? '' : this.stateService.network;
+      this.websocketSubject = webSocket<WebsocketResponse>(this.webSocketUrl.replace('{network}', this.network ? '/' + this.network : ''));
       this.startSubscription();
 
       this.stateService.networkChanged$.subscribe((network) => {
-        if (network === 'bisq' && !env.BISQ_SEPARATE_BACKEND) {
+        if (network === 'bisq' && !this.stateService.env.BISQ_SEPARATE_BACKEND) {
           network = '';
         }
         if (network === this.network) {
@@ -61,7 +61,9 @@ export class WebsocketService {
 
         this.websocketSubject.complete();
         this.subscription.unsubscribe();
-        this.websocketSubject = webSocket<WebsocketResponse>(WEB_SOCKET_URL.replace('{network}', this.network ? '/' + this.network : ''));
+        this.websocketSubject = webSocket<WebsocketResponse>(
+          this.webSocketUrl.replace('{network}', this.network ? '/' + this.network : '')
+        );
 
         this.startSubscription();
       });
