@@ -1,5 +1,5 @@
-import { isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnChanges, PLATFORM_ID, Inject } from '@angular/core';
+import { StateService } from 'src/app/services/state.service';
 
 @Component({
   selector: 'app-time-since',
@@ -7,7 +7,6 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, ChangeDet
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
-  isBrowser: boolean = isPlatformBrowser(this.platformId);
   interval: number;
   text: string;
   intervals = {};
@@ -17,7 +16,7 @@ export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private ref: ChangeDetectorRef,
-    @Inject(PLATFORM_ID) private platformId: any,
+    private stateService: StateService,
   ) {
     if (document.body.clientWidth < 768) {
       this.intervals = {
@@ -43,7 +42,7 @@ export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
-    if (!this.isBrowser) {
+    if (!this.stateService.isBrowser) {
       this.text = this.calculate();
       this.ref.markForCheck();
       return;

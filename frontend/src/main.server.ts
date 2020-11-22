@@ -5,7 +5,7 @@
 import * as domino from 'domino';
 
 const win = domino.createWindow();
-
+// @ts-ignore
 global['window'] = win;
 global['document'] = win.document;
 
