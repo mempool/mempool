@@ -98,6 +98,9 @@ export class AssetComponent implements OnInit, OnDestroy {
         switchMap(([asset, assetsData]) => {
           this.asset = asset;
           this.assetContract = assetsData[this.asset.asset_id];
+          if (!this.assetContract) {
+            this.assetContract = [null, '?', 'Unknown', 0];
+          }
           this.isNativeAsset = asset.asset_id === this.nativeAssetId;
           this.updateChainStats();
           this.websocketService.startTrackAsset(asset.asset_id);
