@@ -86,7 +86,7 @@ class WebsocketHandler {
               'vBytesPerSecond': memPool.getVBytesPerSecond(),
               'lastDifficultyAdjustment': blocks.getLastDifficultyAdjustmentTime(),
               'blocks': _blocks,
-              'conversions': fiatConversion.getTickers()['BTCUSD'],
+              'conversions': fiatConversion.getConversionRates(),
               'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
               'transactions': memPool.getLatestTransactions(),
               'git-commit': backendInfo.gitCommitHash,
