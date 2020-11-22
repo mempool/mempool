@@ -30,7 +30,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "dev:ssr": "ng run mempool:serve-ssr",
+    "dev:ssr": "npm run generate-config && ng run mempool:serve-ssr",
     "serve:ssr": "node dist/mempool/server/main.js",
     "build:ssr": "npm run build && ng run mempool:server:production",
     "prerender": "ng run mempool:prerender"

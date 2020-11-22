@@ -1,4 +1,5 @@
 import 'zone.js/dist/zone-node';
+import './generated-config';
 
 import { ngExpressEngine } from '@nguniversal/express-engine';
 import * as express from 'express';
@@ -15,6 +16,9 @@ import { existsSync } from 'fs';
 const template = fs.readFileSync(path.join(__dirname, '../../mempool/browser/', 'index.html')).toString();
 
 const win = domino.createWindow(template);
+
+// @ts-ignore
+win.__env = global.__env;
 
 // @ts-ignore
 win.matchMedia = () => {
@@ -40,7 +44,6 @@ global['localStorage'] = {
   length: 0,
   key: () => '',
 };
-
 
 // The Express app is exported so that it can be used by serverless Functions.
 export function app(): express.Express {
@@ -70,7 +73,8 @@ export function app(): express.Express {
  ));
 
   server.get('/api/**', createProxyMiddleware({
-     target: 'http://localhost:50001',
+     // @ts-ignore
+     target: win.__env.ELECTRS_ABSOLUTE_URL_SERVER,
      changeOrigin: true,
      pathRewrite: {'^/api' : '/'}
     },
@@ -90,7 +94,7 @@ function run(): void {
   // Start up the Node server
   const server = app();
   server.listen(port, () => {
-    console.log(`Node Express server listening on http://localhost:${port}`);
+    console.log(`Node Express server listening on port ${port}`);
   });
 }
 

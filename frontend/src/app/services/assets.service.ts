@@ -18,7 +18,7 @@ export class AssetsService {
   ) {
     let baseApiUrl = '';
     if (!this.stateService.isBrowser) {
-      baseApiUrl = 'http://localhost:4200/';
+      baseApiUrl = this.stateService.env.ELECTRS_ABSOLUTE_URL;
     }
 
     this.getAssetsJson$ = this.httpClient.get(baseApiUrl + '/resources/assets.json').pipe(shareReplay());

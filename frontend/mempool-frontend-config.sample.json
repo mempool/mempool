@@ -3,7 +3,10 @@
   "LIQUID_ENABLED": false,
   "BISQ_ENABLED": false,
   "BISQ_SEPARATE_BACKEND": false,
-  "ELCTRS_ITEMS_PER_PAGE": 25,
+  "ELECTRS_ITEMS_PER_PAGE": 25,
   "KEEP_BLOCKS_AMOUNT": 8,
-  "SPONSORS_ENABLED": false
+  "SPONSORS_ENABLED": false,
+  "BACKEND_ABSOLUTE_URL": "http://localhost:8999",
+  "ELECTRS_ABSOLUTE_URL": "http://localhost:4200",
+  "ELECTRS_ABSOLUTE_URL_SERVER": "http://localhost:50001"
 }
