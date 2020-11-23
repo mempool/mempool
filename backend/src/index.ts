@@ -142,6 +142,7 @@ class Server {
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/recommended', routes.getRecommendedFees)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/mempool-blocks', routes.getMempoolBlocks)
       .get(config.MEMPOOL.API_URL_PREFIX + 'backend-info', routes.getBackendInfo)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'init-data', routes.getInitData)
     ;
 
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {

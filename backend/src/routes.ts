@@ -6,6 +6,7 @@ import backendInfo from './api/backend-info';
 import mempoolBlocks from './api/mempool-blocks';
 import mempool from './api/mempool';
 import bisq from './api/bisq/bisq';
+import websocketHandler from './api/websocket-handler';
 import bisqMarket from './api/bisq/markets-api';
 import { OptimizedStatistic, RequiredSpec } from './interfaces';
 import { MarketsApiError } from './api/bisq/interfaces';
@@ -61,6 +62,15 @@ class Routes {
 
   public get1YStatistics(req: Request, res: Response) {
     res.json(this.cache['1y']);
+  }
+
+  public getInitData(req: Request, res: Response) {
+    try {
+      const result = websocketHandler.getInitData();
+      res.json(result);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
   }
 
   public async getRecommendedFees(req: Request, res: Response) {
