@@ -20,7 +20,7 @@ class FiatConversion {
 
   private async updateCurrency(): Promise<void> {
     try {
-      const response = await axios.get('https://price.bisq.wiz.biz/getAllMarketPrices ');
+      const response = await axios.get('https://price.bisq.wiz.biz/getAllMarketPrices');
       const usd = response.data.data.find((item: any) => item.currencyCode === 'USD');
       this.conversionRates = {
         'USD': usd.price,
