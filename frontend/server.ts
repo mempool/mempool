@@ -67,7 +67,8 @@ export function app(): express.Express {
   }));
 
   server.get('/api/v1/**', createProxyMiddleware({
-    target: 'http://localhost:8999',
+    // @ts-ignore
+    target: win.__env.BACKEND_ABSOLUTE_URL,
     changeOrigin: true,
    },
  ));
