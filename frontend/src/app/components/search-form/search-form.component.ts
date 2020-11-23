@@ -17,6 +17,7 @@ import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
 export class SearchFormComponent implements OnInit {
   network = '';
   assets: object = {};
+  isSearching = false;
 
   searchForm: FormGroup;
   @Output() searchTriggered = new EventEmitter();
@@ -74,25 +75,36 @@ export class SearchFormComponent implements OnInit {
   search() {
     const searchText = this.searchForm.value.searchText.trim();
     if (searchText) {
+      this.isSearching = true;
       if (this.regexAddress.test(searchText)) {
-        this.router.navigate([(this.network ? '/' + this.network : '') + '/address/', searchText]);
-        this.searchTriggered.emit();
+        this.navigate('/address/', searchText);
       } else if (this.regexBlockhash.test(searchText) || this.regexBlockheight.test(searchText)) {
-        this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', searchText]);
-        this.searchTriggered.emit();
+        this.navigate('/block/', searchText);
       } else if (this.regexTransaction.test(searchText)) {
-        if (this.network === 'liquid' && this.assets[searchText]) {
-          this.router.navigate([(this.network ? '/' + this.network : '') + '/asset/', searchText]);
+        if (this.network === 'liquid') {
+          if (this.assets[searchText]) {
+            this.navigate('/asset/', searchText);
+          }
+          this.electrsApiService.getAsset$(searchText)
+            .subscribe(
+              () => { this.navigate('/asset/', searchText); },
+              () => { this.navigate('/tx/', searchText); }
+            );
         } else {
-          this.router.navigate([(this.network ? '/' + this.network : '') + '/tx/', searchText]);
+          this.navigate('/tx/', searchText);
         }
-        this.searchTriggered.emit();
       } else {
-        return;
+        this.isSearching = false;
       }
-      this.searchForm.setValue({
-        searchText: '',
-      });
     }
+  }
+
+  navigate(url: string, searchText: string) {
+    this.router.navigate([(this.network ? '/' + this.network : '') + url, searchText]);
+    this.searchTriggered.emit();
+    this.searchForm.setValue({
+      searchText: '',
+    });
+    this.isSearching = false;
   }
 }

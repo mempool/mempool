@@ -2,10 +2,8 @@ import logger from '../logger';
 import axios from 'axios';
 
 class FiatConversion {
-  private tickers = {
-    'BTCUSD': {
-      'USD': 4110.78
-    },
+  private conversionRates = {
+    'USD': 0
   };
 
   constructor() { }
@@ -16,16 +14,19 @@ class FiatConversion {
     this.updateCurrency();
   }
 
-  public getTickers() {
-    return this.tickers;
+  public getConversionRates() {
+    return this.conversionRates;
   }
 
   private async updateCurrency(): Promise<void> {
     try {
-      const response = await axios.get('https://api.opennode.co/v1/rates');
-      this.tickers = response.data.data;
+      const response = await axios.get('https://price.bisq.wiz.biz/getAllMarketPrices');
+      const usd = response.data.data.find((item: any) => item.currencyCode === 'USD');
+      this.conversionRates = {
+        'USD': usd.price,
+      };
     } catch (e) {
-      logger.err('Error updating currency from OpenNode: ' + e);
+      logger.err('Error updating fiat conversion rates: ' + e);
     }
   }
 }
