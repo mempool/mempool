@@ -6,6 +6,8 @@ import * as datetime from 'locutus/php/datetime';
 class BisqMarketsApi {
   private cryptoCurrencyData: Currency[] = [];
   private fiatCurrencyData: Currency[] = [];
+  private activeCryptoCurrencyData: Currency[] = [];
+  private activeFiatCurrencyData: Currency[] = [];
   private offersData: OffersData[] = [];
   private tradesData: TradesData[] = [];
   private fiatCurrenciesIndexed: { [code: string]: true } = {};
@@ -32,9 +34,11 @@ class BisqMarketsApi {
     });
   }
 
-  setCurrencyData(cryptoCurrency: Currency[], fiatCurrency: Currency[]) {
+  setCurrencyData(cryptoCurrency: Currency[], fiatCurrency: Currency[], activeCryptoCurrency: Currency[], activeFiatCurrency: Currency[]) {
     this.cryptoCurrencyData = cryptoCurrency,
-    this.fiatCurrencyData = fiatCurrency;
+    this.fiatCurrencyData = fiatCurrency,
+    this.activeCryptoCurrencyData = activeCryptoCurrency,
+    this.activeFiatCurrencyData = activeFiatCurrency;
 
     this.fiatCurrenciesIndexed = {};
     this.allCurrenciesIndexed = {};
@@ -56,7 +60,7 @@ class BisqMarketsApi {
   }
 
   getCurrencies(
-    type: 'crypto' | 'fiat' | 'all' = 'all',
+    type: 'crypto' | 'fiat' | 'active' | 'all' = 'all',
   ): Currencies {
     let currencies: Currency[];
 
@@ -66,6 +70,9 @@ class BisqMarketsApi {
         break;
       case 'crypto':
         currencies = this.cryptoCurrencyData;
+        break;
+      case 'active':
+        currencies = this.activeCryptoCurrencyData.concat(this.activeFiatCurrencyData);
         break;
       case 'all':
       default:
@@ -136,9 +143,10 @@ class BisqMarketsApi {
 
   getMarkets(): Markets {
     const allCurrencies = this.getCurrencies();
+    const activeCurrencies = this.getCurrencies('active');
     const markets = {};
 
-    for (const currency of Object.keys(allCurrencies)) {
+    for (const currency of Object.keys(activeCurrencies)) {
       if (allCurrencies[currency].code === 'BTC') {
         continue;
       }
