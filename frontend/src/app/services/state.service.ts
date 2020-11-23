@@ -21,8 +21,10 @@ export interface Env {
   SPONSORS_ENABLED: boolean;
   ELECTRS_ITEMS_PER_PAGE: number;
   KEEP_BLOCKS_AMOUNT: number;
-  BACKEND_ABSOLUTE_URL?: string;
-  ELECTRS_ABSOLUTE_URL?: string;
+  BACKEND_URL?: string;
+  ELECTRS_URL?: string;
+  ELECTRS_URL_SERVER?: string;
+  STATIC_WEBSERVER_URL?: string;
 }
 
 const defaultEnv: Env = {

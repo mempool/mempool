@@ -23,13 +23,13 @@ export class ApiService {
       }
       this.apiBaseUrl = API_BASE_URL.replace('{network}', network ? '/' + network : '');
       if (!stateService.isBrowser) {
-        this.apiBaseUrl = this.stateService.env.BACKEND_ABSOLUTE_URL + this.apiBaseUrl;
+        this.apiBaseUrl = this.stateService.env.BACKEND_URL + this.apiBaseUrl;
       }
     });
 
     this.apiBaseUrl = API_BASE_URL.replace('{network}', '');
     if (!stateService.isBrowser) {
-      this.apiBaseUrl = this.stateService.env.BACKEND_ABSOLUTE_URL + this.apiBaseUrl;
+      this.apiBaseUrl = this.stateService.env.BACKEND_URL + this.apiBaseUrl;
     }
   }
 
