@@ -20,7 +20,8 @@
   ],
   "main": "index.ts",
   "scripts": {
-    "ng": "ng",
+    "ng": "./node_modules/@angular/cli/bin/ng",
+    "tsc": "./node_modules/typescript/bin/tsc",
     "serve": "ng serve --proxy-config proxy.conf.json",
     "start": "npm run generate-config && npm run sync-assets-dev && ng serve --proxy-config proxy.conf.json",
     "build": "npm run generate-config && ng build --prod && npm run sync-assets",
