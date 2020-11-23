@@ -18,15 +18,15 @@
             <tbody>
               <tr>
                 <td>Total received</td>
-                <td><app-amount [satoshis]="receieved" [noFiat]="true"></app-amount></td>
+                <td *ngIf="address.chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="receieved" [noFiat]="true"></app-amount></td>
               </tr>
               <tr>
                 <td>Total sent</td>
-                <td><app-amount [satoshis]="sent" [noFiat]="true"></app-amount></td>
+                <td *ngIf="address.chain_stats.spent_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="sent" [noFiat]="true"></app-amount></td>
               </tr>
               <tr>
                 <td>Balance</td>
-                <td><app-amount [satoshis]="receieved - sent" [noFiat]="true"></app-amount> (<app-fiat [value]="receieved - sent"></app-fiat>)</td>
+                <td *ngIf="address.chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="receieved - sent" [noFiat]="true"></app-amount> (<app-fiat [value]="receieved - sent"></app-fiat>)</td>
               </tr>
             </tbody>
           </table>
@@ -107,3 +107,7 @@
 </div>
 
 <br>
+
+<ng-template #confidentialTd>
+  <td>Confidential</td>
+</ng-template>

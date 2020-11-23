@@ -14,21 +14,21 @@ source "$NVM_DIR/nvm.sh"
 REPO=origin
 BRANCH=master
 
-TAG="${REPO}/${BRANCH}"
+TAG="${BRANCH}"
 [ ! -z "$1" ] && TAG=$1
 
 echo "upgrading mempool to ${TAG}" | wall
 
 cd "$HOME/mempool"
 git fetch "${REPO}"
-git reset --hard "${TAG}"
+git reset --hard "${REPO}/${TAG}"
 cd "$HOME/"
 
 for site in mainnet liquid testnet bisq
 do
     cd "$HOME/${site}"
     git fetch "${REPO}"
-    git reset --hard "${TAG}"
+    git reset --hard "${REPO}/${TAG}"
     hash=$(git rev-parse HEAD)
 
     if [ "${site}" = "mainnet" ]

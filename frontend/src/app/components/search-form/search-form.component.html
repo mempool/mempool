@@ -4,7 +4,7 @@
       <input #instance="ngbTypeahead" [ngbTypeahead]="typeaheadSearch" (selectItem)="itemSelected()" (focus)="focus$.next($any($event).target.value)" (click)="click$.next($any($event).target.value)" formControlName="searchText" type="text" class="form-control" placeholder="TXID, block height, hash or address">
     </div>
     <div>
-      <button type="submit" class="btn btn-block btn-primary"><fa-icon [icon]="['fas', 'search']" [fixedWidth]="true" title="Search"></fa-icon></button>
+      <button [disabled]="isSearching" type="submit" class="btn btn-block btn-primary"><fa-icon [icon]="['fas', 'search']" [fixedWidth]="true" title="Search"></fa-icon></button>
     </div>
   </div>
 </form>
