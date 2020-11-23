@@ -68,14 +68,14 @@ export function app(): express.Express {
 
   server.get('/api/v1/**', createProxyMiddleware({
     // @ts-ignore
-    target: win.__env.BACKEND_ABSOLUTE_URL,
+    target: win.__env.BACKEND_URL,
     changeOrigin: true,
    },
  ));
 
   server.get('/api/**', createProxyMiddleware({
      // @ts-ignore
-     target: win.__env.ELECTRS_ABSOLUTE_URL_SERVER,
+     target: win.__env.ELECTRS_URL_SERVER,
      changeOrigin: true,
      pathRewrite: {'^/api' : '/'}
     },
