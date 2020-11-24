@@ -10,16 +10,16 @@
 
     <br>
 
-    <h2>About the project</h2>
+    <h2 i18n="about.about-the-project">About the project</h2>
     <div class="row row-cols-1">
       <div class="col col-md-6 offset-md-3">
-        <p>The mempool open-source project aims to implement a high quality explorer and visualization website for the entire Bitcoin ecosystem, without distractions like altcoins, advertising, or third-party trackers.</p>
+        <p i18n>The mempool open-source project aims to implement a high quality explorer and visualization website for the entire Bitcoin ecosystem, without distractions like altcoins, advertising, or third-party trackers.</p>
       </div>
     </div>
 
     <br>
 
-    <h2>Maintainers</h2>
+    <h2 i18n="about.maintainers">Maintainers</h2>
 
     <div class="container text-center">
       <div class="row row-cols-2">
@@ -29,7 +29,7 @@
             @softsimon_
           </a>
           <br>
-          Development
+          <span i18n="about.development">Development</span>
         </div>
         <div class="col col-md-2">
           <a href="https://twitter.com/wiz">
@@ -37,7 +37,7 @@
             @wiz
           </a>
           <br>
-          Operations
+          <span i18n="about.operations">Operations</span>
         </div>
       </div>
     </div>
@@ -60,9 +60,9 @@
     </ng-template>
     <br><br>
     
-    <button type="button" class="btn btn-primary" (click)="donationStatus = 2" [hidden]="donationStatus !== 1">Become a sponsor ❤️</button>
+    <button type="button" class="btn btn-primary" (click)="donationStatus = 2" [hidden]="donationStatus !== 1" i18n="about.become-a-sponsor">Become a sponsor ❤️</button>
     <p *ngIf="donationStatus === 2 && !sponsorsEnabled">
-      Navigate to <a href="https://mempool.space/about" target="_blank">https://mempool.space/about</a> to sponsor
+      <span i18n="about.navigate-to">Navigate to</span> <a href="https://mempool.space/about" target="_blank">https://mempool.space/about</a> <span i18n="about.to-sponsor">to sponsor</span>
     </p>
 
     <div style="max-width: 300px;" class="mx-auto" [hidden]="donationStatus !== 2 || !sponsorsEnabled">
@@ -79,17 +79,17 @@
           </div>
           <input formControlName="handle" class="form-control" type="text" placeholder="Twitter handle (Optional)">
         </div>
-        <div class="required" *ngIf="donationForm.get('amount').hasError('required')">Amount required</div>
-        <div class="required" *ngIf="donationForm.get('amount').hasError('min')">Minimum amount is 0.001 BTC</div>
+        <div class="required" *ngIf="donationForm.get('amount').hasError('required')" i18n="about.sponsor.amount-required">Amount required</div>
+        <div class="required" *ngIf="donationForm.get('amount').hasError('min')" i18n="about.sponsor.minimum-amount">Minimum amount is 0.001 BTC</div>
         <div class="input-group mt-4">
-          <button class="btn btn-primary mx-auto" type="submit" [disabled]="donationForm.invalid">Request invoice</button>
+          <button class="btn btn-primary mx-auto" type="submit" [disabled]="donationForm.invalid" i18n="about.sponsor.request-invoice">Request invoice</button>
         </div>
       </form>
     </div>
 
     <ng-template #lowAmount>
       <div class="input-group mb-4 text-small">
-        If you donate 0.01 BTC or more, your profile photo will be added to the list of sponsors above :)
+        <span i18n="about.sponsor.description">If you donate 0.01 BTC or more, your profile photo will be added to the list of sponsors above :)</span>
       </div>
     </ng-template>
 
@@ -167,13 +167,13 @@
         <p style="font-size: 12px;">{{ donationObj.amount }} BTC</p>
       </ng-template>
 
-      <p>Waiting for transaction... </p>
+      <p i18n="about.sponsor.waiting-for-transaction">Waiting for transaction... </p>
       <div class="spinner-border text-light"></div>
     </div>
 
     <div *ngIf="donationStatus === 4" class="text-center">
-      <h2>Donation confirmed!<br>Thank you!</h2>
-      <p>If you specified a Twitter handle, the profile photo should now be visible on this page when you reload.</p>
+      <h2><span i18n="about.sponsor.donation-confirmed">Donation confirmed!</span><br><span i18n="about.sponsor.thank-you">Thank you!</span></h2>
+      <p i18n="about.sponsor.sponsor-completed">If you specified a Twitter handle, the profile photo should now be visible on this page when you reload.</p>
     </div>
 
     <br><br><br><br>
@@ -203,7 +203,7 @@
   <br><br>
 
   <div class="text-center">
-    <a [routerLink]="['/terms-of-service']">Terms of Service</a>
+    <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a>
   </div>
 
 </div>

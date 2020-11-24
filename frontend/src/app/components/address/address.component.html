@@ -17,15 +17,15 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td>Total received</td>
+                <td i18n="address.total-received">Total received</td>
                 <td *ngIf="address.chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="receieved" [noFiat]="true"></app-amount></td>
               </tr>
               <tr>
-                <td>Total sent</td>
+                <td i18n="address.total-sent">Total sent</td>
                 <td *ngIf="address.chain_stats.spent_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="sent" [noFiat]="true"></app-amount></td>
               </tr>
               <tr>
-                <td>Balance</td>
+                <td i18n="address.balance">Balance</td>
                 <td *ngIf="address.chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="receieved - sent" [noFiat]="true"></app-amount> (<app-fiat [value]="receieved - sent"></app-fiat>)</td>
               </tr>
             </tbody>
@@ -98,7 +98,7 @@
 
   <ng-template [ngIf]="error">
     <div class="text-center">
-      Error loading address data.
+      <span i18n="address.error.loading-address-data">Error loading address data.</span>
       <br>
       <i>{{ error.error }}</i>
     </div>
@@ -109,5 +109,5 @@
 <br>
 
 <ng-template #confidentialTd>
-  <td>Confidential</td>
+  <td i18n="shared.confidential">Confidential</td>
 </ng-template>

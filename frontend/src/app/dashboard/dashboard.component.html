@@ -155,13 +155,13 @@
       <td>
         <h5 class="card-title">Mempool size</h5>
         <p class="card-text" *ngIf="(mempoolBlocksData$ | async) as mempoolBlocksData; else loading">
-          {{ mempoolBlocksData.size | bytes }} ({{ mempoolBlocksData.blocks }} block<span [hidden]="mempoolBlocksData.blocks <= 1">s</span>)
+          {{ mempoolBlocksData.size | bytes }} ({{ mempoolBlocksData.blocks }} <span i18n="dashboard.block">block</span><span [hidden]="mempoolBlocksData.blocks <= 1">s</span>)
         </p>
       </td>
       <td>
         <h5 class="card-title">Unconfirmed</h5>
         <p class="card-text" *ngIf="mempoolInfoData.value; else loading">
-          {{ mempoolInfoData.value.memPoolInfo.size | number }} TXs
+          {{ mempoolInfoData.value.memPoolInfo.size | number }} <span i18n="dashboard.txs">TXs</span>
         </p>
       </td>
     </tr>
@@ -169,14 +169,14 @@
 </ng-template>
 
 <ng-template #txPerSecond let-mempoolInfoData>
-  <h5 class="card-title">Incoming transactions</h5>
+  <h5 class="card-title" i18n="dashboard.incoming-transactions">Incoming transactions</h5>
   <ng-template [ngIf]="mempoolInfoData.value" [ngIfElse]="loading">
     <span *ngIf="mempoolInfoData.value.vBytesPerSecond === 0; else inSync">
-      &nbsp;<span class="badge badge-pill badge-warning">Backend is synchronizing</span>
+      &nbsp;<span class="badge badge-pill badge-warning" i18n="dashboard.backend-is-synchronizing">Backend is synchronizing</span>
     </span>
     <ng-template #inSync>
       <div class="progress sub-text" style="max-width: 250px;">
-        <div class="progress-bar {{ mempoolInfoData.value.progressClass }}" style="padding: 4px;" role="progressbar" [ngStyle]="{'width': mempoolInfoData.value.progressWidth}">{{ mempoolInfoData.value.vBytesPerSecond | ceil | number }} vB/s</div>
+        <div class="progress-bar {{ mempoolInfoData.value.progressClass }}" style="padding: 4px;" role="progressbar" [ngStyle]="{'width': mempoolInfoData.value.progressWidth}">{{ mempoolInfoData.value.vBytesPerSecond | ceil | number }} <span i18n="shared.vbytes-per-second|vB/s">vB/s</span></div>
       </div>
     </ng-template>
   </ng-template>
