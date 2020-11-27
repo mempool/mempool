@@ -71,6 +71,7 @@ export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
 		  unit = $localize`:@@time.sec:`;
 	        break;
             }
+            return counter + ' ' + unit;
           } else {
             switch (i) { // plural (2 days ago)
               case 'year': unit = $localize`:@@time.years:`; break;
@@ -89,9 +90,9 @@ export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
 		  unit = $localize`:@@time.secs:`;
 	        break;
             }
+            return counter + ' ' + unit;
           }
         }
-        return `${counter} ${unit}`
       }
     }
   }
