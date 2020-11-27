@@ -8,6 +8,8 @@ class Bisq {
   private static FOLDER_WATCH_CHANGE_DETECTION_DEBOUNCE = 4000;
   private static MARKET_JSON_PATH = config.BISQ_MARKETS.DATA_PATH;
   private static MARKET_JSON_FILE_PATHS = {
+    activeCryptoCurrency: '/active_crypto_currency_list.json',
+    activeFiatCurrency: '/active_fiat_currency_list.json',
     cryptoCurrency: '/crypto_currency_list.json',
     fiatCurrency: '/fiat_currency_list.json',
     offers: '/offers_statistics.json',
@@ -66,8 +68,10 @@ class Bisq {
       if (cryptoMtime > this.cryptoCurrencyLastMtime || fiatMtime > this.fiatCurrencyLastMtime) {
         const cryptoCurrencyData = await this.loadData<Currency[]>(Bisq.MARKET_JSON_FILE_PATHS.cryptoCurrency);
         const fiatCurrencyData = await this.loadData<Currency[]>(Bisq.MARKET_JSON_FILE_PATHS.fiatCurrency);
+        const activeCryptoCurrencyData = await this.loadData<Currency[]>(Bisq.MARKET_JSON_FILE_PATHS.activeCryptoCurrency);
+        const activeFiatCurrencyData = await this.loadData<Currency[]>(Bisq.MARKET_JSON_FILE_PATHS.activeFiatCurrency);
         logger.debug('Updating Bisq Market Currency Data');
-        bisqMarket.setCurrencyData(cryptoCurrencyData, fiatCurrencyData);
+        bisqMarket.setCurrencyData(cryptoCurrencyData, fiatCurrencyData, activeCryptoCurrencyData, activeFiatCurrencyData);
         if (cryptoMtime > this.cryptoCurrencyLastMtime) {
           this.cryptoCurrencyLastMtime = cryptoMtime;
         }
