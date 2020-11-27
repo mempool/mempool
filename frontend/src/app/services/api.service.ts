@@ -5,60 +5,56 @@ import { Observable } from 'rxjs';
 import { StateService } from './state.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
 
-const API_BASE_URL = '{network}/api/v1';
-
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  private apiBaseUrl: string;
+  private apiBaseUrl: string; // base URL is protocol, hostname, and port
+  private apiBasePath: string; // network path is /testnet, etc. or '' for mainnet
 
   constructor(
     private httpClient: HttpClient,
     private stateService: StateService,
   ) {
+    this.apiBaseUrl = ''; // use relative URL by default
+    if (!stateService.isBrowser) { // except when inside AU SSR process
+      this.apiBaseUrl = this.stateService.env.NGINX_PROTOCOL + '://' + this.stateService.env.NGINX_HOSTNAME + ':' + this.stateService.env.NGINX_PORT;
+    }
+    this.apiBasePath = ''; // assume mainnet by default
     this.stateService.networkChanged$.subscribe((network) => {
       if (network === 'bisq' && !this.stateService.env.BISQ_SEPARATE_BACKEND) {
         network = '';
       }
-      this.apiBaseUrl = API_BASE_URL.replace('{network}', network ? '/' + network : '');
-      if (!stateService.isBrowser) {
-        this.apiBaseUrl = this.stateService.env.BACKEND_URL + this.apiBaseUrl;
-      }
+      this.apiBasePath = network ? '/' + network : '';
     });
-
-    this.apiBaseUrl = API_BASE_URL.replace('{network}', '');
-    if (!stateService.isBrowser) {
-      this.apiBaseUrl = this.stateService.env.BACKEND_URL + this.apiBaseUrl;
-    }
   }
 
   list2HStatistics$(): Observable<OptimizedMempoolStats[]> {
-    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + '/statistics/2h');
+    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/2h');
   }
 
   list24HStatistics$(): Observable<OptimizedMempoolStats[]> {
-    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + '/statistics/24h');
+    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/24h');
   }
 
   list1WStatistics$(): Observable<OptimizedMempoolStats[]> {
-    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + '/statistics/1w');
+    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/1w');
   }
 
   list1MStatistics$(): Observable<OptimizedMempoolStats[]> {
-    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + '/statistics/1m');
+    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/1m');
   }
 
   list3MStatistics$(): Observable<OptimizedMempoolStats[]> {
-    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + '/statistics/3m');
+    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/3m');
   }
 
   list6MStatistics$(): Observable<OptimizedMempoolStats[]> {
-    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + '/statistics/6m');
+    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/6m');
   }
 
   list1YStatistics$(): Observable<OptimizedMempoolStats[]> {
-    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + '/statistics/1y');
+    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/1y');
   }
 
   getTransactionTimes$(txIds: string[]): Observable<number[]> {
@@ -66,7 +62,7 @@ export class ApiService {
     txIds.forEach((txId: string) => {
       params = params.append('txId[]', txId);
     });
-    return this.httpClient.get<number[]>(this.apiBaseUrl + '/transaction-times', { params });
+    return this.httpClient.get<number[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/transaction-times', { params });
   }
 
   requestDonation$(amount: number, orderId: string): Observable<any> {
@@ -74,14 +70,14 @@ export class ApiService {
       amount: amount,
       orderId: orderId,
     };
-    return this.httpClient.post<any>(this.apiBaseUrl + '/donations', params);
+    return this.httpClient.post<any>(this.apiBaseUrl + this.apiBasePath + '/api/v1/donations', params);
   }
 
   getDonation$(): Observable<any[]> {
-    return this.httpClient.get<any[]>(this.apiBaseUrl + '/donations');
+    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/donations');
   }
 
   getInitData$(): Observable<WebsocketResponse> {
-    return this.httpClient.get<WebsocketResponse>(this.apiBaseUrl + '/init-data');
+    return this.httpClient.get<WebsocketResponse>(this.apiBaseUrl + this.apiBasePath + '/api/v1/init-data');
   }
 }

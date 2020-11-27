@@ -16,13 +16,13 @@ export class AssetsService {
     private httpClient: HttpClient,
     private stateService: StateService,
   ) {
-    let baseApiUrl = '';
+    let apiBaseUrl = '';
     if (!this.stateService.isBrowser) {
-      baseApiUrl = this.stateService.env.STATIC_WEBSERVER_URL;
+      apiBaseUrl = this.stateService.env.NGINX_PROTOCOL + '://' + this.stateService.env.NGINX_HOSTNAME + ':' + this.stateService.env.NGINX_PORT;
     }
 
-    this.getAssetsJson$ = this.httpClient.get(baseApiUrl + '/resources/assets.json').pipe(shareReplay());
-    this.getAssetsMinimalJson$ = this.httpClient.get(baseApiUrl + '/resources/assets.minimal.json').pipe(shareReplay());
-    this.getMiningPools$ = this.httpClient.get(baseApiUrl + '/resources/pools.json').pipe(shareReplay());
+    this.getAssetsJson$ = this.httpClient.get(apiBaseUrl + '/resources/assets.json').pipe(shareReplay());
+    this.getAssetsMinimalJson$ = this.httpClient.get(apiBaseUrl + '/resources/assets.minimal.json').pipe(shareReplay());
+    this.getMiningPools$ = this.httpClient.get(apiBaseUrl + '/resources/pools.json').pipe(shareReplay());
   }
 }
