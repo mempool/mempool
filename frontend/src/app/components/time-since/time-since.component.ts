@@ -16,17 +16,6 @@ export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private ref: ChangeDetectorRef
   ) {
-    if (document.body.clientWidth < 768) {
-      this.intervals = {
-        year: 31536000,
-        month: 2592000,
-        week: 604800,
-        day: 86400,
-        hour: 3600,
-        min: 60,
-        sec: 1
-      };
-    } else {
       this.intervals = {
         year: 31536000,
         month: 2592000,
@@ -36,7 +25,6 @@ export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
         minute: 60,
         second: 1
       };
-    }
   }
 
   ngOnInit() {
@@ -58,19 +46,52 @@ export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
   calculate() {
     const seconds = Math.floor((+new Date() - +new Date(this.time * 1000)) / 1000);
     if (seconds < 60) {
-      return '< 1 minute';
+      return $localize`< 1 :@@time.minute:`;
     }
-    let counter;
+    let counter, unit;
     for (const i in this.intervals) {
       if (this.intervals.hasOwnProperty(i)) {
         counter = Math.floor(seconds / this.intervals[i]);
         if (counter > 0) {
           if (counter === 1) {
-              return counter + ' ' + i; // singular (1 day ago)
+            switch (i) { // singular (1 day ago)
+              case 'year': unit = $localize`:@@time.year:`; break;
+              case 'month': unit = $localize`:@@time.month:`; break;
+              case 'week': unit = $localize`:@@time.week:`; break;
+              case 'day': unit = $localize`:@@time.day:`; break;
+              case 'hour': unit = $localize`:@@time.hour:`; break;
+              case 'minute':
+		unit = $localize`:@@time.minute:`;
+                if (document.body.clientWidth < 768)
+		  unit = $localize`:@@time.min:`;
+	        break;
+              case 'second':
+		unit = $localize`:@@time.second:`;
+                if (document.body.clientWidth < 768)
+		  unit = $localize`:@@time.sec:`;
+	        break;
+            }
           } else {
-              return counter + ' ' + i + 's'; // plural (2 days ago)
+            switch (i) { // plural (2 days ago)
+              case 'year': unit = $localize`:@@time.years:`; break;
+              case 'month': unit = $localize`:@@time.months:`; break;
+              case 'week': unit = $localize`:@@time.weeks:`; break;
+              case 'day': unit = $localize`:@@time.days:`; break;
+              case 'hour': unit = $localize`:@@time.hours:`; break;
+              case 'minute':
+		unit = $localize`:@@time.minutes:`;
+                if (document.body.clientWidth < 768)
+		  unit = $localize`:@@time.mins:`;
+	        break;
+              case 'second':
+		unit = $localize`:@@time.seconds:`;
+                if (document.body.clientWidth < 768)
+		  unit = $localize`:@@time.secs:`;
+	        break;
+            }
           }
         }
+        return `${counter} ${unit}`
       }
     }
   }

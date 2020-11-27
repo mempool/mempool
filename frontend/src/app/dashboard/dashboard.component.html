@@ -72,18 +72,18 @@
       <div class="col mb-4">
         <div class="card text-center">
           <div class="card-body">
-            <h5 class="card-title">Latest blocks</h5>
+            <h5 class="card-title" i18n="dashboard.latest-blocks">Latest blocks</h5>
             <table class="table table-borderless text-left">
               <thead>
-                <th style="width: 15%;">Height</th>
-                <th style="width: 35%;">Mined</th>
-                <th style="width: 20%;" class="d-none d-lg-table-cell">Txs</th>
-                <th style="width: 30%;">Filled</th>
+                <th style="width: 15%;" i18n="dashboard.latest-blocks.height">Height</th>
+                <th style="width: 35%;" i18n="dashboard.latest-blocks.mined">Mined</th>
+                <th style="width: 20%;" class="d-none d-lg-table-cell" i18n="dashboard.latest-blocks.txs">Txs</th>
+                <th style="width: 30%;" i18n="dashboard.latest-blocks.filled">Filled</th>
               </thead>
               <tbody>
                 <tr *ngFor="let block of blocks$ | async; let i = index; trackBy: trackByBlock">
                   <td><a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
-                  <td><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since> ago</td>
+                  <td><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since> <span i18n="shared.ago|ago">ago</span></td>
                   <td class="d-none d-lg-table-cell">{{ block.tx_count | number }}</td>
                   <td>
                     <div class="progress position-relative">
@@ -94,27 +94,27 @@
                 </tr>
               </tbody>
             </table>
-            <div class="text-center"><a href="" [routerLink]="['/blocks' | relativeUrl]">View all &raquo;</a></div>
+            <div class="text-center"><a href="" [routerLink]="['/blocks' | relativeUrl]" i18n="dashboard.view-all">View all &raquo;</a></div>
           </div>
         </div>
       </div>
       <div class="col mb-4">
         <div class="card text-center">
           <div class="card-body">
-            <h5 class="card-title">Latest transactions</h5>
+            <h5 class="card-title" i18n="dashboard.latest-transactions">Latest transactions</h5>
             <table class="table table-borderless text-left">
               <thead>
-                <th style="width: 20%;">TXID</th>
-                <th style="width: 35%;" class="text-right d-none d-lg-table-cell">Amount</th>
-                <th *ngIf="(network$ | async) === ''" style="width: 20%;" class="text-right d-none d-lg-table-cell">USD</th>
-                <th style="width: 25%;" class="text-right">Fee</th>
+                <th style="width: 20%;" i18n="dashboard.latest-transactions.txid">TXID</th>
+                <th style="width: 35%;" class="text-right d-none d-lg-table-cell" i18n="dashboard.latest-transactions.amount">Amount</th>
+                <th *ngIf="(network$ | async) === ''" style="width: 20%;" class="text-right d-none d-lg-table-cell" i18n="dashboard.latest-transactions.USD">USD</th>
+                <th style="width: 25%;" class="text-right" i18n="dashboard.latest-transactions.fee">Fee</th>
               </thead>
               <tbody>
                 <tr *ngFor="let transaction of transactions$ | async; let i = index;">
                   <td><a [routerLink]="['/tx' | relativeUrl, transaction.txid]">{{ transaction.txid | shortenString : 10 }}</a></td>
                   <td class="text-right d-none d-lg-table-cell"><app-amount [satoshis]="transaction.value" digitsInfo="1.8-8" [noFiat]="true"></app-amount></td>
                   <td *ngIf="(network$ | async) === ''" class="text-right d-none d-lg-table-cell"><app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat></td>
-                  <td class="text-right">{{ transaction.fee / (transaction.weight / 4) | number : '1.1-1' }} sat/vB</td>
+                  <td class="text-right">{{ transaction.fee / (transaction.weight / 4) | number : '1.1-1' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
                 </tr>
               </tbody>
             </table>
@@ -153,13 +153,13 @@
   <table style="width: 100%;">
     <tr>
       <td>
-        <h5 class="card-title">Mempool size</h5>
+        <h5 class="card-title" i18n="dashboard.mempool-size|Mempool size">Mempool size</h5>
         <p class="card-text" *ngIf="(mempoolBlocksData$ | async) as mempoolBlocksData; else loading">
-          {{ mempoolBlocksData.size | bytes }} ({{ mempoolBlocksData.blocks }} <span i18n="dashboard.block">block</span><span [hidden]="mempoolBlocksData.blocks <= 1">s</span>)
+          {{ mempoolBlocksData.size | bytes }} ({{ mempoolBlocksData.blocks }} <span [hidden]="mempoolBlocksData.blocks == 1" i18n="dashboard.block">block</span><span [hidden]="mempoolBlocksData.blocks != 1">blocks</span>)
         </p>
       </td>
       <td>
-        <h5 class="card-title">Unconfirmed</h5>
+        <h5 class="card-title" i18n="dashboard.unconfirmed|Unconfirmed count">Unconfirmed</h5>
         <p class="card-text" *ngIf="mempoolInfoData.value; else loading">
           {{ mempoolInfoData.value.memPoolInfo.size | number }} <span i18n="dashboard.txs">TXs</span>
         </p>
@@ -185,7 +185,7 @@
 <ng-template #difficultyEpoch>
   <div class="card text-center">
     <div class="card-body more-padding">
-      <h5 class="card-title">Difficulty adjustment</h5>
+      <h5 class="card-title" i18n="dashboard.difficulty-adjustment">Difficulty adjustment</h5>
       <div class="progress" *ngIf="(difficultyEpoch$ | async) as epochData; else loading">
         <div class="progress-bar" role="progressbar" style="width: 15%; background-color: #105fb0" [ngStyle]="{'width': epochData.base}"><ng-template [ngIf]="epochData.change > 0">+</ng-template>{{ epochData.change | number: '1.0-2' }}%</div>
         <div class="progress-bar bg-success" role="progressbar" style="width: 0%" [ngStyle]="{'width': epochData.green}"></div>
