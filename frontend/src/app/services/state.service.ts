@@ -21,10 +21,9 @@ export interface Env {
   SPONSORS_ENABLED: boolean;
   ELECTRS_ITEMS_PER_PAGE: number;
   KEEP_BLOCKS_AMOUNT: number;
-  BACKEND_URL?: string;
-  ELECTRS_URL?: string;
-  ELECTRS_URL_SERVER?: string;
-  STATIC_WEBSERVER_URL?: string;
+  NGINX_PROTOCOL?: string;
+  NGINX_HOSTNAME?: string;
+  NGINX_PORT?: string;
 }
 
 const defaultEnv: Env = {
@@ -35,6 +34,9 @@ const defaultEnv: Env = {
   'SPONSORS_ENABLED': false,
   'ELECTRS_ITEMS_PER_PAGE': 25,
   'KEEP_BLOCKS_AMOUNT': 8,
+  'NGINX_PROTOCOL': 'http',
+  'NGINX_HOSTNAME': '127.0.0.1',
+  'NGINX_PORT': '81',
 };
 
 @Injectable({
