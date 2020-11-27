@@ -20,12 +20,13 @@
   ],
   "main": "index.ts",
   "scripts": {
-    "build": "tsc",
+    "ng": "./node_modules/@angular/cli/bin/ng",
+    "tsc": "./node_modules/typescript/bin/tsc",
+    "build": "npm run tsc",
     "start": "node --max-old-space-size=4096 dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@types/axios": "^0.14.0",
     "axios": "^0.21.0",
     "express": "^4.17.1",
     "locutus": "^2.0.12",
