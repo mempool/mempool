@@ -6,11 +6,13 @@ import { Block, Transaction } from '../interfaces/electrs.interface';
 import { Subscription } from 'rxjs';
 import { ApiService } from './api.service';
 import { take } from 'rxjs/operators';
-
+import { TransferState, makeStateKey } from '@angular/platform-browser';
 
 const OFFLINE_RETRY_AFTER_MS = 10000;
 const OFFLINE_PING_CHECK_AFTER_MS = 30000;
 const EXPECT_PING_RESPONSE_AFTER_MS = 4000;
+
+const initData = makeStateKey('/api/v1/init-data');
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +34,7 @@ export class WebsocketService {
   constructor(
     private stateService: StateService,
     private apiService: ApiService,
+    private transferState: TransferState,
   ) {
     if (!this.stateService.isBrowser) {
       // @ts-ignore
@@ -40,11 +43,17 @@ export class WebsocketService {
       this.apiService.getInitData$()
         .pipe(take(1))
         .subscribe((response) => this.handleResponse(response));
-
     } else {
       this.network = this.stateService.network === 'bisq' && !this.stateService.env.BISQ_SEPARATE_BACKEND ? '' : this.stateService.network;
       this.websocketSubject = webSocket<WebsocketResponse>(this.webSocketUrl.replace('{network}', this.network ? '/' + this.network : ''));
-      this.startSubscription();
+
+      const theInitData = this.transferState.get(initData, null);
+      if (theInitData) {
+        this.handleResponse(theInitData.body);
+        this.startSubscription(false, true);
+      } else {
+        this.startSubscription();
+      }
 
       this.stateService.networkChanged$.subscribe((network) => {
         if (network === 'bisq' && !this.stateService.env.BISQ_SEPARATE_BACKEND) {
@@ -70,12 +79,14 @@ export class WebsocketService {
     }
   }
 
-  startSubscription(retrying = false) {
-    this.stateService.isLoadingWebSocket$.next(true);
+  startSubscription(retrying = false, hasInitData = false) {
+    if (!hasInitData) {
+      this.stateService.isLoadingWebSocket$.next(true);
+      this.websocketSubject.next({'action': 'init'});
+    }
     if (retrying) {
       this.stateService.connectionState$.next(1);
     }
-    this.websocketSubject.next({'action': 'init'});
     this.subscription = this.websocketSubject
       .subscribe((response: WebsocketResponse) => {
         this.stateService.isLoadingWebSocket$.next(false);
