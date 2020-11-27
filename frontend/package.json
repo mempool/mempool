@@ -33,15 +33,15 @@
     "e2e": "ng e2e"
   },
   "dependencies": {
-    "@angular/animations": "~10.0.4",
-    "@angular/common": "~10.0.4",
-    "@angular/compiler": "~10.0.4",
-    "@angular/core": "~10.0.4",
-    "@angular/forms": "~10.0.4",
-    "@angular/localize": "^10.0.4",
-    "@angular/platform-browser": "~10.0.4",
-    "@angular/platform-browser-dynamic": "~10.0.4",
-    "@angular/router": "~10.0.4",
+    "@angular/animations": "~10.2.3",
+    "@angular/common": "~10.2.3",
+    "@angular/compiler": "~10.2.3",
+    "@angular/core": "~10.2.3",
+    "@angular/forms": "~10.2.3",
+    "@angular/localize": "^10.2.3",
+    "@angular/platform-browser": "~10.2.3",
+    "@angular/platform-browser-dynamic": "~10.2.3",
+    "@angular/router": "~10.2.3",
     "@fortawesome/angular-fontawesome": "^0.7.0",
     "@fortawesome/fontawesome-common-types": "^0.2.30",
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
@@ -61,9 +61,9 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.1002.0",
-    "@angular/cli": "~10.0.3",
-    "@angular/compiler-cli": "~10.0.4",
-    "@angular/language-service": "~10.0.4",
+    "@angular/cli": "~10.2.0",
+    "@angular/compiler-cli": "~10.2.0",
+    "@angular/language-service": "~10.2.0",
     "@types/jasmine": "~3.3.8",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.11.1",
@@ -78,6 +78,6 @@
     "protractor": "~7.0.0",
     "ts-node": "~7.0.0",
     "tslint": "~6.1.0",
-    "typescript": "~3.9.7"
+    "typescript": "~4.0.5"
   }
 }
