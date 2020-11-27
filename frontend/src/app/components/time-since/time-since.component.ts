@@ -46,7 +46,7 @@ export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
   calculate() {
     const seconds = Math.floor((+new Date() - +new Date(this.time * 1000)) / 1000);
     if (seconds < 60) {
-      return $localize`< 1 :@@time.minute:`;
+      return '< 1 '+$localize`:@@time.minute:`;
     }
     let counter, unit;
     for (const i in this.intervals) {
