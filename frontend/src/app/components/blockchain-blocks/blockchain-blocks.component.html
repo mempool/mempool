@@ -13,7 +13,7 @@
           {{ block.feeRange[1] | number:'1.0-0' }} - {{ block.feeRange[block.feeRange.length - 1] | number:'1.0-0' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
         </div>
         <div class="block-size">{{ block.size | bytes: 2 }}</div>
-        <div class="transaction-count">{{ block.tx_count | number }} <span i18n="shared.transaction">transaction</span><ng-template [ngIf]="block.tx_count !== 1">s</ng-template></div>
+        <div class="transaction-count">{{ block.tx_count | number }} <ng-template [ngIf]="block.tx_count === 1" i18n="shared.transaction">transaction</ng-template><ng-template [ngIf]="block.tx_count !== 1" i18n="shared.transactions">transactions</ng-template></div>
         <div class="time-difference"><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since> <span i18n="shared.ago|ago">ago</span></div>
       </div>
     </div>

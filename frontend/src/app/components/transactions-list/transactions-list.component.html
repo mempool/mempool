@@ -198,7 +198,7 @@
 
       <div class="float-right">
         <span *ngIf="showConfirmations && latestBlock$ | async as latestBlock">
-          <button *ngIf="tx.status.confirmed; else unconfirmedButton" type="button" class="btn btn-sm btn-success mt-2">{{ latestBlock.height - tx.status.block_height + 1 }} <span i18n="transactions-list.confirmation-count">confirmation</span><ng-container *ngIf="latestBlock.height - tx.status.block_height + 1 > 1">s</ng-container></button>
+          <button *ngIf="tx.status.confirmed; else unconfirmedButton" type="button" class="btn btn-sm btn-success mt-2">{{ latestBlock.height - tx.status.block_height + 1 }} <ng-container *ngIf="latestBlock.height - tx.status.block_height + 1 == 1" i18n="shared.confirmation-count-singular">confirmation</ng-container><ng-container *ngIf="latestBlock.height - tx.status.block_height + 1 > 1" i18n="shared.confirmation-count.plural">confirmations</ng-container></button>
           <ng-template #unconfirmedButton>
             <button type="button" class="btn btn-sm btn-danger mt-2" i18n="transactions-list.unconfirmed">Unconfirmed</button>
           </ng-template>
