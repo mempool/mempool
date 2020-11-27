@@ -22,6 +22,7 @@
   "scripts": {
     "ng": "./node_modules/@angular/cli/bin/ng",
     "tsc": "./node_modules/typescript/bin/tsc",
+    "xi18n": "./node_modules/@angular/cli/bin/ng xi18n --ivy --out-file ./src/locale/messages.xlf",
     "serve": "ng serve --proxy-config proxy.conf.json",
     "start": "npm run generate-config && npm run sync-assets-dev && ng serve --proxy-config proxy.conf.json",
     "build": "npm run generate-config && ng build --prod --localize && npm run sync-assets",
