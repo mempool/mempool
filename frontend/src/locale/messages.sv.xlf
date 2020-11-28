@@ -145,7 +145,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="cb1b52c13b95fa29ea4044f2bbe0ac623b890c80">
         <source>Fee</source>
-        <target>Avgifter totalt</target>
+        <target>Avgift</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">75</context>
@@ -440,7 +440,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="26cdad3f9e94369ff12c5c628d8eb5c724e3acb3">
         <source>Previous output script</source>
-        <target>Föregående output script</target>
+        <target>Föregående outputscript</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">96</context>
@@ -669,7 +669,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b784270035273a5744e3c23c0fff31eebca32050">
         <source>Subsidy + fees:</source>
-        <target>Inflation + avgifter:</target>
+        <target>Subvention + avgifter:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">57</context>
@@ -725,7 +725,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="56ad2f3895f350abdd3cee2d95498deb8819afac">
         <source>Error loading block data.</source>
-        <target>Kunde inte ladda blockdata</target>
+        <target>Kunde inte ladda blockdata.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">165</context>
@@ -779,7 +779,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f094f67fbe759cdbeb2ea14455634bbe5cc6375d">
         <source>Error loading address data.</source>
-        <target>Kunde inte ladda addressdata</target>
+        <target>Kunde inte ladda addressdata.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">101</context>
@@ -926,7 +926,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="489827bef9fd30645fd2a217aea141ac43bd01ef">
         <source>The mempool open-source project aims to implement a high quality explorer and visualization website for the entire Bitcoin ecosystem, without distractions like altcoins, advertising, or third-party trackers.</source>
-        <target>Mempool-projektet med öppen källkod syftar till att implementera en högkvalitativ utforskare och visualiserare för hela Bitcoin-ekosystemet, utan distraktioner som altcoins, reklam eller tredjepartsspårare.</target>
+        <target>Det öppna källkodprojektet Mempool syftar till att implementera en högkvalitativ utforskare och visualiserare för hela Bitcoin-ekosystemet, utan distraktioner som altcoins, reklam eller tredjepartsspårare.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">16</context>
@@ -934,7 +934,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="def6d893b4c04ddb5f3aa01c150d587059738282">
         <source>Maintainers</source>
-        <target>Underhållare</target>
+        <target>Vidmakthållare</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">22</context>
@@ -952,7 +952,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7d9b2050c14256d89dfd7260e7fde4c17f77255d">
         <source>Operations</source>
-        <target>Operationer</target>
+        <target>Operation</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">40</context>
@@ -1133,7 +1133,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7b8ceef54c3151c632777d309944c67d676a585f">
         <source>Mempool size:</source>
-        <target>Mempool storlek:</target>
+        <target>Mempoolstorlek:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">20</context>
@@ -1164,7 +1164,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b2cb12c1680a46464cae5aa0d0d1d6914733a75d">
         <source>Fee span</source>
-        <target>Avgift spann</target>
+        <target>Avgiftspann</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
           <context context-type="linenumber">20</context>
@@ -1409,7 +1409,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3">
         <source>Mempool size</source>
-        <target>Mempool storlek</target>
+        <target>Mempoolstorlek</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">156</context>
@@ -1476,7 +1476,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d9baa5e9ea1cde02012703c3a43f190947dadd04">
         <source>Endpoint</source>
-        <target>Endpoint</target>
+        <target>Ändpunkt</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">14</context>
@@ -1611,7 +1611,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="23c346e87b137b1807bac13c27d19dc18f745f8f">
         <source>Get the full list of txids in the mempool as an array. The order of the txids is arbitrary and does not match bitcoind.</source>
-        <target>Få en fullständig lista över txid's i mempoolen som en matris. Ordningen på txid-erna är godtycklig och matchar inte bitcoind.</target>
+        <target>Få en fullständig lista över txids i mempoolen som en matris. Ordningen på txiderna är godtycklig och matchar inte bitcoind.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">63</context>
@@ -1673,7 +1673,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="6d5aacdd7e6c375570a88c25bfd0be82beba4c7b">
         <source>Returns the raw block representation in binary.</source>
-        <target>Returnerar blocket i binär form.</target>
+        <target>Returnerar blocket i rå binär form.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">105</context>
@@ -1921,7 +1921,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e7e7c97535181ba299bc0ad02904f851088a0dd5">
         <source>Returns all Bisq transactions that exist in a Bitcoin block.</source>
-        <target>Returns all Bisq transactions that exist in a Bitcoin block.</target>
+        <target>Returnerar alla Bisq-transaktioner som finns i ett Bitcoin-block.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">260</context>
@@ -1929,7 +1929,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="6fdafaace68cb298c6281e89eedc704f3d8f3f6a">
         <source>Returns :length Bitcoin blocks that contain Bisq transactions, starting from :index.</source>
-        <target>Returns :length Bitcoin blocks that contain Bisq transactions, starting from :index.</target>
+        <target>Returnerar :length Bitcoin-block som innehåller Bisq-transaktioner, från och med :index.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">264</context>
@@ -1937,7 +1937,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ac234ff46c8f499399a20fb5d74005094de7cdcd">
         <source>Returns the most recently processed Bitcoin block height processed by Bisq.</source>
-        <target>Returns the most recently processed Bitcoin block height processed by Bisq.</target>
+        <target>Returnerar blockhöjden på det senast bearbetade Bitcoin-block som behandlats av Bisq.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">268</context>
@@ -1945,7 +1945,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="9604b870a64e6635062828425fcb801371e716ad">
         <source>Returns all Bisq transactions belonging to a Bitcoin address, with 'B' prefixed in front of the address.</source>
-        <target>Returns all Bisq transactions belonging to a Bitcoin address, with 'B' prefixed in front of the address.</target>
+        <target>Returnerar alla Bisq-transaktioner som tillhör en Bitcoin-adress, med &quot;B&quot; framför adressen.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">272</context>
@@ -2211,7 +2211,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0fa66b0c410bef320d3f370d7c98c51754b5f28f">
         <source>Overpaid <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/>x</source>
-        <target>Överbetalad <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/> x</target>
+        <target>Överbetalad <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/>x</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
@@ -2221,7 +2221,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f948156b1396cbbf78bbbce437c4d73a1f0770f3">
         <source>Overpaid <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/>x</source>
-        <target>Överbetalad <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/> x</target>
+        <target>Överbetalad <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/>x</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">3</context>
