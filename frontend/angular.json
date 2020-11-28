@@ -16,8 +16,16 @@
       "i18n": {
         "sourceLocale": "en-US",
         "locales": {
+          "cs": "src/locale/messages.cs.xlf",
+          "es": "src/locale/messages.es.xlf",
+          "fa": "src/locale/messages.fa.xlf",
           "ja": "src/locale/messages.ja.xlf",
-          "sv": "src/locale/messages.sv.xlf"
+          "nl": "src/locale/messages.nl.xlf",
+          "pl": "src/locale/messages.pl.xlf",
+          "pt_BR": "src/locale/messages.pt_BR.xlf",
+          "sv": "src/locale/messages.sv.xlf",
+          "uk": "src/locale/messages.uk.xlf",
+          "zh": "src/locale/messages.zh.xlf"
         }
       },
       "architect": {
