@@ -2,6 +2,14 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en-US" datatype="plaintext" original="ng2.template">
     <body>
+      <trans-unit id="b59ea65c89a5ae15b787d8318fdad9edd6fec243" datatype="html">
+        <source>Transaction</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <note priority="1" from="description">shared.transaction</note>
+      </trans-unit>
       <trans-unit id="0094b97dd052620710f173e7aedf6807a1eba1f5" datatype="html">
         <source>This transaction has been replaced by:</source>
         <context-group purpose="location">
@@ -55,6 +63,14 @@
         </context-group>
         <note priority="1" from="description">Transaction Details</note>
         <note priority="1" from="meaning">transaction.details</note>
+      </trans-unit>
+      <trans-unit id="4f8b2bb476981727ab34ed40fde1218361f92c45" datatype="html">
+        <source>Details</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">173</context>
+        </context-group>
+        <note priority="1" from="description">transaction.details</note>
       </trans-unit>
       <trans-unit id="35214e7a6aec1b0317e0fa1eb32e8caf6757b147" datatype="html">
         <source>Size</source>
@@ -548,6 +564,10 @@
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">31</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">81</context>
+        </context-group>
         <note priority="1" from="description">block.size</note>
       </trans-unit>
       <trans-unit id="919f2fd60a898850c24b1584362bbf18a4628bcb" datatype="html">
@@ -627,6 +647,10 @@
           <context context-type="linenumber">85</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
           <context context-type="linenumber">14</context>
         </context-group>
@@ -647,6 +671,14 @@
           <context context-type="linenumber">165</context>
         </context-group>
         <note priority="1" from="description">block.error.loading-block-data</note>
+      </trans-unit>
+      <trans-unit id="729754dd19eb9ce0670b0aeb5a6ae60574c2c563" datatype="html">
+        <source>Address</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+        <note priority="1" from="description">shared.address</note>
       </trans-unit>
       <trans-unit id="a9b87c3aa4731edee661c8287ef3aab71799c0b8" datatype="html">
         <source>Total received</source>
@@ -671,6 +703,14 @@
           <context context-type="linenumber">28</context>
         </context-group>
         <note priority="1" from="description">address.balance</note>
+      </trans-unit>
+      <trans-unit id="169eed2bc3e08e1bea977bcc5d799379f6b8a758" datatype="html">
+        <source>of</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+        <note priority="1" from="description">shared.of</note>
       </trans-unit>
       <trans-unit id="f094f67fbe759cdbeb2ea14455634bbe5cc6375d" datatype="html">
         <source>Error loading address data.</source>
@@ -725,10 +765,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
           <context context-type="linenumber">32</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">81</context>
         </context-group>
         <note priority="1" from="description">latest-blocks.filled</note>
       </trans-unit>
@@ -840,6 +876,14 @@
         </context-group>
         <note priority="1" from="description">about.operations</note>
       </trans-unit>
+      <trans-unit id="3f9ef8d00399db6891b99155dfcda3e26da215e8" datatype="html">
+        <source>Sponsors ❤️</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+        <note priority="1" from="description">about.sponsors.withHeart</note>
+      </trans-unit>
       <trans-unit id="8d0b91c3b649c0237734a2c27585ed0409451523" datatype="html">
         <source>Become a sponsor ❤️</source>
         <context-group purpose="location">
@@ -861,6 +905,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">206</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">137</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
@@ -1171,13 +1219,17 @@
         </context-group>
         <note priority="1" from="description">dashboard.latest-blocks</note>
       </trans-unit>
-      <trans-unit id="90000a825e620339b67061214b65c54724a7ed9a" datatype="html">
-        <source>Txs</source>
+      <trans-unit id="e6213c3f05146287cf121868d9f3d3c3ff5f9714" datatype="html">
+        <source>TXs</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">80</context>
         </context-group>
-        <note priority="1" from="description">dashboard.latest-blocks.txs</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">164</context>
+        </context-group>
+        <note priority="1" from="description">dashboard.latest-blocks.transaction-count</note>
       </trans-unit>
       <trans-unit id="1915fb658404dd3fa2a05f7d5fdd774ad72ef422" datatype="html">
         <source>View all »</source>
@@ -1252,14 +1304,6 @@
           <context context-type="linenumber">158</context>
         </context-group>
         <note priority="1" from="description">dashboard.block</note>
-      </trans-unit>
-      <trans-unit id="e6213c3f05146287cf121868d9f3d3c3ff5f9714" datatype="html">
-        <source>TXs</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">164</context>
-        </context-group>
-        <note priority="1" from="description">dashboard.txs</note>
       </trans-unit>
       <trans-unit id="926c571b25cca7e2a294619f145960c0cd3848b6" datatype="html">
         <source>Incoming transactions</source>

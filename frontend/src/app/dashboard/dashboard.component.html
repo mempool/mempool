@@ -77,8 +77,8 @@
               <thead>
                 <th style="width: 15%;" i18n="dashboard.latest-blocks.height">Height</th>
                 <th style="width: 35%;" i18n="dashboard.latest-blocks.mined">Mined</th>
-                <th style="width: 20%;" class="d-none d-lg-table-cell" i18n="dashboard.latest-blocks.txs">Txs</th>
-                <th style="width: 30%;" i18n="dashboard.latest-blocks.filled">Filled</th>
+                <th style="width: 20%;" class="d-none d-lg-table-cell" i18n="dashboard.latest-blocks.transaction-count">TXs</th>
+                <th style="width: 30%;" i18n="dashboard.latest-blocks.size">Size</th>
               </thead>
               <tbody>
                 <tr *ngFor="let block of blocks$ | async; let i = index; trackBy: trackByBlock">
@@ -134,7 +134,7 @@
   </button>
 
   <div class="text-small text-center mt-3">
-    <a [routerLink]="['/terms-of-service']">Terms of Service</a>
+    <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a>
   </div>
 
 </div>
@@ -176,7 +176,7 @@
     </span>
     <ng-template #inSync>
       <div class="progress sub-text" style="max-width: 250px;">
-        <div class="progress-bar {{ mempoolInfoData.value.progressClass }}" style="padding: 4px;" role="progressbar" [ngStyle]="{'width': mempoolInfoData.value.progressWidth}">{{ mempoolInfoData.value.vBytesPerSecond | ceil | number }} <span i18n="shared.vbytes-per-second|vB/s">vB/s</span></div>
+        <div class="progress-bar {{ mempoolInfoData.value.progressClass }}" style="padding: 4px;" role="progressbar" [ngStyle]="{'width': mempoolInfoData.value.progressWidth}">{{ mempoolInfoData.value.vBytesPerSecond | ceil | number }} <ng-template i18n="shared.vbytes-per-second|vB/s">vB/s</ng-template></div>
       </div>
     </ng-template>
   </ng-template>
