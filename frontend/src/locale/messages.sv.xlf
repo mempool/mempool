@@ -12,7 +12,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0094b97dd052620710f173e7aedf6807a1eba1f5">
         <source>This transaction has been replaced by:</source>
-        <target>Denna transaktion har ersatts av:</target>
+        <target>Transaktionen har blivit ersatts av:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">5</context>
@@ -801,7 +801,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="65d447765db0bf3390e9b3ecce142bf34bb602a3">
         <source>Mined</source>
-        <target>Minad</target>
+        <target>Minead</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
           <context context-type="linenumber">11</context>
@@ -899,7 +899,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2b34680062c4aed90c4d846eab42d6e99501b783">
         <source>Offline</source>
-        <target>Off-line</target>
+        <target>Frånkopplad</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">7</context>
@@ -908,7 +908,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="c5d46228bea3555d65c705bad40be80f8798a113">
         <source>Reconnecting...</source>
-        <target>Återansluter ...</target>
+        <target>Återansluter...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">8</context>
@@ -1051,7 +1051,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="64a98449e66031949cbf82767dd17c30d4e6da7f">
         <source>Waiting for transaction... </source>
-        <target>Väntar på transaktion ... </target>
+        <target>Väntar på transaktion... </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">170</context>
@@ -1114,7 +1114,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e8104ec47dbdca878cd9d7aba4a3cb59378fcaf7">
         <source>Waiting for blocks...</source>
-        <target>Väntar på block ...</target>
+        <target>Väntar på block...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blockchain/blockchain.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1552,7 +1552,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fe56475a8f4cf4bfc3acaafa215a7dd60d9ed7da">
         <source>Default push: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> action: 'want', data: ['blocks', ...] <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> to express what you want pushed. Available: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>blocks<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool-block<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>live-2h-chart<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>stats<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>.<x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/>Push transactions related to address: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> 'track-address': '3PbJ...bF9B' <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address-transactions<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> for new mempool transactions, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block-transactions<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> for new block confirmed transactions.</source>
-        <target>Default push: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> action: 'want', data: ['blocks', ...] <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> to express what you want pushed. Available: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>blocks<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool-block<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>live-2h-chart<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>stats<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>.<x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/>Push transactions related to address: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> 'track-address': '3PbJ...bF9B' <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address-transactions<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> for new mempool transactions, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block-transactions<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> for new block confirmed transactions.</target>
+        <target>Standard push: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> åtgärd: 'want', data: ['blocks', ...] <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> för att uttrycka vad du vill ha pushat. Tillgängligt: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>blocks<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool-block<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>live-2h-chart<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>stats<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>.<x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/>Pusha transaktioner relaterade till address: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> 'track-address': '3PbJ...bF9B' <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> för att ta emot alla nya transaktioner innehållandes addressen som input eller output. Retunerar en matris av transaktioner. <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address-transactions<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> för nya mempooltransaktioner, och <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block-transactions<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> för nya blockkonfinmerade transaktioner.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">19</context>
@@ -1657,7 +1657,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3846f2527c3c9a50bb84b2c941a876f66797449b">
         <source>Returns a list of all txids in the block.</source>
-        <target>Returns a list of all txids in the block.</target>
+        <target>Returnerar en lista över alla txids i blocket.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">97</context>
@@ -1665,7 +1665,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3e08815110b2e5ce8aa7256ed05a2faf6dbb7077">
         <source>Returns the transaction at index <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:index<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> within the specified block.</source>
-        <target>Returns the transaction at index <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:index<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> within the specified block.</target>
+        <target>Returnerar transaktionen vid index <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>: index <x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> inom det angivna blocket.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">101</context>
@@ -1673,7 +1673,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="6d5aacdd7e6c375570a88c25bfd0be82beba4c7b">
         <source>Returns the raw block representation in binary.</source>
-        <target>Returns the raw block representation in binary.</target>
+        <target>Returnerar blocket i binär form.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">105</context>
@@ -1681,7 +1681,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="36df9865e9099d98537ea69c9cfdc035d1b64116">
         <source>Returns the hash of the block currently at <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
-        <target>Returns the hash of the block currently at <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
+        <target>Returnerar hash för blocket för närvarande vid <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">109</context>
@@ -1689,7 +1689,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f8380186899495340cbfe7fb836ba664fb4b52af">
         <source>Returns the 10 newest blocks starting at the tip or at <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:start_height<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> if specified.</source>
-        <target>Returns the 10 newest blocks starting at the tip or at <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:start_height<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> if specified.</target>
+        <target>Returnerar de 10 senaste blocken med början vid toppen alternativt <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:start_height<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> om angivet.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">113</context>
@@ -1697,7 +1697,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4767bdd2059533d5eed7f3fe7cf0be5c260cdb00">
         <source>Returns the height of the last block.</source>
-        <target>Returns the height of the last block.</target>
+        <target>Returnerar höjden på det senaste blocket.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">117</context>
@@ -1705,7 +1705,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="940153d58769f1a8f50dba2458693142675a5dcb">
         <source>Returns the hash of the last block.</source>
-        <target>Returns the hash of the last block.</target>
+        <target>Returnerar hashen för det senaste blocket.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">121</context>
@@ -1713,7 +1713,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="194d480219559b855b01ea58459066e3c63acdb2">
         <source>Returns details about a block. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>id<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>version<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>timestamp<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>bits<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>merkle_root<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>size<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>weight<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt; " id="START_TAG_NG_CONTAINER"/><x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt; " id="CLOSE_TAG_NG_CONTAINER"/> and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>previousblockhash<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
-        <target>Returns details about a block. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>id<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>version<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>timestamp<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>bits<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>merkle_root<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>size<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>weight<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt; " id="START_TAG_NG_CONTAINER"/><x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt; " id="CLOSE_TAG_NG_CONTAINER"/> and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>previousblockhash<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
+        <target>Returnerar information om ett block. Tillgängliga fält: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> id <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> height <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> version <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> timestamp <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> bits <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> nonce <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> merkle_root <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> tx_count <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> size <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> weight <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt; " id="START_TAG_NG_CONTAINER"/> <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> proof <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt; " id="CLOSE_TAG_NG_CONTAINER"/> och <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> previousblockhash <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">85</context>
@@ -1721,7 +1721,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8a4a4b8f308aaaeae782f7c9847013348d969c2d">
         <source>Transactions</source>
-        <target>Transactions</target>
+        <target>Transaktioner</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">129</context>
@@ -1731,7 +1731,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a8ea1ec66e7bb9f92e87ae5482e50748baafffd2">
         <source>Returns details about a transaction. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>version<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>locktime<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>size<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>weight<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>fee<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vin<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vout<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
-        <target>Returns details about a transaction. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>version<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>locktime<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>size<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>weight<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>fee<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vin<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vout<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
+        <target>Returnerar information om en transaktion. Tillgängliga fält: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>version<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>locktime<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>size<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>weight<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>fee<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vin<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vout<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">139</context>
@@ -1739,7 +1739,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7e784cfa5833e7b54d4dfc723fabde94f66ebde3">
         <source>Returns the confirmation status of a transaction. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>confirmed<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (boolean), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_height<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (optional), and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_hash<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (optional).</source>
-        <target>Returns the confirmation status of a transaction. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>confirmed<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (boolean), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_height<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (optional), and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_hash<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (optional).</target>
+        <target>Returnerar konfirmationsstatus för ett block. Tillgängliga fält: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>confirmed<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (boolean), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_height<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (valfritt), and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_hash<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (valfritt).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">143</context>
@@ -1747,7 +1747,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="34c21c242665d87bf22645c90f571bd5078eac93">
         <source>Returns a transaction serialized as hex.</source>
-        <target>Returns a transaction serialized as hex.</target>
+        <target>Returnerar en transaktion serialiserad som en hash.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">147</context>
@@ -1755,7 +1755,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fd42ee72bb64b93578d7d2142ae50796d0056d7a">
         <source>Returns a transaction as binary data.</source>
-        <target>Returns a transaction as binary data.</target>
+        <target>Returnerar en transaktion som binär data.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">151</context>
@@ -1763,7 +1763,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a57953199686e9980df838cb25edb51691941ac5">
         <source>Returns a merkle inclusion proof for the transaction using <x ctype="x-a" equiv-text="&lt;a href=&quot;https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle&quot;&gt;" id="START_LINK"/>Electrum's blockchain.transaction.get_merkle format.<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/></source>
-        <target>Returns a merkle inclusion proof for the transaction using <x ctype="x-a" equiv-text="&lt;a href=&quot;https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle&quot;&gt;" id="START_LINK"/>Electrum's blockchain.transaction.get_merkle format.<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/></target>
+        <target>Returnerar ett merkle-inkluderingsbevis för transaktionen med <x ctype="x-a" equiv-text="&lt;a href=&quot;https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle&quot;&gt;" id="START_LINK"/> Electrums blockchain.transaction.get_merkle-format. <x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">159</context>
@@ -1771,7 +1771,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fe9a40b2ff9674b4ab7d82624ffed340c9ee5b89">
         <source>Returns the spending status of a transaction output. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (boolean), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (optional), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vin<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (optional), and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (optional, the status of the spending tx).</source>
-        <target>Returns the spending status of a transaction output. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (boolean), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (optional), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vin<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (optional), and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (optional, the status of the spending tx).</target>
+        <target>Returnerar spenderingsstatus för en transaktions output. Tillgängliga fält: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (valfritt), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (valfritt), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vin<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (valfritt), and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (valfritt, statusen för spenderingstransaktionen).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">163</context>
@@ -1779,7 +1779,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0358265aa88614843e1f5e887b94c673808c84f1">
         <source>Returns the spending status of all transaction outputs.</source>
-        <target>Returns the spending status of all transaction outputs.</target>
+        <target>Returnerar spenderingsstatus för transaktionens alla outputs.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">167</context>
@@ -1787,7 +1787,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="01723473ecc53cab60ef1b37dc39d8941994d56f">
         <source>Broadcast a raw transaction to the network. The transaction should be provided as hex in the request body. The <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> will be returned on success.</source>
-        <target>Broadcast a raw transaction to the network. The transaction should be provided as hex in the request body. The <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> will be returned on success.</target>
+        <target>Skickar ut en rå transaktion till nätverket. Transaktionen ska tillhandahållas som hex. Transaktionens <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> txid <x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> kommer att returneras om det lyckas.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">171</context>
@@ -1795,7 +1795,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d51106cc898981e9862d35a4db40796f0cf464f8">
         <source>Returns a merkle inclusion proof for the transaction using <x ctype="x-a" equiv-text="&lt;a href=&quot;https://bitcoin.org/en/glossary/merkle-block&quot;&gt;" id="START_LINK"/>bitcoind's merkleblock<x ctype="x-a" equiv-text="&lt;/a&gt; " id="CLOSE_LINK"/> format.</source>
-        <target>Returns a merkle inclusion proof for the transaction using <x ctype="x-a" equiv-text="&lt;a href=&quot;https://bitcoin.org/en/glossary/merkle-block&quot;&gt;" id="START_LINK"/>bitcoind's merkleblock<x ctype="x-a" equiv-text="&lt;/a&gt; " id="CLOSE_LINK"/> format.</target>
+        <target>Returnerar ett merkle-inkluderingsbevis för transaktionen med <x ctype="x-a" equiv-text="&lt;a href=&quot;https://bitcoin.org/en/glossary/merkle-block&quot;&gt;" id="START_LINK"/> bitcoinds merkleblockformat<x ctype="x-a" equiv-text="&lt;/a&gt; " id="CLOSE_LINK"/> som format.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">155</context>
@@ -1803,7 +1803,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="9885457131a86be85a59c5366767e82c12d0a288">
         <source>Addresses</source>
-        <target>Addresses</target>
+        <target>Adresser</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">179</context>
@@ -1813,7 +1813,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e12cd52eaa77b446ba97436c145b59741151adf3">
         <source>Returns details about an address. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>chain_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>. <x equiv-text="{{ '{' }}" id="INTERPOLATION"/>chain,mempool<x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/>_stats each contain an object with <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
-        <target>Returns details about an address. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>chain_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>. <x equiv-text="{{ '{' }}" id="INTERPOLATION"/>chain,mempool<x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/>_stats each contain an object with <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
+        <target>Returnerar detaljer om en address. Tillgängliga fält: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>chain_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, och <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>. <x equiv-text="{{ '{' }}" id="INTERPOLATION"/>chain,mempool<x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/>_stats each contain an object with <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, och <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">189</context>
@@ -1821,7 +1821,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bdc501d28e02e07f692859977fdaee8c52eea401">
         <source>Get transaction history for the specified address/scripthash, sorted with newest first. Returns up to 50 mempool transactions plus the first 25 confirmed transactions. You can request more confirmed transactions using <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:last_seen_txid<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (see below). </source>
-        <target>Get transaction history for the specified address/scripthash, sorted with newest first. Returns up to 50 mempool transactions plus the first 25 confirmed transactions. You can request more confirmed transactions using <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:last_seen_txid<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (see below). </target>
+        <target>Få transaktionshistorik för den angivna adressen/scripthash, sorterad efter nyast först. Returnerar upp till 50 mempool-transaktioner plus de 25 första bekräftade transaktionerna. Du kan begära fler bekräftade transaktioner med <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:last_seen_txid<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (se nedan).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">193,194</context>
@@ -1829,7 +1829,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5676910aa3ffb568079a7499b366744fe3fd87ea">
         <source>Get confirmed transaction history for the specified address/scripthash, sorted with newest first. Returns 25 transactions per page. More can be requested by specifying the last txid seen by the previous query.</source>
-        <target>Get confirmed transaction history for the specified address/scripthash, sorted with newest first. Returns 25 transactions per page. More can be requested by specifying the last txid seen by the previous query.</target>
+        <target>Få bekräftad transaktionshistorik för den angivna adressen/scripthash, sorterad efter nyaste först. Returnerar 25 transaktioner per sida. Mer kan begäras genom att ange den sista txid ifrån föregående fråga.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">197</context>
@@ -1837,7 +1837,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f10009779c64e19e20414fae506f27118420aa33">
         <source>Get unconfirmed transaction history for the specified address/scripthash. Returns up to 50 transactions (no paging).</source>
-        <target>Get unconfirmed transaction history for the specified address/scripthash. Returns up to 50 transactions (no paging).</target>
+        <target>Få obekräftad transaktionshistorik för den angivna adressen/scripthash. Returnerar upp till 50 transaktioner (ingen pagenering).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">201</context>
@@ -1845,7 +1845,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4eb50557085c85bfca995b6ee0de56ec3f5e97eb">
         <source>Get the list of unspent transaction outputs associated with the address/scripthash. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vout<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (with the status of the funding tx).<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/>There is also a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>valuecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> field that may appear in place of <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, plus the following additional fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>asset<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>assetcommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>noncecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>surjection_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>range_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></source>
-        <target>Get the list of unspent transaction outputs associated with the address/scripthash. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vout<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (with the status of the funding tx).<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/>There is also a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>valuecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> field that may appear in place of <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, plus the following additional fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>asset<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>assetcommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>noncecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>surjection_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>range_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></target>
+        <target>Hämta listan över ospenderade transaktionsoutputs som är associerade med adressen/scripthash. Tillgängliga fält: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vout<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, och <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (med status för funding tx).<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/>Det finns även ett <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>valuecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> fält som kan visa sig istället för <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, plus följande ytterligare fält: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>asset<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>assetcommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>noncecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>surjection_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, och <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>range_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">205</context>
@@ -1863,7 +1863,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b885a96aa1a96bff3f603dab79746f90eef5cbdf">
         <source>Returns information about a Liquid asset.</source>
-        <target>Returns information about a Liquid asset.</target>
+        <target>Returnerar information om en Liquid asset.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">223</context>
@@ -1871,7 +1871,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4a0bf20cf26a4f4a387bed5c3d47c23294cb606e">
         <source>Returns transactions associated with the specified Liquid asset. For the network's native asset, returns a list of peg in, peg out, and burn transactions. For user-issued assets, returns a list of issuance, reissuance, and burn transactions. Does not include regular transactions transferring this asset.</source>
-        <target>Returns transactions associated with the specified Liquid asset. For the network's native asset, returns a list of peg in, peg out, and burn transactions. For user-issued assets, returns a list of issuance, reissuance, and burn transactions. Does not include regular transactions transferring this asset.</target>
+        <target>Returnerar transaktioner associerade med den angivna Liquid asseten För nätverkets inhemska asset, returneras en lista över peg-in, peg-out och burn-transaktioner. För användarutgivna assets returneras en lista över utgivnings-, återutgivnings- och burn-transaktioner. Inkluderar inte vanliga transaktioner som överför denna asset.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">227</context>
@@ -1879,7 +1879,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="44a238eb28145f904f3a5bbfd4050987668f78d0">
         <source>Get the current total supply of the specified asset. For the native asset (L-BTC), this is calculated as [chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount. For issued assets, this is calculated as [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount. Not available for assets with blinded issuances. If /decimal is specified, returns the supply as a decimal according to the asset's divisibility. Otherwise, returned in base units.</source>
-        <target>Get the current total supply of the specified asset. For the native asset (L-BTC), this is calculated as [chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount. For issued assets, this is calculated as [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount. Not available for assets with blinded issuances. If /decimal is specified, returns the supply as a decimal according to the asset's divisibility. Otherwise, returned in base units.</target>
+        <target>Hämta nuvarande utbud för den specifika asseten. För den inhemska asseten (L-BTC), är detta kalkylerat som [chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount. För utgivna assets, är detta kalkylerat som [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount. Inte tillgängligt för assets med blind utgivelse. Om /decimal är specifierat, returnera utbudet decimalt enligt assetens delbarhet. Annars, returnera i basenhet.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">231</context>
@@ -1897,7 +1897,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="088d201b8d0589637d7aa64457a6cdd97a5d0f11">
         <source>Returns statistics about all Bisq transactions.</source>
-        <target>Returns statistics about all Bisq transactions.</target>
+        <target>Returnerar statistik om alla Bisq-transaktioner.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">248</context>
@@ -1905,7 +1905,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5d67fbdf2986058351024c16d526c444475ead37">
         <source>Returns details about a Bisq transaction.</source>
-        <target>Returns details about a Bisq transaction.</target>
+        <target>Returnerar information om en Bisq-transaktion.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">252</context>
@@ -1913,7 +1913,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e9a58657c410cf65dba4c3cdfb1af7099dedb241">
         <source>Returns :length of latest Bisq transactions, starting from :index.</source>
-        <target>Returns :length of latest Bisq transactions, starting from :index.</target>
+        <target>Returnerar :length på de senaste Bisq-transaktionerna, med start från :index.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">256</context>
@@ -2211,7 +2211,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0fa66b0c410bef320d3f370d7c98c51754b5f28f">
         <source>Overpaid <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/>x</source>
-        <target>Överbetalt <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/> x</target>
+        <target>Överbetalad <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/> x</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
@@ -2221,7 +2221,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f948156b1396cbbf78bbbce437c4d73a1f0770f3">
         <source>Overpaid <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/>x</source>
-        <target>Överbetalt <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/> x</target>
+        <target>Överbetalad <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/> x</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">3</context>
