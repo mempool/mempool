@@ -908,6 +908,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="c5d46228bea3555d65c705bad40be80f8798a113">
         <source>Reconnecting...</source>
+        <target>در حال اتصال...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">8</context>
@@ -916,6 +917,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="de1392124ed7b6c274917f8049f2fbc9975f20b3">
         <source>About the project</source>
+        <target>درباره پروژه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">13</context>
@@ -924,6 +926,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="489827bef9fd30645fd2a217aea141ac43bd01ef">
         <source>The mempool open-source project aims to implement a high quality explorer and visualization website for the entire Bitcoin ecosystem, without distractions like altcoins, advertising, or third-party trackers.</source>
+        <target>پروژه متن‌باز mempool با هدف پیاده‌سازی یک کاوشگر و سایت بصری‌ساز برای همه زیست‌بوم بیت‌کوین است و کاربر را درگیر آلت‌کوین‌ها، تبلیغات و جاسوس‌افزارها نمی‌کند.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">16</context>
@@ -931,6 +934,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="def6d893b4c04ddb5f3aa01c150d587059738282">
         <source>Maintainers</source>
+        <target>توسعه‌دهنده‌ها</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">22</context>
@@ -939,6 +943,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7f3f6a4fb2545cacf800f0623582b6d41d1f8791">
         <source>Development</source>
+        <target>توسعه‌دهنده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">32</context>
@@ -947,6 +952,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7d9b2050c14256d89dfd7260e7fde4c17f77255d">
         <source>Operations</source>
+        <target>امور اجرایی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">40</context>
@@ -955,6 +961,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3f9ef8d00399db6891b99155dfcda3e26da215e8">
         <source>Sponsors ❤️</source>
+        <target>حامیان ❤️</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">47</context>
@@ -963,6 +970,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8d0b91c3b649c0237734a2c27585ed0409451523">
         <source>Become a sponsor ❤️</source>
+        <target>حامی شوید ❤️</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">63</context>
