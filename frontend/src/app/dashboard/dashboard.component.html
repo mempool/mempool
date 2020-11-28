@@ -137,6 +137,29 @@
     <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a>
   </div>
 
+  <div [formGroup]="languageForm" class="text-small text-center mt-3">
+    <select formControlName="language" class="form-control form-control-sm mx-auto" style="width: 100px;" (change)="changeLanguage()">
+      <option value="">English</option>
+      <option value="pt-pt">Português</option>
+      <option value="de">Deutsch</option>
+      <option value="fr">Français</option>
+      <option value="it">Italiano</option>
+      <option value="es">Español</option>
+      <option value="nl">Nederlands</option>
+      <option value="bg">Български</option>
+      <option value="ru">Русский</option>
+      <option value="sr">Српски</option>
+      <option value="hr">Hrvatski</option>
+      <option value="bs">Bosanski</option>
+      <option value="me">Црногорски</option>
+      <option value="sv">Svenska</option>
+      <option value="zh-cn">中文(简体)</option>
+      <option value="he">עברית</option>
+      <option value="jp">日本語</option>
+      <option value="ko">한국어</option>
+    </select>
+  </div>
+
 </div>
 
 <ng-template #loading>

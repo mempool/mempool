@@ -7,10 +7,11 @@ import { MempoolInfo, TransactionStripped } from '../interfaces/websocket.interf
 import { ApiService } from '../services/api.service';
 import { StateService } from '../services/state.service';
 import * as Chartist from '@mempool/chartist';
-import { formatDate } from '@angular/common';
+import { DOCUMENT, formatDate } from '@angular/common';
 import { WebsocketService } from '../services/websocket.service';
 import { SeoService } from '../services/seo.service';
 import { StorageService } from '../services/storage.service';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 interface MempoolBlocksData {
   blocks: number;
@@ -55,6 +56,7 @@ export class DashboardComponent implements OnInit {
   mempoolTransactionsWeightPerSecondData: any;
   mempoolStats$: Observable<MempoolStatsData>;
   transactionsWeightPerSecondOptions: any;
+  languageForm: FormGroup;
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
@@ -63,6 +65,8 @@ export class DashboardComponent implements OnInit {
     private websocketService: WebsocketService,
     private seoService: SeoService,
     private storageService: StorageService,
+    private formBuilder: FormBuilder,
+    @Inject(DOCUMENT) private document: Document
   ) { }
 
   ngOnInit(): void {
@@ -70,6 +74,10 @@ export class DashboardComponent implements OnInit {
     this.websocketService.want(['blocks', 'stats', 'mempool-blocks', 'live-2h-chart']);
     this.network$ = merge(of(''), this.stateService.networkChanged$);
     this.collapseLevel = this.storageService.getValue('dashboard-collapsed') || 'one';
+
+    this.languageForm = this.formBuilder.group({
+      language: ['']
+    });
 
     this.mempoolInfoData$ = combineLatest([
       this.stateService.mempoolInfo$,
@@ -231,5 +239,10 @@ export class DashboardComponent implements OnInit {
       this.collapseLevel = 'one';
     }
     this.storageService.setValue('dashboard-collapsed', this.collapseLevel);
+  }
+
+  changeLanguage() {
+    const language = this.languageForm.get('language').value;
+    this.document.location.href = '/' + language;
   }
 }
