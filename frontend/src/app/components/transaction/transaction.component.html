@@ -12,7 +12,7 @@
     <h1 class="float-left mr-3 mb-md-3" i18n="shared.transaction">Transaction</h1>
 
     <ng-template [ngIf]="tx?.status?.confirmed">
-      <button *ngIf="latestBlock" type="button" class="btn btn-sm btn-success float-right mr-2 mt-1 mt-md-3">{{ latestBlock.height - tx.status.block_height + 1 }} <ng-container *ngIf="latestBlock.height - tx.status.block_height + 1 == 1" i18n="shared.confirmation-count-singular|Transaction singular confirmation count">confirmation</ng-container><ng-container *ngIf="latestBlock.height - tx.status.block_height + 1 > 1" i18n="shared.confirmation-count-plural|Transaction plural confirmation count">confirmations</ng-container></button>
+      <button *ngIf="latestBlock" type="button" class="btn btn-sm btn-success float-right mr-2 mt-1 mt-md-3">{{ latestBlock.height - tx.status.block_height + 1 }} <ng-container *ngIf="latestBlock.height - tx.status.block_height + 1 == 1" i18n="shared.confirmation-count.singular|Transaction singular confirmation count">confirmation</ng-container><ng-container *ngIf="latestBlock.height - tx.status.block_height + 1 > 1" i18n="shared.confirmation-count.plural|Transaction plural confirmation count">confirmations</ng-container></button>
     </ng-template>
     <ng-template [ngIf]="tx && !tx?.status.confirmed">
       <button type="button" class="btn btn-sm btn-danger float-right mr-2 mt-1 mt-md-3" i18n="transaction.unconfirmed|Transaction unconfirmed state">Unconfirmed</button>

@@ -19,23 +19,23 @@
         <note priority="1" from="description">RBF replacement</note>
         <note priority="1" from="meaning">transaction.rbf.replacement</note>
       </trans-unit>
-      <trans-unit id="9e42eef057f413652df6075d6a227e6daad926bd" datatype="html">
+      <trans-unit id="192e949d72439897cac5e60476f5f9d7a31d7f75" datatype="html">
         <source>confirmation</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">15</context>
         </context-group>
         <note priority="1" from="description">Transaction singular confirmation count</note>
-        <note priority="1" from="meaning">shared.confirmation-count-singular</note>
+        <note priority="1" from="meaning">shared.confirmation-count.singular</note>
       </trans-unit>
-      <trans-unit id="f64c1120f05fc19cd17df2432f002158bf80db57" datatype="html">
+      <trans-unit id="8e7857f523947b408f111009113b6eb28fa56b59" datatype="html">
         <source>confirmations</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">15</context>
         </context-group>
         <note priority="1" from="description">Transaction plural confirmation count</note>
-        <note priority="1" from="meaning">shared.confirmation-count-plural</note>
+        <note priority="1" from="meaning">shared.confirmation-count.plural</note>
       </trans-unit>
       <trans-unit id="ef772ce5cf98a47b29175e3d46b8a9816c7990a2" datatype="html">
         <source>Unconfirmed</source>
@@ -480,7 +480,7 @@
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">201</context>
         </context-group>
-        <note priority="1" from="description">shared.confirmation-count-singular</note>
+        <note priority="1" from="description">shared.confirmation-count.singular</note>
       </trans-unit>
       <trans-unit id="083c00406bb5b675130ec232b843b401a571421c" datatype="html">
         <source>confirmations</source>
@@ -638,7 +638,7 @@
           <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
           <context context-type="linenumber">16</context>
         </context-group>
-        <note priority="1" from="description">shared.transaction-count-singular</note>
+        <note priority="1" from="description">shared.transaction-count.singular</note>
       </trans-unit>
       <trans-unit id="3be4e3c0a506f2d238c116f1bdeeae8da389efa3" datatype="html">
         <source>transactions</source>
@@ -662,7 +662,7 @@
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">16</context>
         </context-group>
-        <note priority="1" from="description">shared.transaction-count-plural</note>
+        <note priority="1" from="description">shared.transaction-count.plural</note>
       </trans-unit>
       <trans-unit id="56ad2f3895f350abdd3cee2d95498deb8819afac" datatype="html">
         <source>Error loading block data.</source>

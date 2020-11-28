@@ -11,7 +11,7 @@
             {{ projectedBlock.feeRange[0] | number:'1.0-0' }} - {{ projectedBlock.feeRange[projectedBlock.feeRange.length - 1] | number:'1.0-0' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
           </div>
           <div class="block-size">{{ projectedBlock.blockSize | bytes: 2 }}</div>
-          <div class="transaction-count">{{ projectedBlock.nTx | number }} <ng-template [ngIf]="projectedBlock.nTx === 1" i18n="shared.transaction-count.singular">transaction</ng-template><ng-template [ngIf]="projectedBlock.nTx !== 1" i18n="shared.transaction-count-plural">transactions</ng-template></div>
+          <div class="transaction-count">{{ projectedBlock.nTx | number }} <ng-template [ngIf]="projectedBlock.nTx === 1" i18n="shared.transaction-count.singular">transaction</ng-template><ng-template [ngIf]="projectedBlock.nTx !== 1" i18n="shared.transaction-count.plural">transactions</ng-template></div>
           <div class="time-difference" *ngIf="projectedBlock.blockVSize <= 1000000; else mergedBlock">
             <ng-template [ngIf]="network === 'liquid'" [ngIfElse]="timeDiffMainnet">
               <span i18n="mempool-blocks.eta-of-next-block|Block Frequency">In</span> &lt; {{ 1 * i + 1 }} <span i18n="shared.minute">minute</span>
