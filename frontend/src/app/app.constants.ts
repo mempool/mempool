@@ -94,9 +94,8 @@ export const languages: Language[] = [
 //{ code: 'ms', name: 'Bahasa Melayu' },   // Malay
   { code: 'nl', name: 'Nederlands' },      // Dutch
   { code: 'ja', name: '日本語' },          // Japanese
-  { code: 'no', name: 'Norsk' },           // Norwegian
 //{ code: 'nb', name: 'Norsk bokmål' },    // Norwegian Bokmål
-//{ code: 'nn', name: 'Norsk nynorsk' },   // Norwegian Nynorsk
+  { code: 'nn', name: 'Norsk nynorsk' },   // Norwegian Nynorsk
   { code: 'pl', name: 'Polski' },          // Polish
 //{ code: 'pt', name: 'Português' },       // Portuguese
   { code: 'pt-BR', name: 'Português (Brazil)' }, // Portuguese (Brazil)
