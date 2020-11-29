@@ -65,22 +65,51 @@ export interface Language {
 }
 
 export const languages: Language[] = [
-  { code: '', name: 'English' },
-  { code: 'pt-pt', name: 'Português' },
-  { code: 'de', name: 'Deutsch' },
-  { code: 'fr', name: 'Français' },
-  { code: 'it', name: 'Italiano' },
-  { code: 'es', name: 'Español' },
-  { code: 'nl', name: 'Nederlands' },
-  { code: 'bg', name: 'Български' },
-  { code: 'ru', name: 'Русский' },
-  { code: 'sr', name: 'Српски' },
-  { code: 'hr', name: 'Hrvatski' },
-  { code: 'bs', name: 'Bosanski' },
-  { code: 'me', name: 'Црногорски' },
-  { code: 'sv', name: 'Svenska' },
-  { code: 'zh-cn', name: '中文(简体)' },
-  { code: 'he', name: 'עברית' },
-  { code: 'jp', name: '日本語' },
-  { code: 'ko', name: '한국어' },
+//{ code: 'ar', name: 'العربية' },         // Arabic
+//{ code: 'bg', name: 'Български' },       // Bulgarian
+//{ code: 'bs', name: 'Bosanski' },        // Bosnian
+//{ code: 'ca', name: 'Català' },          // Catalan
+  { code: 'cs', name: 'Čeština' },         // Czech
+//{ code: 'da', name: 'Dansk' },           // Danish
+//{ code: 'de', name: 'Deutsch' },         // German
+//{ code: 'et', name: 'Eesti' },           // Estonian
+//{ code: 'el', name: 'Ελληνικά' },        // Greek
+  { code: 'es', name: 'Español' },         // Spanish
+//{ code: 'eo', name: 'Esperanto' },       // Esperanto
+//{ code: 'eu', name: 'Euskara' },         // Basque
+  { code: 'fa', name: 'فارسی' },           // Persian
+//{ code: 'fr', name: 'Français' },        // French
+//{ code: 'gl', name: 'Galego' },          // Galician
+//{ code: 'ko', name: '한국어' },          // Korean
+//{ code: 'hr', name: 'Hrvatski' },        // Croatian
+//{ code: 'id', name: 'Bahasa Indonesia' },// Indonesian
+//{ code: 'it', name: 'Italiano' },        // Italian
+//{ code: 'he', name: 'עברית' },           // Hebrew
+//{ code: 'ka', name: 'ქართული' },         // Georgian
+//{ code: 'lv', name: 'Latviešu' },        // Latvian
+//{ code: 'lt', name: 'Lietuvių' },        // Lithuanian
+//{ code: 'hu', name: 'Magyar' },          // Hungarian
+//{ code: 'mk', name: 'Македонски' },      // Macedonian
+//{ code: 'ms', name: 'Bahasa Melayu' },   // Malay
+  { code: 'nl', name: 'Nederlands' },      // Dutch
+  { code: 'ja', name: '日本語' },          // Japanese
+  { code: 'no', name: 'Norsk' },           // Norwegian
+//{ code: 'nb', name: 'Norsk bokmål' },    // Norwegian Bokmål
+//{ code: 'nn', name: 'Norsk nynorsk' },   // Norwegian Nynorsk
+  { code: 'pl', name: 'Polski' },          // Polish
+//{ code: 'pt', name: 'Português' },       // Portuguese
+  { code: 'pt-br', name: 'Português (Brazil)' }, // Portuguese (Brazil)
+//{ code: 'ro', name: 'Română' },          // Romanian
+//{ code: 'ru', name: 'Русский' },         // Russian
+//{ code: 'sk', name: 'Slovenčina' },      // Slovak
+//{ code: 'sl', name: 'Slovenščina' },     // Slovenian
+//{ code: 'sr', name: 'Српски / srpski' }, // Serbian
+//{ code: 'sh', name: 'Srpskohrvatski / српскохрватски' },// Serbo-Croatian
+//{ code: 'fi', name: 'Suomi' },           // Finnish
+  { code: 'sv', name: 'Svenska' },         // Swedish
+//{ code: 'th', name: 'ไทย' },             // Thai
+//{ code: 'tr', name: 'Türkçe' },          // Turkish
+  { code: 'uk', name: 'Українська' },      // Ukrainian
+//{ code: 'vi', name: 'Tiếng Việt' },      // Vietnamese
+  { code: 'zh', name: '中文' },            // Chinese
 ];
