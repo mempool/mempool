@@ -99,39 +99,6 @@
         <note priority="1" from="description">Transaction Timestamp</note>
         <note priority="1" from="meaning">transaction.timestamp</note>
       </trans-unit>
-      <trans-unit id="7f0270516737aef69b21c851f17148750abebefa" datatype="html">
-        <source>ago</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">46</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">110</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">10</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">26</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
-          <context context-type="linenumber">19</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
-          <context context-type="linenumber">17</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">86</context>
-        </context-group>
-        <note priority="1" from="description">ago</note>
-        <note priority="1" from="meaning">shared.ago</note>
-      </trans-unit>
       <trans-unit id="cb1b52c13b95fa29ea4044f2bbe0ac623b890c80" datatype="html">
         <source>Fee</source>
         <context-group purpose="location">
@@ -522,21 +489,21 @@
         </context-group>
         <note priority="1" from="description">shared.confidential</note>
       </trans-unit>
-      <trans-unit id="7f5d0c10614e8a34f0e2dad33a0568277c50cf69" datatype="html">
-        <source>Block</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">4</context>
-        </context-group>
-        <note priority="1" from="description">block.block</note>
-      </trans-unit>
-      <trans-unit id="2f15417ffa2d79e1acb298de79090db28f42e5a4" datatype="html">
-        <source>Genesis</source>
+      <trans-unit id="7daa2693df24aec262c6aad735f9bf918575b866" datatype="html">
+        <source>Genesis </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">4</context>
         </context-group>
         <note priority="1" from="description">block.genesis</note>
+      </trans-unit>
+      <trans-unit id="b00fefac12eae222c964c5af806ef8a55bfd53a3" datatype="html">
+        <source><x id="START_LINK" ctype="x-a" equiv-text="&lt;a [routerLink]=&quot;[&apos;/block/&apos; | relativeUrl, blockHash]&quot;&gt;"/>Block <x id="INTERPOLATION" equiv-text="{{ blockHeight }}"/><x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+        <note priority="1" from="description">block.block</note>
       </trans-unit>
       <trans-unit id="960cd598cbd85edb0a254ff3e59574d2c5cb888c" datatype="html">
         <source>Hash</source>
@@ -908,7 +875,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">137</context>
+          <context context-type="linenumber">143</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
@@ -1046,7 +1013,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">175</context>
+          <context context-type="linenumber">181</context>
         </context-group>
         <note priority="1" from="description">footer.backend-is-synchronizing</note>
       </trans-unit>
@@ -1227,7 +1194,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">164</context>
+          <context context-type="linenumber">170</context>
         </context-group>
         <note priority="1" from="description">dashboard.latest-blocks.transaction-count</note>
       </trans-unit>
@@ -1283,7 +1250,7 @@
         <source>Mempool size</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">156</context>
+          <context context-type="linenumber">162</context>
         </context-group>
         <note priority="1" from="description">Mempool size</note>
         <note priority="1" from="meaning">dashboard.mempool-size</note>
@@ -1292,7 +1259,7 @@
         <source>Unconfirmed</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">162</context>
+          <context context-type="linenumber">168</context>
         </context-group>
         <note priority="1" from="description">Unconfirmed count</note>
         <note priority="1" from="meaning">dashboard.unconfirmed</note>
@@ -1301,7 +1268,7 @@
         <source>block</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">158</context>
+          <context context-type="linenumber">164</context>
         </context-group>
         <note priority="1" from="description">dashboard.block</note>
       </trans-unit>
@@ -1309,7 +1276,7 @@
         <source>Incoming transactions</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">172</context>
+          <context context-type="linenumber">178</context>
         </context-group>
         <note priority="1" from="description">dashboard.incoming-transactions</note>
       </trans-unit>
@@ -1317,7 +1284,7 @@
         <source>vB/s</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">179</context>
+          <context context-type="linenumber">185</context>
         </context-group>
         <note priority="1" from="description">vB/s</note>
         <note priority="1" from="meaning">shared.vbytes-per-second</note>
@@ -1326,7 +1293,7 @@
         <source>Difficulty adjustment</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">188</context>
+          <context context-type="linenumber">194</context>
         </context-group>
         <note priority="1" from="description">dashboard.difficulty-adjustment</note>
       </trans-unit>
@@ -1767,8 +1734,8 @@
           <context context-type="linenumber">272</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="time.sec" datatype="html">
-        <source>sec</source>
+      <trans-unit id="time-since.sec.ago" datatype="html">
+        <source>sec ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">3</context>
@@ -1778,8 +1745,8 @@
           <context context-type="linenumber">71</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="time.secs" datatype="html">
-        <source>secs</source>
+      <trans-unit id="time-since.secs.ago" datatype="html">
+        <source>secs ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">4</context>
@@ -1789,8 +1756,8 @@
           <context context-type="linenumber">90</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="time.second" datatype="html">
-        <source>second</source>
+      <trans-unit id="time-since.second.ago" datatype="html">
+        <source>second ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">5</context>
@@ -1800,8 +1767,8 @@
           <context context-type="linenumber">69</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="time.seconds" datatype="html">
-        <source>seconds</source>
+      <trans-unit id="time-since.seconds.ago" datatype="html">
+        <source>seconds ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">6</context>
@@ -1811,8 +1778,8 @@
           <context context-type="linenumber">88</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="time.min" datatype="html">
-        <source>min</source>
+      <trans-unit id="time-since.min.ago" datatype="html">
+        <source>min ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">7</context>
@@ -1822,8 +1789,8 @@
           <context context-type="linenumber">66</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="time.mins" datatype="html">
-        <source>mins</source>
+      <trans-unit id="time-since.mins.ago" datatype="html">
+        <source>mins ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">8</context>
@@ -1833,8 +1800,8 @@
           <context context-type="linenumber">85</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="time.minute" datatype="html">
-        <source>minute</source>
+      <trans-unit id="time-since.minute.ago" datatype="html">
+        <source>minute ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">9</context>
@@ -1848,8 +1815,8 @@
           <context context-type="linenumber">64</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="time.minutes" datatype="html">
-        <source>minutes</source>
+      <trans-unit id="time-since.minutes.ago" datatype="html">
+        <source>minutes ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">10</context>
@@ -1859,8 +1826,8 @@
           <context context-type="linenumber">83</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="time.hour" datatype="html">
-        <source>hour</source>
+      <trans-unit id="time-since.hour.ago" datatype="html">
+        <source>hour ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1870,8 +1837,8 @@
           <context context-type="linenumber">62</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="time.hours" datatype="html">
-        <source>hours</source>
+      <trans-unit id="time-since.hours.ago" datatype="html">
+        <source>hours ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">12</context>
@@ -1881,8 +1848,8 @@
           <context context-type="linenumber">81</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="time.day" datatype="html">
-        <source>day</source>
+      <trans-unit id="time-since.day.ago" datatype="html">
+        <source>day ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">13</context>
@@ -1892,8 +1859,8 @@
           <context context-type="linenumber">61</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="time.days" datatype="html">
-        <source>days</source>
+      <trans-unit id="time-since.days.ago" datatype="html">
+        <source>days ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">14</context>
@@ -1903,8 +1870,8 @@
           <context context-type="linenumber">80</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="time.week" datatype="html">
-        <source>week</source>
+      <trans-unit id="time-since.week.ago" datatype="html">
+        <source>week ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">15</context>
@@ -1914,8 +1881,8 @@
           <context context-type="linenumber">60</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="time.weeks" datatype="html">
-        <source>weeks</source>
+      <trans-unit id="time-since.weeks.ago" datatype="html">
+        <source>weeks ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">16</context>
@@ -1925,8 +1892,8 @@
           <context context-type="linenumber">79</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="time.month" datatype="html">
-        <source>month</source>
+      <trans-unit id="time-since.month.ago" datatype="html">
+        <source>month ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">17</context>
@@ -1936,8 +1903,8 @@
           <context context-type="linenumber">59</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="time.months" datatype="html">
-        <source>months</source>
+      <trans-unit id="time-since.months.ago" datatype="html">
+        <source>months ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">18</context>
@@ -1947,8 +1914,8 @@
           <context context-type="linenumber">78</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="time.year" datatype="html">
-        <source>year</source>
+      <trans-unit id="time-since.year.ago" datatype="html">
+        <source>year ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">19</context>
@@ -1958,8 +1925,8 @@
           <context context-type="linenumber">58</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="time.years" datatype="html">
-        <source>years</source>
+      <trans-unit id="time-since.years.ago" datatype="html">
+        <source>years ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">20</context>
