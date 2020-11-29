@@ -74,6 +74,7 @@ export const languages: Language[] = [
 //{ code: 'de', name: 'Deutsch' },         // German
 //{ code: 'et', name: 'Eesti' },           // Estonian
 //{ code: 'el', name: 'Ελληνικά' },        // Greek
+  { code: '', name: 'English' },           // English
   { code: 'es', name: 'Español' },         // Spanish
 //{ code: 'eo', name: 'Esperanto' },       // Esperanto
 //{ code: 'eu', name: 'Euskara' },         // Basque
