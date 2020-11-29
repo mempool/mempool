@@ -31,6 +31,10 @@ const routes: Routes = [
             component: DashboardComponent,
           },
           {
+            path: 'sv',
+            component: DashboardComponent,
+          },
+          {
             path: 'tx/:id',
             component: TransactionComponent
           },

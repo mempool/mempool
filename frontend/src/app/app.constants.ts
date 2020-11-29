@@ -58,3 +58,29 @@ const browserWindow = window || {};
 // @ts-ignore
 const browserWindowEnv = browserWindow.__env || {};
 export const env: Env = Object.assign(defaultEnv, browserWindowEnv);
+
+export interface Language {
+  code: string;
+  name: string;
+}
+
+export const languages: Language[] = [
+  { code: '', name: 'English' },
+  { code: 'pt-pt', name: 'Português' },
+  { code: 'de', name: 'Deutsch' },
+  { code: 'fr', name: 'Français' },
+  { code: 'it', name: 'Italiano' },
+  { code: 'es', name: 'Español' },
+  { code: 'nl', name: 'Nederlands' },
+  { code: 'bg', name: 'Български' },
+  { code: 'ru', name: 'Русский' },
+  { code: 'sr', name: 'Српски' },
+  { code: 'hr', name: 'Hrvatski' },
+  { code: 'bs', name: 'Bosanski' },
+  { code: 'me', name: 'Црногорски' },
+  { code: 'sv', name: 'Svenska' },
+  { code: 'zh-cn', name: '中文(简体)' },
+  { code: 'he', name: 'עברית' },
+  { code: 'jp', name: '日本語' },
+  { code: 'ko', name: '한국어' },
+];

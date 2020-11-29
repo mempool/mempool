@@ -12,6 +12,7 @@ import { WebsocketService } from '../services/websocket.service';
 import { SeoService } from '../services/seo.service';
 import { StorageService } from '../services/storage.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { languages, Language } from '../app.constants';
 
 interface MempoolBlocksData {
   blocks: number;
@@ -57,6 +58,7 @@ export class DashboardComponent implements OnInit {
   mempoolStats$: Observable<MempoolStatsData>;
   transactionsWeightPerSecondOptions: any;
   languageForm: FormGroup;
+  languages: Language[];
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
@@ -70,6 +72,7 @@ export class DashboardComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.languages = languages;
     this.seoService.resetTitle();
     this.websocketService.want(['blocks', 'stats', 'mempool-blocks', 'live-2h-chart']);
     this.network$ = merge(of(''), this.stateService.networkChanged$);
@@ -78,6 +81,7 @@ export class DashboardComponent implements OnInit {
     this.languageForm = this.formBuilder.group({
       language: ['']
     });
+    this.setLanguageFromUrl();
 
     this.mempoolInfoData$ = combineLatest([
       this.stateService.mempoolInfo$,
@@ -239,6 +243,13 @@ export class DashboardComponent implements OnInit {
       this.collapseLevel = 'one';
     }
     this.storageService.setValue('dashboard-collapsed', this.collapseLevel);
+  }
+
+  setLanguageFromUrl() {
+    const urlLanguage = this.document.location.pathname.split('/')[1];
+    if (this.languages.map((lang) => lang.code).indexOf(urlLanguage) > -1) {
+      this.languageForm.get('language').setValue(urlLanguage);
+    }
   }
 
   changeLanguage() {
