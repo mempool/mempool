@@ -19,17 +19,50 @@
           "baseHref":"/"
         },
         "locales": {
-          "cs": "src/locale/messages.cs.xlf",
-          "es": "src/locale/messages.es.xlf",
-          "fa": "src/locale/messages.fa.xlf",
-          "ja": "src/locale/messages.ja.xlf",
-          "nl": "src/locale/messages.nl.xlf",
-          "no": "src/locale/messages.no.xlf",
-          "pl": "src/locale/messages.pl.xlf",
-          "pt-BR": "src/locale/messages.pt_BR.xlf",
-          "sv": "src/locale/messages.sv.xlf",
-          "uk": "src/locale/messages.uk.xlf",
-          "zh": "src/locale/messages.zh.xlf"
+          "cs": {
+            "translation": "src/locale/messages.cs.xlf",
+            "baseHref": "/cs/"
+          },
+          "es": {
+            "translation": "src/locale/messages.es.xlf",
+            "baseHref": "/es/"
+          },
+          "fa": {
+            "translation": "src/locale/messages.fa.xlf",
+            "baseHref": "/fa/"
+          },
+          "ja": {
+            "translation": "src/locale/messages.ja.xlf",
+            "baseHref": "/ja/"
+          },
+          "nl": {
+            "translation": "src/locale/messages.nl.xlf",
+            "baseHref": "/nl/"
+          },
+          "no": {
+            "translation": "src/locale/messages.no.xlf",
+            "baseHref": "/no/"
+          },
+          "pl": {
+            "translation": "src/locale/messages.pl.xlf",
+            "baseHref": "/pl/"
+          },
+          "pt-BR": {
+            "translation": "src/locale/messages.pt_BR.xlf",
+            "baseHref": "/pt-BR/"
+          },
+          "sv": {
+            "translation": "src/locale/messages.sv.xlf",
+            "baseHref": "/sv/"
+          },
+          "uk": {
+            "translation": "src/locale/messages.uk.xlf",
+            "baseHref": "/uk/"
+          },
+          "zh": {
+            "translation": "src/locale/messages.zh.xlf",
+            "baseHref": "/zh/"
+          }
         }
       },
       "architect": {
