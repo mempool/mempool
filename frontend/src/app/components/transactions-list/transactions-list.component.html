@@ -7,7 +7,7 @@
     <div class="float-right">
       <ng-template [ngIf]="tx.status.confirmed">{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}</ng-template>
       <ng-template [ngIf]="!tx.status.confirmed && tx.firstSeen">
-        <i><app-time-since [time]="tx.firstSeen" [fastRender]="true"></app-time-since> <span i18n="shared.ago|ago">ago</span></i>
+        <i><app-time-since [time]="tx.firstSeen" [fastRender]="true"></app-time-since></i>
       </ng-template>
     </div>
     <div class="clearfix"></div>

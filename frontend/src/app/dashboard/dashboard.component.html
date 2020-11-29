@@ -83,7 +83,7 @@
               <tbody>
                 <tr *ngFor="let block of blocks$ | async; let i = index; trackBy: trackByBlock">
                   <td><a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
-                  <td><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since> <span i18n="shared.ago|ago">ago</span></td>
+                  <td><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since></td>
                   <td class="d-none d-lg-table-cell">{{ block.tx_count | number }}</td>
                   <td>
                     <div class="progress position-relative">
