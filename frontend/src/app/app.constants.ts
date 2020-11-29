@@ -79,9 +79,9 @@ export const languages: Language[] = [
 //{ code: 'eo', name: 'Esperanto' },       // Esperanto
 //{ code: 'eu', name: 'Euskara' },         // Basque
   { code: 'fa', name: 'فارسی' },           // Persian
-//{ code: 'fr', name: 'Français' },        // French
+  { code: 'fr', name: 'Français' },        // French
 //{ code: 'gl', name: 'Galego' },          // Galician
-//{ code: 'ko', name: '한국어' },          // Korean
+  { code: 'ko', name: '한국어' },          // Korean
 //{ code: 'hr', name: 'Hrvatski' },        // Croatian
 //{ code: 'id', name: 'Bahasa Indonesia' },// Indonesian
 //{ code: 'it', name: 'Italiano' },        // Italian
@@ -109,7 +109,7 @@ export const languages: Language[] = [
 //{ code: 'fi', name: 'Suomi' },           // Finnish
   { code: 'sv', name: 'Svenska' },         // Swedish
 //{ code: 'th', name: 'ไทย' },             // Thai
-//{ code: 'tr', name: 'Türkçe' },          // Turkish
+  { code: 'tr', name: 'Türkçe' },          // Turkish
   { code: 'uk', name: 'Українська' },      // Ukrainian
 //{ code: 'vi', name: 'Tiếng Việt' },      // Vietnamese
   { code: 'zh', name: '中文' },            // Chinese
