@@ -98,7 +98,7 @@ export const languages: Language[] = [
 //{ code: 'nn', name: 'Norsk nynorsk' },   // Norwegian Nynorsk
   { code: 'pl', name: 'Polski' },          // Polish
 //{ code: 'pt', name: 'Português' },       // Portuguese
-  { code: 'pt-br', name: 'Português (Brazil)' }, // Portuguese (Brazil)
+  { code: 'pt-BR', name: 'Português (Brazil)' }, // Portuguese (Brazil)
 //{ code: 'ro', name: 'Română' },          // Romanian
 //{ code: 'ru', name: 'Русский' },         // Russian
 //{ code: 'sk', name: 'Slovenčina' },      // Slovak

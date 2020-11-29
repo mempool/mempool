@@ -21,6 +21,7 @@
           "fa": "src/locale/messages.fa.xlf",
           "ja": "src/locale/messages.ja.xlf",
           "nl": "src/locale/messages.nl.xlf",
+          "no": "src/locale/messages.no.xlf",
           "pl": "src/locale/messages.pl.xlf",
           "pt-BR": "src/locale/messages.pt_BR.xlf",
           "sv": "src/locale/messages.sv.xlf",
