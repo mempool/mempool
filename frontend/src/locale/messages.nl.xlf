@@ -2162,7 +2162,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0fa66b0c410bef320d3f370d7c98c51754b5f28f">
         <source>Overpaid <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/>x</source>
-        <target>Overbetaald 1x</target>
+        <target>Te veel betaald <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/>x</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
@@ -2172,6 +2172,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f948156b1396cbbf78bbbce437c4d73a1f0770f3">
         <source>Overpaid <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/>x</source>
+        <target>Te veel betaald <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/> x</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">3</context>
