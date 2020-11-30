@@ -12,7 +12,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0094b97dd052620710f173e7aedf6807a1eba1f5">
         <source>This transaction has been replaced by:</source>
-        <target>このトランザクションは次のように置き換えられました。</target>
+        <target>このトランザクションは以下のように置き換えられました。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">5</context>
@@ -91,7 +91,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="13f5a75f3e01e5924e45052d2f336eda8bac37e8">
         <source>Weight</source>
-        <target>重量</target>
+        <target>重み</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">182</context>
@@ -415,7 +415,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="288d096739aa2d9aae2911f072f91b3a29245509">
         <source>Load all</source>
-        <target>すべてロード</target>
+        <target>すべてをロード</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">106</context>
@@ -537,7 +537,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7daa2693df24aec262c6aad735f9bf918575b866">
         <source>Genesis </source>
-        <target>ゲネシス</target>
+        <target>ジェネシス</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">4</context>
@@ -590,7 +590,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="919f2fd60a898850c24b1584362bbf18a4628bcb">
         <source>Weight</source>
-        <target>重量</target>
+        <target>重み</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">35</context>
@@ -691,7 +691,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="56ad2f3895f350abdd3cee2d95498deb8819afac">
         <source>Error loading block data.</source>
-        <target>ブロックデータの読み込み中にエラーが発生しました。</target>
+        <target>ブロックデータを読み込み中にエラーが生じました。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">165</context>
@@ -709,7 +709,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a9b87c3aa4731edee661c8287ef3aab71799c0b8">
         <source>Total received</source>
-        <target>受金合計</target>
+        <target>受領合計</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">20</context>
@@ -745,7 +745,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f094f67fbe759cdbeb2ea14455634bbe5cc6375d">
         <source>Error loading address data.</source>
-        <target>アドレスデータの読み込み中にエラーが発生しました。</target>
+        <target>アドレスデータを読み込み中にエラーが生じました。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">101</context>
@@ -767,7 +767,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="65d447765db0bf3390e9b3ecce142bf34bb602a3">
         <source>Mined</source>
-        <target>採掘</target>
+        <target>採掘された</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
           <context context-type="linenumber">11</context>
@@ -874,7 +874,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="c5d46228bea3555d65c705bad40be80f8798a113">
         <source>Reconnecting...</source>
-        <target>再接続しています...</target>
+        <target>再接続中...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">8</context>
@@ -883,7 +883,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="de1392124ed7b6c274917f8049f2fbc9975f20b3">
         <source>About the project</source>
-        <target>このプロジェクトについて</target>
+        <target>プロジェクトについて</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">13</context>
@@ -892,7 +892,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="489827bef9fd30645fd2a217aea141ac43bd01ef">
         <source>The mempool open-source project aims to implement a high quality explorer and visualization website for the entire Bitcoin ecosystem, without distractions like altcoins, advertising, or third-party trackers.</source>
-        <target>mempoolオープンソースプロジェクトは、アルトコイン、広告、サードパーティのトラッカーなどの気を散らすことなく、ビットコインエコシステム全体に高品質のエクスプローラーと視覚化Webサイトを実装することを目的としています。</target>
+        <target>mempoolオープンソースプロジェクトは、アルトコイン、広告、サードパーティのトラッカーなどの気が散るものなく、ビットコインエコシステム全体に高品質のエクスプローラーと視覚化Webサイトを実装することを目的としています。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">16</context>
@@ -945,7 +945,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8a24d1f821c3fde832ff742b6aaba455accadc74">
         <source>Request invoice</source>
-        <target>請求書をリクエストする</target>
+        <target>請求書を依頼する</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">85</context>
@@ -1008,7 +1008,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="9b8d8dedba1ce2bf7b44f324993f8df5d7a75410">
         <source>If you donate 0.01 BTC or more, your profile photo will be added to the list of sponsors above :)</source>
-        <target>0.01 BTC以上を寄付すると、プロフィール写真が上記のスポンサーのリストに追加されます:)</target>
+        <target>0.01 BTC以上を寄付すると、プロフィール写真が上記のスポンサーリストに追加されます:)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">92</context>
@@ -1017,7 +1017,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="64a98449e66031949cbf82767dd17c30d4e6da7f">
         <source>Waiting for transaction... </source>
-        <target>トランザクションを待っています...</target>
+        <target>トランザクションを待ち...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">170</context>
@@ -1053,7 +1053,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ff4b7f4070be9e876c7610d99b9dbd53ff19dceb">
         <source>Loading graphs...</source>
-        <target>グラフを読み込んでいます...</target>
+        <target>グラフを読み込み中...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">6</context>
@@ -1080,7 +1080,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e8104ec47dbdca878cd9d7aba4a3cb59378fcaf7">
         <source>Waiting for blocks...</source>
-        <target>ブロックを待っています...</target>
+        <target>ブロックを待ち...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blockchain/blockchain.component.html</context>
           <context context-type="linenumber">11</context>
