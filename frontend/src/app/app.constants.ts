@@ -71,7 +71,7 @@ export const languages: Language[] = [
 //{ code: 'ca', name: 'Català' },          // Catalan
   { code: 'cs', name: 'Čeština' },         // Czech
 //{ code: 'da', name: 'Dansk' },           // Danish
-//{ code: 'de', name: 'Deutsch' },         // German
+  { code: 'de', name: 'Deutsch' },         // German
 //{ code: 'et', name: 'Eesti' },           // Estonian
 //{ code: 'el', name: 'Ελληνικά' },        // Greek
   { code: '', name: 'English' },           // English
@@ -79,9 +79,9 @@ export const languages: Language[] = [
 //{ code: 'eo', name: 'Esperanto' },       // Esperanto
 //{ code: 'eu', name: 'Euskara' },         // Basque
   { code: 'fa', name: 'فارسی' },           // Persian
-  { code: 'fr', name: 'Français' },        // French
+//{ code: 'fr', name: 'Français' },        // French
 //{ code: 'gl', name: 'Galego' },          // Galician
-  { code: 'ko', name: '한국어' },          // Korean
+//{ code: 'ko', name: '한국어' },          // Korean
 //{ code: 'hr', name: 'Hrvatski' },        // Croatian
 //{ code: 'id', name: 'Bahasa Indonesia' },// Indonesian
 //{ code: 'it', name: 'Italiano' },        // Italian
@@ -95,8 +95,8 @@ export const languages: Language[] = [
   { code: 'nl', name: 'Nederlands' },      // Dutch
   { code: 'ja', name: '日本語' },          // Japanese
 //{ code: 'nb', name: 'Norsk bokmål' },    // Norwegian Bokmål
-  { code: 'nn', name: 'Norsk nynorsk' },   // Norwegian Nynorsk
-  { code: 'pl', name: 'Polski' },          // Polish
+  { code: 'nn', name: 'Norsk' },           // Norwegian Nynorsk
+//{ code: 'pl', name: 'Polski' },          // Polish
 //{ code: 'pt', name: 'Português' },       // Portuguese
   { code: 'pt-BR', name: 'Português (Brazil)' }, // Portuguese (Brazil)
 //{ code: 'ro', name: 'Română' },          // Romanian
