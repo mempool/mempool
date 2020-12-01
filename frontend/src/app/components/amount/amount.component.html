@@ -3,7 +3,7 @@
 </ng-container>
 <ng-template #viewFiatVin>
   <ng-template [ngIf]="network === 'liquid' && (satoshis === undefined || satoshis === null)" [ngIfElse]="default">
-    Confidential
+    <span i18n="shared.confidential">Confidential</span>
   </ng-template>
   <ng-template #default>
     {{ satoshis / 100000000 | number : digitsInfo }}
