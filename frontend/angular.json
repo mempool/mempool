@@ -13,6 +13,66 @@
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
+      "i18n": {
+        "sourceLocale": {
+          "code":"en-US",
+          "baseHref":"/"
+        },
+        "locales": {
+          "cs": {
+            "translation": "src/locale/messages.cs.xlf",
+            "baseHref": "/cs/"
+          },
+          "de": {
+            "translation": "src/locale/messages.de.xlf",
+            "baseHref": "/de/"
+          },
+          "es": {
+            "translation": "src/locale/messages.es.xlf",
+            "baseHref": "/es/"
+          },
+          "fa": {
+            "translation": "src/locale/messages.fa.xlf",
+            "baseHref": "/fa/"
+          },
+          "ja": {
+            "translation": "src/locale/messages.ja.xlf",
+            "baseHref": "/ja/"
+          },
+          "nl": {
+            "translation": "src/locale/messages.nl.xlf",
+            "baseHref": "/nl/"
+          },
+          "nn": {
+            "translation": "src/locale/messages.nn.xlf",
+            "baseHref": "/nn/"
+          },
+          "pt": {
+            "translation": "src/locale/messages.pt.xlf",
+            "baseHref": "/pt/"
+          },
+          "sv": {
+            "translation": "src/locale/messages.sv.xlf",
+            "baseHref": "/sv/"
+          },
+          "sl": {
+            "translation": "src/locale/messages.sl.xlf",
+            "baseHref": "/sl/"
+          },
+          "tr": {
+            "translation": "src/locale/messages.tr.xlf",
+            "baseHref": "/tr/"
+          },
+          "uk": {
+            "translation": "src/locale/messages.uk.xlf",
+            "baseHref": "/uk/"
+          },
+          "zh": {
+            "translation": "src/locale/messages.zh.xlf",
+            "baseHref": "/zh/"
+          }
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
