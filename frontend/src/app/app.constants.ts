@@ -79,7 +79,7 @@ export const languages: Language[] = [
 // { code: 'eo', name: 'Esperanto' },       // Esperanto
 // { code: 'eu', name: 'Euskara' },         // Basque
    { code: 'fa', name: 'فارسی' },           // Persian
-// { code: 'fr', name: 'Français' },        // French
+   { code: 'fr', name: 'Français' },        // French
 // { code: 'gl', name: 'Galego' },          // Galician
 // { code: 'ko', name: '한국어' },          // Korean
 // { code: 'hr', name: 'Hrvatski' },        // Croatian
