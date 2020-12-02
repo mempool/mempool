@@ -55,13 +55,13 @@
             "translation": "src/locale/messages.pt.xlf",
             "baseHref": "/pt/"
           },
-          "sv": {
-            "translation": "src/locale/messages.sv.xlf",
-            "baseHref": "/sv/"
-          },
           "sl": {
             "translation": "src/locale/messages.sl.xlf",
             "baseHref": "/sl/"
+          },
+          "sv": {
+            "translation": "src/locale/messages.sv.xlf",
+            "baseHref": "/sv/"
           },
           "tr": {
             "translation": "src/locale/messages.tr.xlf",
