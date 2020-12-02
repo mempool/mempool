@@ -8,7 +8,7 @@
   </div>
   <div *ngIf="(isLoading$ | async) === true" class="position-container loading">
     <div class="loading-block">
-      <h3>Waiting for blocks...</h3>
+      <h3 i18n="blockchain.waiting-for-blocks|Loading text">Waiting for blocks...</h3>
       <div class="spinner-border text-light mt-2"></div>
     </div>
   </div>

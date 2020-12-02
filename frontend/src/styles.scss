@@ -97,6 +97,15 @@ body {
   color: #000;
 }
 
+.form-control.form-control-secondary {
+  color: #fff;
+  background-color: #2d3348;
+  border: 1px solid #2d3348;
+}
+.form-control.form-control-secondary:focus {
+  color: #fff;
+}
+
 .h2-match-table {
   padding-left: .65rem;
 }

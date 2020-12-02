@@ -6,17 +6,17 @@
 
   <table class="table table-borderless" [alwaysCallback]="true" [fromRoot]="true" [infiniteScrollContainer]="'body'" infiniteScroll [infiniteScrollDistance]="1.5" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50" (scrolled)="loadMore()">
     <thead>
-      <th style="width: 15%;">Height</th>
-      <th class="d-none d-md-block" style="width: 20%;">Timestamp</th>
-      <th style="width: 20%;">Mined</th>
-      <th class="d-none d-lg-block" style="width: 15%;">Transactions</th>
-      <th style="width: 20%;">Filled</th>
+      <th style="width: 15%;" i18n="latest-blocks.height">Height</th>
+      <th class="d-none d-md-block" style="width: 20%;" i18n="latest-blocks.timestamp">Timestamp</th>
+      <th style="width: 20%;" i18n="latest-blocks.mined">Mined</th>
+      <th class="d-none d-lg-block" style="width: 15%;" i18n="latest-blocks.transactions">Transactions</th>
+      <th style="width: 20%;" i18n="latest-blocks.filled">Filled</th>
     </thead>
     <tbody>
       <tr *ngFor="let block of blocks; let i= index; trackBy: trackByBlock">
         <td><a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
         <td class="d-none d-md-block">{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}</td>
-        <td><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since> ago</td>
+        <td><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since></td>
         <td class="d-none d-lg-block">{{ block.tx_count | number }}</td>
         <td>
           <div class="progress position-relative">

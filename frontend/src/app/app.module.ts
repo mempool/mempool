@@ -47,6 +47,7 @@ import { faAngleDoubleDown, faAngleDoubleUp, faAngleDown, faAngleUp, faBolt, faC
   faLink, faList, faSearch, faTachometerAlt, faThList, faTint, faTv } from '@fortawesome/free-solid-svg-icons';
 import { ApiDocsComponent } from './components/api-docs/api-docs.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
+import { TranslationStringsComponent } from './components/translation-strings/translation-strings.component';
 import { StorageService } from './services/storage.service';
 
 @NgModule({
@@ -82,6 +83,7 @@ import { StorageService } from './services/storage.service';
     DashboardComponent,
     ApiDocsComponent,
     TermsOfServiceComponent,
+    TranslationStringsComponent,
   ],
   imports: [
     BrowserModule,
