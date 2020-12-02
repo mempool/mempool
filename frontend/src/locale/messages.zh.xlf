@@ -323,6 +323,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="30751732ff4b8f6ddb2a906e0173072ac29d412a">
         <source>Confidential</source>
+        <target>机密</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/amount/amount.component.html</context>
           <context context-type="linenumber">6</context>
@@ -427,6 +428,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="288d096739aa2d9aae2911f072f91b3a29245509">
         <source>Load all</source>
+        <target>加载全部</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">106</context>
@@ -532,6 +534,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="51e0346da0d58dd6ee252cdaae9ca2711b2f540a">
         <source>Block <x ctype="x-a" equiv-text="&lt;a [routerLink]=&quot;['/block/' | relativeUrl, blockHash]&quot;&gt;" id="START_LINK"/><x equiv-text="{{ blockHeight }}" id="INTERPOLATION"/><x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/></source>
+        <target>区块 <x ctype="x-a" equiv-text="&lt;a [routerLink]=&quot;['/block/' | relativeUrl, blockHash]&quot;&gt;" id="START_LINK"/><x equiv-text="{{ blockHeight }}" id="INTERPOLATION"/><x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">4</context>
@@ -620,6 +623,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b784270035273a5744e3c23c0fff31eebca32050">
         <source>Subsidy + fees:</source>
+        <target>补贴+手续费：</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">57</context>
@@ -731,6 +735,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ce1f390de628a07a0a2ad0eb1c8e8fed9982a72b">
         <source>Filled</source>
+        <target>大小</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
           <context context-type="linenumber">13</context>
@@ -827,6 +832,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="de1392124ed7b6c274917f8049f2fbc9975f20b3">
         <source>About the project</source>
+        <target>项目介绍</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">13</context>
@@ -835,6 +841,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="489827bef9fd30645fd2a217aea141ac43bd01ef">
         <source>The mempool open-source project aims to implement a high quality explorer and visualization website for the entire Bitcoin ecosystem, without distractions like altcoins, advertising, or third-party trackers.</source>
+        <target>Mempool开源项目旨在为整个比特币生态系统搭建一个高质量、可视化，但不会像其他加密货币、广告或第三方中介这些分散注意力的网站。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">16</context>
@@ -851,7 +858,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7f3f6a4fb2545cacf800f0623582b6d41d1f8791">
         <source>Development</source>
-        <target>发展历程</target>
+        <target>开发总工程师</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">32</context>
@@ -860,7 +867,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7d9b2050c14256d89dfd7260e7fde4c17f77255d">
         <source>Operations</source>
-        <target>运营</target>
+        <target>首席运营官</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">40</context>
@@ -887,6 +894,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8a24d1f821c3fde832ff742b6aaba455accadc74">
         <source>Request invoice</source>
+        <target>请求开票</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">85</context>
@@ -930,6 +938,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="39120551bb7b48cc1a7b94a6cb58aef166eee801">
         <source>Amount required</source>
+        <target>所需金额</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">82</context>
@@ -1000,6 +1009,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="75c20c8a9cd9723d45bee0230dd582d7c2e4ecbc">
         <source>Mempool by vBytes (sat/vByte)</source>
+        <target>交易字节/秒 (虚拟字节)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">16</context>
@@ -1008,6 +1018,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="dc15ec15e6206b40133f2c1b06095ce75aaee1ef">
         <source>Transaction vBytes per second (vB/s)</source>
+        <target>交易字节/秒 (虚拟字节)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">57</context>
@@ -1026,6 +1037,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0ae5beecbbfc96bcdf4f9a637aa72687e81ef5e1">
         <source>Tx vBytes per second:</source>
+        <target>交易字节/秒</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">5</context>
@@ -1055,6 +1067,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="64d40decf56cbb1187e01f1fe47b92e10ddfa45d">
         <source>vBytes/s</source>
+        <target>字节/秒</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1291,6 +1304,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1cb0c1f40f7ef8d62da2ccdccfdd2b7cdd18d2b9">
         <source>USD</source>
+        <target>美元</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">109</context>
@@ -1299,6 +1313,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3">
         <source>Mempool size</source>
+        <target>内存池大小</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">162</context>
@@ -1336,6 +1351,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="50904e472d4671388a20fbbb1ee9dfc0a4586fa1">
         <source>vB/s</source>
+        <target>字节/秒</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">185</context>
@@ -1447,6 +1463,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e15117360d2a70d6959e8aedf59e9f0241fdfc4f">
         <source>Fees</source>
+        <target>手续费</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">27</context>
@@ -1474,6 +1491,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="19a8d63607ead7ba08364fe9f64aa3c503dff6c4">
         <source>Mempool</source>
+        <target>内存池</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">49</context>
@@ -1510,6 +1528,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f4cba7faeb126346f09cc6af30124f9a343f7a28">
         <source>Blocks</source>
+        <target>区块</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">75</context>
@@ -1591,6 +1610,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8a4a4b8f308aaaeae782f7c9847013348d969c2d">
         <source>Transactions</source>
+        <target>交易</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">129</context>
@@ -1851,6 +1871,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.just-now">
         <source>just now</source>
+        <target>刚刚</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">3</context>
@@ -1862,6 +1883,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.sec.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> sec ago</source>
+        <target><x equiv-text="{{counter}}" id="INTERPOLATION"/>秒前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">4</context>
@@ -1873,6 +1895,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.secs.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> secs ago</source>
+        <target><x equiv-text="{{counter}}" id="INTERPOLATION"/>秒前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">5</context>
@@ -1884,6 +1907,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.second.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> second ago</source>
+        <target><x equiv-text="{{counter}}" id="INTERPOLATION"/>秒前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">6</context>
@@ -1895,6 +1919,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.seconds.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> seconds ago</source>
+        <target><x equiv-text="{{counter}}" id="INTERPOLATION"/>秒前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">7</context>
@@ -1906,6 +1931,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.min.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> min ago</source>
+        <target><x equiv-text="{{counter}}" id="INTERPOLATION"/>分钟前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">8</context>
@@ -1917,6 +1943,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.mins.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> mins ago</source>
+        <target><x equiv-text="{{counter}}" id="INTERPOLATION"/>分钟前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">9</context>
@@ -1928,6 +1955,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.minute.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> minute ago</source>
+        <target><x equiv-text="{{counter}}" id="INTERPOLATION"/>分钟前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">10</context>
@@ -1939,6 +1967,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.minutes.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> minutes ago</source>
+        <target><x equiv-text="{{counter}}" id="INTERPOLATION"/>分钟前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1950,6 +1979,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.hour.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> hour ago</source>
+        <target><x equiv-text="{{counter}}" id="INTERPOLATION"/>小时前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">12</context>
@@ -1961,6 +1991,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.hours.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> hours ago</source>
+        <target><x equiv-text="{{counter}}" id="INTERPOLATION"/>小时前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">13</context>
@@ -1972,6 +2003,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.day.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> day ago</source>
+        <target><x equiv-text="{{counter}}" id="INTERPOLATION"/>天前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">14</context>
@@ -1983,6 +2015,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.days.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> days ago</source>
+        <target><x equiv-text="{{counter}}" id="INTERPOLATION"/>天前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">15</context>
@@ -1994,6 +2027,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.week.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> week ago</source>
+        <target><x equiv-text="{{counter}}" id="INTERPOLATION"/>周前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">16</context>
@@ -2005,6 +2039,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.weeks.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> weeks ago</source>
+        <target><x equiv-text="{{counter}}" id="INTERPOLATION"/>周前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">17</context>
@@ -2016,6 +2051,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.month.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> month ago</source>
+        <target><x equiv-text="{{counter}}" id="INTERPOLATION"/>个月前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">18</context>
@@ -2027,6 +2063,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.months.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> months ago</source>
+        <target><x equiv-text="{{counter}}" id="INTERPOLATION"/>个月前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">19</context>
@@ -2038,6 +2075,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.year.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> year ago</source>
+        <target><x equiv-text="{{counter}}" id="INTERPOLATION"/>年前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">20</context>
@@ -2049,6 +2087,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.years.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> years ago</source>
+        <target><x equiv-text="{{counter}}" id="INTERPOLATION"/>年前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">21</context>
@@ -2086,6 +2125,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b2035d486e8d59980736a224891d9790c981691a">
         <source>Optimal</source>
+        <target>最佳</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">1</context>
@@ -2095,6 +2135,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0fa66b0c410bef320d3f370d7c98c51754b5f28f">
         <source>Overpaid <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/>x</source>
+        <target>溢缴款 <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/>x</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
@@ -2104,6 +2145,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f948156b1396cbbf78bbbce437c4d73a1f0770f3">
         <source>Overpaid <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/>x</source>
+        <target>溢缴款 <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/>x</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">3</context>
