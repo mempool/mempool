@@ -17,19 +17,19 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td>Name</td>
+                <td i18n="asset.name|Liquid Asset name">Name</td>
                 <td>{{ assetContract[2] }} ({{ assetContract[1] }})</td>
               </tr>
               <tr>
-                <td>Precision</td>
+                <td i18n="asset.precision|Liquid Asset precision">Precision</td>
                 <td>{{ assetContract[3] }}</td>
               </tr>
               <tr *ngIf="!isNativeAsset && assetContract[0]">
-                <td>Issuer</td>
+                <td i18n="asset.issuer|Liquid Asset issuer">Issuer</td>
                 <td><a target="_blank" href="{{ 'http://' + assetContract[0] }}">{{ assetContract[0] }}</a></td>
               </tr>
               <tr *ngIf="!isNativeAsset">
-                <td>Issuance tx</td>
+                <td i18n="asset.issuance-tx|Liquid Asset issuance TX">Issuance TX</td>
                 <td><a [routerLink]="['/tx/' | relativeUrl, asset.issuance_txin.txid]">{{ asset.issuance_txin.txid | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="asset.issuance_txin.txid"></app-clipboard></td>
               </tr>
             </tbody>
@@ -40,27 +40,27 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr *ngIf="isNativeAsset">
-                <td>Pegged in</td>
+                <td i18n="asset.pegged-in|Liquid Asset pegged-in amount">Pegged in</td>
                 <td>{{ formatAmount(asset.chain_stats.peg_in_amount, assetContract[3]) | number: '1.0-' + assetContract[3] }} {{ assetContract[1] }}</td>
               </tr>
               <tr *ngIf="isNativeAsset">
-                <td>Pegged out</td>
+                <td i18n="asset.pegged-out|Liquid Asset pegged-out amount">Pegged out</td>
                 <td>{{ formatAmount(asset.chain_stats.peg_out_amount, assetContract[3]) | number: '1.0-' + assetContract[3] }} {{ assetContract[1] }}</td>
               </tr>
               <tr *ngIf="!isNativeAsset">
-                <td>Issued amount</td>
+                <td i18n="asset.issued-amount|Liquid Asset issued amount">Issued amount</td>
                 <td *ngIf="!blindedIssuance; else confidentialTd">{{ formatAmount(asset.chain_stats.issued_amount, assetContract[3]) | number: '1.0-' + assetContract[3] }} {{ assetContract[1] }}</td>
               </tr>
               <tr>
-                <td>Burned amount</td>
+                <td i18n="asset.burned-amount|Liquid Asset burned amount">Burned amount</td>
                 <td *ngIf="!blindedIssuance; else confidentialTd">{{ formatAmount(asset.chain_stats.burned_amount, assetContract[3]) | number: '1.0-' + assetContract[3] }} {{ assetContract[1] }}</td>
               </tr>
               <tr *ngIf="!isNativeAsset">
-                <td>Circulating amount</td>
+                <td i18n="asset.circulating-amount|Liquid Asset circulating amount">Circulating amount</td>
                 <td *ngIf="!blindedIssuance; else confidentialTd">{{ formatAmount(asset.chain_stats.issued_amount - asset.chain_stats.burned_amount, assetContract[3]) | number: '1.0-' + assetContract[3] }} {{ assetContract[1] }}</td>
               </tr>
               <tr *ngIf="isNativeAsset">
-                <td>Circulating amount</td>
+                <td i18n="asset.circulating-amount|Liquid Asset circulating amount">Circulating amount</td>
                 <td>{{ formatAmount(asset.chain_stats.peg_in_amount - asset.chain_stats.burned_amount - asset.chain_stats.peg_out_amount, assetContract[3]) | number: '1.0-' + assetContract[3] }} {{ assetContract[1] }}</td>
               </tr>
             </tbody>
@@ -129,7 +129,7 @@
 
   <ng-template [ngIf]="error">
     <div class="text-center">
-      Error loading asset data.
+      <span i18n="asset.error.loading-asset-data">Error loading asset data.</span>
       <br>
       <i>{{ error.error }}</i>
     </div>
@@ -140,5 +140,5 @@
 <br>
 
 <ng-template #confidentialTd>
-  <td>Confidential</td>
+  <td i18n="shared.confidential">Confidential</td>
 </ng-template>

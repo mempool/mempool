@@ -33,3 +33,83 @@ export const mempoolFeeColors = [
 
 export const feeLevels = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
   250, 300, 350, 400, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000];
+
+interface Env {
+  TESTNET_ENABLED: boolean;
+  LIQUID_ENABLED: boolean;
+  BISQ_ENABLED: boolean;
+  BISQ_SEPARATE_BACKEND: boolean;
+  SPONSORS_ENABLED: boolean;
+  ELCTRS_ITEMS_PER_PAGE: number;
+  KEEP_BLOCKS_AMOUNT: number;
+}
+
+const defaultEnv: Env = {
+  'TESTNET_ENABLED': false,
+  'LIQUID_ENABLED': false,
+  'BISQ_ENABLED': false,
+  'BISQ_SEPARATE_BACKEND': false,
+  'SPONSORS_ENABLED': false,
+  'ELCTRS_ITEMS_PER_PAGE': 25,
+  'KEEP_BLOCKS_AMOUNT': 8
+};
+
+const browserWindow = window || {};
+// @ts-ignore
+const browserWindowEnv = browserWindow.__env || {};
+export const env: Env = Object.assign(defaultEnv, browserWindowEnv);
+
+export interface Language {
+  code: string;
+  name: string;
+}
+
+export const languages: Language[] = [
+// { code: 'ar', name: 'العربية' },         // Arabic
+// { code: 'bg', name: 'Български' },       // Bulgarian
+// { code: 'bs', name: 'Bosanski' },        // Bosnian
+// { code: 'ca', name: 'Català' },          // Catalan
+   { code: 'cs', name: 'Čeština' },         // Czech
+// { code: 'da', name: 'Dansk' },           // Danish
+   { code: 'de', name: 'Deutsch' },         // German
+// { code: 'et', name: 'Eesti' },           // Estonian
+// { code: 'el', name: 'Ελληνικά' },        // Greek
+   { code: 'en', name: 'English' },         // English
+   { code: 'es', name: 'Español' },         // Spanish
+// { code: 'eo', name: 'Esperanto' },       // Esperanto
+// { code: 'eu', name: 'Euskara' },         // Basque
+   { code: 'fa', name: 'فارسی' },           // Persian
+   { code: 'fr', name: 'Français' },        // French
+// { code: 'gl', name: 'Galego' },          // Galician
+// { code: 'ko', name: '한국어' },          // Korean
+// { code: 'hr', name: 'Hrvatski' },        // Croatian
+// { code: 'id', name: 'Bahasa Indonesia' },// Indonesian
+// { code: 'it', name: 'Italiano' },        // Italian
+// { code: 'he', name: 'עברית' },           // Hebrew
+// { code: 'ka', name: 'ქართული' },         // Georgian
+// { code: 'lv', name: 'Latviešu' },        // Latvian
+// { code: 'lt', name: 'Lietuvių' },        // Lithuanian
+// { code: 'hu', name: 'Magyar' },          // Hungarian
+// { code: 'mk', name: 'Македонски' },      // Macedonian
+// { code: 'ms', name: 'Bahasa Melayu' },   // Malay
+   { code: 'nl', name: 'Nederlands' },      // Dutch
+   { code: 'ja', name: '日本語' },          // Japanese
+// { code: 'nb', name: 'Norsk bokmål' },    // Norwegian Bokmål
+   { code: 'nn', name: 'Norsk' },           // Norwegian Nynorsk
+// { code: 'pl', name: 'Polski' },          // Polish
+   { code: 'pt', name: 'Português' },       // Portuguese
+// { code: 'pt-BR', name: 'Português (Brazil)' }, // Portuguese (Brazil)
+// { code: 'ro', name: 'Română' },          // Romanian
+// { code: 'ru', name: 'Русский' },         // Russian
+// { code: 'sk', name: 'Slovenčina' },      // Slovak
+   { code: 'sl', name: 'Slovenščina' },     // Slovenian
+// { code: 'sr', name: 'Српски / srpski' }, // Serbian
+// { code: 'sh', name: 'Srpskohrvatski / српскохрватски' },// Serbo-Croatian
+// { code: 'fi', name: 'Suomi' },           // Finnish
+   { code: 'sv', name: 'Svenska' },         // Swedish
+// { code: 'th', name: 'ไทย' },             // Thai
+   { code: 'tr', name: 'Türkçe' },          // Turkish
+   { code: 'uk', name: 'Українська' },      // Ukrainian
+// { code: 'vi', name: 'Tiếng Việt' },      // Vietnamese
+   { code: 'zh', name: '中文' },            // Chinese
+];
