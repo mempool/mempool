@@ -14,7 +14,8 @@ export class TimespanComponent implements OnChanges {
   ngOnChanges() {
     const seconds = this.time;
     if (seconds < 60) {
-      return '< 1 minute';
+      this.text = '< 1 minute';
+      return;
     }
     const intervals = {
         year: 31536000,

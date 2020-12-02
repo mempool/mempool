@@ -5,23 +5,23 @@
         <a [routerLink]="['/mempool-block/' | relativeUrl, i]" class="blockLink">&nbsp;</a>
         <div class="block-body">
           <div class="fees">
-            ~{{ projectedBlock.medianFee | number:'1.0-0' }} sat/vB
+            ~{{ projectedBlock.medianFee | number:'1.0-0' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
           </div>
           <div class="fee-span">
-            {{ projectedBlock.feeRange[0] | number:'1.0-0' }} - {{ projectedBlock.feeRange[projectedBlock.feeRange.length - 1] | number:'1.0-0' }} sat/vB
+            {{ projectedBlock.feeRange[0] | number:'1.0-0' }} - {{ projectedBlock.feeRange[projectedBlock.feeRange.length - 1] | number:'1.0-0' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
           </div>
           <div class="block-size">{{ projectedBlock.blockSize | bytes: 2 }}</div>
-          <div class="transaction-count">{{ projectedBlock.nTx | number }} transaction<ng-template [ngIf]="projectedBlock.nTx !== 1">s</ng-template></div>
+          <div class="transaction-count">{{ projectedBlock.nTx | number }} <ng-template [ngIf]="projectedBlock.nTx === 1" i18n="shared.transaction-count.singular">transaction</ng-template><ng-template [ngIf]="projectedBlock.nTx !== 1" i18n="shared.transaction-count.plural">transactions</ng-template></div>
           <div class="time-difference" *ngIf="projectedBlock.blockVSize <= 1000000; else mergedBlock">
             <ng-template [ngIf]="network === 'liquid'" [ngIfElse]="timeDiffMainnet">
-              In &lt; {{ 1 * i + 1 }} minute
+              <span i18n="mempool-blocks.eta-of-next-block|Block Frequency">In</span> &lt; {{ 1 * i + 1 }} <span i18n="shared.minute">minute</span>
             </ng-template>
             <ng-template #timeDiffMainnet>
-              In ~{{ 10 * i + 10 }} minutes
+              <span i18n="mempool-blocks.eta-of-next-block|Block Frequency">In</span> ~{{ 10 * i + 10 }} <span i18n="shared.minutes">minutes</span>
             </ng-template>
           </div>
           <ng-template #mergedBlock>
-            <div class="time-difference"><b>({{ projectedBlock.blockVSize / 1000000 | ceil }} blocks)</b></div>
+            <div class="time-difference"><b>({{ projectedBlock.blockVSize / 1000000 | ceil }} <span i18n="shared.blocks">blocks</span>)</b></div>
           </ng-template>
         </div>
         <span class="animated-border"></span>
