@@ -449,7 +449,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="dd10de81278151bfe94c45b31949acfaec3b9f5e">
         <source>Peg-out to</source>
-        <target>Peg-out to</target>
+        <target>Peg-out v</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">125</context>
@@ -537,6 +537,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7daa2693df24aec262c6aad735f9bf918575b866">
         <source>Genesis </source>
+        <target>Prvotni </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">4</context>
@@ -699,6 +700,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="78fe1342aab9e91cb7cbd1becbaacf3b719546b3">
         <source>TXID, block height, hash or address</source>
+        <target>TXID, višina bloka, hash ali naslov</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-form.component.html</context>
           <context context-type="linenumber">4</context>
@@ -759,6 +761,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="9f10a0577222a7d6c35a889453fa3a794750d9c4">
         <source>multisig <x equiv-text="{{ multisigM }}" id="INTERPOLATION"/> of <x equiv-text="{{ multisigN }}" id="INTERPOLATION_1"/></source>
+        <target>multisig <x equiv-text="{{ multisigM }}" id="INTERPOLATION"/> od <x equiv-text="{{ multisigN }}" id="INTERPOLATION_1"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
           <context context-type="linenumber">1</context>
@@ -767,6 +770,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="aae004b987aaf258dea1829618651427b68283db">
         <source>Layer<x equiv-text="{{ network === 'liquid' ? '3' : '2' }}" id="INTERPOLATION"/> Peg-out</source>
+        <target>Layer<x equiv-text="{{ network === 'liquid' ? '3' : '2' }}" id="INTERPOLATION"/> Peg-out</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
           <context context-type="linenumber">2</context>
@@ -789,7 +793,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="cff3ed26f8073fa2fe757d97880662060c39a1fa">
         <source>minute</source>
-        <target>minut</target>
+        <target>minuta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
           <context context-type="linenumber">17</context>
@@ -834,6 +838,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="9daedf013e87630c4e0a9123dc62e5bbf15a59ad">
         <source>Layer 2 Networks</source>
+        <target>Omrežja 2. plasti</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">19</context>
@@ -858,6 +863,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="def6d893b4c04ddb5f3aa01c150d587059738282">
         <source>Maintainers</source>
+        <target>Vzdrževalci</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">22</context>
@@ -866,6 +872,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7f3f6a4fb2545cacf800f0623582b6d41d1f8791">
         <source>Development</source>
+        <target>Razvoj</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">32</context>
@@ -874,6 +881,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7d9b2050c14256d89dfd7260e7fde4c17f77255d">
         <source>Operations</source>
+        <target>Operacije</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">40</context>
@@ -882,6 +890,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3f9ef8d00399db6891b99155dfcda3e26da215e8">
         <source>Sponsors ❤️</source>
+        <target>Sponzorji ❤️</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">47</context>
@@ -890,6 +899,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8d0b91c3b649c0237734a2c27585ed0409451523">
         <source>Become a sponsor ❤️</source>
+        <target>Postanite sponzor ❤️</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">63</context>
@@ -898,6 +908,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8a24d1f821c3fde832ff742b6aaba455accadc74">
         <source>Request invoice</source>
+        <target>Ustvari račun</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">85</context>
@@ -924,6 +935,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bb4671d1c6b230ec821cf7f9c72210f32e8a6e7b">
         <source>Navigate to</source>
+        <target>Pojdite na</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">65</context>
@@ -932,6 +944,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4e6c8a60b2cd0e40c8d266c6333d873d2f2db77e">
         <source>to sponsor</source>
+        <target>za sponzorstvo</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">65</context>
@@ -940,6 +953,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="39120551bb7b48cc1a7b94a6cb58aef166eee801">
         <source>Amount required</source>
+        <target>Znesek je zahtevan</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">82</context>
@@ -948,6 +962,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="c525ee366d56496a39853d54f8f08fcaed0eaf40">
         <source>Minimum amount is 0.001 BTC</source>
+        <target>Najmanjši znesek je 0.001 BTC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">83</context>
@@ -964,6 +979,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="64a98449e66031949cbf82767dd17c30d4e6da7f">
         <source>Waiting for transaction... </source>
+        <target>Čakanje na transakcijo... </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">170</context>
@@ -972,6 +988,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="023f8e4927b3e3baa217a2577c78c5194b885a21">
         <source>Donation confirmed!</source>
+        <target>Prispevek potrjen!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">175</context>
@@ -980,6 +997,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="768fa94396eb6bb2834ec52fc1b5fad92273027d">
         <source>Thank you!</source>
+        <target>Hvala vam!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">175</context>
@@ -996,6 +1014,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ff4b7f4070be9e876c7610d99b9dbd53ff19dceb">
         <source>Loading graphs...</source>
+        <target>Nalaganje grafov...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">6</context>
@@ -1090,6 +1109,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2346453954cf21bf1326e790bfb3cb3369574ed9">
         <source>Name</source>
+        <target>Naziv</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">20</context>
@@ -1099,6 +1119,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8f301d45550dcb7dec91cc1fdc1f65f13c6a2892">
         <source>Precision</source>
+        <target>Decimalna mesta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">24</context>
@@ -1108,6 +1129,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e21556753a442f3d474ccfed50cd3f60bec18fe3">
         <source>Burned amount</source>
+        <target>Umaknjeno iz obtoka (burned)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">55</context>
@@ -1117,6 +1139,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="80475fc1bf22ded644db203c43a075f623c527d4">
         <source>Issuer</source>
+        <target>Izdajatelj</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">28</context>
@@ -1126,6 +1149,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e357dfd9e8685f17a862680cd98fe4aa2e068d28">
         <source>Issuance TX</source>
+        <target>Izdajna transakcija</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">32</context>
@@ -1135,6 +1159,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="c5b2c0d65b8fd12ebf8c0d79f562703776fc954e">
         <source>Pegged in</source>
+        <target>Pegged in</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">43</context>
@@ -1144,6 +1169,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8f5d6ce525a24b049fee47f9b2d8447cca97ccc8">
         <source>Pegged out</source>
+        <target>Pegged out</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">47</context>
@@ -1153,6 +1179,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="21530115a661c0faac6906740c586118628c2d54">
         <source>Issued amount</source>
+        <target>Izdani znesek</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">51</context>
@@ -1162,6 +1189,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1990b8bef8f205a7d1b821aa4f979cc9f4fe179d">
         <source>Circulating amount</source>
+        <target>Znesek v obtoku</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">59</context>
@@ -1175,6 +1203,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ef5ac12104751b93b03c16f64d4c3a4341dce89c">
         <source>Error loading asset data.</source>
+        <target>Napaka pri nalaganju podatkov o sredstvu.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">132</context>
@@ -1183,6 +1212,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e5d8bb389c702588877f039d72178f219453a72d">
         <source>Unknown</source>
+        <target>Neznano</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/miner/miner.component.html</context>
           <context context-type="linenumber">10</context>
@@ -1252,6 +1282,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1915fb658404dd3fa2a05f7d5fdd774ad72ef422">
         <source>View all »</source>
+        <target>Prikaži vse »</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">97</context>
@@ -1269,6 +1300,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="94c248797dd2b6af49068cb49c3b4bc26bec6a16">
         <source>TXID</source>
+        <target>TXID</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">107</context>
@@ -1277,6 +1309,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="dfc2fb58e2a04ed944a4bd80f0a2087775134068">
         <source>Amount</source>
+        <target>Znesek</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">108</context>
@@ -1294,6 +1327,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1cb0c1f40f7ef8d62da2ccdccfdd2b7cdd18d2b9">
         <source>USD</source>
+        <target>USD</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">109</context>
@@ -1312,6 +1346,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="60cd6fa18f925b42065d8cfb1a791efdc228b4c3">
         <source>Unconfirmed</source>
+        <target>Nepotrjeno</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">168</context>
@@ -1321,6 +1356,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="9daa50d6ccc822a983e2d794d55b1ce708e42836">
         <source>block</source>
+        <target>blok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">164</context>
@@ -1338,6 +1374,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="50904e472d4671388a20fbbb1ee9dfc0a4586fa1">
         <source>vB/s</source>
+        <target>vB/s</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">185</context>
@@ -1356,6 +1393,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="aacc1242420c527c8b9d4948a7ae7d94cde956e4">
         <source>Websocket</source>
+        <target>Websocket</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">9</context>
@@ -1365,6 +1403,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d9baa5e9ea1cde02012703c3a43f190947dadd04">
         <source>Endpoint</source>
+        <target>Končna točka</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">14</context>
@@ -1402,6 +1441,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="80449b1198ade0f86ec83b676f3a436026136efe">
         <source>Description</source>
+        <target>Opis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">15</context>
@@ -1512,6 +1552,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f4cba7faeb126346f09cc6af30124f9a343f7a28">
         <source>Blocks</source>
+        <target>Bloki</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">75</context>
@@ -1591,6 +1632,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8a4a4b8f308aaaeae782f7c9847013348d969c2d">
         <source>Transactions</source>
+        <target>Transakcije</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">129</context>
@@ -1663,6 +1705,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="9885457131a86be85a59c5366767e82c12d0a288">
         <source>Addresses</source>
+        <target>Naslovi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">179</context>
@@ -1707,6 +1750,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b861fd11d5aa8772acc40c5412621b6dd52378e8">
         <source>Assets</source>
+        <target>Sredstva</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">213</context>
@@ -1737,6 +1781,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a29245620333b4788dee4c478c327d99846513c6">
         <source>BSQ</source>
+        <target>BSQ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">238</context>
@@ -1831,6 +1876,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="169eed2bc3e08e1bea977bcc5d799379f6b8a758">
         <source>of</source>
+        <target>od</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">46</context>
@@ -1848,6 +1894,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.just-now">
         <source>just now</source>
+        <target>pravkar</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">3</context>
@@ -1859,6 +1906,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.sec.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> sec ago</source>
+        <target>pred <x equiv-text="{{counter}}" id="INTERPOLATION"/>s</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">4</context>
@@ -1870,6 +1918,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.secs.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> secs ago</source>
+        <target>pred <x equiv-text="{{counter}}" id="INTERPOLATION"/>s</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">5</context>
@@ -1881,6 +1930,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.second.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> second ago</source>
+        <target>pred <x equiv-text="{{counter}}" id="INTERPOLATION"/>s</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">6</context>
@@ -1892,6 +1942,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.seconds.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> seconds ago</source>
+        <target>pred <x equiv-text="{{counter}}" id="INTERPOLATION"/>s</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">7</context>
@@ -1903,6 +1954,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.min.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> min ago</source>
+        <target>pred <x equiv-text="{{counter}}" id="INTERPOLATION"/> min</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">8</context>
@@ -1914,6 +1966,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.mins.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> mins ago</source>
+        <target>pred <x equiv-text="{{counter}}" id="INTERPOLATION"/> min</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">9</context>
@@ -1925,6 +1978,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.minute.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> minute ago</source>
+        <target>pred <x equiv-text="{{counter}}" id="INTERPOLATION"/> min</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">10</context>
@@ -1936,6 +1990,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.minutes.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> minutes ago</source>
+        <target>pred <x equiv-text="{{counter}}" id="INTERPOLATION"/> min</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1947,6 +2002,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.hour.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> hour ago</source>
+        <target>pred <x equiv-text="{{counter}}" id="INTERPOLATION"/>h</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">12</context>
@@ -1958,6 +2014,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.hours.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> hours ago</source>
+        <target>pred <x equiv-text="{{counter}}" id="INTERPOLATION"/>h</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">13</context>
@@ -1969,6 +2026,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.day.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> day ago</source>
+        <target>pred <x equiv-text="{{counter}}" id="INTERPOLATION"/>d</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">14</context>
@@ -1980,6 +2038,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.days.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> days ago</source>
+        <target>pred <x equiv-text="{{counter}}" id="INTERPOLATION"/>d</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">15</context>
@@ -1991,6 +2050,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.week.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> week ago</source>
+        <target>pred <x equiv-text="{{counter}}" id="INTERPOLATION"/> tednom</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">16</context>
@@ -2002,6 +2062,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.weeks.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> weeks ago</source>
+        <target>pred <x equiv-text="{{counter}}" id="INTERPOLATION"/> tedni</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">17</context>
@@ -2013,6 +2074,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.month.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> month ago</source>
+        <target>pred <x equiv-text="{{counter}}" id="INTERPOLATION"/> mesecem</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">18</context>
@@ -2024,6 +2086,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.months.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> months ago</source>
+        <target>pred <x equiv-text="{{counter}}" id="INTERPOLATION"/> meseci</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">19</context>
@@ -2035,6 +2098,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.year.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> year ago</source>
+        <target>pred <x equiv-text="{{counter}}" id="INTERPOLATION"/> letom</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">20</context>
@@ -2046,6 +2110,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.years.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> years ago</source>
+        <target>pred <x equiv-text="{{counter}}" id="INTERPOLATION"/> leti</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">21</context>
@@ -2057,6 +2122,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0ca27703757bf9a636a0b9b61e6a0cf248781cb4">
         <source>SegWit</source>
+        <target>SegWit</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">1</context>
@@ -2074,6 +2140,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f0e7d6d900658ee5ce66d8fef3637caf13891c53">
         <source>RBF</source>
+        <target>RBF</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">8</context>
@@ -2083,6 +2150,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b2035d486e8d59980736a224891d9790c981691a">
         <source>Optimal</source>
+        <target>Optimalno</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">1</context>
@@ -2092,6 +2160,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0fa66b0c410bef320d3f370d7c98c51754b5f28f">
         <source>Overpaid <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/>x</source>
+        <target><x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/>-krat preplačano</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
@@ -2101,6 +2170,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f948156b1396cbbf78bbbce437c4d73a1f0770f3">
         <source>Overpaid <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/>x</source>
+        <target><x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/>-krat preplačano</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">3</context>
