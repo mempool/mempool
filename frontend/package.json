@@ -22,9 +22,11 @@
   "scripts": {
     "ng": "./node_modules/@angular/cli/bin/ng",
     "tsc": "./node_modules/typescript/bin/tsc",
+    "i18n-extract-from-source": "./node_modules/@angular/cli/bin/ng xi18n --ivy --out-file ./src/locale/messages.xlf",
+    "i18n-pull-from-transifex": "tx pull -a --parallel --minimum-perc 1",
     "serve": "ng serve --proxy-config proxy.conf.json",
     "start": "npm run generate-config && npm run sync-assets-dev && ng serve --proxy-config proxy.conf.json",
-    "build": "npm run generate-config && ng build --prod && npm run sync-assets",
+    "build": "npm run generate-config && ng build --prod --localize && npm run sync-assets",
     "sync-assets": "node sync-assets.js",
     "sync-assets-dev": "node sync-assets.js dev",
     "generate-config": "node generate-config.js",

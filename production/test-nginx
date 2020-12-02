@@ -1,0 +1,49 @@
+#!/usr/bin/env zsh
+PROTO=https
+HOSTNAME=mempool.ninja
+URL_BASE=${PROTO}://${HOSTNAME}
+
+curltest()
+{
+    read output
+    if [ "${output}" = "$1" ];then
+        echo "PASS: |${output}|"
+    else
+        echo "FAIL: |${output}|"
+        echo "WANT: |$1|"
+        exit 1
+    fi
+}
+
+echo "Starting tests to ${URL_BASE}"
+
+echo "Test locale for / with no header or cookie"
+curl -s ${URL_BASE}/ | grep '<html lang' | tr -d '\r\n' | curltest '<html lang="en-US">'
+
+echo "Test locale for / with 'ja' lang header and no cookie"
+curl -s -H 'Accept-Language: ja' ${URL_BASE}/ | grep '<html lang' | tr -d '\r\n' | curltest '<html lang="ja">'
+
+echo "Test locale for / with 'ja' lang header and 'en' lang cookie"
+curl -s -H 'Accept-Language: ja' --cookie 'lang=en' ${URL_BASE}/ | grep '<html lang' | tr -d '\r\n' | curltest '<html lang="en-US">'
+
+echo "Test locale for / with 'ja' lang header and 'sv' lang cookie"
+curl -s -H 'Accept-Language: ja' --cookie 'lang=sv' ${URL_BASE}/ | grep '<html lang' | tr -d '\r\n' | curltest '<html lang="sv">'
+
+echo "Test locale for / with 'ja' lang header and 'foo' lang cookie"
+curl -s -H 'Accept-Language: ja' --cookie 'lang=foo' ${URL_BASE}/ | grep '<html lang' | tr -d '\r\n' | curltest '<html lang="ja">'
+
+echo "Test rewrite for /resources/pools.json with no header and no cookie"
+curl -s -i ${URL_BASE}/resources/pools.json | grep -i content-type | tr -d '\r\n' | curltest 'content-type: application/json'
+
+echo "Test rewrite for /sv/resources/pools.json with no header and no cookie"
+curl -s -i ${URL_BASE}/sv/resources/pools.json | grep -i content-type | tr -d '\r\n' | curltest 'content-type: application/json'
+
+echo "Test rewrite for /resources/pools.json with 'ja' lang header and no cookie"
+curl -s -i -H 'Accept-Language: ja' ${URL_BASE}/resources/pools.json | grep -i content-type | tr -d '\r\n' | curltest 'content-type: application/json'
+
+echo "Test rewrite for /ja/resources/pools.json with 'ja' lang header and no cookie"
+curl -s -i -H 'Accept-Language: ja' ${URL_BASE}/ja/resources/pools.json | grep -i content-type | tr -d '\r\n' | curltest 'content-type: application/json'
+
+#curl -s -i -H 'Accept-Language: sv' ${URL_BASE}/ja/resources/pools.json | grep -i content-type
+#curl -s -i -H 'Accept-Language: foo' --cookie 'lang=sv' ${URL_BASE}/ja/resources/pools.json | grep -i content-type
+#curl -s -i -H 'Accept-Language: foo' --cookie 'lang=sv' ${URL_BASE}/sv/resources/pools.json | grep -i content-type
