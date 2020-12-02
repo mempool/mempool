@@ -56,7 +56,7 @@
                 <ng-template [ngIf]="transactionTime > 0">
                   <tr>
                     <td i18n="transaction.confirmed|Transaction Confirmed state">Confirmed</td>
-                    <td><span i18n="transaction.confirmed.after|Transaction confirmed after">After</span> <app-timespan [time]="tx.status.block_time - transactionTime"></app-timespan></td>
+                    <td><span i18n="transaction.confirmed.after|Transaction confirmed after">After</span>&nbsp;<app-timespan [time]="tx.status.block_time - transactionTime"></app-timespan></td>
                   </tr>
                 </ng-template>
                 <tr *ngIf="network !== 'liquid'">
@@ -123,11 +123,10 @@
                       </ng-template>
                       <ng-template #belowBlockLimit>
                         <ng-template [ngIf]="network === 'liquid'" [ngIfElse]="timeEstimateDefault">
-                          &lt; {{ 1 * txInBlockIndex + 1 }} <span i18n="transaction.minutes|Transaction Minutes">minutes</span> <i>({{ txInBlockIndex + 1 }} <span i18n="transaction.eta.block|Transaction ETA (X blocks)">block</span>{{ txInBlockIndex > 0 ? 's' : '' }})</i>
+                          &lt; {{ 1 * txInBlockIndex + 1 }}&nbsp;<span i18n="transaction.minutes|Transaction Minutes">minutes</span>&nbsp;<i>({{ txInBlockIndex + 1 }} <span i18n="transaction.eta.block|Transaction ETA (X blocks)">block</span>{{ txInBlockIndex > 0 ? 's' : '' }})</i>
                         </ng-template>
                         <ng-template #timeEstimateDefault>
-
-                          ~{{ 10 * txInBlockIndex + 10 }} <span i18n="transaction.minutes|Transaction Minutes">minutes</span> <i>({{ txInBlockIndex + 1 }} <span i18n="transaction.eta.block|Transaction ETA (X blocks)">block</span>{{ txInBlockIndex > 0 ? 's' : '' }})</i>
+                          ~{{ 10 * txInBlockIndex + 10 }}&nbsp;<span i18n="transaction.minutes|Transaction Minutes">minutes</span>&nbsp;<i>({{ txInBlockIndex + 1 }} <span i18n="transaction.eta.block|Transaction ETA (X blocks)">block</span>{{ txInBlockIndex > 0 ? 's' : '' }})</i>
                         </ng-template>
                       </ng-template>
                     </ng-template>
