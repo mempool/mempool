@@ -178,6 +178,10 @@
             <td>{{ tx.size | bytes: 2 }}</td>
           </tr>
           <tr>
+            <td i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
+            <td>{{ tx.weight / 4 | vbytes: 2 }}</td>
+          </tr>
+          <tr>
             <td i18n="transaction.weight|Transaction Weight">Weight</td>
             <td>{{ tx.weight | wuBytes: 2 }}</td>
           </tr>
@@ -245,6 +249,10 @@
     <div class="box">
       <table class="table table-borderless table-striped">
         <tbody>
+          <tr>
+            <td><span class="skeleton-loader"></span></td>
+            <td><span class="skeleton-loader"></span></td>
+          </tr>
           <tr>
             <td><span class="skeleton-loader"></span></td>
             <td><span class="skeleton-loader"></span></td>
