@@ -1,7 +1,7 @@
 <ng-container *ngIf="{ val: network$ | async } as network">
 <div class="container-xl">
   <div class="text-center">
-    <h2>{{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} API Service</h2>
+    <h2>{{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} <ng-container i18n="api-docs.title">API Service</ng-container></h2>
   </div>
 
   <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
