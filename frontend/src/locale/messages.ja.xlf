@@ -700,7 +700,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="78fe1342aab9e91cb7cbd1becbaacf3b719546b3">
         <source>TXID, block height, hash or address</source>
-        <target>TXID、アドレス、ブロックハッシュなど</target>
+        <target>TXID, アドレス, ブロックハッシュなど</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-form.component.html</context>
           <context context-type="linenumber">4</context>
