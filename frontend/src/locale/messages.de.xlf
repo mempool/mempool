@@ -1997,7 +1997,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.min.ago">
         <source><x equiv-text="{{counter}}" id="INTERPOLATION"/> min ago</source>
-        <target>vor einer min.</target>
+        <target>vor einer Min.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/translation-strings/translation-strings.component.html</context>
           <context context-type="linenumber">8</context>
