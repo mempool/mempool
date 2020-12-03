@@ -65,7 +65,7 @@ export interface Language {
 }
 
 export const languages: Language[] = [
-// { code: 'ar', name: 'العربية' },         // Arabic
+   { code: 'ar', name: 'العربية' },         // Arabic
 // { code: 'bg', name: 'Български' },       // Bulgarian
 // { code: 'bs', name: 'Bosanski' },        // Bosnian
 // { code: 'ca', name: 'Català' },          // Catalan
