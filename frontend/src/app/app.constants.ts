@@ -110,6 +110,6 @@ export const languages: Language[] = [
 // { code: 'th', name: 'ไทย' },             // Thai
    { code: 'tr', name: 'Türkçe' },          // Turkish
    { code: 'uk', name: 'Українська' },      // Ukrainian
-// { code: 'vi', name: 'Tiếng Việt' },      // Vietnamese
+   { code: 'vi', name: 'Tiếng Việt' },      // Vietnamese
    { code: 'zh', name: '中文' },            // Chinese
 ];
