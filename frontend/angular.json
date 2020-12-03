@@ -47,9 +47,9 @@
             "translation": "src/locale/messages.nl.xlf",
             "baseHref": "/nl/"
           },
-          "nn": {
-            "translation": "src/locale/messages.nn.xlf",
-            "baseHref": "/nn/"
+          "nb": {
+            "translation": "src/locale/messages.nb.xlf",
+            "baseHref": "/nb/"
           },
           "pt": {
             "translation": "src/locale/messages.pt.xlf",
