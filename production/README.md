@@ -102,10 +102,12 @@ Log notice syslog
 
 CookieAuthentication 1
 CookieAuthFileGroupReadable 1
+CookieAuthFile /var/db/tor/control_auth_cookie
+DataDirectory /var/db/tor
 DataDirectoryGroupReadable 1
 
 HiddenServiceDir /var/db/tor/mempool
-HiddenServicePort 80 127.0.0.1:81
+HiddenServicePort 80 127.0.0.1:80
 HiddenServiceVersion 3
 ```
 
