@@ -635,7 +635,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b784270035273a5744e3c23c0fff31eebca32050">
         <source>Subsidy + fees:</source>
-        <target>Nově vytěžené + poplatky:</target>
+        <target>Vytěžené + poplatky:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">57</context>
@@ -666,7 +666,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3be4e3c0a506f2d238c116f1bdeeae8da389efa3">
         <source>transactions</source>
-        <target>transakce</target>
+        <target>transakcí</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">85</context>
