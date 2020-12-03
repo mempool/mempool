@@ -69,13 +69,11 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
   getOrdinal(mempoolBlock: MempoolBlock): string {
     const blocksInBlock = Math.ceil(mempoolBlock.blockVSize / 1000000);
     if (this.mempoolBlockIndex === 0) {
-      return 'Next block';
+      return $localize`:@@mempool-block.next.block:Next block`;
     } else if (this.mempoolBlockIndex === env.KEEP_BLOCKS_AMOUNT - 1 && blocksInBlock > 1 ) {
-      return `Stack of ${blocksInBlock} blocks`;
+      return $localize`:@@mempool-block.stack.of.blocks:Stack of ${blocksInBlock}:INTERPOLATION: mempool blocks`;
     } else {
-      const s = ['th', 'st', 'nd', 'rd'];
-      const v = this.mempoolBlockIndex + 1 % 100;
-      return this.mempoolBlockIndex + 1 + (s[(v - 20) % 10] || s[v] || s[0]) + ' next block';
+      return $localize`:@@mempool-block.block.no:Mempool block ${this.mempoolBlockIndex + 1}:INTERPOLATION:`;
     }
  }
 }

@@ -1,5 +1,5 @@
 <div class="container-xl">
-  <h1 style="float: left;">Transactions</h1>
+  <h1 style="float: left;" i18n>Transactions</h1>
 
   <div class="d-block float-right">
     <form [formGroup]="radioGroupForm">
@@ -15,11 +15,11 @@
 
   <table class="table table-borderless table-striped">
     <thead>
-      <th style="width: 20%;">Transaction</th>
-      <th class="d-none d-md-block" style="width: 100%;">Type</th>
-      <th style="width: 20%;">Amount</th>
-      <th style="width: 20%;">Confirmed</th>
-      <th class="d-none d-md-block">Height</th>
+      <th style="width: 20%;" i18n>Transaction</th>
+      <th class="d-none d-md-block" style="width: 100%;" i18n>Type</th>
+      <th style="width: 20%;" i18n>Amount</th>
+      <th style="width: 20%;" i18n>Confirmed</th>
+      <th class="d-none d-md-block" i18n>Height</th>
     </thead>
     <tbody *ngIf="transactions.value; else loadingTmpl">
       <tr *ngFor="let tx of transactions.value[0]; trackBy: trackByFn">
@@ -37,7 +37,7 @@
             {{ calculateTotalOutput(tx.outputs) / 100 | number: '1.2-2' }}<span class="d-none d-md-inline"> BSQ</span>
           </ng-template>
         </td>
-        <td><app-time-since [time]="tx.time / 1000" [fastRender]="true"></app-time-since> ago</td>
+        <td><app-time-since [time]="tx.time / 1000" [fastRender]="true"></app-time-since></td>
         <td class="d-none d-md-block"><a [routerLink]="['/block/' | relativeUrl, tx.blockHash]" [state]="{ data: { blockHeight: tx.blockHeight } }">{{ tx.blockHeight }}</a></td>
       </tr> 
     </tbody>

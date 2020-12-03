@@ -82,7 +82,7 @@ export class BisqBlockComponent implements OnInit, OnDestroy {
         }
         this.isLoading = false;
         this.blockHeight = block.height;
-        this.seoService.setTitle('Block: #' + block.height + ': ' + block.hash);
+        this.seoService.setTitle($localize`:@@729754dd19eb9ce0670b0aeb5a6ae60574c2c563:Block` + ': #' + block.height + ': ' + block.hash);
         this.block = block;
       });
   }

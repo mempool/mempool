@@ -43,11 +43,10 @@ import { NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { FeesBoxComponent } from './components/fees-box/fees-box.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faAngleDoubleDown, faAngleDoubleUp, faAngleDown, faAngleUp, faBolt, faChartArea, faCogs, faCubes, faDatabase, faExchangeAlt, faInfoCircle,
+import { faAngleDown, faAngleUp, faBolt, faChartArea, faCogs, faCubes, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faTachometerAlt, faThList, faTint, faTv } from '@fortawesome/free-solid-svg-icons';
 import { ApiDocsComponent } from './components/api-docs/api-docs.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
-import { TranslationStringsComponent } from './components/translation-strings/translation-strings.component';
 import { StorageService } from './services/storage.service';
 
 @NgModule({
@@ -83,7 +82,6 @@ import { StorageService } from './services/storage.service';
     DashboardComponent,
     ApiDocsComponent,
     TermsOfServiceComponent,
-    TranslationStringsComponent,
   ],
   imports: [
     BrowserModule,
