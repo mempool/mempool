@@ -532,7 +532,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">112</context>
+          <context context-type="linenumber">116</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
@@ -704,10 +704,6 @@
           <context context-type="linenumber">85</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">46</context>
-        </context-group>
-        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
           <context context-type="linenumber">14</context>
         </context-group>
@@ -768,19 +764,27 @@
         </context-group>
         <note priority="1" from="description">address.balance</note>
       </trans-unit>
-      <trans-unit id="169eed2bc3e08e1bea977bcc5d799379f6b8a758" datatype="html">
-        <source>of</source>
+      <trans-unit id="714e34125b3343df73f19ec800b43be95217d5d4" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || &apos;?&apos; }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transaction</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">46</context>
+          <context context-type="linenumber">48</context>
         </context-group>
-        <note priority="1" from="description">shared.of</note>
+        <note priority="1" from="description">X of X Address Transaction</note>
+      </trans-unit>
+      <trans-unit id="0f6ada0cfb60aefd8f77f8a22349850ce186d666" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || &apos;?&apos; }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transactions</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
+        <note priority="1" from="description">X of X Address Transactions (Plural)</note>
       </trans-unit>
       <trans-unit id="f094f67fbe759cdbeb2ea14455634bbe5cc6375d" datatype="html">
         <source>Error loading address data.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">101</context>
+          <context context-type="linenumber">105</context>
         </context-group>
         <note priority="1" from="description">address.error.loading-address-data</note>
       </trans-unit>
@@ -1636,21 +1640,21 @@
         </context-group>
         <note priority="1" from="description">dashboard.latest-transactions.USD</note>
       </trans-unit>
-      <trans-unit id="e8bcb762b48cf52fbea66ce9c4f6b970b99a80fd" datatype="html">
-        <source>Collapse</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">131</context>
-        </context-group>
-        <note priority="1" from="description">dashboard.collapse</note>
-      </trans-unit>
       <trans-unit id="1f332ec66f3bc8d943c248091be7f92772ba280f" datatype="html">
         <source>Expand</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">132</context>
+          <context context-type="linenumber">131</context>
         </context-group>
         <note priority="1" from="description">dashboard.expand</note>
+      </trans-unit>
+      <trans-unit id="e8bcb762b48cf52fbea66ce9c4f6b970b99a80fd" datatype="html">
+        <source>Collapse</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">132</context>
+        </context-group>
+        <note priority="1" from="description">dashboard.collapse</note>
       </trans-unit>
       <trans-unit id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3" datatype="html">
         <source>Mempool size</source>
