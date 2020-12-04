@@ -128,8 +128,8 @@
 
   <button type="button" class="btn btn-secondary btn-sm d-block mx-auto" (click)="toggleCollapsed()">
     <div [ngSwitch]="collapseLevel">
-      <fa-icon *ngSwitchCase="'three'" [icon]="['fas', 'angle-down']" [fixedWidth]="true" i18n-title="dashboard.collapse" title="Collapse"></fa-icon>
-      <fa-icon *ngSwitchDefault [icon]="['fas', 'angle-up']" [fixedWidth]="true" i18n-title="dashboard.expand" title="Expand"></fa-icon>
+      <fa-icon *ngSwitchCase="'three'" [icon]="['fas', 'angle-down']" [fixedWidth]="true" i18n-title="dashboard.expand" title="Expand"></fa-icon>
+      <fa-icon *ngSwitchDefault [icon]="['fas', 'angle-up']" [fixedWidth]="true" i18n-title="dashboard.collapse" title="Collapse"></fa-icon>
     </div>
   </button>
 
