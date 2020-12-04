@@ -6,7 +6,7 @@
 
   <form [formGroup]="searchForm" class="form-inline">
     <div class="input-group m-2">
-      <input style="width: 250px;" formControlName="searchText" type="text" class="form-control" i8n-placeholder="Search Assets Placeholder Text" placeholder="Search asset">
+      <input style="width: 250px;" formControlName="searchText" type="text" class="form-control" i18n-placeholder="Search Assets Placeholder Text" placeholder="Search asset">
       <div class="input-group-append">
         <button [disabled]="!searchForm.get('searchText')?.value.length" class="btn btn-secondary" type="button" (click)="searchForm.get('searchText')?.setValue('');" autocomplete="off" i18n="Search Clear Button">Clear</button>
       </div>
