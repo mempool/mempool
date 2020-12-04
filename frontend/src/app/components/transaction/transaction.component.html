@@ -123,10 +123,10 @@
                       </ng-template>
                       <ng-template #belowBlockLimit>
                         <ng-template [ngIf]="network === 'liquid'" [ngIfElse]="timeEstimateDefault">
-                          &lt; {{ 1 * txInBlockIndex + 1 }}&nbsp;<span i18n="transaction.minutes|Transaction Minutes">minutes</span>&nbsp;<i>({{ txInBlockIndex + 1 }} <span i18n="transaction.eta.block|Transaction ETA (X blocks)">block</span>{{ txInBlockIndex > 0 ? 's' : '' }})</i>
+                          &lt; {{ 1 * txInBlockIndex + 1 }}&nbsp;<span i18n="transaction.minutes|Transaction Minutes">minutes</span>&nbsp;<i>(<ng-template [ngIf]="txInBlockIndex === 0" [ngIfElse]="blocksPlural" i18n="shared.block">{{ txInBlockIndex + 1 }} block</ng-template>)</i>
                         </ng-template>
                         <ng-template #timeEstimateDefault>
-                          ~{{ 10 * txInBlockIndex + 10 }}&nbsp;<span i18n="transaction.minutes|Transaction Minutes">minutes</span>&nbsp;<i>({{ txInBlockIndex + 1 }} <span i18n="transaction.eta.block|Transaction ETA (X blocks)">block</span>{{ txInBlockIndex > 0 ? 's' : '' }})</i>
+                          ~{{ 10 * txInBlockIndex + 10 }}&nbsp;<span i18n="transaction.minutes|Transaction Minutes">minutes</span>&nbsp;<i>(<ng-template [ngIf]="txInBlockIndex === 0" [ngIfElse]="blocksPlural" i18n="shared.block">{{ txInBlockIndex + 1 }} block</ng-template>)</i>
                         </ng-template>
                       </ng-template>
                     </ng-template>
@@ -285,3 +285,5 @@
 </div>
 
 <br>
+
+<ng-template #blocksPlural i18n="shared.blocks">{{ txInBlockIndex + 1 }} blocks</ng-template>

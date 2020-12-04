@@ -29,7 +29,7 @@
               <td>{{ mempoolBlock.nTx }}</td>
             </tr>
             <tr>
-              <td i18n="mempool-block.filled">Filled</td>
+              <td i18n="mempool-block.size">Size</td>
               <td>
                 <div class="progress position-relative">
                   <div class="progress-bar progress-mempool {{ (network$ | async) }}" role="progressbar" [ngStyle]="{'width': (mempoolBlock.blockVSize / 1000000) * 100 + '%' }"></div>

@@ -1,5 +1,5 @@
 <div class="container-xl">
-  <h1 style="float: left;" i18n>Blocks</h1>
+  <h1 style="float: left;" i18n="Bisq blocks header">Blocks</h1>
   <br>
 
   <div class="clearfix"></div>
@@ -9,10 +9,10 @@
   <div class="table-responsive-sm">
     <table class="table table-borderless table-striped">
       <thead>
-        <th style="width: 25%;" i18n>Height</th>
-        <th style="width: 25%;" i18n>Confirmed</th>
-        <th style="width: 25%;" i18n>Total sent</th>
-        <th class="d-none d-md-block" style="width: 25%;" i18n>Transactions</th>
+        <th style="width: 25%;" i18n="Bisq block height header">Height</th>
+        <th style="width: 25%;" i18="Bisq block confirmed time header">Confirmed</th>
+        <th style="width: 25%;" i18="Bisq block total BSQ tokens sent header">Total sent</th>
+        <th class="d-none d-md-block" style="width: 25%;" i18n="Bisq block transactions title">Transactions</th>
       </thead>
       <tbody *ngIf="blocks.value; else loadingTmpl">
         <tr *ngFor="let block of blocks.value[0]; trackBy: trackByFn">
