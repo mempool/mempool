@@ -130,7 +130,7 @@
                     </ng-template>
                     <ng-template #defaultscriptpubkey_type>
                       <ng-template [ngIf]="vout.scriptpubkey_type === 'op_return'" [ngIfElse]="otherPubkeyType">
-                        <a placement="bottom" [ngbTooltip]="vout.scriptpubkey | hex2ascii">OP_RETURN</a>&nbsp;<span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" class="badge badge-secondary scriptmessage">{{ vout.scriptpubkey_asm | hex2ascii }}</span>
+                        <a placement="bottom" [ngbTooltip]="vout.scriptpubkey_asm | hex2ascii">OP_RETURN</a>&nbsp;<span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" class="badge badge-secondary scriptmessage">{{ vout.scriptpubkey_asm | hex2ascii }}</span>
                       </ng-template>
                       <ng-template #otherPubkeyType>{{ vout.scriptpubkey_type | scriptpubkeyType }}</ng-template>
                     </ng-template>
