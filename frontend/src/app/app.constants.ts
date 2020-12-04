@@ -65,7 +65,7 @@ export interface Language {
 }
 
 export const languages: Language[] = [
-// { code: 'ar', name: 'العربية' },         // Arabic
+   { code: 'ar', name: 'العربية' },         // Arabic
 // { code: 'bg', name: 'Български' },       // Bulgarian
 // { code: 'bs', name: 'Bosanski' },        // Bosnian
 // { code: 'ca', name: 'Català' },          // Catalan
@@ -94,8 +94,8 @@ export const languages: Language[] = [
 // { code: 'ms', name: 'Bahasa Melayu' },   // Malay
    { code: 'nl', name: 'Nederlands' },      // Dutch
    { code: 'ja', name: '日本語' },          // Japanese
-// { code: 'nb', name: 'Norsk bokmål' },    // Norwegian Bokmål
-   { code: 'nn', name: 'Norsk' },           // Norwegian Nynorsk
+   { code: 'nb', name: 'Norsk' },           // Norwegian Bokmål
+// { code: 'nn', name: 'Norsk Nynorsk' },   // Norwegian Nynorsk
 // { code: 'pl', name: 'Polski' },          // Polish
    { code: 'pt', name: 'Português' },       // Portuguese
 // { code: 'pt-BR', name: 'Português (Brazil)' }, // Portuguese (Brazil)
