@@ -541,7 +541,7 @@
         <note priority="1" from="description">shared.confidential</note>
       </trans-unit>
       <trans-unit id="block.component.browser-title" datatype="html">
-        <source>Block <x id="INTERPOLATION" equiv-text="block.id"/>: <x id="INTERPOLATION" equiv-text="block.id"/></source>
+        <source>Block <x id="BLOCK_HEIGHT" equiv-text="block.height"/>: <x id="BLOCK_ID" equiv-text="block.id"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.ts</context>
           <context context-type="linenumber">98</context>
@@ -1429,6 +1429,90 @@
           <context context-type="linenumber">132</context>
         </context-group>
         <note priority="1" from="description">asset.error.loading-asset-data</note>
+      </trans-unit>
+      <trans-unit id="791a4c4131a0ae0aaf82ddb66dacdc7f1c007c3b" datatype="html">
+        <source>Registered assets</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+        <note priority="1" from="description">Registered assets page header</note>
+      </trans-unit>
+      <trans-unit id="99ee4faa69cd2ea8e3678c1f557c0ff1f05aae46" datatype="html">
+        <source>Clear</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+        <note priority="1" from="description">Search Clear Button</note>
+      </trans-unit>
+      <trans-unit id="cff1428d10d59d14e45edec3c735a27b5482db59" datatype="html">
+        <source>Name</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+        <note priority="1" from="description">Asset name header</note>
+      </trans-unit>
+      <trans-unit id="4ad173c0e4010b1f25bf58e96a383edc1b59cd80" datatype="html">
+        <source>Ticker</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+        <note priority="1" from="description">Asset ticker header</note>
+      </trans-unit>
+      <trans-unit id="465c39daa2b644679d73a451043622f1610a2084" datatype="html">
+        <source>Issuer domain</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">48</context>
+        </context-group>
+        <note priority="1" from="description">Asset Issuer Domain header</note>
+      </trans-unit>
+      <trans-unit id="d5e7c95d7c8920ae0a384e3fffb14776b1e203f4" datatype="html">
+        <source>Asset ID</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
+        <note priority="1" from="description">Asset ID header</note>
+      </trans-unit>
+      <trans-unit id="cf1fbcd10d4be4845152f2e10d1db9bc61dd9410" datatype="html">
+        <source>Issuance TX</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">50</context>
+        </context-group>
+        <note priority="1" from="description">Asset issuance transaction header</note>
+      </trans-unit>
+      <trans-unit id="52686df280be57a57e1e9ecf5786499b147e0e90" datatype="html">
+        <source>Error loading assets data.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">67</context>
+        </context-group>
+        <note priority="1" from="description">Asset data load error</note>
       </trans-unit>
       <trans-unit id="e5d8bb389c702588877f039d72178f219453a72d" datatype="html">
         <source>Unknown</source>
@@ -2405,7 +2489,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="bisq-block.component.browser-title" datatype="html">
-        <source>Block <x id="INTERPOLATION" equiv-text="block.hash"/>: <x id="INTERPOLATION" equiv-text="block.hash"/></source>
+        <source>Block <x id="BLOCK_HEIGHT" equiv-text="block.height"/>: <x id="BLOCK_HASH" equiv-text="block.hash"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.ts</context>
           <context context-type="linenumber">85</context>
