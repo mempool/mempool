@@ -970,7 +970,7 @@
           <context context-type="sourcefile">src/app/components/about/about.component.ts</context>
           <context context-type="linenumber">38</context>
         </context-group>
-        <note priority="1" from="description">master-page.api</note>
+        <note priority="1" from="description">master-page.about</note>
       </trans-unit>
       <trans-unit id="2b34680062c4aed90c4d846eab42d6e99501b783" datatype="html">
         <source>Offline</source>
