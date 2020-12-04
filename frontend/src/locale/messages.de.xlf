@@ -581,7 +581,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">112</context>
+          <context context-type="linenumber">116</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
@@ -591,6 +591,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="block.component.browser-title">
         <source>Block <x equiv-text="block.height" id="BLOCK_HEIGHT"/>: <x equiv-text="block.id" id="BLOCK_ID"/></source>
+        <target>Block <x equiv-text="block.height" id="BLOCK_HEIGHT"/>: <x equiv-text="block.id" id="BLOCK_ID"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.ts</context>
           <context context-type="linenumber">98</context>
@@ -766,10 +767,6 @@
           <context context-type="linenumber">85</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">46</context>
-        </context-group>
-        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
           <context context-type="linenumber">14</context>
         </context-group>
@@ -836,21 +833,28 @@
         </context-group>
         <note from="description" priority="1">address.balance</note>
       </trans-unit>
-      <trans-unit datatype="html" id="169eed2bc3e08e1bea977bcc5d799379f6b8a758">
-        <source>of</source>
-        <target>von</target>
+      <trans-unit datatype="html" id="714e34125b3343df73f19ec800b43be95217d5d4">
+        <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> transaction</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">46</context>
+          <context context-type="linenumber">48</context>
         </context-group>
-        <note from="description" priority="1">shared.of</note>
+        <note from="description" priority="1">X of X Address Transaction</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="0f6ada0cfb60aefd8f77f8a22349850ce186d666">
+        <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> transactions</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
+        <note from="description" priority="1">X of X Address Transactions (Plural)</note>
       </trans-unit>
       <trans-unit datatype="html" id="f094f67fbe759cdbeb2ea14455634bbe5cc6375d">
         <source>Error loading address data.</source>
         <target>Fehler beim Laden der Adressdaten.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">101</context>
+          <context context-type="linenumber">105</context>
         </context-group>
         <note from="description" priority="1">address.error.loading-address-data</note>
       </trans-unit>
@@ -1230,23 +1234,14 @@
         <note from="description" priority="1">Terms of Service</note>
         <note from="meaning" priority="1">shared.terms-of-service</note>
       </trans-unit>
-      <trans-unit datatype="html" id="bb4671d1c6b230ec821cf7f9c72210f32e8a6e7b">
-        <source>Navigate to</source>
-        <target>Gehe zu</target>
+      <trans-unit datatype="html" id="90a59434bf67130fb2531e0610f10d28af0fcc87">
+        <source>Navigate to <x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/about&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/>https://mempool.space/about<x ctype="x-a" equiv-text="&lt;/a&gt; " id="CLOSE_LINK"/> to sponsor</source>
+        <target>Um zu sponsern, Navigieren Sie zu <x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/about&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/> https://mempool.space/about <x ctype="x-a" equiv-text="&lt;/a&gt; " id="CLOSE_LINK"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">65</context>
         </context-group>
-        <note from="description" priority="1">about.navigate-to</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="4e6c8a60b2cd0e40c8d266c6333d873d2f2db77e">
-        <source>to sponsor</source>
-        <target>um zu sponsern</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">65</context>
-        </context-group>
-        <note from="description" priority="1">about.to-sponsor</note>
+        <note from="description" priority="1">about.navigate-to-sponsor</note>
       </trans-unit>
       <trans-unit datatype="html" id="39120551bb7b48cc1a7b94a6cb58aef166eee801">
         <source>Amount required</source>
@@ -1570,6 +1565,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="791a4c4131a0ae0aaf82ddb66dacdc7f1c007c3b">
         <source>Registered assets</source>
+        <target>Registrierte Vermögenswerte</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">2</context>
@@ -1578,6 +1574,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="99ee4faa69cd2ea8e3678c1f557c0ff1f05aae46">
         <source>Clear</source>
+        <target>Löschen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1586,6 +1583,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="cff1428d10d59d14e45edec3c735a27b5482db59">
         <source>Name</source>
+        <target>Name</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">19</context>
@@ -1598,6 +1596,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4ad173c0e4010b1f25bf58e96a383edc1b59cd80">
         <source>Ticker</source>
+        <target>Ticker</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">20</context>
@@ -1610,6 +1609,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="465c39daa2b644679d73a451043622f1610a2084">
         <source>Issuer domain</source>
+        <target>Ausstellerdomäne</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">21</context>
@@ -1622,6 +1622,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d5e7c95d7c8920ae0a384e3fffb14776b1e203f4">
         <source>Asset ID</source>
+        <target>Vermögenswert ID</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">22</context>
@@ -1634,6 +1635,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="cf1fbcd10d4be4845152f2e10d1db9bc61dd9410">
         <source>Issuance TX</source>
+        <target>Ausgabe TX</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">23</context>
@@ -1646,11 +1648,28 @@
       </trans-unit>
       <trans-unit datatype="html" id="52686df280be57a57e1e9ecf5786499b147e0e90">
         <source>Error loading assets data.</source>
+        <target>Fehler beim Laden der Daten der Vermögenswerte.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">67</context>
         </context-group>
         <note from="description" priority="1">Asset data load error</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="miner-identified-by-payout">
+        <source>Identified by payout address: '<x equiv-text="vout.scriptpubkey_address" id="PAYOUT_ADDRESS"/>'</source>
+        <target>Identifiziert durch die Auszahlungsadresse: '<x equiv-text="vout.scriptpubkey_address" id="PAYOUT_ADDRESS"/>'</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="miner-identified-by-coinbase">
+        <source>Identified by coinbase tag: '<x equiv-text="tag" id="TAG"/>'</source>
+        <target>Identifiziert durch den Coinbase-Tag: '<x equiv-text="tag" id="TAG"/>'</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
+          <context context-type="linenumber">52</context>
+        </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="e5d8bb389c702588877f039d72178f219453a72d">
         <source>Unknown</source>
@@ -1780,23 +1799,23 @@
         </context-group>
         <note from="description" priority="1">dashboard.latest-transactions.USD</note>
       </trans-unit>
-      <trans-unit datatype="html" id="e8bcb762b48cf52fbea66ce9c4f6b970b99a80fd">
-        <source>Collapse</source>
-        <target>Reduzieren</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">131</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.collapse</note>
-      </trans-unit>
       <trans-unit datatype="html" id="1f332ec66f3bc8d943c248091be7f92772ba280f">
         <source>Expand</source>
         <target>Erweitern</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">132</context>
+          <context context-type="linenumber">131</context>
         </context-group>
         <note from="description" priority="1">dashboard.expand</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="e8bcb762b48cf52fbea66ce9c4f6b970b99a80fd">
+        <source>Collapse</source>
+        <target>Reduzieren</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">132</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.collapse</note>
       </trans-unit>
       <trans-unit datatype="html" id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3">
         <source>Mempool size</source>
@@ -2396,6 +2415,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1be04d5407059059b596f72696a3d1704ce9c0ef">
         <source>This transaction could save <x equiv-text=" could save {{ segwitGains.potentialBech32Gains * 100 | number " id="INTERPOLATION"/>% on fees by upgrading to native SegWit-Bech32 or <x equiv-text="t-Bech32 or {{ segwitGains.potentialP2shGains * 100 | number:" id="INTERPOLATION_1"/>% by upgrading to SegWit-P2SH</source>
+        <target>Diese Transaktion könne durch ein Upgrade auf natives SegWit-Bech32 <x equiv-text=" could save {{ segwitGains.potentialBech32Gains * 100 | number " id="INTERPOLATION"/>% an Gebühren eingesparen, durch ein Upgrade auf SegWit-P2SH <x equiv-text="t-Bech32 or {{ segwitGains.potentialP2shGains * 100 | number:" id="INTERPOLATION_1"/>%</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">5</context>
@@ -2404,6 +2424,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5531c86f8e09b83930f66566fb85baf3057e2f51">
         <source>This transaction support Replace-By-Fee (RBF) allowing fee bumping</source>
+        <target>Diese Transaktion unterstützt Replace-By-Fee (RBF) und ermöglicht damit Gebührenerhöhungen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">8</context>
@@ -2432,6 +2453,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f1b50928719b5261ccc81e9ec3ea4cc074018f89">
         <source>Only ~<x equiv-text="ltip=&quot;Only ~{{ median" id="INTERPOLATION"/> sat/vB was needed to get into this block</source>
+        <target>Nur ~<x equiv-text="ltip=&quot;Only ~{{ median" id="INTERPOLATION"/> sat/vB wurden benötigt, um in diesen Block zu gelangen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
@@ -2472,6 +2494,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.year.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> year ago</source>
+        <target>vor einem Jahr</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">58</context>
@@ -2479,6 +2502,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.month.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> month ago</source>
+        <target>vor einem Monat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">59</context>
@@ -2486,6 +2510,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.week.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> week ago</source>
+        <target>vor einer Woche</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">60</context>
@@ -2493,6 +2518,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.day.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> day ago</source>
+        <target>vor einem Tag</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">61</context>
@@ -2500,6 +2526,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.hour.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> hour ago</source>
+        <target>vor einer Stunde</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">62</context>
@@ -2507,6 +2534,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.min.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> min ago</source>
+        <target>vor einer Min.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">65</context>
@@ -2514,6 +2542,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.minute.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> minute ago</source>
+        <target>vor einer Minute</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -2521,6 +2550,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.sec.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> sec ago</source>
+        <target>vor einer Sek.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">70</context>
@@ -2528,6 +2558,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.second.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> second ago</source>
+        <target>vor <x equiv-text="counter" id="INTERPOLATION"/> Sekunden</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">72</context>
@@ -2535,6 +2566,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.years.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> years ago</source>
+        <target>vor <x equiv-text="counter" id="INTERPOLATION"/> Jahren</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">76</context>
@@ -2542,6 +2574,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.months.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> months ago</source>
+        <target>vor <x equiv-text="counter" id="INTERPOLATION"/> Monaten</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">77</context>
@@ -2549,6 +2582,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.weeks.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> weeks ago</source>
+        <target>vor <x equiv-text="counter" id="INTERPOLATION"/> Wochen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">78</context>
@@ -2556,6 +2590,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.days.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> days ago</source>
+        <target>vor <x equiv-text="counter" id="INTERPOLATION"/> Tagen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">79</context>
@@ -2563,6 +2598,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.hours.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> hours ago</source>
+        <target>vor <x equiv-text="counter" id="INTERPOLATION"/> Stunden</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">80</context>
@@ -2570,6 +2606,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.mins.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> mins ago</source>
+        <target>vor <x equiv-text="counter" id="INTERPOLATION"/> Min.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">83</context>
@@ -2577,6 +2614,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.minutes.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> minutes ago</source>
+        <target>vor <x equiv-text="counter" id="INTERPOLATION"/> Minuten</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">85</context>
@@ -2584,6 +2622,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.secs.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> secs ago</source>
+        <target>vor <x equiv-text="counter" id="INTERPOLATION"/> Sek.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">88</context>
@@ -2591,6 +2630,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.seconds.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> seconds ago</source>
+        <target>vor <x equiv-text="counter" id="INTERPOLATION"/> Sekunden</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">90</context>
@@ -2598,6 +2638,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2a30a4cdb123a03facc5ab8c5b3e6d8b8dbbc3d4">
         <source>BSQ statistics</source>
+        <target>BSQ-Statistiken</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.ts</context>
           <context context-type="linenumber">24</context>
@@ -2609,6 +2650,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1cde02174ca8cc2cc0b18172cd2ec598aa82dcc7">
         <source>Existing amount</source>
+        <target>Bestehender Betrag</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">12</context>
@@ -2621,6 +2663,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3218e6768d0d5fbc69d4931819e21451c89ba8ed">
         <source>Minted amount</source>
+        <target>Geprägte Menge</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">16</context>
@@ -2633,6 +2676,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="32377aae07f946d943f9361c8e518f714988c619">
         <source>Burnt amount</source>
+        <target>Verbrannte Menge</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">20</context>
@@ -2645,6 +2689,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7882f2edb1d4139800b276b6b0bbf5ae0b2234ef">
         <source>Addresses</source>
+        <target>Adressen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">24</context>
@@ -2657,6 +2702,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fb5b5aec9a6add4912de64b7bbc55884cc7f8e3a">
         <source>Unspent TXOs</source>
+        <target>Unspent TXOs</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">28</context>
@@ -2669,6 +2715,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0f8a41c901cd606bd3389d8a022cee193264f20b">
         <source>Spent TXOs</source>
+        <target>Spent TXOs</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">32</context>
@@ -2677,6 +2724,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4d6ee53858628de558a18623894a03c8673bce9e">
         <source>Price</source>
+        <target>Preis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">36</context>
@@ -2689,6 +2737,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b8552f7d0a57c0cc7e63eb57d3371ea35a8bbfd3">
         <source>Market cap</source>
+        <target>Marktkapitalisierung</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">40</context>
@@ -2701,6 +2750,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq-address.component.browser-title">
         <source>Address: <x equiv-text="this.addressString" id="INTERPOLATION"/></source>
+        <target>Adresse: <x equiv-text="this.addressString" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.ts</context>
           <context context-type="linenumber">39</context>
@@ -2708,6 +2758,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq-block.component.browser-title">
         <source>Block <x equiv-text="block.height" id="BLOCK_HEIGHT"/>: <x equiv-text="block.hash" id="BLOCK_HASH"/></source>
+        <target>Block <x equiv-text="block.height" id="BLOCK_HEIGHT"/>: <x equiv-text="block.hash" id="BLOCK_HASH"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.ts</context>
           <context context-type="linenumber">85</context>
@@ -2715,6 +2766,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq-transactions.filter">
         <source>Filter</source>
+        <target>Auswahl</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">55</context>
@@ -2722,6 +2774,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq-transactions.selectall">
         <source>Select all</source>
+        <target>Alle Auswählen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">56</context>
@@ -2729,6 +2782,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq-transactions.unselectall">
         <source>Unselect all</source>
+        <target>Auswahl aufheben</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">57</context>
@@ -2736,6 +2790,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a1daf43d26259bffdd5eb2d405c61583540b113b">
         <source>Confirmed</source>
+        <target>Bestätigt</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
           <context context-type="linenumber">21</context>

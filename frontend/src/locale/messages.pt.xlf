@@ -577,7 +577,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">112</context>
+          <context context-type="linenumber">116</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
@@ -759,10 +759,6 @@
           <context context-type="linenumber">85</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">46</context>
-        </context-group>
-        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
           <context context-type="linenumber">14</context>
         </context-group>
@@ -828,21 +824,28 @@
         </context-group>
         <note from="description" priority="1">address.balance</note>
       </trans-unit>
-      <trans-unit datatype="html" id="169eed2bc3e08e1bea977bcc5d799379f6b8a758">
-        <source>of</source>
-        <target>de</target>
+      <trans-unit datatype="html" id="714e34125b3343df73f19ec800b43be95217d5d4">
+        <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> transaction</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">46</context>
+          <context context-type="linenumber">48</context>
         </context-group>
-        <note from="description" priority="1">shared.of</note>
+        <note from="description" priority="1">X of X Address Transaction</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="0f6ada0cfb60aefd8f77f8a22349850ce186d666">
+        <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> transactions</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
+        <note from="description" priority="1">X of X Address Transactions (Plural)</note>
       </trans-unit>
       <trans-unit datatype="html" id="f094f67fbe759cdbeb2ea14455634bbe5cc6375d">
         <source>Error loading address data.</source>
         <target>Erro ao carregar os dados do endereço.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">101</context>
+          <context context-type="linenumber">105</context>
         </context-group>
         <note from="description" priority="1">address.error.loading-address-data</note>
       </trans-unit>
@@ -1211,23 +1214,13 @@
         <note from="description" priority="1">Terms of Service</note>
         <note from="meaning" priority="1">shared.terms-of-service</note>
       </trans-unit>
-      <trans-unit datatype="html" id="bb4671d1c6b230ec821cf7f9c72210f32e8a6e7b">
-        <source>Navigate to</source>
-        <target>Navegar para</target>
+      <trans-unit datatype="html" id="90a59434bf67130fb2531e0610f10d28af0fcc87">
+        <source>Navigate to <x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/about&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/>https://mempool.space/about<x ctype="x-a" equiv-text="&lt;/a&gt; " id="CLOSE_LINK"/> to sponsor</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">65</context>
         </context-group>
-        <note from="description" priority="1">about.navigate-to</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="4e6c8a60b2cd0e40c8d266c6333d873d2f2db77e">
-        <source>to sponsor</source>
-        <target>patrocinar</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">65</context>
-        </context-group>
-        <note from="description" priority="1">about.to-sponsor</note>
+        <note from="description" priority="1">about.navigate-to-sponsor</note>
       </trans-unit>
       <trans-unit datatype="html" id="39120551bb7b48cc1a7b94a6cb58aef166eee801">
         <source>Amount required</source>
@@ -1626,6 +1619,20 @@
         </context-group>
         <note from="description" priority="1">Asset data load error</note>
       </trans-unit>
+      <trans-unit datatype="html" id="miner-identified-by-payout">
+        <source>Identified by payout address: '<x equiv-text="vout.scriptpubkey_address" id="PAYOUT_ADDRESS"/>'</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="miner-identified-by-coinbase">
+        <source>Identified by coinbase tag: '<x equiv-text="tag" id="TAG"/>'</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
+          <context context-type="linenumber">52</context>
+        </context-group>
+      </trans-unit>
       <trans-unit datatype="html" id="e5d8bb389c702588877f039d72178f219453a72d">
         <source>Unknown</source>
         <target>Desconhecido</target>
@@ -1754,21 +1761,21 @@
         </context-group>
         <note from="description" priority="1">dashboard.latest-transactions.USD</note>
       </trans-unit>
-      <trans-unit datatype="html" id="e8bcb762b48cf52fbea66ce9c4f6b970b99a80fd">
-        <source>Collapse</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">131</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.collapse</note>
-      </trans-unit>
       <trans-unit datatype="html" id="1f332ec66f3bc8d943c248091be7f92772ba280f">
         <source>Expand</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">132</context>
+          <context context-type="linenumber">131</context>
         </context-group>
         <note from="description" priority="1">dashboard.expand</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="e8bcb762b48cf52fbea66ce9c4f6b970b99a80fd">
+        <source>Collapse</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">132</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.collapse</note>
       </trans-unit>
       <trans-unit datatype="html" id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3">
         <source>Mempool size</source>

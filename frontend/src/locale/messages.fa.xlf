@@ -181,7 +181,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d2eb45d1cd8cd146b7cb0223ab97a4b03b614060">
         <source>sat/vB</source>
-        <target>sat/vB</target>
+        <target>‏sat بر vB‏</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">81</context>
@@ -581,7 +581,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">112</context>
+          <context context-type="linenumber">116</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
@@ -767,10 +767,6 @@
           <context context-type="linenumber">85</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">46</context>
-        </context-group>
-        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
           <context context-type="linenumber">14</context>
         </context-group>
@@ -837,21 +833,30 @@
         </context-group>
         <note from="description" priority="1">address.balance</note>
       </trans-unit>
-      <trans-unit datatype="html" id="169eed2bc3e08e1bea977bcc5d799379f6b8a758">
-        <source>of</source>
-        <target>از</target>
+      <trans-unit datatype="html" id="714e34125b3343df73f19ec800b43be95217d5d4">
+        <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> transaction</source>
+        <target><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> از <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> تراکنش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">46</context>
+          <context context-type="linenumber">48</context>
         </context-group>
-        <note from="description" priority="1">shared.of</note>
+        <note from="description" priority="1">X of X Address Transaction</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="0f6ada0cfb60aefd8f77f8a22349850ce186d666">
+        <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> transactions</source>
+        <target><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> از <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> تراکنش</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
+        <note from="description" priority="1">X of X Address Transactions (Plural)</note>
       </trans-unit>
       <trans-unit datatype="html" id="f094f67fbe759cdbeb2ea14455634bbe5cc6375d">
         <source>Error loading address data.</source>
         <target>حطا در بازکردن داده‌های آدرس.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">101</context>
+          <context context-type="linenumber">105</context>
         </context-group>
         <note from="description" priority="1">address.error.loading-address-data</note>
       </trans-unit>
@@ -887,6 +892,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8a7b4bd44c0ac71b2e72de0398b303257f7d2f54">
         <source>Blocks</source>
+        <target>بلاک‌ها</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
           <context context-type="linenumber">2</context>
@@ -1033,6 +1039,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e351b40b3869a5c7d19c3d4918cb1ac7aaab95c4">
         <source>API</source>
+        <target>رابط برنامه‌نویسی نرم‌افزار (API)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">56</context>
@@ -1045,6 +1052,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="004b222ff9ef9dd4771b777950ca1d0e4cd4348a">
         <source>About</source>
+        <target>درباره</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">59</context>
@@ -1084,6 +1092,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="299f97b8ee9c62d45f2cc01961aa1e5101d6d05a">
         <source>Stats</source>
+        <target>آمار</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">35</context>
@@ -1092,6 +1101,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f65253954b66e929a8b4d5ecaf61f9129f8cec64">
         <source>Dashboard</source>
+        <target>داشبورد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">40</context>
@@ -1100,6 +1110,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5d4f792f048fcaa6df5948575d7cb325c9393383">
         <source>Graphs</source>
+        <target>گراف‌ها</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">46</context>
@@ -1112,6 +1123,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="46ce8155c9ab953edeec97e8950b5a21e67d7c4e">
         <source>TV view</source>
+        <target>نمایش تلویزیونی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">49</context>
@@ -1124,6 +1136,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ee8f8008bae6ce3a49840c4e1d39b4af23d4c263">
         <source>Assets</source>
+        <target>دارایی‌ها</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">53</context>
@@ -1223,23 +1236,14 @@
         <note from="description" priority="1">Terms of Service</note>
         <note from="meaning" priority="1">shared.terms-of-service</note>
       </trans-unit>
-      <trans-unit datatype="html" id="bb4671d1c6b230ec821cf7f9c72210f32e8a6e7b">
-        <source>Navigate to</source>
-        <target>برای حمایت به</target>
+      <trans-unit datatype="html" id="90a59434bf67130fb2531e0610f10d28af0fcc87">
+        <source>Navigate to <x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/about&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/>https://mempool.space/about<x ctype="x-a" equiv-text="&lt;/a&gt; " id="CLOSE_LINK"/> to sponsor</source>
+        <target>برای حامی شدن به اینجا برو <x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/about&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/>https://mempool.space/about<x ctype="x-a" equiv-text="&lt;/a&gt; " id="CLOSE_LINK"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">65</context>
         </context-group>
-        <note from="description" priority="1">about.navigate-to</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="4e6c8a60b2cd0e40c8d266c6333d873d2f2db77e">
-        <source>to sponsor</source>
-        <target>برو</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">65</context>
-        </context-group>
-        <note from="description" priority="1">about.to-sponsor</note>
+        <note from="description" priority="1">about.navigate-to-sponsor</note>
       </trans-unit>
       <trans-unit datatype="html" id="39120551bb7b48cc1a7b94a6cb58aef166eee801">
         <source>Amount required</source>
@@ -1324,6 +1328,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="add9d52e5bf541c941df44e251a5c1cafcc92e9d">
         <source>Invert</source>
+        <target>معکوس</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">43</context>
@@ -1391,6 +1396,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="mempool-block.next.block">
         <source>Next block</source>
+        <target>بلاک بعدی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">72</context>
@@ -1398,6 +1404,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="mempool-block.stack.of.blocks">
         <source>Stack of <x equiv-text="blocksInBlock" id="INTERPOLATION"/> mempool blocks</source>
+        <target>مجموعه <x equiv-text="blocksInBlock" id="INTERPOLATION"/> بلاک ممپول</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">74</context>
@@ -1405,6 +1412,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="mempool-block.block.no">
         <source>Mempool block <x equiv-text="this.mempoolBlockIndex + 1" id="INTERPOLATION"/></source>
+        <target>بلاک ممپول <x equiv-text="this.mempoolBlockIndex + 1" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">76</context>
@@ -1430,6 +1438,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="asset.component.asset-browser-title">
         <source>Asset: <x equiv-text="this.assetString" id="INTERPOLATION"/></source>
+        <target>دارایی: <x equiv-text="this.assetString" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.ts</context>
           <context context-type="linenumber">73</context>
@@ -1531,6 +1540,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d2a84740e76b7220516a9f10644e4b3bdabdb833">
         <source>Peg In/Out and Burn Transactions</source>
+        <target>تراکنش‌های سوزاندن و PegIn/Out</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">75</context>
@@ -1539,6 +1549,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fcbd3315aa10b59ba6ef383c6f16ace6c9d53b71">
         <source>Issuance and Burn Transactions</source>
+        <target>تراکنش‌های صدور و سوزاندن</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">75</context>
@@ -1556,6 +1567,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="791a4c4131a0ae0aaf82ddb66dacdc7f1c007c3b">
         <source>Registered assets</source>
+        <target>دارایی‌های ثبت‌شده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">2</context>
@@ -1564,6 +1576,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="99ee4faa69cd2ea8e3678c1f557c0ff1f05aae46">
         <source>Clear</source>
+        <target>پاک‌کردن</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1572,6 +1585,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="cff1428d10d59d14e45edec3c735a27b5482db59">
         <source>Name</source>
+        <target>نام</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">19</context>
@@ -1584,6 +1598,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4ad173c0e4010b1f25bf58e96a383edc1b59cd80">
         <source>Ticker</source>
+        <target>Ticker</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">20</context>
@@ -1596,6 +1611,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="465c39daa2b644679d73a451043622f1610a2084">
         <source>Issuer domain</source>
+        <target>دامنه صادرکننده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">21</context>
@@ -1608,6 +1624,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d5e7c95d7c8920ae0a384e3fffb14776b1e203f4">
         <source>Asset ID</source>
+        <target>شناسه دارایی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">22</context>
@@ -1620,6 +1637,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="cf1fbcd10d4be4845152f2e10d1db9bc61dd9410">
         <source>Issuance TX</source>
+        <target>تراکنش صادرکننده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">23</context>
@@ -1632,11 +1650,28 @@
       </trans-unit>
       <trans-unit datatype="html" id="52686df280be57a57e1e9ecf5786499b147e0e90">
         <source>Error loading assets data.</source>
+        <target>خطا در بارکردن داده‌های دارایی‌ها.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">67</context>
         </context-group>
         <note from="description" priority="1">Asset data load error</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="miner-identified-by-payout">
+        <source>Identified by payout address: '<x equiv-text="vout.scriptpubkey_address" id="PAYOUT_ADDRESS"/>'</source>
+        <target>شناسایی شده با آدرس پرداخت: '<x equiv-text="vout.scriptpubkey_address" id="PAYOUT_ADDRESS"/>'</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="miner-identified-by-coinbase">
+        <source>Identified by coinbase tag: '<x equiv-text="tag" id="TAG"/>'</source>
+        <target>شناسایی شده با برچسب coinbase تراکنش: '<x equiv-text="tag" id="TAG"/>'</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
+          <context context-type="linenumber">52</context>
+        </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="e5d8bb389c702588877f039d72178f219453a72d">
         <source>Unknown</source>
@@ -1766,21 +1801,23 @@
         </context-group>
         <note from="description" priority="1">dashboard.latest-transactions.USD</note>
       </trans-unit>
-      <trans-unit datatype="html" id="e8bcb762b48cf52fbea66ce9c4f6b970b99a80fd">
-        <source>Collapse</source>
+      <trans-unit datatype="html" id="1f332ec66f3bc8d943c248091be7f92772ba280f">
+        <source>Expand</source>
+        <target>بستن</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">131</context>
         </context-group>
-        <note from="description" priority="1">dashboard.collapse</note>
+        <note from="description" priority="1">dashboard.expand</note>
       </trans-unit>
-      <trans-unit datatype="html" id="1f332ec66f3bc8d943c248091be7f92772ba280f">
-        <source>Expand</source>
+      <trans-unit datatype="html" id="e8bcb762b48cf52fbea66ce9c4f6b970b99a80fd">
+        <source>Collapse</source>
+        <target>بازکردن</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">132</context>
         </context-group>
-        <note from="description" priority="1">dashboard.expand</note>
+        <note from="description" priority="1">dashboard.collapse</note>
       </trans-unit>
       <trans-unit datatype="html" id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3">
         <source>Mempool size</source>
@@ -1804,6 +1841,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ee0d8fddc1dd89c919c21db1b8b2d848d05cdfdc">
         <source><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> block</source>
+        <target><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> بلاک</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">164</context>
@@ -1812,6 +1850,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="33d349897f450ba879a5a0f48842b6a3d884cac1">
         <source><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> blocks</source>
+        <target><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> بلاک</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">164</context>
@@ -1848,6 +1887,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f11bc15f83d9174bd27454d32977b5025a66537d">
         <source>API Service</source>
+        <target>خدمات API</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">4</context>
@@ -2225,6 +2265,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4eb50557085c85bfca995b6ee0de56ec3f5e97eb">
         <source>Get the list of unspent transaction outputs associated with the address/scripthash. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vout<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (with the status of the funding tx).<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/>There is also a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>valuecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> field that may appear in place of <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, plus the following additional fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>asset<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>assetcommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>noncecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>surjection_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>range_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></source>
+        <target>دریافت لیست خروجی تراکنش‌های مرتبط با آدرس/چکیده‌اسکریپت. فیلدهای در دسترس: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vout<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, و <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (به همراه وضعیت تراکنش پرداخت‌کننده). <x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/>همچنین یک فیلد <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>valuecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>وجود دارد که ممکن است به جای <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> قرار بگیرد، به اضافه این فیلدها: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>asset<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>assetcommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>noncecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>surjection_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, و <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>range_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">205</context>
@@ -2250,6 +2291,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4a0bf20cf26a4f4a387bed5c3d47c23294cb606e">
         <source>Returns transactions associated with the specified Liquid asset. For the network's native asset, returns a list of peg in, peg out, and burn transactions. For user-issued assets, returns a list of issuance, reissuance, and burn transactions. Does not include regular transactions transferring this asset.</source>
+        <target>تراکنش‌های مرتبط با دارایی Liquid مشخص شده را برمی‌گرداند. برای دارایی‌های اصیل شبکه، لیستی از peg-in ها، peg-outها و تراکنش‌های سوزاندن برمی‌گرداند. برای دارایی‌هایی که کاربر آن را صادر کرده است، لیستی از صدورها، باز صدورها و تراکنش‌های سوزاندن برمی‌گرداند. شامل تراکنش‌های معمولی برای انتقال این دارایی نمی‌شود.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">227</context>
@@ -2257,6 +2299,11 @@
       </trans-unit>
       <trans-unit datatype="html" id="44a238eb28145f904f3a5bbfd4050987668f78d0">
         <source>Get the current total supply of the specified asset. For the native asset (L-BTC), this is calculated as [chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount. For issued assets, this is calculated as [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount. Not available for assets with blinded issuances. If /decimal is specified, returns the supply as a decimal according to the asset's divisibility. Otherwise, returned in base units.</source>
+        <target>مقدار کل دارایی مشخص شده را برمی‌گرداند. برای دارایی‌های اصیل (L-BTC)، به این صورت محاسبه می‌شود 
+[chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount
+برای دارایی‌های صادر شده محاسبه آن این صورت است
+ [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount.
+برای دارایی‌های صدور کور داشته‌اند در دسترس نیست. اگر /decimal مشخص بشود، مقدار کل را به صورت decimal با توجه به تقسیم‌پذیری دارایی برمی‌گرداند. در غیر این صورت با واحدهای پایه برمی‌گرداند.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">231</context>
@@ -2330,6 +2377,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="clipboard.copied-message">
         <source>Copied!</source>
+        <target>کپی شد!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/clipboard/clipboard.component.ts</context>
           <context context-type="linenumber">15</context>
@@ -2337,6 +2385,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f85c05147b720576e50336cf26f63d3b05601699">
         <source>This transaction saved <x equiv-text="ction saved {{ segwitGains.realizedGains * 100 | number:" id="INTERPOLATION"/>% on fees by using native SegWit-Bech32</source>
+        <target>این تراکنش با استفاده کردن از SegWit-Bech32 حدودا <x equiv-text="ction saved {{ segwitGains.realizedGains * 100 | number:" id="INTERPOLATION"/> درصد در کارمزد صرفه‌جویی کرده است</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">1</context>
@@ -2363,6 +2412,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="975f46d122f2ca0a187308399a58b44d61ef08eb">
         <source>This transaction saved <x equiv-text="ction saved {{ segwitGains.realizedGains * 100 | number:" id="INTERPOLATION"/>% on fees by using SegWit and could save <x equiv-text=" could save {{ segwitGains.potentialBech32Gains * 100 | number " id="INTERPOLATION_1"/>% more by fully upgrading to native SegWit-Bech32</source>
+        <target>این تراکنش <x equiv-text="ction saved {{ segwitGains.realizedGains * 100 | number:" id="INTERPOLATION"/> درصد با استفاده کردن از SegWit در کارمزد صرفه‌جویی کرده و می‌تونست با SegWit-Bech32 تا <x equiv-text=" could save {{ segwitGains.potentialBech32Gains * 100 | number " id="INTERPOLATION_1"/>درصد بیشتر هم صرفه‌جویی کنه!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">3</context>
@@ -2371,6 +2421,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1be04d5407059059b596f72696a3d1704ce9c0ef">
         <source>This transaction could save <x equiv-text=" could save {{ segwitGains.potentialBech32Gains * 100 | number " id="INTERPOLATION"/>% on fees by upgrading to native SegWit-Bech32 or <x equiv-text="t-Bech32 or {{ segwitGains.potentialP2shGains * 100 | number:" id="INTERPOLATION_1"/>% by upgrading to SegWit-P2SH</source>
+        <target>این تراکنش می‌تونست با استفاده کردن از SegWit-P2SH تا <x equiv-text="t-Bech32 or {{ segwitGains.potentialP2shGains * 100 | number:" id="INTERPOLATION_1"/> درصد یا SegWit-Bech32 تا <x equiv-text=" could save {{ segwitGains.potentialBech32Gains * 100 | number " id="INTERPOLATION"/> درصد در کارمزد صرفه‌جویی کنه!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">5</context>
@@ -2379,6 +2430,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5531c86f8e09b83930f66566fb85baf3057e2f51">
         <source>This transaction support Replace-By-Fee (RBF) allowing fee bumping</source>
+        <target>این تراکنش از امکان جایگزینی با کارمزد (RBF) پشتیبانی می‌کند و اجازه افزایش کارمزد را می‌دهد.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">8</context>
@@ -2407,6 +2459,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f1b50928719b5261ccc81e9ec3ea4cc074018f89">
         <source>Only ~<x equiv-text="ltip=&quot;Only ~{{ median" id="INTERPOLATION"/> sat/vB was needed to get into this block</source>
+        <target>تنها به حدود <x equiv-text="ltip=&quot;Only ~{{ median" id="INTERPOLATION"/> ساتوشی بر بایت مجازی sat/vB نیاز بود تا در این بلاک قرار بگیرد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
@@ -2447,6 +2500,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.year.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> year ago</source>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> سال پیش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">58</context>
@@ -2454,6 +2508,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.month.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> month ago</source>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> ماه پیش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">59</context>
@@ -2461,6 +2516,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.week.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> week ago</source>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> هفته پیش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">60</context>
@@ -2468,6 +2524,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.day.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> day ago</source>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> روز پیش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">61</context>
@@ -2475,6 +2532,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.hour.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> hour ago</source>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> ساعت پیش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">62</context>
@@ -2482,6 +2540,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.min.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> min ago</source>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> دقیقه پیش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">65</context>
@@ -2489,6 +2548,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.minute.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> minute ago</source>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> دقیقه پیش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -2496,6 +2556,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.sec.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> sec ago</source>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> ثانیه پیش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">70</context>
@@ -2503,6 +2564,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.second.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> second ago</source>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> ثانیه پیش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">72</context>
@@ -2510,6 +2572,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.years.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> years ago</source>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> سال پیش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">76</context>
@@ -2517,6 +2580,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.months.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> months ago</source>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> ماه پیش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">77</context>
@@ -2524,6 +2588,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.weeks.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> weeks ago</source>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> هفته پیش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">78</context>
@@ -2531,6 +2596,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.days.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> days ago</source>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> روز پیش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">79</context>
@@ -2538,6 +2604,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.hours.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> hours ago</source>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> ساعت پیش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">80</context>
@@ -2545,6 +2612,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.mins.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> mins ago</source>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> دقیقه پیش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">83</context>
@@ -2552,6 +2620,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.minutes.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> minutes ago</source>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> دقیقه پیش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">85</context>
@@ -2559,6 +2628,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.secs.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> secs ago</source>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> ثانیه پیش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">88</context>
@@ -2566,6 +2636,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.seconds.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> seconds ago</source>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> ثانیه پیش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">90</context>
@@ -2573,6 +2644,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2a30a4cdb123a03facc5ab8c5b3e6d8b8dbbc3d4">
         <source>BSQ statistics</source>
+        <target>آمارهای BSQ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.ts</context>
           <context context-type="linenumber">24</context>
@@ -2584,6 +2656,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1cde02174ca8cc2cc0b18172cd2ec598aa82dcc7">
         <source>Existing amount</source>
+        <target>مقدار موجود</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">12</context>
@@ -2596,6 +2669,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3218e6768d0d5fbc69d4931819e21451c89ba8ed">
         <source>Minted amount</source>
+        <target>مقدار استخراج‌شده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">16</context>
@@ -2608,6 +2682,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="32377aae07f946d943f9361c8e518f714988c619">
         <source>Burnt amount</source>
+        <target>مقدار سوزانده‌شده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">20</context>
@@ -2620,6 +2695,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7882f2edb1d4139800b276b6b0bbf5ae0b2234ef">
         <source>Addresses</source>
+        <target>آدرس‌ها</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">24</context>
@@ -2632,6 +2708,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fb5b5aec9a6add4912de64b7bbc55884cc7f8e3a">
         <source>Unspent TXOs</source>
+        <target>خروجی تراکنش‌های خرج‌نشده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">28</context>
@@ -2644,6 +2721,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0f8a41c901cd606bd3389d8a022cee193264f20b">
         <source>Spent TXOs</source>
+        <target>خروجی تراکنش‌های خرج‌شده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">32</context>
@@ -2652,6 +2730,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4d6ee53858628de558a18623894a03c8673bce9e">
         <source>Price</source>
+        <target>قیمت</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">36</context>
@@ -2664,6 +2743,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b8552f7d0a57c0cc7e63eb57d3371ea35a8bbfd3">
         <source>Market cap</source>
+        <target>حجم بازار</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">40</context>
@@ -2676,6 +2756,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq-address.component.browser-title">
         <source>Address: <x equiv-text="this.addressString" id="INTERPOLATION"/></source>
+        <target>آدرس: <x equiv-text="this.addressString" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.ts</context>
           <context context-type="linenumber">39</context>
@@ -2683,6 +2764,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq-block.component.browser-title">
         <source>Block <x equiv-text="block.height" id="BLOCK_HEIGHT"/>: <x equiv-text="block.hash" id="BLOCK_HASH"/></source>
+        <target>بلاک <x equiv-text="block.height" id="BLOCK_HEIGHT"/>: <x equiv-text="block.hash" id="BLOCK_HASH"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.ts</context>
           <context context-type="linenumber">85</context>
@@ -2690,6 +2772,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq-transactions.filter">
         <source>Filter</source>
+        <target>پالایش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">55</context>
@@ -2697,6 +2780,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq-transactions.selectall">
         <source>Select all</source>
+        <target>انتخاب همه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">56</context>
@@ -2704,6 +2788,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq-transactions.unselectall">
         <source>Unselect all</source>
+        <target>لغو انتخاب همه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">57</context>
@@ -2711,6 +2796,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a1daf43d26259bffdd5eb2d405c61583540b113b">
         <source>Confirmed</source>
+        <target>تأیید شده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
           <context context-type="linenumber">21</context>
