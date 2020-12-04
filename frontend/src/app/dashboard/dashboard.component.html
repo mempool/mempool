@@ -161,7 +161,7 @@
       <td>
         <h5 class="card-title" i18n="dashboard.mempool-size|Mempool size">Mempool size</h5>
         <p class="card-text" *ngIf="(mempoolBlocksData$ | async) as mempoolBlocksData; else loading">
-          {{ mempoolBlocksData.size | bytes }} ({{ mempoolBlocksData.blocks }} <span i18n="dashboard.blocks">{mempoolBlocksData.blocks, plural, =1 {block} other {blocks}}</span>)
+          {{ mempoolBlocksData.size | bytes }} (<ng-template [ngIf]="mempoolBlocksData.blocks === 1" [ngIfElse]="blocksPlural" i18n="shared.block">{{ mempoolBlocksData.blocks }} block</ng-template><ng-template i18n="shared.blocks" #blocksPlural>{{ mempoolBlocksData.blocks }} blocks</ng-template>)
         </p>
       </td>
       <td>

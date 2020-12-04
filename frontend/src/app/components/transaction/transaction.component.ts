@@ -45,7 +45,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
     this.subscription = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         this.txId = params.get('id') || '';
-        this.seoService.setTitle($localize`:@@b59ea65c89a5ae15b787d8318fdad9edd6fec243:Transaction` + ': ' + this.txId);
+        this.seoService.setTitle($localize`:@@bisq.transaction.browser-title:Transaction: ${this.txId}:INTERPOLATION:`);
         this.resetTransaction();
         return merge(
           of(true),

@@ -70,7 +70,7 @@ export class AssetComponent implements OnInit, OnDestroy {
           this.transactions = null;
           document.body.scrollTo(0, 0);
           this.assetString = params.get('id') || '';
-          this.seoService.setTitle($localize`:@@asset.component.asset:Asset` + ': ' + this.assetString);
+          this.seoService.setTitle($localize`:@@asset.component.asset-browser-title:Asset: ${this.assetString}:INTERPOLATION:`);
 
           return merge(
             of(true),
