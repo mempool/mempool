@@ -34,7 +34,7 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.seoService.setTitle('Blocks');
+    this.seoService.setTitle($localize`:@@f4cba7faeb126346f09cc6af30124f9a343f7a28:Blocks`);
     this.websocketService.want(['blocks']);
 
     this.network$ = merge(of(''), this.stateService.networkChanged$);

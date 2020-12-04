@@ -3,19 +3,19 @@
     <td class="d-none d-md-block">
       <h5 class="card-title" i18n="fees-box.low-priority">Low priority</h5>
       <p class="card-text">
-        {{ feeEstimations.hourFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span> (<app-fiat [value]="feeEstimations.hourFee * 140" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat>)
+        {{ feeEstimations.hourFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span> (<app-fiat [value]="feeEstimations.hourFee * 140" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat>)
       </p>
     </td>
     <td>
       <h5 class="card-title" i18n="fees-box.medium-priority">Medium priority</h5>
       <p class="card-text">
-        {{ feeEstimations.halfHourFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span> (<app-fiat [value]="feeEstimations.halfHourFee * 140" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat>)
+        {{ feeEstimations.halfHourFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span> (<app-fiat [value]="feeEstimations.halfHourFee * 140" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat>)
       </p>
     </td>
     <td>
       <h5 class="card-title" i18n="fees-box.high-priority">High priority</h5>
       <p class="card-text">
-        {{ feeEstimations.fastestFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span> (<app-fiat [value]="feeEstimations.fastestFee * 140" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat>)
+        {{ feeEstimations.fastestFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span> (<app-fiat [value]="feeEstimations.fastestFee * 140" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat>)
       </p>
     </td>
   </tr>

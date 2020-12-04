@@ -256,9 +256,9 @@ export class DashboardComponent implements OnInit {
 
   changeLanguage() {
     const language = this.languageForm.get('language').value;
-    this.document.location.href = (language === 'en' ? '/' : '/' + language);
     try {
       document.cookie = `lang=${language}; expires=Thu, 18 Dec 2050 12:00:00 UTC; path=/`;
     } catch (e) { }
+    this.document.location.href = (language === 'en' ? '/' : '/' + language);
   }
 }

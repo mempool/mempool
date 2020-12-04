@@ -95,7 +95,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       tap((block: Block) => {
         this.block = block;
         this.blockHeight = block.height;
-        this.seoService.setTitle('Block: #' + block.height + ': ' + block.id);
+        this.seoService.setTitle($localize`:@@block.component.browser-title:Block ${block.height}:INTERPOLATION:: ${block.id}:INTERPOLATION:`);
         this.isLoadingBlock = false;
         if (block.coinbaseTx) {
           this.coinbaseTx = block.coinbaseTx;

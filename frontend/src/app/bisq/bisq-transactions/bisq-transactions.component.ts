@@ -52,7 +52,9 @@ export class BisqTransactionsComponent implements OnInit {
   };
 
   txTypeDropdownTexts: IMultiSelectTexts = {
-    defaultTitle: 'Filter',
+    defaultTitle: $localize`:@@bisq-transactions.filter:Filter`,
+    checkAll: $localize`:@@bisq-transactions.selectall:Select all`,
+    uncheckAll: $localize`:@@bisq-transactions.unselectall:Unselect all`,
   };
 
   // @ts-ignore
@@ -72,7 +74,7 @@ export class BisqTransactionsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.seoService.setTitle('Transactions');
+    this.seoService.setTitle($localize`:@@add4cd82e3e38a3110fe67b3c7df56e9602644ee:Transactions`);
 
     this.radioGroupForm = this.formBuilder.group({
       txTypes: [this.txTypesDefaultChecked],
