@@ -569,7 +569,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">112</context>
+          <context context-type="linenumber">116</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
@@ -579,6 +579,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="block.component.browser-title">
         <source>Block <x equiv-text="block.height" id="BLOCK_HEIGHT"/>: <x equiv-text="block.id" id="BLOCK_ID"/></source>
+        <target>区块 <x equiv-text="block.height" id="BLOCK_HEIGHT"/>: <x equiv-text="block.id" id="BLOCK_ID"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.ts</context>
           <context context-type="linenumber">98</context>
@@ -752,10 +753,6 @@
           <context context-type="linenumber">85</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">46</context>
-        </context-group>
-        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
           <context context-type="linenumber">14</context>
         </context-group>
@@ -822,20 +819,28 @@
         </context-group>
         <note from="description" priority="1">address.balance</note>
       </trans-unit>
-      <trans-unit datatype="html" id="169eed2bc3e08e1bea977bcc5d799379f6b8a758">
-        <source>of</source>
+      <trans-unit datatype="html" id="714e34125b3343df73f19ec800b43be95217d5d4">
+        <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> transaction</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">46</context>
+          <context context-type="linenumber">48</context>
         </context-group>
-        <note from="description" priority="1">shared.of</note>
+        <note from="description" priority="1">X of X Address Transaction</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="0f6ada0cfb60aefd8f77f8a22349850ce186d666">
+        <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> transactions</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
+        <note from="description" priority="1">X of X Address Transactions (Plural)</note>
       </trans-unit>
       <trans-unit datatype="html" id="f094f67fbe759cdbeb2ea14455634bbe5cc6375d">
         <source>Error loading address data.</source>
         <target>在加载地址数据时出错</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">101</context>
+          <context context-type="linenumber">105</context>
         </context-group>
         <note from="description" priority="1">address.error.loading-address-data</note>
       </trans-unit>
@@ -1205,22 +1210,13 @@
         <note from="description" priority="1">Terms of Service</note>
         <note from="meaning" priority="1">shared.terms-of-service</note>
       </trans-unit>
-      <trans-unit datatype="html" id="bb4671d1c6b230ec821cf7f9c72210f32e8a6e7b">
-        <source>Navigate to</source>
-        <target>导航</target>
+      <trans-unit datatype="html" id="90a59434bf67130fb2531e0610f10d28af0fcc87">
+        <source>Navigate to <x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/about&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/>https://mempool.space/about<x ctype="x-a" equiv-text="&lt;/a&gt; " id="CLOSE_LINK"/> to sponsor</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">65</context>
         </context-group>
-        <note from="description" priority="1">about.navigate-to</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="4e6c8a60b2cd0e40c8d266c6333d873d2f2db77e">
-        <source>to sponsor</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">65</context>
-        </context-group>
-        <note from="description" priority="1">about.to-sponsor</note>
+        <note from="description" priority="1">about.navigate-to-sponsor</note>
       </trans-unit>
       <trans-unit datatype="html" id="39120551bb7b48cc1a7b94a6cb58aef166eee801">
         <source>Amount required</source>
@@ -1611,6 +1607,20 @@
         </context-group>
         <note from="description" priority="1">Asset data load error</note>
       </trans-unit>
+      <trans-unit datatype="html" id="miner-identified-by-payout">
+        <source>Identified by payout address: '<x equiv-text="vout.scriptpubkey_address" id="PAYOUT_ADDRESS"/>'</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="miner-identified-by-coinbase">
+        <source>Identified by coinbase tag: '<x equiv-text="tag" id="TAG"/>'</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
+          <context context-type="linenumber">52</context>
+        </context-group>
+      </trans-unit>
       <trans-unit datatype="html" id="e5d8bb389c702588877f039d72178f219453a72d">
         <source>Unknown</source>
         <target>未知</target>
@@ -1737,21 +1747,21 @@
         </context-group>
         <note from="description" priority="1">dashboard.latest-transactions.USD</note>
       </trans-unit>
-      <trans-unit datatype="html" id="e8bcb762b48cf52fbea66ce9c4f6b970b99a80fd">
-        <source>Collapse</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">131</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.collapse</note>
-      </trans-unit>
       <trans-unit datatype="html" id="1f332ec66f3bc8d943c248091be7f92772ba280f">
         <source>Expand</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">132</context>
+          <context context-type="linenumber">131</context>
         </context-group>
         <note from="description" priority="1">dashboard.expand</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="e8bcb762b48cf52fbea66ce9c4f6b970b99a80fd">
+        <source>Collapse</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">132</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.collapse</note>
       </trans-unit>
       <trans-unit datatype="html" id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3">
         <source>Mempool size</source>
@@ -1775,6 +1785,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ee0d8fddc1dd89c919c21db1b8b2d848d05cdfdc">
         <source><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> block</source>
+        <target><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/>个区块</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">164</context>
@@ -1783,6 +1794,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="33d349897f450ba879a5a0f48842b6a3d884cac1">
         <source><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> blocks</source>
+        <target><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/>个区块</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">164</context>
