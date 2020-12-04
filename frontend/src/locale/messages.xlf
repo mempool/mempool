@@ -1128,21 +1128,13 @@
         <note priority="1" from="description">Terms of Service</note>
         <note priority="1" from="meaning">shared.terms-of-service</note>
       </trans-unit>
-      <trans-unit id="bb4671d1c6b230ec821cf7f9c72210f32e8a6e7b" datatype="html">
-        <source>Navigate to</source>
+      <trans-unit id="90a59434bf67130fb2531e0610f10d28af0fcc87" datatype="html">
+        <source>Navigate to <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/about&quot; target=&quot;_blank&quot;&gt;"/>https://mempool.space/about<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt; "/> to sponsor</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">65</context>
         </context-group>
-        <note priority="1" from="description">about.navigate-to</note>
-      </trans-unit>
-      <trans-unit id="4e6c8a60b2cd0e40c8d266c6333d873d2f2db77e" datatype="html">
-        <source>to sponsor</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">65</context>
-        </context-group>
-        <note priority="1" from="description">about.to-sponsor</note>
+        <note priority="1" from="description">about.navigate-to-sponsor</note>
       </trans-unit>
       <trans-unit id="39120551bb7b48cc1a7b94a6cb58aef166eee801" datatype="html">
         <source>Amount required</source>
@@ -1513,6 +1505,20 @@
           <context context-type="linenumber">67</context>
         </context-group>
         <note priority="1" from="description">Asset data load error</note>
+      </trans-unit>
+      <trans-unit id="miner-identified-by-payout" datatype="html">
+        <source>Identified by payout address: &apos;<x id="PAYOUT_ADDRESS" equiv-text="vout.scriptpubkey_address"/>&apos;</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="miner-identified-by-coinbase" datatype="html">
+        <source>Identified by coinbase tag: &apos;<x id="TAG" equiv-text="tag"/>&apos;</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
+          <context context-type="linenumber">52</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="e5d8bb389c702588877f039d72178f219453a72d" datatype="html">
         <source>Unknown</source>
