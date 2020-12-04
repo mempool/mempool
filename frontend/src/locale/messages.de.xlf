@@ -3,6 +3,7 @@
     <body>
       <trans-unit datatype="html" id="bisq.transaction.browser-title">
         <source>Transaction: <x equiv-text="this.txId" id="INTERPOLATION"/></source>
+        <target>Transaktion: <x equiv-text="this.txId" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.ts</context>
           <context context-type="linenumber">48</context>
@@ -332,6 +333,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f12c066e1cd7a3844f7a0f9a039694d64cd23bfc">
         <source><x equiv-text="{{ txInBlockIndex + 1 }}" id="INTERPOLATION"/> block</source>
+        <target> <x equiv-text="{{ txInBlockIndex + 1 }}" id="INTERPOLATION"/> Block</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">126</context>
@@ -362,6 +364,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f9b2839ab051e0483d3e99238db6f3280660b271">
         <source><x equiv-text="{{ txInBlockIndex + 1 }}" id="INTERPOLATION"/> blocks</source>
+        <target> <x equiv-text="{{ txInBlockIndex + 1 }}" id="INTERPOLATION"/> Blöcke</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">289</context>
@@ -587,7 +590,7 @@
         <note from="description" priority="1">shared.confidential</note>
       </trans-unit>
       <trans-unit datatype="html" id="block.component.browser-title">
-        <source>Block <x equiv-text="block.id" id="INTERPOLATION"/>: <x equiv-text="block.id" id="INTERPOLATION"/></source>
+        <source>Block <x equiv-text="block.height" id="BLOCK_HEIGHT"/>: <x equiv-text="block.id" id="BLOCK_ID"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.ts</context>
           <context context-type="linenumber">98</context>
@@ -687,6 +690,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="855f852e5642a1279605465df0cbbe78c2622648">
         <source>Based on average native segwit transaction of 140 vBytes</source>
+        <target>Basierend auf einer durchschnittlichen nativen Segwit-Transaktion von 140 vByte</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">46</context>
@@ -790,6 +794,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="address.component.browser-title">
         <source>Address: <x equiv-text="this.addressString" id="INTERPOLATION"/></source>
+        <target>Adresse: <x equiv-text="this.addressString" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.ts</context>
           <context context-type="linenumber">64</context>
@@ -860,6 +865,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7e892ba15f2c6c17e83510e273b3e10fc32ea016">
         <source>Search</source>
+        <target>Suche</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-form.component.html</context>
           <context context-type="linenumber">7</context>
@@ -880,6 +886,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8a7b4bd44c0ac71b2e72de0398b303257f7d2f54">
         <source>Blocks</source>
+        <target>Blöcke</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
           <context context-type="linenumber">2</context>
@@ -1026,6 +1033,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e351b40b3869a5c7d19c3d4918cb1ac7aaab95c4">
         <source>API</source>
+        <target>API</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">56</context>
@@ -1038,6 +1046,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="004b222ff9ef9dd4771b777950ca1d0e4cd4348a">
         <source>About</source>
+        <target>Über</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">59</context>
@@ -1077,6 +1086,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="299f97b8ee9c62d45f2cc01961aa1e5101d6d05a">
         <source>Stats</source>
+        <target>Statistiken</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">35</context>
@@ -1085,6 +1095,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f65253954b66e929a8b4d5ecaf61f9129f8cec64">
         <source>Dashboard</source>
+        <target>Dashboard</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">40</context>
@@ -1093,6 +1104,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5d4f792f048fcaa6df5948575d7cb325c9393383">
         <source>Graphs</source>
+        <target>Grafiken</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">46</context>
@@ -1105,6 +1117,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="46ce8155c9ab953edeec97e8950b5a21e67d7c4e">
         <source>TV view</source>
+        <target>TV-Ansicht</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">49</context>
@@ -1117,6 +1130,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ee8f8008bae6ce3a49840c4e1d39b4af23d4c263">
         <source>Assets</source>
+        <target>Vermögenswerte</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">53</context>
@@ -1317,6 +1331,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="add9d52e5bf541c941df44e251a5c1cafcc92e9d">
         <source>Invert</source>
+        <target>Umkehren</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">43</context>
@@ -1384,6 +1399,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="mempool-block.next.block">
         <source>Next block</source>
+        <target>Nächster Block</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">72</context>
@@ -1391,6 +1407,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="mempool-block.stack.of.blocks">
         <source>Stack of <x equiv-text="blocksInBlock" id="INTERPOLATION"/> mempool blocks</source>
+        <target>Stapel von <x equiv-text="blocksInBlock" id="INTERPOLATION"/>-Mempoolblöcken</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">74</context>
@@ -1398,6 +1415,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="mempool-block.block.no">
         <source>Mempool block <x equiv-text="this.mempoolBlockIndex + 1" id="INTERPOLATION"/></source>
+        <target>Mempool-Block <x equiv-text="this.mempoolBlockIndex + 1" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">76</context>
@@ -1423,6 +1441,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="asset.component.asset-browser-title">
         <source>Asset: <x equiv-text="this.assetString" id="INTERPOLATION"/></source>
+        <target>Vermögenswert: <x equiv-text="this.assetString" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.ts</context>
           <context context-type="linenumber">73</context>
@@ -1524,6 +1543,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d2a84740e76b7220516a9f10644e4b3bdabdb833">
         <source>Peg In/Out and Burn Transactions</source>
+        <target>Peg In/Out- und Burn-Transaktionen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">75</context>
@@ -1532,6 +1552,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fcbd3315aa10b59ba6ef383c6f16ace6c9d53b71">
         <source>Issuance and Burn Transactions</source>
+        <target>Ausgabe und Verbrennung von Transaktionen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">75</context>
@@ -1546,6 +1567,90 @@
           <context context-type="linenumber">132</context>
         </context-group>
         <note from="description" priority="1">asset.error.loading-asset-data</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="791a4c4131a0ae0aaf82ddb66dacdc7f1c007c3b">
+        <source>Registered assets</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+        <note from="description" priority="1">Registered assets page header</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="99ee4faa69cd2ea8e3678c1f557c0ff1f05aae46">
+        <source>Clear</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+        <note from="description" priority="1">Search Clear Button</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="cff1428d10d59d14e45edec3c735a27b5482db59">
+        <source>Name</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+        <note from="description" priority="1">Asset name header</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="4ad173c0e4010b1f25bf58e96a383edc1b59cd80">
+        <source>Ticker</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+        <note from="description" priority="1">Asset ticker header</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="465c39daa2b644679d73a451043622f1610a2084">
+        <source>Issuer domain</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">48</context>
+        </context-group>
+        <note from="description" priority="1">Asset Issuer Domain header</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="d5e7c95d7c8920ae0a384e3fffb14776b1e203f4">
+        <source>Asset ID</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
+        <note from="description" priority="1">Asset ID header</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="cf1fbcd10d4be4845152f2e10d1db9bc61dd9410">
+        <source>Issuance TX</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">50</context>
+        </context-group>
+        <note from="description" priority="1">Asset issuance transaction header</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="52686df280be57a57e1e9ecf5786499b147e0e90">
+        <source>Error loading assets data.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">67</context>
+        </context-group>
+        <note from="description" priority="1">Asset data load error</note>
       </trans-unit>
       <trans-unit datatype="html" id="e5d8bb389c702588877f039d72178f219453a72d">
         <source>Unknown</source>
@@ -1677,6 +1782,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e8bcb762b48cf52fbea66ce9c4f6b970b99a80fd">
         <source>Collapse</source>
+        <target>Reduzieren</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">131</context>
@@ -1685,6 +1791,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1f332ec66f3bc8d943c248091be7f92772ba280f">
         <source>Expand</source>
+        <target>Erweitern</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">132</context>
@@ -1713,6 +1820,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ee0d8fddc1dd89c919c21db1b8b2d848d05cdfdc">
         <source><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> block</source>
+        <target> <x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> Block</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">164</context>
@@ -1721,6 +1829,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="33d349897f450ba879a5a0f48842b6a3d884cac1">
         <source><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> blocks</source>
+        <target> <x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> Blöcke</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">164</context>
@@ -1757,6 +1866,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f11bc15f83d9174bd27454d32977b5025a66537d">
         <source>API Service</source>
+        <target>API-Service</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">4</context>
@@ -2242,6 +2352,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="clipboard.copied-message">
         <source>Copied!</source>
+        <target>Kopiert!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/clipboard/clipboard.component.ts</context>
           <context context-type="linenumber">15</context>
@@ -2249,6 +2360,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f85c05147b720576e50336cf26f63d3b05601699">
         <source>This transaction saved <x equiv-text="ction saved {{ segwitGains.realizedGains * 100 | number:" id="INTERPOLATION"/>% on fees by using native SegWit-Bech32</source>
+        <target>Diese Transaktion konnte durch natives SegWit-Bech32 <x equiv-text="ction saved {{ segwitGains.realizedGains * 100 | number:" id="INTERPOLATION"/>% an Gebühren einsparen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">1</context>
@@ -2275,6 +2387,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="975f46d122f2ca0a187308399a58b44d61ef08eb">
         <source>This transaction saved <x equiv-text="ction saved {{ segwitGains.realizedGains * 100 | number:" id="INTERPOLATION"/>% on fees by using SegWit and could save <x equiv-text=" could save {{ segwitGains.potentialBech32Gains * 100 | number " id="INTERPOLATION_1"/>% more by fully upgrading to native SegWit-Bech32</source>
+        <target>Diese Transaktion konnte mit SegWit <x equiv-text="ction saved {{ segwitGains.realizedGains * 100 | number:" id="INTERPOLATION"/>% an Gebühren einsparen, und könnte mit einem vollständiges Upgrade auf natives SegWit-Bech32 <x equiv-text=" could save {{ segwitGains.potentialBech32Gains * 100 | number " id="INTERPOLATION_1"/>% zusätzlich einsparen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">3</context>
@@ -2594,7 +2707,7 @@
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="bisq-block.component.browser-title">
-        <source>Block <x equiv-text="block.hash" id="INTERPOLATION"/>: <x equiv-text="block.hash" id="INTERPOLATION"/></source>
+        <source>Block <x equiv-text="block.height" id="BLOCK_HEIGHT"/>: <x equiv-text="block.hash" id="BLOCK_HASH"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.ts</context>
           <context context-type="linenumber">85</context>
