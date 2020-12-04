@@ -62,7 +62,7 @@
     
     <button type="button" class="btn btn-primary" (click)="donationStatus = 2" [hidden]="donationStatus !== 1" i18n="about.become-a-sponsor">Become a sponsor ❤️</button>
     <p *ngIf="donationStatus === 2 && !sponsorsEnabled">
-      <span i18n="about.navigate-to">Navigate to</span> <a href="https://mempool.space/about" target="_blank">https://mempool.space/about</a> <span i18n="about.to-sponsor">to sponsor</span>
+      <ng-container i18n="about.navigate-to-sponsor">Navigate to <a href="https://mempool.space/about" target="_blank">https://mempool.space/about</a> to sponsor</ng-container>
     </p>
 
     <div style="max-width: 300px;" class="mx-auto" [hidden]="donationStatus !== 2 || !sponsorsEnabled">
