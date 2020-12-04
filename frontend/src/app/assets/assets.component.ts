@@ -6,6 +6,7 @@ import { distinctUntilChanged, map, filter, mergeMap, tap, take } from 'rxjs/ope
 import { ActivatedRoute, Router } from '@angular/router';
 import { merge, combineLatest, Observable } from 'rxjs';
 import { AssetExtended } from '../interfaces/electrs.interface';
+import { SeoService } from '../services/seo.service';
 
 @Component({
   selector: 'app-assets',
@@ -32,9 +33,11 @@ export class AssetsComponent implements OnInit {
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
+    private seoService: SeoService,
   ) { }
 
   ngOnInit() {
+    this.seoService.setTitle($localize`:@@ee8f8008bae6ce3a49840c4e1d39b4af23d4c263:Assets`);
     this.itemsPerPage = Math.max(Math.round(this.contentSpace / this.fiveItemsPxSize) * 5, 10);
 
     this.searchForm = this.formBuilder.group({
