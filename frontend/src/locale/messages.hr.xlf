@@ -1141,12 +1141,12 @@
           <context context-type="linenumber">206</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">143</context>
-        </context-group>
-        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">284</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">143</context>
         </context-group>
         <note from="description" priority="1">Terms of Service</note>
         <note from="meaning" priority="1">shared.terms-of-service</note>
@@ -1453,6 +1453,14 @@
         </context-group>
         <note from="description" priority="1">Registered assets page header</note>
       </trans-unit>
+      <trans-unit datatype="html" id="aef0d676b15fdae8cb70fc3b089cce7399fde9da">
+        <source>Search asset</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+        <note from="description" priority="1">Search Assets Placeholder Text</note>
+      </trans-unit>
       <trans-unit datatype="html" id="99ee4faa69cd2ea8e3678c1f557c0ff1f05aae46">
         <source>Clear</source>
         <context-group purpose="location">
@@ -1586,153 +1594,6 @@
           <context context-type="linenumber">35</context>
         </context-group>
         <note from="description" priority="1">fees-box.high-priority</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="e1139ea570985b3f114e18876f09fd7223429983">
-        <source>Latest blocks</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">75</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.latest-blocks</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="e6213c3f05146287cf121868d9f3d3c3ff5f9714">
-        <source>TXs</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">80</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">170</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.latest-blocks.transaction-count</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="1915fb658404dd3fa2a05f7d5fdd774ad72ef422">
-        <source>View all »</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">97</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.view-all</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="46ae0bacea22bcf409534f1c314735e4983e398a">
-        <source>Latest transactions</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">104</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.latest-transactions</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="94c248797dd2b6af49068cb49c3b4bc26bec6a16">
-        <source>TXID</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">107</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.latest-transactions.txid</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="dfc2fb58e2a04ed944a4bd80f0a2087775134068">
-        <source>Amount</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">108</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
-          <context context-type="linenumber">20</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.latest-transactions.amount</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="160f1ffbd26df073d0fbd02cf8ce0d8cea7603b0">
-        <source>Fee</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">110</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.latest-transactions.fee</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="1cb0c1f40f7ef8d62da2ccdccfdd2b7cdd18d2b9">
-        <source>USD</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">109</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.latest-transactions.USD</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="1f332ec66f3bc8d943c248091be7f92772ba280f">
-        <source>Expand</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">131</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.expand</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="e8bcb762b48cf52fbea66ce9c4f6b970b99a80fd">
-        <source>Collapse</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">132</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.collapse</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3">
-        <source>Mempool size</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">162</context>
-        </context-group>
-        <note from="description" priority="1">Mempool size</note>
-        <note from="meaning" priority="1">dashboard.mempool-size</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="60cd6fa18f925b42065d8cfb1a791efdc228b4c3">
-        <source>Unconfirmed</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">168</context>
-        </context-group>
-        <note from="description" priority="1">Unconfirmed count</note>
-        <note from="meaning" priority="1">dashboard.unconfirmed</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="ee0d8fddc1dd89c919c21db1b8b2d848d05cdfdc">
-        <source><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> block</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">164</context>
-        </context-group>
-        <note from="description" priority="1">shared.block</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="33d349897f450ba879a5a0f48842b6a3d884cac1">
-        <source><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> blocks</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">164</context>
-        </context-group>
-        <note from="description" priority="1">shared.blocks</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="926c571b25cca7e2a294619f145960c0cd3848b6">
-        <source>Incoming transactions</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">178</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.incoming-transactions</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="50904e472d4671388a20fbbb1ee9dfc0a4586fa1">
-        <source>vB/s</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">185</context>
-        </context-group>
-        <note from="description" priority="1">vB/s</note>
-        <note from="meaning" priority="1">shared.vbytes-per-second</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="125c154b4a63daa7e993e1f4a8bea4c98a645142">
-        <source>Difficulty adjustment</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">194</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.difficulty-adjustment</note>
       </trans-unit>
       <trans-unit datatype="html" id="f11bc15f83d9174bd27454d32977b5025a66537d">
         <source>API Service</source>
@@ -2169,6 +2030,153 @@
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">272</context>
         </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="e1139ea570985b3f114e18876f09fd7223429983">
+        <source>Latest blocks</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">75</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.latest-blocks</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="e6213c3f05146287cf121868d9f3d3c3ff5f9714">
+        <source>TXs</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">80</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">170</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.latest-blocks.transaction-count</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="1915fb658404dd3fa2a05f7d5fdd774ad72ef422">
+        <source>View all »</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">97</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.view-all</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="46ae0bacea22bcf409534f1c314735e4983e398a">
+        <source>Latest transactions</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">104</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.latest-transactions</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="94c248797dd2b6af49068cb49c3b4bc26bec6a16">
+        <source>TXID</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">107</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.latest-transactions.txid</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="dfc2fb58e2a04ed944a4bd80f0a2087775134068">
+        <source>Amount</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">108</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.latest-transactions.amount</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="160f1ffbd26df073d0fbd02cf8ce0d8cea7603b0">
+        <source>Fee</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">110</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.latest-transactions.fee</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="1cb0c1f40f7ef8d62da2ccdccfdd2b7cdd18d2b9">
+        <source>USD</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">109</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.latest-transactions.USD</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="1f332ec66f3bc8d943c248091be7f92772ba280f">
+        <source>Expand</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">131</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.expand</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="e8bcb762b48cf52fbea66ce9c4f6b970b99a80fd">
+        <source>Collapse</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">132</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.collapse</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3">
+        <source>Mempool size</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">162</context>
+        </context-group>
+        <note from="description" priority="1">Mempool size</note>
+        <note from="meaning" priority="1">dashboard.mempool-size</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="60cd6fa18f925b42065d8cfb1a791efdc228b4c3">
+        <source>Unconfirmed</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">168</context>
+        </context-group>
+        <note from="description" priority="1">Unconfirmed count</note>
+        <note from="meaning" priority="1">dashboard.unconfirmed</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="ee0d8fddc1dd89c919c21db1b8b2d848d05cdfdc">
+        <source><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> block</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">164</context>
+        </context-group>
+        <note from="description" priority="1">shared.block</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="33d349897f450ba879a5a0f48842b6a3d884cac1">
+        <source><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> blocks</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">164</context>
+        </context-group>
+        <note from="description" priority="1">shared.blocks</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="926c571b25cca7e2a294619f145960c0cd3848b6">
+        <source>Incoming transactions</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">178</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.incoming-transactions</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="50904e472d4671388a20fbbb1ee9dfc0a4586fa1">
+        <source>vB/s</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">185</context>
+        </context-group>
+        <note from="description" priority="1">vB/s</note>
+        <note from="meaning" priority="1">shared.vbytes-per-second</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="125c154b4a63daa7e993e1f4a8bea4c98a645142">
+        <source>Difficulty adjustment</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">194</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.difficulty-adjustment</note>
       </trans-unit>
       <trans-unit datatype="html" id="clipboard.copied-message">
         <source>Copied!</source>

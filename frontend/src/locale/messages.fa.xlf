@@ -1226,12 +1226,12 @@
           <context context-type="linenumber">206</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">143</context>
-        </context-group>
-        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">284</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">143</context>
         </context-group>
         <note from="description" priority="1">Terms of Service</note>
         <note from="meaning" priority="1">shared.terms-of-service</note>
@@ -1319,7 +1319,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="75c20c8a9cd9723d45bee0230dd582d7c2e4ecbc">
         <source>Mempool by vBytes (sat/vByte)</source>
-        <target>وضعیت ممپول به vByte (ساتوشی به vByte)</target>
+        <target>وضعیت ممپول به vByte (ساتوشی بر vByte)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">16</context>
@@ -1574,6 +1574,15 @@
         </context-group>
         <note from="description" priority="1">Registered assets page header</note>
       </trans-unit>
+      <trans-unit datatype="html" id="aef0d676b15fdae8cb70fc3b089cce7399fde9da">
+        <source>Search asset</source>
+        <target>جستجوی دارایی</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+        <note from="description" priority="1">Search Assets Placeholder Text</note>
+      </trans-unit>
       <trans-unit datatype="html" id="99ee4faa69cd2ea8e3678c1f557c0ff1f05aae46">
         <source>Clear</source>
         <target>پاک‌کردن</target>
@@ -1720,170 +1729,6 @@
           <context context-type="linenumber">35</context>
         </context-group>
         <note from="description" priority="1">fees-box.high-priority</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="e1139ea570985b3f114e18876f09fd7223429983">
-        <source>Latest blocks</source>
-        <target>آخرین بلاک‌ها</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">75</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.latest-blocks</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="e6213c3f05146287cf121868d9f3d3c3ff5f9714">
-        <source>TXs</source>
-        <target>تراکنش</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">80</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">170</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.latest-blocks.transaction-count</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="1915fb658404dd3fa2a05f7d5fdd774ad72ef422">
-        <source>View all »</source>
-        <target>نمایش همه »</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">97</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.view-all</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="46ae0bacea22bcf409534f1c314735e4983e398a">
-        <source>Latest transactions</source>
-        <target>آخرین تراکنش‌ها</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">104</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.latest-transactions</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="94c248797dd2b6af49068cb49c3b4bc26bec6a16">
-        <source>TXID</source>
-        <target>شناسه</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">107</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.latest-transactions.txid</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="dfc2fb58e2a04ed944a4bd80f0a2087775134068">
-        <source>Amount</source>
-        <target>مبلغ</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">108</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
-          <context context-type="linenumber">20</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.latest-transactions.amount</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="160f1ffbd26df073d0fbd02cf8ce0d8cea7603b0">
-        <source>Fee</source>
-        <target>کارمزد</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">110</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.latest-transactions.fee</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="1cb0c1f40f7ef8d62da2ccdccfdd2b7cdd18d2b9">
-        <source>USD</source>
-        <target>USD</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">109</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.latest-transactions.USD</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="1f332ec66f3bc8d943c248091be7f92772ba280f">
-        <source>Expand</source>
-        <target>بستن</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">131</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.expand</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="e8bcb762b48cf52fbea66ce9c4f6b970b99a80fd">
-        <source>Collapse</source>
-        <target>بازکردن</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">132</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.collapse</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3">
-        <source>Mempool size</source>
-        <target>اندازه ممپول</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">162</context>
-        </context-group>
-        <note from="description" priority="1">Mempool size</note>
-        <note from="meaning" priority="1">dashboard.mempool-size</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="60cd6fa18f925b42065d8cfb1a791efdc228b4c3">
-        <source>Unconfirmed</source>
-        <target>تأیید نشده</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">168</context>
-        </context-group>
-        <note from="description" priority="1">Unconfirmed count</note>
-        <note from="meaning" priority="1">dashboard.unconfirmed</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="ee0d8fddc1dd89c919c21db1b8b2d848d05cdfdc">
-        <source><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> block</source>
-        <target><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> بلاک</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">164</context>
-        </context-group>
-        <note from="description" priority="1">shared.block</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="33d349897f450ba879a5a0f48842b6a3d884cac1">
-        <source><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> blocks</source>
-        <target><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> بلاک</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">164</context>
-        </context-group>
-        <note from="description" priority="1">shared.blocks</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="926c571b25cca7e2a294619f145960c0cd3848b6">
-        <source>Incoming transactions</source>
-        <target>تراکنش‌های منتشرشده</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">178</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.incoming-transactions</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="50904e472d4671388a20fbbb1ee9dfc0a4586fa1">
-        <source>vB/s</source>
-        <target>vB/s</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">185</context>
-        </context-group>
-        <note from="description" priority="1">vB/s</note>
-        <note from="meaning" priority="1">shared.vbytes-per-second</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="125c154b4a63daa7e993e1f4a8bea4c98a645142">
-        <source>Difficulty adjustment</source>
-        <target>تنظیم سختی بلاک‌ها</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">194</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.difficulty-adjustment</note>
       </trans-unit>
       <trans-unit datatype="html" id="f11bc15f83d9174bd27454d32977b5025a66537d">
         <source>API Service</source>
@@ -2375,6 +2220,170 @@
           <context context-type="linenumber">272</context>
         </context-group>
       </trans-unit>
+      <trans-unit datatype="html" id="e1139ea570985b3f114e18876f09fd7223429983">
+        <source>Latest blocks</source>
+        <target>آخرین بلاک‌ها</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">75</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.latest-blocks</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="e6213c3f05146287cf121868d9f3d3c3ff5f9714">
+        <source>TXs</source>
+        <target>تراکنش</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">80</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">170</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.latest-blocks.transaction-count</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="1915fb658404dd3fa2a05f7d5fdd774ad72ef422">
+        <source>View all »</source>
+        <target>نمایش همه »</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">97</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.view-all</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="46ae0bacea22bcf409534f1c314735e4983e398a">
+        <source>Latest transactions</source>
+        <target>آخرین تراکنش‌ها</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">104</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.latest-transactions</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="94c248797dd2b6af49068cb49c3b4bc26bec6a16">
+        <source>TXID</source>
+        <target>شناسه</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">107</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.latest-transactions.txid</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="dfc2fb58e2a04ed944a4bd80f0a2087775134068">
+        <source>Amount</source>
+        <target>مبلغ</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">108</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.latest-transactions.amount</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="160f1ffbd26df073d0fbd02cf8ce0d8cea7603b0">
+        <source>Fee</source>
+        <target>کارمزد</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">110</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.latest-transactions.fee</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="1cb0c1f40f7ef8d62da2ccdccfdd2b7cdd18d2b9">
+        <source>USD</source>
+        <target>USD</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">109</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.latest-transactions.USD</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="1f332ec66f3bc8d943c248091be7f92772ba280f">
+        <source>Expand</source>
+        <target>بستن</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">131</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.expand</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="e8bcb762b48cf52fbea66ce9c4f6b970b99a80fd">
+        <source>Collapse</source>
+        <target>بازکردن</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">132</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.collapse</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3">
+        <source>Mempool size</source>
+        <target>اندازه ممپول</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">162</context>
+        </context-group>
+        <note from="description" priority="1">Mempool size</note>
+        <note from="meaning" priority="1">dashboard.mempool-size</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="60cd6fa18f925b42065d8cfb1a791efdc228b4c3">
+        <source>Unconfirmed</source>
+        <target>تأیید نشده</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">168</context>
+        </context-group>
+        <note from="description" priority="1">Unconfirmed count</note>
+        <note from="meaning" priority="1">dashboard.unconfirmed</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="ee0d8fddc1dd89c919c21db1b8b2d848d05cdfdc">
+        <source><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> block</source>
+        <target><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> بلاک</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">164</context>
+        </context-group>
+        <note from="description" priority="1">shared.block</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="33d349897f450ba879a5a0f48842b6a3d884cac1">
+        <source><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> blocks</source>
+        <target><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> بلاک</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">164</context>
+        </context-group>
+        <note from="description" priority="1">shared.blocks</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="926c571b25cca7e2a294619f145960c0cd3848b6">
+        <source>Incoming transactions</source>
+        <target>تراکنش‌های منتشرشده</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">178</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.incoming-transactions</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="50904e472d4671388a20fbbb1ee9dfc0a4586fa1">
+        <source>vB/s</source>
+        <target>vB/s</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">185</context>
+        </context-group>
+        <note from="description" priority="1">vB/s</note>
+        <note from="meaning" priority="1">shared.vbytes-per-second</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="125c154b4a63daa7e993e1f4a8bea4c98a645142">
+        <source>Difficulty adjustment</source>
+        <target>تنظیم سختی بلاک‌ها</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">194</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.difficulty-adjustment</note>
+      </trans-unit>
       <trans-unit datatype="html" id="clipboard.copied-message">
         <source>Copied!</source>
         <target>کپی شد!</target>
@@ -2412,7 +2421,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="975f46d122f2ca0a187308399a58b44d61ef08eb">
         <source>This transaction saved <x equiv-text="ction saved {{ segwitGains.realizedGains * 100 | number:" id="INTERPOLATION"/>% on fees by using SegWit and could save <x equiv-text=" could save {{ segwitGains.potentialBech32Gains * 100 | number " id="INTERPOLATION_1"/>% more by fully upgrading to native SegWit-Bech32</source>
-        <target>این تراکنش <x equiv-text="ction saved {{ segwitGains.realizedGains * 100 | number:" id="INTERPOLATION"/> درصد با استفاده کردن از SegWit در کارمزد صرفه‌جویی کرده و می‌تونست با SegWit-Bech32 تا <x equiv-text=" could save {{ segwitGains.potentialBech32Gains * 100 | number " id="INTERPOLATION_1"/>درصد بیشتر هم صرفه‌جویی کنه!</target>
+        <target>این تراکنش با استفاده کردن از SegWit <x equiv-text="ction saved {{ segwitGains.realizedGains * 100 | number:" id="INTERPOLATION"/> درصد در کارمزد صرفه‌جویی کرده‌است. در صورت استفاده از SegWit-Bech32 این صرفه‌جویی تا <x equiv-text=" could save {{ segwitGains.potentialBech32Gains * 100 | number " id="INTERPOLATION_1"/> درصد بیشتر افزایش پیدا می‌کرد!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">3</context>
@@ -2421,7 +2430,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1be04d5407059059b596f72696a3d1704ce9c0ef">
         <source>This transaction could save <x equiv-text=" could save {{ segwitGains.potentialBech32Gains * 100 | number " id="INTERPOLATION"/>% on fees by upgrading to native SegWit-Bech32 or <x equiv-text="t-Bech32 or {{ segwitGains.potentialP2shGains * 100 | number:" id="INTERPOLATION_1"/>% by upgrading to SegWit-P2SH</source>
-        <target>این تراکنش می‌تونست با استفاده کردن از SegWit-P2SH تا <x equiv-text="t-Bech32 or {{ segwitGains.potentialP2shGains * 100 | number:" id="INTERPOLATION_1"/> درصد یا SegWit-Bech32 تا <x equiv-text=" could save {{ segwitGains.potentialBech32Gains * 100 | number " id="INTERPOLATION"/> درصد در کارمزد صرفه‌جویی کنه!</target>
+        <target>این تراکنش در صورت استفاده کردن از SegWit-P2SH تا <x equiv-text="t-Bech32 or {{ segwitGains.potentialP2shGains * 100 | number:" id="INTERPOLATION_1"/> درصد یا SegWit-Bech32 تا <x equiv-text=" could save {{ segwitGains.potentialBech32Gains * 100 | number " id="INTERPOLATION"/> درصد کارمزد کمتری پرداخت می‌کرد!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">5</context>
@@ -2459,7 +2468,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f1b50928719b5261ccc81e9ec3ea4cc074018f89">
         <source>Only ~<x equiv-text="ltip=&quot;Only ~{{ median" id="INTERPOLATION"/> sat/vB was needed to get into this block</source>
-        <target>تنها به حدود <x equiv-text="ltip=&quot;Only ~{{ median" id="INTERPOLATION"/> ساتوشی بر بایت مجازی sat/vB نیاز بود تا در این بلاک قرار بگیرد</target>
+        <target>تنها به حدود <x equiv-text="ltip=&quot;Only ~{{ median" id="INTERPOLATION"/> ساتوشی بر بایت مجازی نیاز بود تا در این بلاک قرار بگیرد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
