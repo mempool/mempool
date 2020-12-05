@@ -580,7 +580,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="block.component.browser-title">
         <source>Block <x equiv-text="block.height" id="BLOCK_HEIGHT"/>: <x equiv-text="block.id" id="BLOCK_ID"/></source>
-        <target>区块 <x equiv-text="block.height" id="BLOCK_HEIGHT"/>: <x equiv-text="block.id" id="BLOCK_ID"/></target>
+        <target>区块<x equiv-text="block.height" id="BLOCK_HEIGHT"/>：<x equiv-text="block.id" id="BLOCK_ID"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.ts</context>
           <context context-type="linenumber">98</context>
@@ -597,7 +597,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="51e0346da0d58dd6ee252cdaae9ca2711b2f540a">
         <source>Block <x ctype="x-a" equiv-text="&lt;a [routerLink]=&quot;['/block/' | relativeUrl, blockHash]&quot;&gt;" id="START_LINK"/><x equiv-text="{{ blockHeight }}" id="INTERPOLATION"/><x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/></source>
-        <target>区块 <x ctype="x-a" equiv-text="&lt;a [routerLink]=&quot;['/block/' | relativeUrl, blockHash]&quot;&gt;" id="START_LINK"/><x equiv-text="{{ blockHeight }}" id="INTERPOLATION"/><x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/></target>
+        <target>区块<x ctype="x-a" equiv-text="&lt;a [routerLink]=&quot;['/block/' | relativeUrl, blockHash]&quot;&gt;" id="START_LINK"/><x equiv-text="{{ blockHeight }}" id="INTERPOLATION"/><x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">4</context>
@@ -1551,7 +1551,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="791a4c4131a0ae0aaf82ddb66dacdc7f1c007c3b">
         <source>Registered assets</source>
-        <target>注册资产</target>
+        <target>已注册资产</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">2</context>
@@ -2653,6 +2653,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fb5b5aec9a6add4912de64b7bbc55884cc7f8e3a">
         <source>Unspent TXOs</source>
+        <target>未用UTXO</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">28</context>
@@ -2665,6 +2666,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0f8a41c901cd606bd3389d8a022cee193264f20b">
         <source>Spent TXOs</source>
+        <target>已用UTXO</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">32</context>
@@ -2707,7 +2709,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq-block.component.browser-title">
         <source>Block <x equiv-text="block.height" id="BLOCK_HEIGHT"/>: <x equiv-text="block.hash" id="BLOCK_HASH"/></source>
-        <target>区块 <x equiv-text="block.height" id="BLOCK_HEIGHT"/>: <x equiv-text="block.hash" id="BLOCK_HASH"/></target>
+        <target>区块<x equiv-text="block.height" id="BLOCK_HEIGHT"/>: <x equiv-text="block.hash" id="BLOCK_HASH"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.ts</context>
           <context context-type="linenumber">85</context>
