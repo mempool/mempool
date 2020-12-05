@@ -333,7 +333,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f12c066e1cd7a3844f7a0f9a039694d64cd23bfc">
         <source><x equiv-text="{{ txInBlockIndex + 1 }}" id="INTERPOLATION"/> block</source>
-        <target> <x equiv-text="{{ txInBlockIndex + 1 }}" id="INTERPOLATION"/>ブロック</target>
+        <target><x equiv-text="{{ txInBlockIndex + 1 }}" id="INTERPOLATION"/>ブロック</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">126</context>
@@ -364,7 +364,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f9b2839ab051e0483d3e99238db6f3280660b271">
         <source><x equiv-text="{{ txInBlockIndex + 1 }}" id="INTERPOLATION"/> blocks</source>
-        <target> <x equiv-text="{{ txInBlockIndex + 1 }}" id="INTERPOLATION"/>ブロック</target>
+        <target><x equiv-text="{{ txInBlockIndex + 1 }}" id="INTERPOLATION"/>ブロック</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">289</context>
@@ -1576,6 +1576,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="aef0d676b15fdae8cb70fc3b089cce7399fde9da">
         <source>Search asset</source>
+        <target>アセット検索</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">9</context>
@@ -2335,7 +2336,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ee0d8fddc1dd89c919c21db1b8b2d848d05cdfdc">
         <source><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> block</source>
-        <target> <x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/>ブロック</target>
+        <target><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/>ブロック</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">164</context>
@@ -2344,7 +2345,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="33d349897f450ba879a5a0f48842b6a3d884cac1">
         <source><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/> blocks</source>
-        <target> <x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/>ブロック</target>
+        <target><x equiv-text="{{ mempoolBlocksData.blocks }}" id="INTERPOLATION"/>ブロック</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">164</context>

@@ -2421,7 +2421,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="975f46d122f2ca0a187308399a58b44d61ef08eb">
         <source>This transaction saved <x equiv-text="ction saved {{ segwitGains.realizedGains * 100 | number:" id="INTERPOLATION"/>% on fees by using SegWit and could save <x equiv-text=" could save {{ segwitGains.potentialBech32Gains * 100 | number " id="INTERPOLATION_1"/>% more by fully upgrading to native SegWit-Bech32</source>
-        <target>این تراکنش با استفاده کردن از SegWit <x equiv-text="ction saved {{ segwitGains.realizedGains * 100 | number:" id="INTERPOLATION"/> درصد در کارمزد صرفه‌جویی کرده‌است. در صورت استفاده از SegWit-Bech32 این صرفه‌جویی تا <x equiv-text=" could save {{ segwitGains.potentialBech32Gains * 100 | number " id="INTERPOLATION_1"/> درصد بیشتر افزایش پیدا می‌کرد!</target>
+        <target>این تراکنش با استفاده کردن از SegWit حدودا <x equiv-text="ction saved {{ segwitGains.realizedGains * 100 | number:" id="INTERPOLATION"/> درصد در کارمزد صرفه‌جویی کرده‌است. در صورت استفاده از SegWit-Bech32 این صرفه‌جویی تا <x equiv-text=" could save {{ segwitGains.potentialBech32Gains * 100 | number " id="INTERPOLATION_1"/> درصد بیشتر افزایش پیدا می‌کرد!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">3</context>
