@@ -1466,7 +1466,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e21556753a442f3d474ccfed50cd3f60bec18fe3">
         <source>Burned amount</source>
-        <target>Uničeno</target>
+        <target>Uničeno (burned)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">55</context>
@@ -2687,7 +2687,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="32377aae07f946d943f9361c8e518f714988c619">
         <source>Burnt amount</source>
-        <target>Uničeno</target>
+        <target>Uničeno (burned)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">20</context>
