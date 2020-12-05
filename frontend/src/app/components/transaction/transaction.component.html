@@ -73,7 +73,7 @@
               <tbody>
                 <tr>
                   <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
-                  <td>{{ tx.fee | number }} sat (<app-fiat [value]="tx.fee"></app-fiat>)</td>
+                  <td>{{ tx.fee | number }} <span i18n="transaction.fee.sat|Transaction Fee sat">sat</span> (<app-fiat [value]="tx.fee"></app-fiat>)</td>
                 </tr>
                 <tr>
                   <td i18n="transaction.fee-per-vbyte|Transaction fee">Fee per vByte</td>
