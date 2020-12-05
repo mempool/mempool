@@ -133,7 +133,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="13f5a75f3e01e5924e45052d2f336eda8bac37e8">
         <source>Weight</source>
-        <target>Weight</target>
+        <target>Viktenheter</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">185</context>
@@ -1101,7 +1101,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f65253954b66e929a8b4d5ecaf61f9129f8cec64">
         <source>Dashboard</source>
-        <target>instrumentbräda</target>
+        <target>Instrumentbräda</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">40</context>
