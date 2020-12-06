@@ -81,6 +81,7 @@ export const languages: Language[] = [
    { code: 'fa', name: 'فارسی' },           // Persian
    { code: 'fr', name: 'Français' },        // French
 // { code: 'gl', name: 'Galego' },          // Galician
+   { code: 'ka', name: 'ქართული' },         // Georgian
 // { code: 'ko', name: '한국어' },          // Korean
 // { code: 'hr', name: 'Hrvatski' },        // Croatian
 // { code: 'id', name: 'Bahasa Indonesia' },// Indonesian

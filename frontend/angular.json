@@ -47,6 +47,10 @@
             "translation": "src/locale/messages.ja.xlf",
             "baseHref": "/ja/"
           },
+          "ka": {
+            "translation": "src/locale/messages.ka.xlf",
+            "baseHref": "/ka/"
+          },
           "nl": {
             "translation": "src/locale/messages.nl.xlf",
             "baseHref": "/nl/"
