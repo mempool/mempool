@@ -824,7 +824,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="714e34125b3343df73f19ec800b43be95217d5d4">
         <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> transaction</source>
-        <target>第<x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/>个交易 / 共<x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/>个交易</target>
+        <target>前<x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/>个交易 / 共<x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/>个交易</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">48</context>
@@ -833,7 +833,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0f6ada0cfb60aefd8f77f8a22349850ce186d666">
         <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> transactions</source>
-        <target>第<x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/>个交易 / 共<x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/>个交易</target>
+        <target>前<x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/>个交易 / 共<x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/>个交易</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">49</context>
@@ -1651,7 +1651,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="miner-identified-by-payout">
         <source>Identified by payout address: '<x equiv-text="vout.scriptpubkey_address" id="PAYOUT_ADDRESS"/>'</source>
-        <target>根据付款地址识别：“ <x equiv-text="vout.scriptpubkey_address" id="PAYOUT_ADDRESS"/>”</target>
+        <target>根据付款地址识别：“<x equiv-text="vout.scriptpubkey_address" id="PAYOUT_ADDRESS"/>”</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
           <context context-type="linenumber">42</context>
@@ -1659,7 +1659,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="miner-identified-by-coinbase">
         <source>Identified by coinbase tag: '<x equiv-text="tag" id="TAG"/>'</source>
-        <target>根据coinbase标签识别：“ <x equiv-text="tag" id="TAG"/>”</target>
+        <target>根据coinbase标签识别：“<x equiv-text="tag" id="TAG"/>”</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
           <context context-type="linenumber">52</context>
@@ -2384,7 +2384,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f0e7d6d900658ee5ce66d8fef3637caf13891c53">
         <source>RBF</source>
-        <target>按需付费</target>
+        <target>RBF</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">8</context>
@@ -2709,7 +2709,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq-block.component.browser-title">
         <source>Block <x equiv-text="block.height" id="BLOCK_HEIGHT"/>: <x equiv-text="block.hash" id="BLOCK_HASH"/></source>
-        <target>区块<x equiv-text="block.height" id="BLOCK_HEIGHT"/>: <x equiv-text="block.hash" id="BLOCK_HASH"/></target>
+        <target>区块<x equiv-text="block.height" id="BLOCK_HEIGHT"/>：<x equiv-text="block.hash" id="BLOCK_HASH"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.ts</context>
           <context context-type="linenumber">85</context>
