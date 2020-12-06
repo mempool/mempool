@@ -65,7 +65,9 @@
     <div class="float-right">
       <span *ngIf="showConfirmations && latestBlock$ | async as latestBlock">
         <button type="button" class="btn btn-sm btn-success mt-2">
-          <ng-container *ngIf="latestBlock.height - tx.blockHeight + 1 == 1; else confirmationPlural" i18n="shared.confirmation-count.singular|Transaction singular confirmation count">confirmation</ng-container><ng-template #confirmationPlural i18n="shared.confirmation-count.plural|Transaction plural confirmation count">confirmations</ng-template>
+          <ng-container *ngTemplateOutlet="latestBlock.height - tx.blockHeight + 1 == 1 ? confirmationSingular : confirmationPlural; context: {$implicit: latestBlock.height - tx.blockHeight + 1}"></ng-container>
+          <ng-template #confirmationSingular let-i i18n="shared.confirmation-count.singular|Transaction singular confirmation count">{{ i }} confirmation</ng-template>
+          <ng-template #confirmationPlural let-i i18n="shared.confirmation-count.plural|Transaction plural confirmation count">{{ i }} confirmations</ng-template>
         </button>
         &nbsp;
       </span>

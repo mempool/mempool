@@ -4,8 +4,11 @@
 
   <ng-template [ngIf]="!isLoading && !error">
 
-    <button *ngIf="(latestBlock$ | async) as latestBlock" type="button" class="btn btn-sm btn-success float-right mr-2 mt-1 mt-md-3">{{ latestBlock.height - bisqTx.blockHeight + 1 }} <ng-container *ngIf="latestBlock.height - bisqTx.blockHeight + 1 == 1; else confirmationPlural" i18n="shared.confirmation-count.singular|Transaction singular confirmation count">confirmation</ng-container><ng-template #confirmationPlural i18n="shared.confirmation-count.plural|Transaction plural confirmation count">confirmations</ng-template></button>
-
+    <button *ngIf="(latestBlock$ | async) as latestBlock" type="button" class="btn btn-sm btn-success float-right mr-2 mt-1 mt-md-3">
+      <ng-container *ngTemplateOutlet="latestBlock.height - bisqTx.blockHeight + 1 == 1 ? confirmationSingular : confirmationPlural; context: {$implicit: latestBlock.height - bisqTx.blockHeight + 1}"></ng-container>
+      <ng-template #confirmationSingular let-i i18n="shared.confirmation-count.singular|Transaction singular confirmation count">{{ i }} confirmation</ng-template>
+      <ng-template #confirmationPlural let-i i18n="shared.confirmation-count.plural|Transaction plural confirmation count">{{ i }} confirmations</ng-template>
+    </button>
     <div>
       <a [routerLink]="['/bisq-tx' | relativeUrl, bisqTx.id]" style="line-height: 56px;">
         <span class="d-inline d-lg-none">{{ bisqTx.id | shortenString : 24 }}</span>
