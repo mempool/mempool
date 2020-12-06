@@ -38,10 +38,6 @@
   <div *ngIf="arrowVisible" id="arrow-up" [ngStyle]="{'right': rightPosition + 75 + 'px', transition: transition }"></div>
 </div>
 
-<ng-template let-i #nextBlockEtaPlural i18n="mempool-blocks.eta-of-next-block-plural|Block Frequency (plural)">
-  In ~{{ i }} minutes
-</ng-template>
+<ng-template let-i #nextBlockEtaPlural i18n="mempool-blocks.eta-of-next-block-plural|Block Frequency (plural)">In ~{{ i }} minutes</ng-template>
 
-<ng-template let-i #nextBlockEta i18n="mempool-blocks.eta-of-next-block|Block Frequency">
-  In ~{{ i }} minute
-</ng-template>
+<ng-template let-i #nextBlockEta i18n="mempool-blocks.eta-of-next-block|Block Frequency">In ~{{ i }} minute</ng-template>
