@@ -2178,7 +2178,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e9a58657c410cf65dba4c3cdfb1af7099dedb241">
         <source>Returns :length of latest Bisq transactions, starting from :index.</source>
-        <target>Повертає :length останній транзакцій Bisq починаючи з :index.</target>
+        <target>Повертає :length останніх транзакцій Bisq починаючи з :index.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">256</context>
@@ -2661,7 +2661,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1cde02174ca8cc2cc0b18172cd2ec598aa82dcc7">
         <source>Existing amount</source>
-        <target>Існуюча сума</target>
+        <target>Всього</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">12</context>
@@ -2674,7 +2674,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3218e6768d0d5fbc69d4931819e21451c89ba8ed">
         <source>Minted amount</source>
-        <target>Створена сума</target>
+        <target>Створено</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">16</context>
@@ -2687,7 +2687,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="32377aae07f946d943f9361c8e518f714988c619">
         <source>Burnt amount</source>
-        <target>Спалена сума</target>
+        <target>Спалено</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">20</context>
