@@ -122,11 +122,13 @@
                   </a>
                   <ng-template #scriptpubkey_type>
                     <ng-template [ngIf]="vout.pegout" [ngIfElse]="defaultscriptpubkey_type">
-                      <span i18n="transactions-list.peg-out-to">Peg-out to</span>
-                      <a [routerLink]="['/address/', vout.pegout.scriptpubkey_address]" title="{{ vout.pegout.scriptpubkey_address }}">
-                        <span class="d-block d-lg-none">{{ vout.pegout.scriptpubkey_address | shortenString : 16 }}</span>
-                        <span class="d-none d-lg-block">{{ vout.pegout.scriptpubkey_address | shortenString : 35 }}</span>
-                      </a>
+                      <ng-container i18n="transactions-list.peg-out-to">Peg-out to <ng-container *ngTemplateOutlet="pegOutLink"></ng-container></ng-container>
+                      <ng-template #pegOutLink>
+                        <a [routerLink]="['/address/', vout.pegout.scriptpubkey_address]" title="{{ vout.pegout.scriptpubkey_address }}">
+                          <span class="d-block d-lg-none">{{ vout.pegout.scriptpubkey_address | shortenString : 16 }}</span>
+                          <span class="d-none d-lg-block">{{ vout.pegout.scriptpubkey_address | shortenString : 35 }}</span>
+                        </a>
+                      </ng-template>
                     </ng-template>
                     <ng-template #defaultscriptpubkey_type>
                       <ng-template [ngIf]="vout.scriptpubkey_type === 'op_return'" [ngIfElse]="otherPubkeyType">
@@ -198,7 +200,11 @@
 
       <div class="float-right">
         <span *ngIf="showConfirmations && latestBlock$ | async as latestBlock">
-          <button *ngIf="tx.status.confirmed; else unconfirmedButton" type="button" class="btn btn-sm btn-success mt-2">{{ latestBlock.height - tx.status.block_height + 1 }} <ng-container *ngIf="latestBlock.height - tx.status.block_height + 1 == 1" i18n="shared.confirmation-count.singular">confirmation</ng-container><ng-container *ngIf="latestBlock.height - tx.status.block_height + 1 > 1" i18n="shared.confirmation-count.plural">confirmations</ng-container></button>
+          <button *ngIf="tx.status.confirmed; else unconfirmedButton" type="button" class="btn btn-sm btn-success mt-2">
+            <ng-container *ngTemplateOutlet="latestBlock.height - tx.status.block_height + 1 == 1 ? confirmationSingular : confirmationPlural; context: {$implicit: latestBlock.height - tx.status.block_height + 1}"></ng-container>
+            <ng-template #confirmationSingular let-i i18n="shared.confirmation-count.singular|Transaction singular confirmation count">{{ i }} confirmation</ng-template>
+            <ng-template #confirmationPlural let-i i18n="shared.confirmation-count.plural|Transaction plural confirmation count">{{ i }} confirmations</ng-template>
+          </button>
           <ng-template #unconfirmedButton>
             <button type="button" class="btn btn-sm btn-danger mt-2" i18n="transactions-list.unconfirmed">Unconfirmed</button>
           </ng-template>
