@@ -322,30 +322,28 @@
         </context-group>
         <note priority="1" from="description">transaction.error.waiting-for-it-to-appear</note>
       </trans-unit>
-      <trans-unit id="8fb67c9ec3fc773fa5c0c4e32d2d9814ccb60315" datatype="html">
-        <source> In ~<x id="INTERPOLATION" equiv-text=" ~{{ i "/> minutes
-</source>
+      <trans-unit id="02c35681bc187cde4d0d3a98a3a1f2035dfe7398" datatype="html">
+        <source>In ~<x id="INTERPOLATION" equiv-text="{{ i }}"/> minutes</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">293,295</context>
+          <context context-type="linenumber">293</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
-          <context context-type="linenumber">41,43</context>
+          <context context-type="linenumber">41</context>
         </context-group>
         <note priority="1" from="description">Block Frequency (plural)</note>
         <note priority="1" from="meaning">mempool-blocks.eta-of-next-block-plural</note>
       </trans-unit>
-      <trans-unit id="e27fd660bdc63a08a91e998b4dfe20ae0b7dbccd" datatype="html">
-        <source> In ~<x id="INTERPOLATION" equiv-text=" ~{{ i "/> minute
-</source>
+      <trans-unit id="e8b52d333f9395e1ae9c541d45dfb8c1cd017424" datatype="html">
+        <source>In ~<x id="INTERPOLATION" equiv-text="{{ i }}"/> minute</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">297,299</context>
+          <context context-type="linenumber">295</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
-          <context context-type="linenumber">45,47</context>
+          <context context-type="linenumber">43</context>
         </context-group>
         <note priority="1" from="description">Block Frequency</note>
         <note priority="1" from="meaning">mempool-blocks.eta-of-next-block</note>
@@ -354,7 +352,7 @@
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">301</context>
+          <context context-type="linenumber">297</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -366,7 +364,7 @@
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">302</context>
+          <context context-type="linenumber">298</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
