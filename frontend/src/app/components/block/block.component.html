@@ -82,7 +82,11 @@
 
     <br>
 
-    <h2 class="float-left">{{ block.tx_count | number }} <ng-template [ngIf]="block.tx_count === 1" i18n="shared.transaction-count.singular">transaction</ng-template><ng-template [ngIf]="block.tx_count !== 1" i18n="shared.transaction-count.plural">transactions</ng-template></h2>
+    <h2 class="float-left">
+      <ng-container *ngTemplateOutlet="block.tx_count === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: block.tx_count | number}"></ng-container>
+      <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
+      <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
+    </h2>
 
     <ngb-pagination class="float-right" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true"></ngb-pagination>
 
