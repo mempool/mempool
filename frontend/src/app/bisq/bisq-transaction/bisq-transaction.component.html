@@ -1,11 +1,14 @@
 <div class="container-xl">
 
-  <h1 class="float-left mr-3 mb-md-3">Transaction</h1>
+  <h1 class="float-left mr-3 mb-md-3" i18n="shared.transaction">Transaction</h1>
 
   <ng-template [ngIf]="!isLoading && !error">
 
-    <button *ngIf="(latestBlock$ | async) as latestBlock" type="button" class="btn btn-sm btn-success float-right mr-2 mt-1 mt-md-3">{{ latestBlock.height - bisqTx.blockHeight + 1 }} confirmation<ng-container *ngIf="latestBlock.height - bisqTx.blockHeight + 1 > 1">s</ng-container></button>
-
+    <button *ngIf="(latestBlock$ | async) as latestBlock" type="button" class="btn btn-sm btn-success float-right mr-2 mt-1 mt-md-3">
+      <ng-container *ngTemplateOutlet="latestBlock.height - bisqTx.blockHeight + 1 == 1 ? confirmationSingular : confirmationPlural; context: {$implicit: latestBlock.height - bisqTx.blockHeight + 1}"></ng-container>
+      <ng-template #confirmationSingular let-i i18n="shared.confirmation-count.singular|Transaction singular confirmation count">{{ i }} confirmation</ng-template>
+      <ng-template #confirmationPlural let-i i18n="shared.confirmation-count.plural|Transaction plural confirmation count">{{ i }} confirmations</ng-template>
+    </button>
     <div>
       <a [routerLink]="['/bisq-tx' | relativeUrl, bisqTx.id]" style="line-height: 56px;">
         <span class="d-inline d-lg-none">{{ bisqTx.id | shortenString : 24 }}</span>
@@ -21,22 +24,22 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td>Timestamp</td>
+                <td i18n="transaction.timestamp|Transaction Timestamp">Timestamp</td>
                 <td>
                   {{ bisqTx.time | date:'yyyy-MM-dd HH:mm' }}
                   <div class="lg-inline">
-                    <i>(<app-time-since [time]="bisqTx.time / 1000" [fastRender]="true"></app-time-since> ago)</i>
+                    <i>(<app-time-since [time]="bisqTx.time / 1000" [fastRender]="true"></app-time-since>)</i>
                   </div>
                 </td>
               </tr>
               <tr>
-                <td class="td-width">Included in block</td>
+                <td class="td-width" i18n="transaction.included-in-block|Transaction included in block">Included in block</td>
                 <td>
                   <a [routerLink]="['/block/' | relativeUrl, bisqTx.blockHash]" [state]="{ data: { blockHeight: bisqTx.blockHeight } }">{{ bisqTx.blockHeight }}</a>
                 </td>
               </tr>
               <tr>
-                <td class="td-width">Features</td>
+                <td class="td-width" i18n="transaction.features|Transaction features">Features</td>
                 <td>
                   <app-tx-features *ngIf="tx; else loadingTx" [tx]="tx"></app-tx-features>
                   <ng-template #loadingTx>
@@ -51,12 +54,12 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td class="td-width">Burnt</td>
+                <td class="td-width" i18n="BSQ burnt amount">Burnt amount</td>
                 <td>
                   {{ bisqTx.burntFee / 100 | number: '1.2-2' }} BSQ (<app-bsq-amount [bsq]="bisqTx.burntFee" [forceFiat]="true" [green]="true"></app-bsq-amount>)
               </tr>
               <tr>
-                <td>Fee per vByte</td>
+                <td i18n="transaction.fee-per-vbyte|Transaction fee">Fee per vByte</td>
                 <td *ngIf="!isLoadingTx; else loadingTxFee">
                   {{ tx.fee / (tx.weight / 4) | number : '1.1-1' }} sat/vB
                   &nbsp;
@@ -75,14 +78,14 @@
 
     <br>
 
-    <h2>Details</h2>
+    <h2 i18n="transaction.details">Details</h2>
 
 
     <app-bisq-transaction-details [tx]="bisqTx"></app-bisq-transaction-details>
 
     <br>
 
-    <h2>Inputs & Outputs</h2>
+    <h2 i18n="transaction.inputs-and-outputs|Transaction inputs and outputs">Inputs & Outputs</h2>
 
     <app-bisq-transfers [tx]="bisqTx"></app-bisq-transfers>
 
@@ -121,7 +124,7 @@
 
     <br>
 
-    <h2>Details</h2>
+    <h2 i18n="transaction.details">Details</h2>
     <div class="box">
       <table class="table table-borderless table-striped">
         <tbody>
@@ -142,7 +145,7 @@
 
     <br>
 
-    <h2>Inputs & Outputs</h2>
+    <h2 i18n="transaction.inputs-and-outputs|Transaction inputs and outputs">Inputs & Outputs</h2>
 
     <div class="box">
       <div class="row">

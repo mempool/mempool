@@ -1,7 +1,7 @@
 <div class="container-xl">
 
   <div class="title-block">
-    <h1>Block <ng-template [ngIf]="blockHeight"><a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a></ng-template></h1>
+    <h1><ng-template [ngIf]="blockHeight" i18n="block.block">Block <a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a></ng-template></h1>
   </div>
 
   <div class="clearfix"></div>
@@ -14,15 +14,15 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td class="td-width">Hash</td>
+                <td class="td-width" i18n="block.hash">Hash</td>
                 <td><a [routerLink]="['/block/' | relativeUrl, block.hash]" title="{{ block.hash }}">{{ block.hash | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="block.hash"></app-clipboard></td>
               </tr>
               <tr>
-                <td>Timestamp</td>
+                <td i18n="transaction.timestamp|Transaction Timestamp">Timestamp</td>
                 <td>
                   {{ block.time | date:'yyyy-MM-dd HH:mm' }}
                   <div class="lg-inline">
-                    <i>(<app-time-since [time]="block.time / 1000" [fastRender]="true"></app-time-since> ago)</i>
+                    <i>(<app-time-since [time]="block.time / 1000" [fastRender]="true"></app-time-since>)</i>
                   </div>
                 </td>
               </tr>
@@ -32,7 +32,7 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td class="td-width">Previous hash</td>
+                <td class="td-width" i18n="block.previous_hash|Transaction Previous Hash">Previous hash</td>
                 <td><a [routerLink]="['/block/' | relativeUrl, block.previousBlockHash]" title="{{ block.hash }}">{{ block.previousBlockHash | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="block.previousBlockHash"></app-clipboard></td>
               </tr>
           </table>
@@ -44,7 +44,11 @@
 
     <br>
 
-    <h2>{{ block.txs.length | number }} transactions</h2>
+    <h2>
+      <ng-container *ngTemplateOutlet="block.txs.length === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: block.txs.length| number}"></ng-container>
+      <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
+      <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
+    </h2>
 
     <ng-template ngFor let-tx [ngForOf]="block.txs">
 
@@ -73,11 +77,11 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td class="td-width">Hash</td>
+                <td class="td-width" i18n="block.hash">Hash</td>
                 <td><span class="skeleton-loader"></span></td>
               </tr>
               <tr>
-                <td>Timestamp</td>
+                <td i18n="transaction.timestamp|Transaction Timestamp">Timestamp</td>
                 <td><span class="skeleton-loader"></span></td>
               </tr>
           </table>
@@ -86,7 +90,7 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td class="td-width">Previous hash</td>
+                <td class="td-width" i18n="block.previous_hash|Transaction Previous Hash">Previous hash</td>
                 <td><span class="skeleton-loader"></span></td>
               </tr>
           </table>

@@ -52,7 +52,7 @@ export class StatisticsComponent implements OnInit {
    }
 
   ngOnInit() {
-    this.seoService.setTitle('Graphs');
+    this.seoService.setTitle($localize`:@@5d4f792f048fcaa6df5948575d7cb325c9393383:Graphs`);
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.inverted = this.storageService.getValue('inverted-graph') === 'true';
     const isMobile = window.innerWidth <= 767.98;

@@ -14,11 +14,11 @@
           <tbody>
             <tr>
               <td i18n="mempool-block.median-fee">Median fee</td>
-              <td>~{{ mempoolBlock.medianFee | number:'1.0-0' }} sat/vB (<app-fiat [value]="mempoolBlock.medianFee * 140" digitsInfo="1.2-2" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat>)</td>
+              <td>~{{ mempoolBlock.medianFee | number:'1.0-0' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span> (<app-fiat [value]="mempoolBlock.medianFee * 140" digitsInfo="1.2-2" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat>)</td>
             </tr>
             <tr>
               <td i18n="mempool-block.fee-span">Fee span</td>
-              <td><span class="yellow-color">{{ mempoolBlock.feeRange[0] | number:'1.0-0' }} - {{ mempoolBlock.feeRange[mempoolBlock.feeRange.length - 1] | number:'1.0-0' }} sat/vB</span></td>
+              <td><span class="yellow-color">{{ mempoolBlock.feeRange[0] | number:'1.0-0' }} - {{ mempoolBlock.feeRange[mempoolBlock.feeRange.length - 1] | number:'1.0-0' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></span></td>
             </tr>
             <tr>
               <td i18n="mempool-block.total-fees">Total fees</td>
@@ -29,7 +29,7 @@
               <td>{{ mempoolBlock.nTx }}</td>
             </tr>
             <tr>
-              <td i18n="mempool-block.filled">Filled</td>
+              <td i18n="mempool-block.size">Size</td>
               <td>
                 <div class="progress position-relative">
                   <div class="progress-bar progress-mempool {{ (network$ | async) }}" role="progressbar" [ngStyle]="{'width': (mempoolBlock.blockVSize / 1000000) * 100 + '%' }"></div>
