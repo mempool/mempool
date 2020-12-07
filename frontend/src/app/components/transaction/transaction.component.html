@@ -127,10 +127,10 @@
                       </ng-template>
                       <ng-template #belowBlockLimit>
                         <ng-template [ngIf]="network === 'liquid'" [ngIfElse]="timeEstimateDefault">
-                          <ng-container *ngTemplateOutlet="1 * txInBlockIndex + 1 === 1 ? nextBlockEta : nextBlockEtaPlural; context:{ $implicit: 1 * txInBlockIndex + 1 }"></ng-container> <i>(<ng-container *ngTemplateOutlet="txInBlockIndex === 0 ? blocksSingular : blocksPlural; context: {$implicit: txInBlockIndex + 1 }"></ng-container>)</i>
+                          <ng-container *ngTemplateOutlet="1 * txInBlockIndex + 1 === 1 ? nextBlockEta : nextBlockEtaPlural; context:{ $implicit: 1 * txInBlockIndex + 1 }"></ng-container>&nbsp;<i>(<ng-container *ngTemplateOutlet="txInBlockIndex === 0 ? blocksSingular : blocksPlural; context: {$implicit: txInBlockIndex + 1 }"></ng-container>)</i>
                         </ng-template>
                         <ng-template #timeEstimateDefault>
-                          <ng-container *ngTemplateOutlet="nextBlockEtaPlural; context:{ $implicit: 10 * txInBlockIndex + 10 }"></ng-container> <i>(<ng-container *ngTemplateOutlet="txInBlockIndex === 0 ? blocksSingular : blocksPlural; context: {$implicit: txInBlockIndex + 1 }"></ng-container>)</i>
+                          <ng-container *ngTemplateOutlet="nextBlockEtaPlural; context:{ $implicit: 10 * txInBlockIndex + 10 }"></ng-container>&nbsp;<i>(<ng-container *ngTemplateOutlet="txInBlockIndex === 0 ? blocksSingular : blocksPlural; context: {$implicit: txInBlockIndex + 1 }"></ng-container>)</i>
                         </ng-template>
                       </ng-template>
                     </ng-template>
@@ -249,7 +249,7 @@
 
     <br>
 
-    <h2>Details</h2>
+    <h2 i18n="transaction.details">Details</h2>
     <div class="box">
       <table class="table table-borderless table-striped">
         <tbody>
