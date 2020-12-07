@@ -20,6 +20,10 @@
           <context context-type="linenumber">12</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
           <context context-type="linenumber">18</context>
         </context-group>
@@ -91,6 +95,14 @@
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">168</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">88</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">148</context>
+        </context-group>
         <note priority="1" from="description">Transaction inputs and outputs</note>
         <note priority="1" from="meaning">transaction.inputs-and-outputs</note>
       </trans-unit>
@@ -108,6 +120,18 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">176</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">252</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">81</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">127</context>
         </context-group>
         <note priority="1" from="description">transaction.details</note>
       </trans-unit>
@@ -143,6 +167,18 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">46</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
+          <context context-type="linenumber">84</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">27</context>
         </context-group>
         <note priority="1" from="description">Transaction Timestamp</note>
         <note priority="1" from="meaning">transaction.timestamp</note>
@@ -183,6 +219,10 @@
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">156</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">62</context>
+        </context-group>
         <note priority="1" from="description">Transaction fee</note>
         <note priority="1" from="meaning">transaction.fee-per-vbyte</note>
       </trans-unit>
@@ -221,6 +261,14 @@
           <context context-type="linenumber">13</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">6</context>
         </context-group>
@@ -244,6 +292,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">55</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">36</context>
         </context-group>
         <note priority="1" from="description">Transaction included in block</note>
         <note priority="1" from="meaning">transaction.included-in-block</note>
@@ -275,6 +327,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">140</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">42</context>
         </context-group>
         <note priority="1" from="description">Transaction features</note>
         <note priority="1" from="meaning">transaction.features</note>
@@ -356,7 +412,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">166</context>
+          <context context-type="linenumber">165</context>
         </context-group>
         <note priority="1" from="description">shared.block</note>
       </trans-unit>
@@ -372,7 +428,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">167</context>
+          <context context-type="linenumber">166</context>
         </context-group>
         <note priority="1" from="description">shared.blocks</note>
       </trans-unit>
@@ -503,6 +559,10 @@
           <context context-type="linenumber">166</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction-details/bisq-transaction-details.component.html</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
           <context context-type="linenumber">19</context>
         </context-group>
@@ -578,6 +638,10 @@
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">4</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
         <note priority="1" from="description">block.block</note>
       </trans-unit>
       <trans-unit id="960cd598cbd85edb0a254ff3e59574d2c5cb888c" datatype="html">
@@ -585,6 +649,14 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">18</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
+          <context context-type="linenumber">80</context>
         </context-group>
         <note priority="1" from="description">block.hash</note>
       </trans-unit>
@@ -712,6 +784,14 @@
           <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
           <context context-type="linenumber">18</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
+          <context context-type="linenumber">48</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
         <note priority="1" from="description">shared.transaction-count.singular</note>
       </trans-unit>
       <trans-unit id="14779b0ce4cbc4d975a35a8fe074426228a324f3" datatype="html">
@@ -727,6 +807,14 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
           <context context-type="linenumber">19</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
+          <context context-type="linenumber">50</context>
         </context-group>
         <note priority="1" from="description">shared.transaction-count.plural</note>
       </trans-unit>
@@ -751,6 +839,10 @@
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
         <note priority="1" from="description">shared.address</note>
       </trans-unit>
       <trans-unit id="a9b87c3aa4731edee661c8287ef3aab71799c0b8" datatype="html">
@@ -759,12 +851,20 @@
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">20</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
         <note priority="1" from="description">address.total-received</note>
       </trans-unit>
       <trans-unit id="f149942f271231be52f55589398967093382d96d" datatype="html">
         <source>Total sent</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
           <context context-type="linenumber">24</context>
         </context-group>
         <context-group purpose="location">
@@ -777,6 +877,10 @@
         <source>Balance</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
           <context context-type="linenumber">28</context>
         </context-group>
         <note priority="1" from="description">address.balance</note>
@@ -1249,7 +1353,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">185</context>
+          <context context-type="linenumber">183</context>
         </context-group>
         <note priority="1" from="description">footer.backend-is-synchronizing</note>
       </trans-unit>
@@ -1373,6 +1477,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">51</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction-details/bisq-transaction-details.component.html</context>
+          <context context-type="linenumber">15</context>
         </context-group>
         <note priority="1" from="description">Liquid Asset issued amount</note>
         <note priority="1" from="meaning">asset.issued-amount</note>
@@ -1580,7 +1688,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">174</context>
+          <context context-type="linenumber">172</context>
         </context-group>
         <note priority="1" from="description">dashboard.latest-blocks.transaction-count</note>
       </trans-unit>
@@ -1665,7 +1773,7 @@
         <source>Unconfirmed</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">172</context>
+          <context context-type="linenumber">170</context>
         </context-group>
         <note priority="1" from="description">Unconfirmed count</note>
         <note priority="1" from="meaning">dashboard.unconfirmed</note>
@@ -1674,7 +1782,7 @@
         <source>Incoming transactions</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">182</context>
+          <context context-type="linenumber">180</context>
         </context-group>
         <note priority="1" from="description">dashboard.incoming-transactions</note>
       </trans-unit>
@@ -1682,7 +1790,7 @@
         <source>vB/s</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">189</context>
+          <context context-type="linenumber">187</context>
         </context-group>
         <note priority="1" from="description">vB/s</note>
         <note priority="1" from="meaning">shared.vbytes-per-second</note>
@@ -1691,7 +1799,7 @@
         <source>Difficulty adjustment</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">198</context>
+          <context context-type="linenumber">196</context>
         </context-group>
         <note priority="1" from="description">dashboard.difficulty-adjustment</note>
       </trans-unit>
@@ -2413,6 +2521,14 @@
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">62</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transfers/bisq-transfers.component.html</context>
+          <context context-type="linenumber">62</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">57</context>
+        </context-group>
         <note priority="1" from="description">BSQ burnt amount</note>
       </trans-unit>
       <trans-unit id="7882f2edb1d4139800b276b6b0bbf5ae0b2234ef" datatype="html">
@@ -2490,12 +2606,49 @@
         </context-group>
         <note priority="1" from="description">Bisq block confirmed time header</note>
       </trans-unit>
+      <trans-unit id="23b4db80cfba2937f6b087d8776cb5cd6725a16b" datatype="html">
+        <source>Inputs</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction-details/bisq-transaction-details.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+        <note priority="1" from="description">transaction.inputs</note>
+      </trans-unit>
+      <trans-unit id="93883f08c5e22b14770da46e1a5b724bab7d43fb" datatype="html">
+        <source>Outputs</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction-details/bisq-transaction-details.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+        <note priority="1" from="description">transaction.outputs</note>
+      </trans-unit>
+      <trans-unit id="8fe73a4787b8068b2ba61f54ab7e0f9af2ea1fc9" datatype="html">
+        <source>Version</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction-details/bisq-transaction-details.component.html</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+        <note priority="1" from="description">transaction.version</note>
+      </trans-unit>
       <trans-unit id="bisq-block.component.browser-title" datatype="html">
         <source>Block <x id="BLOCK_HEIGHT" equiv-text="block.height"/>: <x id="BLOCK_HASH" equiv-text="block.hash"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.ts</context>
           <context context-type="linenumber">85</context>
         </context-group>
+      </trans-unit>
+      <trans-unit id="6d0db947a91dc4884aefa858a27fc848530e6404" datatype="html">
+        <source>Previous hash</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
+          <context context-type="linenumber">93</context>
+        </context-group>
+        <note priority="1" from="description">Transaction Previous Hash</note>
+        <note priority="1" from="meaning">block.previous_hash</note>
       </trans-unit>
       <trans-unit id="bisq-transactions.filter" datatype="html">
         <source>Filter</source>
