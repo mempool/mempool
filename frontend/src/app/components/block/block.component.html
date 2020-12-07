@@ -43,7 +43,7 @@
             <tbody>
               <tr *ngIf="block.medianFee !== undefined">
                 <td class="td-width" i18n="block.median-fee">Median fee</td>
-                <td>~{{ block.medianFee | number:'1.0-0' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span> (<app-fiat [value]="block.medianFee * 140" digitsInfo="1.2-2" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat>)</td>
+                <td>~{{ block.medianFee | number:'1.0-0' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span> (<app-fiat [value]="block.medianFee * 140" digitsInfo="1.2-2" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat>)</td>
               </tr>
               <ng-template [ngIf]="fees !== undefined" [ngIfElse]="loadingFees">
                 <tr>
@@ -82,7 +82,11 @@
 
     <br>
 
-    <h2 class="float-left">{{ block.tx_count | number }} <ng-template [ngIf]="block.tx_count === 1" i18n="shared.transaction-count.singular">transaction</ng-template><ng-template [ngIf]="block.tx_count !== 1" i18n="shared.transaction-count.plural">transactions</ng-template></h2>
+    <h2 class="float-left">
+      <ng-container *ngTemplateOutlet="block.tx_count === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: block.tx_count | number}"></ng-container>
+      <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
+      <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
+    </h2>
 
     <ngb-pagination class="float-right" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true"></ngb-pagination>
 

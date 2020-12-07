@@ -43,7 +43,7 @@ export class BisqTransactionComponent implements OnInit, OnDestroy {
         this.error = null;
         document.body.scrollTo(0, 0);
         this.txId = params.get('id') || '';
-        this.seoService.setTitle('Transaction: ' + this.txId);
+        this.seoService.setTitle($localize`:@@bisq.transaction.browser-title:Transaction: ${this.txId}:INTERPOLATION:`);
         if (history.state.data) {
           return of(history.state.data);
         }

@@ -34,7 +34,7 @@ export class AboutComponent implements OnInit {
 
   ngOnInit() {
     this.gitCommit$ = this.stateService.gitCommit$.pipe(map((str) => str.substr(0, 8)));
-    this.seoService.setTitle('About');
+    this.seoService.setTitle($localize`:@@004b222ff9ef9dd4771b777950ca1d0e4cd4348a:About`);
     this.websocketService.want(['blocks']);
 
     this.donationForm = this.formBuilder.group({

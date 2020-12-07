@@ -128,8 +128,8 @@
 
   <button type="button" class="btn btn-secondary btn-sm d-block mx-auto" (click)="toggleCollapsed()">
     <div [ngSwitch]="collapseLevel">
-      <fa-icon *ngSwitchCase="'three'" [icon]="['fas', 'angle-down']" [fixedWidth]="true" title="Collapse"></fa-icon>
-      <fa-icon *ngSwitchDefault [icon]="['fas', 'angle-up']" [fixedWidth]="true" title="Expand"></fa-icon>
+      <fa-icon *ngSwitchCase="'three'" [icon]="['fas', 'angle-down']" [fixedWidth]="true" i18n-title="dashboard.expand" title="Expand"></fa-icon>
+      <fa-icon *ngSwitchDefault [icon]="['fas', 'angle-up']" [fixedWidth]="true" i18n-title="dashboard.collapse" title="Collapse"></fa-icon>
     </div>
   </button>
 
@@ -161,7 +161,9 @@
       <td>
         <h5 class="card-title" i18n="dashboard.mempool-size|Mempool size">Mempool size</h5>
         <p class="card-text" *ngIf="(mempoolBlocksData$ | async) as mempoolBlocksData; else loading">
-          {{ mempoolBlocksData.size | bytes }} ({{ mempoolBlocksData.blocks }} <span [hidden]="mempoolBlocksData.blocks == 1" i18n="dashboard.block">block</span><span [hidden]="mempoolBlocksData.blocks != 1">blocks</span>)
+          {{ mempoolBlocksData.size | bytes }} (<ng-container *ngTemplateOutlet="mempoolBlocksData.blocks === 1 ? blocksSingular : blocksPlural; context: {$implicit: mempoolBlocksData.blocks }"></ng-container>)
+            <ng-template #blocksSingular let-i i18n="shared.block">{{ i }} block</ng-template>
+            <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} blocks</ng-template>
         </p>
       </td>
       <td>
@@ -182,7 +184,7 @@
     </span>
     <ng-template #inSync>
       <div class="progress sub-text" style="max-width: 250px;">
-        <div class="progress-bar {{ mempoolInfoData.value.progressClass }}" style="padding: 4px;" role="progressbar" [ngStyle]="{'width': mempoolInfoData.value.progressWidth}">{{ mempoolInfoData.value.vBytesPerSecond | ceil | number }} <ng-template i18n="shared.vbytes-per-second|vB/s">vB/s</ng-template></div>
+        <div class="progress-bar {{ mempoolInfoData.value.progressClass }}" style="padding: 4px;" role="progressbar" [ngStyle]="{'width': mempoolInfoData.value.progressWidth}">{{ mempoolInfoData.value.vBytesPerSecond | ceil | number }} <ng-container i18n="shared.vbytes-per-second|vB/s">vB/s</ng-container></div>
       </div>
     </ng-template>
   </ng-template>
