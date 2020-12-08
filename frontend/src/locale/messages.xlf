@@ -1367,13 +1367,18 @@
         </context-group>
         <note priority="1" from="description">footer.backend-is-synchronizing</note>
       </trans-unit>
-      <trans-unit id="3bf119bbcf30407270db9f271af12aa89c52414a" datatype="html">
+      <trans-unit id="50904e472d4671388a20fbbb1ee9dfc0a4586fa1" datatype="html">
         <source>vB/s</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">11</context>
         </context-group>
-        <note priority="1" from="description">shared.vbytes-per-second</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">187</context>
+        </context-group>
+        <note priority="1" from="description">vB/s</note>
+        <note priority="1" from="meaning">shared.vbytes-per-second</note>
       </trans-unit>
       <trans-unit id="mempool-block.next.block" datatype="html">
         <source>Next block</source>
@@ -1777,15 +1782,6 @@
           <context context-type="linenumber">180</context>
         </context-group>
         <note priority="1" from="description">dashboard.incoming-transactions</note>
-      </trans-unit>
-      <trans-unit id="50904e472d4671388a20fbbb1ee9dfc0a4586fa1" datatype="html">
-        <source>vB/s</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">187</context>
-        </context-group>
-        <note priority="1" from="description">vB/s</note>
-        <note priority="1" from="meaning">shared.vbytes-per-second</note>
       </trans-unit>
       <trans-unit id="125c154b4a63daa7e993e1f4a8bea4c98a645142" datatype="html">
         <source>Difficulty adjustment</source>
