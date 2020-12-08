@@ -86,6 +86,10 @@
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">22</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
+          <context context-type="linenumber">209</context>
+        </context-group>
         <note priority="1" from="description">Transaction unconfirmed state</note>
         <note priority="1" from="meaning">transaction.unconfirmed</note>
       </trans-unit>
@@ -411,6 +415,10 @@
           <context context-type="linenumber">297</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">165</context>
         </context-group>
@@ -425,6 +433,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
           <context context-type="linenumber">30</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
+          <context context-type="linenumber">23</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -584,18 +596,6 @@
         </context-group>
         <note priority="1" from="description">sat</note>
         <note priority="1" from="meaning">shared.sat</note>
-      </trans-unit>
-      <trans-unit id="dbc2df5fb208e52733f39fc22e55d0b4b38e420f" datatype="html">
-        <source>Unconfirmed</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">209</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
-          <context context-type="linenumber">16</context>
-        </context-group>
-        <note priority="1" from="description">transactions-list.unconfirmed</note>
       </trans-unit>
       <trans-unit id="30751732ff4b8f6ddb2a906e0173072ac29d412a" datatype="html">
         <source>Confidential</source>
@@ -1329,21 +1329,31 @@
         </context-group>
         <note priority="1" from="description">footer.tx-vbytes-per-second</note>
       </trans-unit>
-      <trans-unit id="3be4e3c0a506f2d238c116f1bdeeae8da389efa3" datatype="html">
-        <source>transactions</source>
+      <trans-unit id="60cd6fa18f925b42065d8cfb1a791efdc228b4c3" datatype="html">
+        <source>Unconfirmed</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">16</context>
         </context-group>
-        <note priority="1" from="description">shared.transactions</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">170</context>
+        </context-group>
+        <note priority="1" from="description">Unconfirmed count</note>
+        <note priority="1" from="meaning">dashboard.unconfirmed</note>
       </trans-unit>
-      <trans-unit id="7b8ceef54c3151c632777d309944c67d676a585f" datatype="html">
-        <source>Mempool size:</source>
+      <trans-unit id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3" datatype="html">
+        <source>Mempool size</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">20</context>
         </context-group>
-        <note priority="1" from="description">footer.mempool-size</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">162</context>
+        </context-group>
+        <note priority="1" from="description">Mempool size</note>
+        <note priority="1" from="meaning">dashboard.mempool-size</note>
       </trans-unit>
       <trans-unit id="a5950b2ce4c3ea32de91034de8269781eb333d73" datatype="html">
         <source>Backend is synchronizing</source>
@@ -1357,8 +1367,8 @@
         </context-group>
         <note priority="1" from="description">footer.backend-is-synchronizing</note>
       </trans-unit>
-      <trans-unit id="64d40decf56cbb1187e01f1fe47b92e10ddfa45d" datatype="html">
-        <source>vBytes/s</source>
+      <trans-unit id="3bf119bbcf30407270db9f271af12aa89c52414a" datatype="html">
+        <source>vB/s</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1759,24 +1769,6 @@
           <context context-type="linenumber">132</context>
         </context-group>
         <note priority="1" from="description">dashboard.collapse</note>
-      </trans-unit>
-      <trans-unit id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3" datatype="html">
-        <source>Mempool size</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">162</context>
-        </context-group>
-        <note priority="1" from="description">Mempool size</note>
-        <note priority="1" from="meaning">dashboard.mempool-size</note>
-      </trans-unit>
-      <trans-unit id="60cd6fa18f925b42065d8cfb1a791efdc228b4c3" datatype="html">
-        <source>Unconfirmed</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">170</context>
-        </context-group>
-        <note priority="1" from="description">Unconfirmed count</note>
-        <note priority="1" from="meaning">dashboard.unconfirmed</note>
       </trans-unit>
       <trans-unit id="926c571b25cca7e2a294619f145960c0cd3848b6" datatype="html">
         <source>Incoming transactions</source>
