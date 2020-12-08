@@ -91,6 +91,10 @@
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">22</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
+          <context context-type="linenumber">209</context>
+        </context-group>
         <note from="description" priority="1">Transaction unconfirmed state</note>
         <note from="meaning" priority="1">transaction.unconfirmed</note>
       </trans-unit>
@@ -405,7 +409,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="02c35681bc187cde4d0d3a98a3a1f2035dfe7398">
         <source>In ~<x equiv-text="{{ i }}" id="INTERPOLATION"/> minutes</source>
-        <target>在~<x equiv-text="{{ i }}" id="INTERPOLATION"/>分钟之内</target>
+        <target>大约<x equiv-text="{{ i }}" id="INTERPOLATION"/>分钟之后</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">293</context>
@@ -419,7 +423,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e8b52d333f9395e1ae9c541d45dfb8c1cd017424">
         <source>In ~<x equiv-text="{{ i }}" id="INTERPOLATION"/> minute</source>
-        <target>在~<x equiv-text="{{ i }}" id="INTERPOLATION"/>分钟之内</target>
+        <target>大约<x equiv-text="{{ i }}" id="INTERPOLATION"/>分钟之后</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">295</context>
@@ -439,6 +443,10 @@
           <context context-type="linenumber">297</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">165</context>
         </context-group>
@@ -454,6 +462,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
           <context context-type="linenumber">30</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
+          <context context-type="linenumber">23</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -627,19 +639,6 @@
         </context-group>
         <note from="description" priority="1">sat</note>
         <note from="meaning" priority="1">shared.sat</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="dbc2df5fb208e52733f39fc22e55d0b4b38e420f">
-        <source>Unconfirmed</source>
-        <target>未确认</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">209</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
-          <context context-type="linenumber">16</context>
-        </context-group>
-        <note from="description" priority="1">transactions-list.unconfirmed</note>
       </trans-unit>
       <trans-unit datatype="html" id="30751732ff4b8f6ddb2a906e0173072ac29d412a">
         <source>Confidential</source>
@@ -1438,23 +1437,33 @@
         </context-group>
         <note from="description" priority="1">footer.tx-vbytes-per-second</note>
       </trans-unit>
-      <trans-unit datatype="html" id="3be4e3c0a506f2d238c116f1bdeeae8da389efa3">
-        <source>transactions</source>
-        <target>交易</target>
+      <trans-unit datatype="html" id="60cd6fa18f925b42065d8cfb1a791efdc228b4c3">
+        <source>Unconfirmed</source>
+        <target>未确认</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">16</context>
         </context-group>
-        <note from="description" priority="1">shared.transactions</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">170</context>
+        </context-group>
+        <note from="description" priority="1">Unconfirmed count</note>
+        <note from="meaning" priority="1">dashboard.unconfirmed</note>
       </trans-unit>
-      <trans-unit datatype="html" id="7b8ceef54c3151c632777d309944c67d676a585f">
-        <source>Mempool size:</source>
-        <target>内存池大小：</target>
+      <trans-unit datatype="html" id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3">
+        <source>Mempool size</source>
+        <target>内存池大小</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">20</context>
         </context-group>
-        <note from="description" priority="1">footer.mempool-size</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">162</context>
+        </context-group>
+        <note from="description" priority="1">Mempool size</note>
+        <note from="meaning" priority="1">dashboard.mempool-size</note>
       </trans-unit>
       <trans-unit datatype="html" id="a5950b2ce4c3ea32de91034de8269781eb333d73">
         <source>Backend is synchronizing</source>
@@ -1469,14 +1478,19 @@
         </context-group>
         <note from="description" priority="1">footer.backend-is-synchronizing</note>
       </trans-unit>
-      <trans-unit datatype="html" id="64d40decf56cbb1187e01f1fe47b92e10ddfa45d">
-        <source>vBytes/s</source>
+      <trans-unit datatype="html" id="50904e472d4671388a20fbbb1ee9dfc0a4586fa1">
+        <source>vB/s</source>
         <target>字节/秒</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">11</context>
         </context-group>
-        <note from="description" priority="1">shared.vbytes-per-second</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">187</context>
+        </context-group>
+        <note from="description" priority="1">vB/s</note>
+        <note from="meaning" priority="1">shared.vbytes-per-second</note>
       </trans-unit>
       <trans-unit datatype="html" id="mempool-block.next.block">
         <source>Next block</source>
@@ -1911,26 +1925,6 @@
         </context-group>
         <note from="description" priority="1">dashboard.collapse</note>
       </trans-unit>
-      <trans-unit datatype="html" id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3">
-        <source>Mempool size</source>
-        <target>内存池大小</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">162</context>
-        </context-group>
-        <note from="description" priority="1">Mempool size</note>
-        <note from="meaning" priority="1">dashboard.mempool-size</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="60cd6fa18f925b42065d8cfb1a791efdc228b4c3">
-        <source>Unconfirmed</source>
-        <target>未确认</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">170</context>
-        </context-group>
-        <note from="description" priority="1">Unconfirmed count</note>
-        <note from="meaning" priority="1">dashboard.unconfirmed</note>
-      </trans-unit>
       <trans-unit datatype="html" id="926c571b25cca7e2a294619f145960c0cd3848b6">
         <source>Incoming transactions</source>
         <target>收款交易</target>
@@ -1939,16 +1933,6 @@
           <context context-type="linenumber">180</context>
         </context-group>
         <note from="description" priority="1">dashboard.incoming-transactions</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="50904e472d4671388a20fbbb1ee9dfc0a4586fa1">
-        <source>vB/s</source>
-        <target>字节/秒</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">187</context>
-        </context-group>
-        <note from="description" priority="1">vB/s</note>
-        <note from="meaning" priority="1">shared.vbytes-per-second</note>
       </trans-unit>
       <trans-unit datatype="html" id="125c154b4a63daa7e993e1f4a8bea4c98a645142">
         <source>Difficulty adjustment</source>
@@ -2845,6 +2829,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="6d0db947a91dc4884aefa858a27fc848530e6404">
         <source>Previous hash</source>
+        <target>上个哈希值</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
           <context context-type="linenumber">35</context>

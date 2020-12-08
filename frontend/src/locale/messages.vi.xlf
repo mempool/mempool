@@ -3,6 +3,7 @@
     <body>
       <trans-unit datatype="html" id="bisq.transaction.browser-title">
         <source>Transaction: <x equiv-text="this.txId" id="INTERPOLATION"/></source>
+        <target>Giao dịch: <x equiv-text="this.txId" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.ts</context>
           <context context-type="linenumber">48</context>
@@ -41,6 +42,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8e623d3cfecb7c560c114390db53c1f430ffd0de">
         <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> confirmation</source>
+        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> xác nhận</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">17</context>
@@ -62,6 +64,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bc5b0a2631f0b7bc71aaec6aa6f01af21f9a80d4">
         <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> confirmations</source>
+        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> xác nhận</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">18</context>
@@ -87,6 +90,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">22</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
+          <context context-type="linenumber">209</context>
         </context-group>
         <note from="description" priority="1">Transaction unconfirmed state</note>
         <note from="meaning" priority="1">transaction.unconfirmed</note>
@@ -152,6 +159,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="54c58b39481f1749fce23fa8a77f616eee84d761">
         <source>Virtual size</source>
+        <target>Kích thước ảo</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">185</context>
@@ -161,7 +169,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="13f5a75f3e01e5924e45052d2f336eda8bac37e8">
         <source>Weight</source>
-        <target>Cân nặng</target>
+        <target>Khối lượng</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">189</context>
@@ -193,7 +201,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="cb1b52c13b95fa29ea4044f2bbe0ac623b890c80">
         <source>Fee</source>
-        <target>Chi phí</target>
+        <target>Phí</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">79</context>
@@ -207,6 +215,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="071dc2ed21e40ad2199ea5dda884f48c0414a42a">
         <source>sat</source>
+        <target>sat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">80</context>
@@ -238,6 +247,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d2eb45d1cd8cd146b7cb0223ab97a4b03b614060">
         <source>sat/vB</source>
+        <target>sat/vB</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">85</context>
@@ -323,6 +333,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7917764f923dd6b723b1cff254c7f5b837d1c48a">
         <source>After <x ctype="x-app_timespan" equiv-text="&lt;app-timespan [time]=&quot;tx.status.block_time - transactionTime&quot;&gt;" id="START_TAG_APP_TIMESPAN"/><x ctype="x-app_timespan" equiv-text="&lt;/app-timespan&gt;" id="CLOSE_TAG_APP_TIMESPAN"/></source>
+        <target>Sau <x ctype="x-app_timespan" equiv-text="&lt;app-timespan [time]=&quot;tx.status.block_time - transactionTime&quot;&gt;" id="START_TAG_APP_TIMESPAN"/><x ctype="x-app_timespan" equiv-text="&lt;/app-timespan&gt;" id="CLOSE_TAG_APP_TIMESPAN"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">63</context>
@@ -332,7 +343,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="885666551418fd59011ceb09d5c481095940193b">
         <source>Features</source>
-        <target>Điểm đặc trưng</target>
+        <target>Tính năng</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">67</context>
@@ -350,6 +361,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4e738ef3d2b4878f17f43002204f7b31aabb8e87">
         <source>ETA</source>
+        <target>Thời gian dự kiến</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">119</context>
@@ -359,7 +371,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1bc4a5de56ea48a832e32294c124009867b478d0">
         <source>First seen</source>
-        <target>Lần đầu tiên nhìn thấy</target>
+        <target>Lần đầu thấy</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">113</context>
@@ -397,6 +409,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="02c35681bc187cde4d0d3a98a3a1f2035dfe7398">
         <source>In ~<x equiv-text="{{ i }}" id="INTERPOLATION"/> minutes</source>
+        <target>Trong ~<x equiv-text="{{ i }}" id="INTERPOLATION"/> phút</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">293</context>
@@ -410,6 +423,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e8b52d333f9395e1ae9c541d45dfb8c1cd017424">
         <source>In ~<x equiv-text="{{ i }}" id="INTERPOLATION"/> minute</source>
+        <target>Trong ~<x equiv-text="{{ i }}" id="INTERPOLATION"/> phút</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">295</context>
@@ -423,9 +437,14 @@
       </trans-unit>
       <trans-unit datatype="html" id="3aef75db6f65e1371d54d8bed1767299de9457d8">
         <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> block</source>
+        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> khối</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">297</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
+          <context context-type="linenumber">22</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -435,6 +454,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="588930712875bfa0834655249093d99eaa3d162e">
         <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> blocks</source>
+        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> khối</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">298</context>
@@ -444,6 +464,10 @@
           <context context-type="linenumber">30</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">166</context>
         </context-group>
@@ -451,6 +475,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7e06b8dd9f29261827018351cd71efe1c87839de">
         <source>Coinbase</source>
+        <target>Coinbase</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">39</context>
@@ -606,18 +631,6 @@
         </context-group>
         <note from="description" priority="1">sat</note>
         <note from="meaning" priority="1">shared.sat</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="dbc2df5fb208e52733f39fc22e55d0b4b38e420f">
-        <source>Unconfirmed</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">209</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
-          <context context-type="linenumber">16</context>
-        </context-group>
-        <note from="description" priority="1">transactions-list.unconfirmed</note>
       </trans-unit>
       <trans-unit datatype="html" id="30751732ff4b8f6ddb2a906e0173072ac29d412a">
         <source>Confidential</source>
@@ -1352,21 +1365,31 @@
         </context-group>
         <note from="description" priority="1">footer.tx-vbytes-per-second</note>
       </trans-unit>
-      <trans-unit datatype="html" id="3be4e3c0a506f2d238c116f1bdeeae8da389efa3">
-        <source>transactions</source>
+      <trans-unit datatype="html" id="60cd6fa18f925b42065d8cfb1a791efdc228b4c3">
+        <source>Unconfirmed</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">16</context>
         </context-group>
-        <note from="description" priority="1">shared.transactions</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">170</context>
+        </context-group>
+        <note from="description" priority="1">Unconfirmed count</note>
+        <note from="meaning" priority="1">dashboard.unconfirmed</note>
       </trans-unit>
-      <trans-unit datatype="html" id="7b8ceef54c3151c632777d309944c67d676a585f">
-        <source>Mempool size:</source>
+      <trans-unit datatype="html" id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3">
+        <source>Mempool size</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">20</context>
         </context-group>
-        <note from="description" priority="1">footer.mempool-size</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">162</context>
+        </context-group>
+        <note from="description" priority="1">Mempool size</note>
+        <note from="meaning" priority="1">dashboard.mempool-size</note>
       </trans-unit>
       <trans-unit datatype="html" id="a5950b2ce4c3ea32de91034de8269781eb333d73">
         <source>Backend is synchronizing</source>
@@ -1380,13 +1403,18 @@
         </context-group>
         <note from="description" priority="1">footer.backend-is-synchronizing</note>
       </trans-unit>
-      <trans-unit datatype="html" id="64d40decf56cbb1187e01f1fe47b92e10ddfa45d">
-        <source>vBytes/s</source>
+      <trans-unit datatype="html" id="50904e472d4671388a20fbbb1ee9dfc0a4586fa1">
+        <source>vB/s</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">11</context>
         </context-group>
-        <note from="description" priority="1">shared.vbytes-per-second</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">187</context>
+        </context-group>
+        <note from="description" priority="1">vB/s</note>
+        <note from="meaning" priority="1">shared.vbytes-per-second</note>
       </trans-unit>
       <trans-unit datatype="html" id="mempool-block.next.block">
         <source>Next block</source>
@@ -1783,24 +1811,6 @@
         </context-group>
         <note from="description" priority="1">dashboard.collapse</note>
       </trans-unit>
-      <trans-unit datatype="html" id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3">
-        <source>Mempool size</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">162</context>
-        </context-group>
-        <note from="description" priority="1">Mempool size</note>
-        <note from="meaning" priority="1">dashboard.mempool-size</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="60cd6fa18f925b42065d8cfb1a791efdc228b4c3">
-        <source>Unconfirmed</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">170</context>
-        </context-group>
-        <note from="description" priority="1">Unconfirmed count</note>
-        <note from="meaning" priority="1">dashboard.unconfirmed</note>
-      </trans-unit>
       <trans-unit datatype="html" id="926c571b25cca7e2a294619f145960c0cd3848b6">
         <source>Incoming transactions</source>
         <context-group purpose="location">
@@ -1808,15 +1818,6 @@
           <context context-type="linenumber">180</context>
         </context-group>
         <note from="description" priority="1">dashboard.incoming-transactions</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="50904e472d4671388a20fbbb1ee9dfc0a4586fa1">
-        <source>vB/s</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">187</context>
-        </context-group>
-        <note from="description" priority="1">vB/s</note>
-        <note from="meaning" priority="1">shared.vbytes-per-second</note>
       </trans-unit>
       <trans-unit datatype="html" id="125c154b4a63daa7e993e1f4a8bea4c98a645142">
         <source>Difficulty adjustment</source>
