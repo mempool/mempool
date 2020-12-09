@@ -333,6 +333,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7917764f923dd6b723b1cff254c7f5b837d1c48a">
         <source>After <x ctype="x-app_timespan" equiv-text="&lt;app-timespan [time]=&quot;tx.status.block_time - transactionTime&quot;&gt;" id="START_TAG_APP_TIMESPAN"/><x ctype="x-app_timespan" equiv-text="&lt;/app-timespan&gt;" id="CLOSE_TAG_APP_TIMESPAN"/></source>
+        <target>Po <x ctype="x-app_timespan" equiv-text="&lt;app-timespan [time]=&quot;tx.status.block_time - transactionTime&quot;&gt;" id="START_TAG_APP_TIMESPAN"/><x ctype="x-app_timespan" equiv-text="&lt;/app-timespan&gt;" id="CLOSE_TAG_APP_TIMESPAN"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">63</context>
@@ -436,6 +437,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3aef75db6f65e1371d54d8bed1767299de9457d8">
         <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> block</source>
+        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> blok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">297</context>
@@ -452,6 +454,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="588930712875bfa0834655249093d99eaa3d162e">
         <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> blocks</source>
+        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> bloků</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">298</context>
@@ -2845,6 +2848,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="23b4db80cfba2937f6b087d8776cb5cd6725a16b">
         <source>Inputs</source>
+        <target>Vstupy</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction-details/bisq-transaction-details.component.html</context>
           <context context-type="linenumber">7</context>
@@ -2853,6 +2857,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="93883f08c5e22b14770da46e1a5b724bab7d43fb">
         <source>Outputs</source>
+        <target>Výstupy</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction-details/bisq-transaction-details.component.html</context>
           <context context-type="linenumber">11</context>
@@ -2861,6 +2866,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8fe73a4787b8068b2ba61f54ab7e0f9af2ea1fc9">
         <source>Version</source>
+        <target>Verze</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction-details/bisq-transaction-details.component.html</context>
           <context context-type="linenumber">29</context>
@@ -2877,6 +2883,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="6d0db947a91dc4884aefa858a27fc848530e6404">
         <source>Previous hash</source>
+        <target>Předchozí hash</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
           <context context-type="linenumber">35</context>
