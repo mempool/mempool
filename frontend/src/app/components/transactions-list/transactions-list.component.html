@@ -69,32 +69,32 @@
                       <ng-template [ngIf]="vin.scriptsig">
                         <tr>
                           <td i18n="transactions-list.scriptsig.asm|ScriptSig (ASM)">ScriptSig (ASM)</td>
-                          <td class="text-left" [innerHTML]="vin.scriptsig_asm | asmStyler"></td>
+                          <td style="text-align: left;" [innerHTML]="vin.scriptsig_asm | asmStyler"></td>
                         </tr>
                         <tr>
                           <td i18n="transactions-list.scriptsig.hex|ScriptSig (HEX)">ScriptSig (HEX)</td>
-                          <td class="text-left">{{ vin.scriptsig }}</td>
+                          <td style="text-align: left;">{{ vin.scriptsig }}</td>
                         </tr>
                       </ng-template>
                       <tr *ngIf="vin.witness">
                         <td i18n="transactions-list.witness">Witness</td>
-                        <td class="text-left">{{ vin.witness.join(' ') }}</td>
+                        <td style="text-align: left;">{{ vin.witness.join(' ') }}</td>
                       </tr>
                       <tr *ngIf="vin.inner_redeemscript_asm">
                         <td i18n="transactions-list.p2sh-redeem-script">P2SH redeem script</td>
-                        <td class="text-left" [innerHTML]="vin.inner_redeemscript_asm | asmStyler"></td>
+                        <td style="text-align: left;" [innerHTML]="vin.inner_redeemscript_asm | asmStyler"></td>
                       </tr>
                       <tr *ngIf="vin.inner_witnessscript_asm">
                         <td i18n="transactions-list.p2wsh-witness-script">P2WSH witness script</td>
-                        <td class="text-left" [innerHTML]="vin.inner_witnessscript_asm | asmStyler"></td>
+                        <td style="text-align: left;" [innerHTML]="vin.inner_witnessscript_asm | asmStyler"></td>
                       </tr>
                       <tr>
                         <td i18n="transactions-list.nsequence">nSequence</td>
-                        <td class="text-left">{{ formatHex(vin.sequence) }}</td>
+                        <td style="text-align: left;">{{ formatHex(vin.sequence) }}</td>
                       </tr>
                       <tr *ngIf="vin.prevout">
                         <td i18n="transactions-list.previous-output-script">Previous output script</td>
-                        <td class="text-left" [innerHTML]="vin.prevout.scriptpubkey_asm | asmStyler">{{ vin.prevout.scriptpubkey_type ? ('(' + vin.prevout.scriptpubkey_type + ')') : '' }}"</td>
+                        <td style="text-align: left;" [innerHTML]="vin.prevout.scriptpubkey_asm | asmStyler">{{ vin.prevout.scriptpubkey_type ? ('(' + vin.prevout.scriptpubkey_type + ')') : '' }}"</td>
                       </tr>
                     </tbody>
                   </table>
@@ -164,19 +164,19 @@
                     <tbody>
                       <tr *ngIf="vout.scriptpubkey_type">
                         <td i18n="transactions-list.vout.scriptpubkey-type">Type</td>
-                        <td class="text-left">{{ vout.scriptpubkey_type.toUpperCase() }}</td>
+                        <td style="text-align: left;">{{ vout.scriptpubkey_type.toUpperCase() }}</td>
                       </tr>
                       <tr>
                         <td i18n="transactions-list.scriptpubkey.asm|ScriptPubKey (ASM)">ScriptPubKey (ASM)</td>
-                        <td class="text-left" [innerHTML]="vout.scriptpubkey_asm | asmStyler"></td>
+                        <td style="text-align: left;" [innerHTML]="vout.scriptpubkey_asm | asmStyler"></td>
                       </tr>
                       <tr>
                         <td i18n="transactions-list.scriptpubkey.hex|ScriptPubKey (HEX)">ScriptPubKey (HEX)</td>
-                        <td class="text-left">{{ vout.scriptpubkey }}</td>
+                        <td style="text-align: left;">{{ vout.scriptpubkey }}</td>
                       </tr>
                       <tr *ngIf="vout.scriptpubkey_type == 'op_return'">
                         <td>OP_RETURN <span i18n="transactions-list.vout.scriptpubkey-type.data">data</span></td>
-                        <td class="text-left">{{ vout.scriptpubkey_asm | hex2ascii }}</td>
+                        <td style="text-align: left;">{{ vout.scriptpubkey_asm | hex2ascii }}</td>
                       </tr>
                     </tbody>
                   </table>
