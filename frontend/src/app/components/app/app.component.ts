@@ -19,10 +19,12 @@ export class AppComponent implements OnInit {
   ) {
     if (this.locale.startsWith('ar') || this.locale.startsWith('fa')) {
       this.dir = 'rtl';
+      this.class = 'rtl-layout';
     }
   }
 
   @HostBinding('attr.dir') dir = 'ltr';
+  @HostBinding('class') class;
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvents(event: KeyboardEvent) {
