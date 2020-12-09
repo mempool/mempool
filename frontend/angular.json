@@ -83,6 +83,10 @@
             "translation": "src/locale/messages.uk.xlf",
             "baseHref": "/uk/"
           },
+          "fi": {
+            "translation": "src/locale/messages.fi.xlf",
+            "baseHref": "/fi/"
+          },
           "zh": {
             "translation": "src/locale/messages.zh.xlf",
             "baseHref": "/zh/"

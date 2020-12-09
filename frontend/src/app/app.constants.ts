@@ -106,7 +106,7 @@ export const languages: Language[] = [
    { code: 'sl', name: 'Slovenščina' },     // Slovenian
 // { code: 'sr', name: 'Српски / srpski' }, // Serbian
 // { code: 'sh', name: 'Srpskohrvatski / српскохрватски' },// Serbo-Croatian
-// { code: 'fi', name: 'Suomi' },           // Finnish
+   { code: 'fi', name: 'Suomi' },           // Finnish
    { code: 'sv', name: 'Svenska' },         // Swedish
 // { code: 'th', name: 'ไทย' },             // Thai
    { code: 'tr', name: 'Türkçe' },          // Turkish
