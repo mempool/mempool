@@ -953,7 +953,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="714e34125b3343df73f19ec800b43be95217d5d4">
         <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> transaction</source>
-        <target> <x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> trong <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> giao dịch</target>
+        <target><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> trong <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> giao dịch</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">48</context>
@@ -962,7 +962,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0f6ada0cfb60aefd8f77f8a22349850ce186d666">
         <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> transactions</source>
-        <target> <x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> trong <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> giao dịch</target>
+        <target><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> trong <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> giao dịch</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">49</context>
@@ -1857,7 +1857,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1915fb658404dd3fa2a05f7d5fdd774ad72ef422">
         <source>View all »</source>
-        <target>Xem tất cả &quot;</target>
+        <target>Xem tất cả »</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">97</context>
@@ -2552,7 +2552,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.year.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> year ago</source>
-        <target> <x equiv-text="counter" id="INTERPOLATION"/> năm trước</target>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> năm trước</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">58</context>
@@ -2560,7 +2560,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.month.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> month ago</source>
-        <target> <x equiv-text="counter" id="INTERPOLATION"/> tháng trước</target>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> tháng trước</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">59</context>
@@ -2568,7 +2568,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.week.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> week ago</source>
-        <target> <x equiv-text="counter" id="INTERPOLATION"/> tuần trước</target>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> tuần trước</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">60</context>
@@ -2576,7 +2576,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.day.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> day ago</source>
-        <target> <x equiv-text="counter" id="INTERPOLATION"/> ngày trước</target>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> ngày trước</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">61</context>
@@ -2584,7 +2584,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.hour.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> hour ago</source>
-        <target> <x equiv-text="counter" id="INTERPOLATION"/> giờ trước</target>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> giờ trước</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">62</context>
@@ -2592,7 +2592,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.min.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> min ago</source>
-        <target> <x equiv-text="counter" id="INTERPOLATION"/> phút trước</target>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> phút trước</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">65</context>
@@ -2600,7 +2600,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.minute.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> minute ago</source>
-        <target> <x equiv-text="counter" id="INTERPOLATION"/> phút trước</target>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> phút trước</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -2608,7 +2608,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.sec.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> sec ago</source>
-        <target> <x equiv-text="counter" id="INTERPOLATION"/> giây trước</target>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> giây trước</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">70</context>
@@ -2616,7 +2616,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.second.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> second ago</source>
-        <target> <x equiv-text="counter" id="INTERPOLATION"/> giây trước</target>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> giây trước</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">72</context>
@@ -2624,7 +2624,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.years.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> years ago</source>
-        <target> <x equiv-text="counter" id="INTERPOLATION"/> năm trước</target>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> năm trước</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">76</context>
@@ -2632,7 +2632,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.months.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> months ago</source>
-        <target> <x equiv-text="counter" id="INTERPOLATION"/> tháng trước</target>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> tháng trước</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">77</context>
@@ -2640,7 +2640,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.weeks.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> weeks ago</source>
-        <target> <x equiv-text="counter" id="INTERPOLATION"/> tuần trước</target>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> tuần trước</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">78</context>
@@ -2648,7 +2648,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.days.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> days ago</source>
-        <target> <x equiv-text="counter" id="INTERPOLATION"/> ngày trước</target>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> ngày trước</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">79</context>
@@ -2656,7 +2656,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.hours.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> hours ago</source>
-        <target> <x equiv-text="counter" id="INTERPOLATION"/> giờ trước</target>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> giờ trước</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">80</context>
@@ -2664,7 +2664,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.mins.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> mins ago</source>
-        <target> <x equiv-text="counter" id="INTERPOLATION"/> phút trước</target>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> phút trước</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">83</context>
@@ -2672,7 +2672,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.minutes.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> minutes ago</source>
-        <target> <x equiv-text="counter" id="INTERPOLATION"/> phút trước</target>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> phút trước</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">85</context>
@@ -2680,7 +2680,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.secs.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> secs ago</source>
-        <target> <x equiv-text="counter" id="INTERPOLATION"/> giây trước</target>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> giây trước</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">88</context>
@@ -2688,7 +2688,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.seconds.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> seconds ago</source>
-        <target> <x equiv-text="counter" id="INTERPOLATION"/> giây trước</target>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> giây trước</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">90</context>
