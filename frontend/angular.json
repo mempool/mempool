@@ -87,6 +87,10 @@
             "translation": "src/locale/messages.fi.xlf",
             "baseHref": "/fi/"
           },
+          "vi": {
+            "translation": "src/locale/messages.vi.xlf",
+            "baseHref": "/vi/"
+          },
           "zh": {
             "translation": "src/locale/messages.zh.xlf",
             "baseHref": "/zh/"
