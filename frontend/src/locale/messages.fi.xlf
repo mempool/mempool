@@ -856,7 +856,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="14779b0ce4cbc4d975a35a8fe074426228a324f3">
         <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> transactions</source>
-        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> siirtotapahtumat</target>
+        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> siirtotapahtumaa</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">88</context>
@@ -1588,6 +1588,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e357dfd9e8685f17a862680cd98fe4aa2e068d28">
         <source>Issuance TX</source>
+        <target>Liikkeeseenlasku TX</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">32</context>
@@ -1597,6 +1598,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="c5b2c0d65b8fd12ebf8c0d79f562703776fc954e">
         <source>Pegged in</source>
+        <target>Kiinnitetty</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">43</context>
@@ -1606,6 +1608,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8f5d6ce525a24b049fee47f9b2d8447cca97ccc8">
         <source>Pegged out</source>
+        <target>Irrotettu</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">47</context>
@@ -1615,6 +1618,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="21530115a661c0faac6906740c586118628c2d54">
         <source>Issued amount</source>
+        <target>Liikkeeseenlaskettu määrä</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">51</context>
@@ -1628,6 +1632,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1990b8bef8f205a7d1b821aa4f979cc9f4fe179d">
         <source>Circulating amount</source>
+        <target>Liikkuva määrä</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">59</context>
@@ -1641,6 +1646,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d2a84740e76b7220516a9f10644e4b3bdabdb833">
         <source>Peg In/Out and Burn Transactions</source>
+        <target>Kiinnitä/Irrota ja Polta Siirtotapahtumat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">75</context>
@@ -1649,6 +1655,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fcbd3315aa10b59ba6ef383c6f16ace6c9d53b71">
         <source>Issuance and Burn Transactions</source>
+        <target>Liikkeeseenlasku- ja Poltto Siirtotapahtumat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">75</context>
@@ -1657,6 +1664,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ef5ac12104751b93b03c16f64d4c3a4341dce89c">
         <source>Error loading asset data.</source>
+        <target>Omaisuuserätietoja ladattaessa tapahtui virhe.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">132</context>
@@ -1665,6 +1673,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="791a4c4131a0ae0aaf82ddb66dacdc7f1c007c3b">
         <source>Registered assets</source>
+        <target>Rekisteröidyt omaisuuserät</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">2</context>
@@ -1673,6 +1682,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="aef0d676b15fdae8cb70fc3b089cce7399fde9da">
         <source>Search asset</source>
+        <target>Etsi omaisuuserä</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">9</context>
@@ -1681,6 +1691,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="99ee4faa69cd2ea8e3678c1f557c0ff1f05aae46">
         <source>Clear</source>
+        <target>Tyhjennä</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1689,6 +1700,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="cff1428d10d59d14e45edec3c735a27b5482db59">
         <source>Name</source>
+        <target>Nimi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">19</context>
@@ -1701,6 +1713,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4ad173c0e4010b1f25bf58e96a383edc1b59cd80">
         <source>Ticker</source>
+        <target>Tunnus</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">20</context>
@@ -1713,6 +1726,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="465c39daa2b644679d73a451043622f1610a2084">
         <source>Issuer domain</source>
+        <target>Liikkeeseenlaskijan verkkotunnus</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">21</context>
@@ -1725,6 +1739,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d5e7c95d7c8920ae0a384e3fffb14776b1e203f4">
         <source>Asset ID</source>
+        <target>Omaisuuserä tunnus</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">22</context>
@@ -1737,6 +1752,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="cf1fbcd10d4be4845152f2e10d1db9bc61dd9410">
         <source>Issuance TX</source>
+        <target>Liikkeeseenlasku TX</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">23</context>
@@ -1749,6 +1765,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="52686df280be57a57e1e9ecf5786499b147e0e90">
         <source>Error loading assets data.</source>
+        <target>Omaisuuserätietoja ladattaessa tapahtui virhe.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">67</context>
@@ -1757,6 +1774,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="miner-identified-by-payout">
         <source>Identified by payout address: '<x equiv-text="vout.scriptpubkey_address" id="PAYOUT_ADDRESS"/>'</source>
+        <target>Tunnistettu maksuosoitteella: '<x equiv-text="vout.scriptpubkey_address" id="PAYOUT_ADDRESS"/>'</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
           <context context-type="linenumber">42</context>
@@ -1764,6 +1782,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="miner-identified-by-coinbase">
         <source>Identified by coinbase tag: '<x equiv-text="tag" id="TAG"/>'</source>
+        <target>Tunnistettu kolikkopohjaisella tunnisteella: '<x equiv-text="tag" id="TAG"/>'</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
           <context context-type="linenumber">52</context>
@@ -1771,6 +1790,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e5d8bb389c702588877f039d72178f219453a72d">
         <source>Unknown</source>
+        <target>Tuntematon</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/miner/miner.component.html</context>
           <context context-type="linenumber">10</context>
@@ -1779,6 +1799,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f2385584215e9b925b6347de866110d5e07d3a35">
         <source>Low priority</source>
+        <target>Matala tärkeys</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">4</context>
@@ -1791,6 +1812,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0ba9d74c1d31a9d98829892f40334a22624564b8">
         <source>Medium priority</source>
+        <target>Keskitasoinen prioriteetti</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">10</context>
@@ -1803,6 +1825,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f80dd1511a91af4e592a538f95fa29d24907176f">
         <source>High priority</source>
+        <target>Korkea prioriteetti</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">16</context>
@@ -1815,6 +1838,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e1139ea570985b3f114e18876f09fd7223429983">
         <source>Latest blocks</source>
+        <target>Viimeisimmät lohkot</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">75</context>
@@ -1823,6 +1847,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e6213c3f05146287cf121868d9f3d3c3ff5f9714">
         <source>TXs</source>
+        <target>TXs</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">80</context>
@@ -1835,6 +1860,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1915fb658404dd3fa2a05f7d5fdd774ad72ef422">
         <source>View all »</source>
+        <target>Näytä kaikki »</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">97</context>
@@ -1843,6 +1869,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="46ae0bacea22bcf409534f1c314735e4983e398a">
         <source>Latest transactions</source>
+        <target>Viimeisimmät siirtotapahtumat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">104</context>
@@ -1851,6 +1878,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="94c248797dd2b6af49068cb49c3b4bc26bec6a16">
         <source>TXID</source>
+        <target>TXID</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">107</context>
@@ -1859,6 +1887,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="dfc2fb58e2a04ed944a4bd80f0a2087775134068">
         <source>Amount</source>
+        <target>Määrä</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">108</context>
@@ -1871,6 +1900,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="160f1ffbd26df073d0fbd02cf8ce0d8cea7603b0">
         <source>Fee</source>
+        <target>Siirtokulu</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">110</context>
@@ -1879,6 +1909,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1cb0c1f40f7ef8d62da2ccdccfdd2b7cdd18d2b9">
         <source>USD</source>
+        <target>USD</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">109</context>
@@ -1887,6 +1918,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1f332ec66f3bc8d943c248091be7f92772ba280f">
         <source>Expand</source>
+        <target>Laajenna</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">131</context>
@@ -1895,6 +1927,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e8bcb762b48cf52fbea66ce9c4f6b970b99a80fd">
         <source>Collapse</source>
+        <target>Paina kokoon</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">132</context>
@@ -1903,6 +1936,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="926c571b25cca7e2a294619f145960c0cd3848b6">
         <source>Incoming transactions</source>
+        <target>Saapuvat siirtotapahtumat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">180</context>
@@ -1911,6 +1945,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="125c154b4a63daa7e993e1f4a8bea4c98a645142">
         <source>Difficulty adjustment</source>
+        <target>Vaikeudensäätö</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">196</context>
@@ -1919,6 +1954,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f11bc15f83d9174bd27454d32977b5025a66537d">
         <source>API Service</source>
+        <target>API-palvelu</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">4</context>
@@ -1927,6 +1963,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="aacc1242420c527c8b9d4948a7ae7d94cde956e4">
         <source>Websocket</source>
+        <target>Websocket</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">9</context>
@@ -1936,6 +1973,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d9baa5e9ea1cde02012703c3a43f190947dadd04">
         <source>Endpoint</source>
+        <target>Päätepiste</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">14</context>
@@ -1973,6 +2011,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="80449b1198ade0f86ec83b676f3a436026136efe">
         <source>Description</source>
+        <target>Kuvaus</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">15</context>
@@ -2010,6 +2049,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fe56475a8f4cf4bfc3acaafa215a7dd60d9ed7da">
         <source>Default push: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> action: 'want', data: ['blocks', ...] <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> to express what you want pushed. Available: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>blocks<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool-block<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>live-2h-chart<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>stats<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>.<x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/>Push transactions related to address: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> 'track-address': '3PbJ...bF9B' <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address-transactions<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> for new mempool transactions, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block-transactions<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> for new block confirmed transactions.</source>
+        <target>Oletuspainike: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> toiminto: 'want', data: ['blocks', ...] <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> ilmaisemaan mitä haluat työnnettävän. Saatavana: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>lohkot<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool-lohko<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>live-2h-kaavio<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> ja <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tilastot<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>. <x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/>Paina osoitteeseen liittyviä siirtotapahtumia: 'track-address': '3PbJ...bF9B' <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> saadaksesi kaikki uudet siirtotapahtumat, jotka sisältävät kyseisen osoitteen syötteenä tai ulostulona. Palauttaa joukon siirtotapahtumia. <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>osoite-siirtotapahtumat<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> uusille mempool-siirtotapahtumille ja <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>lohko-siirtotapahtumat<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> uusille lohkovahvistetuille siirtotapahtumille.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">19</context>
@@ -2018,6 +2058,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e15117360d2a70d6959e8aedf59e9f0241fdfc4f">
         <source>Fees</source>
+        <target>Siirtokulut</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">27</context>
@@ -2027,6 +2068,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="39f61f2d1434d921a1f80a2a2f0903f06e9fd4df">
         <source>Returns our currently suggested fees for new transactions.</source>
+        <target>Palauttaa tällä hetkellä ehdotetut maksut uusista tapahtumista.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">37</context>
