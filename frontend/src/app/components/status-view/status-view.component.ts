@@ -12,5 +12,6 @@ export class StatusViewComponent implements OnInit {
 
   ngOnInit() {
     this.websocketService.want(['mempool-blocks', 'stats']);
+    this.websocketService.want(['blocks', 'stats']);
   }
 }
