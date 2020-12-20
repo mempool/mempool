@@ -1,6 +1,7 @@
 {
   "MEMPOOL": {
     "NETWORK": "mainnet",
+    "BACKEND": "electrs",
     "HTTP_PORT": 8999,
     "SPAWN_CLUSTER_PROCS": 0,
     "API_URL_PREFIX": "/api/v1/",
@@ -8,7 +9,15 @@
   },
   "ELECTRS": {
     "REST_API_URL": "http://127.0.0.1:3000",
-    "POLL_RATE_MS": 2000
+    "POLL_RATE_MS": 2000,
+    "HOST": "127.0.0.1",
+    "PORT": 50002
+  },
+  "BITCOIND": {
+    "HOST": "127.0.0.1",
+    "PORT": 3306,
+    "USERNAME": "mempool",
+    "PASSWORD": "mempool"
   },
   "DATABASE": {
     "ENABLED": true,

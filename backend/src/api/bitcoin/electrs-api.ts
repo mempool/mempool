@@ -1,8 +1,9 @@
 import config from '../../config';
-import { Transaction, Block, MempoolInfo } from '../../interfaces';
+import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
+import { Transaction, Block, MempoolInfo, MempoolEntry, MempoolEntries } from '../../interfaces';
 import axios from 'axios';
 
-class ElectrsApi {
+class ElectrsApi implements AbstractBitcoinApi {
 
   constructor() {
   }
@@ -42,15 +43,22 @@ class ElectrsApi {
       .then((response) => response.data);
   }
 
-  getBlocksFromHeight(height: number): Promise<string> {
-    return axios.get<string>(config.ELECTRS.REST_API_URL + '/blocks/' + height)
-      .then((response) => response.data);
-  }
-
   getBlock(hash: string): Promise<Block> {
     return axios.get<Block>(config.ELECTRS.REST_API_URL + '/block/' + hash)
       .then((response) => response.data);
   }
+
+  getRawMempoolVerbose(): Promise<MempoolEntries> {
+    throw new Error('Method not implemented.');
+  }
+
+  getMempoolEntry(): Promise<MempoolEntry> {
+    throw new Error('Method not implemented.');
+  }
+
+  getRawTransactionBitcond(txId: string): Promise<Transaction> {
+    throw new Error('Method not implemented.');
+  }
 }
 
-export default new ElectrsApi();
+export default ElectrsApi;

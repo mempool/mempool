@@ -1,7 +1,8 @@
-import bitcoinApi from './bitcoin/electrs-api';
+import config from '../config';
+import bitcoinApi from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
 import memPool from './mempool';
-import { Block, TransactionExtended, TransactionMinerInfo } from '../interfaces';
+import { Block, Transaction, TransactionExtended, TransactionMinerInfo } from '../interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
 
@@ -55,31 +56,38 @@ class Blocks {
         logger.debug(`New block found (#${this.currentBlockHeight})!`);
       }
 
+      let transactions: TransactionExtended[] = [];
+
       const blockHash = await bitcoinApi.getBlockHash(this.currentBlockHeight);
       const block = await bitcoinApi.getBlock(blockHash);
-      const txIds = await bitcoinApi.getTxIdsForBlock(blockHash);
+      let txIds: string[] = await bitcoinApi.getTxIdsForBlock(blockHash);
 
       const mempool = memPool.getMempool();
       let found = 0;
-      let notFound = 0;
-
-      const transactions: TransactionExtended[] = [];
 
       for (let i = 0; i < txIds.length; i++) {
         if (mempool[txIds[i]]) {
           transactions.push(mempool[txIds[i]]);
           found++;
         } else {
-          logger.debug(`Fetching block tx ${i} of ${txIds.length}`);
-          const tx = await memPool.getTransactionExtended(txIds[i]);
-          if (tx) {
-            transactions.push(tx);
+          if (config.MEMPOOL.BACKEND === 'electrs') {
+            logger.debug(`Fetching block tx ${i} of ${txIds.length}`);
+            const tx = await memPool.getTransactionExtended(txIds[i]);
+            if (tx) {
+              transactions.push(tx);
+            }
+          } else { // When using bitcoind, just skip parsing past block tx's for now
+            if (i === 0) {
+              const tx = await memPool.getTransactionExtended(txIds[i], true);
+              if (tx) {
+                transactions.push(tx);
+              }
+            }
           }
-          notFound++;
         }
       }
 
-      logger.debug(`${found} of ${txIds.length} found in mempool. ${notFound} not found.`);
+      logger.debug(`${found} of ${txIds.length} found in mempool. ${txIds.length - found} not found.`);
 
       block.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
       block.coinbaseTx = this.stripCoinbaseTransaction(transactions[0]);
@@ -110,10 +118,13 @@ class Blocks {
   private stripCoinbaseTransaction(tx: TransactionExtended): TransactionMinerInfo {
     return {
       vin: [{
-        scriptsig: tx.vin[0].scriptsig
+        scriptsig: tx.vin[0].scriptsig || tx.vin[0]['coinbase']
       }],
       vout: tx.vout
-        .map((vout) => ({ scriptpubkey_address: vout.scriptpubkey_address, value: vout.value }))
+        .map((vout) => ({
+          scriptpubkey_address: vout.scriptpubkey_address || (vout['scriptPubKey']['addresses'] && vout['scriptPubKey']['addresses'][0]) || null,
+          value: vout.value
+        }))
         .filter((vout) => vout.value)
     };
   }

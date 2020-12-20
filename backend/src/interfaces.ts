@@ -119,7 +119,7 @@ export interface Block {
   version: number;
   timestamp: number;
   bits: number;
-  nounce: number;
+  nonce: number;
   difficulty: number;
   merkle_root: string;
   tx_count: number;
@@ -132,8 +132,58 @@ export interface Block {
   feeRange?: number[];
   reward?: number;
   coinbaseTx?: TransactionMinerInfo;
-  matchRate: number;
-  stage: number;
+  matchRate?: number;
+}
+
+export interface RpcBlock {
+  hash: string;
+  confirmations: number;
+  size: number;
+  strippedsize: number;
+  weight: number;
+  height: number;
+  version: number,
+  versionHex: string;
+  merkleroot: string;
+  tx: Transaction[];
+  time: number;
+  mediantime: number;
+  nonce: number;
+  bits: number;
+  difficulty: number;
+  chainwork: string;
+  nTx: number,
+  previousblockhash: string;
+  nextblockhash: string;
+}
+
+export interface MempoolEntries { [txId: string]: MempoolEntry };
+
+export interface MempoolEntry {
+  fees: Fees
+  vsize: number
+  weight: number
+  fee: number
+  modifiedfee: number
+  time: number
+  height: number
+  descendantcount: number
+  descendantsize: number
+  descendantfees: number
+  ancestorcount: number
+  ancestorsize: number
+  ancestorfees: number
+  wtxid: string
+  depends: any[]
+  spentby: any[]
+  'bip125-replaceable': boolean
+}
+
+export interface Fees {
+  base: number
+  modified: number
+  ancestor: number
+  descendant: number
 }
 
 export interface Address {
