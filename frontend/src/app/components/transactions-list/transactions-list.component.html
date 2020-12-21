@@ -1,6 +1,6 @@
 <ng-container *ngFor="let tx of transactions; let i = index; trackBy: trackByFn">
   <div *ngIf="!transactionPage" class="header-bg box" style="padding: 10px; margin-bottom: 10px;">
-    <a [routerLink]="['/tx/' | relativeUrl, tx.txid]" [state]="{ data: tx }">
+    <a class="float-left" [routerLink]="['/tx/' | relativeUrl, tx.txid]" [state]="{ data: tx }">
       <span style="float: left;" class="d-block d-md-none">{{ tx.txid | shortenString : 16 }}</span>
       <span style="float: left;" class="d-none d-md-block">{{ tx.txid }}</span>
     </a>
@@ -69,32 +69,32 @@
                       <ng-template [ngIf]="vin.scriptsig">
                         <tr>
                           <td i18n="transactions-list.scriptsig.asm|ScriptSig (ASM)">ScriptSig (ASM)</td>
-                          <td [innerHTML]="vin.scriptsig_asm | asmStyler"></td>
+                          <td style="text-align: left;" [innerHTML]="vin.scriptsig_asm | asmStyler"></td>
                         </tr>
                         <tr>
                           <td i18n="transactions-list.scriptsig.hex|ScriptSig (HEX)">ScriptSig (HEX)</td>
-                          <td>{{ vin.scriptsig }}</td>
+                          <td style="text-align: left;">{{ vin.scriptsig }}</td>
                         </tr>
                       </ng-template>
                       <tr *ngIf="vin.witness">
                         <td i18n="transactions-list.witness">Witness</td>
-                        <td>{{ vin.witness.join(' ') }}</td>
+                        <td style="text-align: left;">{{ vin.witness.join(' ') }}</td>
                       </tr>
                       <tr *ngIf="vin.inner_redeemscript_asm">
                         <td i18n="transactions-list.p2sh-redeem-script">P2SH redeem script</td>
-                        <td [innerHTML]="vin.inner_redeemscript_asm | asmStyler"></td>
+                        <td style="text-align: left;" [innerHTML]="vin.inner_redeemscript_asm | asmStyler"></td>
                       </tr>
                       <tr *ngIf="vin.inner_witnessscript_asm">
                         <td i18n="transactions-list.p2wsh-witness-script">P2WSH witness script</td>
-                        <td [innerHTML]="vin.inner_witnessscript_asm | asmStyler"></td>
+                        <td style="text-align: left;" [innerHTML]="vin.inner_witnessscript_asm | asmStyler"></td>
                       </tr>
                       <tr>
                         <td i18n="transactions-list.nsequence">nSequence</td>
-                        <td>{{ formatHex(vin.sequence) }}</td>
+                        <td style="text-align: left;">{{ formatHex(vin.sequence) }}</td>
                       </tr>
                       <tr *ngIf="vin.prevout">
                         <td i18n="transactions-list.previous-output-script">Previous output script</td>
-                        <td [innerHTML]="vin.prevout.scriptpubkey_asm | asmStyler">{{ vin.prevout.scriptpubkey_type ? ('(' + vin.prevout.scriptpubkey_type + ')') : '' }}"</td>
+                        <td style="text-align: left;" [innerHTML]="vin.prevout.scriptpubkey_asm | asmStyler">{{ vin.prevout.scriptpubkey_type ? ('(' + vin.prevout.scriptpubkey_type + ')') : '' }}"</td>
                       </tr>
                     </tbody>
                   </table>
@@ -164,19 +164,19 @@
                     <tbody>
                       <tr *ngIf="vout.scriptpubkey_type">
                         <td i18n="transactions-list.vout.scriptpubkey-type">Type</td>
-                        <td>{{ vout.scriptpubkey_type.toUpperCase() }}</td>
+                        <td style="text-align: left;">{{ vout.scriptpubkey_type.toUpperCase() }}</td>
                       </tr>
                       <tr>
                         <td i18n="transactions-list.scriptpubkey.asm|ScriptPubKey (ASM)">ScriptPubKey (ASM)</td>
-                        <td [innerHTML]="vout.scriptpubkey_asm | asmStyler"></td>
+                        <td style="text-align: left;" [innerHTML]="vout.scriptpubkey_asm | asmStyler"></td>
                       </tr>
                       <tr>
                         <td i18n="transactions-list.scriptpubkey.hex|ScriptPubKey (HEX)">ScriptPubKey (HEX)</td>
-                        <td>{{ vout.scriptpubkey }}</td>
+                        <td style="text-align: left;">{{ vout.scriptpubkey }}</td>
                       </tr>
                       <tr *ngIf="vout.scriptpubkey_type == 'op_return'">
                         <td>OP_RETURN <span i18n="transactions-list.vout.scriptpubkey-type.data">data</span></td>
-                        <td>{{ vout.scriptpubkey_asm | hex2ascii }}</td>
+                        <td style="text-align: left;">{{ vout.scriptpubkey_asm | hex2ascii }}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -206,7 +206,7 @@
             <ng-template #confirmationPlural let-i i18n="shared.confirmation-count.plural|Transaction plural confirmation count">{{ i }} confirmations</ng-template>
           </button>
           <ng-template #unconfirmedButton>
-            <button type="button" class="btn btn-sm btn-danger mt-2" i18n="transactions-list.unconfirmed">Unconfirmed</button>
+            <button type="button" class="btn btn-sm btn-danger mt-2" i18n="transaction.unconfirmed|Transaction unconfirmed state">Unconfirmed</button>
           </ng-template>
           &nbsp;
         </span>

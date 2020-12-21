@@ -56,13 +56,12 @@ export const languages: Language[] = [
    { code: 'fa', name: 'فارسی' },           // Persian
    { code: 'fr', name: 'Français' },        // French
 // { code: 'gl', name: 'Galego' },          // Galician
-   { code: 'ka', name: 'ქართული' },         // Georgian
-// { code: 'ko', name: '한국어' },          // Korean
+   { code: 'ko', name: '한국어' },          // Korean
 // { code: 'hr', name: 'Hrvatski' },        // Croatian
 // { code: 'id', name: 'Bahasa Indonesia' },// Indonesian
 // { code: 'it', name: 'Italiano' },        // Italian
 // { code: 'he', name: 'עברית' },           // Hebrew
-// { code: 'ka', name: 'ქართული' },         // Georgian
+   { code: 'ka', name: 'ქართული' },         // Georgian
 // { code: 'lv', name: 'Latviešu' },        // Latvian
 // { code: 'lt', name: 'Lietuvių' },        // Lithuanian
 // { code: 'hu', name: 'Magyar' },          // Hungarian
@@ -81,11 +80,11 @@ export const languages: Language[] = [
    { code: 'sl', name: 'Slovenščina' },     // Slovenian
 // { code: 'sr', name: 'Српски / srpski' }, // Serbian
 // { code: 'sh', name: 'Srpskohrvatski / српскохрватски' },// Serbo-Croatian
-// { code: 'fi', name: 'Suomi' },           // Finnish
+   { code: 'fi', name: 'Suomi' },           // Finnish
    { code: 'sv', name: 'Svenska' },         // Swedish
 // { code: 'th', name: 'ไทย' },             // Thai
    { code: 'tr', name: 'Türkçe' },          // Turkish
    { code: 'uk', name: 'Українська' },      // Ukrainian
-// { code: 'vi', name: 'Tiếng Việt' },      // Vietnamese
+   { code: 'vi', name: 'Tiếng Việt' },      // Vietnamese
    { code: 'zh', name: '中文' },            // Chinese
 ];

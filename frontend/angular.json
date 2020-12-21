@@ -51,6 +51,10 @@
             "translation": "src/locale/messages.ka.xlf",
             "baseHref": "/ka/"
           },
+          "ko": {
+            "translation": "src/locale/messages.ko.xlf",
+            "baseHref": "/ko/"
+          },
           "nl": {
             "translation": "src/locale/messages.nl.xlf",
             "baseHref": "/nl/"
@@ -78,6 +82,10 @@
           "uk": {
             "translation": "src/locale/messages.uk.xlf",
             "baseHref": "/uk/"
+          },
+          "fi": {
+            "translation": "src/locale/messages.fi.xlf",
+            "baseHref": "/fi/"
           },
           "vi": {
             "translation": "src/locale/messages.vi.xlf",
