@@ -142,7 +142,7 @@ export interface RpcBlock {
   strippedsize: number;
   weight: number;
   height: number;
-  version: number,
+  version: number;
   versionHex: string;
   merkleroot: string;
   tx: Transaction[];
@@ -152,38 +152,38 @@ export interface RpcBlock {
   bits: number;
   difficulty: number;
   chainwork: string;
-  nTx: number,
+  nTx: number;
   previousblockhash: string;
   nextblockhash: string;
 }
 
-export interface MempoolEntries { [txId: string]: MempoolEntry };
+export interface MempoolEntries { [txId: string]: MempoolEntry; }
 
 export interface MempoolEntry {
-  fees: Fees
-  vsize: number
-  weight: number
-  fee: number
-  modifiedfee: number
-  time: number
-  height: number
-  descendantcount: number
-  descendantsize: number
-  descendantfees: number
-  ancestorcount: number
-  ancestorsize: number
-  ancestorfees: number
-  wtxid: string
-  depends: any[]
-  spentby: any[]
-  'bip125-replaceable': boolean
+  fees: Fees;
+  vsize: number;
+  weight: number;
+  fee: number;
+  modifiedfee: number;
+  time: number;
+  height: number;
+  descendantcount: number;
+  descendantsize: number;
+  descendantfees: number;
+  ancestorcount: number;
+  ancestorsize: number;
+  ancestorfees: number;
+  wtxid: string;
+  depends: any[];
+  spentby: any[];
+  'bip125-replaceable': boolean;
 }
 
 export interface Fees {
-  base: number
-  modified: number
-  ancestor: number
-  descendant: number
+  base: number;
+  modified: number;
+  ancestor: number;
+  descendant: number;
 }
 
 export interface Address {

@@ -8,10 +8,12 @@ import mempool from './api/mempool';
 import bisq from './api/bisq/bisq';
 import websocketHandler from './api/websocket-handler';
 import bisqMarket from './api/bisq/markets-api';
-import { OptimizedStatistic, RequiredSpec } from './interfaces';
+import { OptimizedStatistic, RequiredSpec, Transaction, TransactionExtended } from './interfaces';
 import { MarketsApiError } from './api/bisq/interfaces';
 import donations from './api/donations';
 import logger from './logger';
+import bitcoinApi from './api/bitcoin/bitcoin-api-factory';
+import transactionUtils from './api/transaction-utils';
 
 class Routes {
   private cache: { [date: string]: OptimizedStatistic[] } = {
@@ -524,6 +526,71 @@ class Routes {
     };
   }
 
+  public async getTransaction(req: Request, res: Response) {
+    try {
+      let transaction: TransactionExtended | null;
+      const txInMempool = mempool.getMempool()[req.params.txId];
+      if (txInMempool) {
+        transaction = txInMempool;
+      } else {
+        transaction = await transactionUtils.getTransactionExtended(req.params.txId);
+      }
+      if (transaction) {
+        transaction = await transactionUtils.$addPrevoutsToTransaction(transaction);
+        res.json(transaction);
+      } else {
+        res.status(500).send('Error fetching transaction.');
+      }
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
+  }
+
+  public async getBlock(req: Request, res: Response) {
+    try {
+      const result = await bitcoinApi.$getBlock(req.params.hash);
+      res.json(result);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
+  }
+
+  public async getBlocks(req: Request, res: Response) {
+    res.status(404).send('Not implemented');
+  }
+
+  public async getBlockTransactions(req: Request, res: Response) {
+    res.status(404).send('Not implemented');
+  }
+
+  public async getBlockHeight(req: Request, res: Response) {
+    res.status(404).send('Not implemented');
+  }
+
+  public async getAddress(req: Request, res: Response) {
+    try {
+      const result = await bitcoinApi.$getAddress(req.params.hash);
+      res.json(result);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
+  }
+
+  public async getAddressTransactions(req: Request, res: Response) {
+    res.status(404).send('Not implemented');
+  }
+
+  public async getAdressTxChain(req: Request, res: Response) {
+    res.status(404).send('Not implemented');
+  }
+
+  public async getAddressPrefix(req: Request, res: Response) {
+    res.json([]);
+  }
+
+  public getTransactionOutspends(req: Request, res: Response) {
+    res.json([]);
+  }
 }
 
 export default new Routes();

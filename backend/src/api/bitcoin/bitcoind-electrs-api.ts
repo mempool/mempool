@@ -1,9 +1,10 @@
 import config from '../../config';
 import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
-import { Transaction, Block, MempoolInfo, RpcBlock, MempoolEntries, MempoolEntry } from '../../interfaces';
+import { Transaction, Block, MempoolInfo, RpcBlock, MempoolEntries, MempoolEntry, Address } from '../../interfaces';
 import * as bitcoin from '@mempool/bitcoin';
 import * as ElectrumClient from '@codewarriorr/electrum-client-js';
 import logger from '../../logger';
+import transactionUtils from '../transaction-utils';
 
 class BitcoindElectrsApi implements AbstractBitcoinApi {
   bitcoindClient: any;
@@ -27,64 +28,64 @@ class BitcoindElectrsApi implements AbstractBitcoinApi {
     this.electrumClient.connect(
       'electrum-client-js',
       '1.4'
-    )
+    );
   }
 
-  getMempoolInfo(): Promise<MempoolInfo> {
+  $getMempoolInfo(): Promise<MempoolInfo> {
     return this.bitcoindClient.getMempoolInfo();
   }
 
-  getRawMempool(): Promise<Transaction['txid'][]> {
+  $getRawMempool(): Promise<Transaction['txid'][]> {
     return this.bitcoindClient.getRawMemPool();
   }
 
-  getRawMempoolVerbose(): Promise<MempoolEntries> {
+  $getRawMempoolVerbose(): Promise<MempoolEntries> {
     return this.bitcoindClient.getRawMemPool(true);
   }
 
-  getMempoolEntry(txid: string): Promise<MempoolEntry> {
-    return this.bitcoindClient.getMempoolEntry(txid,);
+  $getMempoolEntry(txid: string): Promise<MempoolEntry> {
+    return this.bitcoindClient.getMempoolEntry(txid);
   }
 
-  async getRawTransaction(txId: string): Promise<Transaction> {
+  async $getRawTransaction(txId: string): Promise<Transaction> {
     try {
       const transaction: Transaction = await this.electrumClient.blockchain_transaction_get(txId, true);
       if (!transaction) {
-        throw new Error('not found');
+        throw new Error(txId + ' not found!');
       }
-      transaction.vout.forEach((vout) => vout.value = vout.value * 100000000);
+      transactionUtils.bitcoindToElectrsTransaction(transaction);
       return transaction;
     } catch (e) {
-      logger.debug('getRawTransaction error: ' + (e.message || e)); 
+      logger.debug('getRawTransaction error: ' + (e.message || e));
       throw new Error(e);
     }
   }
 
-  getRawTransactionBitcond(txId: string): Promise<Transaction> {
+  $getRawTransactionBitcond(txId: string): Promise<Transaction> {
     return this.bitcoindClient.getRawTransaction(txId, true)
       .then((transaction: Transaction) => {
-        transaction.vout.forEach((vout) => vout.value = vout.value * 100000000);
+        transactionUtils.bitcoindToElectrsTransaction(transaction);
         return transaction;
       });
   }
 
-  getBlockHeightTip(): Promise<number> {
+  $getBlockHeightTip(): Promise<number> {
     return this.bitcoindClient.getChainTips()
       .then((result) => result[0].height);
   }
 
-  getTxIdsForBlock(hash: string): Promise<string[]> {
+  $getTxIdsForBlock(hash: string): Promise<string[]> {
     return this.bitcoindClient.getBlock(hash, 1)
       .then((rpcBlock: RpcBlock) => {
         return rpcBlock.tx;
       });
   }
 
-  getBlockHash(height: number): Promise<string> {
-    return this.bitcoindClient.getBlockHash(height)
+  $getBlockHash(height: number): Promise<string> {
+    return this.bitcoindClient.getBlockHash(height);
   }
 
-  getBlock(hash: string): Promise<Block> {
+  $getBlock(hash: string): Promise<Block> {
     return this.bitcoindClient.getBlock(hash)
       .then((rpcBlock: RpcBlock) => {
         return {
@@ -102,6 +103,19 @@ class BitcoindElectrsApi implements AbstractBitcoinApi {
           previousblockhash: rpcBlock.previousblockhash,
         };
       });
+  }
+
+  async $getAddress(address: string): Promise<Address> {
+    try {
+      const addressInfo: Address = await this.electrumClient.blockchain_scripthash_getBalance(address);
+      if (!address) {
+        throw new Error('not found');
+      }
+      return addressInfo;
+    } catch (e) {
+      logger.debug('getRawTransaction error: ' + (e.message || e));
+      throw new Error(e);
+    }
   }
 }
 
