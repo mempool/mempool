@@ -3,6 +3,7 @@ import bitcoinApi from './bitcoin/bitcoin-api-factory';
 import { MempoolInfo, TransactionExtended, Transaction, VbytesPerSecond, MempoolEntry, MempoolEntries } from '../interfaces';
 import logger from '../logger';
 import { Common } from './common';
+import transactionUtils from './transaction-utils';
 
 class Mempool {
   private inSync: boolean = false;
@@ -18,7 +19,6 @@ class Mempool {
   private vBytesPerSecond: number = 0;
   private mempoolProtection = 0;
   private latestTransactions: any[] = [];
-  private mempoolEntriesCache: MempoolEntries | null = null;
 
   constructor() {
     setInterval(this.updateTxPerSecond.bind(this), 1000);
@@ -49,7 +49,7 @@ class Mempool {
   }
 
   public async $updateMemPoolInfo() {
-    this.mempoolInfo = await bitcoinApi.getMempoolInfo();
+    this.mempoolInfo = await bitcoinApi.$getMempoolInfo();
   }
 
   public getMempoolInfo(): MempoolInfo | undefined {
@@ -76,60 +76,19 @@ class Mempool {
     return txTimes;
   }
 
-  public async getTransactionExtended(txId: string, isCoinbase = false): Promise<TransactionExtended | false> {
-    try {
-      let transaction: Transaction;
-      if (!isCoinbase && config.MEMPOOL.BACKEND === 'bitcoind-electrs') {
-        transaction = await bitcoinApi.getRawTransactionBitcond(txId);
-      } else {
-        transaction = await bitcoinApi.getRawTransaction(txId);
-      }
-      if (config.MEMPOOL.BACKEND !== 'electrs' && !isCoinbase) {
-        transaction = await this.$appendFeeData(transaction);
-      }
-      return this.extendTransaction(transaction);
-    } catch (e) {
-      logger.debug(txId + ' not found');
-      return false;
-    }
-  }
-
-  private async $appendFeeData(transaction: Transaction): Promise<Transaction> {
-    let mempoolEntry: MempoolEntry;
-    if (!this.inSync && !this.mempoolEntriesCache) {
-      this.mempoolEntriesCache = await bitcoinApi.getRawMempoolVerbose();
-    }
-    if (this.mempoolEntriesCache && this.mempoolEntriesCache[transaction.txid]) {
-      mempoolEntry = this.mempoolEntriesCache[transaction.txid];
-    } else {
-      mempoolEntry = await bitcoinApi.getMempoolEntry(transaction.txid);
-    }
-    transaction.fee = mempoolEntry.fees.base * 100000000;
-    return transaction;
-  }
-
-  private extendTransaction(transaction: Transaction | MempoolEntry): TransactionExtended {
-    // @ts-ignore
-    return Object.assign({
-      vsize: Math.round(transaction.weight / 4),
-      feePerVsize: Math.max(1, (transaction.fee || 0) / (transaction.weight / 4)),
-      firstSeen: Math.round((new Date().getTime() / 1000)),
-    }, transaction);
-  }
-
   public async $updateMempool() {
     logger.debug('Updating mempool');
     const start = new Date().getTime();
     let hasChange: boolean = false;
     const currentMempoolSize = Object.keys(this.mempoolCache).length;
     let txCount = 0;
-    const transactions = await bitcoinApi.getRawMempool();
+    const transactions = await bitcoinApi.$getRawMempool();
     const diff = transactions.length - currentMempoolSize;
     const newTransactions: TransactionExtended[] = [];
 
     for (const txid of transactions) {
       if (!this.mempoolCache[txid]) {
-        const transaction = await this.getTransactionExtended(txid);
+        const transaction = await transactionUtils.getTransactionExtended(txid, false, true);
         if (transaction) {
           this.mempoolCache[txid] = transaction;
           txCount++;
@@ -197,7 +156,6 @@ class Mempool {
 
     if (!this.inSync && transactions.length === Object.keys(newMempool).length) {
       this.inSync = true;
-      this.mempoolEntriesCache = null;
       logger.info('The mempool is now in sync!');
     }
 

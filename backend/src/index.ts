@@ -208,6 +208,21 @@ class Server {
           }
         });
     }
+
+    if (config.MEMPOOL.BACKEND === 'bitcoind' || config.MEMPOOL.BACKEND === 'bitcoind-electrs') {
+      this.app
+        .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId', routes.getTransaction)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/outspends', routes.getTransactionOutspends)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash', routes.getBlock)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'blocks', routes.getBlocks)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txs/:index', routes.getBlockTransactions)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'block-height/:height', routes.getBlockHeight)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address', routes.getAddress)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs', routes.getAddressTransactions)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs/chain/:txId', routes.getAdressTxChain)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'address-prefix/:prefix', routes.getAddressPrefix)
+      ;
+    }
   }
 }
 

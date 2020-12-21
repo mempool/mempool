@@ -2,9 +2,10 @@ import config from '../config';
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
 import memPool from './mempool';
-import { Block, Transaction, TransactionExtended, TransactionMinerInfo } from '../interfaces';
+import { Block, TransactionExtended, TransactionMinerInfo } from '../interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
+import transactionUtils from './transaction-utils';
 
 class Blocks {
   private static KEEP_BLOCK_AMOUNT = 8;
@@ -28,7 +29,7 @@ class Blocks {
   }
 
   public async $updateBlocks() {
-    const blockHeightTip = await bitcoinApi.getBlockHeightTip();
+    const blockHeightTip = await bitcoinApi.$getBlockHeightTip();
 
     if (this.blocks.length === 0) {
       this.currentBlockHeight = blockHeightTip - Blocks.KEEP_BLOCK_AMOUNT;
@@ -43,8 +44,8 @@ class Blocks {
 
     if (!this.lastDifficultyAdjustmentTime) {
       const heightDiff = blockHeightTip % 2016;
-      const blockHash = await bitcoinApi.getBlockHash(blockHeightTip - heightDiff);
-      const block = await bitcoinApi.getBlock(blockHash);
+      const blockHash = await bitcoinApi.$getBlockHash(blockHeightTip - heightDiff);
+      const block = await bitcoinApi.$getBlock(blockHash);
       this.lastDifficultyAdjustmentTime = block.timestamp;
     }
 
@@ -56,11 +57,11 @@ class Blocks {
         logger.debug(`New block found (#${this.currentBlockHeight})!`);
       }
 
-      let transactions: TransactionExtended[] = [];
+      const transactions: TransactionExtended[] = [];
 
-      const blockHash = await bitcoinApi.getBlockHash(this.currentBlockHeight);
-      const block = await bitcoinApi.getBlock(blockHash);
-      let txIds: string[] = await bitcoinApi.getTxIdsForBlock(blockHash);
+      const blockHash = await bitcoinApi.$getBlockHash(this.currentBlockHeight);
+      const block = await bitcoinApi.$getBlock(blockHash);
+      const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
 
       const mempool = memPool.getMempool();
       let found = 0;
@@ -70,18 +71,12 @@ class Blocks {
           transactions.push(mempool[txIds[i]]);
           found++;
         } else {
-          if (config.MEMPOOL.BACKEND === 'electrs') {
+          // When using bitcoind, just skip parsing past block tx's for now except for coinbase
+          if (config.MEMPOOL.BACKEND === 'electrs' || i === 0) { //
             logger.debug(`Fetching block tx ${i} of ${txIds.length}`);
-            const tx = await memPool.getTransactionExtended(txIds[i]);
+            const tx = await transactionUtils.getTransactionExtended(txIds[i]);
             if (tx) {
               transactions.push(tx);
-            }
-          } else { // When using bitcoind, just skip parsing past block tx's for now
-            if (i === 0) {
-              const tx = await memPool.getTransactionExtended(txIds[i], true);
-              if (tx) {
-                transactions.push(tx);
-              }
             }
           }
         }
@@ -115,6 +110,10 @@ class Blocks {
     return this.lastDifficultyAdjustmentTime;
   }
 
+  public getCurrentBlockHeight(): number {
+    return this.currentBlockHeight;
+  }
+
   private stripCoinbaseTransaction(tx: TransactionExtended): TransactionMinerInfo {
     return {
       vin: [{
@@ -122,7 +121,7 @@ class Blocks {
       }],
       vout: tx.vout
         .map((vout) => ({
-          scriptpubkey_address: vout.scriptpubkey_address || (vout['scriptPubKey']['addresses'] && vout['scriptPubKey']['addresses'][0]) || null,
+          scriptpubkey_address: vout.scriptpubkey_address,
           value: vout.value
         }))
         .filter((vout) => vout.value)

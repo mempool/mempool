@@ -53,7 +53,7 @@ export class Common {
       txid: tx.txid,
       fee: tx.fee,
       weight: tx.weight,
-      value: tx.vout ? tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0) : 0,
+      value: tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0),
     };
   }
 }
