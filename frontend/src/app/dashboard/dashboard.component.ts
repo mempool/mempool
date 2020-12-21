@@ -247,10 +247,10 @@ export class DashboardComponent implements OnInit {
 
   setLanguageFromUrl() {
     const urlLanguage = this.document.location.pathname.split('/')[1];
-    if (urlLanguage === '') {
-      this.languageForm.get('language').setValue('en');
-    } else if (this.languages.map((lang) => lang.code).indexOf(urlLanguage) > -1) {
+    if (this.languages.map((lang) => lang.code).indexOf(urlLanguage) > -1) {
       this.languageForm.get('language').setValue(urlLanguage);
+    } else {
+      this.languageForm.get('language').setValue('en');
     }
   }
 
