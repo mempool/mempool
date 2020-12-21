@@ -8,17 +8,19 @@
         </span>
         <ng-template #inSync>
           <div class="progress sub-text">
-            <div class="progress-bar {{ mempoolInfoData.progressClass }}" role="progressbar" [ngStyle]="{'width': mempoolInfoData.progressWidth}">{{ mempoolInfoData.vBytesPerSecond | ceil | number }} <span i18n="shared.vbytes-per-second">vBytes/s</span></div>
+            <div class="progress-bar {{ mempoolInfoData.progressClass }}" role="progressbar" [ngStyle]="{'width': mempoolInfoData.progressWidth}">{{ mempoolInfoData.vBytesPerSecond | ceil | number }} <ng-container i18n="shared.vbytes-per-second|vB/s">vB/s</ng-container></div>
           </div>
         </ng-template>    
       </div>
       <div class="col">
-        <span class="unconfirmedTx"><span i18n="shared.unconfirmed">Unconfirmed</span> <span class="extra-text" i18n="shared.transactions">transactions</span>:</span>
+        <span class="unconfirmedTx"><ng-container i18n="dashboard.unconfirmed|Unconfirmed count">Unconfirmed</ng-container>:</span>
         <div class="sub-text">{{ mempoolInfoData.memPoolInfo.size | number }}</div>
       </div>
       <div class="col">
-        <span class="mempoolSize" i18n="footer.mempool-size">Mempool size:</span>
-        <div class="sub-text" *ngIf="(mempoolBlocksData$ | async) as mempoolBlocksData">{{ mempoolBlocksData.size | bytes }} ({{ mempoolBlocksData.blocks }} block<span [hidden]="mempoolBlocksData.blocks <= 1">s</span>)</div>
+        <span class="mempoolSize"><ng-container i18n="dashboard.mempool-size|Mempool size">Mempool size</ng-container>:</span>
+        <div class="sub-text" *ngIf="(mempoolBlocksData$ | async) as mempoolBlocksData">{{ mempoolBlocksData.size | bytes }} (<ng-container *ngTemplateOutlet="mempoolBlocksData.blocks === 1 ? blocksSingular : blocksPlural; context: {$implicit: mempoolBlocksData.blocks }"></ng-container>)</div>
+          <ng-template #blocksSingular let-i i18n="shared.block">{{ i }} block</ng-template>
+          <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} blocks</ng-template>
       </div>
     </div>
   </div>

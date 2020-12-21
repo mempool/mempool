@@ -6,7 +6,7 @@
     <span i18n="shared.confidential">Confidential</span>
   </ng-template>
   <ng-template #default>
-    {{ satoshis / 100000000 | number : digitsInfo }}
+    &lrm;{{ satoshis / 100000000 | number : digitsInfo }}
     <ng-template [ngIf]="network === 'liquid'">L-</ng-template>
     <ng-template [ngIf]="network === 'testnet'">t</ng-template>BTC
   </ng-template>

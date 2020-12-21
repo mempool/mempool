@@ -450,3 +450,52 @@ th {
 .crypto { color: #fa3d3d }
 .locktime { color: #ff8c00 }
 .reserved { color: #ff8c00 }
+
+.rtl-layout {
+    .arrow {
+        @extend .arrow;
+        -webkit-transform: scaleX(-1);
+        transform: scaleX(-1);
+    }
+
+    .table td {
+        text-align: right;
+    }
+
+    .table th {
+        text-align: right;
+    }
+
+    .title-block {
+        text-align: right;
+    }
+
+    .mr-3 {
+        @extend .ml-3;
+        margin-right: 0 !important;
+    }
+
+    .mr-1 {
+        @extend .ml-1;
+    }
+
+    .float-left {
+        float: right !important;
+    }
+
+    .float-right {
+        float: left !important;
+    }
+
+    .text-left {
+        text-align: right !important;
+    }
+
+    .text-right {
+        text-align: left !important;
+    }
+
+    .bitcoin-block {
+        direction: rtl;
+    }
+}
