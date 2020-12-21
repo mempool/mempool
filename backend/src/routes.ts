@@ -1,5 +1,5 @@
 import config from './config';
-import { Request, Response } from 'express';
+import { json, Request, Response } from 'express';
 import statistics from './api/statistics';
 import feeApi from './api/fee-api';
 import backendInfo from './api/backend-info';
@@ -568,16 +568,85 @@ class Routes {
   }
 
   public async getAddress(req: Request, res: Response) {
+    if (config.MEMPOOL.BACKEND === 'bitcoind') {
+      res.status(405).send('Address lookups cannot be used with bitcoind as backend.');
+      return;
+    }
     try {
-      const result = await bitcoinApi.$getAddress(req.params.hash);
-      res.json(result);
+      const addressInfo = await bitcoinApi.$validateAddress(req.params.address);
+      if (!addressInfo || !addressInfo.isvalid) {
+        res.json({
+          'address': req.params.address,
+          'chain_stats': {
+            'funded_txo_count': 0,
+            'funded_txo_sum': 0,
+            'spent_txo_count': 0,
+            'spent_txo_sum': 0,
+            'tx_count': 0
+          },
+          'mempool_stats': {
+            'funded_txo_count': 0,
+            'funded_txo_sum': 0,
+            'spent_txo_count': 0,
+            'spent_txo_sum': 0,
+            'tx_count': 0
+          }
+        });
+        return;
+      }
+
+      const balance = await bitcoinApi.$getScriptHashBalance(addressInfo.scriptPubKey);
+      const history = await bitcoinApi.$getScriptHashHistory(addressInfo.scriptPubKey);
+
+      const unconfirmed = history.filter((h) => h.fee).length;
+
+      res.json({
+        'address': addressInfo.address,
+        'chain_stats': {
+          'funded_txo_count': 0,
+          'funded_txo_sum': balance.confirmed ? balance.confirmed : 0,
+          'spent_txo_count': 0,
+          'spent_txo_sum': balance.confirmed < 0 ? balance.confirmed : 0,
+          'tx_count': history.length - unconfirmed,
+        },
+        'mempool_stats': {
+          'funded_txo_count': 0,
+          'funded_txo_sum': balance.unconfirmed > 0 ? balance.unconfirmed : 0,
+          'spent_txo_count': 0,
+          'spent_txo_sum': balance.unconfirmed < 0 ? -balance.unconfirmed : 0,
+          'tx_count': unconfirmed,
+        }
+      });
+
     } catch (e) {
       res.status(500).send(e.message);
     }
   }
 
   public async getAddressTransactions(req: Request, res: Response) {
-    res.status(404).send('Not implemented');
+    if (config.MEMPOOL.BACKEND === 'bitcoind') {
+      res.status(405).send('Address lookups cannot be used with bitcoind as backend.');
+      return;
+    }
+
+    try {
+      const addressInfo = await bitcoinApi.$validateAddress(req.params.address);
+      if (!addressInfo || !addressInfo.isvalid) {
+        res.json([]);
+      }
+      const history = await bitcoinApi.$getScriptHashHistory(addressInfo.scriptPubKey);
+      const transactions: TransactionExtended[] = [];
+      for (const h of history) {
+        let tx = await transactionUtils.getTransactionExtended(h.tx_hash);
+        if (tx) {
+          tx = await transactionUtils.$addPrevoutsToTransaction(tx);
+          transactions.push(tx);
+        }
+      }
+      res.json(transactions);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
   }
 
   public async getAdressTxChain(req: Request, res: Response) {

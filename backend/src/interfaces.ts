@@ -30,6 +30,9 @@ export interface Transaction {
   vin: Vin[];
   vout: Vout[];
   status: Status;
+
+  // bitcoind (temp?)
+  in_active_chain?: boolean;
 }
 
 export interface TransactionMinerInfo {
@@ -293,4 +296,25 @@ export interface RequiredSpec { [name: string]: RequiredParams; }
 interface RequiredParams {
   required: boolean;
   types: ('@string' | '@number' | '@boolean' | string)[];
+}
+
+export interface AddressInformation {
+  isvalid: boolean;
+  address: string;
+  scriptPubKey: string;
+  isscript: boolean;
+  iswitness: boolean;
+  witness_version?: boolean;
+  witness_program: string;
+}
+
+export interface ScriptHashBalance {
+  confirmed: number;
+  unconfirmed: number;
+}
+
+export interface ScriptHashHistory {
+  height: number;
+  tx_hash: string;
+  fee?: number;
 }
