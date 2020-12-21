@@ -67,17 +67,22 @@ class Blocks {
       let found = 0;
 
       for (let i = 0; i < txIds.length; i++) {
+        // When using bitcoind, just fetch the coinbase tx for now
+        if ((config.MEMPOOL.BACKEND === 'bitcoind' ||
+            config.MEMPOOL.BACKEND === 'bitcoind-electrs') && i === 0) {
+          const tx = await transactionUtils.getTransactionExtended(txIds[i], true);
+          if (tx) {
+            transactions.push(tx);
+          }
+        }
         if (mempool[txIds[i]]) {
           transactions.push(mempool[txIds[i]]);
           found++;
-        } else {
-          // When using bitcoind, just skip parsing past block tx's for now except for coinbase
-          if (config.MEMPOOL.BACKEND === 'electrs' || i === 0) { //
-            logger.debug(`Fetching block tx ${i} of ${txIds.length}`);
-            const tx = await transactionUtils.getTransactionExtended(txIds[i]);
-            if (tx) {
-              transactions.push(tx);
-            }
+        } else if (config.MEMPOOL.BACKEND === 'electrs') {
+          logger.debug(`Fetching block tx ${i} of ${txIds.length}`);
+          const tx = await transactionUtils.getTransactionExtended(txIds[i]);
+          if (tx) {
+            transactions.push(tx);
           }
         }
       }

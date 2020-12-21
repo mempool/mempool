@@ -30,6 +30,7 @@
     "@codewarriorr/electrum-client-js": "^0.1.1",
     "@mempool/bitcoin": "^3.0.2",
     "axios": "^0.21.0",
+    "crypto-js": "^4.0.0",
     "express": "^4.17.1",
     "locutus": "^2.0.12",
     "mysql2": "^1.6.1",

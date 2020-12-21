@@ -34,13 +34,14 @@ class TransactionUtils {
     return this.extendTransaction(transaction);
   }
 
-  public extendTransaction(transaction: Transaction | MempoolEntry): TransactionExtended {
+  public extendTransaction(transaction: Transaction): TransactionExtended {
+    transaction['vsize'] = Math.round(transaction.weight / 4);
+    transaction['feePerVsize'] = Math.max(1, (transaction.fee || 0) / (transaction.weight / 4));
+    if (!transaction.in_active_chain) {
+      transaction['firstSeen'] = Math.round((new Date().getTime() / 1000));
+    }
     // @ts-ignore
-    return Object.assign({
-      vsize: Math.round(transaction.weight / 4),
-      feePerVsize: Math.max(1, (transaction.fee || 0) / (transaction.weight / 4)),
-      firstSeen: Math.round((new Date().getTime() / 1000)),
-    }, transaction);
+    return transaction;
   }
 
   public stripCoinbaseTransaction(tx: TransactionExtended): TransactionMinerInfo {
@@ -88,7 +89,7 @@ class TransactionUtils {
           scriptpubkey: vout.scriptPubKey.hex,
           scriptpubkey_address: vout.scriptPubKey && vout.scriptPubKey.addresses ? vout.scriptPubKey.addresses[0] : null,
           scriptpubkey_asm: vout.scriptPubKey.asm,
-          scriptpubkey_type: vout.scriptPubKey.type,
+          scriptpubkey_type: this.translateScriptPubKeyType(vout.scriptPubKey.type),
         };
       });
       if (transaction.confirmations) {
@@ -103,6 +104,25 @@ class TransactionUtils {
       }
     } catch (e) {
       console.log('augment failed: ' + (e.message || e));
+    }
+  }
+
+  private translateScriptPubKeyType(outputType: string): string {
+    const map = {
+      'pubkey': 'p2pk',
+      'pubkeyhash': 'p2pkh',
+      'scripthash': 'p2sh',
+      'witness_v0_keyhash': 'v0_p2wpkh',
+      'witness_v0_scripthash': 'v0_p2wsh',
+      'witness_v1_taproot': 'v1_p2tr',
+      'nonstandard': 'nonstandard',
+      'nulldata': 'nulldata'
+    };
+
+    if (map[outputType]) {
+      return map[outputType];
+    } else {
+      return '';
     }
   }
 

@@ -1,11 +1,13 @@
 import config from '../../config';
 import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
-import { Transaction, Block, MempoolInfo, RpcBlock, MempoolEntries, MempoolEntry, Address } from '../../interfaces';
+import { Transaction, Block, MempoolInfo, RpcBlock, MempoolEntries, MempoolEntry, Address,
+  AddressInformation, ScriptHashBalance, ScriptHashHistory } from '../../interfaces';
 import * as bitcoin from '@mempool/bitcoin';
 import * as ElectrumClient from '@codewarriorr/electrum-client-js';
 import logger from '../../logger';
 import transactionUtils from '../transaction-utils';
-
+import * as sha256 from 'crypto-js/sha256';
+import * as hexEnc from 'crypto-js/enc-hex';
 class BitcoindElectrsApi implements AbstractBitcoinApi {
   bitcoindClient: any;
   electrumClient: any;
@@ -116,6 +118,23 @@ class BitcoindElectrsApi implements AbstractBitcoinApi {
       logger.debug('getRawTransaction error: ' + (e.message || e));
       throw new Error(e);
     }
+  }
+
+  $validateAddress(address: string): Promise<AddressInformation> {
+    return this.bitcoindClient.validateAddress(address);
+  }
+
+  $getScriptHashBalance(scriptHash: string): Promise<ScriptHashBalance> {
+    return this.electrumClient.blockchain_scripthash_getBalance(this.encodeScriptHash(scriptHash));
+  }
+
+  $getScriptHashHistory(scriptHash: string): Promise<ScriptHashHistory[]> {
+    return this.electrumClient.blockchain_scripthash_getHistory(this.encodeScriptHash(scriptHash));
+  }
+
+  private encodeScriptHash(scriptPubKey: string): string {
+    const addrScripthash = hexEnc.stringify(sha256(hexEnc.parse(scriptPubKey)));
+    return addrScripthash.match(/.{2}/g).reverse().join('');
   }
 }
 

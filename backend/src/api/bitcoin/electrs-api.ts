@@ -1,6 +1,7 @@
 import config from '../../config';
 import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
-import { Transaction, Block, MempoolInfo, MempoolEntry, MempoolEntries, Address } from '../../interfaces';
+import { Transaction, Block, MempoolInfo, MempoolEntry, MempoolEntries, Address,
+  AddressInformation, ScriptHashBalance, ScriptHashHistory } from '../../interfaces';
 import axios from 'axios';
 
 class ElectrsApi implements AbstractBitcoinApi {
@@ -63,6 +64,19 @@ class ElectrsApi implements AbstractBitcoinApi {
   $getAddress(address: string): Promise<Address> {
     throw new Error('Method not implemented.');
   }
+
+  $getScriptHashBalance(scriptHash: string): Promise<ScriptHashBalance> {
+    throw new Error('Method not implemented.');
+  }
+
+  $getScriptHashHistory(scriptHash: string): Promise<ScriptHashHistory[]> {
+    throw new Error('Method not implemented.');
+  }
+
+  $validateAddress(address: string): Promise<AddressInformation> {
+    throw new Error('Method not implemented.');
+  }
+
 }
 
 export default ElectrsApi;

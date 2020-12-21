@@ -1,8 +1,10 @@
 import config from '../../config';
-import { Transaction, Block, MempoolInfo, RpcBlock, MempoolEntries, MempoolEntry, Address } from '../../interfaces';
+import { Transaction, Block, MempoolInfo, RpcBlock, MempoolEntries, MempoolEntry, Address,
+    AddressInformation, ScriptHashBalance, ScriptHashHistory } from '../../interfaces';
 import * as bitcoin from '@mempool/bitcoin';
+import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
 
-class BitcoindApi {
+class BitcoindApi implements AbstractBitcoinApi {
   bitcoindClient: any;
 
   constructor() {
@@ -80,6 +82,18 @@ class BitcoindApi {
   }
 
   $getAddress(address: string): Promise<Address> {
+    throw new Error('Method not implemented.');
+  }
+
+  $validateAddress(address: string): Promise<AddressInformation> {
+    return this.bitcoindClient.validateAddress(address);
+  }
+
+  $getScriptHashBalance(scriptHash: string): Promise<ScriptHashBalance> {
+    throw new Error('Method not implemented.');
+  }
+
+  $getScriptHashHistory(scriptHash: string): Promise<ScriptHashHistory[]> {
     throw new Error('Method not implemented.');
   }
 }
