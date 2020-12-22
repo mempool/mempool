@@ -13,7 +13,7 @@ import { AppServerModule } from './src/main.server';
 import { APP_BASE_HREF } from '@angular/common';
 import { existsSync } from 'fs';
 
-const template = fs.readFileSync(path.join(__dirname, '../../mempool/browser/', 'index.html')).toString();
+const template = fs.readFileSync(path.join(__dirname, '../../mempool/browser/en-US/', 'index.html')).toString();
 
 const win = domino.createWindow(template);
 
@@ -48,7 +48,7 @@ global['localStorage'] = {
 // The Express app is exported so that it can be used by serverless Functions.
 export function app(): express.Express {
   const server = express();
-  const distFolder = join(process.cwd(), 'dist/mempool/browser');
+  const distFolder = join(process.cwd(), 'dist/mempool/browser/en-US');
   const indexHtml = existsSync(join(distFolder, 'index.original.html')) ? 'index.original.html' : 'index';
 
   // Our Universal express-engine (found @ https://github.com/angular/universal/tree/master/modules/express-engine)
@@ -68,18 +68,15 @@ export function app(): express.Express {
 
   server.get('/api/v1/**', createProxyMiddleware({
     // @ts-ignore
-    target: win.__env.BACKEND_URL,
+    target: win.__env.NGINX_PROTOCOL + '://' + win.__env.NGINX_HOSTNAME + ':' + win.__env.NGINX_PORT,
     changeOrigin: true,
-   },
- ));
+  }));
 
   server.get('/api/**', createProxyMiddleware({
-     // @ts-ignore
-     target: win.__env.ELECTRS_URL_SERVER,
-     changeOrigin: true,
-     pathRewrite: {'^/api' : '/'}
-    },
-  ));
+    // @ts-ignore
+    target: win.__env.NGINX_PROTOCOL + '://' + win.__env.NGINX_HOSTNAME + ':' + win.__env.NGINX_PORT,
+    changeOrigin: true,
+  }));
 
   // All regular routes use the Universal engine
   server.get('*', (req, res) => {
