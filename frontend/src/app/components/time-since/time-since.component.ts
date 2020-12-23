@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnChanges } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnChanges, PLATFORM_ID, Inject } from '@angular/core';
+import { StateService } from 'src/app/services/state.service';
 
 @Component({
   selector: 'app-time-since',
@@ -14,7 +15,8 @@ export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
   @Input() fastRender = false;
 
   constructor(
-    private ref: ChangeDetectorRef
+    private ref: ChangeDetectorRef,
+    private stateService: StateService,
   ) {
       this.intervals = {
         year: 31536000,
@@ -28,6 +30,11 @@ export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
+    if (!this.stateService.isBrowser) {
+      this.text = this.calculate();
+      this.ref.markForCheck();
+      return;
+    }
     this.interval = window.setInterval(() => {
       this.text = this.calculate();
       this.ref.markForCheck();

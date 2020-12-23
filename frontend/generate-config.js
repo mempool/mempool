@@ -25,7 +25,7 @@ for (setting in configContent) {
 const code = `(function (window) {
   window.__env = window.__env || {};${settings.reduce((str, obj) => `${str}
     window.__env.${obj.key} = ${ typeof obj.value === 'string' ? `'${obj.value}'` : obj.value };`, '')}
-  }(this));`;
+  }(global || this));`;
 
 try {
   fs.writeFileSync(GENERATED_CONFIG_FILE_NAME, code, 'utf8');
