@@ -36,7 +36,7 @@ do
         cd "$HOME/${site}/frontend"
         npm install
         npm run build
-        rsync -av ./dist/mempool/* "${HOME}/public_html/${site}/"
+        rsync -av ./dist/mempool/browser/* "${HOME}/public_html/${site}/"
     fi
 
     cd "$HOME/${site}/backend"

@@ -5,7 +5,6 @@ import { switchMap, map, tap, filter } from 'rxjs/operators';
 import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
-import { env } from 'src/app/app.constants';
 import { WebsocketService } from 'src/app/services/websocket.service';
 
 @Component({
@@ -70,7 +69,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
     const blocksInBlock = Math.ceil(mempoolBlock.blockVSize / 1000000);
     if (this.mempoolBlockIndex === 0) {
       return $localize`:@@mempool-block.next.block:Next block`;
-    } else if (this.mempoolBlockIndex === env.KEEP_BLOCKS_AMOUNT - 1 && blocksInBlock > 1 ) {
+    } else if (this.mempoolBlockIndex === this.stateService.env.KEEP_BLOCKS_AMOUNT - 1 && blocksInBlock > 1) {
       return $localize`:@@mempool-block.stack.of.blocks:Stack of ${blocksInBlock}:INTERPOLATION: mempool blocks`;
     } else {
       return $localize`:@@mempool-block.block.no:Mempool block ${this.mempoolBlockIndex + 1}:INTERPOLATION:`;

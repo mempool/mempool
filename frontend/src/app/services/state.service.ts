@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
-import { ReplaySubject, BehaviorSubject, Subject, fromEvent } from 'rxjs';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable } from 'rxjs';
 import { Block, Transaction } from '../interfaces/electrs.interface';
 import { MempoolBlock, MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
 import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
-import { env } from '../app.constants';
-import { shareReplay, map } from 'rxjs/operators';
+import { isPlatformBrowser } from '@angular/common';
+import { map, shareReplay } from 'rxjs/operators';
 
 interface MarkBlockState {
   blockHeight?: number;
@@ -13,15 +13,43 @@ interface MarkBlockState {
   txFeePerVSize?: number;
 }
 
+export interface Env {
+  TESTNET_ENABLED: boolean;
+  LIQUID_ENABLED: boolean;
+  BISQ_ENABLED: boolean;
+  BISQ_SEPARATE_BACKEND: boolean;
+  SPONSORS_ENABLED: boolean;
+  ELECTRS_ITEMS_PER_PAGE: number;
+  KEEP_BLOCKS_AMOUNT: number;
+  NGINX_PROTOCOL?: string;
+  NGINX_HOSTNAME?: string;
+  NGINX_PORT?: string;
+}
+
+const defaultEnv: Env = {
+  'TESTNET_ENABLED': false,
+  'LIQUID_ENABLED': false,
+  'BISQ_ENABLED': false,
+  'BISQ_SEPARATE_BACKEND': false,
+  'SPONSORS_ENABLED': false,
+  'ELECTRS_ITEMS_PER_PAGE': 25,
+  'KEEP_BLOCKS_AMOUNT': 8,
+  'NGINX_PROTOCOL': 'http',
+  'NGINX_HOSTNAME': '127.0.0.1',
+  'NGINX_PORT': '81',
+};
+
 @Injectable({
   providedIn: 'root'
 })
 export class StateService {
+  isBrowser: boolean = isPlatformBrowser(this.platformId);
   network = '';
+  env: Env;
   latestBlockHeight = 0;
 
   networkChanged$ = new ReplaySubject<string>(1);
-  blocks$ = new ReplaySubject<[Block, boolean]>(env.KEEP_BLOCKS_AMOUNT);
+  blocks$: ReplaySubject<[Block, boolean]>;
   transactions$ = new ReplaySubject<TransactionStripped>(6);
   conversions$ = new ReplaySubject<any>(1);
   bsqPrice$ = new ReplaySubject<number>(1);
@@ -40,21 +68,35 @@ export class StateService {
 
   viewFiat$ = new BehaviorSubject<boolean>(false);
   connectionState$ = new BehaviorSubject<0 | 1 | 2>(2);
-  isTabHidden$ = fromEvent(document, 'visibilitychange').pipe(map((event) => this.isHidden()), shareReplay());
+  isTabHidden$: Observable<boolean>;
 
   markBlock$ = new ReplaySubject<MarkBlockState>();
   keyNavigation$ = new Subject<KeyboardEvent>();
 
   constructor(
+    @Inject(PLATFORM_ID) private platformId: any,
     private router: Router,
   ) {
-    this.setNetworkBasedonUrl(window.location.pathname);
-
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         this.setNetworkBasedonUrl(event.url);
       }
     });
+
+    if (this.isBrowser) {
+      this.setNetworkBasedonUrl(window.location.pathname);
+      this.isTabHidden$ = fromEvent(document, 'visibilitychange').pipe(map(() => this.isHidden()), shareReplay());
+    } else {
+      this.setNetworkBasedonUrl('/');
+      this.isTabHidden$ = new BehaviorSubject(false);
+    }
+
+    const browserWindow = window || {};
+    // @ts-ignore
+    const browserWindowEnv = browserWindow.__env || {};
+    this.env = Object.assign(defaultEnv, browserWindowEnv);
+
+    this.blocks$ = new ReplaySubject<[Block, boolean]>(this.env.KEEP_BLOCKS_AMOUNT);
   }
 
   setNetworkBasedonUrl(url: string) {

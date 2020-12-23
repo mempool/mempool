@@ -7,7 +7,6 @@ import { Block, Transaction, Vout } from '../../interfaces/electrs.interface';
 import { of, Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { SeoService } from 'src/app/services/seo.service';
-import { env } from 'src/app/app.constants';
 import { WebsocketService } from 'src/app/services/websocket.service';
 
 @Component({
@@ -31,7 +30,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   paginationMaxSize: number;
   coinbaseTx: Transaction;
   page = 1;
-  itemsPerPage = env.ELCTRS_ITEMS_PER_PAGE;
+  itemsPerPage: number;
 
   constructor(
     private route: ActivatedRoute,
@@ -47,6 +46,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.websocketService.want(['blocks', 'mempool-blocks']);
     this.paginationMaxSize = window.matchMedia('(max-width: 700px)').matches ? 3 : 5;
     this.network = this.stateService.network;
+    this.itemsPerPage = this.stateService.env.ELECTRS_ITEMS_PER_PAGE;
 
     this.subscription = this.route.paramMap
     .pipe(
