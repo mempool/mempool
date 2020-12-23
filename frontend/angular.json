@@ -227,6 +227,7 @@
                 }
               ],
               "sourceMap": false,
+              "localize": true,
               "optimization": true
             }
           }
