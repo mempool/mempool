@@ -34,8 +34,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "dev:ssr": "npm run generate-config && ng run mempool:serve-ssr",
-    "serve:ssr": "node dist/mempool/server/main.js",
-    "build:ssr": "npm run build && ng run mempool:server:production",
+    "serve:ssr": "node server.run.js",
+    "build:ssr": "npm run build && ng run mempool:server:production && ./node_modules/typescript/bin/tsc server.run.ts",
     "prerender": "ng run mempool:prerender"
   },
   "dependencies": {

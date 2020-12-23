@@ -13,7 +13,7 @@ import { AppServerModule } from './src/main.server';
 import { APP_BASE_HREF } from '@angular/common';
 import { existsSync } from 'fs';
 
-const template = fs.readFileSync(path.join(__dirname, '../browser/en-US/', 'index.html')).toString();
+const template = fs.readFileSync(path.join(process.cwd(), 'dist/mempool/browser/en-US/', 'index.html')).toString();
 const win = domino.createWindow(template);
 
 // @ts-ignore
@@ -45,9 +45,10 @@ global['localStorage'] = {
 };
 
 // The Express app is exported so that it can be used by serverless Functions.
-export function app(): express.Express {
+export function app(locale: string): express.Express {
   const server = express();
-  const distFolder = join(__dirname, '../browser/en-US');
+  const distFolder = join(process.cwd(), `dist/mempool/browser/${locale}`);
+  const indexHtml = existsSync(join(distFolder, 'index.original.html')) ? 'index.original.html' : 'index';
 
   // Our Universal express-engine (found @ https://github.com/angular/universal/tree/master/modules/express-engine)
   server.engine('html', ngExpressEngine({
@@ -57,98 +58,62 @@ export function app(): express.Express {
   server.set('view engine', 'html');
   server.set('views', distFolder);
 
-  // map each locale to its folder
-  mapLocaleToFolder(server, '/ar', 'ar');
-  mapLocaleToFolder(server, '/cs', 'cs');
-  mapLocaleToFolder(server, '/de', 'de');
-  mapLocaleToFolder(server, '/en', 'en-US');
-  mapLocaleToFolder(server, '/es', 'es');
-  mapLocaleToFolder(server, '/fa', 'fa');
-  mapLocaleToFolder(server, '/fr', 'fr');
-  mapLocaleToFolder(server, '/ja', 'ja');
-  mapLocaleToFolder(server, '/ka', 'ka');
-  mapLocaleToFolder(server, '/ko', 'ko');
-  mapLocaleToFolder(server, '/nl', 'nl');
-  mapLocaleToFolder(server, '/nb', 'nb');
-  mapLocaleToFolder(server, '/pt', 'pt');
-  mapLocaleToFolder(server, '/sl', 'sl');
-  mapLocaleToFolder(server, '/sv', 'sv');
-  mapLocaleToFolder(server, '/tr', 'tr');
-  mapLocaleToFolder(server, '/uk', 'uk');
-  mapLocaleToFolder(server, '/fi', 'fi');
-  mapLocaleToFolder(server, '/vi', 'vi');
-  mapLocaleToFolder(server, '/zh', 'zh');
+  // only handle URLs that actually exist
+  //server.get(locale, getLocalizedSSR(indexHtml));
+  server.get('/', getLocalizedSSR(indexHtml));
+  server.get('/tx/*', getLocalizedSSR(indexHtml));
+  server.get('/block/*', getLocalizedSSR(indexHtml));
+  server.get('/mempool-block/*', getLocalizedSSR(indexHtml));
+  server.get('/address/*', getLocalizedSSR(indexHtml));
+  server.get('/blocks', getLocalizedSSR(indexHtml));
+  server.get('/graphs', getLocalizedSSR(indexHtml));
+  server.get('/liquid', getLocalizedSSR(indexHtml));
+  server.get('/liquid/tx/*', getLocalizedSSR(indexHtml));
+  server.get('/liquid/block/*', getLocalizedSSR(indexHtml));
+  server.get('/liquid/mempool-block/*', getLocalizedSSR(indexHtml));
+  server.get('/liquid/address/*', getLocalizedSSR(indexHtml));
+  server.get('/liquid/asset/*', getLocalizedSSR(indexHtml));
+  server.get('/liquid/blocks', getLocalizedSSR(indexHtml));
+  server.get('/liquid/graphs', getLocalizedSSR(indexHtml));
+  server.get('/liquid/assets', getLocalizedSSR(indexHtml));
+  server.get('/liquid/api', getLocalizedSSR(indexHtml));
+  server.get('/liquid/tv', getLocalizedSSR(indexHtml));
+  server.get('/liquid/status', getLocalizedSSR(indexHtml));
+  server.get('/liquid/about', getLocalizedSSR(indexHtml));
+  server.get('/testnet', getLocalizedSSR(indexHtml));
+  server.get('/testnet/tx/*', getLocalizedSSR(indexHtml));
+  server.get('/testnet/block/*', getLocalizedSSR(indexHtml));
+  server.get('/testnet/mempool-block/*', getLocalizedSSR(indexHtml));
+  server.get('/testnet/address/*', getLocalizedSSR(indexHtml));
+  server.get('/testnet/blocks', getLocalizedSSR(indexHtml));
+  server.get('/testnet/graphs', getLocalizedSSR(indexHtml));
+  server.get('/testnet/api', getLocalizedSSR(indexHtml));
+  server.get('/testnet/tv', getLocalizedSSR(indexHtml));
+  server.get('/testnet/status', getLocalizedSSR(indexHtml));
+  server.get('/testnet/about', getLocalizedSSR(indexHtml));
+  server.get('/bisq', getLocalizedSSR(indexHtml));
+  server.get('/bisq/tx/*', getLocalizedSSR(indexHtml));
+  server.get('/bisq/blocks', getLocalizedSSR(indexHtml));
+  server.get('/bisq/block/*', getLocalizedSSR(indexHtml));
+  server.get('/bisq/address/*', getLocalizedSSR(indexHtml));
+  server.get('/bisq/stats', getLocalizedSSR(indexHtml));
+  server.get('/bisq/about', getLocalizedSSR(indexHtml));
+  server.get('/bisq/api', getLocalizedSSR(indexHtml));
+  server.get('/about', getLocalizedSSR(indexHtml));
+  server.get('/api', getLocalizedSSR(indexHtml));
+  server.get('/tv', getLocalizedSSR(indexHtml));
+  server.get('/status', getLocalizedSSR(indexHtml));
+  server.get('/terms-of-service', getLocalizedSSR(indexHtml));
 
-  // map null locale to en-US
-  mapLocaleToFolder(server, '', 'en-US');
-
-  // proxy API to nginx
-  server.get('/api/**', createProxyMiddleware({
-    // @ts-ignore
-    target: win.__env.NGINX_PROTOCOL + '://' + win.__env.NGINX_HOSTNAME + ':' + win.__env.NGINX_PORT,
-    changeOrigin: true,
-  }));
+  // fallback to static file handler so we send HTTP 404 to nginx
+  server.get('/**', express.static(distFolder, { maxAge: '1y' }));
 
   return server;
 }
 
-function mapLocaleToFolder(server, urlPrefix, folderName) {
-  // only handle URLs that actually exist
-  server.get(urlPrefix, getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/tx/*', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/block/*', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/mempool-block/*', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/address/*', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/blocks', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/graphs', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/liquid', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/liquid/tx/*', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/liquid/block/*', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/liquid/mempool-block/*', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/liquid/address/*', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/liquid/asset/*', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/liquid/blocks', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/liquid/graphs', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/liquid/assets', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/liquid/api', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/liquid/tv', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/liquid/status', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/liquid/about', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/testnet', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/testnet/tx/*', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/testnet/block/*', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/testnet/mempool-block/*', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/testnet/address/*', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/testnet/blocks', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/testnet/graphs', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/testnet/api', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/testnet/tv', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/testnet/status', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/testnet/about', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/bisq', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/bisq/tx/*', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/bisq/blocks', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/bisq/block/*', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/bisq/address/*', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/bisq/stats', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/bisq/about', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/bisq/api', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/about', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/api', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/tv', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/status', getLocalizedSSR(folderName));
-  server.get(urlPrefix + '/terms-of-service', getLocalizedSSR(folderName));
-
-  // fallback to static file handler so we send HTTP 404 to nginx
-  const distFolder = join(__dirname, '../browser' + (urlPrefix === '' ? '/en-US' : ''));
-  server.get(urlPrefix + '/**', express.static(distFolder, { maxAge: '1y' }));
-}
-
-function getLocalizedSSR(locale) {
+function getLocalizedSSR(indexHtml) {
   return (req, res) => {
-    const distFolder = join(__dirname, `../browser/${locale}`);
-    res.render(join(distFolder, 'index.html'), {
+    res.render(indexHtml, {
       req,
       providers: [
         { provide: APP_BASE_HREF, useValue: req.baseUrl }
@@ -157,11 +122,12 @@ function getLocalizedSSR(locale) {
   }
 }
 
+// only used for development mode
 function run(): void {
   const port = process.env.PORT || 4000;
 
   // Start up the Node server
-  const server = app();
+  const server = app('en-US');
   server.listen(port, () => {
     console.log(`Node Express server listening on port ${port}`);
   });
