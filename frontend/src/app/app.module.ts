@@ -1,6 +1,6 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, BrowserTransferStateModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
@@ -48,6 +48,7 @@ import { faAngleDown, faAngleUp, faBolt, faChartArea, faCogs, faCubes, faDatabas
 import { ApiDocsComponent } from './components/api-docs/api-docs.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 import { StorageService } from './services/storage.service';
+import { HttpCacheInterceptor } from './services/http-cache.interceptor';
 
 @NgModule({
   declarations: [
@@ -84,7 +85,8 @@ import { StorageService } from './services/storage.service';
     TermsOfServiceComponent,
   ],
   imports: [
-    BrowserModule,
+    BrowserModule.withServerTransition({ appId: 'serverApp' }),
+    BrowserTransferStateModule,
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,
@@ -100,6 +102,7 @@ import { StorageService } from './services/storage.service';
     AudioService,
     SeoService,
     StorageService,
+    { provide: HTTP_INTERCEPTORS, useClass: HttpCacheInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })

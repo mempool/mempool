@@ -4,6 +4,8 @@
 /dist
 /tmp
 /out-tsc
+server.run.js
+
 # Only exists if Bazel was run
 /bazel-out
 

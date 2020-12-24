@@ -1,6 +1,5 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { StateService } from '../../services/state.service';
-import { env } from 'src/app/app.constants';
+import { Component, OnInit } from '@angular/core';
+import { Env, StateService } from '../../services/state.service';
 import { Observable, merge, of } from 'rxjs';
 
 @Component({
@@ -9,7 +8,7 @@ import { Observable, merge, of } from 'rxjs';
   styleUrls: ['./master-page.component.scss'],
 })
 export class MasterPageComponent implements OnInit {
-  env = env;
+  env: Env;
   network$: Observable<string>;
   connectionState$: Observable<number>;
   navCollapsed = false;
@@ -20,6 +19,7 @@ export class MasterPageComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.env = this.stateService.env;
     this.connectionState$ = this.stateService.connectionState$;
     this.network$ = merge(of(''), this.stateService.networkChanged$);
   }
