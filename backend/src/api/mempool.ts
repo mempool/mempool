@@ -1,15 +1,18 @@
 import config from '../config';
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
-import { MempoolInfo, TransactionExtended, Transaction, VbytesPerSecond, MempoolEntry, MempoolEntries } from '../interfaces';
+import { TransactionExtended, VbytesPerSecond } from '../mempool.interfaces';
 import logger from '../logger';
 import { Common } from './common';
 import transactionUtils from './transaction-utils';
+import { IBitcoinApi } from './bitcoin/bitcoin-api.interface';
+import bitcoinBaseApi from './bitcoin/bitcoin-base.api';
 
 class Mempool {
   private inSync: boolean = false;
   private mempoolCache: { [txId: string]: TransactionExtended } = {};
-  private mempoolInfo: MempoolInfo = { size: 0, bytes: 0 };
-  private mempoolChangedCallback: ((newMempool: { [txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
+  private mempoolInfo: IBitcoinApi.MempoolInfo = { loaded: false, size: 0, bytes: 0, usage: 0,
+                                                    maxmempool: 0, mempoolminfee: 0, minrelaytxfee: 0 };
+  private mempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
     deletedTransactions: TransactionExtended[]) => void) | undefined;
 
   private txPerSecondArray: number[] = [];
@@ -49,10 +52,10 @@ class Mempool {
   }
 
   public async $updateMemPoolInfo() {
-    this.mempoolInfo = await bitcoinApi.$getMempoolInfo();
+    this.mempoolInfo = await bitcoinBaseApi.$getMempoolInfo();
   }
 
-  public getMempoolInfo(): MempoolInfo | undefined {
+  public getMempoolInfo(): IBitcoinApi.MempoolInfo | undefined {
     return this.mempoolInfo;
   }
 
@@ -67,8 +70,9 @@ class Mempool {
   public getFirstSeenForTransactions(txIds: string[]): number[] {
     const txTimes: number[] = [];
     txIds.forEach((txId: string) => {
-      if (this.mempoolCache[txId]) {
-        txTimes.push(this.mempoolCache[txId].firstSeen);
+      const tx = this.mempoolCache[txId];
+      if (tx && tx.firstSeen) {
+        txTimes.push(tx.firstSeen);
       } else {
         txTimes.push(0);
       }
@@ -88,7 +92,7 @@ class Mempool {
 
     for (const txid of transactions) {
       if (!this.mempoolCache[txid]) {
-        const transaction = await transactionUtils.getTransactionExtended(txid, false, true);
+        const transaction = await transactionUtils.$getTransactionExtended(txid, true);
         if (transaction) {
           this.mempoolCache[txid] = transaction;
           txCount++;
@@ -118,6 +122,7 @@ class Mempool {
 
     // Prevent mempool from clear on bitcoind restart by delaying the deletion
     if (this.mempoolProtection === 0
+      && config.MEMPOOL.BACKEND === 'esplora'
       && currentMempoolSize > 20000
       && transactions.length / currentMempoolSize <= 0.80
     ) {

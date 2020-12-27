@@ -1,21 +1,13 @@
-import { MempoolInfo, Transaction, Block, MempoolEntries, MempoolEntry, Address, AddressInformation,
-  ScriptHashBalance, ScriptHashHistory } from '../../interfaces';
+import { IEsploraApi } from './esplora-api.interface';
 
 export interface AbstractBitcoinApi {
-  $getMempoolInfo(): Promise<MempoolInfo>;
-  $getRawMempool(): Promise<Transaction['txid'][]>;
-  $getRawTransaction(txId: string): Promise<Transaction>;
+  $getRawMempool(): Promise<IEsploraApi.Transaction['txid'][]>;
+  $getRawTransaction(txId: string, skipConversion?: boolean, addPrevout?: boolean): Promise<IEsploraApi.Transaction>;
+  $getRawTransactionBitcoind(txId: string, skipConversion?: boolean, addPrevout?: boolean): Promise<IEsploraApi.Transaction>;
   $getBlockHeightTip(): Promise<number>;
   $getTxIdsForBlock(hash: string): Promise<string[]>;
   $getBlockHash(height: number): Promise<string>;
-  $getBlock(hash: string): Promise<Block>;
-  $getMempoolEntry(txid: string): Promise<MempoolEntry>;
-  $getAddress(address: string): Promise<Address>;
-  $validateAddress(address: string): Promise<AddressInformation>;
-  $getScriptHashBalance(scriptHash: string): Promise<ScriptHashBalance>;
-  $getScriptHashHistory(scriptHash: string): Promise<ScriptHashHistory[]>;
-
-  // Custom
-  $getRawMempoolVerbose(): Promise<MempoolEntries>;
-  $getRawTransactionBitcond(txId: string): Promise<Transaction>;
+  $getBlock(hash: string): Promise<IEsploraApi.Block>;
+  $getAddress(address: string): Promise<IEsploraApi.Address>;
+  $getAddressTransactions(address: string, lastSeenTxId: string): Promise<IEsploraApi.Transaction[]>;
 }

@@ -1,4 +1,4 @@
-import { TransactionExtended, TransactionStripped } from '../interfaces';
+import { TransactionExtended, TransactionStripped } from '../mempool.interfaces';
 
 export class Common {
   static median(numbers: number[]) {

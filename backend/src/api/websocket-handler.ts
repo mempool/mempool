@@ -1,6 +1,6 @@
 import logger from '../logger';
 import * as WebSocket from 'ws';
-import { Block, TransactionExtended, WebsocketResponse, MempoolBlock, OptimizedStatistic } from '../interfaces';
+import { BlockExtended, TransactionExtended, WebsocketResponse, MempoolBlock, OptimizedStatistic } from '../mempool.interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
 import backendInfo from './backend-info';
@@ -117,7 +117,7 @@ class WebsocketHandler {
     });
   }
 
-  getInitData(_blocks?: Block[]) {
+  getInitData(_blocks?: BlockExtended[]) {
     if (!_blocks) {
       _blocks = blocks.getBlocks();
     }
@@ -256,7 +256,7 @@ class WebsocketHandler {
     });
   }
 
-  handleNewBlock(block: Block, txIds: string[], transactions: TransactionExtended[]) {
+  handleNewBlock(block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
     }

@@ -1,0 +1,199 @@
+import config from '../../config';
+import * as bitcoin from '@mempool/bitcoin';
+import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
+import { IBitcoinApi } from './bitcoin-api.interface';
+import { IEsploraApi } from './esplora-api.interface';
+import blocks from '../blocks';
+import bitcoinBaseApi from './bitcoin-base.api';
+import mempool from '../mempool';
+
+class BitcoinApi implements AbstractBitcoinApi {
+  private rawMempoolCache: IBitcoinApi.RawMempool | null = null;
+  private bitcoindClient: any;
+
+  constructor() {
+    this.bitcoindClient = new bitcoin.Client({
+      host: config.BITCOIND.HOST,
+      port: config.BITCOIND.PORT,
+      user: config.BITCOIND.USERNAME,
+      pass: config.BITCOIND.PASSWORD,
+      timeout: 60000,
+    });
+  }
+
+  $getRawTransactionBitcoind(txId: string, skipConversion = false, addPrevout = false): Promise<IEsploraApi.Transaction> {
+    return this.bitcoindClient.getRawTransaction(txId, true)
+      .then((transaction: IBitcoinApi.Transaction) => {
+        if (skipConversion) {
+          return transaction;
+        }
+        return this.$convertTransaction(transaction, addPrevout);
+      });
+  }
+
+  $getRawTransaction(txId: string, skipConversion = false, addPrevout = false): Promise<IEsploraApi.Transaction> {
+    return this.bitcoindClient.getRawTransaction(txId, true)
+      .then((transaction: IBitcoinApi.Transaction) => {
+        if (skipConversion) {
+          return transaction;
+        }
+        return this.$convertTransaction(transaction, addPrevout);
+      });
+  }
+
+  $getBlockHeightTip(): Promise<number> {
+    return this.bitcoindClient.getChainTips()
+      .then((result: IBitcoinApi.ChainTips[]) => result[0].height);
+  }
+
+  $getTxIdsForBlock(hash: string): Promise<string[]> {
+    return this.bitcoindClient.getBlock(hash, 1)
+      .then((rpcBlock: IBitcoinApi.Block) => rpcBlock.tx);
+  }
+
+  $getBlockHash(height: number): Promise<string> {
+    return this.bitcoindClient.getBlockHash(height);
+  }
+
+  $getBlock(hash: string): Promise<IEsploraApi.Block> {
+    return this.bitcoindClient.getBlock(hash)
+      .then((block: IBitcoinApi.Block) => this.convertBlock(block));
+  }
+
+  $getAddress(address: string): Promise<IEsploraApi.Address> {
+    throw new Error('Method getAddress not supported by the Bitcoin RPC API.');
+  }
+
+  $getAddressTransactions(address: string, lastSeenTxId: string): Promise<IEsploraApi.Transaction[]> {
+    throw new Error('Method getAddressTransactions not supported by the Bitcoin RPC API.');
+  }
+
+  $getRawMempool(): Promise<IEsploraApi.Transaction['txid'][]> {
+    return this.bitcoindClient.getRawMemPool();
+  }
+
+  protected async $convertTransaction(transaction: IBitcoinApi.Transaction, addPrevout: boolean): Promise<IEsploraApi.Transaction> {
+    let esploraTransaction: IEsploraApi.Transaction = {
+      txid: transaction.txid,
+      version: transaction.version,
+      locktime: transaction.locktime,
+      size: transaction.size,
+      weight: transaction.weight,
+      fee: 0,
+      vin: [],
+      vout: [],
+      status: { confirmed: false },
+    };
+
+    esploraTransaction.vout = transaction.vout.map((vout) => {
+      return {
+        value: vout.value * 100000000,
+        scriptpubkey: vout.scriptPubKey.hex,
+        scriptpubkey_address: vout.scriptPubKey && vout.scriptPubKey.addresses ? vout.scriptPubKey.addresses[0] : '',
+        scriptpubkey_asm: vout.scriptPubKey.asm,
+        scriptpubkey_type: this.translateScriptPubKeyType(vout.scriptPubKey.type),
+      };
+    });
+
+    esploraTransaction.vin = transaction.vin.map((vin) => {
+      return {
+        is_coinbase: !!vin.coinbase,
+        prevout: null,
+        scriptsig: vin.scriptSig && vin.scriptSig.hex || vin.coinbase || '',
+        scriptsig_asm: vin.scriptSig && vin.scriptSig.asm || '',
+        sequence: vin.sequence,
+        txid: vin.txid || '',
+        vout: vin.vout || 0,
+        witness: vin.txinwitness,
+      };
+    });
+
+    if (transaction.confirmations) {
+      esploraTransaction.status = {
+        confirmed: true,
+        block_height: blocks.getCurrentBlockHeight() - transaction.confirmations + 1,
+        block_hash: transaction.blockhash,
+        block_time: transaction.blocktime,
+      };
+    }
+
+    if (transaction.confirmations) {
+      esploraTransaction = await this.$calculateFeeFromInputs(esploraTransaction, addPrevout);
+    } else {
+      esploraTransaction = await this.$appendMempoolFeeData(esploraTransaction);
+    }
+
+    return esploraTransaction;
+  }
+
+  private convertBlock(block: IBitcoinApi.Block): IEsploraApi.Block {
+    return {
+      id: block.hash,
+      height: block.height,
+      version: block.version,
+      timestamp: block.time,
+      bits: parseInt(block.bits, 16),
+      nonce: block.nonce,
+      difficulty: block.difficulty,
+      merkle_root: block.merkleroot,
+      tx_count: block.nTx,
+      size: block.size,
+      weight: block.weight,
+      previousblockhash: block.previousblockhash,
+    };
+  }
+
+  private translateScriptPubKeyType(outputType: string): string {
+    const map = {
+      'pubkey': 'p2pk',
+      'pubkeyhash': 'p2pkh',
+      'scripthash': 'p2sh',
+      'witness_v0_keyhash': 'v0_p2wpkh',
+      'witness_v0_scripthash': 'v0_p2wsh',
+      'witness_v1_taproot': 'v1_p2tr',
+      'nonstandard': 'nonstandard',
+      'nulldata': 'op_return'
+    };
+
+    if (map[outputType]) {
+      return map[outputType];
+    } else {
+      return '';
+    }
+  }
+
+  private async $appendMempoolFeeData(transaction: IEsploraApi.Transaction): Promise<IEsploraApi.Transaction> {
+    let mempoolEntry: IBitcoinApi.MempoolEntry;
+    if (!mempool.isInSync() && !this.rawMempoolCache) {
+      this.rawMempoolCache = await bitcoinBaseApi.$getRawMempoolVerbose();
+    }
+    if (this.rawMempoolCache && this.rawMempoolCache[transaction.txid]) {
+      mempoolEntry = this.rawMempoolCache[transaction.txid];
+    } else {
+      mempoolEntry = await bitcoinBaseApi.$getMempoolEntry(transaction.txid);
+    }
+    transaction.fee = mempoolEntry.fees.base * 100000000;
+    return transaction;
+  }
+
+  private async $calculateFeeFromInputs(transaction: IEsploraApi.Transaction, addPrevout: boolean): Promise<IEsploraApi.Transaction> {
+    if (transaction.vin[0].is_coinbase) {
+      transaction.fee = 0;
+      return transaction;
+    }
+    let totalIn = 0;
+    for (const vin of transaction.vin) {
+      const innerTx = await this.$getRawTransaction(vin.txid, !addPrevout);
+      if (addPrevout) {
+        vin.prevout = innerTx.vout[vin.vout];
+      }
+      totalIn += innerTx.vout[vin.vout].value;
+    }
+    const totalOut = transaction.vout.reduce((prev, output) => prev + output.value, 0);
+    transaction.fee = parseFloat((totalIn - totalOut).toFixed(8));
+    return transaction;
+  }
+
+}
+
+export default BitcoinApi;

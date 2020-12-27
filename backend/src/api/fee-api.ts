@@ -1,5 +1,5 @@
 import config from '../config';
-import { MempoolBlock } from '../interfaces';
+import { MempoolBlock } from '../mempool.interfaces';
 import projectedBlocks from './mempool-blocks';
 
 class FeeApi {
