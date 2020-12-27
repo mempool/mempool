@@ -1,4 +1,4 @@
-import { MempoolBlock, TransactionExtended, MempoolBlockWithTransactions } from '../interfaces';
+import { MempoolBlock, TransactionExtended, MempoolBlockWithTransactions } from '../mempool.interfaces';
 import { Common } from './common';
 
 class MempoolBlocks {

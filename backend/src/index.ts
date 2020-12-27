@@ -209,7 +209,7 @@ class Server {
         });
     }
 
-    if (config.MEMPOOL.BACKEND === 'bitcoind' || config.MEMPOOL.BACKEND === 'bitcoind-electrs') {
+    if (config.MEMPOOL.BACKEND !== 'esplora') {
       this.app
         .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId', routes.getTransaction)
         .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/outspends', routes.getTransactionOutspends)
@@ -219,7 +219,7 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'block-height/:height', routes.getBlockHeight)
         .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address', routes.getAddress)
         .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs', routes.getAddressTransactions)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs/chain/:txId', routes.getAdressTxChain)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs/chain/:txId', routes.getAddressTransactions)
         .get(config.MEMPOOL.API_URL_PREFIX + 'address-prefix/:prefix', routes.getAddressPrefix)
       ;
     }

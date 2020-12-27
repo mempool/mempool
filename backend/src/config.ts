@@ -3,7 +3,7 @@ const configFile = require('../mempool-config.json');
 interface IConfig {
   MEMPOOL: {
     NETWORK: 'mainnet' | 'testnet' | 'liquid';
-    BACKEND: 'electrs' | 'bitcoind' | 'bitcoind-electrs';
+    BACKEND: 'esplora' | 'electrum' | 'none';
     HTTP_PORT: number;
     SPAWN_CLUSTER_PROCS: number;
     API_URL_PREFIX: string;
@@ -20,7 +20,7 @@ interface IConfig {
     PORT: number;
     USERNAME: string;
     PASSWORD: string;
-  },
+  };
   DATABASE: {
     ENABLED: boolean;
     HOST: string,
@@ -53,7 +53,7 @@ interface IConfig {
 const defaults: IConfig = {
   'MEMPOOL': {
     'NETWORK': 'mainnet',
-    'BACKEND': 'electrs',
+    'BACKEND': 'none',
     'HTTP_PORT': 8999,
     'SPAWN_CLUSTER_PROCS': 0,
     'API_URL_PREFIX': '/api/v1/',
@@ -66,10 +66,10 @@ const defaults: IConfig = {
     'PORT': 3306
   },
   'BITCOIND': {
-    'HOST': "127.0.0.1",
+    'HOST': '127.0.0.1',
     'PORT': 8332,
-    'USERNAME': "mempoo",
-    'PASSWORD': "mempool"
+    'USERNAME': 'mempool',
+    'PASSWORD': 'mempool'
   },
   'DATABASE': {
     'ENABLED': true,

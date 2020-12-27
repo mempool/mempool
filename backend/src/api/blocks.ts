@@ -2,29 +2,29 @@ import config from '../config';
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
 import memPool from './mempool';
-import { Block, TransactionExtended, TransactionMinerInfo } from '../interfaces';
+import { BlockExtended, TransactionExtended, TransactionMinerInfo } from '../mempool.interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
 import transactionUtils from './transaction-utils';
 
 class Blocks {
   private static KEEP_BLOCK_AMOUNT = 8;
-  private blocks: Block[] = [];
+  private blocks: BlockExtended[] = [];
   private currentBlockHeight = 0;
   private lastDifficultyAdjustmentTime = 0;
-  private newBlockCallbacks: ((block: Block, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
+  private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
 
   constructor() { }
 
-  public getBlocks(): Block[] {
+  public getBlocks(): BlockExtended[] {
     return this.blocks;
   }
 
-  public setBlocks(blocks: Block[]) {
+  public setBlocks(blocks: BlockExtended[]) {
     this.blocks = blocks;
   }
 
-  public setNewBlockCallback(fn: (block: Block, txIds: string[], transactions: TransactionExtended[]) => void) {
+  public setNewBlockCallback(fn: (block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void) {
     this.newBlockCallbacks.push(fn);
   }
 
@@ -68,9 +68,8 @@ class Blocks {
 
       for (let i = 0; i < txIds.length; i++) {
         // When using bitcoind, just fetch the coinbase tx for now
-        if ((config.MEMPOOL.BACKEND === 'bitcoind' ||
-            config.MEMPOOL.BACKEND === 'bitcoind-electrs') && i === 0) {
-          const tx = await transactionUtils.getTransactionExtended(txIds[i], true);
+        if (config.MEMPOOL.BACKEND !== 'none' && i === 0) {
+          const tx = await transactionUtils.$getTransactionExtended(txIds[i]);
           if (tx) {
             transactions.push(tx);
           }
@@ -78,9 +77,9 @@ class Blocks {
         if (mempool[txIds[i]]) {
           transactions.push(mempool[txIds[i]]);
           found++;
-        } else if (config.MEMPOOL.BACKEND === 'electrs') {
+        } else if (config.MEMPOOL.BACKEND === 'esplora') {
           logger.debug(`Fetching block tx ${i} of ${txIds.length}`);
-          const tx = await transactionUtils.getTransactionExtended(txIds[i]);
+          const tx = await transactionUtils.$getTransactionExtended(txIds[i]);
           if (tx) {
             transactions.push(tx);
           }
@@ -89,23 +88,24 @@ class Blocks {
 
       logger.debug(`${found} of ${txIds.length} found in mempool. ${txIds.length - found} not found.`);
 
-      block.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
-      block.coinbaseTx = this.stripCoinbaseTransaction(transactions[0]);
+      const blockExtended: BlockExtended = Object.assign({}, block);
+      blockExtended.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
+      blockExtended.coinbaseTx = this.stripCoinbaseTransaction(transactions[0]);
       transactions.sort((a, b) => b.feePerVsize - a.feePerVsize);
-      block.medianFee = transactions.length > 1 ? Common.median(transactions.map((tx) => tx.feePerVsize)) : 0;
-      block.feeRange = transactions.length > 1 ? Common.getFeesInRange(transactions.slice(0, transactions.length - 1), 8) : [0, 0];
+      blockExtended.medianFee = transactions.length > 1 ? Common.median(transactions.map((tx) => tx.feePerVsize)) : 0;
+      blockExtended.feeRange = transactions.length > 1 ? Common.getFeesInRange(transactions.slice(0, transactions.length - 1), 8) : [0, 0];
 
       if (block.height % 2016 === 0) {
         this.lastDifficultyAdjustmentTime = block.timestamp;
       }
 
-      this.blocks.push(block);
+      this.blocks.push(blockExtended);
       if (this.blocks.length > Blocks.KEEP_BLOCK_AMOUNT) {
         this.blocks = this.blocks.slice(-Blocks.KEEP_BLOCK_AMOUNT);
       }
 
       if (this.newBlockCallbacks.length) {
-        this.newBlockCallbacks.forEach((cb) => cb(block, txIds, transactions));
+        this.newBlockCallbacks.forEach((cb) => cb(blockExtended, txIds, transactions));
       }
       diskCache.$saveCacheToDisk();
     }

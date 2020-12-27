@@ -2,7 +2,7 @@ import memPool from './mempool';
 import { DB } from '../database';
 import logger from '../logger';
 
-import { Statistic, TransactionExtended, OptimizedStatistic } from '../interfaces';
+import { Statistic, TransactionExtended, OptimizedStatistic } from '../mempool.interfaces';
 
 class Statistics {
   protected intervalTimer: NodeJS.Timer | undefined;
