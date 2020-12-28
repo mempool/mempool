@@ -1,6 +1,5 @@
 import config from '../../config';
 import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
-import * as ElectrumClient from '@codewarriorr/electrum-client-js';
 import { IBitcoinApi } from './bitcoin-api.interface';
 import { IEsploraApi } from './esplora-api.interface';
 import { IElectrumApi } from './electrum-api.interface';
@@ -9,22 +8,43 @@ import * as hexEnc from 'crypto-js/enc-hex';
 import BitcoinApi from './bitcoin-api';
 import bitcoinBaseApi from './bitcoin-base.api';
 import mempool from '../mempool';
+import logger from '../../logger';
+
+// @ts-ignore
+global.net = require('net');
+// @ts-ignore
+global.tls = require('tls');
+import * as ElectrumClient from 'electrum-client';
+
 class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
   private electrumClient: any;
 
   constructor() {
     super();
 
+    const electrumConfig = { client: 'mempool-v2', version: '1.4' };
+    const electrumPersistencePolicy = { retryPeriod: 10000, maxRetry: 1000, callback: null };
+
+    const electrumCallbacks = {
+      onConnect: (client, versionInfo) => { logger.info(`Connected to Electrum Server at ${config.ELECTRS.HOST}:${config.ELECTRS.PORT} (${JSON.stringify(versionInfo)})`); },
+      onClose: (client) => { logger.info(`Disconnected from Electrum Server at ${config.ELECTRS.HOST}:${config.ELECTRS.PORT}`); },
+      onError: (err) => { logger.err(`Electrum error: ${JSON.stringify(err)}`); },
+      onLog: (str) => { logger.debug(str); },
+    };
+
     this.electrumClient = new ElectrumClient(
-      config.ELECTRS.HOST,
       config.ELECTRS.PORT,
-      'ssl'
+      config.ELECTRS.HOST,
+      config.ELECTRS.PORT === 50001 ? 'tcp' : 'tls',
+      null,
+      electrumCallbacks
     );
 
-    this.electrumClient.connect(
-      'electrum-client-js',
-      '1.4'
-    );
+    this.electrumClient.initElectrum(electrumConfig, electrumPersistencePolicy)
+      .then(() => {})
+      .catch((err) => {
+        logger.err(`Error connecting to Electrum Server at ${config.ELECTRS.HOST}:${config.ELECTRS.PORT}`);
+      });
   }
 
   async $getRawTransaction(txId: string, skipConversion = false, addPrevout = false): Promise<IEsploraApi.Transaction> {
@@ -32,7 +52,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     if (txInMempool && addPrevout) {
       return this.$addPrevouts(txInMempool);
     }
-    const transaction: IBitcoinApi.Transaction = await this.electrumClient.blockchain_transaction_get(txId, true);
+    const transaction: IBitcoinApi.Transaction = await this.electrumClient.blockchainTransaction_get(txId, true);
     if (!transaction) {
       throw new Error('Unable to get transaction: ' + txId);
     }
@@ -107,11 +127,11 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
   }
 
   private $getScriptHashBalance(scriptHash: string): Promise<IElectrumApi.ScriptHashBalance> {
-    return this.electrumClient.blockchain_scripthash_getBalance(this.encodeScriptHash(scriptHash));
+    return this.electrumClient.blockchainScripthash_getBalance(this.encodeScriptHash(scriptHash));
   }
 
   private $getScriptHashHistory(scriptHash: string): Promise<IElectrumApi.ScriptHashHistory[]> {
-    return this.electrumClient.blockchain_scripthash_getHistory(this.encodeScriptHash(scriptHash));
+    return this.electrumClient.blockchainScripthash_getHistory(this.encodeScriptHash(scriptHash));
   }
 
   private encodeScriptHash(scriptPubKey: string): string {
