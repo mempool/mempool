@@ -56,4 +56,12 @@ export class Common {
       value: tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0),
     };
   }
+
+  static sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => {
+       setTimeout(() => {
+         resolve();
+       }, ms);
+    });
+  }
 }

@@ -6,6 +6,7 @@ import { IEsploraApi } from './esplora-api.interface';
 import blocks from '../blocks';
 import bitcoinBaseApi from './bitcoin-base.api';
 import mempool from '../mempool';
+import { TransactionExtended } from '../../mempool.interfaces';
 
 class BitcoinApi implements AbstractBitcoinApi {
   private rawMempoolCache: IBitcoinApi.RawMempool | null = null;
@@ -32,6 +33,11 @@ class BitcoinApi implements AbstractBitcoinApi {
   }
 
   $getRawTransaction(txId: string, skipConversion = false, addPrevout = false): Promise<IEsploraApi.Transaction> {
+    // If the transaction is in the mempool we also already fetched the fee, just prevouts are missing
+    const txInMempool = mempool.getMempool()[txId];
+    if (txInMempool && addPrevout) {
+      return this.$addPrevouts(txInMempool);
+    }
     return this.bitcoindClient.getRawTransaction(txId, true)
       .then((transaction: IBitcoinApi.Transaction) => {
         if (skipConversion) {
@@ -55,7 +61,12 @@ class BitcoinApi implements AbstractBitcoinApi {
     return this.bitcoindClient.getBlockHash(height);
   }
 
-  $getBlock(hash: string): Promise<IEsploraApi.Block> {
+  async $getBlock(hash: string): Promise<IEsploraApi.Block> {
+    const foundBlock = blocks.getBlocks().find((block) => block.id === hash);
+    if (foundBlock) {
+      return foundBlock;
+    }
+
     return this.bitcoindClient.getBlock(hash)
       .then((block: IBitcoinApi.Block) => this.convertBlock(block));
   }
@@ -163,6 +174,9 @@ class BitcoinApi implements AbstractBitcoinApi {
   }
 
   private async $appendMempoolFeeData(transaction: IEsploraApi.Transaction): Promise<IEsploraApi.Transaction> {
+    if (transaction.fee) {
+      return transaction;
+    }
     let mempoolEntry: IBitcoinApi.MempoolEntry;
     if (!mempool.isInSync() && !this.rawMempoolCache) {
       this.rawMempoolCache = await bitcoinBaseApi.$getRawMempoolVerbose();
@@ -173,6 +187,17 @@ class BitcoinApi implements AbstractBitcoinApi {
       mempoolEntry = await bitcoinBaseApi.$getMempoolEntry(transaction.txid);
     }
     transaction.fee = mempoolEntry.fees.base * 100000000;
+    return transaction;
+  }
+
+  protected async $addPrevouts(transaction: TransactionExtended): Promise<TransactionExtended> {
+    for (const vin of transaction.vin) {
+      if (vin.prevout) {
+        continue;
+      }
+      const innerTx = await this.$getRawTransaction(vin.txid, false);
+      vin.prevout = innerTx.vout[vin.vout];
+    }
     return transaction;
   }
 
