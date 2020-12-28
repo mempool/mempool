@@ -8,6 +8,7 @@ import * as sha256 from 'crypto-js/sha256';
 import * as hexEnc from 'crypto-js/enc-hex';
 import BitcoinApi from './bitcoin-api';
 import bitcoinBaseApi from './bitcoin-base.api';
+import mempool from '../mempool';
 class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
   private electrumClient: any;
 
@@ -27,6 +28,10 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
   }
 
   async $getRawTransaction(txId: string, skipConversion = false, addPrevout = false): Promise<IEsploraApi.Transaction> {
+    const txInMempool = mempool.getMempool()[txId];
+    if (txInMempool && addPrevout) {
+      return this.$addPrevouts(txInMempool);
+    }
     const transaction: IBitcoinApi.Transaction = await this.electrumClient.blockchain_transaction_get(txId, true);
     if (!transaction) {
       throw new Error('Unable to get transaction: ' + txId);
@@ -93,7 +98,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     const history = await this.$getScriptHashHistory(addressInfo.scriptPubKey);
     const transactions: IEsploraApi.Transaction[] = [];
     for (const h of history) {
-      const tx = await this.$getRawTransaction(h.tx_hash);
+      const tx = await this.$getRawTransaction(h.tx_hash, false, true);
       if (tx) {
         transactions.push(tx);
       }

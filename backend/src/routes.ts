@@ -528,13 +528,7 @@ class Routes {
 
   public async getTransaction(req: Request, res: Response) {
     try {
-      let transaction: TransactionExtended | null;
-      const txInMempool = mempool.getMempool()[req.params.txId];
-      if (txInMempool) {
-        transaction = txInMempool;
-      } else {
-        transaction = await transactionUtils.$getTransactionExtended(req.params.txId, false, true);
-      }
+      const transaction = await transactionUtils.$getTransactionExtended(req.params.txId, false, true);
 
       if (transaction) {
         res.json(transaction);
@@ -563,8 +557,9 @@ class Routes {
     try {
       const txIds = await bitcoinApi.$getTxIdsForBlock(req.params.hash);
       const transactions: TransactionExtended[] = [];
+      const startingIndex = Math.max(0, parseInt(req.params.index, 10));
 
-      for (let i = 0; i < Math.min(15, txIds.length); i++) {
+      for (let i = startingIndex; i < Math.min(startingIndex + 10, txIds.length); i++) {
         const transaction = await transactionUtils.$getTransactionExtended(txIds[i], false, true);
         if (transaction) {
           transactions.push(transaction);
@@ -577,7 +572,12 @@ class Routes {
   }
 
   public async getBlockHeight(req: Request, res: Response) {
-    res.status(404).send('Not implemented');
+    try {
+      const blockHash = await bitcoinApi.$getBlockHash(parseInt(req.params.height, 10));
+      res.send(blockHash);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
   }
 
   public async getAddress(req: Request, res: Response) {

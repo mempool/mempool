@@ -64,19 +64,28 @@ class Blocks {
       const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
 
       const mempool = memPool.getMempool();
-      let found = 0;
+      let transactionsFound = 0;
 
       for (let i = 0; i < txIds.length; i++) {
         // When using bitcoind, just fetch the coinbase tx for now
         if (config.MEMPOOL.BACKEND !== 'none' && i === 0) {
-          const tx = await transactionUtils.$getTransactionExtended(txIds[i]);
-          if (tx) {
-            transactions.push(tx);
+          let txFound = false;
+          let findCoinbaseTxTries = 0;
+          // It takes Electrum Server a few seconds to index the transaction after a block is found
+          while (findCoinbaseTxTries < 5 && !txFound) {
+            const tx = await transactionUtils.$getTransactionExtended(txIds[i]);
+            if (tx) {
+              txFound = true;
+              transactions.push(tx);
+            } else {
+              await Common.sleep(1000);
+              findCoinbaseTxTries++;
+            }
           }
         }
         if (mempool[txIds[i]]) {
           transactions.push(mempool[txIds[i]]);
-          found++;
+          transactionsFound++;
         } else if (config.MEMPOOL.BACKEND === 'esplora') {
           logger.debug(`Fetching block tx ${i} of ${txIds.length}`);
           const tx = await transactionUtils.$getTransactionExtended(txIds[i]);
@@ -86,11 +95,11 @@ class Blocks {
         }
       }
 
-      logger.debug(`${found} of ${txIds.length} found in mempool. ${txIds.length - found} not found.`);
+      logger.debug(`${transactionsFound} of ${txIds.length} found in mempool. ${txIds.length - transactionsFound} not found.`);
 
       const blockExtended: BlockExtended = Object.assign({}, block);
       blockExtended.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
-      blockExtended.coinbaseTx = this.stripCoinbaseTransaction(transactions[0]);
+      blockExtended.coinbaseTx = transactionUtils.stripCoinbaseTransaction(transactions[0]);
       transactions.sort((a, b) => b.feePerVsize - a.feePerVsize);
       blockExtended.medianFee = transactions.length > 1 ? Common.median(transactions.map((tx) => tx.feePerVsize)) : 0;
       blockExtended.feeRange = transactions.length > 1 ? Common.getFeesInRange(transactions.slice(0, transactions.length - 1), 8) : [0, 0];
@@ -117,20 +126,6 @@ class Blocks {
 
   public getCurrentBlockHeight(): number {
     return this.currentBlockHeight;
-  }
-
-  private stripCoinbaseTransaction(tx: TransactionExtended): TransactionMinerInfo {
-    return {
-      vin: [{
-        scriptsig: tx.vin[0].scriptsig || tx.vin[0]['coinbase']
-      }],
-      vout: tx.vout
-        .map((vout) => ({
-          scriptpubkey_address: vout.scriptpubkey_address,
-          value: vout.value
-        }))
-        .filter((vout) => vout.value)
-    };
   }
 }
 
