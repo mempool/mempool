@@ -554,12 +554,10 @@ class Routes {
   public async getBlocks(req: Request, res: Response) {
     try {
       const returnBlocks: IEsploraApi.Block[] = [];
-      const latestBlockHeight = blocks.getCurrentBlockHeight();
-      const fromHeight = parseInt(req.params.height, 10) || latestBlockHeight;
-      const localBlocks = blocks.getBlocks();
+      const fromHeight = parseInt(req.params.height, 10) || blocks.getCurrentBlockHeight();
 
-      // See if block hight exist in local cache to skip the hash lookup
-      const blockByHeight = localBlocks.find((b) => b.height === fromHeight);
+      // Check if block height exist in local cache to skip the hash lookup
+      const blockByHeight = blocks.getBlocks().find((b) => b.height === fromHeight);
       let startFromHash: string | null = null;
       if (blockByHeight) {
         startFromHash = blockByHeight.id;
@@ -569,7 +567,7 @@ class Routes {
 
       let nextHash = startFromHash;
       for (let i = 0; i < 10; i++) {
-        const localBlock = localBlocks.find((b) => b.id === nextHash);
+        const localBlock = blocks.getBlocks().find((b) => b.id === nextHash);
         if (localBlock) {
           returnBlocks.push(localBlock);
           nextHash = localBlock.previousblockhash;
