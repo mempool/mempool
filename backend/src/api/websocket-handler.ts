@@ -77,7 +77,7 @@ class WebsocketHandler {
           }
 
           if (parsedMessage.action === 'init') {
-            const _blocks = blocks.getBlocks();
+            const _blocks = blocks.getBlocks().slice(-8);
             if (!_blocks) {
               return;
             }
@@ -119,7 +119,7 @@ class WebsocketHandler {
 
   getInitData(_blocks?: BlockExtended[]) {
     if (!_blocks) {
-      _blocks = blocks.getBlocks();
+      _blocks = blocks.getBlocks().slice(-8);
     }
     return {
       'mempoolInfo': memPool.getMempoolInfo(),

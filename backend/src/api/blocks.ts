@@ -2,13 +2,13 @@ import config from '../config';
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
 import memPool from './mempool';
-import { BlockExtended, TransactionExtended, TransactionMinerInfo } from '../mempool.interfaces';
+import { BlockExtended, TransactionExtended } from '../mempool.interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
 import transactionUtils from './transaction-utils';
 
 class Blocks {
-  private static KEEP_BLOCK_AMOUNT = 8;
+  private static INITIAL_BLOCK_AMOUNT = 8;
   private blocks: BlockExtended[] = [];
   private currentBlockHeight = 0;
   private lastDifficultyAdjustmentTime = 0;
@@ -32,14 +32,14 @@ class Blocks {
     const blockHeightTip = await bitcoinApi.$getBlockHeightTip();
 
     if (this.blocks.length === 0) {
-      this.currentBlockHeight = blockHeightTip - Blocks.KEEP_BLOCK_AMOUNT;
+      this.currentBlockHeight = blockHeightTip - Blocks.INITIAL_BLOCK_AMOUNT;
     } else {
       this.currentBlockHeight = this.blocks[this.blocks.length - 1].height;
     }
 
-    if (blockHeightTip - this.currentBlockHeight > Blocks.KEEP_BLOCK_AMOUNT * 2) {
-      logger.info(`${blockHeightTip - this.currentBlockHeight} blocks since tip. Fast forwarding to the ${Blocks.KEEP_BLOCK_AMOUNT} recent blocks`);
-      this.currentBlockHeight = blockHeightTip - Blocks.KEEP_BLOCK_AMOUNT;
+    if (blockHeightTip - this.currentBlockHeight > Blocks.INITIAL_BLOCK_AMOUNT * 2) {
+      logger.info(`${blockHeightTip - this.currentBlockHeight} blocks since tip. Fast forwarding to the ${Blocks.INITIAL_BLOCK_AMOUNT} recent blocks`);
+      this.currentBlockHeight = blockHeightTip - Blocks.INITIAL_BLOCK_AMOUNT;
     }
 
     if (!this.lastDifficultyAdjustmentTime) {
@@ -109,8 +109,8 @@ class Blocks {
       }
 
       this.blocks.push(blockExtended);
-      if (this.blocks.length > Blocks.KEEP_BLOCK_AMOUNT) {
-        this.blocks = this.blocks.slice(-Blocks.KEEP_BLOCK_AMOUNT);
+      if (this.blocks.length > Blocks.INITIAL_BLOCK_AMOUNT * 4) {
+        this.blocks = this.blocks.slice(-Blocks.INITIAL_BLOCK_AMOUNT * 4);
       }
 
       if (this.newBlockCallbacks.length) {
