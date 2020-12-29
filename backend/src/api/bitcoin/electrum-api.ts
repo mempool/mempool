@@ -110,14 +110,25 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     if (!addressInfo || !addressInfo.isvalid) {
      return [];
     }
-    const history = await this.$getScriptHashHistory(addressInfo.scriptPubKey);
     const transactions: IEsploraApi.Transaction[] = [];
-    for (const h of history) {
-      const tx = await this.$getRawTransaction(h.tx_hash, false, true);
+    const history = await this.$getScriptHashHistory(addressInfo.scriptPubKey);
+    history.reverse();
+
+    let startingIndex = 0;
+    if (lastSeenTxId) {
+      const pos = history.findIndex((historicalTx) => historicalTx.tx_hash === lastSeenTxId);
+      if (pos) {
+        startingIndex = pos + 1;
+      }
+    }
+
+    for (let i = startingIndex; i < Math.min(startingIndex + 10, history.length); i++) {
+      const tx = await this.$getRawTransaction(history[i].tx_hash, false, true);
       if (tx) {
         transactions.push(tx);
       }
     }
+
     return transactions;
   }
 
