@@ -10,10 +10,12 @@ import websocketHandler from './api/websocket-handler';
 import bisqMarket from './api/bisq/markets-api';
 import { OptimizedStatistic, RequiredSpec, TransactionExtended } from './mempool.interfaces';
 import { MarketsApiError } from './api/bisq/interfaces';
+import { IEsploraApi } from './api/bitcoin/esplora-api.interface';
 import donations from './api/donations';
 import logger from './logger';
 import bitcoinApi from './api/bitcoin/bitcoin-api-factory';
 import transactionUtils from './api/transaction-utils';
+import blocks from './api/blocks';
 
 class Routes {
   private cache: { [date: string]: OptimizedStatistic[] } = {
@@ -550,7 +552,38 @@ class Routes {
   }
 
   public async getBlocks(req: Request, res: Response) {
-    res.status(404).send('Not implemented');
+    try {
+      const returnBlocks: IEsploraApi.Block[] = [];
+      const latestBlockHeight = blocks.getCurrentBlockHeight();
+      const fromHeight = parseInt(req.params.height, 10) || latestBlockHeight;
+      const localBlocks = blocks.getBlocks();
+
+      // See if block hight exist in local cache to skip the hash lookup
+      const blockByHeight = localBlocks.find((b) => b.height === fromHeight);
+      let startFromHash: string | null = null;
+      if (blockByHeight) {
+        startFromHash = blockByHeight.id;
+      } else {
+        startFromHash = await bitcoinApi.$getBlockHash(fromHeight);
+      }
+
+      let nextHash = startFromHash;
+      for (let i = 0; i < 10; i++) {
+        const localBlock = localBlocks.find((b) => b.id === nextHash);
+        if (localBlock) {
+          returnBlocks.push(localBlock);
+          nextHash = localBlock.previousblockhash;
+        } else {
+          const block = await bitcoinApi.$getBlock(nextHash);
+          returnBlocks.push(block);
+          nextHash = block.previousblockhash;
+        }
+      }
+
+      res.json(returnBlocks);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
   }
 
   public async getBlockTransactions(req: Request, res: Response) {
