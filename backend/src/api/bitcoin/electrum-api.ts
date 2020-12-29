@@ -3,18 +3,13 @@ import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
 import { IBitcoinApi } from './bitcoin-api.interface';
 import { IEsploraApi } from './esplora-api.interface';
 import { IElectrumApi } from './electrum-api.interface';
-import * as sha256 from 'crypto-js/sha256';
-import * as hexEnc from 'crypto-js/enc-hex';
 import BitcoinApi from './bitcoin-api';
 import bitcoinBaseApi from './bitcoin-base.api';
 import mempool from '../mempool';
 import logger from '../../logger';
-
-// @ts-ignore
-global.net = require('net');
-// @ts-ignore
-global.tls = require('tls');
-import * as ElectrumClient from 'electrum-client';
+import * as ElectrumClient from '@mempool/electrum-client';
+import * as sha256 from 'crypto-js/sha256';
+import * as hexEnc from 'crypto-js/enc-hex';
 
 class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
   private electrumClient: any;
