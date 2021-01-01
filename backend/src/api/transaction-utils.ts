@@ -31,6 +31,7 @@ class TransactionUtils {
       return this.extendTransaction(transaction);
     } catch (e) {
       logger.debug('getTransactionExtended error: ' + (e.message || e));
+      logger.debug(JSON.stringify(e));
       return null;
     }
   }

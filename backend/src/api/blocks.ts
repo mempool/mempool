@@ -68,7 +68,7 @@ class Blocks {
 
       for (let i = 0; i < txIds.length; i++) {
         // When using bitcoind, just fetch the coinbase tx for now
-        if (config.MEMPOOL.BACKEND !== 'none' && i === 0) {
+        if (config.MEMPOOL.BACKEND !== 'esplora' && i === 0) {
           let txFound = false;
           let findCoinbaseTxTries = 0;
           // It takes Electrum Server a few seconds to index the transaction after a block is found
