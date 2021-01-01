@@ -119,6 +119,7 @@ class Server {
       } else {
         logger.debug(loggerMsg);
       }
+      logger.debug(JSON.stringify(e));
       setTimeout(this.runMainUpdateLoop.bind(this), 1000 * this.retryOnElectrsErrorAfterSeconds);
       this.retryOnElectrsErrorAfterSeconds *= 2;
       this.retryOnElectrsErrorAfterSeconds = Math.min(this.retryOnElectrsErrorAfterSeconds, 60);

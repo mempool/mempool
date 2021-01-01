@@ -33,11 +33,17 @@ class BitcoinApi implements AbstractBitcoinApi {
   }
 
   $getRawTransaction(txId: string, skipConversion = false, addPrevout = false): Promise<IEsploraApi.Transaction> {
-    // If the transaction is in the mempool we also already fetched the fee, just prevouts are missing
+    // If the transaction is in the mempool we already converted and fetched the fee. Only prevouts are missing
     const txInMempool = mempool.getMempool()[txId];
     if (txInMempool && addPrevout) {
       return this.$addPrevouts(txInMempool);
     }
+
+    // Special case to fetch the Coinbase transaction
+    if (txId === '4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b') {
+      return this.$returnCoinbaseTransaction();
+    }
+
     return this.bitcoindClient.getRawTransaction(txId, true)
       .then((transaction: IBitcoinApi.Transaction) => {
         if (skipConversion) {
@@ -199,6 +205,15 @@ class BitcoinApi implements AbstractBitcoinApi {
       vin.prevout = innerTx.vout[vin.vout];
     }
     return transaction;
+  }
+
+  protected $returnCoinbaseTransaction(): Promise<IEsploraApi.Transaction> {
+    return this.bitcoindClient.getBlock('000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f', 2)
+      .then((block: IBitcoinApi.Block) => {
+        return this.$convertTransaction(Object.assign(block.tx[0], {
+          confirmations: blocks.getCurrentBlockHeight() + 1,
+          blocktime: 1231006505 }), false);
+      });
   }
 
   private async $calculateFeeFromInputs(transaction: IEsploraApi.Transaction, addPrevout: boolean): Promise<IEsploraApi.Transaction> {
