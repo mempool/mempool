@@ -107,7 +107,7 @@ class BitcoinApi implements AbstractBitcoinApi {
         value: vout.value * 100000000,
         scriptpubkey: vout.scriptPubKey.hex,
         scriptpubkey_address: vout.scriptPubKey && vout.scriptPubKey.addresses ? vout.scriptPubKey.addresses[0] : '',
-        scriptpubkey_asm: vout.scriptPubKey.asm,
+        scriptpubkey_asm: vout.scriptPubKey.asm ? this.convertScriptSigAsm(vout.scriptPubKey.asm) : '',
         scriptpubkey_type: this.translateScriptPubKeyType(vout.scriptPubKey.type),
       };
     });
@@ -117,7 +117,7 @@ class BitcoinApi implements AbstractBitcoinApi {
         is_coinbase: !!vin.coinbase,
         prevout: null,
         scriptsig: vin.scriptSig && vin.scriptSig.hex || vin.coinbase || '',
-        scriptsig_asm: vin.scriptSig && vin.scriptSig.asm || '',
+        scriptsig_asm: vin.scriptSig && this.convertScriptSigAsm(vin.scriptSig.asm) || '',
         sequence: vin.sequence,
         txid: vin.txid || '',
         vout: vin.vout || 0,
@@ -214,6 +214,20 @@ class BitcoinApi implements AbstractBitcoinApi {
           confirmations: blocks.getCurrentBlockHeight() + 1,
           blocktime: 1231006505 }), false);
       });
+  }
+
+  private convertScriptSigAsm(str: string): string {
+    const a = str.split(' ');
+    const b: string[] = [];
+    a.forEach((chunk) => {
+      if (chunk.substr(0, 3) === 'OP_') {
+        b.push(chunk);
+      } else {
+        chunk = chunk.replace('[ALL]', '01');
+        b.push('OP_PUSHBYTES_' + Math.round(chunk.length / 2) + ' ' + chunk);
+      }
+    });
+    return b.join(' ');
   }
 
   private async $calculateFeeFromInputs(transaction: IEsploraApi.Transaction, addPrevout: boolean): Promise<IEsploraApi.Transaction> {
