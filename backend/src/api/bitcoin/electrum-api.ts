@@ -21,16 +21,16 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     const electrumPersistencePolicy = { retryPeriod: 10000, maxRetry: 1000, callback: null };
 
     const electrumCallbacks = {
-      onConnect: (client, versionInfo) => { logger.info(`Connected to Electrum Server at ${config.ELECTRS.HOST}:${config.ELECTRS.PORT} (${JSON.stringify(versionInfo)})`); },
-      onClose: (client) => { logger.info(`Disconnected from Electrum Server at ${config.ELECTRS.HOST}:${config.ELECTRS.PORT}`); },
+      onConnect: (client, versionInfo) => { logger.info(`Connected to Electrum Server at ${config.ELECTRUM.HOST}:${config.ELECTRUM.PORT} (${JSON.stringify(versionInfo)})`); },
+      onClose: (client) => { logger.info(`Disconnected from Electrum Server at ${config.ELECTRUM.HOST}:${config.ELECTRUM.PORT}`); },
       onError: (err) => { logger.err(`Electrum error: ${JSON.stringify(err)}`); },
       onLog: (str) => { logger.debug(str); },
     };
 
     this.electrumClient = new ElectrumClient(
-      config.ELECTRS.PORT,
-      config.ELECTRS.HOST,
-      config.ELECTRS.PORT === 50001 ? 'tcp' : 'tls',
+      config.ELECTRUM.PORT,
+      config.ELECTRUM.HOST,
+      config.ELECTRUM.PROTOCOL,
       null,
       electrumCallbacks
     );
@@ -38,11 +38,14 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     this.electrumClient.initElectrum(electrumConfig, electrumPersistencePolicy)
       .then(() => {})
       .catch((err) => {
-        logger.err(`Error connecting to Electrum Server at ${config.ELECTRS.HOST}:${config.ELECTRS.PORT}`);
+        logger.err(`Error connecting to Electrum Server at ${config.ELECTRUM.HOST}:${config.ELECTRUM.PORT}`);
       });
   }
 
   async $getRawTransaction(txId: string, skipConversion = false, addPrevout = false): Promise<IEsploraApi.Transaction> {
+    if (!config.ELECTRUM.TX_LOOKUPS) {
+      return super.$getRawTransaction(txId, skipConversion, addPrevout);
+    }
     const txInMempool = mempool.getMempool()[txId];
     if (txInMempool && addPrevout) {
       return this.$addPrevouts(txInMempool);

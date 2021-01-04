@@ -12,8 +12,12 @@ interface IConfig {
   ELECTRS: {
     REST_API_URL: string;
     POLL_RATE_MS: number;
+  };
+  ELECTRUM: {
     HOST: string;
     PORT: number;
+    PROTOCOL: 'tls' | 'tcp';
+    TX_LOOKUPS: boolean;
   };
   BITCOIND: {
     HOST: string;
@@ -61,9 +65,13 @@ const defaults: IConfig = {
   },
   'ELECTRS': {
     'REST_API_URL': 'http://127.0.0.1:3000',
-    'POLL_RATE_MS': 2000,
+    'POLL_RATE_MS': 2000
+  },
+  'ELECTRUM': {
     'HOST': '127.0.0.1',
-    'PORT': 3306
+    'PORT': 3306,
+    'PROTOCOL': 'tls',
+    'TX_LOOKUPS': false
   },
   'BITCOIND': {
     'HOST': '127.0.0.1',
@@ -103,6 +111,7 @@ const defaults: IConfig = {
 class Config implements IConfig {
   MEMPOOL: IConfig['MEMPOOL'];
   ELECTRS: IConfig['ELECTRS'];
+  ELECTRUM: IConfig['ELECTRUM'];
   BITCOIND: IConfig['BITCOIND'];
   DATABASE: IConfig['DATABASE'];
   STATISTICS: IConfig['STATISTICS'];
@@ -114,6 +123,7 @@ class Config implements IConfig {
     const configs = this.merge(configFile, defaults);
     this.MEMPOOL = configs.MEMPOOL;
     this.ELECTRS = configs.ELECTRS;
+    this.ELECTRUM = configs.ELECTRUM;
     this.BITCOIND = configs.BITCOIND;
     this.DATABASE = configs.DATABASE;
     this.STATISTICS = configs.STATISTICS;
