@@ -538,7 +538,7 @@ class Routes {
         res.status(500).send('Error fetching transaction.');
       }
     } catch (e) {
-      res.status(500).send(e.message);
+      res.status(500).send(e.message || e);
     }
   }
 
@@ -547,7 +547,7 @@ class Routes {
       const result = await bitcoinApi.$getBlock(req.params.hash);
       res.json(result);
     } catch (e) {
-      res.status(500).send(e.message);
+      res.status(500).send(e.message || e);
     }
   }
 
@@ -580,7 +580,7 @@ class Routes {
 
       res.json(returnBlocks);
     } catch (e) {
-      res.status(500).send(e.message);
+      res.status(500).send(e.message || e);
     }
   }
 
@@ -598,7 +598,7 @@ class Routes {
       }
       res.json(transactions);
     } catch (e) {
-      res.status(500).send(e.message);
+      res.status(500).send(e.message || e);
     }
   }
 
@@ -607,7 +607,7 @@ class Routes {
       const blockHash = await bitcoinApi.$getBlockHash(parseInt(req.params.height, 10));
       res.send(blockHash);
     } catch (e) {
-      res.status(500).send(e.message);
+      res.status(500).send(e.message || e);
     }
   }
 
@@ -621,7 +621,10 @@ class Routes {
       const addressData = await bitcoinApi.$getAddress(req.params.address);
       res.json(addressData);
     } catch (e) {
-      res.status(500).send(e.message);
+      if (e.message && e.message.indexOf('exceeds') > 0) {
+        return res.status(413).send(e.message);
+      }
+      res.status(500).send(e.message || e);
     }
   }
 
@@ -635,7 +638,10 @@ class Routes {
       const transactions = await bitcoinApi.$getAddressTransactions(req.params.address, req.params.txId);
       res.json(transactions);
     } catch (e) {
-      res.status(500).send(e.message);
+      if (e.message && e.message.indexOf('exceeds') > 0) {
+        return res.status(413).send(e.message);
+      }
+      res.status(500).send(e.message || e);
     }
   }
 

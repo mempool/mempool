@@ -83,29 +83,35 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
       });
     }
 
-    const balance = await this.$getScriptHashBalance(addressInfo.scriptPubKey);
-    const history = await this.$getScriptHashHistory(addressInfo.scriptPubKey);
+    try {
+      const balance = await this.$getScriptHashBalance(addressInfo.scriptPubKey);
+      const history = await this.$getScriptHashHistory(addressInfo.scriptPubKey);
 
-    const unconfirmed = history.filter((h) => h.fee).length;
+      const unconfirmed = history.filter((h) => h.fee).length;
 
-    return {
-      'address': addressInfo.address,
-      'chain_stats': {
-        'funded_txo_count': 0,
-        'funded_txo_sum': balance.confirmed ? balance.confirmed : 0,
-        'spent_txo_count': 0,
-        'spent_txo_sum': balance.confirmed < 0 ? balance.confirmed : 0,
-        'tx_count': history.length - unconfirmed,
-      },
-      'mempool_stats': {
-        'funded_txo_count': 0,
-        'funded_txo_sum': balance.unconfirmed > 0 ? balance.unconfirmed : 0,
-        'spent_txo_count': 0,
-        'spent_txo_sum': balance.unconfirmed < 0 ? -balance.unconfirmed : 0,
-        'tx_count': unconfirmed,
+      return {
+        'address': addressInfo.address,
+        'chain_stats': {
+          'funded_txo_count': 0,
+          'funded_txo_sum': balance.confirmed ? balance.confirmed : 0,
+          'spent_txo_count': 0,
+          'spent_txo_sum': balance.confirmed < 0 ? balance.confirmed : 0,
+          'tx_count': history.length - unconfirmed,
+        },
+        'mempool_stats': {
+          'funded_txo_count': 0,
+          'funded_txo_sum': balance.unconfirmed > 0 ? balance.unconfirmed : 0,
+          'spent_txo_count': 0,
+          'spent_txo_sum': balance.unconfirmed < 0 ? -balance.unconfirmed : 0,
+          'tx_count': unconfirmed,
+        }
+      };
+    } catch (e) {
+      if (e === 'failed to get confirmed status') {
+        e = 'The number of transactions on this address exceeds the Electrum server limit';
       }
-    };
-
+      throw new Error(e);
+    }
   }
 
   async $getAddressTransactions(address: string, lastSeenTxId: string): Promise<IEsploraApi.Transaction[]> {
@@ -113,26 +119,34 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     if (!addressInfo || !addressInfo.isvalid) {
      return [];
     }
-    const transactions: IEsploraApi.Transaction[] = [];
-    const history = await this.$getScriptHashHistory(addressInfo.scriptPubKey);
-    history.reverse();
 
-    let startingIndex = 0;
-    if (lastSeenTxId) {
-      const pos = history.findIndex((historicalTx) => historicalTx.tx_hash === lastSeenTxId);
-      if (pos) {
-        startingIndex = pos + 1;
+    try {
+      const transactions: IEsploraApi.Transaction[] = [];
+      const history = await this.$getScriptHashHistory(addressInfo.scriptPubKey);
+      history.reverse();
+
+      let startingIndex = 0;
+      if (lastSeenTxId) {
+        const pos = history.findIndex((historicalTx) => historicalTx.tx_hash === lastSeenTxId);
+        if (pos) {
+          startingIndex = pos + 1;
+        }
       }
-    }
 
-    for (let i = startingIndex; i < Math.min(startingIndex + 10, history.length); i++) {
-      const tx = await this.$getRawTransaction(history[i].tx_hash, false, true);
-      if (tx) {
-        transactions.push(tx);
+      for (let i = startingIndex; i < Math.min(startingIndex + 10, history.length); i++) {
+        const tx = await this.$getRawTransaction(history[i].tx_hash, false, true);
+        if (tx) {
+          transactions.push(tx);
+        }
       }
-    }
 
-    return transactions;
+      return transactions;
+    } catch (e) {
+      if (e === 'failed to get confirmed status') {
+        e = 'The number of transactions on this address exceeds the Electrum server limit';
+      }
+      throw new Error(e);
+    }
   }
 
   private $getScriptHashBalance(scriptHash: string): Promise<IElectrumApi.ScriptHashBalance> {
