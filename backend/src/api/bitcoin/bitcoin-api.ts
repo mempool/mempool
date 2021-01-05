@@ -1,5 +1,6 @@
 import config from '../../config';
 import * as bitcoin from '@mempool/bitcoin';
+import * as bitcoinjs from 'bitcoinjs-lib';
 import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
 import { IBitcoinApi } from './bitcoin-api.interface';
 import { IEsploraApi } from './esplora-api.interface';
@@ -203,6 +204,7 @@ class BitcoinApi implements AbstractBitcoinApi {
       }
       const innerTx = await this.$getRawTransaction(vin.txid, false);
       vin.prevout = innerTx.vout[vin.vout];
+      this.addInnerScriptsToVin(vin);
     }
     return transaction;
   }
@@ -216,20 +218,6 @@ class BitcoinApi implements AbstractBitcoinApi {
       });
   }
 
-  private convertScriptSigAsm(str: string): string {
-    const a = str.split(' ');
-    const b: string[] = [];
-    a.forEach((chunk) => {
-      if (chunk.substr(0, 3) === 'OP_') {
-        b.push(chunk);
-      } else {
-        chunk = chunk.replace('[ALL]', '01');
-        b.push('OP_PUSHBYTES_' + Math.round(chunk.length / 2) + ' ' + chunk);
-      }
-    });
-    return b.join(' ');
-  }
-
   private async $calculateFeeFromInputs(transaction: IEsploraApi.Transaction, addPrevout: boolean): Promise<IEsploraApi.Transaction> {
     if (transaction.vin[0].is_coinbase) {
       transaction.fee = 0;
@@ -240,12 +228,49 @@ class BitcoinApi implements AbstractBitcoinApi {
       const innerTx = await this.$getRawTransaction(vin.txid, !addPrevout);
       if (addPrevout) {
         vin.prevout = innerTx.vout[vin.vout];
+        this.addInnerScriptsToVin(vin);
       }
       totalIn += innerTx.vout[vin.vout].value;
     }
-    const totalOut = transaction.vout.reduce((prev, output) => prev + output.value, 0);
+    const totalOut = transaction.vout.reduce((p, output) => p + output.value, 0);
     transaction.fee = parseFloat((totalIn - totalOut).toFixed(8));
     return transaction;
+  }
+
+  private convertScriptSigAsm(str: string): string {
+    const a = str.split(' ');
+    const b: string[] = [];
+    a.forEach((chunk) => {
+      if (chunk.substr(0, 3) === 'OP_') {
+        chunk = chunk.replace(/^OP_(\d+)/, 'OP_PUSHNUM_$1');
+        chunk = chunk.replace('OP_CHECKSEQUENCEVERIFY', 'OP_CSV');
+        b.push(chunk);
+      } else {
+        chunk = chunk.replace('[ALL]', '01');
+        if (chunk === '0') {
+          b.push('OP_0');
+        } else {
+          b.push('OP_PUSHBYTES_' + Math.round(chunk.length / 2) + ' ' + chunk);
+        }
+      }
+    });
+    return b.join(' ');
+  }
+
+  private addInnerScriptsToVin(vin: IEsploraApi.Vin): void {
+    if (!vin.prevout) {
+      return;
+    }
+
+    if (vin.prevout.scriptpubkey_type === 'p2sh') {
+      const redeemScript = vin.scriptsig_asm.split(' ').reverse()[0];
+      vin.inner_redeemscript_asm = this.convertScriptSigAsm(bitcoinjs.script.toASM(Buffer.from(redeemScript, 'hex')));
+    }
+
+    if (vin.prevout.scriptpubkey_type === 'v0_p2wsh' && vin.witness) {
+      const witnessScript = vin.witness[vin.witness.length - 1];
+      vin.inner_witnessscript_asm = this.convertScriptSigAsm(bitcoinjs.script.toASM(Buffer.from(witnessScript, 'hex')));
+    }
   }
 
 }
