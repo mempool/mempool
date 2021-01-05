@@ -1,12 +1,13 @@
 import logger from '../logger';
 import * as WebSocket from 'ws';
-import { BlockExtended, TransactionExtended, WebsocketResponse, MempoolBlock, OptimizedStatistic } from '../mempool.interfaces';
+import { BlockExtended, TransactionExtended, WebsocketResponse, MempoolBlock, OptimizedStatistic, ILoadingIndicators } from '../mempool.interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
 import backendInfo from './backend-info';
 import mempoolBlocks from './mempool-blocks';
 import fiatConversion from './fiat-conversion';
 import { Common } from './common';
+import loadingIndicators from './loading-indicators';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
@@ -117,6 +118,19 @@ class WebsocketHandler {
     });
   }
 
+  handleLoadingChanged(indicators: ILoadingIndicators) {
+    if (!this.wss) {
+      throw new Error('WebSocket.Server is not set');
+    }
+
+    this.wss.clients.forEach((client: WebSocket) => {
+      if (client.readyState !== WebSocket.OPEN) {
+        return;
+      }
+      client.send(JSON.stringify({ loadingIndicators: indicators }));
+    });
+  }
+
   getInitData(_blocks?: BlockExtended[]) {
     if (!_blocks) {
       _blocks = blocks.getBlocks().slice(-8);
@@ -131,6 +145,7 @@ class WebsocketHandler {
       'transactions': memPool.getLatestTransactions(),
       'git-commit': backendInfo.gitCommitHash,
       'hostname': backendInfo.hostname,
+      'loadingIndicators': loadingIndicators.getLoadingIndicators(),
       ...this.extraInitProperties
     };
   }

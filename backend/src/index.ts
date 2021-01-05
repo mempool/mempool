@@ -20,6 +20,7 @@ import bisqMarkets from './api/bisq/markets';
 import donations from './api/donations';
 import logger from './logger';
 import backendInfo from './api/backend-info';
+import loadingIndicators from './api/loading-indicators';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -135,6 +136,7 @@ class Server {
     blocks.setNewBlockCallback(websocketHandler.handleNewBlock.bind(websocketHandler));
     memPool.setMempoolChangedCallback(websocketHandler.handleMempoolChange.bind(websocketHandler));
     donations.setNotfyDonationStatusCallback(websocketHandler.handleNewDonation.bind(websocketHandler));
+    loadingIndicators.setProgressChangedCallback(websocketHandler.handleLoadingChanged.bind(websocketHandler));
   }
 
   setUpHttpApiRoutes() {

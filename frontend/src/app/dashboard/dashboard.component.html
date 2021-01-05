@@ -179,8 +179,8 @@
 <ng-template #txPerSecond let-mempoolInfoData>
   <h5 class="card-title" i18n="dashboard.incoming-transactions">Incoming transactions</h5>
   <ng-template [ngIf]="mempoolInfoData.value" [ngIfElse]="loading">
-    <span *ngIf="mempoolInfoData.value.vBytesPerSecond === 0; else inSync">
-      &nbsp;<span class="badge badge-pill badge-warning" i18n="dashboard.backend-is-synchronizing">Backend is synchronizing</span>
+    <span *ngIf="(mempoolLoadingStatus$ | async) !== 100; else inSync">
+      &nbsp;<span class="badge badge-pill badge-warning"><ng-container i18n="dashboard.backend-is-synchronizing">Backend is synchronizing</ng-container> ({{ mempoolLoadingStatus$ | async }}%)</span>
     </span>
     <ng-template #inSync>
       <div class="progress sub-text" style="max-width: 250px;">
