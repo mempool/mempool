@@ -50,6 +50,7 @@ export class DashboardComponent implements OnInit {
   mempoolBlocksData$: Observable<MempoolBlocksData>;
   mempoolInfoData$: Observable<MempoolInfoData>;
   difficultyEpoch$: Observable<EpochProgress>;
+  mempoolLoadingStatus$: Observable<number>;
   vBytesPerSecondLimit = 1667;
   blocks$: Observable<Block[]>;
   transactions$: Observable<TransactionStripped[]>;
@@ -77,6 +78,9 @@ export class DashboardComponent implements OnInit {
     this.websocketService.want(['blocks', 'stats', 'mempool-blocks', 'live-2h-chart']);
     this.network$ = merge(of(''), this.stateService.networkChanged$);
     this.collapseLevel = this.storageService.getValue('dashboard-collapsed') || 'one';
+    this.mempoolLoadingStatus$ = this.stateService.loadingIndicators$.pipe(
+      map((indicators) => indicators.mempool !== undefined ? indicators.mempool : 100)
+    );
 
     this.languageForm = this.formBuilder.group({
       language: ['']

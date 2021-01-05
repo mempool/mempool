@@ -136,3 +136,4 @@ interface RequiredParams {
   types: ('@string' | '@number' | '@boolean' | string)[];
 }
 
+export interface ILoadingIndicators { [name: string]: number; }

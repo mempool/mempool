@@ -6,6 +6,7 @@ import { Common } from './common';
 import transactionUtils from './transaction-utils';
 import { IBitcoinApi } from './bitcoin/bitcoin-api.interface';
 import bitcoinBaseApi from './bitcoin/bitcoin-base.api';
+import loadingIndicators from './loading-indicators';
 
 class Mempool {
   private inSync: boolean = false;
@@ -90,6 +91,10 @@ class Mempool {
     const diff = transactions.length - currentMempoolSize;
     const newTransactions: TransactionExtended[] = [];
 
+    if (!this.inSync) {
+      loadingIndicators.setProgress('mempool', Object.keys(this.mempoolCache).length / transactions.length * 100);
+    }
+
     for (const txid of transactions) {
       if (!this.mempoolCache[txid]) {
         const transaction = await transactionUtils.$getTransactionExtended(txid, true);
@@ -162,6 +167,7 @@ class Mempool {
     if (!this.inSync && transactions.length === Object.keys(newMempool).length) {
       this.inSync = true;
       logger.info('The mempool is now in sync!');
+      loadingIndicators.setProgress('mempool', 100);
     }
 
     if (this.mempoolChangedCallback && (hasChange || deletedTransactions.length)) {

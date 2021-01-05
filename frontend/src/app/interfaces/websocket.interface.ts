@@ -1,3 +1,4 @@
+import { ILoadingIndicators } from '../services/state.service';
 import { Block, Transaction } from './electrs.interface';
 
 export interface WebsocketResponse {
@@ -15,6 +16,7 @@ export interface WebsocketResponse {
   rbfTransaction?: Transaction;
   transactions?: TransactionStripped[];
   donationConfirmed?: boolean;
+  loadingIndicators?: ILoadingIndicators;
   'track-tx'?: string;
   'track-address'?: string;
   'track-asset'?: string;
