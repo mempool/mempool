@@ -25,15 +25,15 @@ class Statistics {
     setTimeout(() => {
       this.runStatistics();
       this.intervalTimer = setInterval(() => {
-        if (!memPool.isInSync()) {
-          return;
-        }
         this.runStatistics();
       }, 1 * 60 * 1000);
     }, difference);
   }
 
   private async runStatistics(): Promise<void> {
+    if (!memPool.isInSync()) {
+      return;
+    }
     const currentMempool = memPool.getMempool();
     const txPerSecond = memPool.getTxPerSecond();
     const vBytesPerSecond = memPool.getVBytesPerSecond();
