@@ -30,7 +30,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     this.electrumClient = new ElectrumClient(
       config.ELECTRUM.PORT,
       config.ELECTRUM.HOST,
-      config.ELECTRUM.PROTOCOL,
+      config.ELECTRUM.TLS_ENABLED ? 'tls' : 'tcp',
       null,
       electrumCallbacks
     );

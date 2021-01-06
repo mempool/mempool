@@ -7,16 +7,15 @@ interface IConfig {
     HTTP_PORT: number;
     SPAWN_CLUSTER_PROCS: number;
     API_URL_PREFIX: string;
-    WEBSOCKET_REFRESH_RATE_MS: number;
-  };
-  ELECTRS: {
-    REST_API_URL: string;
     POLL_RATE_MS: number;
+  };
+  ESPLORA: {
+    REST_API_URL: string;
   };
   ELECTRUM: {
     HOST: string;
     PORT: number;
-    PROTOCOL: 'tls' | 'tcp';
+    TLS_ENABLED: boolean;
     TX_LOOKUPS: boolean;
   };
   BITCOIND: {
@@ -61,16 +60,15 @@ const defaults: IConfig = {
     'HTTP_PORT': 8999,
     'SPAWN_CLUSTER_PROCS': 0,
     'API_URL_PREFIX': '/api/v1/',
-    'WEBSOCKET_REFRESH_RATE_MS': 2000
-  },
-  'ELECTRS': {
-    'REST_API_URL': 'http://127.0.0.1:3000',
     'POLL_RATE_MS': 2000
+  },
+  'ESPLORA': {
+    'REST_API_URL': 'http://127.0.0.1:3000',
   },
   'ELECTRUM': {
     'HOST': '127.0.0.1',
     'PORT': 3306,
-    'PROTOCOL': 'tls',
+    'TLS_ENABLED': true,
     'TX_LOOKUPS': false
   },
   'BITCOIND': {
@@ -110,7 +108,7 @@ const defaults: IConfig = {
 
 class Config implements IConfig {
   MEMPOOL: IConfig['MEMPOOL'];
-  ELECTRS: IConfig['ELECTRS'];
+  ESPLORA: IConfig['ESPLORA'];
   ELECTRUM: IConfig['ELECTRUM'];
   BITCOIND: IConfig['BITCOIND'];
   DATABASE: IConfig['DATABASE'];
@@ -122,7 +120,7 @@ class Config implements IConfig {
   constructor() {
     const configs = this.merge(configFile, defaults);
     this.MEMPOOL = configs.MEMPOOL;
-    this.ELECTRS = configs.ELECTRS;
+    this.ESPLORA = configs.ESPLORA;
     this.ELECTRUM = configs.ELECTRUM;
     this.BITCOIND = configs.BITCOIND;
     this.DATABASE = configs.DATABASE;
