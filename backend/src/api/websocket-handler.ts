@@ -1,6 +1,6 @@
 import logger from '../logger';
 import * as WebSocket from 'ws';
-import { BlockExtended, TransactionExtended, WebsocketResponse, MempoolBlock, OptimizedStatistic, ILoadingIndicators } from '../mempool.interfaces';
+import { BlockExtended, TransactionExtended, WebsocketResponse, MempoolBlock, OptimizedStatistic, ILoadingIndicators, IConversionRates } from '../mempool.interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
 import backendInfo from './backend-info';
@@ -128,6 +128,19 @@ class WebsocketHandler {
         return;
       }
       client.send(JSON.stringify({ loadingIndicators: indicators }));
+    });
+  }
+
+  handleNewConversionRates(conversionRates: IConversionRates) {
+    if (!this.wss) {
+      throw new Error('WebSocket.Server is not set');
+    }
+
+    this.wss.clients.forEach((client: WebSocket) => {
+      if (client.readyState !== WebSocket.OPEN) {
+        return;
+      }
+      client.send(JSON.stringify({ conversions: conversionRates }));
     });
   }
 

@@ -137,3 +137,4 @@ interface RequiredParams {
 }
 
 export interface ILoadingIndicators { [name: string]: number; }
+export interface IConversionRates { [currency: string]: number; }

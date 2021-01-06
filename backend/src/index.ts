@@ -136,6 +136,7 @@ class Server {
     blocks.setNewBlockCallback(websocketHandler.handleNewBlock.bind(websocketHandler));
     memPool.setMempoolChangedCallback(websocketHandler.handleMempoolChange.bind(websocketHandler));
     donations.setNotfyDonationStatusCallback(websocketHandler.handleNewDonation.bind(websocketHandler));
+    fiatConversion.setProgressChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));
     loadingIndicators.setProgressChangedCallback(websocketHandler.handleLoadingChanged.bind(websocketHandler));
   }
 
