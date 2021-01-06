@@ -26,7 +26,7 @@ class Server {
   private wss: WebSocket.Server | undefined;
   private server: https.Server | http.Server | undefined;
   private app: Express;
-  private retryOnElectrsErrorAfterSeconds = 5;
+  private currentBackendRetryInterval = 5;
 
   constructor() {
     this.app = express();
@@ -111,19 +111,19 @@ class Server {
       await memPool.$updateMemPoolInfo();
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
-      setTimeout(this.runMainUpdateLoop.bind(this), config.ELECTRS.POLL_RATE_MS);
-      this.retryOnElectrsErrorAfterSeconds = 5;
+      setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
+      this.currentBackendRetryInterval = 5;
     } catch (e) {
-      const loggerMsg = `runMainLoop error: ${(e.message || e)}. Retrying in ${this.retryOnElectrsErrorAfterSeconds} sec.`;
-      if (this.retryOnElectrsErrorAfterSeconds > 5) {
+      const loggerMsg = `runMainLoop error: ${(e.message || e)}. Retrying in ${this.currentBackendRetryInterval} sec.`;
+      if (this.currentBackendRetryInterval > 5) {
         logger.warn(loggerMsg);
       } else {
         logger.debug(loggerMsg);
       }
       logger.debug(JSON.stringify(e));
-      setTimeout(this.runMainUpdateLoop.bind(this), 1000 * this.retryOnElectrsErrorAfterSeconds);
-      this.retryOnElectrsErrorAfterSeconds *= 2;
-      this.retryOnElectrsErrorAfterSeconds = Math.min(this.retryOnElectrsErrorAfterSeconds, 60);
+      setTimeout(this.runMainUpdateLoop.bind(this), 1000 * this.currentBackendRetryInterval);
+      this.currentBackendRetryInterval *= 2;
+      this.currentBackendRetryInterval = Math.min(this.currentBackendRetryInterval, 60);
     }
   }
 

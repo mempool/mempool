@@ -9,6 +9,7 @@ import bitcoinBaseApi from './bitcoin/bitcoin-base.api';
 import loadingIndicators from './loading-indicators';
 
 class Mempool {
+  private static WEBSOCKET_REFRESH_RATE_MS = 10000;
   private inSync: boolean = false;
   private mempoolCache: { [txId: string]: TransactionExtended } = {};
   private mempoolInfo: IBitcoinApi.MempoolInfo = { loaded: false, size: 0, bytes: 0, usage: 0,
@@ -120,7 +121,7 @@ class Mempool {
         }
       }
 
-      if ((new Date().getTime()) - start > config.MEMPOOL.WEBSOCKET_REFRESH_RATE_MS * 10) {
+      if ((new Date().getTime()) - start > Mempool.WEBSOCKET_REFRESH_RATE_MS) {
         break;
       }
     }
