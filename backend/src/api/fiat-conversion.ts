@@ -1,12 +1,18 @@
 import logger from '../logger';
 import axios from 'axios';
+import { IConversionRates } from '../mempool.interfaces';
 
 class FiatConversion {
-  private conversionRates = {
+  private conversionRates: IConversionRates = {
     'USD': 0
   };
+  private ratesChangedCallback: ((rates: IConversionRates) => void) | undefined;
 
   constructor() { }
+
+  public setProgressChangedCallback(fn: (rates: IConversionRates) => void) {
+    this.ratesChangedCallback = fn;
+  }
 
   public startService() {
     logger.info('Starting currency rates service');
@@ -25,6 +31,9 @@ class FiatConversion {
       this.conversionRates = {
         'USD': usd.price,
       };
+      if (this.ratesChangedCallback) {
+        this.ratesChangedCallback(this.conversionRates);
+      }
     } catch (e) {
       logger.err('Error updating fiat conversion rates: ' + e);
     }
