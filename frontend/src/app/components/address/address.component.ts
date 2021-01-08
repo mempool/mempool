@@ -1,13 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
-import { switchMap, filter, catchError } from 'rxjs/operators';
+import { switchMap, filter, catchError, map, tap } from 'rxjs/operators';
 import { Address, Transaction } from '../../interfaces/electrs.interface';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { StateService } from 'src/app/services/state.service';
 import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
-import { of, merge, Subscription } from 'rxjs';
+import { of, merge, Subscription, Observable } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
 
 @Component({
@@ -25,6 +25,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   isLoadingTransactions = true;
   error: any;
   mainSubscription: Subscription;
+  addressLoadingStatus$: Observable<number>;
 
   totalConfirmedTxCount = 0;
   loadedConfirmedTxCount = 0;
@@ -48,7 +49,13 @@ export class AddressComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
-    this.websocketService.want(['blocks', 'mempool-blocks']);
+    this.websocketService.want(['blocks']);
+
+    this.addressLoadingStatus$ = this.route.paramMap
+      .pipe(
+        switchMap(() => this.stateService.loadingIndicators$),
+        map((indicators) => indicators['address-' + this.addressString] !== undefined ? indicators['address-' + this.addressString] : 0)
+      );
 
     this.mainSubscription = this.route.paramMap
       .pipe(

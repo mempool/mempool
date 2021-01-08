@@ -10,6 +10,7 @@ import logger from '../../logger';
 import * as ElectrumClient from '@mempool/electrum-client';
 import * as sha256 from 'crypto-js/sha256';
 import * as hexEnc from 'crypto-js/enc-hex';
+import loadingIndicators from '../loading-indicators';
 
 class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
   private electrumClient: any;
@@ -121,6 +122,8 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     }
 
     try {
+      loadingIndicators.setProgress('address-' + address, 0);
+
       const transactions: IEsploraApi.Transaction[] = [];
       const history = await this.$getScriptHashHistory(addressInfo.scriptPubKey);
       history.reverse();
@@ -132,16 +135,17 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
           startingIndex = pos + 1;
         }
       }
+      const endIndex = Math.min(startingIndex + 10, history.length);
 
-      for (let i = startingIndex; i < Math.min(startingIndex + 10, history.length); i++) {
+      for (let i = startingIndex; i < endIndex; i++) {
         const tx = await this.$getRawTransaction(history[i].tx_hash, false, true);
-        if (tx) {
-          transactions.push(tx);
-        }
+        transactions.push(tx);
+        loadingIndicators.setProgress('address-' + address, (i + 1) / endIndex * 100);
       }
 
       return transactions;
     } catch (e) {
+      loadingIndicators.setProgress('address-' + address, 100);
       if (e === 'failed to get confirmed status') {
         e = 'The number of transactions on this address exceeds the Electrum server limit';
       }

@@ -16,6 +16,7 @@ import logger from './logger';
 import bitcoinApi from './api/bitcoin/bitcoin-api-factory';
 import transactionUtils from './api/transaction-utils';
 import blocks from './api/blocks';
+import loadingIndicators from './api/loading-indicators';
 
 class Routes {
   private cache: { [date: string]: OptimizedStatistic[] } = {
@@ -553,6 +554,8 @@ class Routes {
 
   public async getBlocks(req: Request, res: Response) {
     try {
+      loadingIndicators.setProgress('blocks', 0);
+
       const returnBlocks: IEsploraApi.Block[] = [];
       const fromHeight = parseInt(req.params.height, 10) || blocks.getCurrentBlockHeight();
 
@@ -576,28 +579,35 @@ class Routes {
           returnBlocks.push(block);
           nextHash = block.previousblockhash;
         }
+        loadingIndicators.setProgress('blocks', i / 10 * 100);
       }
 
       res.json(returnBlocks);
     } catch (e) {
+      loadingIndicators.setProgress('blocks', 100);
       res.status(500).send(e.message || e);
     }
   }
 
   public async getBlockTransactions(req: Request, res: Response) {
     try {
+      loadingIndicators.setProgress('blocktxs-' + req.params.hash, 0);
+
       const txIds = await bitcoinApi.$getTxIdsForBlock(req.params.hash);
       const transactions: TransactionExtended[] = [];
       const startingIndex = Math.max(0, parseInt(req.params.index, 10));
 
-      for (let i = startingIndex; i < Math.min(startingIndex + 10, txIds.length); i++) {
+      const endIndex = Math.min(startingIndex + 10, txIds.length);
+      for (let i = startingIndex; i < endIndex; i++) {
         const transaction = await transactionUtils.$getTransactionExtended(txIds[i], false, true);
         if (transaction) {
           transactions.push(transaction);
+          loadingIndicators.setProgress('blocktxs-' + req.params.hash, (i + 1) / endIndex * 100);
         }
       }
       res.json(transactions);
     } catch (e) {
+      loadingIndicators.setProgress('blocktxs-' + req.params.hash, 100);
       res.status(500).send(e.message || e);
     }
   }

@@ -5,6 +5,7 @@ import { Block } from '../../interfaces/electrs.interface';
 import { Subscription, Observable, merge, of } from 'rxjs';
 import { SeoService } from '../../services/seo.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-latest-blocks',
@@ -19,6 +20,7 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
   blockSubscription: Subscription;
   isLoading = true;
   interval: any;
+  blocksLoadingStatus$: Observable<number>;
 
   latestBlockHeight: number;
 
@@ -38,6 +40,11 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
     this.websocketService.want(['blocks']);
 
     this.network$ = merge(of(''), this.stateService.networkChanged$);
+
+    this.blocksLoadingStatus$ = this.stateService.loadingIndicators$
+      .pipe(
+        map((indicators) => indicators['blocks'] !== undefined ? indicators['blocks'] : 0)
+      );
 
     this.blockSubscription = this.stateService.blocks$
       .subscribe(([block]) => {
