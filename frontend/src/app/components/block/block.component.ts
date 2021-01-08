@@ -2,9 +2,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
-import { switchMap, tap, debounceTime, catchError } from 'rxjs/operators';
+import { switchMap, tap, debounceTime, catchError, map } from 'rxjs/operators';
 import { Block, Transaction, Vout } from '../../interfaces/electrs.interface';
-import { of, Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
@@ -31,6 +31,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   coinbaseTx: Transaction;
   page = 1;
   itemsPerPage: number;
+  txsLoadingStatus$: Observable<number>;
 
   constructor(
     private route: ActivatedRoute,
@@ -47,6 +48,12 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.paginationMaxSize = window.matchMedia('(max-width: 700px)').matches ? 3 : 5;
     this.network = this.stateService.network;
     this.itemsPerPage = this.stateService.env.ELECTRS_ITEMS_PER_PAGE;
+
+    this.txsLoadingStatus$ = this.route.paramMap
+      .pipe(
+        switchMap(() => this.stateService.loadingIndicators$),
+        map((indicators) => indicators['blocktxs-' + this.blockHash] !== undefined ? indicators['blocktxs-' + this.blockHash] : 0)
+      );
 
     this.subscription = this.route.paramMap
     .pipe(
