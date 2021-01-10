@@ -656,15 +656,15 @@ class Routes {
   }
 
   public async getAdressTxChain(req: Request, res: Response) {
-    res.status(404).send('Not implemented');
+    res.status(501).send('Not implemented');
   }
 
   public async getAddressPrefix(req: Request, res: Response) {
-    res.json([]);
+    res.status(501).send('Not implemented');
   }
 
   public getTransactionOutspends(req: Request, res: Response) {
-    res.json([]);
+    res.status(501).send('Not implemented');
   }
 }
 
