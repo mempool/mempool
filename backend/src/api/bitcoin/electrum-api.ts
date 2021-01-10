@@ -126,7 +126,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
 
       const transactions: IEsploraApi.Transaction[] = [];
       const history = await this.$getScriptHashHistory(addressInfo.scriptPubKey);
-      history.reverse();
+      history.sort((a, b) => (b.height || 9999999) - (a.height || 9999999));
 
       let startingIndex = 0;
       if (lastSeenTxId) {
