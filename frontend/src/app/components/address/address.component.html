@@ -113,7 +113,7 @@
       <span i18n="address.error.loading-address-data">Error loading address data.</span>
       <br>
       <i>{{ error.error }}</i>
-      <ng-template [ngIf]="error.status === 413">
+      <ng-template [ngIf]="error.status === 413 || error.status === 405">
         <br><br>
         Consider view this address on the official Mempool website instead:
         <br>
