@@ -11,6 +11,7 @@ import * as ElectrumClient from '@mempool/electrum-client';
 import * as sha256 from 'crypto-js/sha256';
 import * as hexEnc from 'crypto-js/enc-hex';
 import loadingIndicators from '../loading-indicators';
+import memoryCache from '../memory-cache';
 
 class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
   private electrumClient: any;
@@ -158,7 +159,15 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
   }
 
   private $getScriptHashHistory(scriptHash: string): Promise<IElectrumApi.ScriptHashHistory[]> {
-    return this.electrumClient.blockchainScripthash_getHistory(this.encodeScriptHash(scriptHash));
+    const fromCache = memoryCache.get<IElectrumApi.ScriptHashHistory[]>('Scripthash_getHistory', scriptHash);
+    if (fromCache) {
+      return Promise.resolve(fromCache);
+    }
+    return this.electrumClient.blockchainScripthash_getHistory(this.encodeScriptHash(scriptHash))
+      .then((history) => {
+        memoryCache.set('Scripthash_getHistory', scriptHash, history, 2);
+        return history;
+      });
   }
 
   private encodeScriptHash(scriptPubKey: string): string {
