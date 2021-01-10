@@ -46,4 +46,12 @@
     </tbody>
   </table>
 
+  <ng-template [ngIf]="error">
+    <div class="text-center">
+      <span>Error loading blocks</span>
+      <br>
+      <i>{{ error.error }}</i>
+    </div>
+  </ng-template>
+
 </div>
