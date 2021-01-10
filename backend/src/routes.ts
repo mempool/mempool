@@ -660,7 +660,12 @@ class Routes {
   }
 
   public async getAddressPrefix(req: Request, res: Response) {
-    res.status(501).send('Not implemented');
+    try {
+      const blockHash = await bitcoinApi.$getAddressPrefix(req.params.prefix);
+      res.send(blockHash);
+    } catch (e) {
+      res.status(500).send(e.message || e);
+    }
   }
 
   public getTransactionOutspends(req: Request, res: Response) {
