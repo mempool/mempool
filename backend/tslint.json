@@ -12,7 +12,7 @@
       "severity": "warn"
     },
     "eofline": true,
-    "forin": true,
+    "forin": false,
     "import-blacklist": [
       true,
       "rxjs",

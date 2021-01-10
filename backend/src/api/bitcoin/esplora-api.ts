@@ -50,6 +50,9 @@ class ElectrsApi implements AbstractBitcoinApi {
       .then((response) => response.data);
   }
 
+  $getAddressPrefix(prefix: string): string[] {
+    throw new Error('Method not implemented.');
+  }
 }
 
 export default ElectrsApi;

@@ -10,4 +10,5 @@ export interface AbstractBitcoinApi {
   $getBlock(hash: string): Promise<IEsploraApi.Block>;
   $getAddress(address: string): Promise<IEsploraApi.Address>;
   $getAddressTransactions(address: string, lastSeenTxId: string): Promise<IEsploraApi.Transaction[]>;
+  $getAddressPrefix(prefix: string): string[];
 }

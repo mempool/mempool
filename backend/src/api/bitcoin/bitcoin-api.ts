@@ -90,6 +90,22 @@ class BitcoinApi implements AbstractBitcoinApi {
     return this.bitcoindClient.getRawMemPool();
   }
 
+  $getAddressPrefix(prefix: string): string[] {
+    const found: string[] = [];
+    const mp = mempool.getMempool();
+    for (const tx in mp) {
+      for (const vout of mp[tx].vout) {
+        if (vout.scriptpubkey_address.indexOf(prefix) === 0) {
+          found.push(vout.scriptpubkey_address);
+          if (found.length >= 10) {
+            return found;
+          }
+        }
+      }
+    }
+    return found;
+  }
+
   protected async $convertTransaction(transaction: IBitcoinApi.Transaction, addPrevout: boolean): Promise<IEsploraApi.Transaction> {
     let esploraTransaction: IEsploraApi.Transaction = {
       txid: transaction.txid,
