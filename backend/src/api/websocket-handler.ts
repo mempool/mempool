@@ -1,6 +1,7 @@
 import logger from '../logger';
 import * as WebSocket from 'ws';
-import { BlockExtended, TransactionExtended, WebsocketResponse, MempoolBlock, OptimizedStatistic, ILoadingIndicators, IConversionRates } from '../mempool.interfaces';
+import { BlockExtended, TransactionExtended, WebsocketResponse, MempoolBlock,
+  OptimizedStatistic, ILoadingIndicators, IConversionRates } from '../mempool.interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
 import backendInfo from './backend-info';
@@ -8,6 +9,8 @@ import mempoolBlocks from './mempool-blocks';
 import fiatConversion from './fiat-conversion';
 import { Common } from './common';
 import loadingIndicators from './loading-indicators';
+import config from '../config';
+import transactionUtils from './transaction-utils';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
@@ -195,7 +198,7 @@ class WebsocketHandler {
     const vBytesPerSecond = memPool.getVBytesPerSecond();
     const rbfTransactions = Common.findRbfTransactions(newTransactions, deletedTransactions);
 
-    this.wss.clients.forEach((client: WebSocket) => {
+    this.wss.clients.forEach(async (client: WebSocket) => {
       if (client.readyState !== WebSocket.OPEN) {
         return;
       }
@@ -215,7 +218,14 @@ class WebsocketHandler {
       if (client['track-mempool-tx']) {
         const tx = newTransactions.find((t) => t.txid === client['track-mempool-tx']);
         if (tx) {
-          response['tx'] = tx;
+          if (config.MEMPOOL.BACKEND !== 'esplora') {
+            const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, false, true);
+            if (fullTx) {
+              response['tx'] = fullTx;
+            }
+          } else {
+            response['tx'] = tx;
+          }
           client['track-mempool-tx'] = null;
         }
       }
@@ -223,17 +233,31 @@ class WebsocketHandler {
       if (client['track-address']) {
         const foundTransactions: TransactionExtended[] = [];
 
-        newTransactions.forEach((tx) => {
+        for (const tx of newTransactions) {
           const someVin = tx.vin.some((vin) => !!vin.prevout && vin.prevout.scriptpubkey_address === client['track-address']);
           if (someVin) {
-            foundTransactions.push(tx);
+            if (config.MEMPOOL.BACKEND !== 'esplora') {
+              const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, false, true);
+              if (fullTx) {
+                foundTransactions.push(fullTx);
+              }
+            } else {
+              foundTransactions.push(tx);
+            }
             return;
           }
           const someVout = tx.vout.some((vout) => vout.scriptpubkey_address === client['track-address']);
           if (someVout) {
-            foundTransactions.push(tx);
+            if (config.MEMPOOL.BACKEND !== 'esplora') {
+              const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, false, true);
+              if (fullTx) {
+                foundTransactions.push(fullTx);
+              }
+            } else {
+              foundTransactions.push(tx);
+            }
           }
-        });
+        }
 
         if (foundTransactions.length) {
           response['address-transactions'] = foundTransactions;
@@ -272,7 +296,15 @@ class WebsocketHandler {
       if (client['track-tx'] && rbfTransactions[client['track-tx']]) {
         for (const rbfTransaction in rbfTransactions) {
           if (client['track-tx'] === rbfTransaction) {
-            response['rbfTransaction'] = rbfTransactions[rbfTransaction];
+            const rbfTx = rbfTransactions[rbfTransaction];
+            if (config.MEMPOOL.BACKEND !== 'esplora') {
+              const fullTx = await transactionUtils.$getTransactionExtended(rbfTransaction, false, true);
+              if (fullTx) {
+                response['rbfTransaction'] = fullTx;
+              }
+            } else {
+              response['rbfTransaction'] = rbfTx;
+            }
             break;
           }
         }
