@@ -3,14 +3,26 @@ const configFile = require('../mempool-config.json');
 interface IConfig {
   MEMPOOL: {
     NETWORK: 'mainnet' | 'testnet' | 'liquid';
+    BACKEND: 'esplora' | 'electrum' | 'none';
     HTTP_PORT: number;
     SPAWN_CLUSTER_PROCS: number;
     API_URL_PREFIX: string;
-    WEBSOCKET_REFRESH_RATE_MS: number;
-  };
-  ELECTRS: {
-    REST_API_URL: string;
     POLL_RATE_MS: number;
+  };
+  ESPLORA: {
+    REST_API_URL: string;
+  };
+  ELECTRUM: {
+    HOST: string;
+    PORT: number;
+    TLS_ENABLED: boolean;
+    TX_LOOKUPS: boolean;
+  };
+  CORE_RPC: {
+    HOST: string;
+    PORT: number;
+    USERNAME: string;
+    PASSWORD: string;
   };
   DATABASE: {
     ENABLED: boolean;
@@ -44,14 +56,26 @@ interface IConfig {
 const defaults: IConfig = {
   'MEMPOOL': {
     'NETWORK': 'mainnet',
+    'BACKEND': 'none',
     'HTTP_PORT': 8999,
     'SPAWN_CLUSTER_PROCS': 0,
     'API_URL_PREFIX': '/api/v1/',
-    'WEBSOCKET_REFRESH_RATE_MS': 2000
-  },
-  'ELECTRS': {
-    'REST_API_URL': 'http://127.0.0.1:3000',
     'POLL_RATE_MS': 2000
+  },
+  'ESPLORA': {
+    'REST_API_URL': 'http://127.0.0.1:3000',
+  },
+  'ELECTRUM': {
+    'HOST': '127.0.0.1',
+    'PORT': 3306,
+    'TLS_ENABLED': true,
+    'TX_LOOKUPS': false
+  },
+  'CORE_RPC': {
+    'HOST': '127.0.0.1',
+    'PORT': 8332,
+    'USERNAME': 'mempool',
+    'PASSWORD': 'mempool'
   },
   'DATABASE': {
     'ENABLED': true,
@@ -84,7 +108,9 @@ const defaults: IConfig = {
 
 class Config implements IConfig {
   MEMPOOL: IConfig['MEMPOOL'];
-  ELECTRS: IConfig['ELECTRS'];
+  ESPLORA: IConfig['ESPLORA'];
+  ELECTRUM: IConfig['ELECTRUM'];
+  CORE_RPC: IConfig['CORE_RPC'];
   DATABASE: IConfig['DATABASE'];
   STATISTICS: IConfig['STATISTICS'];
   BISQ_BLOCKS: IConfig['BISQ_BLOCKS'];
@@ -94,7 +120,9 @@ class Config implements IConfig {
   constructor() {
     const configs = this.merge(configFile, defaults);
     this.MEMPOOL = configs.MEMPOOL;
-    this.ELECTRS = configs.ELECTRS;
+    this.ESPLORA = configs.ESPLORA;
+    this.ELECTRUM = configs.ELECTRUM;
+    this.CORE_RPC = configs.CORE_RPC;
     this.DATABASE = configs.DATABASE;
     this.STATISTICS = configs.STATISTICS;
     this.BISQ_BLOCKS = configs.BISQ_BLOCKS;

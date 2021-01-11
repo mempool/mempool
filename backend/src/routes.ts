@@ -8,10 +8,15 @@ import mempool from './api/mempool';
 import bisq from './api/bisq/bisq';
 import websocketHandler from './api/websocket-handler';
 import bisqMarket from './api/bisq/markets-api';
-import { OptimizedStatistic, RequiredSpec } from './interfaces';
+import { OptimizedStatistic, RequiredSpec, TransactionExtended } from './mempool.interfaces';
 import { MarketsApiError } from './api/bisq/interfaces';
+import { IEsploraApi } from './api/bitcoin/esplora-api.interface';
 import donations from './api/donations';
 import logger from './logger';
+import bitcoinApi from './api/bitcoin/bitcoin-api-factory';
+import transactionUtils from './api/transaction-utils';
+import blocks from './api/blocks';
+import loadingIndicators from './api/loading-indicators';
 
 class Routes {
   private cache: { [date: string]: OptimizedStatistic[] } = {
@@ -524,6 +529,148 @@ class Routes {
     };
   }
 
+  public async getTransaction(req: Request, res: Response) {
+    try {
+      const transaction = await transactionUtils.$getTransactionExtended(req.params.txId, false, true);
+
+      if (transaction) {
+        res.json(transaction);
+      } else {
+        res.status(500).send('Error fetching transaction.');
+      }
+    } catch (e) {
+      res.status(500).send(e.message || e);
+    }
+  }
+
+  public async getBlock(req: Request, res: Response) {
+    try {
+      const result = await bitcoinApi.$getBlock(req.params.hash);
+      res.json(result);
+    } catch (e) {
+      res.status(500).send(e.message || e);
+    }
+  }
+
+  public async getBlocks(req: Request, res: Response) {
+    try {
+      loadingIndicators.setProgress('blocks', 0);
+
+      const returnBlocks: IEsploraApi.Block[] = [];
+      const fromHeight = parseInt(req.params.height, 10) || blocks.getCurrentBlockHeight();
+
+      // Check if block height exist in local cache to skip the hash lookup
+      const blockByHeight = blocks.getBlocks().find((b) => b.height === fromHeight);
+      let startFromHash: string | null = null;
+      if (blockByHeight) {
+        startFromHash = blockByHeight.id;
+      } else {
+        startFromHash = await bitcoinApi.$getBlockHash(fromHeight);
+      }
+
+      let nextHash = startFromHash;
+      for (let i = 0; i < 10; i++) {
+        const localBlock = blocks.getBlocks().find((b) => b.id === nextHash);
+        if (localBlock) {
+          returnBlocks.push(localBlock);
+          nextHash = localBlock.previousblockhash;
+        } else {
+          const block = await bitcoinApi.$getBlock(nextHash);
+          returnBlocks.push(block);
+          nextHash = block.previousblockhash;
+        }
+        loadingIndicators.setProgress('blocks', i / 10 * 100);
+      }
+
+      res.json(returnBlocks);
+    } catch (e) {
+      loadingIndicators.setProgress('blocks', 100);
+      res.status(500).send(e.message || e);
+    }
+  }
+
+  public async getBlockTransactions(req: Request, res: Response) {
+    try {
+      loadingIndicators.setProgress('blocktxs-' + req.params.hash, 0);
+
+      const txIds = await bitcoinApi.$getTxIdsForBlock(req.params.hash);
+      const transactions: TransactionExtended[] = [];
+      const startingIndex = Math.max(0, parseInt(req.params.index, 10));
+
+      const endIndex = Math.min(startingIndex + 10, txIds.length);
+      for (let i = startingIndex; i < endIndex; i++) {
+        const transaction = await transactionUtils.$getTransactionExtended(txIds[i], false, true);
+        if (transaction) {
+          transactions.push(transaction);
+          loadingIndicators.setProgress('blocktxs-' + req.params.hash, (i + 1) / endIndex * 100);
+        }
+      }
+      res.json(transactions);
+    } catch (e) {
+      loadingIndicators.setProgress('blocktxs-' + req.params.hash, 100);
+      res.status(500).send(e.message || e);
+    }
+  }
+
+  public async getBlockHeight(req: Request, res: Response) {
+    try {
+      const blockHash = await bitcoinApi.$getBlockHash(parseInt(req.params.height, 10));
+      res.send(blockHash);
+    } catch (e) {
+      res.status(500).send(e.message || e);
+    }
+  }
+
+  public async getAddress(req: Request, res: Response) {
+    if (config.MEMPOOL.BACKEND === 'none') {
+      res.status(405).send('Address lookups cannot be used with bitcoind as backend.');
+      return;
+    }
+
+    try {
+      const addressData = await bitcoinApi.$getAddress(req.params.address);
+      res.json(addressData);
+    } catch (e) {
+      if (e.message && e.message.indexOf('exceeds') > 0) {
+        return res.status(413).send(e.message);
+      }
+      res.status(500).send(e.message || e);
+    }
+  }
+
+  public async getAddressTransactions(req: Request, res: Response) {
+    if (config.MEMPOOL.BACKEND === 'none') {
+      res.status(405).send('Address lookups cannot be used with bitcoind as backend.');
+      return;
+    }
+
+    try {
+      const transactions = await bitcoinApi.$getAddressTransactions(req.params.address, req.params.txId);
+      res.json(transactions);
+    } catch (e) {
+      if (e.message && e.message.indexOf('exceeds') > 0) {
+        return res.status(413).send(e.message);
+      }
+      res.status(500).send(e.message || e);
+    }
+  }
+
+  public async getAdressTxChain(req: Request, res: Response) {
+    res.status(501).send('Not implemented');
+  }
+
+  public async getAddressPrefix(req: Request, res: Response) {
+    try {
+      const blockHash = await bitcoinApi.$getAddressPrefix(req.params.prefix);
+      res.send(blockHash);
+    } catch (e) {
+      res.status(500).send(e.message || e);
+    }
+  }
+
+  public getTransactionOutspends(req: Request, res: Response) {
+    res.status(501).send('Not implemented');
+  }
 }
 
 export default new Routes();

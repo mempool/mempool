@@ -20,12 +20,13 @@ import bisqMarkets from './api/bisq/markets';
 import donations from './api/donations';
 import logger from './logger';
 import backendInfo from './api/backend-info';
+import loadingIndicators from './api/loading-indicators';
 
 class Server {
   private wss: WebSocket.Server | undefined;
   private server: https.Server | http.Server | undefined;
   private app: Express;
-  private retryOnElectrsErrorAfterSeconds = 5;
+  private currentBackendRetryInterval = 5;
 
   constructor() {
     this.app = express();
@@ -110,18 +111,19 @@ class Server {
       await memPool.$updateMemPoolInfo();
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
-      setTimeout(this.runMainUpdateLoop.bind(this), config.ELECTRS.POLL_RATE_MS);
-      this.retryOnElectrsErrorAfterSeconds = 5;
+      setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
+      this.currentBackendRetryInterval = 5;
     } catch (e) {
-      const loggerMsg = `runMainLoop error: ${(e.message || e)}. Retrying in ${this.retryOnElectrsErrorAfterSeconds} sec.`;
-      if (this.retryOnElectrsErrorAfterSeconds > 5) {
+      const loggerMsg = `runMainLoop error: ${(e.message || e)}. Retrying in ${this.currentBackendRetryInterval} sec.`;
+      if (this.currentBackendRetryInterval > 5) {
         logger.warn(loggerMsg);
       } else {
         logger.debug(loggerMsg);
       }
-      setTimeout(this.runMainUpdateLoop.bind(this), 1000 * this.retryOnElectrsErrorAfterSeconds);
-      this.retryOnElectrsErrorAfterSeconds *= 2;
-      this.retryOnElectrsErrorAfterSeconds = Math.min(this.retryOnElectrsErrorAfterSeconds, 60);
+      logger.debug(JSON.stringify(e));
+      setTimeout(this.runMainUpdateLoop.bind(this), 1000 * this.currentBackendRetryInterval);
+      this.currentBackendRetryInterval *= 2;
+      this.currentBackendRetryInterval = Math.min(this.currentBackendRetryInterval, 60);
     }
   }
 
@@ -134,6 +136,8 @@ class Server {
     blocks.setNewBlockCallback(websocketHandler.handleNewBlock.bind(websocketHandler));
     memPool.setMempoolChangedCallback(websocketHandler.handleMempoolChange.bind(websocketHandler));
     donations.setNotfyDonationStatusCallback(websocketHandler.handleNewDonation.bind(websocketHandler));
+    fiatConversion.setProgressChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));
+    loadingIndicators.setProgressChangedCallback(websocketHandler.handleLoadingChanged.bind(websocketHandler));
   }
 
   setUpHttpApiRoutes() {
@@ -207,6 +211,22 @@ class Server {
             res.status(500).end();
           }
         });
+    }
+
+    if (config.MEMPOOL.BACKEND !== 'esplora') {
+      this.app
+        .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId', routes.getTransaction)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/outspends', routes.getTransactionOutspends)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash', routes.getBlock)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/:height', routes.getBlocks)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'blocks', routes.getBlocks)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txs/:index', routes.getBlockTransactions)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'block-height/:height', routes.getBlockHeight)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address', routes.getAddress)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs', routes.getAddressTransactions)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs/chain/:txId', routes.getAddressTransactions)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'address-prefix/:prefix', routes.getAddressPrefix)
+      ;
     }
   }
 }

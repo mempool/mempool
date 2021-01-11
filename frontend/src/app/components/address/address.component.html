@@ -67,6 +67,14 @@
             </div>
           </div>
         </div>
+
+        <ng-container *ngIf="addressLoadingStatus$ | async as addressLoadingStatus">
+          <br>
+          <div  class="progress position-relative progress-dark">
+            <div class="progress-bar progress-darklight" role="progressbar" [ngStyle]="{'width': addressLoadingStatus + '%' }"></div>
+          </div>
+        </ng-container>
+
       </ng-template>
     </div>
 
@@ -105,6 +113,14 @@
       <span i18n="address.error.loading-address-data">Error loading address data.</span>
       <br>
       <i>{{ error.error }}</i>
+      <ng-template [ngIf]="error.status === 413 || error.status === 405">
+        <br><br>
+        Consider view this address on the official Mempool website instead:
+        <br>
+        <a href="https://mempool.space/address/{{ addressString }}" target="_blank">https://mempool.space/address/{{ addressString }}</a>
+        <br>
+        <a href="http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/address/{{ addressString }}" target="_blank">http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/address/{{ addressString }}</a>
+      </ng-template>
     </div>
   </ng-template>
 

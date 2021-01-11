@@ -270,6 +270,10 @@ export class WebsocketService {
       this.stateService.live2Chart$.next(response['live-2h-chart']);
     }
 
+    if (response.loadingIndicators) {
+      this.stateService.loadingIndicators$.next(response.loadingIndicators);
+    }
+
     if (response.mempoolInfo) {
       this.stateService.mempoolInfo$.next(response.mempoolInfo);
     }

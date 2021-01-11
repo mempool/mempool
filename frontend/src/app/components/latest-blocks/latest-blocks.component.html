@@ -33,8 +33,25 @@
           <td class="d-none d-lg-block"><span class="skeleton-loader"></span></td>
           <td><span class="skeleton-loader"></span></td>
         </tr>
-      </ng-template>
+      <ng-container *ngIf="(blocksLoadingStatus$ | async) as blocksLoadingStatus">
+      <tr>
+        <td colspan="5">
+          <div class="progress position-relative progress-dark">
+            <div class="progress-bar progress-darklight" role="progressbar" [ngStyle]="{'width': blocksLoadingStatus + '%' }"></div>
+          </div>
+        </td>
+      </tr>
+      </ng-container>
+    </ng-template>
     </tbody>
   </table>
+
+  <ng-template [ngIf]="error">
+    <div class="text-center">
+      <span>Error loading blocks</span>
+      <br>
+      <i>{{ error.error }}</i>
+    </div>
+  </ng-template>
 
 </div>

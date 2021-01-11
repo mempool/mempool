@@ -1,16 +1,20 @@
 {
   "MEMPOOL": {
     "NETWORK": "liquid",
+    "BACKEND": "esplora",
     "HTTP_PORT": 8998,
     "MINED_BLOCKS_CACHE": 144,
     "SPAWN_CLUSTER_PROCS": 0,
     "API_URL_PREFIX": "/api/v1/",
     "WEBSOCKET_REFRESH_RATE_MS": 2000
   },
-  "ELECTRS": {
-    "ENABLED": true,
-    "REST_API_URL": "http://[::1]:3001",
-    "POLL_RATE_MS": 2000
+  "CORE_RPC": {
+    "PORT": 7041,
+    "USERNAME": "foo",
+    "PASSWORD": "bar"
+  },
+  "ESPLORA": {
+    "REST_API_URL": "http://[::1]:3001"
   },
   "DATABASE": {
     "ENABLED": true,

@@ -1,11 +1,4 @@
-export interface MempoolInfo {
-  size: number;
-  bytes: number;
-  usage?: number;
-  maxmempool?: number;
-  mempoolminfee?: number;
-  minrelaytxfee?: number;
-}
+import { IEsploraApi } from './api/bitcoin/esplora-api.interface';
 
 export interface MempoolBlock {
   blockSize: number;
@@ -20,23 +13,6 @@ export interface MempoolBlockWithTransactions extends MempoolBlock {
   transactionIds: string[];
 }
 
-export interface Transaction {
-  txid: string;
-  version: number;
-  locktime: number;
-  fee: number;
-  size: number;
-  weight: number;
-  vin: Vin[];
-  vout: Vout[];
-  status: Status;
-}
-
-export interface TransactionMinerInfo {
-  vin: VinStrippedToScriptsig[];
-  vout: VoutStrippedToScriptPubkey[];
-}
-
 interface VinStrippedToScriptsig {
   scriptsig: string;
 }
@@ -46,10 +22,10 @@ interface VoutStrippedToScriptPubkey {
   value: number;
 }
 
-export interface TransactionExtended extends Transaction {
+export interface TransactionExtended extends IEsploraApi.Transaction {
   vsize: number;
   feePerVsize: number;
-  firstSeen: number;
+  firstSeen?: number;
 }
 
 export interface TransactionStripped {
@@ -58,96 +34,17 @@ export interface TransactionStripped {
   weight: number;
   value: number;
 }
-
-export interface Vin {
-  txid: string;
-  vout: number;
-  is_coinbase: boolean;
-  scriptsig: string;
-  scriptsig_asm: string;
-  inner_redeemscript_asm?: string;
-  inner_witnessscript_asm?: string;
-  sequence: any;
-  witness?: string[];
-  prevout: Vout;
-  // Elements
-  is_pegin?: boolean;
-  issuance?: Issuance;
-}
-
-interface Issuance {
-  asset_id: string;
-  is_reissuance: string;
-  asset_blinding_nonce: string;
-  asset_entropy: string;
-  contract_hash: string;
-  assetamount?: number;
-  assetamountcommitment?: string;
-  tokenamount?: number;
-  tokenamountcommitment?: string;
-}
-
-export interface Vout {
-  scriptpubkey: string;
-  scriptpubkey_asm: string;
-  scriptpubkey_type: string;
-  scriptpubkey_address: string;
-  value: number;
-  // Elements
-  valuecommitment?: number;
-  asset?: string;
-  pegout?: Pegout;
-}
-
-interface Pegout {
-  genesis_hash: string;
-  scriptpubkey: string;
-  scriptpubkey_asm: string;
-  scriptpubkey_address: string;
-}
-
-export interface Status {
-  confirmed: boolean;
-  block_height?: number;
-  block_hash?: string;
-  block_time?: number;
-}
-
-export interface Block {
-  id: string;
-  height: number;
-  version: number;
-  timestamp: number;
-  bits: number;
-  nounce: number;
-  difficulty: number;
-  merkle_root: string;
-  tx_count: number;
-  size: number;
-  weight: number;
-  previousblockhash: string;
-
-  // Custom properties
+export interface BlockExtended extends IEsploraApi.Block {
   medianFee?: number;
   feeRange?: number[];
   reward?: number;
   coinbaseTx?: TransactionMinerInfo;
-  matchRate: number;
-  stage: number;
+  matchRate?: number;
 }
 
-export interface Address {
-  address: string;
-  chain_stats: ChainStats;
-  mempool_stats: MempoolStats;
-}
-
-export interface ChainStats {
-  funded_txo_count: number;
-  funded_txo_sum: number;
-  spent_txo_count: number;
-  spent_txo_sum: number;
-  tx_count: number;
+export interface TransactionMinerInfo {
+  vin: VinStrippedToScriptsig[];
+  vout: VoutStrippedToScriptPubkey[];
 }
 
 export interface MempoolStats {
@@ -219,12 +116,6 @@ export interface OptimizedStatistic {
   vsizes: number[];
 }
 
-export interface Outspend {
-  spent: boolean;
-  txid: string;
-  vin: number;
-  status: Status;
-}
 export interface WebsocketResponse {
   action: string;
   data: string[];
@@ -244,3 +135,6 @@ interface RequiredParams {
   required: boolean;
   types: ('@string' | '@number' | '@boolean' | string)[];
 }
+
+export interface ILoadingIndicators { [name: string]: number; }
+export interface IConversionRates { [currency: string]: number; }
