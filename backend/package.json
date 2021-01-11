@@ -27,7 +27,6 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@codewarriorr/electrum-client-js": "^0.1.1",
     "@mempool/bitcoin": "^3.0.2",
     "@mempool/electrum-client": "^1.1.7",
     "axios": "^0.21.0",
