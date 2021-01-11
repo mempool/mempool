@@ -47,7 +47,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.websocketService.want(['blocks', 'mempool-blocks']);
     this.paginationMaxSize = window.matchMedia('(max-width: 700px)').matches ? 3 : 5;
     this.network = this.stateService.network;
-    this.itemsPerPage = this.stateService.env.ELECTRS_ITEMS_PER_PAGE;
+    this.itemsPerPage = this.stateService.env.ITEMS_PER_PAGE;
 
     this.txsLoadingStatus$ = this.route.paramMap
       .pipe(
