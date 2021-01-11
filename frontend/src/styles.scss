@@ -421,6 +421,14 @@ h1, h2, h3 {
   background: repeating-linear-gradient(to right, #2d3348, #2d3348 0%, #116761 0%, #183550 100%);
 }
 
+.progress-dark {
+  background-color: #181b2d;
+}
+
+.progress-darklight {
+  background-color: #24273e;
+}
+
 .mt-2-5, .my-2-5 {
   margin-top: 0.75rem !important;
 }
