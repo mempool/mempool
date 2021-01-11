@@ -13,6 +13,8 @@ interface MarkBlockState {
   txFeePerVSize?: number;
 }
 
+export interface ILoadingIndicators { [name: string]: number; }
+
 export interface Env {
   TESTNET_ENABLED: boolean;
   LIQUID_ENABLED: boolean;
@@ -63,6 +65,7 @@ export class StateService {
   lastDifficultyAdjustment$ = new ReplaySubject<number>(1);
   gitCommit$ = new ReplaySubject<string>(1);
   donationConfirmed$ = new Subject();
+  loadingIndicators$ = new ReplaySubject<ILoadingIndicators>(1);
 
   live2Chart$ = new Subject<OptimizedMempoolStats>();
 

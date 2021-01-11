@@ -1,4 +1,4 @@
-import { Transaction, TransactionExtended, TransactionStripped } from '../interfaces';
+import { TransactionExtended, TransactionStripped } from '../mempool.interfaces';
 
 export class Common {
   static median(numbers: number[]) {
@@ -53,7 +53,15 @@ export class Common {
       txid: tx.txid,
       fee: tx.fee,
       weight: tx.weight,
-      value: tx.vin.reduce((acc, vin) => acc + (vin.prevout ? vin.prevout.value : 0), 0),
+      value: tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0),
     };
+  }
+
+  static sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => {
+       setTimeout(() => {
+         resolve();
+       }, ms);
+    });
   }
 }

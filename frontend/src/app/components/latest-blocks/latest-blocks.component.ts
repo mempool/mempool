@@ -5,6 +5,7 @@ import { Block } from '../../interfaces/electrs.interface';
 import { Subscription, Observable, merge, of } from 'rxjs';
 import { SeoService } from '../../services/seo.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-latest-blocks',
@@ -14,11 +15,12 @@ import { WebsocketService } from 'src/app/services/websocket.service';
 })
 export class LatestBlocksComponent implements OnInit, OnDestroy {
   network$: Observable<string>;
-
+  error: any;
   blocks: any[] = [];
   blockSubscription: Subscription;
   isLoading = true;
   interval: any;
+  blocksLoadingStatus$: Observable<number>;
 
   latestBlockHeight: number;
 
@@ -38,6 +40,11 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
     this.websocketService.want(['blocks']);
 
     this.network$ = merge(of(''), this.stateService.networkChanged$);
+
+    this.blocksLoadingStatus$ = this.stateService.loadingIndicators$
+      .pipe(
+        map((indicators) => indicators['blocks'] !== undefined ? indicators['blocks'] : 0)
+      );
 
     this.blockSubscription = this.stateService.blocks$
       .subscribe(([block]) => {
@@ -79,6 +86,7 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
       .subscribe((blocks) => {
         this.blocks = blocks;
         this.isLoading = false;
+        this.error = undefined;
 
         this.latestBlockHeight = blocks[0].height;
 
@@ -87,6 +95,12 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
         if (chunks > 0) {
           this.loadMore(chunks);
         }
+        this.cd.markForCheck();
+      },
+      (error) => {
+        console.log(error);
+        this.error = error;
+        this.isLoading = false;
         this.cd.markForCheck();
       });
   }
@@ -100,11 +114,18 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
       .subscribe((blocks) => {
         this.blocks = this.blocks.concat(blocks);
         this.isLoading = false;
+        this.error = undefined;
 
         const chunksLeft = chunks - 1;
         if (chunksLeft > 0) {
           this.loadMore(chunksLeft);
         }
+        this.cd.markForCheck();
+      },
+      (error) => {
+        console.log(error);
+        this.error = error;
+        this.isLoading = false;
         this.cd.markForCheck();
       });
   }

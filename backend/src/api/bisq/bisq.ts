@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import axios from 'axios';
 import { BisqBlocks, BisqBlock, BisqTransaction, BisqStats, BisqTrade } from './interfaces';
 import { Common } from '../common';
-import { Block } from '../../interfaces';
+import { BlockExtended } from '../../mempool.interfaces';
 import { StaticPool } from 'node-worker-threads-pool';
 import logger from '../../logger';
 
@@ -42,7 +42,7 @@ class Bisq {
     this.startSubDirectoryWatcher();
   }
 
-  handleNewBitcoinBlock(block: Block): void {
+  handleNewBitcoinBlock(block: BlockExtended): void {
     if (block.height - 2 > this.latestBlockHeight && this.latestBlockHeight !== 0) {
       logger.warn(`Bitcoin block height (#${block.height}) has diverged from the latest Bisq block height (#${this.latestBlockHeight}). Restarting watchers...`);
       this.startTopDirectoryWatcher();

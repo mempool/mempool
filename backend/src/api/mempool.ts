@@ -1,14 +1,20 @@
 import config from '../config';
-import bitcoinApi from './bitcoin/electrs-api';
-import { MempoolInfo, TransactionExtended, Transaction, VbytesPerSecond } from '../interfaces';
+import bitcoinApi from './bitcoin/bitcoin-api-factory';
+import { TransactionExtended, VbytesPerSecond } from '../mempool.interfaces';
 import logger from '../logger';
 import { Common } from './common';
+import transactionUtils from './transaction-utils';
+import { IBitcoinApi } from './bitcoin/bitcoin-api.interface';
+import bitcoinBaseApi from './bitcoin/bitcoin-base.api';
+import loadingIndicators from './loading-indicators';
 
 class Mempool {
+  private static WEBSOCKET_REFRESH_RATE_MS = 10000;
   private inSync: boolean = false;
   private mempoolCache: { [txId: string]: TransactionExtended } = {};
-  private mempoolInfo: MempoolInfo = { size: 0, bytes: 0 };
-  private mempoolChangedCallback: ((newMempool: { [txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
+  private mempoolInfo: IBitcoinApi.MempoolInfo = { loaded: false, size: 0, bytes: 0, usage: 0,
+                                                    maxmempool: 0, mempoolminfee: 0, minrelaytxfee: 0 };
+  private mempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
     deletedTransactions: TransactionExtended[]) => void) | undefined;
 
   private txPerSecondArray: number[] = [];
@@ -48,10 +54,10 @@ class Mempool {
   }
 
   public async $updateMemPoolInfo() {
-    this.mempoolInfo = await bitcoinApi.getMempoolInfo();
+    this.mempoolInfo = await bitcoinBaseApi.$getMempoolInfo();
   }
 
-  public getMempoolInfo(): MempoolInfo | undefined {
+  public getMempoolInfo(): IBitcoinApi.MempoolInfo | undefined {
     return this.mempoolInfo;
   }
 
@@ -66,27 +72,14 @@ class Mempool {
   public getFirstSeenForTransactions(txIds: string[]): number[] {
     const txTimes: number[] = [];
     txIds.forEach((txId: string) => {
-      if (this.mempoolCache[txId]) {
-        txTimes.push(this.mempoolCache[txId].firstSeen);
+      const tx = this.mempoolCache[txId];
+      if (tx && tx.firstSeen) {
+        txTimes.push(tx.firstSeen);
       } else {
         txTimes.push(0);
       }
     });
     return txTimes;
-  }
-
-  public async getTransactionExtended(txId: string): Promise<TransactionExtended | false> {
-    try {
-      const transaction: Transaction = await bitcoinApi.getRawTransaction(txId);
-      return Object.assign({
-        vsize: transaction.weight / 4,
-        feePerVsize: (transaction.fee || 0) / (transaction.weight / 4),
-        firstSeen: Math.round((new Date().getTime() / 1000)),
-      }, transaction);
-    } catch (e) {
-      logger.debug(txId + ' not found');
-      return false;
-    }
   }
 
   public async $updateMempool() {
@@ -95,13 +88,17 @@ class Mempool {
     let hasChange: boolean = false;
     const currentMempoolSize = Object.keys(this.mempoolCache).length;
     let txCount = 0;
-    const transactions = await bitcoinApi.getRawMempool();
+    const transactions = await bitcoinApi.$getRawMempool();
     const diff = transactions.length - currentMempoolSize;
     const newTransactions: TransactionExtended[] = [];
 
+    if (!this.inSync) {
+      loadingIndicators.setProgress('mempool', Object.keys(this.mempoolCache).length / transactions.length * 100);
+    }
+
     for (const txid of transactions) {
       if (!this.mempoolCache[txid]) {
-        const transaction = await this.getTransactionExtended(txid);
+        const transaction = await transactionUtils.$getTransactionExtended(txid, true);
         if (transaction) {
           this.mempoolCache[txid] = transaction;
           txCount++;
@@ -124,13 +121,14 @@ class Mempool {
         }
       }
 
-      if ((new Date().getTime()) - start > config.MEMPOOL.WEBSOCKET_REFRESH_RATE_MS * 10) {
+      if ((new Date().getTime()) - start > Mempool.WEBSOCKET_REFRESH_RATE_MS) {
         break;
       }
     }
 
     // Prevent mempool from clear on bitcoind restart by delaying the deletion
     if (this.mempoolProtection === 0
+      && config.MEMPOOL.BACKEND === 'esplora'
       && currentMempoolSize > 20000
       && transactions.length / currentMempoolSize <= 0.80
     ) {
@@ -170,6 +168,7 @@ class Mempool {
     if (!this.inSync && transactions.length === Object.keys(newMempool).length) {
       this.inSync = true;
       logger.info('The mempool is now in sync!');
+      loadingIndicators.setProgress('mempool', 100);
     }
 
     if (this.mempoolChangedCallback && (hasChange || deletedTransactions.length)) {
