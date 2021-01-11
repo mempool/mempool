@@ -1,37 +1,22 @@
-# mempool
-## a mempool visualizer and explorer for Bitcoin
+# The Mempool Open Source Project
+
+Mempool is the fully featured mempool visualizer and block explorer website and API service running on [mempool.space](https://mempool.space/). The instructions below are for most users at home running on low-powered Raspberry Pi devices, but if you want to run a production website on a powerful server, see the [production setup guide](https://github.com/mempool/mempool/tree/master/production)
 
 ![mempool](https://pbs.twimg.com/media/Ei8p_flUcAEjfXE?format=jpg&name=4096x4096)
 
-## Mempool V1 vs Mempool V2
-
-Mempool V1 features basic mempool visualization, fee estimation, and transaction tracking and can run directly off a Bitcoin Core full node on a Raspberry Pi.
-
-Mempool V2 is the fully featured explorer running on [mempool.space](https://mempool.space/), but it requires a fully synced electrs backend running on powerful server hardware. [Guide to install Mempool V2](https://github.com/mempool/mempool/tree/master/production)
-
-# Mempool V1 using Docker (easy)
-
-Install from Docker Hub, passing your Bitcoin Core RPC credentials as environment variables:
-
-```bash
-docker pull mempool/mempool:v1.0
-docker create -p 80:80 -e BITCOIN_NODE_HOST=192.168.1.102 -e BITCOIN_NODE_USER=foo -e BITCOIN_NODE_PASS=bar --name mempool mempool/mempool:v1.0
-docker start mempool
-docker logs mempool
-```
-
-You should see mempool starting up, which takes over an hour (needs 8 blocks). When it's ready, visit http://127.0.0.1/ to see your mempool.
-
-# Mempool V1 not using Docker (advanced)
+# Installation
 
 ## Dependencies
 
-* Bitcoin (full node required, no pruning, txindex=1)
+* Bitcoin Core (no pruning, txindex=1)
+* Electrum Server (romanz/electrs)
 * NodeJS (official stable LTS)
-* MySQL or MariaDB (default config)
-* Nginx (use supplied nginx.conf)
+* MariaDB (default config)
+* Nginx (use supplied nginx.conf and nginx-mempool.conf)
 
-## Checking out release tag
+## Mempool
+
+Clone the mempool repo, and checkout the latest release tag:
 ```bash
   git clone https://github.com/mempool/mempool
   cd mempool
@@ -41,52 +26,16 @@ You should see mempool starting up, which takes over an hour (needs 8 blocks). W
 
 ## Bitcoin Core (bitcoind)
 
-Enable RPC and txindex in bitcoin.conf
-
+Enable RPC and txindex in `bitcoin.conf`:
 ```bash
   rpcuser=mempool
   rpcpassword=71b61986da5b03a5694d7c7d5165ece5
   txindex=1
 ```
 
-## NodeJS
-
-Install dependencies and build code:
-
-```bash
-  # Install TypeScript Globally
-  npm install -g typescript
-
-  # Frontend
-  cd frontend
-  npm install
-  npm run build
-
-  # Backend
-  cd ../backend/
-  npm install
-  npm run build
-```
-
-## Mempool Configuration
-In the `backend` folder, make a copy of the sample config and modify it to fit your settings.
-
-```bash
-  cp mempool-config.sample.json mempool-config.json
-```
-
-Edit `mempool-config.json` to add your Bitcoin Core node RPC credentials:
-```bash
-  "BITCOIN_NODE_HOST": "192.168.1.5",
-  "BITCOIN_NODE_PORT": 8332,
-  "BITCOIN_NODE_USER": "mempool",
-  "BITCOIN_NODE_PASS": "71b61986da5b03a5694d7c7d5165ece5",
-```
-
 ## MySQL
 
-Install MariaDB:
-
+Install MariaDB from OS package manager:
 ```bash
   # Linux
   apt-get install mariadb-server mariadb-client
@@ -108,47 +57,69 @@ Create database and grant privileges:
   Query OK, 0 rows affected (0.00 sec)
 ```
 
-From the root folder, initialize database structure:
-
+From the mempool repo's top-level folder, import the database structure:
 ```bash
   mysql -u mempool -p mempool < mariadb-structure.sql
 ```
 
-## Running (Backend)
-
-Create an initial empty cache and start the app:
-
-```bash
-  touch cache.json
-  npm run start # node dist/index.js
-```
-
-After starting you should see:
+## Mempool Backend
+Install mempool dependencies from npm and build the backend:
 
 ```bash
-  Server started on port 8999 :)
-  New block found (#586498)! 0 of 1986 found in mempool. 1985 not found.
-  New block found (#586499)! 0 of 1094 found in mempool. 1093 not found.
-  New block found (#586500)! 0 of 2735 found in mempool. 2734 not found.
-  New block found (#586501)! 0 of 2675 found in mempool. 2674 not found.
-  New block found (#586502)! 0 of 975 found in mempool. 974 not found.
-  New block found (#586503)! 0 of 2130 found in mempool. 2129 not found.
-  New block found (#586504)! 0 of 2770 found in mempool. 2769 not found.
-  New block found (#586505)! 0 of 2759 found in mempool. 2758 not found.
-  Updating mempool
-  Calculated fee for transaction 1 / 3257
-  Calculated fee for transaction 2 / 3257
-  Calculated fee for transaction 3 / 3257
-  Calculated fee for transaction 4 / 3257
-  Calculated fee for transaction 5 / 3257
-  Calculated fee for transaction 6 / 3257
-  Calculated fee for transaction 7 / 3257
-  Calculated fee for transaction 8 / 3257
-  Calculated fee for transaction 9 / 3257
+  # backend
+  cd ../backend/
+  npm install
+  npm run build
 ```
-You need to wait for at least *8 blocks to be mined*, so please wait ~80 minutes.
-The backend also needs to index transactions, calculate fees, etc.
-When it's ready you will see output like this:
+
+In the `backend` folder, make a copy of the sample config and modify it to fit your settings.
+
+```bash
+  cp mempool-config.sample.json mempool-config.json
+```
+
+Edit `mempool-config.json` to add your Bitcoin Core node RPC credentials:
+```bash
+{
+  "MEMPOOL": {
+    "NETWORK": "mainnet",
+    "BACKEND": "electrum",
+    "HTTP_PORT": 8999,
+    "API_URL_PREFIX": "/api/v1/",
+    "POLL_RATE_MS": 2000
+  },
+  "CORE_RPC": {
+    "USERNAME": "mempool",
+    "PASSWORD": "71b61986da5b03a5694d7c7d5165ece5"
+  },
+  "ELECTRUM": {
+    "HOST": "127.0.0.1",
+    "PORT": 50002,
+    "TLS_ENABLED": true,
+    "TX_LOOKUPS": false
+  },
+  "DATABASE": {
+    "ENABLED": true,
+    "HOST": "localhost",
+    "PORT": 3306,
+    "USERNAME": "mempool",
+    "PASSWORD": "mempool",
+    "DATABASE": "mempool"
+  },
+  "STATISTICS": {
+    "ENABLED": true,
+    "TX_PER_SECOND_SAMPLE_PERIOD": 150
+  }
+}
+```
+
+Start the backend:
+
+```bash
+  npm run start
+```
+
+When it's running you should see output like this:
 
 ```bash
   Mempool updated in 0.189 seconds
@@ -171,43 +142,38 @@ When it's ready you will see output like this:
   Updating mempool
 ```
 
-## nginx + CertBot (LetsEncrypt)
-Setup nginx using the supplied nginx.conf
+## Mempool Frontend
+
+Install mempool dependencies from npm and build the frontend static HTML/CSS/JS:
+
+```bash
+  # frontend
+  cd frontend
+  npm install
+  npm run build
+```
+
+Install the output into nginx webroot folder:
+
+```bash
+  sudo rsync -av --delete dist/mempool/ /var/www/html/
+```
+
+## nginx + certbot
+
+Install the supplied nginx.conf and nginx-mempool.conf in /etc/nginx
 
 ```bash
   # install nginx and certbot
   apt-get install -y nginx python-certbot-nginx
 
+  # install the mempool configuration for nginx
+  cp nginx.conf nginx-mempool.conf /etc/nginx/nginx.conf
+
   # replace example.com with your domain name
   certbot --nginx -d example.com
 
-  # install the mempool configuration for nginx
-  cp nginx.conf /etc/nginx/nginx.conf
-
-  # edit the installed nginx.conf, and replace all
-  # instances of example.com with your domain name
 ```
-Make sure you can access https://<your-domain-name>/ in browser before proceeding
-
-
-## Running (Frontend)
-
-Build the frontend static HTML/CSS/JS, rsync the output into nginx folder:
-
-```bash
-  cd frontend/
-  npm run build
-  sudo rsync -av --delete dist/mempool/ /var/www/html/
-```
-
-### Optional frontend configuration
-In the `frontend` folder, make a copy of the sample config and modify it to fit your settings.
-
-```bash
-  cp mempool-frontend-config.sample.json mempool-frontend-config.json
-```
-
-## Try It Out
 
 If everything went okay you should see the beautiful mempool :grin:
 
