@@ -34,11 +34,11 @@ const defaultEnv: Env = {
   'BISQ_ENABLED': false,
   'BISQ_SEPARATE_BACKEND': false,
   'SPONSORS_ENABLED': false,
-  'ELECTRS_ITEMS_PER_PAGE': 25,
+  'ELECTRS_ITEMS_PER_PAGE': 10,
   'KEEP_BLOCKS_AMOUNT': 8,
   'NGINX_PROTOCOL': 'http',
   'NGINX_HOSTNAME': '127.0.0.1',
-  'NGINX_PORT': '81',
+  'NGINX_PORT': '80',
 };
 
 @Injectable({
