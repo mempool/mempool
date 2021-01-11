@@ -164,18 +164,18 @@ export class DashboardComponent implements OnInit {
         }),
         scan((acc, [block]) => {
           acc.unshift(block);
+          acc = acc.slice(0, 6);
           return acc;
         }, []),
-        map((blocks) => blocks.slice(0, 6)),
       );
 
     this.transactions$ = this.stateService.transactions$
       .pipe(
         scan((acc, tx) => {
           acc.unshift(tx);
+          acc = acc.slice(0, 6);
           return acc;
         }, []),
-        map((txs) => txs.slice(0, 6)),
       );
 
     this.mempoolStats$ = this.stateService.connectionState$.pipe(
@@ -187,7 +187,7 @@ export class DashboardComponent implements OnInit {
             .pipe(
               scan((acc, stats) => {
                 acc.unshift(stats);
-                acc = acc.slice(0, acc.length - 1);
+                acc = acc.slice(0, 120);
                 return acc;
               }, mempoolStats)
             ),
