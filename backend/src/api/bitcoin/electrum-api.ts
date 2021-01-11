@@ -4,7 +4,6 @@ import { IBitcoinApi } from './bitcoin-api.interface';
 import { IEsploraApi } from './esplora-api.interface';
 import { IElectrumApi } from './electrum-api.interface';
 import BitcoinApi from './bitcoin-api';
-import bitcoinBaseApi from './bitcoin-base.api';
 import mempool from '../mempool';
 import logger from '../../logger';
 import * as ElectrumClient from '@mempool/electrum-client';
@@ -64,7 +63,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
   }
 
   async $getAddress(address: string): Promise<IEsploraApi.Address> {
-    const addressInfo = await bitcoinBaseApi.$validateAddress(address);
+    const addressInfo = await this.$validateAddress(address);
     if (!addressInfo || !addressInfo.isvalid) {
       return ({
         'address': address,
@@ -117,7 +116,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
   }
 
   async $getAddressTransactions(address: string, lastSeenTxId: string): Promise<IEsploraApi.Transaction[]> {
-    const addressInfo = await bitcoinBaseApi.$validateAddress(address);
+    const addressInfo = await this.$validateAddress(address);
     if (!addressInfo || !addressInfo.isvalid) {
      return [];
     }
