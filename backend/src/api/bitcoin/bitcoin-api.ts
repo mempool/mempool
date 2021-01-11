@@ -234,6 +234,10 @@ class BitcoinApi implements AbstractBitcoinApi {
       });
   }
 
+  protected $validateAddress(address: string): Promise<IBitcoinApi.AddressInformation> {
+    return this.bitcoindClient.validateAddress(address);
+  }
+
   private async $calculateFeeFromInputs(transaction: IEsploraApi.Transaction, addPrevout: boolean): Promise<IEsploraApi.Transaction> {
     if (transaction.vin[0].is_coinbase) {
       transaction.fee = 0;

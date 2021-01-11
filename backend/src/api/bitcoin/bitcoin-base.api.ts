@@ -31,10 +31,6 @@ class BitcoinBaseApi {
     return this.bitcoindClient.getRawMemPool(true);
   }
 
-  $validateAddress(address: string): Promise<IBitcoinApi.AddressInformation> {
-    return this.bitcoindClient.validateAddress(address);
-  }
-
 }
 
 export default new BitcoinBaseApi();
