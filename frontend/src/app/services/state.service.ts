@@ -21,7 +21,7 @@ export interface Env {
   BISQ_ENABLED: boolean;
   BISQ_SEPARATE_BACKEND: boolean;
   SPONSORS_ENABLED: boolean;
-  ELECTRS_ITEMS_PER_PAGE: number;
+  ITEMS_PER_PAGE: number;
   KEEP_BLOCKS_AMOUNT: number;
   NGINX_PROTOCOL?: string;
   NGINX_HOSTNAME?: string;
@@ -34,7 +34,7 @@ const defaultEnv: Env = {
   'BISQ_ENABLED': false,
   'BISQ_SEPARATE_BACKEND': false,
   'SPONSORS_ENABLED': false,
-  'ELECTRS_ITEMS_PER_PAGE': 10,
+  'ITEMS_PER_PAGE': 10,
   'KEEP_BLOCKS_AMOUNT': 8,
   'NGINX_PROTOCOL': 'http',
   'NGINX_HOSTNAME': '127.0.0.1',
