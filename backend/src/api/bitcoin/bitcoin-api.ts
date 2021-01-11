@@ -15,10 +15,10 @@ class BitcoinApi implements AbstractBitcoinApi {
 
   constructor() {
     this.bitcoindClient = new bitcoin.Client({
-      host: config.BITCOIND.HOST,
-      port: config.BITCOIND.PORT,
-      user: config.BITCOIND.USERNAME,
-      pass: config.BITCOIND.PASSWORD,
+      host: config.CORE_RPC.HOST,
+      port: config.CORE_RPC.PORT,
+      user: config.CORE_RPC.USERNAME,
+      pass: config.CORE_RPC.PASSWORD,
       timeout: 60000,
     });
   }

@@ -18,7 +18,7 @@ interface IConfig {
     TLS_ENABLED: boolean;
     TX_LOOKUPS: boolean;
   };
-  BITCOIND: {
+  CORE_RPC: {
     HOST: string;
     PORT: number;
     USERNAME: string;
@@ -71,7 +71,7 @@ const defaults: IConfig = {
     'TLS_ENABLED': true,
     'TX_LOOKUPS': false
   },
-  'BITCOIND': {
+  'CORE_RPC': {
     'HOST': '127.0.0.1',
     'PORT': 8332,
     'USERNAME': 'mempool',
@@ -110,7 +110,7 @@ class Config implements IConfig {
   MEMPOOL: IConfig['MEMPOOL'];
   ESPLORA: IConfig['ESPLORA'];
   ELECTRUM: IConfig['ELECTRUM'];
-  BITCOIND: IConfig['BITCOIND'];
+  CORE_RPC: IConfig['CORE_RPC'];
   DATABASE: IConfig['DATABASE'];
   STATISTICS: IConfig['STATISTICS'];
   BISQ_BLOCKS: IConfig['BISQ_BLOCKS'];
@@ -122,7 +122,7 @@ class Config implements IConfig {
     this.MEMPOOL = configs.MEMPOOL;
     this.ESPLORA = configs.ESPLORA;
     this.ELECTRUM = configs.ELECTRUM;
-    this.BITCOIND = configs.BITCOIND;
+    this.CORE_RPC = configs.CORE_RPC;
     this.DATABASE = configs.DATABASE;
     this.STATISTICS = configs.STATISTICS;
     this.BISQ_BLOCKS = configs.BISQ_BLOCKS;

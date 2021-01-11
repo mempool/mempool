@@ -7,8 +7,11 @@
     "API_URL_PREFIX": "/api/v1/",
     "POLL_RATE_MS": 2000
   },
-  "ESPLORA": {
-    "REST_API_URL": "http://127.0.0.1:3000"
+  "CORE_RPC": {
+    "HOST": "127.0.0.1",
+    "PORT": 8332,
+    "USERNAME": "mempool",
+    "PASSWORD": "mempool"
   },
   "ELECTRUM": {
     "HOST": "127.0.0.1",
@@ -16,11 +19,8 @@
     "TLS_ENABLED": true,
     "TX_LOOKUPS": false
   },
-  "BITCOIND": {
-    "HOST": "127.0.0.1",
-    "PORT": 3306,
-    "USERNAME": "mempool",
-    "PASSWORD": "mempool"
+  "ESPLORA": {
+    "REST_API_URL": "http://127.0.0.1:3000"
   },
   "DATABASE": {
     "ENABLED": true,
