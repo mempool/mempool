@@ -149,6 +149,10 @@
   <div class="skeleton-loader"></div>
 </ng-template>
 
+<ng-template #loadingsmall>
+  <span class="skeleton-loader" style="width: 80%;"></span>
+</ng-template>
+
 <ng-template #emptyBlock>
   <div class="col mb-4">
 
@@ -158,9 +162,15 @@
 <ng-template #mempoolTable let-mempoolInfoData>
   <table style="width: 100%;">
     <tr>
+      <td class="d-none d-md-block">
+        <h5 class="card-title" i18n="dashboard.minimumfee|Minimum fee title">Minimum fee</h5>
+        <p class="card-text" *ngIf="mempoolInfoData.value; else loading">
+          {{ mempoolInfoData.value.memPoolInfo.mempoolminfee * 100000 | number : '1.1-1' }} <ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container> (<app-fiat [value]="mempoolInfoData.value.memPoolInfo.mempoolminfee * 100000 * 140" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat>)
+        </p>
+      </td>
       <td>
         <h5 class="card-title" i18n="dashboard.mempool-size|Mempool size">Mempool size</h5>
-        <p class="card-text" *ngIf="(mempoolBlocksData$ | async) as mempoolBlocksData; else loading">
+        <p class="card-text" *ngIf="(mempoolBlocksData$ | async) as mempoolBlocksData; else loadingsmall">
           {{ mempoolBlocksData.size | bytes }} (<ng-container *ngTemplateOutlet="mempoolBlocksData.blocks === 1 ? blocksSingular : blocksPlural; context: {$implicit: mempoolBlocksData.blocks }"></ng-container>)
             <ng-template #blocksSingular let-i i18n="shared.block">{{ i }} block</ng-template>
             <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} blocks</ng-template>
