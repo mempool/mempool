@@ -2,6 +2,26 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en-US" datatype="plaintext" original="ng2.template">
     <body>
+      <trans-unit id="30751732ff4b8f6ddb2a906e0173072ac29d412a" datatype="html">
+        <source>Confidential</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/amount/amount.component.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">132</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
+          <context context-type="linenumber">214</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
+          <context context-type="linenumber">143</context>
+        </context-group>
+        <note priority="1" from="description">shared.confidential</note>
+      </trans-unit>
       <trans-unit id="bisq.transaction.browser-title" datatype="html">
         <source>Transaction: <x id="INTERPOLATION" equiv-text="this.txId"/></source>
         <context-group purpose="location">
@@ -288,6 +308,10 @@
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">117</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">168</context>
+        </context-group>
         <note priority="1" from="description">sat/vB</note>
         <note priority="1" from="meaning">shared.sat-vbyte</note>
       </trans-unit>
@@ -420,7 +444,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">165</context>
+          <context context-type="linenumber">175</context>
         </context-group>
         <note priority="1" from="description">shared.block</note>
       </trans-unit>
@@ -440,9 +464,92 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">166</context>
+          <context context-type="linenumber">176</context>
         </context-group>
         <note priority="1" from="description">shared.blocks</note>
+      </trans-unit>
+      <trans-unit id="address.component.browser-title" datatype="html">
+        <source>Address: <x id="INTERPOLATION" equiv-text="this.addressString"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address/address.component.ts</context>
+          <context context-type="linenumber">71</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="729754dd19eb9ce0670b0aeb5a6ae60574c2c563" datatype="html">
+        <source>Address</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+        <note priority="1" from="description">shared.address</note>
+      </trans-unit>
+      <trans-unit id="a9b87c3aa4731edee661c8287ef3aab71799c0b8" datatype="html">
+        <source>Total received</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+        <note priority="1" from="description">address.total-received</note>
+      </trans-unit>
+      <trans-unit id="f149942f271231be52f55589398967093382d96d" datatype="html">
+        <source>Total sent</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+        <note priority="1" from="description">address.total-sent</note>
+      </trans-unit>
+      <trans-unit id="7e69426bd97a606d8ae6026762858e6e7c86a1fd" datatype="html">
+        <source>Balance</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+        <note priority="1" from="description">address.balance</note>
+      </trans-unit>
+      <trans-unit id="714e34125b3343df73f19ec800b43be95217d5d4" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || &apos;?&apos; }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transaction</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">48</context>
+        </context-group>
+        <note priority="1" from="description">X of X Address Transaction</note>
+      </trans-unit>
+      <trans-unit id="0f6ada0cfb60aefd8f77f8a22349850ce186d666" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || &apos;?&apos; }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transactions</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
+        <note priority="1" from="description">X of X Address Transactions (Plural)</note>
+      </trans-unit>
+      <trans-unit id="f094f67fbe759cdbeb2ea14455634bbe5cc6375d" datatype="html">
+        <source>Error loading address data.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">113</context>
+        </context-group>
+        <note priority="1" from="description">address.error.loading-address-data</note>
       </trans-unit>
       <trans-unit id="7e06b8dd9f29261827018351cd71efe1c87839de" datatype="html">
         <source>Coinbase</source>
@@ -597,31 +704,27 @@
         <note priority="1" from="description">sat</note>
         <note priority="1" from="meaning">shared.sat</note>
       </trans-unit>
-      <trans-unit id="30751732ff4b8f6ddb2a906e0173072ac29d412a" datatype="html">
-        <source>Confidential</source>
+      <trans-unit id="78fe1342aab9e91cb7cbd1becbaacf3b719546b3" datatype="html">
+        <source>TXID, block height, hash or address</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">214</context>
+          <context context-type="sourcefile">src/app/components/search-form/search-form.component.html</context>
+          <context context-type="linenumber">4</context>
         </context-group>
+        <note priority="1" from="description">search-form.searchbar-placeholder</note>
+      </trans-unit>
+      <trans-unit id="7e892ba15f2c6c17e83510e273b3e10fc32ea016" datatype="html">
+        <source>Search</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/amount/amount.component.html</context>
-          <context context-type="linenumber">6</context>
+          <context context-type="sourcefile">src/app/components/search-form/search-form.component.html</context>
+          <context context-type="linenumber">7</context>
         </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">116</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
-          <context context-type="linenumber">143</context>
-        </context-group>
-        <note priority="1" from="description">shared.confidential</note>
+        <note priority="1" from="description">search-form.search-title</note>
       </trans-unit>
       <trans-unit id="block.component.browser-title" datatype="html">
         <source>Block <x id="BLOCK_HEIGHT" equiv-text="block.height"/>: <x id="BLOCK_ID" equiv-text="block.id"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.ts</context>
-          <context context-type="linenumber">98</context>
+          <context context-type="linenumber">105</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7daa2693df24aec262c6aad735f9bf918575b866" datatype="html">
@@ -679,12 +782,12 @@
           <context context-type="linenumber">31</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
-          <context context-type="linenumber">13</context>
-        </context-group>
-        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
           <context context-type="linenumber">32</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
+          <context context-type="linenumber">13</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -741,6 +844,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">18</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">168</context>
         </context-group>
         <note priority="1" from="description">Transaction fee tooltip</note>
       </trans-unit>
@@ -822,203 +929,9 @@
         <source>Error loading block data.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">169</context>
+          <context context-type="linenumber">176</context>
         </context-group>
         <note priority="1" from="description">block.error.loading-block-data</note>
-      </trans-unit>
-      <trans-unit id="address.component.browser-title" datatype="html">
-        <source>Address: <x id="INTERPOLATION" equiv-text="this.addressString"/></source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/address/address.component.ts</context>
-          <context context-type="linenumber">64</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="729754dd19eb9ce0670b0aeb5a6ae60574c2c563" datatype="html">
-        <source>Address</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">2</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
-          <context context-type="linenumber">2</context>
-        </context-group>
-        <note priority="1" from="description">shared.address</note>
-      </trans-unit>
-      <trans-unit id="a9b87c3aa4731edee661c8287ef3aab71799c0b8" datatype="html">
-        <source>Total received</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">20</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
-          <context context-type="linenumber">20</context>
-        </context-group>
-        <note priority="1" from="description">address.total-received</note>
-      </trans-unit>
-      <trans-unit id="f149942f271231be52f55589398967093382d96d" datatype="html">
-        <source>Total sent</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">24</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
-          <context context-type="linenumber">24</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
-          <context context-type="linenumber">14</context>
-        </context-group>
-        <note priority="1" from="description">address.total-sent</note>
-      </trans-unit>
-      <trans-unit id="7e69426bd97a606d8ae6026762858e6e7c86a1fd" datatype="html">
-        <source>Balance</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">28</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
-          <context context-type="linenumber">28</context>
-        </context-group>
-        <note priority="1" from="description">address.balance</note>
-      </trans-unit>
-      <trans-unit id="714e34125b3343df73f19ec800b43be95217d5d4" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || &apos;?&apos; }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transaction</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">48</context>
-        </context-group>
-        <note priority="1" from="description">X of X Address Transaction</note>
-      </trans-unit>
-      <trans-unit id="0f6ada0cfb60aefd8f77f8a22349850ce186d666" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || &apos;?&apos; }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transactions</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">49</context>
-        </context-group>
-        <note priority="1" from="description">X of X Address Transactions (Plural)</note>
-      </trans-unit>
-      <trans-unit id="f094f67fbe759cdbeb2ea14455634bbe5cc6375d" datatype="html">
-        <source>Error loading address data.</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">105</context>
-        </context-group>
-        <note priority="1" from="description">address.error.loading-address-data</note>
-      </trans-unit>
-      <trans-unit id="78fe1342aab9e91cb7cbd1becbaacf3b719546b3" datatype="html">
-        <source>TXID, block height, hash or address</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/search-form/search-form.component.html</context>
-          <context context-type="linenumber">4</context>
-        </context-group>
-        <note priority="1" from="description">search-form.searchbar-placeholder</note>
-      </trans-unit>
-      <trans-unit id="7e892ba15f2c6c17e83510e273b3e10fc32ea016" datatype="html">
-        <source>Search</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/search-form/search-form.component.html</context>
-          <context context-type="linenumber">7</context>
-        </context-group>
-        <note priority="1" from="description">search-form.search-title</note>
-      </trans-unit>
-      <trans-unit id="f4cba7faeb126346f09cc6af30124f9a343f7a28" datatype="html">
-        <source>Blocks</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.ts</context>
-          <context context-type="linenumber">37</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">75</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="8a7b4bd44c0ac71b2e72de0398b303257f7d2f54" datatype="html">
-        <source>Blocks</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
-          <context context-type="linenumber">2</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">32</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">43</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.ts</context>
-          <context context-type="linenumber">35</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
-          <context context-type="linenumber">2</context>
-        </context-group>
-        <note priority="1" from="description">latest-blocks.blocks</note>
-      </trans-unit>
-      <trans-unit id="179eb5c4a21ad324f75f723218a621d120e39d30" datatype="html">
-        <source>Height</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
-          <context context-type="linenumber">9</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">78</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
-          <context context-type="linenumber">12</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
-          <context context-type="linenumber">22</context>
-        </context-group>
-        <note priority="1" from="description">latest-blocks.height</note>
-      </trans-unit>
-      <trans-unit id="65d447765db0bf3390e9b3ecce142bf34bb602a3" datatype="html">
-        <source>Mined</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
-          <context context-type="linenumber">11</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">79</context>
-        </context-group>
-        <note priority="1" from="description">latest-blocks.mined</note>
-      </trans-unit>
-      <trans-unit id="add4cd82e3e38a3110fe67b3c7df56e9602644ee" datatype="html">
-        <source>Transactions</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
-          <context context-type="linenumber">12</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">29</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
-          <context context-type="linenumber">28</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
-          <context context-type="linenumber">15</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
-          <context context-type="linenumber">77</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
-          <context context-type="linenumber">2</context>
-        </context-group>
-        <note priority="1" from="description">latest-blocks.transactions</note>
       </trans-unit>
       <trans-unit id="9f10a0577222a7d6c35a889453fa3a794750d9c4" datatype="html">
         <source>multisig <x id="INTERPOLATION" equiv-text="{{ multisigM }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ multisigN }}"/></source>
@@ -1036,105 +949,16 @@
         </context-group>
         <note priority="1" from="description">address-labels.upper-layer-peg-out</note>
       </trans-unit>
-      <trans-unit id="e351b40b3869a5c7d19c3d4918cb1ac7aaab95c4" datatype="html">
-        <source>API</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">56</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.ts</context>
-          <context context-type="linenumber">24</context>
-        </context-group>
-        <note priority="1" from="description">master-page.api</note>
-      </trans-unit>
       <trans-unit id="004b222ff9ef9dd4771b777950ca1d0e4cd4348a" datatype="html">
         <source>About</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/about/about.component.ts</context>
+          <context context-type="linenumber">37</context>
+        </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">59</context>
         </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/about/about.component.ts</context>
-          <context context-type="linenumber">38</context>
-        </context-group>
-        <note priority="1" from="description">master-page.about</note>
-      </trans-unit>
-      <trans-unit id="2b34680062c4aed90c4d846eab42d6e99501b783" datatype="html">
-        <source>Offline</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">7</context>
-        </context-group>
-        <note priority="1" from="description">master-page.offline</note>
-      </trans-unit>
-      <trans-unit id="c5d46228bea3555d65c705bad40be80f8798a113" datatype="html">
-        <source>Reconnecting...</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">8</context>
-        </context-group>
-        <note priority="1" from="description">master-page.reconnecting</note>
-      </trans-unit>
-      <trans-unit id="9daedf013e87630c4e0a9123dc62e5bbf15a59ad" datatype="html">
-        <source>Layer 2 Networks</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">19</context>
-        </context-group>
-        <note priority="1" from="description">master-page.layer2-networks-header</note>
-      </trans-unit>
-      <trans-unit id="299f97b8ee9c62d45f2cc01961aa1e5101d6d05a" datatype="html">
-        <source>Stats</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">35</context>
-        </context-group>
-        <note priority="1" from="description">master-page.stats</note>
-      </trans-unit>
-      <trans-unit id="f65253954b66e929a8b4d5ecaf61f9129f8cec64" datatype="html">
-        <source>Dashboard</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">40</context>
-        </context-group>
-        <note priority="1" from="description">master-page.dashboard</note>
-      </trans-unit>
-      <trans-unit id="5d4f792f048fcaa6df5948575d7cb325c9393383" datatype="html">
-        <source>Graphs</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">46</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/statistics/statistics.component.ts</context>
-          <context context-type="linenumber">55</context>
-        </context-group>
-        <note priority="1" from="description">master-page.graphs</note>
-      </trans-unit>
-      <trans-unit id="46ce8155c9ab953edeec97e8950b5a21e67d7c4e" datatype="html">
-        <source>TV view</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">49</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/television/television.component.ts</context>
-          <context context-type="linenumber">27</context>
-        </context-group>
-        <note priority="1" from="description">master-page.tvview</note>
-      </trans-unit>
-      <trans-unit id="ee8f8008bae6ce3a49840c4e1d39b4af23d4c263" datatype="html">
-        <source>Assets</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">53</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/assets/assets.component.ts</context>
-          <context context-type="linenumber">40</context>
-        </context-group>
-        <note priority="1" from="description">master-page.assets</note>
       </trans-unit>
       <trans-unit id="de1392124ed7b6c274917f8049f2fbc9975f20b3" datatype="html">
         <source>About the project</source>
@@ -1280,6 +1104,17 @@
         </context-group>
         <note priority="1" from="description">about.sponsor.sponsor-completed</note>
       </trans-unit>
+      <trans-unit id="5d4f792f048fcaa6df5948575d7cb325c9393383" datatype="html">
+        <source>Graphs</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/statistics/statistics.component.ts</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="ff4b7f4070be9e876c7610d99b9dbd53ff19dceb" datatype="html">
         <source>Loading graphs...</source>
         <context-group purpose="location">
@@ -1312,6 +1147,134 @@
         </context-group>
         <note priority="1" from="description">statistics.transaction-vbytes-per-second</note>
       </trans-unit>
+      <trans-unit id="e351b40b3869a5c7d19c3d4918cb1ac7aaab95c4" datatype="html">
+        <source>API</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.ts</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+        <note priority="1" from="description">master-page.api</note>
+      </trans-unit>
+      <trans-unit id="2b34680062c4aed90c4d846eab42d6e99501b783" datatype="html">
+        <source>Offline</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+        <note priority="1" from="description">master-page.offline</note>
+      </trans-unit>
+      <trans-unit id="c5d46228bea3555d65c705bad40be80f8798a113" datatype="html">
+        <source>Reconnecting...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+        <note priority="1" from="description">master-page.reconnecting</note>
+      </trans-unit>
+      <trans-unit id="9daedf013e87630c4e0a9123dc62e5bbf15a59ad" datatype="html">
+        <source>Layer 2 Networks</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+        <note priority="1" from="description">master-page.layer2-networks-header</note>
+      </trans-unit>
+      <trans-unit id="add4cd82e3e38a3110fe67b3c7df56e9602644ee" datatype="html">
+        <source>Transactions</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
+          <context context-type="linenumber">77</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+        <note priority="1" from="description">master-page.transactions</note>
+      </trans-unit>
+      <trans-unit id="8a7b4bd44c0ac71b2e72de0398b303257f7d2f54" datatype="html">
+        <source>Blocks</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
+          <context context-type="linenumber">43</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.ts</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+        <note priority="1" from="description">master-page.blocks</note>
+      </trans-unit>
+      <trans-unit id="299f97b8ee9c62d45f2cc01961aa1e5101d6d05a" datatype="html">
+        <source>Stats</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+        <note priority="1" from="description">master-page.stats</note>
+      </trans-unit>
+      <trans-unit id="f65253954b66e929a8b4d5ecaf61f9129f8cec64" datatype="html">
+        <source>Dashboard</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+        <note priority="1" from="description">master-page.dashboard</note>
+      </trans-unit>
+      <trans-unit id="46ce8155c9ab953edeec97e8950b5a21e67d7c4e" datatype="html">
+        <source>TV view</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/television/television.component.ts</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+        <note priority="1" from="description">master-page.tvview</note>
+      </trans-unit>
+      <trans-unit id="ee8f8008bae6ce3a49840c4e1d39b4af23d4c263" datatype="html">
+        <source>Assets</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
+          <context context-type="linenumber">53</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/assets/assets.component.ts</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+        <note priority="1" from="description">master-page.assets</note>
+      </trans-unit>
       <trans-unit id="e8104ec47dbdca878cd9d7aba4a3cb59378fcaf7" datatype="html">
         <source>Waiting for blocks...</source>
         <context-group purpose="location">
@@ -1337,7 +1300,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">170</context>
+          <context context-type="linenumber">180</context>
         </context-group>
         <note priority="1" from="description">Unconfirmed count</note>
         <note priority="1" from="meaning">dashboard.unconfirmed</note>
@@ -1350,7 +1313,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">162</context>
+          <context context-type="linenumber">172</context>
         </context-group>
         <note priority="1" from="description">Mempool size</note>
         <note priority="1" from="meaning">dashboard.mempool-size</note>
@@ -1363,7 +1326,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">183</context>
+          <context context-type="linenumber">193</context>
         </context-group>
         <note priority="1" from="description">footer.backend-is-synchronizing</note>
       </trans-unit>
@@ -1375,7 +1338,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">187</context>
+          <context context-type="linenumber">197</context>
         </context-group>
         <note priority="1" from="description">vB/s</note>
         <note priority="1" from="meaning">shared.vbytes-per-second</note>
@@ -1384,21 +1347,21 @@
         <source>Next block</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
-          <context context-type="linenumber">72</context>
+          <context context-type="linenumber">71</context>
         </context-group>
       </trans-unit>
       <trans-unit id="mempool-block.stack.of.blocks" datatype="html">
         <source>Stack of <x id="INTERPOLATION" equiv-text="blocksInBlock"/> mempool blocks</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
-          <context context-type="linenumber">74</context>
+          <context context-type="linenumber">73</context>
         </context-group>
       </trans-unit>
       <trans-unit id="mempool-block.block.no" datatype="html">
         <source>Mempool block <x id="INTERPOLATION" equiv-text="this.mempoolBlockIndex + 1"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
-          <context context-type="linenumber">76</context>
+          <context context-type="linenumber">75</context>
         </context-group>
       </trans-unit>
       <trans-unit id="b2cb12c1680a46464cae5aa0d0d1d6914733a75d" datatype="html">
@@ -1537,6 +1500,107 @@
         </context-group>
         <note priority="1" from="description">asset.error.loading-asset-data</note>
       </trans-unit>
+      <trans-unit id="miner-identified-by-payout" datatype="html">
+        <source>Identified by payout address: &apos;<x id="PAYOUT_ADDRESS" equiv-text="vout.scriptpubkey_address"/>&apos;</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="miner-identified-by-coinbase" datatype="html">
+        <source>Identified by coinbase tag: &apos;<x id="TAG" equiv-text="tag"/>&apos;</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
+          <context context-type="linenumber">52</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="e5d8bb389c702588877f039d72178f219453a72d" datatype="html">
+        <source>Unknown</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/miner/miner.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+        <note priority="1" from="description">miner.tag.unknown-miner</note>
+      </trans-unit>
+      <trans-unit id="f2385584215e9b925b6347de866110d5e07d3a35" datatype="html">
+        <source>Low priority</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+        <note priority="1" from="description">fees-box.low-priority</note>
+      </trans-unit>
+      <trans-unit id="0ba9d74c1d31a9d98829892f40334a22624564b8" datatype="html">
+        <source>Medium priority</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+        <note priority="1" from="description">fees-box.medium-priority</note>
+      </trans-unit>
+      <trans-unit id="f80dd1511a91af4e592a538f95fa29d24907176f" datatype="html">
+        <source>High priority</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+        <note priority="1" from="description">fees-box.high-priority</note>
+      </trans-unit>
+      <trans-unit id="f4cba7faeb126346f09cc6af30124f9a343f7a28" datatype="html">
+        <source>Blocks</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.ts</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">75</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="179eb5c4a21ad324f75f723218a621d120e39d30" datatype="html">
+        <source>Height</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">78</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+        <note priority="1" from="description">latest-blocks.height</note>
+      </trans-unit>
+      <trans-unit id="65d447765db0bf3390e9b3ecce142bf34bb602a3" datatype="html">
+        <source>Mined</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">79</context>
+        </context-group>
+        <note priority="1" from="description">latest-blocks.mined</note>
+      </trans-unit>
       <trans-unit id="791a4c4131a0ae0aaf82ddb66dacdc7f1c007c3b" datatype="html">
         <source>Registered assets</source>
         <context-group purpose="location">
@@ -1629,64 +1693,6 @@
         </context-group>
         <note priority="1" from="description">Asset data load error</note>
       </trans-unit>
-      <trans-unit id="miner-identified-by-payout" datatype="html">
-        <source>Identified by payout address: &apos;<x id="PAYOUT_ADDRESS" equiv-text="vout.scriptpubkey_address"/>&apos;</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
-          <context context-type="linenumber">42</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="miner-identified-by-coinbase" datatype="html">
-        <source>Identified by coinbase tag: &apos;<x id="TAG" equiv-text="tag"/>&apos;</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
-          <context context-type="linenumber">52</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="e5d8bb389c702588877f039d72178f219453a72d" datatype="html">
-        <source>Unknown</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/miner/miner.component.html</context>
-          <context context-type="linenumber">10</context>
-        </context-group>
-        <note priority="1" from="description">miner.tag.unknown-miner</note>
-      </trans-unit>
-      <trans-unit id="f2385584215e9b925b6347de866110d5e07d3a35" datatype="html">
-        <source>Low priority</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">4</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">27</context>
-        </context-group>
-        <note priority="1" from="description">fees-box.low-priority</note>
-      </trans-unit>
-      <trans-unit id="0ba9d74c1d31a9d98829892f40334a22624564b8" datatype="html">
-        <source>Medium priority</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">10</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">31</context>
-        </context-group>
-        <note priority="1" from="description">fees-box.medium-priority</note>
-      </trans-unit>
-      <trans-unit id="f80dd1511a91af4e592a538f95fa29d24907176f" datatype="html">
-        <source>High priority</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">16</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">35</context>
-        </context-group>
-        <note priority="1" from="description">fees-box.high-priority</note>
-      </trans-unit>
       <trans-unit id="e1139ea570985b3f114e18876f09fd7223429983" datatype="html">
         <source>Latest blocks</source>
         <context-group purpose="location">
@@ -1703,7 +1709,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">172</context>
+          <context context-type="linenumber">182</context>
         </context-group>
         <note priority="1" from="description">dashboard.latest-blocks.transaction-count</note>
       </trans-unit>
@@ -1775,11 +1781,20 @@
         </context-group>
         <note priority="1" from="description">dashboard.collapse</note>
       </trans-unit>
+      <trans-unit id="d3c0626211b08750f9244e9307b35ad0f6555f60" datatype="html">
+        <source>Minimum fee</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">166</context>
+        </context-group>
+        <note priority="1" from="description">Minimum fee title</note>
+        <note priority="1" from="meaning">dashboard.minimumfee</note>
+      </trans-unit>
       <trans-unit id="926c571b25cca7e2a294619f145960c0cd3848b6" datatype="html">
         <source>Incoming transactions</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">180</context>
+          <context context-type="linenumber">190</context>
         </context-group>
         <note priority="1" from="description">dashboard.incoming-transactions</note>
       </trans-unit>
@@ -1787,7 +1802,7 @@
         <source>Difficulty adjustment</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">196</context>
+          <context context-type="linenumber">206</context>
         </context-group>
         <note priority="1" from="description">dashboard.difficulty-adjustment</note>
       </trans-unit>
@@ -2335,133 +2350,140 @@
         <source>Just now</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">49</context>
+          <context context-type="linenumber">56</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-since.year.ago" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="counter"/> year ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">58</context>
+          <context context-type="linenumber">65</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-since.month.ago" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="counter"/> month ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">59</context>
+          <context context-type="linenumber">66</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-since.week.ago" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="counter"/> week ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">60</context>
+          <context context-type="linenumber">67</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-since.day.ago" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="counter"/> day ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">61</context>
+          <context context-type="linenumber">68</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-since.hour.ago" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="counter"/> hour ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">62</context>
+          <context context-type="linenumber">69</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-since.min.ago" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="counter"/> min ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">65</context>
+          <context context-type="linenumber">72</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-since.minute.ago" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="counter"/> minute ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">67</context>
+          <context context-type="linenumber">74</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-since.sec.ago" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="counter"/> sec ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">70</context>
+          <context context-type="linenumber">77</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-since.second.ago" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="counter"/> second ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">72</context>
+          <context context-type="linenumber">79</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-since.years.ago" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="counter"/> years ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">76</context>
+          <context context-type="linenumber">83</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-since.months.ago" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="counter"/> months ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">77</context>
+          <context context-type="linenumber">84</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-since.weeks.ago" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="counter"/> weeks ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">78</context>
+          <context context-type="linenumber">85</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-since.days.ago" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="counter"/> days ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">79</context>
+          <context context-type="linenumber">86</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-since.hours.ago" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="counter"/> hours ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">80</context>
+          <context context-type="linenumber">87</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-since.mins.ago" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="counter"/> mins ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">83</context>
+          <context context-type="linenumber">90</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-since.minutes.ago" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="counter"/> minutes ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">85</context>
+          <context context-type="linenumber">92</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-since.secs.ago" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="counter"/> secs ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">88</context>
+          <context context-type="linenumber">95</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-since.seconds.ago" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="counter"/> seconds ago</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">90</context>
+          <context context-type="linenumber">97</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="bisq-address.component.browser-title" datatype="html">
+        <source>Address: <x id="INTERPOLATION" equiv-text="this.addressString"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.ts</context>
+          <context context-type="linenumber">39</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2a30a4cdb123a03facc5ab8c5b3e6d8b8dbbc3d4" datatype="html">
@@ -2574,13 +2596,6 @@
           <context context-type="linenumber">82</context>
         </context-group>
         <note priority="1" from="description">BSQ token market cap</note>
-      </trans-unit>
-      <trans-unit id="bisq-address.component.browser-title" datatype="html">
-        <source>Address: <x id="INTERPOLATION" equiv-text="this.addressString"/></source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.ts</context>
-          <context context-type="linenumber">39</context>
-        </context-group>
       </trans-unit>
       <trans-unit id="a1daf43d26259bffdd5eb2d405c61583540b113b" datatype="html">
         <source>Confirmed</source>
