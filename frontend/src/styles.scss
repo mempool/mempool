@@ -402,9 +402,13 @@ h1, h2, h3 {
   font-size: 14px;
 }
 
+.progress {
+  position: relative;
+}
+
 .progress-text {
   position: absolute;
-  top: 8px;
+  top: 8.5px;
   width: 100%;
   text-align: center;
 }
