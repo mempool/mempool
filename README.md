@@ -53,23 +53,13 @@ Create database and grant privileges:
   MariaDB [(none)]> create database mempool;
   Query OK, 1 row affected (0.00 sec)
 
-  MariaDB [(none)]> grant all privileges on mempool.* to 'mempool' identified by 'mempool';
+  MariaDB [(none)]> grant all privileges on mempool.* to 'mempool'@'%' identified by 'mempool';
   Query OK, 0 rows affected (0.00 sec)
 ```
 
 From the mempool repo's top-level folder, import the database structure:
 ```bash
   mysql -u mempool -p mempool < mariadb-structure.sql
-```
-
-### Troubleshooting
-On Mac, you may need to run the following command if the above gives an error:
-```bash
-MariaDB [(none)]> grant all privileges on mempool.* to 'mempool'@localhost identified by 'mempool';
-```
-followed by:
-```bash
-mariadb -u mempool -pmempool mempool < mariadb-structure.sql
 ```
 
 ## Mempool Backend
