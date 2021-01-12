@@ -53,7 +53,7 @@ Create database and grant privileges:
   MariaDB [(none)]> create database mempool;
   Query OK, 1 row affected (0.00 sec)
 
-  MariaDB [(none)]> grant all privileges on mempool.* to 'mempool' identified by 'mempool';
+  MariaDB [(none)]> grant all privileges on mempool.* to 'mempool'@'%' identified by 'mempool';
   Query OK, 0 rows affected (0.00 sec)
 ```
 
