@@ -102,11 +102,20 @@ export class DashboardComponent implements OnInit {
           progressClass = 'bg-warning';
         }
 
+        let mempoolSizePercentage = (mempoolInfo.usage / mempoolInfo.maxmempool * 100)
+        let mempoolSizeProgress = 'bg-danger';
+        if (mempoolSizePercentage <= 50) {
+          mempoolSizeProgress = 'bg-success';
+        } else if (mempoolSizePercentage <= 75) {
+          mempoolSizeProgress = 'bg-warning';
+        }
+
         return {
           memPoolInfo: mempoolInfo,
           vBytesPerSecond: vbytesPerSecond,
           progressWidth: percent + '%',
           progressClass: progressClass,
+          mempoolSizeProgress: mempoolSizeProgress,
         };
       })
     );

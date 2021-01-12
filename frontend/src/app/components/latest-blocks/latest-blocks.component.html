@@ -19,7 +19,7 @@
         <td><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since></td>
         <td class="d-none d-lg-block">{{ block.tx_count | number }}</td>
         <td>
-          <div class="progress position-relative">
+          <div class="progress">
             <div class="progress-bar progress-mempool {{ network$ | async }}" role="progressbar" [ngStyle]="{'width': (block.weight / 4000000)*100 + '%' }"></div>
             <div class="progress-text">{{ block.size | bytes: 2 }}</div>
           </div>
@@ -36,7 +36,7 @@
       <ng-container *ngIf="(blocksLoadingStatus$ | async) as blocksLoadingStatus">
       <tr>
         <td colspan="5">
-          <div class="progress position-relative progress-dark">
+          <div class="progress progress-dark">
             <div class="progress-bar progress-darklight" role="progressbar" [ngStyle]="{'width': blocksLoadingStatus + '%' }"></div>
           </div>
         </td>
