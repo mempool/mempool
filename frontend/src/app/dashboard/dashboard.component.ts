@@ -263,6 +263,6 @@ export class DashboardComponent implements OnInit {
     try {
       document.cookie = `lang=${language}; expires=Thu, 18 Dec 2050 12:00:00 UTC; path=/`;
     } catch (e) { }
-    this.document.location.href = `${language === 'en' ? '' : '/' + language}/${this.stateService.network}`;
+    this.document.location.href = `/${language}/${this.stateService.network}`;
   }
 }
