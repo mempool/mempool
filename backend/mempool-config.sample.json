@@ -22,6 +22,13 @@
   "ESPLORA": {
     "REST_API_URL": "http://127.0.0.1:3000"
   },
+  "CORE_RPC_MINFEE": {
+    "ENABLED": false,
+    "HOST": "127.0.0.1",
+    "PORT": 8332,
+    "USERNAME": "mempool",
+    "PASSWORD": "mempool"
+  },
   "DATABASE": {
     "ENABLED": true,
     "HOST": "127.0.0.1",
