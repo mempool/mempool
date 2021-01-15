@@ -87,7 +87,7 @@
                   <td class="d-none d-lg-table-cell">{{ block.tx_count | number }}</td>
                   <td>
                     <div class="progress">
-                      <div class="progress-bar progress-mempool {{ network$ | async }}" role="progressbar" [ngStyle]="{'width': (block.weight / 4000000)*100 + '%' }"></div>
+                      <div class="progress-bar progress-mempool {{ network$ | async }}" role="progressbar" [ngStyle]="{'width': (block.weight / 4000000)*100 + '%' }">&nbsp;</div>
                       <div class="progress-text">{{ block.size | bytes: 2 }}</div>
                     </div>
                   </td>
@@ -163,19 +163,20 @@
   <table style="width: 100%;">
     <tr>
       <td style="width: 33%;">
-        <h5 class="card-title" i18n="dashboard.rejecting|Minimum mempool fee">Rejecting</h5>
+        <h5 *ngIf="!mempoolInfoData.value || mempoolInfoData.value.memPoolInfo.mempoolminfee === 0.00001 else purgingText" class="card-title" i18n="dashboard.minimum-fee|Minimum mempool fee">Minimum fee</h5>
+        <ng-template #purgingText><h5 class="card-title" i18n="dashboard.purging|Purgin below fee">Purging</h5></ng-template>
         <p class="card-text" *ngIf="mempoolInfoData.value; else loading">
-          &lt; {{ mempoolInfoData.value.memPoolInfo.mempoolminfee * 100000 | number : '1.1-1' }} <ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
+          <ng-template [ngIf]="mempoolInfoData.value.memPoolInfo.mempoolminfee > 0.00001">&lt; </ng-template>{{ mempoolInfoData.value.memPoolInfo.mempoolminfee * 100000 | number : '1.1-1' }} <ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
         </p>
       </td>
       <td style="width: 33%;">
-        <h5 class="card-title" i18n="dashboard.mempool-size|Mempool size">Mempool size</h5>
+        <h5 class="card-title" i18n="dashboard.memory-usage|Memory usage">Memory usage</h5>
         <div class="card-text" *ngIf="mempoolInfoData.value; else loadingsmall">
-          <div class="progress sub-text" style="max-width: 250px;">
-            <div class="progress-bar {{ mempoolInfoData.value.mempoolSizeProgress }}" style="padding: 4px;" role="progressbar" [ngStyle]="{'width': (mempoolInfoData.value.memPoolInfo.usage / mempoolInfoData.value.memPoolInfo.maxmempool * 100) + '%' }"></div>
+          <div class="progress" style="max-width: 250px;">
+            <div class="progress-bar {{ mempoolInfoData.value.mempoolSizeProgress }}" style="padding: 4px;" role="progressbar" [ngStyle]="{'width': (mempoolInfoData.value.memPoolInfo.usage / mempoolInfoData.value.memPoolInfo.maxmempool * 100) + '%' }">&nbsp;</div>
             <div class="progress-text">{{ mempoolInfoData.value.memPoolInfo.usage | bytes }} / {{ mempoolInfoData.value.memPoolInfo.maxmempool | bytes }}</div>
           </div>
-        </div>  
+        </div>
       </td>
       <td class="d-none d-md-table-cell" style="width: 33%;">
         <h5 class="card-title" i18n="dashboard.unconfirmed|Unconfirmed count">Unconfirmed</h5>
@@ -194,8 +195,8 @@
       &nbsp;<span class="badge badge-pill badge-warning"><ng-container i18n="dashboard.backend-is-synchronizing">Backend is synchronizing</ng-container> ({{ mempoolLoadingStatus$ | async }}%)</span>
     </span>
     <ng-template #inSync>
-      <div class="progress sub-text" style="max-width: 250px;">
-        <div class="progress-bar {{ mempoolInfoData.value.progressClass }}" style="padding: 4px;" role="progressbar" [ngStyle]="{'width': mempoolInfoData.value.progressWidth}"></div>
+      <div class="progress" style="max-width: 250px;">
+        <div class="progress-bar {{ mempoolInfoData.value.progressClass }}" style="padding: 4px;" role="progressbar" [ngStyle]="{'width': mempoolInfoData.value.progressWidth}">&nbsp;</div>
         <div class="progress-text">{{ mempoolInfoData.value.vBytesPerSecond | ceil | number }} <ng-container i18n="shared.vbytes-per-second|vB/s">vB/s</ng-container></div>
       </div>
     </ng-template>
@@ -207,7 +208,7 @@
     <div class="card-body more-padding">
       <h5 class="card-title" i18n="dashboard.difficulty-adjustment">Difficulty adjustment</h5>
       <div class="progress" *ngIf="(difficultyEpoch$ | async) as epochData; else loading">
-        <div class="progress-bar" role="progressbar" style="width: 15%; background-color: #105fb0" [ngStyle]="{'width': epochData.base}"></div>
+        <div class="progress-bar" role="progressbar" style="width: 15%; background-color: #105fb0" [ngStyle]="{'width': epochData.base}">&nbsp;</div>
         <div class="progress-bar bg-success" role="progressbar" style="width: 0%" [ngStyle]="{'width': epochData.green}"></div>
         <div class="progress-bar bg-danger" role="progressbar" style="width: 1%; background-color: #f14d80;" [ngStyle]="{'width': epochData.red}"></div>
         <div class="progress-text"><ng-template [ngIf]="epochData.change > 0">+</ng-template>{{ epochData.change | number: '1.0-2' }}%</div>
