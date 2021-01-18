@@ -8,7 +8,6 @@ do
 
     cd "${HOME}/${site}/backend/"
     cp "../production/mempool-config.${site}.json" "mempool-config.json"
-    touch cache.json
 
     npm install
     npm run build
