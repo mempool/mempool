@@ -61,6 +61,8 @@ class Server {
   }
 
   startServer(worker = false) {
+    logger.debug(`Starting Mempool Server${worker ? ' (worker)' : ''}... (${backendInfo.getShortCommitHash()})`);
+
     this.app
       .use((req: Request, res: Response, next: NextFunction) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
@@ -71,6 +73,8 @@ class Server {
 
     this.server = http.createServer(this.app);
     this.wss = new WebSocket.Server({ server: this.server });
+
+    diskCache.loadMempoolCache();
 
     if (config.DATABASE.ENABLED) {
       checkDbConnection();
@@ -85,7 +89,6 @@ class Server {
     this.runMainUpdateLoop();
 
     fiatConversion.startService();
-    diskCache.loadMempoolCache();
 
     if (config.BISQ_BLOCKS.ENABLED) {
       bisq.startBisqService();
@@ -101,7 +104,7 @@ class Server {
       if (worker) {
         logger.info(`Mempool Server worker #${process.pid} started`);
       } else {
-        logger.notice(`Mempool Server is running on port ${config.MEMPOOL.HTTP_PORT} (${backendInfo.getShortCommitHash()})`);
+        logger.notice(`Mempool Server is running on port ${config.MEMPOOL.HTTP_PORT}`);
       }
     });
   }
