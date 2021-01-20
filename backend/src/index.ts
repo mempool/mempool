@@ -21,6 +21,7 @@ import donations from './api/donations';
 import logger from './logger';
 import backendInfo from './api/backend-info';
 import loadingIndicators from './api/loading-indicators';
+import mempool from './api/mempool';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -120,6 +121,7 @@ class Server {
       const loggerMsg = `runMainLoop error: ${(e.message || e)}. Retrying in ${this.currentBackendRetryInterval} sec.`;
       if (this.currentBackendRetryInterval > 5) {
         logger.warn(loggerMsg);
+        mempool.setOutOfSync();
       } else {
         logger.debug(loggerMsg);
       }

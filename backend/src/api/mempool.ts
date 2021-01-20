@@ -29,8 +29,13 @@ class Mempool {
     setInterval(this.updateTxPerSecond.bind(this), 1000);
   }
 
-  public isInSync() {
+  public isInSync(): boolean {
     return this.inSync;
+  }
+
+  public setOutOfSync(): void {
+    this.inSync = false;
+    loadingIndicators.setProgress('mempool', 99);
   }
 
   public getLatestTransactions() {
