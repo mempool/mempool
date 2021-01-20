@@ -86,7 +86,7 @@ class Blocks {
         if (mempool[txIds[i]]) {
           transactions.push(mempool[txIds[i]]);
           transactionsFound++;
-        } else if (config.MEMPOOL.BACKEND === 'esplora') {
+        } else if (config.MEMPOOL.BACKEND === 'esplora' || memPool.isInSync()) {
           logger.debug(`Fetching block tx ${i} of ${txIds.length}`);
           const tx = await transactionUtils.$getTransactionExtended(txIds[i]);
           if (tx) {
