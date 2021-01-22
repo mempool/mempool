@@ -116,7 +116,9 @@ class Blocks {
       if (this.newBlockCallbacks.length) {
         this.newBlockCallbacks.forEach((cb) => cb(blockExtended, txIds, transactions));
       }
-      diskCache.$saveCacheToDisk();
+      if (memPool.isInSync()) {
+        diskCache.$saveCacheToDisk();
+      }
     }
   }
 
