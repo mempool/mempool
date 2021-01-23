@@ -91,6 +91,10 @@
             "translation": "src/locale/messages.vi.xlf",
             "baseHref": "/vi/"
           },
+          "hu": {
+            "translation": "src/locale/messages.hu.xlf",
+            "baseHref": "/hu/"
+          },
           "zh": {
             "translation": "src/locale/messages.zh.xlf",
             "baseHref": "/zh/"

@@ -64,7 +64,7 @@ export const languages: Language[] = [
    { code: 'ka', name: 'ქართული' },         // Georgian
 // { code: 'lv', name: 'Latviešu' },        // Latvian
 // { code: 'lt', name: 'Lietuvių' },        // Lithuanian
-// { code: 'hu', name: 'Magyar' },          // Hungarian
+   { code: 'hu', name: 'Magyar' },          // Hungarian
 // { code: 'mk', name: 'Македонски' },      // Macedonian
 // { code: 'ms', name: 'Bahasa Melayu' },   // Malay
    { code: 'nl', name: 'Nederlands' },      // Dutch
