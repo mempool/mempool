@@ -20,13 +20,8 @@ class TransactionUtils {
     };
   }
 
-  public async $getTransactionExtended(txId: string, forceBitcoind = false, addPrevouts = false): Promise<TransactionExtended> {
-    let transaction: IEsploraApi.Transaction;
-    if (forceBitcoind) {
-      transaction = await bitcoinApi.$getRawTransactionBitcoind(txId, false, addPrevouts);
-    } else {
-      transaction = await bitcoinApi.$getRawTransaction(txId, false, addPrevouts);
-    }
+  public async $getTransactionExtended(txId: string, addPrevouts = false): Promise<TransactionExtended> {
+    const transaction: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(txId, false, addPrevouts);
     return this.extendTransaction(transaction);
   }
 

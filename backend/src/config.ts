@@ -16,7 +16,6 @@ interface IConfig {
     HOST: string;
     PORT: number;
     TLS_ENABLED: boolean;
-    TX_LOOKUPS: boolean;
   };
   CORE_RPC: {
     HOST: string;
@@ -76,7 +75,6 @@ const defaults: IConfig = {
     'HOST': '127.0.0.1',
     'PORT': 3306,
     'TLS_ENABLED': true,
-    'TX_LOOKUPS': false
   },
   'CORE_RPC': {
     'HOST': '127.0.0.1',

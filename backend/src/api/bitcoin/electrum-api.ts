@@ -43,25 +43,6 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
       });
   }
 
-  async $getRawTransaction(txId: string, skipConversion = false, addPrevout = false): Promise<IEsploraApi.Transaction> {
-    if (!config.ELECTRUM.TX_LOOKUPS) {
-      return super.$getRawTransaction(txId, skipConversion, addPrevout);
-    }
-    const txInMempool = mempool.getMempool()[txId];
-    if (txInMempool && addPrevout) {
-      return this.$addPrevouts(txInMempool);
-    }
-    const transaction: IBitcoinApi.Transaction = await this.electrumClient.blockchainTransaction_get(txId, true);
-    if (!transaction) {
-      throw new Error('Unable to get transaction: ' + txId);
-    }
-    if (skipConversion) {
-      // @ts-ignore
-      return transaction;
-    }
-    return this.$convertTransaction(transaction, addPrevout);
-  }
-
   async $getAddress(address: string): Promise<IEsploraApi.Address> {
     const addressInfo = await this.$validateAddress(address);
     if (!addressInfo || !addressInfo.isvalid) {

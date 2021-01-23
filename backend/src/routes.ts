@@ -531,7 +531,7 @@ class Routes {
 
   public async getTransaction(req: Request, res: Response) {
     try {
-      const transaction = await transactionUtils.$getTransactionExtended(req.params.txId, false, true);
+      const transaction = await transactionUtils.$getTransactionExtended(req.params.txId, true);
       res.json(transaction);
     } catch (e) {
       let statusCode = 500;
@@ -599,7 +599,7 @@ class Routes {
       const endIndex = Math.min(startingIndex + 10, txIds.length);
       for (let i = startingIndex; i < endIndex; i++) {
         try {
-          const transaction = await transactionUtils.$getTransactionExtended(txIds[i], false, true);
+          const transaction = await transactionUtils.$getTransactionExtended(txIds[i], true);
           transactions.push(transaction);
           loadingIndicators.setProgress('blocktxs-' + req.params.hash, (i + 1) / endIndex * 100);
         } catch (e) {

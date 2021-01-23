@@ -67,23 +67,6 @@ class Blocks {
       let transactionsFound = 0;
 
       for (let i = 0; i < txIds.length; i++) {
-        // When using bitcoind, just fetch the coinbase tx for now
-        if (config.MEMPOOL.BACKEND !== 'esplora' && i === 0) {
-          let txFound = false;
-          let findCoinbaseTxTries = 0;
-          // It takes Electrum Server a few seconds to index the transaction after a block is found
-          while (findCoinbaseTxTries < 5 && !txFound) {
-            try {
-              const tx = await transactionUtils.$getTransactionExtended(txIds[i]);
-              txFound = true;
-              transactions.push(tx);
-            } catch (e) {
-              logger.debug('Coinbase transaction fetch error: ' + e.message || e);
-              await Common.sleep(1000);
-              findCoinbaseTxTries++;
-            }
-          }
-        }
         if (mempool[txIds[i]]) {
           transactions.push(mempool[txIds[i]]);
           transactionsFound++;

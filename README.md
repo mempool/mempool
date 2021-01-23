@@ -96,7 +96,6 @@ Edit `mempool-config.json` to add your Bitcoin Core node RPC credentials:
     "HOST": "127.0.0.1",
     "PORT": 50002,
     "TLS_ENABLED": true,
-    "TX_LOOKUPS": false
   },
   "DATABASE": {
     "ENABLED": true,

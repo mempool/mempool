@@ -220,7 +220,7 @@ class WebsocketHandler {
         if (tx) {
           if (config.MEMPOOL.BACKEND !== 'esplora') {
             try {
-              const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, false, true);
+              const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, true);
               response['tx'] = fullTx;
             } catch (e) {
               logger.debug('Error finding transaction in mempool: ' + e.message || e);
@@ -240,7 +240,7 @@ class WebsocketHandler {
           if (someVin) {
             if (config.MEMPOOL.BACKEND !== 'esplora') {
               try {
-                const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, false, true);
+                const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, true);
                 foundTransactions.push(fullTx);
               } catch (e) {
                 logger.debug('Error finding transaction in mempool: ' + e.message || e);
@@ -254,7 +254,7 @@ class WebsocketHandler {
           if (someVout) {
             if (config.MEMPOOL.BACKEND !== 'esplora') {
               try {
-                const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, false, true);
+                const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, true);
                 foundTransactions.push(fullTx);
               } catch (e) {
                 logger.debug('Error finding transaction in mempool: ' + e.message || e);
@@ -305,7 +305,7 @@ class WebsocketHandler {
             const rbfTx = rbfTransactions[rbfTransaction];
             if (config.MEMPOOL.BACKEND !== 'esplora') {
               try {
-                const fullTx = await transactionUtils.$getTransactionExtended(rbfTransaction, false, true);
+                const fullTx = await transactionUtils.$getTransactionExtended(rbfTransaction, true);
                 response['rbfTransaction'] = fullTx;
               } catch (e) {
                 logger.debug('Error finding transaction in mempool: ' + e.message || e);
