@@ -233,8 +233,8 @@ class Bisq {
 
     this.stats = {
       addresses: Object.keys(this.addressIndex).length,
-      minted: minted,
-      burnt: burned,
+      minted: minted / 100,
+      burnt: burned / 100,
       spent_txos: spent,
       unspent_txos: unspent,
     };

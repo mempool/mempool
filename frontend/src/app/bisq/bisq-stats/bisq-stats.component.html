@@ -10,7 +10,7 @@
         <tbody *ngIf="!isLoading; else loadingTemplate">
           <tr>
             <td class="td-width" i18n="BSQ existing amount">Existing amount</td>
-            <td>{{ (stats.minted - stats.burnt) / 100 | number: '1.2-2' }} BSQ</td>
+            <td>{{ (stats.minted - stats.burnt) | number: '1.2-2' }} BSQ</td>
           </tr>
           <tr>
             <td i18n="BSQ minted amount">Minted amount</td>
