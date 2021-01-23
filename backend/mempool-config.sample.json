@@ -16,8 +16,7 @@
   "ELECTRUM": {
     "HOST": "127.0.0.1",
     "PORT": 50002,
-    "TLS_ENABLED": true,
-    "TX_LOOKUPS": false
+    "TLS_ENABLED": true
   },
   "ESPLORA": {
     "REST_API_URL": "http://127.0.0.1:3000"
