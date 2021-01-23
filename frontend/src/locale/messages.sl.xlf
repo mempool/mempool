@@ -1928,6 +1928,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b9565832c4caef9a03f2b30fe37495ff38566fd5">
         <source>Memory usage</source>
+        <target>Velikost</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">173</context>
@@ -1937,6 +1938,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1f9a922cb4010ee20eb9a241a22307b670f7628c">
         <source>Minimum fee</source>
+        <target>Najnižja omrežnina</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">166</context>
@@ -1946,6 +1948,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4c3955cfe5955657297481efaf3ada8c55c75b2c">
         <source>Purging</source>
+        <target>Prag</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">167</context>
@@ -2944,6 +2947,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="85ce9e4f45873116b746899169cbc3445321d60c">
         <source>This transaction does NOT support Replace-By-Fee (RBF) and cannot be fee bumped using this method</source>
+        <target>Ta transakcija NE omogoča povečanje omrežnine, z uporabo Replace-By-Fee (RBF).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">9</context>
