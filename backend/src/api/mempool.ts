@@ -103,8 +103,8 @@ class Mempool {
 
     for (const txid of transactions) {
       if (!this.mempoolCache[txid]) {
-        const transaction = await transactionUtils.$getTransactionExtended(txid, true);
-        if (transaction) {
+        try {
+          const transaction = await transactionUtils.$getTransactionExtended(txid, true);
           this.mempoolCache[txid] = transaction;
           txCount++;
           if (this.inSync) {
@@ -121,8 +121,8 @@ class Mempool {
             logger.debug('Fetched transaction ' + txCount);
           }
           newTransactions.push(transaction);
-        } else {
-          logger.debug('Error finding transaction in mempool.');
+        } catch (e) {
+          logger.debug('Error finding transaction in mempool: ' + e.message || e);
         }
       }
 
