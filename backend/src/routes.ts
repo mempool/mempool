@@ -532,14 +532,13 @@ class Routes {
   public async getTransaction(req: Request, res: Response) {
     try {
       const transaction = await transactionUtils.$getTransactionExtended(req.params.txId, false, true);
-
-      if (transaction) {
-        res.json(transaction);
-      } else {
-        res.status(500).send('Error fetching transaction.');
-      }
+      res.json(transaction);
     } catch (e) {
-      res.status(500).send(e.message || e);
+      let statusCode = 500;
+      if (e.message && e.message.indexOf('No such mempool or blockchain transaction') > -1) {
+        statusCode = 404;
+      }
+      res.status(statusCode).send(e.message || e);
     }
   }
 
@@ -599,10 +598,12 @@ class Routes {
 
       const endIndex = Math.min(startingIndex + 10, txIds.length);
       for (let i = startingIndex; i < endIndex; i++) {
-        const transaction = await transactionUtils.$getTransactionExtended(txIds[i], false, true);
-        if (transaction) {
+        try {
+          const transaction = await transactionUtils.$getTransactionExtended(txIds[i], false, true);
           transactions.push(transaction);
           loadingIndicators.setProgress('blocktxs-' + req.params.hash, (i + 1) / endIndex * 100);
+        } catch (e) {
+          logger.debug('getBlockTransactions error: ' + e.message || e);
         }
       }
       res.json(transactions);

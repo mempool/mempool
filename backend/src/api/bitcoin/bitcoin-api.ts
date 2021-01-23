@@ -5,7 +5,6 @@ import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
 import { IBitcoinApi } from './bitcoin-api.interface';
 import { IEsploraApi } from './esplora-api.interface';
 import blocks from '../blocks';
-import bitcoinBaseApi from './bitcoin-base.api';
 import mempool from '../mempool';
 import { TransactionExtended } from '../../mempool.interfaces';
 
@@ -202,12 +201,12 @@ class BitcoinApi implements AbstractBitcoinApi {
     }
     let mempoolEntry: IBitcoinApi.MempoolEntry;
     if (!mempool.isInSync() && !this.rawMempoolCache) {
-      this.rawMempoolCache = await bitcoinBaseApi.$getRawMempoolVerbose();
+      this.rawMempoolCache = await this.$getRawMempoolVerbose();
     }
     if (this.rawMempoolCache && this.rawMempoolCache[transaction.txid]) {
       mempoolEntry = this.rawMempoolCache[transaction.txid];
     } else {
-      mempoolEntry = await bitcoinBaseApi.$getMempoolEntry(transaction.txid);
+      mempoolEntry = await this.$getMempoolEntry(transaction.txid);
     }
     transaction.fee = mempoolEntry.fees.base * 100000000;
     return transaction;
@@ -236,6 +235,14 @@ class BitcoinApi implements AbstractBitcoinApi {
 
   protected $validateAddress(address: string): Promise<IBitcoinApi.AddressInformation> {
     return this.bitcoindClient.validateAddress(address);
+  }
+
+  private $getMempoolEntry(txid: string): Promise<IBitcoinApi.MempoolEntry> {
+    return this.bitcoindClient.getMempoolEntry(txid);
+  }
+
+  private $getRawMempoolVerbose(): Promise<IBitcoinApi.RawMempool> {
+    return this.bitcoindClient.getRawMemPool(true);
   }
 
   private async $calculateFeeFromInputs(transaction: IEsploraApi.Transaction, addPrevout: boolean): Promise<IEsploraApi.Transaction> {

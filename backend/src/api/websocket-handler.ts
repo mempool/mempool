@@ -219,9 +219,11 @@ class WebsocketHandler {
         const tx = newTransactions.find((t) => t.txid === client['track-mempool-tx']);
         if (tx) {
           if (config.MEMPOOL.BACKEND !== 'esplora') {
-            const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, false, true);
-            if (fullTx) {
+            try {
+              const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, false, true);
               response['tx'] = fullTx;
+            } catch (e) {
+              logger.debug('Error finding transaction in mempool: ' + e.message || e);
             }
           } else {
             response['tx'] = tx;
@@ -237,9 +239,11 @@ class WebsocketHandler {
           const someVin = tx.vin.some((vin) => !!vin.prevout && vin.prevout.scriptpubkey_address === client['track-address']);
           if (someVin) {
             if (config.MEMPOOL.BACKEND !== 'esplora') {
-              const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, false, true);
-              if (fullTx) {
+              try {
+                const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, false, true);
                 foundTransactions.push(fullTx);
+              } catch (e) {
+                logger.debug('Error finding transaction in mempool: ' + e.message || e);
               }
             } else {
               foundTransactions.push(tx);
@@ -249,9 +253,11 @@ class WebsocketHandler {
           const someVout = tx.vout.some((vout) => vout.scriptpubkey_address === client['track-address']);
           if (someVout) {
             if (config.MEMPOOL.BACKEND !== 'esplora') {
-              const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, false, true);
-              if (fullTx) {
+              try {
+                const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, false, true);
                 foundTransactions.push(fullTx);
+              } catch (e) {
+                logger.debug('Error finding transaction in mempool: ' + e.message || e);
               }
             } else {
               foundTransactions.push(tx);
@@ -298,9 +304,11 @@ class WebsocketHandler {
           if (client['track-tx'] === rbfTransaction) {
             const rbfTx = rbfTransactions[rbfTransaction];
             if (config.MEMPOOL.BACKEND !== 'esplora') {
-              const fullTx = await transactionUtils.$getTransactionExtended(rbfTransaction, false, true);
-              if (fullTx) {
+              try {
+                const fullTx = await transactionUtils.$getTransactionExtended(rbfTransaction, false, true);
                 response['rbfTransaction'] = fullTx;
+              } catch (e) {
+                logger.debug('Error finding transaction in mempool: ' + e.message || e);
               }
             } else {
               response['rbfTransaction'] = rbfTx;

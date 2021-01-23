@@ -73,11 +73,12 @@ class Blocks {
           let findCoinbaseTxTries = 0;
           // It takes Electrum Server a few seconds to index the transaction after a block is found
           while (findCoinbaseTxTries < 5 && !txFound) {
-            const tx = await transactionUtils.$getTransactionExtended(txIds[i]);
-            if (tx) {
+            try {
+              const tx = await transactionUtils.$getTransactionExtended(txIds[i]);
               txFound = true;
               transactions.push(tx);
-            } else {
+            } catch (e) {
+              logger.debug('Coinbase transaction fetch error: ' + e.message || e);
               await Common.sleep(1000);
               findCoinbaseTxTries++;
             }
@@ -88,9 +89,11 @@ class Blocks {
           transactionsFound++;
         } else if (config.MEMPOOL.BACKEND === 'esplora' || memPool.isInSync()) {
           logger.debug(`Fetching block tx ${i} of ${txIds.length}`);
-          const tx = await transactionUtils.$getTransactionExtended(txIds[i]);
-          if (tx) {
+          try {
+            const tx = await transactionUtils.$getTransactionExtended(txIds[i]);
             transactions.push(tx);
+          } catch (e) {
+            logger.debug('Error fetching block tx: ' + e.message || e);
           }
         }
       }

@@ -20,20 +20,14 @@ class TransactionUtils {
     };
   }
 
-  public async $getTransactionExtended(txId: string, forceBitcoind = false, addPrevouts = false): Promise<TransactionExtended | null> {
-    try {
-      let transaction: IEsploraApi.Transaction;
-      if (forceBitcoind) {
-        transaction = await bitcoinApi.$getRawTransactionBitcoind(txId, false, addPrevouts);
-      } else {
-        transaction = await bitcoinApi.$getRawTransaction(txId, false, addPrevouts);
-      }
-      return this.extendTransaction(transaction);
-    } catch (e) {
-      logger.debug('getTransactionExtended error: ' + (e.message || e));
-      logger.debug(JSON.stringify(e));
-      return null;
+  public async $getTransactionExtended(txId: string, forceBitcoind = false, addPrevouts = false): Promise<TransactionExtended> {
+    let transaction: IEsploraApi.Transaction;
+    if (forceBitcoind) {
+      transaction = await bitcoinApi.$getRawTransactionBitcoind(txId, false, addPrevouts);
+    } else {
+      transaction = await bitcoinApi.$getRawTransaction(txId, false, addPrevouts);
     }
+    return this.extendTransaction(transaction);
   }
 
   private extendTransaction(transaction: IEsploraApi.Transaction): TransactionExtended {
