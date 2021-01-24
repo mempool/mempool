@@ -1,18 +1,18 @@
 <table style="width: 100%;">
   <tr *ngIf="(isLoadingWebSocket$ | async) === false && (feeEstimations$ | async) as feeEstimations; else loadingFees">
-    <td class="d-none d-md-block">
+    <td class="d-none d-md-table-cell" style="width: 33%;">
       <h5 class="card-title" i18n="fees-box.low-priority">Low priority</h5>
       <p class="card-text">
         {{ feeEstimations.hourFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span> (<app-fiat [value]="feeEstimations.hourFee * 140" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat>)
       </p>
     </td>
-    <td>
+    <td style="width: 33%;">
       <h5 class="card-title" i18n="fees-box.medium-priority">Medium priority</h5>
       <p class="card-text">
         {{ feeEstimations.halfHourFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span> (<app-fiat [value]="feeEstimations.halfHourFee * 140" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat>)
       </p>
     </td>
-    <td>
+    <td style="width: 33%;">
       <h5 class="card-title" i18n="fees-box.high-priority">High priority</h5>
       <p class="card-text">
         {{ feeEstimations.fastestFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span> (<app-fiat [value]="feeEstimations.fastestFee * 140" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat>)
@@ -23,15 +23,15 @@
 
 <ng-template #loadingFees>
   <tr>
-    <td class="d-none d-md-block">
+    <td class="d-none d-md-table-cell" style="width: 33%;">
       <h5 class="card-title" i18n="fees-box.low-priority">Low priority</h5>
       <p class="card-text"><span class="skeleton-loader"></span></p>
     </td>
-    <td>
+    <td style="width: 33%;">
       <h5 class="card-title" i18n="fees-box.medium-priority">Medium priority</h5>
       <p class="card-text"><span class="skeleton-loader" style="width: 80%;"></span></p>
     </td>
-    <td>
+    <td style="width: 33%;">
       <h5 class="card-title" i18n="fees-box.high-priority">High priority</h5>
       <p class="card-text"><span class="skeleton-loader"></span></p>
     </td>
