@@ -44,10 +44,15 @@ nav {
 }
 
 .connection-badge {
-  margin-left: 10px;
   position: absolute;
   top: 13px;
-  left: 40px;
+  left: 0px;
+  width: 140px;
+}
+
+.badge {
+  margin: 0 auto;
+  display: table;
 }
 
 .mainnet.active {
