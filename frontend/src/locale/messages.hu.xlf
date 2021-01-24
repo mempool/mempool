@@ -508,7 +508,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="14779b0ce4cbc4d975a35a8fe074426228a324f3">
         <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> transactions</source>
-        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> tranzakciók</target>
+        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> tranzakció</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">88</context>
@@ -1232,7 +1232,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="489827bef9fd30645fd2a217aea141ac43bd01ef">
         <source>The mempool open-source project aims to implement a high quality explorer and visualization website for the entire Bitcoin ecosystem, without distractions like altcoins, advertising, or third-party trackers.</source>
-        <target>A mempool egy nyílt fórráskódú projekt amelye azt szeretné elérni, hogy kimagasló minőségű keresőt és vizualizációs webhelyet tartson fenn a teljes bitcoin ökoszitéma számára annélkül hogy figyelemelterelő szarpénzek, idegesítő hirdetések vagy más harmadik fél nyomkövetőket használna ehhez. </target>
+        <target>A mempool egy nyílt fórráskódú projekt amelyel azt szeretnénk elérni, hogy kimagasló minőségű keresőt és vizualizációs webhelyet tartsunk fenn a teljes bitcoin ökoszitéma számára annélkül hogy figyelemelterelő szarpénzek, idegesítő hirdetések vagy más harmadik fél általi nyomkövetőket használnánk ehhez. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">16</context>
@@ -1430,6 +1430,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0ae5beecbbfc96bcdf4f9a637aa72687e81ef5e1">
         <source>Tx vBytes per second:</source>
+        <target>Tx vBájt másorpercenként:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">5</context>
@@ -1637,6 +1638,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d2a84740e76b7220516a9f10644e4b3bdabdb833">
         <source>Peg In/Out and Burn Transactions</source>
+        <target>Betét/Kivét és Elégetési Tranzakciók</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">75</context>
@@ -1789,7 +1791,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f2385584215e9b925b6347de866110d5e07d3a35">
         <source>Low priority</source>
-        <target>Alacsony priorítású</target>
+        <target>Lassú</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">4</context>
@@ -1802,7 +1804,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0ba9d74c1d31a9d98829892f40334a22624564b8">
         <source>Medium priority</source>
-        <target>Közepes priorítású</target>
+        <target>Normál</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">10</context>
@@ -1815,7 +1817,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f80dd1511a91af4e592a538f95fa29d24907176f">
         <source>High priority</source>
-        <target>Magas priorítású</target>
+        <target>Elsőbbségi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">16</context>
@@ -1965,7 +1967,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="125c154b4a63daa7e993e1f4a8bea4c98a645142">
         <source>Difficulty adjustment</source>
-        <target>Nehézségifok módosítás</target>
+        <target>Bányászási nehézségifok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">209</context>
@@ -2115,6 +2117,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7d43b13f97ee52aae72d728a52af2e31f6edbf38">
         <source>Returns current mempool backlog statistics.</source>
+        <target>Visszaadja a mostani hátramaradt mempool statisztikáit.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">59</context>
@@ -2156,6 +2159,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3846f2527c3c9a50bb84b2c941a876f66797449b">
         <source>Returns a list of all txids in the block.</source>
+        <target>Visszaadja a blokk összes txidjét.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">97</context>
@@ -2191,6 +2195,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4767bdd2059533d5eed7f3fe7cf0be5c260cdb00">
         <source>Returns the height of the last block.</source>
+        <target>Visszaadja az utolsó blokk magasságát.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">117</context>
@@ -2198,6 +2203,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="940153d58769f1a8f50dba2458693142675a5dcb">
         <source>Returns the hash of the last block.</source>
+        <target>Visszaadja az utolsó blokk heshjét.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">121</context>
