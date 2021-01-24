@@ -220,12 +220,19 @@ class Server {
 
     if (config.MEMPOOL.BACKEND !== 'esplora') {
       this.app
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mempool', routes.getMempool)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mempool/txids', routes.getMempoolTxIds)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mempool/recent', routes.getRecentMempoolTransactions)
         .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId', routes.getTransaction)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/status', routes.getTransactionStatus)
         .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/outspends', routes.getTransactionOutspends)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash', routes.getBlock)
         .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/:height', routes.getBlocks)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'blocks', routes.getBlocks)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/:height', routes.getBlocks)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/height', routes.getBlockTipHeight)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txs', routes.getBlockTransactions)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txs/:index', routes.getBlockTransactions)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txids', routes.getTxIdsForBlock)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block-height/:height', routes.getBlockHeight)
         .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address', routes.getAddress)
         .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs', routes.getAddressTransactions)

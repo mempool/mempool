@@ -52,7 +52,8 @@ export class Common {
     return {
       txid: tx.txid,
       fee: tx.fee,
-      weight: tx.weight,
+      weight: tx.weight, // Deprecated
+      vsize: tx.weight / 4,
       value: tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0),
     };
   }

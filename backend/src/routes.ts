@@ -17,6 +17,7 @@ import bitcoinApi from './api/bitcoin/bitcoin-api-factory';
 import transactionUtils from './api/transaction-utils';
 import blocks from './api/blocks';
 import loadingIndicators from './api/loading-indicators';
+import { Common } from './api/common';
 
 class Routes {
   private cache: { [date: string]: OptimizedStatistic[] } = {
@@ -542,6 +543,19 @@ class Routes {
     }
   }
 
+  public async getTransactionStatus(req: Request, res: Response) {
+    try {
+      const transaction = await transactionUtils.$getTransactionExtended(req.params.txId, true);
+      res.json(transaction.status);
+    } catch (e) {
+      let statusCode = 500;
+      if (e.message && e.message.indexOf('No such mempool or blockchain transaction') > -1) {
+        statusCode = 404;
+      }
+      res.status(statusCode).send(e.message || e);
+    }
+  }
+
   public async getBlock(req: Request, res: Response) {
     try {
       const result = await bitcoinApi.$getBlock(req.params.hash);
@@ -594,7 +608,7 @@ class Routes {
 
       const txIds = await bitcoinApi.$getTxIdsForBlock(req.params.hash);
       const transactions: TransactionExtended[] = [];
-      const startingIndex = Math.max(0, parseInt(req.params.index, 10));
+      const startingIndex = Math.max(0, parseInt(req.params.index || '0', 10));
 
       const endIndex = Math.min(startingIndex + 10, txIds.length);
       for (let i = startingIndex; i < endIndex; i++) {
@@ -664,6 +678,45 @@ class Routes {
     try {
       const blockHash = await bitcoinApi.$getAddressPrefix(req.params.prefix);
       res.send(blockHash);
+    } catch (e) {
+      res.status(500).send(e.message || e);
+    }
+  }
+
+  public async getRecentMempoolTransactions(req: Request, res: Response) {
+    const latestTransactions = Object.entries(mempool.getMempool())
+      .sort((a, b) => (b[1].firstSeen || 0) - (a[1].firstSeen || 0))
+      .slice(0, 10).map((tx) => Common.stripTransaction(tx[1]));
+
+    res.json(latestTransactions);
+  }
+
+  public async getMempool(req: Request, res: Response) {
+    res.status(501).send('Not implemented');
+  }
+
+  public async getMempoolTxIds(req: Request, res: Response) {
+    try {
+      const rawMempool = await bitcoinApi.$getRawMempool();
+      res.send(rawMempool);
+    } catch (e) {
+      res.status(500).send(e.message || e);
+    }
+  }
+
+  public async getBlockTipHeight(req: Request, res: Response) {
+    try {
+      const result = await bitcoinApi.$getBlockHeightTip();
+      res.json(result);
+    } catch (e) {
+      res.status(500).send(e.message || e);
+    }
+  }
+
+  public async getTxIdsForBlock(req: Request, res: Response) {
+    try {
+      const result = await bitcoinApi.$getTxIdsForBlock(req.params.hash);
+      res.json(result);
     } catch (e) {
       res.status(500).send(e.message || e);
     }
