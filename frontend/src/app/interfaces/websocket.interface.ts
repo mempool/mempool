@@ -47,7 +47,7 @@ export interface MempoolInfo {
 export interface TransactionStripped {
   txid: string;
   fee: number;
-  weight: number;
+  vsize: number;
   value: number;
 }
 

@@ -31,7 +31,8 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
 export interface TransactionStripped {
   txid: string;
   fee: number;
-  weight: number;
+  weight?: number // deprecated
+  vsize: number;
   value: number;
 }
 export interface BlockExtended extends IEsploraApi.Block {
