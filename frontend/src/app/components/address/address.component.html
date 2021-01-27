@@ -42,6 +42,14 @@
     </div>
 
     <br>
+    <ng-template [ngIf]="hasNotificationPermission">
+      <button (click)="toggleNotifications(false)">disable notifications</button>
+    </ng-template>
+    <ng-template [ngIf]="!hasNotificationPermission">
+      <button (click)="toggleNotifications(true)">notify me when a transaction happens</button>
+    </ng-template>
+    <br>
+    <br>
 
     <h2>
       <ng-template [ngIf]="!transactions?.length">&nbsp;</ng-template>

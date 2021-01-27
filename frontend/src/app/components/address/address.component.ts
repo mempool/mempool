@@ -33,6 +33,9 @@ export class AddressComponent implements OnInit, OnDestroy {
   receieved = 0;
   sent = 0;
 
+  hasNotificationPermission = false;
+  activeNotification: Notification;
+
   private tempTransactions: Transaction[];
   private timeTxIndexes: number[];
   private lastTransactionTxId: string;
@@ -153,6 +156,20 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.audioService.playSound('chime');
         }
 
+        if (Notification.permission === 'granted' && document.visibilityState !== 'visible') {
+          if (this.activeNotification) {
+            this.activeNotification.close();
+          }
+          this.activeNotification = new Notification(this.addressString, { body: 'Got a transaction' });
+
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+              // The tab has become visible so clear the now-stale Notification.
+              this.activeNotification.close();
+            }
+          });
+        }
+
         transaction.vin.forEach((vin) => {
           if (vin.prevout.scriptpubkey_address === this.address.address) {
             this.sent += vin.prevout.value;
@@ -190,6 +207,16 @@ export class AddressComponent implements OnInit, OnDestroy {
         this.transactions = this.transactions.concat(transactions);
         this.isLoadingTransactions = false;
       });
+  }
+
+  toggleNotifications(enable) {
+    if (enable) {
+      Notification.requestPermission().then((result) => {
+        this.hasNotificationPermission = true;
+      });
+    } else {
+      this.hasNotificationPermission = false;
+    }
   }
 
   updateChainStats() {
