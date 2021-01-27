@@ -209,6 +209,10 @@ export class AddressComponent implements OnInit, OnDestroy {
     }
   }
 
+  hasNotificationSupport() {
+    return NotificationService.supportsNotifications();
+  }
+
   updateChainStats() {
     this.receieved = this.address.chain_stats.funded_txo_sum + this.address.mempool_stats.funded_txo_sum;
     this.sent = this.address.chain_stats.spent_txo_sum + this.address.mempool_stats.spent_txo_sum;

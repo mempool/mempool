@@ -10,7 +10,7 @@ export class NotificationService implements OnDestroy {
     document.addEventListener('visibilitychange', this.onVisibilityChange.bind(this));
   }
 
-  private static supportsNotifications() {
+  public static supportsNotifications() {
     if (!window || !('Notification' in window)) {
       return false;
     }

@@ -43,14 +43,16 @@
 
     <br>
 
-    <div class="float-right">
-      <ng-template [ngIf]="sendNotifications">
-        <button class="btn btn-sm btn-outline-info" (click)="toggleNotifications(false)"><fa-icon [icon]="['fas', 'bell-slash']"></fa-icon> &nbsp; <span i18n="address.disable-desktop-notifications">Disable desktop notifications</span></button>
-      </ng-template>
-      <ng-template [ngIf]="!sendNotifications">
-        <button class="btn btn-sm btn-outline-info" (click)="toggleNotifications(true)"><fa-icon [icon]="['fas', 'bell']"></fa-icon> &nbsp; <span i18n="address.enable-desktop-notifications">Enable desktop notifications</span></button>
-      </ng-template>
-    </div>
+    <ng-template [ngIf]="hasNotificationSupport()">
+      <div class="float-right">
+        <ng-template [ngIf]="sendNotifications">
+          <button class="btn btn-sm btn-outline-info" (click)="toggleNotifications(false)"><fa-icon [icon]="['fas', 'bell-slash']"></fa-icon> &nbsp; <span i18n="address.disable-desktop-notifications">Disable desktop notifications</span></button>
+        </ng-template>
+        <ng-template [ngIf]="!sendNotifications">
+          <button class="btn btn-sm btn-outline-info" (click)="toggleNotifications(true)"><fa-icon [icon]="['fas', 'bell']"></fa-icon> &nbsp; <span i18n="address.enable-desktop-notifications">Enable desktop notifications</span></button>
+        </ng-template>
+      </div>
+    </ng-template>
 
     <h2>
       <ng-template [ngIf]="!transactions?.length">&nbsp;</ng-template>
