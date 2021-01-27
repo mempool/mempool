@@ -35,7 +35,6 @@ export class AddressComponent implements OnInit, OnDestroy {
   sent = 0;
 
   sendNotifications = false;
-  activeNotification: Notification;
 
   private tempTransactions: Transaction[];
   private timeTxIndexes: number[];
@@ -158,15 +157,8 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.audioService.playSound('chime');
         }
 
-        if (this.sendNotifications && this.notificationService.hasNotificationPermission() && document.visibilityState !== 'visible') {
+        if (this.sendNotifications && this.notificationService.hasNotificationPermission()) {
           this.notificationService.sendNotification(this.addressString, $localize`:@@address.new-transaction-notification-body:A new transaction was seen`);
-
-          document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-              // The tab has become visible so clear the now-stale Notification.
-              this.notificationService.closeNotification();
-            }
-          });
         }
 
         transaction.vin.forEach((vin) => {
