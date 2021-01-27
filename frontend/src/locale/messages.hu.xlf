@@ -282,7 +282,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bc5b0a2631f0b7bc71aaec6aa6f01af21f9a80d4">
         <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> confirmations</source>
-        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> konfirmációk</target>
+        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> konfirmáció</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">206</context>
@@ -563,7 +563,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a9b87c3aa4731edee661c8287ef3aab71799c0b8">
         <source>Total received</source>
-        <target>Összes fogadott</target>
+        <target>Összesen fogadott</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">20</context>
@@ -576,7 +576,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f149942f271231be52f55589398967093382d96d">
         <source>Total sent</source>
-        <target>Összes küldött</target>
+        <target>Összesen küldött</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">24</context>
@@ -606,7 +606,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="714e34125b3343df73f19ec800b43be95217d5d4">
         <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> transaction</source>
-        <target><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> a <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/>-ből tranzakció</target>
+        <target><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> a <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/>-ből/ból tranzakció</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">48</context>
@@ -615,7 +615,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0f6ada0cfb60aefd8f77f8a22349850ce186d666">
         <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> transactions</source>
-        <target><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> a <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/>-ből/ból tranzakciók</target>
+        <target><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> a <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/>-ből/ból tranzakció</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">49</context>
@@ -1095,7 +1095,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="9f10a0577222a7d6c35a889453fa3a794750d9c4">
         <source>multisig <x equiv-text="{{ multisigM }}" id="INTERPOLATION"/> of <x equiv-text="{{ multisigN }}" id="INTERPOLATION_1"/></source>
-        <target><x equiv-text="{{ multisigM }}" id="INTERPOLATION"/> a <x equiv-text="{{ multisigN }}" id="INTERPOLATION_1"/>-ből multiszignatúra</target>
+        <target><x equiv-text="{{ multisigM }}" id="INTERPOLATION"/> - <x equiv-text="{{ multisigN }}" id="INTERPOLATION_1"/> multiszignatúra</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
           <context context-type="linenumber">1</context>
@@ -1184,7 +1184,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5d4f792f048fcaa6df5948575d7cb325c9393383">
         <source>Graphs</source>
-        <target>Gráfok</target>
+        <target>Grafikon</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">46</context>
@@ -1384,7 +1384,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ff4b7f4070be9e876c7610d99b9dbd53ff19dceb">
         <source>Loading graphs...</source>
-        <target>Gráfok betöltése...</target>
+        <target>Grafikon betöltése...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">6</context>
@@ -1393,7 +1393,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="75c20c8a9cd9723d45bee0230dd582d7c2e4ecbc">
         <source>Mempool by vBytes (sat/vByte)</source>
-        <target>Mempool vBájtul (sat/vBájt)</target>
+        <target>Mempool vBájtonként (sat/vBájt)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">16</context>
