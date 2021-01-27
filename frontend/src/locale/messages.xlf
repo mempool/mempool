@@ -2,25 +2,443 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en-US" datatype="plaintext" original="ng2.template">
     <body>
-      <trans-unit id="30751732ff4b8f6ddb2a906e0173072ac29d412a" datatype="html">
-        <source>Confidential</source>
+      <trans-unit id="bisq.transaction.browser-title" datatype="html">
+        <source>Transaction: <x id="INTERPOLATION" equiv-text="this.txId"/></source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/amount/amount.component.html</context>
-          <context context-type="linenumber">6</context>
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.ts</context>
+          <context context-type="linenumber">48</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.ts</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="b59ea65c89a5ae15b787d8318fdad9edd6fec243" datatype="html">
+        <source>Transaction</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <note priority="1" from="description">shared.transaction</note>
+      </trans-unit>
+      <trans-unit id="0094b97dd052620710f173e7aedf6807a1eba1f5" datatype="html">
+        <source>This transaction has been replaced by:</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+        <note priority="1" from="description">RBF replacement</note>
+        <note priority="1" from="meaning">transaction.rbf.replacement</note>
+      </trans-unit>
+      <trans-unit id="8e623d3cfecb7c560c114390db53c1f430ffd0de" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> confirmation</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">17</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">214</context>
+          <context context-type="linenumber">205</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">132</context>
+          <context context-type="sourcefile">src/app/bisq/bisq-transfers/bisq-transfers.component.html</context>
+          <context context-type="linenumber">69</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
-          <context context-type="linenumber">143</context>
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">9</context>
         </context-group>
-        <note priority="1" from="description">shared.confidential</note>
+        <note priority="1" from="description">Transaction singular confirmation count</note>
+        <note priority="1" from="meaning">shared.confirmation-count.singular</note>
+      </trans-unit>
+      <trans-unit id="bc5b0a2631f0b7bc71aaec6aa6f01af21f9a80d4" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> confirmations</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
+          <context context-type="linenumber">206</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transfers/bisq-transfers.component.html</context>
+          <context context-type="linenumber">70</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+        <note priority="1" from="description">Transaction plural confirmation count</note>
+        <note priority="1" from="meaning">shared.confirmation-count.plural</note>
+      </trans-unit>
+      <trans-unit id="ef772ce5cf98a47b29175e3d46b8a9816c7990a2" datatype="html">
+        <source>Unconfirmed</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
+          <context context-type="linenumber">209</context>
+        </context-group>
+        <note priority="1" from="description">Transaction unconfirmed state</note>
+        <note priority="1" from="meaning">transaction.unconfirmed</note>
+      </trans-unit>
+      <trans-unit id="31d8d7f29ddbd3f64d374a132ddacd5e4a0835a2" datatype="html">
+        <source>Inputs &amp; Outputs</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">168</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">88</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">148</context>
+        </context-group>
+        <note priority="1" from="description">Transaction inputs and outputs</note>
+        <note priority="1" from="meaning">transaction.inputs-and-outputs</note>
+      </trans-unit>
+      <trans-unit id="5f32c623f92bf3ca31202cc6281d4abd5febaf6a" datatype="html">
+        <source>Details</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">170</context>
+        </context-group>
+        <note priority="1" from="description">Transaction Details</note>
+        <note priority="1" from="meaning">transaction.details</note>
+      </trans-unit>
+      <trans-unit id="4f8b2bb476981727ab34ed40fde1218361f92c45" datatype="html">
+        <source>Details</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">176</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">252</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">81</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">127</context>
+        </context-group>
+        <note priority="1" from="description">transaction.details</note>
+      </trans-unit>
+      <trans-unit id="35214e7a6aec1b0317e0fa1eb32e8caf6757b147" datatype="html">
+        <source>Size</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">181</context>
+        </context-group>
+        <note priority="1" from="description">Transaction Size</note>
+        <note priority="1" from="meaning">transaction.size</note>
+      </trans-unit>
+      <trans-unit id="54c58b39481f1749fce23fa8a77f616eee84d761" datatype="html">
+        <source>Virtual size</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">185</context>
+        </context-group>
+        <note priority="1" from="description">Transaction Virtual Size</note>
+        <note priority="1" from="meaning">transaction.vsize</note>
+      </trans-unit>
+      <trans-unit id="13f5a75f3e01e5924e45052d2f336eda8bac37e8" datatype="html">
+        <source>Weight</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">189</context>
+        </context-group>
+        <note priority="1" from="description">Transaction Weight</note>
+        <note priority="1" from="meaning">transaction.weight</note>
+      </trans-unit>
+      <trans-unit id="804faeaeb734a942eeb814dd53eceed25427d864" datatype="html">
+        <source>Timestamp</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
+          <context context-type="linenumber">84</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+        <note priority="1" from="description">Transaction Timestamp</note>
+        <note priority="1" from="meaning">transaction.timestamp</note>
+      </trans-unit>
+      <trans-unit id="cb1b52c13b95fa29ea4044f2bbe0ac623b890c80" datatype="html">
+        <source>Fee</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">79</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">152</context>
+        </context-group>
+        <note priority="1" from="description">Transaction fee</note>
+        <note priority="1" from="meaning">transaction.fee</note>
+      </trans-unit>
+      <trans-unit id="071dc2ed21e40ad2199ea5dda884f48c0414a42a" datatype="html">
+        <source>sat</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">80</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">153</context>
+        </context-group>
+        <note priority="1" from="description">Transaction Fee sat</note>
+        <note priority="1" from="meaning">transaction.fee.sat</note>
+      </trans-unit>
+      <trans-unit id="e5026f6e33b13e7d8185288b9691d006a139d36d" datatype="html">
+        <source>Fee per vByte</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">83</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">156</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">62</context>
+        </context-group>
+        <note priority="1" from="description">Transaction fee</note>
+        <note priority="1" from="meaning">transaction.fee-per-vbyte</note>
+      </trans-unit>
+      <trans-unit id="d2eb45d1cd8cd146b7cb0223ab97a4b03b614060" datatype="html">
+        <source>sat/vB</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">85</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">157</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
+          <context context-type="linenumber">198</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">117</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">169</context>
+        </context-group>
+        <note priority="1" from="description">sat/vB</note>
+        <note priority="1" from="meaning">shared.sat-vbyte</note>
+      </trans-unit>
+      <trans-unit id="0d6ed649666c5cdcf12be0216d82051bba3614b0" datatype="html">
+        <source>Included in block</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+        <note priority="1" from="description">Transaction included in block</note>
+        <note priority="1" from="meaning">transaction.included-in-block</note>
+      </trans-unit>
+      <trans-unit id="bfa87f9724434e4245b30f2bdd11d97477048cd1" datatype="html">
+        <source>Confirmed</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">62</context>
+        </context-group>
+        <note priority="1" from="description">Transaction Confirmed state</note>
+        <note priority="1" from="meaning">transaction.confirmed</note>
+      </trans-unit>
+      <trans-unit id="7917764f923dd6b723b1cff254c7f5b837d1c48a" datatype="html">
+        <source>After <x id="START_TAG_APP_TIMESPAN" ctype="x-app_timespan" equiv-text="&lt;app-timespan [time]=&quot;tx.status.block_time - transactionTime&quot;&gt;"/><x id="CLOSE_TAG_APP_TIMESPAN" ctype="x-app_timespan" equiv-text="&lt;/app-timespan&gt;"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+        <note priority="1" from="description">Transaction confirmed after</note>
+        <note priority="1" from="meaning">transaction.confirmed.after</note>
+      </trans-unit>
+      <trans-unit id="885666551418fd59011ceb09d5c481095940193b" datatype="html">
+        <source>Features</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">67</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">140</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+        <note priority="1" from="description">Transaction features</note>
+        <note priority="1" from="meaning">transaction.features</note>
+      </trans-unit>
+      <trans-unit id="4e738ef3d2b4878f17f43002204f7b31aabb8e87" datatype="html">
+        <source>ETA</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">119</context>
+        </context-group>
+        <note priority="1" from="description">Transaction ETA</note>
+        <note priority="1" from="meaning">transaction.eta</note>
+      </trans-unit>
+      <trans-unit id="1bc4a5de56ea48a832e32294c124009867b478d0" datatype="html">
+        <source>First seen</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">113</context>
+        </context-group>
+        <note priority="1" from="description">Transaction first seen</note>
+        <note priority="1" from="meaning">transaction.first-seen</note>
+      </trans-unit>
+      <trans-unit id="f9bad781ea9c5192160516ca55ddc5edc307ef07" datatype="html">
+        <source>In several hours (or more)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">126</context>
+        </context-group>
+        <note priority="1" from="description">Transaction ETA in several hours or more</note>
+        <note priority="1" from="meaning">transaction.eta.in-several-hours</note>
+      </trans-unit>
+      <trans-unit id="c9d9612bcd520103486b5fc84d84c9476a1b7f78" datatype="html">
+        <source>Transaction not found.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">277</context>
+        </context-group>
+        <note priority="1" from="description">transaction.error.transaction-not-found</note>
+      </trans-unit>
+      <trans-unit id="66b65556acb90d8764fe166a260af0309671698c" datatype="html">
+        <source>Waiting for it to appear in the mempool...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">278</context>
+        </context-group>
+        <note priority="1" from="description">transaction.error.waiting-for-it-to-appear</note>
+      </trans-unit>
+      <trans-unit id="02c35681bc187cde4d0d3a98a3a1f2035dfe7398" datatype="html">
+        <source>In ~<x id="INTERPOLATION" equiv-text="{{ i }}"/> minutes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">293</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+        <note priority="1" from="description">Block Frequency (plural)</note>
+        <note priority="1" from="meaning">mempool-blocks.eta-of-next-block-plural</note>
+      </trans-unit>
+      <trans-unit id="e8b52d333f9395e1ae9c541d45dfb8c1cd017424" datatype="html">
+        <source>In ~<x id="INTERPOLATION" equiv-text="{{ i }}"/> minute</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">295</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
+          <context context-type="linenumber">43</context>
+        </context-group>
+        <note priority="1" from="description">Block Frequency</note>
+        <note priority="1" from="meaning">mempool-blocks.eta-of-next-block</note>
+      </trans-unit>
+      <trans-unit id="3aef75db6f65e1371d54d8bed1767299de9457d8" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">297</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+        <note priority="1" from="description">shared.block</note>
+      </trans-unit>
+      <trans-unit id="588930712875bfa0834655249093d99eaa3d162e" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">298</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+        <note priority="1" from="description">shared.blocks</note>
       </trans-unit>
       <trans-unit id="7e06b8dd9f29261827018351cd71efe1c87839de" datatype="html">
         <source>Coinbase</source>
@@ -166,71 +584,6 @@
         </context-group>
         <note priority="1" from="description">transactions-list.vout.scriptpubkey-type.data</note>
       </trans-unit>
-      <trans-unit id="d2eb45d1cd8cd146b7cb0223ab97a4b03b614060" datatype="html">
-        <source>sat/vB</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">198</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">46</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">85</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">157</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
-          <context context-type="linenumber">8</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
-          <context context-type="linenumber">11</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
-          <context context-type="linenumber">10</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
-          <context context-type="linenumber">13</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
-          <context context-type="linenumber">17</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
-          <context context-type="linenumber">21</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">6</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">12</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">18</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">117</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">169</context>
-        </context-group>
-        <note priority="1" from="description">sat/vB</note>
-        <note priority="1" from="meaning">shared.sat-vbyte</note>
-      </trans-unit>
       <trans-unit id="83b8b9dd1ed416447cf8438460a37b0ddeb2677c" datatype="html">
         <source>sat</source>
         <context-group purpose="location">
@@ -240,60 +593,25 @@
         <note priority="1" from="description">sat</note>
         <note priority="1" from="meaning">shared.sat</note>
       </trans-unit>
-      <trans-unit id="8e623d3cfecb7c560c114390db53c1f430ffd0de" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> confirmation</source>
+      <trans-unit id="30751732ff4b8f6ddb2a906e0173072ac29d412a" datatype="html">
+        <source>Confidential</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">205</context>
+          <context context-type="linenumber">214</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">17</context>
+          <context context-type="sourcefile">src/app/components/amount/amount.component.html</context>
+          <context context-type="linenumber">6</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transfers/bisq-transfers.component.html</context>
-          <context context-type="linenumber">69</context>
+          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">132</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">9</context>
+          <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
+          <context context-type="linenumber">143</context>
         </context-group>
-        <note priority="1" from="description">Transaction singular confirmation count</note>
-        <note priority="1" from="meaning">shared.confirmation-count.singular</note>
-      </trans-unit>
-      <trans-unit id="bc5b0a2631f0b7bc71aaec6aa6f01af21f9a80d4" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> confirmations</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">206</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">18</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transfers/bisq-transfers.component.html</context>
-          <context context-type="linenumber">70</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">10</context>
-        </context-group>
-        <note priority="1" from="description">Transaction plural confirmation count</note>
-        <note priority="1" from="meaning">shared.confirmation-count.plural</note>
-      </trans-unit>
-      <trans-unit id="ef772ce5cf98a47b29175e3d46b8a9816c7990a2" datatype="html">
-        <source>Unconfirmed</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">209</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">22</context>
-        </context-group>
-        <note priority="1" from="description">Transaction unconfirmed state</note>
-        <note priority="1" from="meaning">transaction.unconfirmed</note>
+        <note priority="1" from="description">shared.confidential</note>
       </trans-unit>
       <trans-unit id="block.component.browser-title" datatype="html">
         <source>Block <x id="BLOCK_HEIGHT" equiv-text="block.height"/>: <x id="BLOCK_ID" equiv-text="block.id"/></source>
@@ -622,11 +940,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">32</context>
+          <context context-type="linenumber">34</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">43</context>
+          <context context-type="linenumber">45</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.ts</context>
@@ -678,7 +996,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">29</context>
+          <context context-type="linenumber">31</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
@@ -697,324 +1015,6 @@
           <context context-type="linenumber">2</context>
         </context-group>
         <note priority="1" from="description">latest-blocks.transactions</note>
-      </trans-unit>
-      <trans-unit id="bisq.transaction.browser-title" datatype="html">
-        <source>Transaction: <x id="INTERPOLATION" equiv-text="this.txId"/></source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.ts</context>
-          <context context-type="linenumber">48</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.ts</context>
-          <context context-type="linenumber">46</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="b59ea65c89a5ae15b787d8318fdad9edd6fec243" datatype="html">
-        <source>Transaction</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">12</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">3</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
-          <context context-type="linenumber">18</context>
-        </context-group>
-        <note priority="1" from="description">shared.transaction</note>
-      </trans-unit>
-      <trans-unit id="0094b97dd052620710f173e7aedf6807a1eba1f5" datatype="html">
-        <source>This transaction has been replaced by:</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">5</context>
-        </context-group>
-        <note priority="1" from="description">RBF replacement</note>
-        <note priority="1" from="meaning">transaction.rbf.replacement</note>
-      </trans-unit>
-      <trans-unit id="31d8d7f29ddbd3f64d374a132ddacd5e4a0835a2" datatype="html">
-        <source>Inputs &amp; Outputs</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">168</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">88</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">148</context>
-        </context-group>
-        <note priority="1" from="description">Transaction inputs and outputs</note>
-        <note priority="1" from="meaning">transaction.inputs-and-outputs</note>
-      </trans-unit>
-      <trans-unit id="5f32c623f92bf3ca31202cc6281d4abd5febaf6a" datatype="html">
-        <source>Details</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">170</context>
-        </context-group>
-        <note priority="1" from="description">Transaction Details</note>
-        <note priority="1" from="meaning">transaction.details</note>
-      </trans-unit>
-      <trans-unit id="4f8b2bb476981727ab34ed40fde1218361f92c45" datatype="html">
-        <source>Details</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">176</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">252</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">81</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">127</context>
-        </context-group>
-        <note priority="1" from="description">transaction.details</note>
-      </trans-unit>
-      <trans-unit id="35214e7a6aec1b0317e0fa1eb32e8caf6757b147" datatype="html">
-        <source>Size</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">181</context>
-        </context-group>
-        <note priority="1" from="description">Transaction Size</note>
-        <note priority="1" from="meaning">transaction.size</note>
-      </trans-unit>
-      <trans-unit id="54c58b39481f1749fce23fa8a77f616eee84d761" datatype="html">
-        <source>Virtual size</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">185</context>
-        </context-group>
-        <note priority="1" from="description">Transaction Virtual Size</note>
-        <note priority="1" from="meaning">transaction.vsize</note>
-      </trans-unit>
-      <trans-unit id="13f5a75f3e01e5924e45052d2f336eda8bac37e8" datatype="html">
-        <source>Weight</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">189</context>
-        </context-group>
-        <note priority="1" from="description">Transaction Weight</note>
-        <note priority="1" from="meaning">transaction.weight</note>
-      </trans-unit>
-      <trans-unit id="804faeaeb734a942eeb814dd53eceed25427d864" datatype="html">
-        <source>Timestamp</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">46</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
-          <context context-type="linenumber">21</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
-          <context context-type="linenumber">84</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">27</context>
-        </context-group>
-        <note priority="1" from="description">Transaction Timestamp</note>
-        <note priority="1" from="meaning">transaction.timestamp</note>
-      </trans-unit>
-      <trans-unit id="cb1b52c13b95fa29ea4044f2bbe0ac623b890c80" datatype="html">
-        <source>Fee</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">79</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">152</context>
-        </context-group>
-        <note priority="1" from="description">Transaction fee</note>
-        <note priority="1" from="meaning">transaction.fee</note>
-      </trans-unit>
-      <trans-unit id="071dc2ed21e40ad2199ea5dda884f48c0414a42a" datatype="html">
-        <source>sat</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">80</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">153</context>
-        </context-group>
-        <note priority="1" from="description">Transaction Fee sat</note>
-        <note priority="1" from="meaning">transaction.fee.sat</note>
-      </trans-unit>
-      <trans-unit id="e5026f6e33b13e7d8185288b9691d006a139d36d" datatype="html">
-        <source>Fee per vByte</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">83</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">156</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">62</context>
-        </context-group>
-        <note priority="1" from="description">Transaction fee</note>
-        <note priority="1" from="meaning">transaction.fee-per-vbyte</note>
-      </trans-unit>
-      <trans-unit id="0d6ed649666c5cdcf12be0216d82051bba3614b0" datatype="html">
-        <source>Included in block</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">55</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">36</context>
-        </context-group>
-        <note priority="1" from="description">Transaction included in block</note>
-        <note priority="1" from="meaning">transaction.included-in-block</note>
-      </trans-unit>
-      <trans-unit id="bfa87f9724434e4245b30f2bdd11d97477048cd1" datatype="html">
-        <source>Confirmed</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">62</context>
-        </context-group>
-        <note priority="1" from="description">Transaction Confirmed state</note>
-        <note priority="1" from="meaning">transaction.confirmed</note>
-      </trans-unit>
-      <trans-unit id="7917764f923dd6b723b1cff254c7f5b837d1c48a" datatype="html">
-        <source>After <x id="START_TAG_APP_TIMESPAN" ctype="x-app_timespan" equiv-text="&lt;app-timespan [time]=&quot;tx.status.block_time - transactionTime&quot;&gt;"/><x id="CLOSE_TAG_APP_TIMESPAN" ctype="x-app_timespan" equiv-text="&lt;/app-timespan&gt;"/></source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">63</context>
-        </context-group>
-        <note priority="1" from="description">Transaction confirmed after</note>
-        <note priority="1" from="meaning">transaction.confirmed.after</note>
-      </trans-unit>
-      <trans-unit id="885666551418fd59011ceb09d5c481095940193b" datatype="html">
-        <source>Features</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">67</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">140</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">42</context>
-        </context-group>
-        <note priority="1" from="description">Transaction features</note>
-        <note priority="1" from="meaning">transaction.features</note>
-      </trans-unit>
-      <trans-unit id="4e738ef3d2b4878f17f43002204f7b31aabb8e87" datatype="html">
-        <source>ETA</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">119</context>
-        </context-group>
-        <note priority="1" from="description">Transaction ETA</note>
-        <note priority="1" from="meaning">transaction.eta</note>
-      </trans-unit>
-      <trans-unit id="1bc4a5de56ea48a832e32294c124009867b478d0" datatype="html">
-        <source>First seen</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">113</context>
-        </context-group>
-        <note priority="1" from="description">Transaction first seen</note>
-        <note priority="1" from="meaning">transaction.first-seen</note>
-      </trans-unit>
-      <trans-unit id="f9bad781ea9c5192160516ca55ddc5edc307ef07" datatype="html">
-        <source>In several hours (or more)</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">126</context>
-        </context-group>
-        <note priority="1" from="description">Transaction ETA in several hours or more</note>
-        <note priority="1" from="meaning">transaction.eta.in-several-hours</note>
-      </trans-unit>
-      <trans-unit id="c9d9612bcd520103486b5fc84d84c9476a1b7f78" datatype="html">
-        <source>Transaction not found.</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">277</context>
-        </context-group>
-        <note priority="1" from="description">transaction.error.transaction-not-found</note>
-      </trans-unit>
-      <trans-unit id="66b65556acb90d8764fe166a260af0309671698c" datatype="html">
-        <source>Waiting for it to appear in the mempool...</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">278</context>
-        </context-group>
-        <note priority="1" from="description">transaction.error.waiting-for-it-to-appear</note>
-      </trans-unit>
-      <trans-unit id="02c35681bc187cde4d0d3a98a3a1f2035dfe7398" datatype="html">
-        <source>In ~<x id="INTERPOLATION" equiv-text="{{ i }}"/> minutes</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">293</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
-          <context context-type="linenumber">41</context>
-        </context-group>
-        <note priority="1" from="description">Block Frequency (plural)</note>
-        <note priority="1" from="meaning">mempool-blocks.eta-of-next-block-plural</note>
-      </trans-unit>
-      <trans-unit id="e8b52d333f9395e1ae9c541d45dfb8c1cd017424" datatype="html">
-        <source>In ~<x id="INTERPOLATION" equiv-text="{{ i }}"/> minute</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">295</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
-          <context context-type="linenumber">43</context>
-        </context-group>
-        <note priority="1" from="description">Block Frequency</note>
-        <note priority="1" from="meaning">mempool-blocks.eta-of-next-block</note>
-      </trans-unit>
-      <trans-unit id="3aef75db6f65e1371d54d8bed1767299de9457d8" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">297</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
-          <context context-type="linenumber">22</context>
-        </context-group>
-        <note priority="1" from="description">shared.block</note>
-      </trans-unit>
-      <trans-unit id="588930712875bfa0834655249093d99eaa3d162e" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">298</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
-          <context context-type="linenumber">30</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
-          <context context-type="linenumber">23</context>
-        </context-group>
-        <note priority="1" from="description">shared.blocks</note>
       </trans-unit>
       <trans-unit id="9f10a0577222a7d6c35a889453fa3a794750d9c4" datatype="html">
         <source>multisig <x id="INTERPOLATION" equiv-text="{{ multisigM }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ multisigN }}"/></source>
@@ -1036,7 +1036,7 @@
         <source>API</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">56</context>
+          <context context-type="linenumber">58</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.ts</context>
@@ -1048,7 +1048,7 @@
         <source>About</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">59</context>
+          <context context-type="linenumber">61</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.ts</context>
@@ -1060,7 +1060,7 @@
         <source>Offline</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">7</context>
+          <context context-type="linenumber">8</context>
         </context-group>
         <note priority="1" from="description">master-page.offline</note>
       </trans-unit>
@@ -1068,7 +1068,7 @@
         <source>Reconnecting...</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">8</context>
+          <context context-type="linenumber">9</context>
         </context-group>
         <note priority="1" from="description">master-page.reconnecting</note>
       </trans-unit>
@@ -1076,7 +1076,7 @@
         <source>Layer 2 Networks</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">19</context>
+          <context context-type="linenumber">21</context>
         </context-group>
         <note priority="1" from="description">master-page.layer2-networks-header</note>
       </trans-unit>
@@ -1084,7 +1084,7 @@
         <source>Stats</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">35</context>
+          <context context-type="linenumber">37</context>
         </context-group>
         <note priority="1" from="description">master-page.stats</note>
       </trans-unit>
@@ -1092,7 +1092,7 @@
         <source>Dashboard</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">40</context>
+          <context context-type="linenumber">42</context>
         </context-group>
         <note priority="1" from="description">master-page.dashboard</note>
       </trans-unit>
@@ -1100,7 +1100,7 @@
         <source>Graphs</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">46</context>
+          <context context-type="linenumber">48</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.ts</context>
@@ -1112,7 +1112,7 @@
         <source>TV view</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">49</context>
+          <context context-type="linenumber">51</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/television/television.component.ts</context>
@@ -1124,7 +1124,7 @@
         <source>Assets</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">53</context>
+          <context context-type="linenumber">55</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.ts</context>
@@ -2253,6 +2253,115 @@
           <context context-type="linenumber">15</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="f85c05147b720576e50336cf26f63d3b05601699" datatype="html">
+        <source>This transaction saved <x id="INTERPOLATION" equiv-text="ction saved {{ segwitGains.realizedGains * 100 | number:"/>% on fees by using native SegWit-Bech32</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+        <note priority="1" from="description">ngbTooltip about segwit gains</note>
+      </trans-unit>
+      <trans-unit id="0ca27703757bf9a636a0b9b61e6a0cf248781cb4" datatype="html">
+        <source>SegWit</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+        <note priority="1" from="description">SegWit</note>
+        <note priority="1" from="meaning">tx-features.tag.segwit</note>
+      </trans-unit>
+      <trans-unit id="975f46d122f2ca0a187308399a58b44d61ef08eb" datatype="html">
+        <source>This transaction saved <x id="INTERPOLATION" equiv-text="ction saved {{ segwitGains.realizedGains * 100 | number:"/>% on fees by using SegWit and could save <x id="INTERPOLATION_1" equiv-text=" could save {{ segwitGains.potentialBech32Gains * 100 | number "/>% more by fully upgrading to native SegWit-Bech32</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <note priority="1" from="description">ngbTooltip about double segwit gains</note>
+      </trans-unit>
+      <trans-unit id="1be04d5407059059b596f72696a3d1704ce9c0ef" datatype="html">
+        <source>This transaction could save <x id="INTERPOLATION" equiv-text=" could save {{ segwitGains.potentialBech32Gains * 100 | number "/>% on fees by upgrading to native SegWit-Bech32 or <x id="INTERPOLATION_1" equiv-text="t-Bech32 or {{ segwitGains.potentialP2shGains * 100 | number:"/>% by upgrading to SegWit-P2SH</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+        <note priority="1" from="description">ngbTooltip about missed out gains</note>
+      </trans-unit>
+      <trans-unit id="5531c86f8e09b83930f66566fb85baf3057e2f51" datatype="html">
+        <source>This transaction support Replace-By-Fee (RBF) allowing fee bumping</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+        <note priority="1" from="description">RBF tooltip</note>
+      </trans-unit>
+      <trans-unit id="f0e7d6d900658ee5ce66d8fef3637caf13891c53" datatype="html">
+        <source>RBF</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+        <note priority="1" from="description">RBF</note>
+        <note priority="1" from="meaning">tx-features.tag.rbf</note>
+      </trans-unit>
+      <trans-unit id="85ce9e4f45873116b746899169cbc3445321d60c" datatype="html">
+        <source>This transaction does NOT support Replace-By-Fee (RBF) and cannot be fee bumped using this method</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+        <note priority="1" from="description">RBF disabled tooltip</note>
+      </trans-unit>
+      <trans-unit id="b2035d486e8d59980736a224891d9790c981691a" datatype="html">
+        <source>Optimal</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+        <note priority="1" from="description">TX Fee Rating is Optimal</note>
+        <note priority="1" from="meaning">tx-fee-rating.optimal</note>
+      </trans-unit>
+      <trans-unit id="f1b50928719b5261ccc81e9ec3ea4cc074018f89" datatype="html">
+        <source>Only ~<x id="INTERPOLATION" equiv-text="ltip=&quot;Only ~{{ median"/> sat/vB was needed to get into this block</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <note priority="1" from="description">tx-fee-rating.warning-tooltip</note>
+      </trans-unit>
+      <trans-unit id="0fa66b0c410bef320d3f370d7c98c51754b5f28f" datatype="html">
+        <source>Overpaid <x id="INTERPOLATION" equiv-text="{{ overpaidTimes }}"/>x</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+        <note priority="1" from="description">TX Fee Rating is Warning</note>
+        <note priority="1" from="meaning">tx-fee-rating.overpaid.warning</note>
+      </trans-unit>
+      <trans-unit id="f948156b1396cbbf78bbbce437c4d73a1f0770f3" datatype="html">
+        <source>Overpaid <x id="INTERPOLATION" equiv-text="{{ overpaidTimes }}"/>x</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <note priority="1" from="description">TX Fee Rating is Danger</note>
+        <note priority="1" from="meaning">tx-fee-rating.overpaid.danger</note>
+      </trans-unit>
       <trans-unit id="time-since.just-now" datatype="html">
         <source>Just now</source>
         <context-group purpose="location">
@@ -2580,115 +2689,6 @@
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">57</context>
         </context-group>
-      </trans-unit>
-      <trans-unit id="b2035d486e8d59980736a224891d9790c981691a" datatype="html">
-        <source>Optimal</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
-          <context context-type="linenumber">1</context>
-        </context-group>
-        <note priority="1" from="description">TX Fee Rating is Optimal</note>
-        <note priority="1" from="meaning">tx-fee-rating.optimal</note>
-      </trans-unit>
-      <trans-unit id="f1b50928719b5261ccc81e9ec3ea4cc074018f89" datatype="html">
-        <source>Only ~<x id="INTERPOLATION" equiv-text="ltip=&quot;Only ~{{ median"/> sat/vB was needed to get into this block</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
-          <context context-type="linenumber">2</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
-          <context context-type="linenumber">3</context>
-        </context-group>
-        <note priority="1" from="description">tx-fee-rating.warning-tooltip</note>
-      </trans-unit>
-      <trans-unit id="0fa66b0c410bef320d3f370d7c98c51754b5f28f" datatype="html">
-        <source>Overpaid <x id="INTERPOLATION" equiv-text="{{ overpaidTimes }}"/>x</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
-          <context context-type="linenumber">2</context>
-        </context-group>
-        <note priority="1" from="description">TX Fee Rating is Warning</note>
-        <note priority="1" from="meaning">tx-fee-rating.overpaid.warning</note>
-      </trans-unit>
-      <trans-unit id="f948156b1396cbbf78bbbce437c4d73a1f0770f3" datatype="html">
-        <source>Overpaid <x id="INTERPOLATION" equiv-text="{{ overpaidTimes }}"/>x</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
-          <context context-type="linenumber">3</context>
-        </context-group>
-        <note priority="1" from="description">TX Fee Rating is Danger</note>
-        <note priority="1" from="meaning">tx-fee-rating.overpaid.danger</note>
-      </trans-unit>
-      <trans-unit id="f85c05147b720576e50336cf26f63d3b05601699" datatype="html">
-        <source>This transaction saved <x id="INTERPOLATION" equiv-text="ction saved {{ segwitGains.realizedGains * 100 | number:"/>% on fees by using native SegWit-Bech32</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
-          <context context-type="linenumber">1</context>
-        </context-group>
-        <note priority="1" from="description">ngbTooltip about segwit gains</note>
-      </trans-unit>
-      <trans-unit id="0ca27703757bf9a636a0b9b61e6a0cf248781cb4" datatype="html">
-        <source>SegWit</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
-          <context context-type="linenumber">1</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
-          <context context-type="linenumber">3</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
-          <context context-type="linenumber">5</context>
-        </context-group>
-        <note priority="1" from="description">SegWit</note>
-        <note priority="1" from="meaning">tx-features.tag.segwit</note>
-      </trans-unit>
-      <trans-unit id="975f46d122f2ca0a187308399a58b44d61ef08eb" datatype="html">
-        <source>This transaction saved <x id="INTERPOLATION" equiv-text="ction saved {{ segwitGains.realizedGains * 100 | number:"/>% on fees by using SegWit and could save <x id="INTERPOLATION_1" equiv-text=" could save {{ segwitGains.potentialBech32Gains * 100 | number "/>% more by fully upgrading to native SegWit-Bech32</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
-          <context context-type="linenumber">3</context>
-        </context-group>
-        <note priority="1" from="description">ngbTooltip about double segwit gains</note>
-      </trans-unit>
-      <trans-unit id="1be04d5407059059b596f72696a3d1704ce9c0ef" datatype="html">
-        <source>This transaction could save <x id="INTERPOLATION" equiv-text=" could save {{ segwitGains.potentialBech32Gains * 100 | number "/>% on fees by upgrading to native SegWit-Bech32 or <x id="INTERPOLATION_1" equiv-text="t-Bech32 or {{ segwitGains.potentialP2shGains * 100 | number:"/>% by upgrading to SegWit-P2SH</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
-          <context context-type="linenumber">5</context>
-        </context-group>
-        <note priority="1" from="description">ngbTooltip about missed out gains</note>
-      </trans-unit>
-      <trans-unit id="5531c86f8e09b83930f66566fb85baf3057e2f51" datatype="html">
-        <source>This transaction support Replace-By-Fee (RBF) allowing fee bumping</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
-          <context context-type="linenumber">8</context>
-        </context-group>
-        <note priority="1" from="description">RBF tooltip</note>
-      </trans-unit>
-      <trans-unit id="f0e7d6d900658ee5ce66d8fef3637caf13891c53" datatype="html">
-        <source>RBF</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
-          <context context-type="linenumber">8</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
-          <context context-type="linenumber">9</context>
-        </context-group>
-        <note priority="1" from="description">RBF</note>
-        <note priority="1" from="meaning">tx-features.tag.rbf</note>
-      </trans-unit>
-      <trans-unit id="85ce9e4f45873116b746899169cbc3445321d60c" datatype="html">
-        <source>This transaction does NOT support Replace-By-Fee (RBF) and cannot be fee bumped using this method</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
-          <context context-type="linenumber">9</context>
-        </context-group>
-        <note priority="1" from="description">RBF disabled tooltip</note>
       </trans-unit>
     </body>
   </file>

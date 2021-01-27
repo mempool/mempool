@@ -55,6 +55,10 @@
             "translation": "src/locale/messages.ko.xlf",
             "baseHref": "/ko/"
           },
+          "it": {
+            "translation": "src/locale/messages.it.xlf",
+            "baseHref": "/it/"
+          },
           "nl": {
             "translation": "src/locale/messages.nl.xlf",
             "baseHref": "/nl/"
