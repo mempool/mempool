@@ -9,6 +9,7 @@ import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
 import { of, merge, Subscription, Observable } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
+import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   selector: 'app-address',
@@ -33,7 +34,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   receieved = 0;
   sent = 0;
 
-  hasNotificationPermission = false;
+  sendNotifications = false;
   activeNotification: Notification;
 
   private tempTransactions: Transaction[];
@@ -48,6 +49,7 @@ export class AddressComponent implements OnInit, OnDestroy {
     private audioService: AudioService,
     private apiService: ApiService,
     private seoService: SeoService,
+    private notificationService: NotificationService,
   ) { }
 
   ngOnInit() {
@@ -156,16 +158,13 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.audioService.playSound('chime');
         }
 
-        if (Notification.permission === 'granted' && document.visibilityState !== 'visible') {
-          if (this.activeNotification) {
-            this.activeNotification.close();
-          }
-          this.activeNotification = new Notification(this.addressString, { body: $localize`:@@address.new-transaction-notification-body:A new transaction was seen` });
+        if (this.sendNotifications && this.notificationService.hasNotificationPermission() && document.visibilityState !== 'visible') {
+          this.notificationService.sendNotification(this.addressString, $localize`:@@address.new-transaction-notification-body:A new transaction was seen`);
 
           document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
               // The tab has become visible so clear the now-stale Notification.
-              this.activeNotification.close();
+              this.notificationService.closeNotification();
             }
           });
         }
@@ -209,13 +208,12 @@ export class AddressComponent implements OnInit, OnDestroy {
       });
   }
 
-  toggleNotifications(enable) {
+  async toggleNotifications(enable) {
     if (enable) {
-      Notification.requestPermission().then((result) => {
-        this.hasNotificationPermission = true;
-      });
+      await this.notificationService.askForNotificationPermission();
+      this.sendNotifications = true;
     } else {
-      this.hasNotificationPermission = false;
+      this.sendNotifications = false;
     }
   }
 
