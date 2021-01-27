@@ -43,10 +43,10 @@
 
     <br>
     <ng-template [ngIf]="hasNotificationPermission">
-      <button (click)="toggleNotifications(false)">disable notifications</button>
+      <button (click)="toggleNotifications(false)"><span i18n="address.disable-desktop-notifications">Disable desktop notifications</span></button>
     </ng-template>
     <ng-template [ngIf]="!hasNotificationPermission">
-      <button (click)="toggleNotifications(true)">notify me when a transaction happens</button>
+      <button (click)="toggleNotifications(true)"><span i18n="address.enable-desktop-notifications">Enable desktop notifications</span></button>
     </ng-template>
     <br>
     <br>

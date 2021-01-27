@@ -160,7 +160,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           if (this.activeNotification) {
             this.activeNotification.close();
           }
-          this.activeNotification = new Notification(this.addressString, { body: 'Got a transaction' });
+          this.activeNotification = new Notification(this.addressString, { body: $localize`:@@address.new-transaction-notification-body:A new transaction was seen` });
 
           document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
