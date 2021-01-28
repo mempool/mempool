@@ -5,8 +5,21 @@ import { IConversionRates } from '../mempool.interfaces';
 class FiatConversion {
   private conversionRates: IConversionRates = {
     'USD': 0,
+    'EGP': 0,
+    'CZK': 0,
+    'EUR': 0,
+    'IRR': 0,
+    'KRW': 0,
+    'GEL': 0,
+    'HUF': 0,
+    'JPY': 0,
+    'NOK': 0,
+    'BRL': 0,
     'SEK': 0,
-    // @todo add all currencies we have locales for, make sure they exist in getAllMarketPrices first
+    'TRY': 0,
+    'UAH': 0,
+    'VND': 0,
+    'CNY': 0,
   };
   private ratesChangedCallback: ((rates: IConversionRates) => void) | undefined;
 
