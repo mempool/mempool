@@ -140,7 +140,7 @@
   </div>
 
   <div *ngIf="currency$ | async" [formGroup]="currencyForm" class="text-small text-center mt-4">
-    <select formControlName="currency" class="custom-select custom-select-sm form-control-secondary form-control mx-auto" style="width: 130px;" (change)="changeCurrency()">
+    <select formControlName="currency" class="custom-select custom-select-sm form-control-secondary form-control mx-auto" style="width: 170px;" (change)="changeCurrency()">
       <option *ngFor="let currency of currencies" [value]="currency.code">{{ currency.name }}</option>
     </select>
   </div>
