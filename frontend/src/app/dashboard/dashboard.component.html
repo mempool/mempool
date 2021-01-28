@@ -139,6 +139,12 @@
     </select>
   </div>
 
+  <div *ngIf="currency$ | async" [formGroup]="currencyForm" class="text-small text-center mt-4">
+    <select formControlName="currency" class="custom-select custom-select-sm form-control-secondary form-control mx-auto" style="width: 130px;" (change)="changeCurrency()">
+      <option *ngFor="let currency of currencies" [value]="currency.code">{{ currency.name }}</option>
+    </select>
+  </div>
+
   <div class="text-small text-center mt-3">
     <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a>
   </div>

@@ -1,7 +1,8 @@
 import { Component, OnInit, Input, ChangeDetectionStrategy, LOCALE_ID, Inject } from '@angular/core';
 import { StateService } from '../../services/state.service';
 import { Observable } from 'rxjs';
-import { getLocaleCurrencyCode, getLocaleCurrencySymbol } from '@angular/common';
+import { Currency } from '../../app.constants';
+import { CurrencyService } from '../../services/currency.service';
 
 @Component({
   selector: 'app-amount',
@@ -12,9 +13,8 @@ import { getLocaleCurrencyCode, getLocaleCurrencySymbol } from '@angular/common'
 export class AmountComponent implements OnInit {
   conversions$: Observable<any>;
   viewFiat$: Observable<boolean>;
+  currency$: Observable<Currency>;
   network = '';
-  currencyCode: string;
-  currencySymbol: string;
 
   @Input() satoshis: number;
   @Input() digitsInfo = '1.8-8';
@@ -22,16 +22,16 @@ export class AmountComponent implements OnInit {
 
   constructor(
     private stateService: StateService,
+    private currencyService: CurrencyService,
     @Inject(LOCALE_ID) private localeId: string
   ) {
-    this.currencyCode = getLocaleCurrencyCode(this.localeId);
-    this.currencySymbol = getLocaleCurrencySymbol(this.localeId);
   }
 
   ngOnInit() {
     this.viewFiat$ = this.stateService.viewFiat$.asObservable();
     this.conversions$ = this.stateService.conversions$.asObservable();
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.currency$ = this.currencyService.currency$.asObservable();
   }
 
 }

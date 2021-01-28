@@ -49,6 +49,7 @@ import { ApiDocsComponent } from './components/api-docs/api-docs.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 import { StorageService } from './services/storage.service';
 import { HttpCacheInterceptor } from './services/http-cache.interceptor';
+import { CurrencyService } from './services/currency.service';
 
 @NgModule({
   declarations: [
@@ -102,6 +103,7 @@ import { HttpCacheInterceptor } from './services/http-cache.interceptor';
     AudioService,
     SeoService,
     StorageService,
+    CurrencyService,
     { provide: HTTP_INTERCEPTORS, useClass: HttpCacheInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]

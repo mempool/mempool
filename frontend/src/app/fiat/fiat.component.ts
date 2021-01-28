@@ -2,6 +2,8 @@ import { Component, OnInit, ChangeDetectionStrategy, Input, Inject, LOCALE_ID } 
 import { Observable } from 'rxjs';
 import { StateService } from '../services/state.service';
 import { getLocaleCurrencyCode, getLocaleCurrencySymbol } from '@angular/common';
+import { CurrencyService } from '../services/currency.service';
+import { Currency } from '../app.constants';
 
 @Component({
   selector: 'app-fiat',
@@ -11,22 +13,21 @@ import { getLocaleCurrencyCode, getLocaleCurrencySymbol } from '@angular/common'
 })
 export class FiatComponent implements OnInit {
   conversions$: Observable<any>;
-  currencyCode: string;
-  currencySymbol: string;
+  currency$: Observable<Currency>;
 
   @Input() value: number;
   @Input() digitsInfo = '1.2-2';
 
   constructor(
     private stateService: StateService,
+    private currencyService: CurrencyService,
     @Inject(LOCALE_ID) private localeId: string
   ) {
-    this.currencyCode = getLocaleCurrencyCode(this.localeId);
-    this.currencySymbol = getLocaleCurrencySymbol(this.localeId);
   }
 
   ngOnInit(): void {
     this.conversions$ = this.stateService.conversions$.asObservable();
+    this.currency$ = this.currencyService.currency$.asObservable();
   }
 
 }

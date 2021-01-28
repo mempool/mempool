@@ -88,3 +88,14 @@ export const languages: Language[] = [
    { code: 'vi', name: 'Tiếng Việt' },      // Vietnamese
    { code: 'zh', name: '中文' },            // Chinese
 ];
+
+export interface Currency {
+  locale: string;
+  code: string;
+  name: string;
+}
+
+export const currencies: Currency[] = [
+  { locale: 'en-US', code: 'USD', name: 'US dollar' },         // USD
+  { locale: 'sv', code: 'SEK', name: 'Svenska kronor' },         // SEK
+];

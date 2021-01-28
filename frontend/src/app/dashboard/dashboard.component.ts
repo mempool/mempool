@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
 import { combineLatest, merge, Observable, of } from 'rxjs';
-import { filter, map, scan, share, switchMap, tap } from 'rxjs/operators';
+import { filter, map, scan, share, switchMap, take, tap } from 'rxjs/operators';
 import { Block } from '../interfaces/electrs.interface';
 import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
@@ -12,7 +12,8 @@ import { WebsocketService } from '../services/websocket.service';
 import { SeoService } from '../services/seo.service';
 import { StorageService } from '../services/storage.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { languages, Language } from '../app.constants';
+import { currencies, Currency, languages, Language } from '../app.constants';
+import { CurrencyService } from '../services/currency.service';
 
 interface MempoolBlocksData {
   blocks: number;
@@ -60,6 +61,9 @@ export class DashboardComponent implements OnInit {
   transactionsWeightPerSecondOptions: any;
   languageForm: FormGroup;
   languages: Language[];
+  currencyForm: FormGroup;
+  currencies: Currency[];
+  currency$: Observable<Currency>;
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
@@ -68,12 +72,14 @@ export class DashboardComponent implements OnInit {
     private websocketService: WebsocketService,
     private seoService: SeoService,
     private storageService: StorageService,
+    private currencyService: CurrencyService,
     private formBuilder: FormBuilder,
     @Inject(DOCUMENT) private document: Document
   ) { }
 
   ngOnInit(): void {
     this.languages = languages;
+    this.currencies = currencies;
     this.seoService.resetTitle();
     this.websocketService.want(['blocks', 'stats', 'mempool-blocks', 'live-2h-chart']);
     this.network$ = merge(of(''), this.stateService.networkChanged$);
@@ -231,6 +237,14 @@ export class DashboardComponent implements OnInit {
           }),
         ]
       };
+
+    this.currency$ = this.currencyService.currency$.asObservable();
+
+    this.currency$.pipe(take(1)).subscribe((d) => {
+      this.currencyForm = this.formBuilder.group({
+        currency: [d.code]
+      });
+    });
   }
 
   handleNewMempoolData(mempoolStats: OptimizedMempoolStats[]) {
@@ -273,5 +287,11 @@ export class DashboardComponent implements OnInit {
       document.cookie = `lang=${language}; expires=Thu, 18 Dec 2050 12:00:00 UTC; path=/`;
     } catch (e) { }
     this.document.location.href = `/${language}/${this.stateService.network}`;
+  }
+
+  changeCurrency() {
+    const currency = this.currencyForm.get('currency').value;
+
+    this.currencyService.setCurrency(currencies.filter(c => c.code === currency)[0]);
   }
 }
