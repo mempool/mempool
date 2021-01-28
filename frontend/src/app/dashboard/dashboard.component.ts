@@ -79,7 +79,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.languages = languages;
-    this.currencies = currencies;
+    this.currencies = currencies.sort((a, b) => a.name.localeCompare(b.name));
     this.seoService.resetTitle();
     this.websocketService.want(['blocks', 'stats', 'mempool-blocks', 'live-2h-chart']);
     this.network$ = merge(of(''), this.stateService.networkChanged$);
@@ -92,6 +92,14 @@ export class DashboardComponent implements OnInit {
       language: ['']
     });
     this.setLanguageFromUrl();
+
+    this.currency$ = this.currencyService.currency$.asObservable();
+
+    this.currency$.pipe(take(1)).subscribe((d) => {
+      this.currencyForm = this.formBuilder.group({
+        currency: [d.code]
+      });
+    });
 
     this.mempoolInfoData$ = combineLatest([
       this.stateService.mempoolInfo$,
@@ -237,14 +245,6 @@ export class DashboardComponent implements OnInit {
           }),
         ]
       };
-
-    this.currency$ = this.currencyService.currency$.asObservable();
-
-    this.currency$.pipe(take(1)).subscribe((d) => {
-      this.currencyForm = this.formBuilder.group({
-        currency: [d.code]
-      });
-    });
   }
 
   handleNewMempoolData(mempoolStats: OptimizedMempoolStats[]) {
