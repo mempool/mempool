@@ -15,6 +15,7 @@ https://www.transifex.com/mempool/mempool/dashboard/
 * Persian @techmix
 * French @Bayernatoor
 * Korean @kcalvinalvinn
+* Italian @HodlBits
 * Georgian @wyd_idk
 * Hungarian @btcdragonlord
 * Dutch @m__btc
