@@ -85,11 +85,15 @@ class Server {
       statistics.startStatistics();
     }
 
+    fiatConversion.startService();
+
+    if (config.SPONSORS.ENABLED) {
+      donations.$updateCache();
+    }
+
     this.setUpHttpApiRoutes();
     this.setUpWebsocketHandling();
     this.runMainUpdateLoop();
-
-    fiatConversion.startService();
 
     if (config.BISQ_BLOCKS.ENABLED) {
       bisq.startBisqService();

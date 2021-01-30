@@ -16,14 +16,9 @@ class Donations {
 
   sponsorsCache: any[] = [];
 
-  constructor() {
-    if (!config.SPONSORS.ENABLED) {
-      return;
-    }
-    this.$updateCache();
-  }
+  constructor() {}
 
-  async $updateCache() {
+  public async $updateCache() {
     try {
       this.sponsorsCache = await this.$getDonationsFromDatabase('handle, image');
     } catch (e) {
