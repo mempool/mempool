@@ -61,7 +61,7 @@ class Server {
     }
   }
 
-  startServer(worker = false) {
+  async startServer(worker = false) {
     logger.debug(`Starting Mempool Server${worker ? ' (worker)' : ''}... (${backendInfo.getShortCommitHash()})`);
 
     this.app
@@ -78,7 +78,7 @@ class Server {
     diskCache.loadMempoolCache();
 
     if (config.DATABASE.ENABLED) {
-      checkDbConnection();
+      await checkDbConnection();
     }
 
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
