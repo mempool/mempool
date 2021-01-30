@@ -1,7 +1,6 @@
-import { Component, OnInit, ChangeDetectionStrategy, Input, Inject, LOCALE_ID } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { StateService } from '../services/state.service';
-import { getLocaleCurrencyCode, getLocaleCurrencySymbol } from '@angular/common';
 import { CurrencyService } from '../services/currency.service';
 import { Currency } from '../app.constants';
 
@@ -21,7 +20,6 @@ export class FiatComponent implements OnInit {
   constructor(
     private stateService: StateService,
     private currencyService: CurrencyService,
-    @Inject(LOCALE_ID) private localeId: string
   ) {
   }
 
