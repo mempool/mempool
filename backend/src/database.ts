@@ -11,7 +11,6 @@ export class DB {
     password: config.DATABASE.PASSWORD,
     connectionLimit: 10,
     supportBigNumbers: true,
-    acquireTimeout: 60000,
   });
 }
 
