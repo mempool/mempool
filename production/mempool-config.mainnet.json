@@ -17,7 +17,7 @@
   },
   "DATABASE": {
     "ENABLED": true,
-    "HOST": "localhost",
+    "HOST": "127.0.0.1",
     "PORT": 3306,
     "USERNAME": "mempool",
     "PASSWORD": "mempool",
