@@ -1,5 +1,4 @@
-import { Inject, Injectable, LOCALE_ID } from '@angular/core';
-import { getLocaleCurrencyCode } from '@angular/common';
+import { Injectable } from '@angular/core';
 import { currencies, Currency } from '../app.constants';
 import { ReplaySubject } from 'rxjs';
 
@@ -11,15 +10,12 @@ export class CurrencyService {
 
   currency$ = new ReplaySubject<Currency>(1);
 
-  constructor(
-    @Inject(LOCALE_ID) private locale: string,
-  ) {
-    this.defaultCurrencyCode = getLocaleCurrencyCode(this.locale);
+  constructor() {
+    this.defaultCurrencyCode = 'USD';
     this.loadCurrencyFromCookie();
   }
 
   public setCurrency(currency: Currency) {
-    console.log(this.defaultCurrencyCode, currency.code);
     if (this.defaultCurrencyCode === currency.code) {
       document.cookie = `currency=; expires=Thu, 1 Jan 1970 12:00:00 UTC; path=/`;
     } else {
