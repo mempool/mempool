@@ -2,6 +2,6 @@
 trap "" PIPE
 while read input;do
 	if [ ! -z "${input}" ];then
-		echo "\`\`\`${input}\`\`\` $*" | /usr/local/bin/keybase chat send --nonblock mempool.syslog
+		echo "\`\`\`${input}\`\`\`" | /usr/local/bin/keybase chat send --nonblock --channel $1 mempool.space
 	fi
 done
