@@ -1,5 +1,5 @@
 <ng-container *ngIf="(conversions$ | async) as conversions">
   <ng-container *ngIf="(currency$ | async) as currency">
-    <span class="green-color">{{ conversions[currency.code] * value / 100000000 | currency:currency.code:'symbol':digitsInfo:currency.locale }}</span>
+    <span class="green-color">{{ conversions[currency.code] * value / 100000000 | currency:currency.code:'symbol':digitsInfo }}</span>
   </ng-container>
 </ng-container>
