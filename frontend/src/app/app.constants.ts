@@ -90,31 +90,30 @@ export const languages: Language[] = [
 ];
 
 export interface Currency {
-  locale: string;
   code: string;
   name: string;
 }
 
 export const currencies: Currency[] = [
-  { locale: 'ar', code: 'EGP', name: 'جنيه مصري' },
-  { locale: 'cs', code: 'CZK', name: 'česká koruna' },
-  { locale: 'de', code: 'EUR', name: 'Euro' },
-  { locale: 'en', code: 'USD', name: 'US Dollar' },
+  { code: 'EGP', name: 'جنيه مصري' },
+  { code: 'CZK', name: 'česká koruna' },
+  { code: 'EUR', name: 'Euro' },
+  { code: 'USD', name: 'US Dollar' },
   // { locale: 'es', code: 'EUR', name: 'Euro' },
-  { locale: 'fa', code: 'IRR', name: 'ریال ایران' },
+  { code: 'IRR', name: 'ریال ایران' },
   // { locale: 'fr', code: 'EUR', name: 'Euro' },
-  { locale: 'ko', code: 'KRW', name: '대한민국 원' },
-  { locale: 'ka', code: 'GEL', name: 'ქართული ლარი' },
-  { locale: 'hu', code: 'HUF', name: 'Magyar forint' },
+  { code: 'KRW', name: '대한민국 원' },
+  { code: 'GEL', name: 'ქართული ლარი' },
+  { code: 'HUF', name: 'Magyar forint' },
   // { locale: 'nl', code: 'EUR', name: 'Euro' },
-  { locale: 'ja', code: 'JPY', name: '日本円' },
-  { locale: 'nb', code: 'NOK', name: 'Norske kroner' },
-  { locale: 'pt', code: 'BRL', name: 'Real brasileiro' },
+  { code: 'JPY', name: '日本円' },
+  { code: 'NOK', name: 'Norske kroner' },
+  { code: 'BRL', name: 'Real brasileiro' },
   // { locale: 'sl', code: 'EUR', name: 'Evro' },
   // { locale: 'fi', code: 'EUR', name: 'Euro' },
-  { locale: 'sv', code: 'SEK', name: 'Svensk krona' },
-  { locale: 'tr', code: 'TRY', name: 'Türk Lirası' },
-  { locale: 'uk', code: 'UAH', name: 'українська гривня' },
-  { locale: 'vi', code: 'VND', name: 'Đồng Việt Nam' },
-  { locale: 'zh', code: 'CNY', name: '人民币' },
+  { code: 'SEK', name: 'Svensk krona' },
+  { code: 'TRY', name: 'Türk Lirası' },
+  { code: 'UAH', name: 'українська гривня' },
+  { code: 'VND', name: 'Đồng Việt Nam' },
+  { code: 'CNY', name: '人民币' },
 ];
