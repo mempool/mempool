@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy, LOCALE_ID, Inject } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 import { StateService } from '../../services/state.service';
 import { Observable } from 'rxjs';
 import { Currency } from '../../app.constants';
@@ -23,7 +23,6 @@ export class AmountComponent implements OnInit {
   constructor(
     private stateService: StateService,
     private currencyService: CurrencyService,
-    @Inject(LOCALE_ID) private localeId: string
   ) {
   }
 
