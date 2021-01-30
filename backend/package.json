@@ -34,7 +34,7 @@
     "crypto-js": "^4.0.0",
     "express": "^4.17.1",
     "locutus": "^2.0.12",
-    "mysql2": "^1.6.1",
+    "mysql2": "2.2.5",
     "node-worker-threads-pool": "^1.4.2",
     "ws": "^7.3.1"
   },
