@@ -20,26 +20,7 @@ import loadingIndicators from './api/loading-indicators';
 import { Common } from './api/common';
 
 class Routes {
-  private cache: { [date: string]: OptimizedStatistic[] } = {
-    '24h': [], '1w': [], '1m': [], '3m': [], '6m': [], '1y': [],
-  };
-
-  constructor() {
-    if (config.DATABASE.ENABLED && config.STATISTICS.ENABLED) {
-      this.createCache();
-      setInterval(this.createCache.bind(this), 600000);
-    }
-  }
-
-  private async createCache() {
-    this.cache['24h'] = await statistics.$list24H();
-    this.cache['1w'] = await statistics.$list1W();
-    this.cache['1m'] = await statistics.$list1M();
-    this.cache['3m'] = await statistics.$list3M();
-    this.cache['6m'] = await statistics.$list6M();
-    this.cache['1y'] = await statistics.$list1Y();
-    logger.debug('Statistics cache created');
-  }
+  constructor() {}
 
   public async get2HStatistics(req: Request, res: Response) {
     const result = await statistics.$list2H();
@@ -47,27 +28,27 @@ class Routes {
   }
 
   public get24HStatistics(req: Request, res: Response) {
-    res.json(this.cache['24h']);
+    res.json(statistics.getCache()['24h']);
   }
 
   public get1WHStatistics(req: Request, res: Response) {
-    res.json(this.cache['1w']);
+    res.json(statistics.getCache()['1w']);
   }
 
   public get1MStatistics(req: Request, res: Response) {
-    res.json(this.cache['1m']);
+    res.json(statistics.getCache()['1m']);
   }
 
   public get3MStatistics(req: Request, res: Response) {
-    res.json(this.cache['3m']);
+    res.json(statistics.getCache()['3m']);
   }
 
   public get6MStatistics(req: Request, res: Response) {
-    res.json(this.cache['6m']);
+    res.json(statistics.getCache()['6m']);
   }
 
   public get1YStatistics(req: Request, res: Response) {
-    res.json(this.cache['1y']);
+    res.json(statistics.getCache()['1y']);
   }
 
   public getInitData(req: Request, res: Response) {

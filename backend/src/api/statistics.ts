@@ -8,6 +8,9 @@ class Statistics {
   protected intervalTimer: NodeJS.Timer | undefined;
   protected newStatisticsEntryCallback: ((stats: OptimizedStatistic) => void) | undefined;
   protected queryTimeout = 120000;
+  protected cache: { [date: string]: OptimizedStatistic[] } = {
+    '24h': [], '1w': [], '1m': [], '3m': [], '6m': [], '1y': [],
+  };
 
   public setNewStatisticsEntryCallback(fn: (stats: OptimizedStatistic) => void) {
     this.newStatisticsEntryCallback = fn;
@@ -29,6 +32,23 @@ class Statistics {
         this.runStatistics();
       }, 1 * 60 * 1000);
     }, difference);
+
+    this.createCache();
+    setInterval(this.createCache.bind(this), 600000);
+  }
+
+  public getCache() {
+    return this.cache;
+  }
+
+  private async createCache() {
+    this.cache['24h'] = await this.$list24H();
+    this.cache['1w'] = await this.$list1W();
+    this.cache['1m'] = await this.$list1M();
+    this.cache['3m'] = await this.$list3M();
+    this.cache['6m'] = await this.$list6M();
+    this.cache['1y'] = await this.$list1Y();
+    logger.debug('Statistics cache created');
   }
 
   private async runStatistics(): Promise<void> {
