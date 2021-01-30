@@ -7,6 +7,7 @@ import { Statistic, TransactionExtended, OptimizedStatistic } from '../mempool.i
 class Statistics {
   protected intervalTimer: NodeJS.Timer | undefined;
   protected newStatisticsEntryCallback: ((stats: OptimizedStatistic) => void) | undefined;
+  protected queryTimeout = 120000;
 
   public setNewStatisticsEntryCallback(fn: (stats: OptimizedStatistic) => void) {
     this.newStatisticsEntryCallback = fn;
@@ -300,7 +301,7 @@ class Statistics {
     try {
       const connection = await DB.pool.getConnection();
       const query = `SELECT * FROM statistics ORDER BY id DESC LIMIT 120`;
-      const [rows] = await connection.query<any>(query);
+      const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
@@ -313,7 +314,7 @@ class Statistics {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(180);
-      const [rows] = await connection.query<any>(query);
+      const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
@@ -326,7 +327,7 @@ class Statistics {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(1260);
-      const [rows] = await connection.query<any>(query);
+      const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
@@ -339,7 +340,7 @@ class Statistics {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(5040);
-      const [rows] = await connection.query<any>(query);
+      const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
@@ -352,7 +353,7 @@ class Statistics {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(15120);
-      const [rows] = await connection.query<any>(query);
+      const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
@@ -365,7 +366,7 @@ class Statistics {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(30240);
-      const [rows] = await connection.query<any>(query);
+      const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
@@ -378,7 +379,7 @@ class Statistics {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(60480);
-      const [rows] = await connection.query<any>(query);
+      const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
