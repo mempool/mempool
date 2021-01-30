@@ -14,7 +14,7 @@
     "PASSWORD": "bar"
   },
   "ESPLORA": {
-    "REST_API_URL": "http://127.0.0.1:3002"
+    "REST_API_URL": "http://127.0.0.1:2002"
   },
   "DATABASE": {
     "ENABLED": true,
