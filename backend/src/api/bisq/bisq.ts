@@ -43,7 +43,7 @@ class Bisq {
   }
 
   handleNewBitcoinBlock(block: BlockExtended): void {
-    if (block.height - 2 > this.latestBlockHeight && this.latestBlockHeight !== 0) {
+    if (block.height - 10 > this.latestBlockHeight && this.latestBlockHeight !== 0) {
       logger.warn(`Bitcoin block height (#${block.height}) has diverged from the latest Bisq block height (#${this.latestBlockHeight}). Restarting watchers...`);
       this.startTopDirectoryWatcher();
       this.startSubDirectoryWatcher();
