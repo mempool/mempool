@@ -45,6 +45,6 @@ do
 done
 
 hostname=$(hostname)
-keybase chat send mempool.space "${hostname} updated to ${TAG} @ ${hash}"
+echo "${hostname} updated to \`${TAG}\` @ \`${hash}\`" | /usr/local/bin/keybase chat send --nonblock --channel alerts mempool.space
 
 rm "$HOME/lock"
