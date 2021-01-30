@@ -91,7 +91,7 @@ const defaults: IConfig = {
   },
   'DATABASE': {
     'ENABLED': true,
-    'HOST': 'localhost',
+    'HOST': '127.0.0.1',
     'PORT': 3306,
     'DATABASE': 'mempool',
     'USERNAME': 'mempool',
