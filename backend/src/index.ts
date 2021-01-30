@@ -202,7 +202,7 @@ class Server {
       this.app
         .get(config.MEMPOOL.API_URL_PREFIX + 'donations', async (req, res) => {
           try {
-            const response = await axios.get('https://mempool.space/api/v1/donations', { responseType: 'stream' });
+            const response = await axios.get('https://mempool.space/api/v1/donations', { responseType: 'stream', timeout: 10000 });
             response.data.pipe(res);
           } catch (e) {
             res.status(500).end();
@@ -210,7 +210,9 @@ class Server {
         })
         .get(config.MEMPOOL.API_URL_PREFIX + 'donations/images/:id', async (req, res) => {
           try {
-            const response = await axios.get('https://mempool.space/api/v1/donations/images/' + req.params.id, { responseType: 'stream' });
+            const response = await axios.get('https://mempool.space/api/v1/donations/images/' + req.params.id, {
+              responseType: 'stream', timeout: 10000
+            });
             response.data.pipe(res);
           } catch (e) {
             res.status(500).end();

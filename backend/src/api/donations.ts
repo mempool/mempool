@@ -11,6 +11,7 @@ class Donations {
       'Content-Type': 'application/json',
       'Authorization': config.SPONSORS.BTCPAY_AUTH,
     },
+    timeout: 10000,
   };
 
   sponsorsCache: any[] = [];
@@ -169,7 +170,8 @@ class Donations {
     const res = await axios.get(`https://api.twitter.com/1.1/users/show.json?screen_name=${handle}`, {
       headers: {
         Authorization: 'Bearer ' + config.SPONSORS.TWITTER_BEARER_AUTH
-      }
+      },
+      timeout: 10000,
     });
     logger.debug('Twitter user data fetched:' + JSON.stringify(res.data));
     return res.data;
@@ -177,7 +179,7 @@ class Donations {
 
   private async $downloadProfileImageBlob(url: string): Promise<string> {
     logger.debug('Fetching image blob...');
-    const res = await axios.get(url, { responseType: 'arraybuffer' });
+    const res = await axios.get(url, { responseType: 'arraybuffer', timeout: 10000 });
     logger.debug('Image downloaded.');
     return Buffer.from(res.data, 'utf8').toString('base64');
   }

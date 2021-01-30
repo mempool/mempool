@@ -1,39 +1,42 @@
 import config from '../../config';
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
 import { IEsploraApi } from './esplora-api.interface';
 
 class ElectrsApi implements AbstractBitcoinApi {
+  axiosConfig: AxiosRequestConfig = {
+    timeout: 10000,
+  };
 
   constructor() { }
 
   $getRawMempool(): Promise<IEsploraApi.Transaction['txid'][]> {
-    return axios.get<IEsploraApi.Transaction['txid'][]>(config.ESPLORA.REST_API_URL + '/mempool/txids')
+    return axios.get<IEsploraApi.Transaction['txid'][]>(config.ESPLORA.REST_API_URL + '/mempool/txids', this.axiosConfig)
       .then((response) => response.data);
   }
 
   $getRawTransaction(txId: string): Promise<IEsploraApi.Transaction> {
-    return axios.get<IEsploraApi.Transaction>(config.ESPLORA.REST_API_URL + '/tx/' + txId)
+    return axios.get<IEsploraApi.Transaction>(config.ESPLORA.REST_API_URL + '/tx/' + txId, this.axiosConfig)
       .then((response) => response.data);
   }
 
   $getBlockHeightTip(): Promise<number> {
-    return axios.get<number>(config.ESPLORA.REST_API_URL + '/blocks/tip/height')
+    return axios.get<number>(config.ESPLORA.REST_API_URL + '/blocks/tip/height', this.axiosConfig)
       .then((response) => response.data);
   }
 
   $getTxIdsForBlock(hash: string): Promise<string[]> {
-    return axios.get<string[]>(config.ESPLORA.REST_API_URL + '/block/' + hash + '/txids')
+    return axios.get<string[]>(config.ESPLORA.REST_API_URL + '/block/' + hash + '/txids', this.axiosConfig)
       .then((response) => response.data);
   }
 
   $getBlockHash(height: number): Promise<string> {
-    return axios.get<string>(config.ESPLORA.REST_API_URL + '/block-height/' + height)
+    return axios.get<string>(config.ESPLORA.REST_API_URL + '/block-height/' + height, this.axiosConfig)
       .then((response) => response.data);
   }
 
   $getBlock(hash: string): Promise<IEsploraApi.Block> {
-    return axios.get<IEsploraApi.Block>(config.ESPLORA.REST_API_URL + '/block/' + hash)
+    return axios.get<IEsploraApi.Block>(config.ESPLORA.REST_API_URL + '/block/' + hash, this.axiosConfig)
       .then((response) => response.data);
   }
 
@@ -46,7 +49,7 @@ class ElectrsApi implements AbstractBitcoinApi {
   }
 
   $getRawTransactionBitcoind(txId: string): Promise<IEsploraApi.Transaction> {
-    return axios.get<IEsploraApi.Transaction>(config.ESPLORA.REST_API_URL + '/tx/' + txId)
+    return axios.get<IEsploraApi.Transaction>(config.ESPLORA.REST_API_URL + '/tx/' + txId, this.axiosConfig)
       .then((response) => response.data);
   }
 
