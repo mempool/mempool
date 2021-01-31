@@ -103,7 +103,8 @@ export class StateService {
   }
 
   setNetworkBasedonUrl(url: string) {
-    switch (url.split(/\/|\?|#/)[1]) {
+    const networkMatches = url.match(/\/(bisq|testnet|liquid)/);
+    switch (networkMatches && networkMatches[1]) {
       case 'liquid':
         if (this.network !== 'liquid') {
           this.network = 'liquid';
