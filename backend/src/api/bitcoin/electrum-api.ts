@@ -86,7 +86,8 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
           'spent_txo_count': 0,
           'spent_txo_sum': balance.unconfirmed < 0 ? -balance.unconfirmed : 0,
           'tx_count': unconfirmed,
-        }
+        },
+        'electrum': true,
       };
     } catch (e) {
       if (e === 'failed to get confirmed status') {

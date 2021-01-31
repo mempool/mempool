@@ -98,6 +98,7 @@ export interface Block {
 }
 
 export interface Address {
+  electrum?: boolean;
   address: string;
   chain_stats: ChainStats;
   mempool_stats: MempoolStats;

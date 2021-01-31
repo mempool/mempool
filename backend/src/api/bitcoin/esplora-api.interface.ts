@@ -91,6 +91,7 @@ export namespace IEsploraApi {
     address: string;
     chain_stats: ChainStats;
     mempool_stats: MempoolStats;
+    electrum?: boolean;
   }
 
   export interface ChainStats {
