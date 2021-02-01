@@ -5,10 +5,11 @@ import * as cluster from 'cluster';
 import memPool from './mempool';
 import blocks from './blocks';
 import logger from '../logger';
+import config from '../config';
 
 class DiskCache {
-  private static FILE_NAME = './cache.json';
-  private static FILE_NAMES = './cache{number}.json';
+  private static FILE_NAME = config.MEMPOOL.CACHE_DIR + 'cache.json';
+  private static FILE_NAMES = config.MEMPOOL.CACHE_DIR + 'cache{number}.json';
   private static CHUNK_SIZE = 10000;
   constructor() {
     if (!cluster.isMaster) {
