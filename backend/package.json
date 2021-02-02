@@ -36,6 +36,7 @@
     "locutus": "^2.0.12",
     "mysql2": "^1.6.1",
     "node-worker-threads-pool": "^1.4.2",
+    "typescript": "~3.9.7",
     "ws": "^7.3.1"
   },
   "devDependencies": {
