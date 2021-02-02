@@ -18,7 +18,7 @@ export class AddressLabelsComponent implements OnInit {
   multisigM: number;
   multisigN: number;
 
-  secondLayerClose = false;
+  lightning = null;
 
   constructor(
     stateService: StateService,
@@ -47,9 +47,17 @@ export class AddressLabelsComponent implements OnInit {
         }
       }
 
-      if (/OP_IF (.+) OP_ELSE (.+) OP_CSV OP_DROP/.test(this.vin.inner_witnessscript_asm)) {
-        this.secondLayerClose = true;
-      }
+      [
+        [/^OP_DUP OP_HASH160/, 'HTLC'],
+        [/^OP_IF OP_PUSHBYTES_33 \w{33} OP_ELSE OP_PUSHBYTES_2 \w{2} OP_CSV OP_DROP/, 'Force Close']
+      ].map(
+        ([re, label]) => {
+          if (re.test(this.vin.inner_witnessscript_asm)) {
+            this.lightning = label;
+            this.multisig = false;
+          }
+        }
+      );
     }
 
     if (this.vin.inner_redeemscript_asm && this.vin.inner_redeemscript_asm.indexOf('OP_CHECKMULTISIG') > -1) {

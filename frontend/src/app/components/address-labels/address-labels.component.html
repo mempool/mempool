@@ -1,2 +1,12 @@
-<span *ngIf="multisig" class="badge badge-pill badge-warning" i18n="address-labels.multisig">multisig {{ multisigM }} of {{ multisigN }}</span>
-<span *ngIf="secondLayerClose" class="badge badge-pill badge-warning" i18n="address-labels.upper-layer-peg-out">Layer{{ network === 'liquid' ? '3' : '2' }} Peg-out</span>
+<span
+  *ngIf="multisig"
+  class="badge badge-pill badge-warning"
+  i18n="address-labels.multisig"
+  >multisig {{ multisigM }} of {{ multisigN }}</span
+>
+<span
+  *ngIf="lightning"
+  class="badge badge-pill badge-warning"
+  i18n="address-labels.upper-layer-peg-out"
+  >Lightning {{ lightning }}</span
+>
