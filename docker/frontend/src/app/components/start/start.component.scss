@@ -1,0 +1,11 @@
+#blockchain-container {
+  position: relative;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+#blockchain-container::-webkit-scrollbar {
+    display: none;
+}

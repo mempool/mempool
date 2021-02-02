@@ -1,0 +1,36 @@
+.card {
+  background-color: #1d1f31;
+}
+
+.card-title {
+  color: #4a68b9;
+}
+
+.info-block {
+  float: left;
+  width: 350px;
+  line-height: 25px;
+}
+
+.progress {
+  display: inline-flex;
+  width: 100%;
+  background-color: #2d3348;
+  height: 1.1rem;
+}
+
+.bg-warning {
+  background-color: #b58800 !important;
+}
+
+.skeleton-loader {
+  max-width: 200px;
+}
+
+.more-padding {
+  padding: 1.25rem 2rem 1.25rem 2rem;
+}
+
+.graph-card {
+  height: 385px;
+}

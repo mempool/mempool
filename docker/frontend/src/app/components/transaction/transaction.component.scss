@@ -1,0 +1,29 @@
+.adjust-btn-padding {
+  padding: 0.55rem;
+}
+
+.title-block {
+  color: #FFF;
+  padding-top: 20px;
+  border-top: 3px solid #FFF;
+}
+
+@media (max-width: 767.98px) {
+	.mobile-bottomcol {
+		margin-top: 15px;
+	}
+}
+
+.td-width {
+  width: 175px;
+}
+
+@media (max-width: 767.98px) {
+	.td-width {
+		width: 150px;
+	}
+}
+
+h1 {
+	margin-bottom: 0;
+}

@@ -1,0 +1,26 @@
+.card-header {
+  border-bottom: 0;
+  background-color: none;
+  font-size: 20px;
+}
+
+.card {
+  background-color: transparent;
+  border: 0;
+}
+
+.bootstrap-spinner {
+  width: 22px;
+  height: 22px;
+  margin-right: 10px;
+}
+
+@media (max-width: 767.98px) {
+ .container-xl {
+    padding: 0;
+  }
+  .card-body {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}

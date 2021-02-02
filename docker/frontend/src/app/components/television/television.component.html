@@ -1,0 +1,21 @@
+<div id="tv-wrapper">
+
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner-border text-light"></div>
+  </div>
+
+  <div class="chart-holder" *ngIf="mempoolStats.length">
+    <app-mempool-graph dir="ltr" [data]="mempoolStats"></app-mempool-graph>
+  </div>
+
+  <div class="text-center" class="blockchain-wrapper">
+    <div class="position-container">
+      <app-mempool-blocks></app-mempool-blocks>
+      <app-blockchain-blocks></app-blockchain-blocks>
+
+      <div id="divider"></div>
+    </div>
+
+  </div>
+
+</div>

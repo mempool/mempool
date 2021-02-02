@@ -1,0 +1,16 @@
+.title-block {
+  color: #FFF;
+  padding-top: 20px;
+  padding-bottom: 3px;
+  border-top: 3px solid #FFF;
+}
+
+.td-width {
+  width: 175px;
+}
+
+@media (max-width: 767.98px) {
+	.td-width {
+		width: 140px;
+	}
+}

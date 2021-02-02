@@ -1,0 +1,50 @@
+{
+  "name": "mempool-backend",
+  "version": "2.0.0",
+  "description": "Bitcoin mempool visualizer and blockchain explorer backend",
+  "license": "MIT",
+  "homepage": "https://mempool.space",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mempool/mempool"
+  },
+  "bugs": {
+    "url": "https://github.com/mempool/mempool/issues"
+  },
+  "keywords": [
+    "bitcoin",
+    "mempool",
+    "blockchain",
+    "explorer",
+    "liquid"
+  ],
+  "main": "index.ts",
+  "scripts": {
+    "ng": "./node_modules/@angular/cli/bin/ng",
+    "tsc": "./node_modules/typescript/bin/tsc",
+    "build": "npm run tsc",
+    "start": "node --max-old-space-size=4096 dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@mempool/bitcoin": "^3.0.2",
+    "@mempool/electrum-client": "^1.1.7",
+    "axios": "^0.21.1",
+    "bitcoinjs-lib": "^5.2.0",
+    "crypto-js": "^4.0.0",
+    "express": "^4.17.1",
+    "locutus": "^2.0.12",
+    "mysql2": "^1.6.1",
+    "node-worker-threads-pool": "^1.4.2",
+    "typescript": "~3.9.7",
+    "ws": "^7.3.1"
+  },
+  "devDependencies": {
+    "@types/compression": "^1.0.1",
+    "@types/express": "^4.17.2",
+    "@types/locutus": "^0.0.6",
+    "@types/ws": "^6.0.4",
+    "tslint": "~6.1.0",
+    "typescript": "~3.9.7"
+  }
+}

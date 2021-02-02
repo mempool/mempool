@@ -1,0 +1,35 @@
+.qr-wrapper {
+  background-color: #FFF;
+  padding: 10px;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+.profile_photo {
+  width: 80px;
+  height: 80px;
+  background-size: 100%, 100%;
+  border-radius: 50%;
+  margin: 10px;
+}
+
+.profile_img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 0;
+}
+
+.text-small {
+  font-size: 12px;
+}
+
+.info-group {
+  max-width: 400px;
+}
+
+
+.required {
+  color: #FF0000;
+  font-weight: bold;
+}

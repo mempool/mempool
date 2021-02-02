@@ -1,0 +1,43 @@
+<div class="mempool-blocks-container">
+  <div class="flashing">
+    <ng-template ngFor let-projectedBlock [ngForOf]="mempoolBlocks$ | async" let-i="index" [ngForTrackBy]="trackByFn">
+      <div class="bitcoin-block text-center mempool-block" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]">
+        <a [routerLink]="['/mempool-block/' | relativeUrl, i]" class="blockLink">&nbsp;</a>
+        <div class="block-body">
+          <div class="fees">
+            ~{{ projectedBlock.medianFee | number:'1.0-0' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+          </div>
+          <div class="fee-span">
+            {{ projectedBlock.feeRange[0] | number:'1.0-0' }} - {{ projectedBlock.feeRange[projectedBlock.feeRange.length - 1] | number:'1.0-0' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+          </div>
+          <div class="block-size">&lrm;{{ projectedBlock.blockSize | bytes: 2 }}</div>
+          <div class="transaction-count">
+            <ng-container *ngTemplateOutlet="projectedBlock.nTx === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: projectedBlock.nTx | number}"></ng-container>
+            <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
+            <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
+          </div>
+          <div class="time-difference" *ngIf="projectedBlock.blockVSize <= 1000000; else mergedBlock">
+            <ng-template [ngIf]="network === 'liquid'" [ngIfElse]="timeDiffMainnet">
+              <ng-container *ngTemplateOutlet="1 * i + 1 === 1 ? nextBlockEta : nextBlockEtaPlural; context:{ $implicit: 1 * i + 1 }"></ng-container>
+            </ng-template>
+            <ng-template #timeDiffMainnet>
+              <ng-container *ngTemplateOutlet="nextBlockEtaPlural; context:{ $implicit: 10 * i + 10 }"></ng-container>
+            </ng-template>
+          </div>
+          <ng-template #mergedBlock>
+            <div class="time-difference">
+              <b>(<ng-container *ngTemplateOutlet="blocksPlural; context: {$implicit: projectedBlock.blockVSize / 1000000 | ceil }"></ng-container>)</b>
+              <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} blocks</ng-template>
+            </div>
+          </ng-template>
+        </div>
+        <span class="animated-border"></span>
+      </div>
+    </ng-template>
+  </div>
+  <div *ngIf="arrowVisible" id="arrow-up" [ngStyle]="{'right': rightPosition + 75 + 'px', transition: transition }"></div>
+</div>
+
+<ng-template let-i #nextBlockEtaPlural i18n="mempool-blocks.eta-of-next-block-plural|Block Frequency (plural)">In ~{{ i }} minutes</ng-template>
+
+<ng-template let-i #nextBlockEta i18n="mempool-blocks.eta-of-next-block|Block Frequency">In ~{{ i }} minute</ng-template>

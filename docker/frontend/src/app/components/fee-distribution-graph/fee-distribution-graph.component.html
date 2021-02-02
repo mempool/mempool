@@ -1,0 +1,13 @@
+<div style="height: 225px;" *ngIf="mempoolVsizeFeesData; else loadingFees">
+  <app-chartist
+    [data]="mempoolVsizeFeesData"
+    [type]="'Line'"
+    [options]="mempoolVsizeFeesOptions">
+  </app-chartist>
+</div>
+
+<ng-template #loadingFees>
+  <div class="text-center">
+    <div class="spinner-border text-light"></div>
+  </div>
+</ng-template>

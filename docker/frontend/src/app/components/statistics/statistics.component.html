@@ -1,0 +1,74 @@
+<div class="container-xl" style="max-width: 100%;">
+
+  <div class="row">
+    <div class="col-lg-12" *ngIf="loading">
+      <div class="text-center">
+        <h3 i18n="statistics.loading-graphs">Loading graphs...</h3>
+        <br>
+        <div class="spinner-border text-light"></div>
+      </div>
+    </div>
+
+    <div class="col-lg-12">
+
+      <div class="card mb-3" *ngIf="mempoolStats.length">
+        <div class="card-header">
+          <i class="fa fa-area-chart"></i> <span i18n="statistics.memory-by-vBytes">Mempool by vBytes (sat/vByte)</span>
+
+          <form [formGroup]="radioGroupForm" style="float: right;">
+            <div class="spinner-border text-light bootstrap-spinner" *ngIf="spinnerLoading"></div>
+            <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="'2h'" [routerLink]="['/graphs' | relativeUrl]" fragment="2h"> 2H (LIVE)
+              </label>
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="'24h'" [routerLink]="['/graphs' | relativeUrl]" fragment="24h"> 24H
+              </label>
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="'1w'" [routerLink]="['/graphs' | relativeUrl]" fragment="1w"> 1W
+              </label>
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="'1m'" [routerLink]="['/graphs' | relativeUrl]" fragment="1m"> 1M
+              </label>
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="'3m'" [routerLink]="['/graphs' | relativeUrl]" fragment="3m"> 3M
+              </label>
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="'6m'" [routerLink]="['/graphs' | relativeUrl]" fragment="6m"> 6M
+              </label>
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="'1y'" [routerLink]="['/graphs' | relativeUrl]" fragment="1y"> 1Y
+              </label>
+            </div>
+            <button (click)="invertGraph()" class="btn btn-primary btn-sm ml-2 d-none d-md-inline"><fa-icon [icon]="['fas', 'exchange-alt']" [rotate]="90" [fixedWidth]="true" i18n-title="statistics.component-invert.title" title="Invert"></fa-icon></button>
+          </form>
+        </div>
+        <div class="card-body">
+          <div style="height: 600px;">
+            <app-mempool-graph dir="ltr" [data]="mempoolStats" [dateSpan]="radioGroupForm.controls.dateSpan.value"></app-mempool-graph>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-12">
+      <div class="card mb-3" *ngIf="mempoolTransactionsWeightPerSecondData">
+        <div class="card-header">
+            <i class="fa fa-area-chart"></i> <span i18n="statistics.transaction-vbytes-per-second">Transaction vBytes per second (vB/s)</span>
+        </div>
+        <div class="card-body">
+          <div style="height: 600px;">
+            <app-chartist
+              [data]="mempoolTransactionsWeightPerSecondData"
+              [type]="'Line'"
+              [options]="transactionsWeightPerSecondOptions">
+            </app-chartist>
+          </div>
+  
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

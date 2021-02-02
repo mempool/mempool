@@ -1,0 +1,16 @@
+:host ::ng-deep .dropdown-item {
+  white-space: nowrap;
+  overflow: hidden;
+  width: 375px;
+  text-overflow: ellipsis;
+}
+
+.search-box-container {
+  width: 100%;
+}
+
+@media (min-width: 992px) {
+  .search-box-container {
+    width: 350px;
+  }
+}

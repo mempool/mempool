@@ -1,0 +1,11 @@
+@media (max-width: 767.98px) {
+	.td-width {
+		width: 150px;
+	}
+	.mobile-even tr:nth-of-type(even) {
+		background-color: #181b2d;
+	}
+	.mobile-even tr:nth-of-type(odd) {
+		background-color: inherit;
+	}
+}
