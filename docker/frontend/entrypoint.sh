@@ -1,6 +1,6 @@
 #!/bin/sh
-API_IP=$API_IP
+__MEMPOOL_BACKEND_MAINNET_HTTP_HOST__=${BACKEND_MAINNET_HTTP_HOST}
 
-sed -i "s/<API_IP>/${API_IP}/g" /etc/nginx/conf.d/nginx-mempool.conf
+sed -i "s/__MEMPOOL_BACKEND_MAINNET_HTTP_HOST__/${__MEMPOOL_BACKEND_MAINNET_HTTP_HOST__}/g" /etc/nginx/conf.d/nginx-mempool.conf
 
 exec "$@"

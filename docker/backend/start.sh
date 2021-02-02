@@ -1,21 +1,27 @@
 #!/bin/sh
 
-RPC_HOST=$RPC_HOST
-RPC_PORT=$RPC_PORT
-RPC_USER=$RPC_USER
-RPC_PASS=$RPC_PASS
-ELECTRS_HOST=$ELECTRS_HOST
-ELECTRS_PORT=$ELECTRS_PORT
-MYSQL_HOST=$MYSQL_HOST
-CACHE_DIR=$CACHE_DIR
+__BITCOIN_MAINNET_RPC_HOST__=${RPC_HOST}
+__BITCOIN_MAINNET_RPC_PORT__=${RPC_PORT}
+__BITCOIN_MAINNET_RPC_USER__=${RPC_USER}
+__BITCOIN_MAINNET_RPC_PASS__=${RPC_PASS}
+__ELECTRS_MAINNET_HTTP_HOST__=${ELECTRS_HOST}
+__ELECTRS_MAINNET_HTTP_PORT__=${ELECTRS_PORT}
+__MYSQL_HOST__=${MYSQL_HOST}
+__MYSQL_PORT__=${MYSQL_PORT}
+__MEMPOOL_BACKEND_CACHE_DIR__=${CACHE_DIR}
+__MEMPOOL_BACKEND_MAINNET_HTTP_HOST__=${BACKEND_MAINNET_HTTP_HOST}
+__MEMPOOL_BACKEND_MAINNET_HTTP_PORT__=${BACKEND_MAINNET_HTTP_PORT}
 
-sed -i "s/<RPC_HOST>/${RPC_HOST}/g" mempool-config.json
-sed -i "s/<RPC_PORT>/${RPC_PORT}/g" mempool-config.json
-sed -i "s/<RPC_USER>/${RPC_USER}/g" mempool-config.json
-sed -i "s/<RPC_PASS>/${RPC_PASS}/g" mempool-config.json
-sed -i "s/<ELECTRS_HOST>/${ELECTRS_HOST}/g" mempool-config.json
-sed -i "s/<ELECTRS_PORT>/${ELECTRS_PORT}/g" mempool-config.json
-sed -i "s/<MYSQL_HOST>/${MYSQL_HOST}/g" mempool-config.json
-sed -i "s/<CACHE_DIR>/${CACHE_DIR}/g" mempool-config.json
+sed -i "s/__BITCOIN_MAINNET_RPC_HOST__/${__BITCOIN_MAINNET_RPC_HOST__}/g" mempool-config.json
+sed -i "s/__BITCOIN_MAINNET_RPC_PORT__/${__BITCOIN_MAINNET_RPC_PORT__}/g" mempool-config.json
+sed -i "s/__BITCOIN_MAINNET_RPC_USER__/${__BITCOIN_MAINNET_RPC_USER__}/g" mempool-config.json
+sed -i "s/__BITCOIN_MAINNET_RPC_PASS__/${__BITCOIN_MAINNET_RPC_PASS__}/g" mempool-config.json
+sed -i "s/__ELECTRS_MAINNET_HTTP_HOST__/${__ELECTRS_MAINNET_HTTP_HOST__}/g" mempool-config.json
+sed -i "s/__ELECTRS_MAINNET_HTTP_PORT__/${__ELECTRS_MAINNET_HTTP_PORT__}/g" mempool-config.json
+sed -i "s/__MYSQL_HOST__/${__MYSQL_HOST__}/g" mempool-config.json
+sed -i "s/__MYSQL_PORT__/${__MYSQL_PORT__}/g" mempool-config.json
+sed -i "s/__MEMPOOL_BACKEND_CACHE_DIR__/${__MEMPOOL_BACKEND_CACHE_DIR__}/g" mempool-config.json
+sed -i "s/__MEMPOOL_BACKEND_MAINNET_HTTP_PORT__/${__MEMPOOL_BACKEND_MAINNET_HTTP_PORT_}/g" mempool-config.json
+sed -i "s/__MEMPOOL_BACKEND_MAINNET_HTTP_HOST__/${__MEMPOOL_BACKEND_MAINNET_HTTP_HOST_}/g" mempool-config.json
 
 node /backend/dist/index.js
