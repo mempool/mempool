@@ -2,7 +2,7 @@
 
 #MEMPOOL
 __MEMPOOL_BACKEND_MAINNET_HTTP_PORT__=${BACKEND_MAINNET_HTTP_PORT:=8999}
-__MEMPOOL_BACKEND_CACHE_DIR__=${CACHE_DIR:=/backend/cache}
+__MEMPOOL_BACKEND_MAINNET_CACHE_DIR__=${CACHE_DIR:=./cache}
 # BITCOIN
 __BITCOIN_MAINNET_RPC_HOST__=${RPC_HOST:=127.0.0.1}
 __BITCOIN_MAINNET_RPC_PORT__=${RPC_PORT:=8332}
@@ -15,7 +15,7 @@ __ELECTRS_MAINNET_HTTP_PORT__=${ELECTRS_PORT:=50002}
 __MYSQL_HOST__=${MYSQL_HOST:=127.0.0.1}
 __MYSQL_PORT__=${MYSQL_PORT:=3306}
 
-mkdir "${__MEMPOOL_BACKEND_CACHE_DIR__}"
+mkdir -p "${__MEMPOOL_BACKEND_CACHE_DIR__}"
 
 sed -i "s/__BITCOIN_MAINNET_RPC_HOST__/${__BITCOIN_MAINNET_RPC_HOST__}/g" mempool-config.json
 sed -i "s/__BITCOIN_MAINNET_RPC_PORT__/${__BITCOIN_MAINNET_RPC_PORT__}/g" mempool-config.json
@@ -25,7 +25,7 @@ sed -i "s/__ELECTRS_MAINNET_HTTP_HOST__/${__ELECTRS_MAINNET_HTTP_HOST__}/g" memp
 sed -i "s/__ELECTRS_MAINNET_HTTP_PORT__/${__ELECTRS_MAINNET_HTTP_PORT__}/g" mempool-config.json
 sed -i "s/__MYSQL_HOST__/${__MYSQL_HOST__}/g" mempool-config.json
 sed -i "s/__MYSQL_PORT__/${__MYSQL_PORT__}/g" mempool-config.json
-sed -i "s/__MEMPOOL_BACKEND_CACHE_DIR__/${__MEMPOOL_BACKEND_CACHE_DIR__}/g" mempool-config.json
-sed -i "s/__MEMPOOL_BACKEND_MAINNET_HTTP_PORT__/${__MEMPOOL_BACKEND_MAINNET_HTTP_PORT_}/g" mempool-config.json
+sed -i "s!__MEMPOOL_BACKEND_MAINNET_CACHE_DIR__!${__MEMPOOL_BACKEND_MAINNET_CACHE_DIR__}!g" mempool-config.json
+sed -i "s/__MEMPOOL_BACKEND_MAINNET_HTTP_PORT__/${__MEMPOOL_BACKEND_MAINNET_HTTP_PORT__}/g" mempool-config.json
 
 node /backend/dist/index.js
