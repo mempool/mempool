@@ -19,7 +19,7 @@ jobs:
           - frontend
           - backend
     runs-on: ubuntu-18.04
-    name: Build frontend/backend images and push to DockerHub
+    name: Build and push to DockerHub
     steps:
       - name: Set env variables
         run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
