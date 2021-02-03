@@ -18,7 +18,6 @@ jobs:
         service:
           - frontend
           - backend
-          - mysql
     runs-on: ubuntu-18.04
     name: Build and push manager image
     steps:
