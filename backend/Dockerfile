@@ -12,6 +12,7 @@ RUN npm i typescript
 RUN npm run build
 
 RUN mv ./docker/* .
+RUN mv ./mempool-config-docker.json ./mempool-config.json
 
 FROM node:12-buster-slim
 
