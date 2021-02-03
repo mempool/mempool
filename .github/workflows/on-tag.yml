@@ -19,7 +19,7 @@ jobs:
           - frontend
           - backend
     runs-on: ubuntu-18.04
-    name: Build and push manager image
+    name: Build frontend/backend images and push to DockerHub
     steps:
       - name: Set env variables
         run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
@@ -60,7 +60,7 @@ jobs:
           --cache-from "type=local,src=/tmp/.buildx-cache" \
           --cache-to "type=local,dest=/tmp/.buildx-cache" \
           --platform linux/amd64,linux/arm64,linux/arm/v7 \
-          --tag ${{ secrets.DOCKER_HUB_USER }}/mempool-frontend:$TAG \
+          --tag ${{ secrets.DOCKER_HUB_USER }}/mempool-${{ matrix.service }}:$TAG \
           --output "type=registry" ./${{ matrix.service }}/
 
       - name: Run Docker buildx for ${{ matrix.service }} against latest
@@ -69,6 +69,6 @@ jobs:
           --cache-from "type=local,src=/tmp/.buildx-cache" \
           --cache-to "type=local,dest=/tmp/.buildx-cache" \
           --platform linux/amd64,linux/arm64,linux/arm/v7 \
-          --tag ${{ secrets.DOCKER_HUB_USER }}/mempool-frontend:latest \
+          --tag ${{ secrets.DOCKER_HUB_USER }}/mempool-${{ matrix.service }}:latest \
           --output "type=registry" ./${{ matrix.service }}/
 
