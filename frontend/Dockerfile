@@ -7,6 +7,8 @@ RUN apt-get install -y build-essential rsync
 RUN npm i
 RUN npm run build
 
+RUN mv ./docker/* .
+
 FROM nginx:1.17.8-alpine
 
 WORKDIR /patch
@@ -14,8 +16,8 @@ WORKDIR /patch
 COPY --from=builder /build/entrypoint.sh .
 COPY --from=builder /build/wait-for .
 COPY --from=builder /build/dist/mempool /var/www/mempool
-COPY --from=builder /build/nginx-docker.conf /etc/nginx/nginx.conf
-COPY --from=builder /build/nginx-mempool-docker.conf /etc/nginx/conf.d/nginx-mempool.conf
+COPY --from=builder /build/nginx.conf /etc/nginx/
+COPY --from=builder /build/nginx-mempool.conf /etc/nginx/conf.d/
 
 RUN chmod +x /patch/entrypoint.sh
 RUN chmod +x /patch/wait-for
