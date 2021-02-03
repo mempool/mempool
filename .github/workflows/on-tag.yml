@@ -63,7 +63,7 @@ jobs:
           docker buildx build \
           --cache-from "type=local,src=/tmp/.buildx-cache" \
           --cache-to "type=local,dest=/tmp/.buildx-cache" \
-          --platform linux/amd64,linux/arm64,linux/arm/v7 \
+          --platform linux/amd64,linux/arm64 \
           --tag ${{ secrets.DOCKER_HUB_USER }}/${{ matrix.service }}:$TAG \
           --output "type=registry" ./${{ matrix.service }}/
 
@@ -72,7 +72,7 @@ jobs:
           docker buildx build \
           --cache-from "type=local,src=/tmp/.buildx-cache" \
           --cache-to "type=local,dest=/tmp/.buildx-cache" \
-          --platform linux/amd64,linux/arm64,linux/arm/v7 \
+          --platform linux/amd64,linux/arm64 \
           --tag ${{ secrets.DOCKER_HUB_USER }}/${{ matrix.service }}:latest \
           --output "type=registry" ./${{ matrix.service }}/
 
