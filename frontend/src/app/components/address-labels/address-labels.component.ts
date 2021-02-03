@@ -43,6 +43,7 @@ export class AddressLabelsComponent implements OnInit {
         } else {
           this.liquid = 'Emergency Peg Out';
         }
+        return;
       }
 
       [
@@ -51,10 +52,13 @@ export class AddressLabelsComponent implements OnInit {
       ].forEach((item) => {
           if (item.regexp.test(this.vin.inner_witnessscript_asm)) {
             this.lightning = item.label;
-            return;
           }
         }
       );
+
+      if (this.lightning) {
+        return;
+      }
 
       if (this.vin.inner_witnessscript_asm.indexOf('OP_CHECKMULTISIG') > -1) {
         const matches = this.getMatches(this.vin.inner_witnessscript_asm, /OP_PUSHNUM_([0-9])/g, 1);
