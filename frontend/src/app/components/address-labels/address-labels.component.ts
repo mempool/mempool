@@ -18,7 +18,8 @@ export class AddressLabelsComponent implements OnInit {
   multisigM: number;
   multisigN: number;
 
-  secondLayerClose = false;
+  lightning = null;
+  liquid = null;
 
   constructor(
     stateService: StateService,
@@ -36,6 +37,26 @@ export class AddressLabelsComponent implements OnInit {
 
   handleVin() {
     if (this.vin.inner_witnessscript_asm) {
+      if (this.vin.inner_witnessscript_asm.indexOf('OP_DEPTH OP_PUSHNUM_12 OP_EQUAL OP_IF OP_PUSHNUM_11') === 0) {
+        if (this.vin.witness.length > 11) {
+          this.liquid = 'Peg Out';
+        } else {
+          this.liquid = 'Emergency Peg Out';
+        }
+      }
+
+      [
+        [/^OP_DUP OP_HASH160/, 'HTLC'],
+        [/^OP_IF OP_PUSHBYTES_33 \w{33} OP_ELSE OP_PUSHBYTES_2 \w{2} OP_CSV OP_DROP/, 'Force Close']
+      ].forEach(
+        ([re, label]) => {
+          if (re.test(this.vin.inner_witnessscript_asm)) {
+            this.lightning = label;
+            return;
+          }
+        }
+      );
+
       if (this.vin.inner_witnessscript_asm.indexOf('OP_CHECKMULTISIG') > -1) {
         const matches = this.getMatches(this.vin.inner_witnessscript_asm, /OP_PUSHNUM_([0-9])/g, 1);
         this.multisig = true;
@@ -45,10 +66,6 @@ export class AddressLabelsComponent implements OnInit {
         if (this.multisigM === 1 && this.multisigN === 1) {
           this.multisig = false;
         }
-      }
-
-      if (/OP_IF (.+) OP_ELSE (.+) OP_CSV OP_DROP/.test(this.vin.inner_witnessscript_asm)) {
-        this.secondLayerClose = true;
       }
     }
 
