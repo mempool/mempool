@@ -7,8 +7,6 @@ RUN apt-get install -y build-essential rsync
 RUN npm i
 RUN npm run build
 
-RUN mv ./docker/* .
-
 FROM nginx:1.17.8-alpine
 
 WORKDIR /patch

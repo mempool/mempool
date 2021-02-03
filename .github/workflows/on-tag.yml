@@ -18,6 +18,7 @@ jobs:
         service:
           - frontend
           - backend
+          - mysql
     runs-on: ubuntu-18.04
     name: Build and push to DockerHub
     steps:
@@ -33,6 +34,9 @@ jobs:
 
       - name: Checkout project
         uses: actions/checkout@v2
+
+      - name: Init repo for Dockerization
+        run: docker/init.sh
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
