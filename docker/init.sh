@@ -15,7 +15,7 @@ sed -i "s/${localhostIP}:/0.0.0.0:80/g" ./frontend/nginx.conf
 sed -i "s/${localhostIP}/0.0.0.0/g" ./frontend/nginx.conf
 sed -i "s/user nobody;//g" ./frontend/nginx.conf
 sed -i "s!/etc/nginx/nginx-mempool.conf!/etc/nginx/conf.d/nginx-mempool.conf!g" ./frontend/nginx.conf
-sed -i "s/${localhostIP}:/__MEMPOOL_BACKEND_MAINNET_HTTP_HOST__:/g" ./frontend/nginx-mempool.conf
+sed -i "s/${localhostIP}/__MEMPOOL_BACKEND_MAINNET_HTTP_HOST__/g" ./frontend/nginx-mempool.conf
 sed -i "s/8999/__MEMPOOL_BACKEND_MAINNET_HTTP_PORT__/g" ./frontend/nginx-mempool.conf
 
 #db
