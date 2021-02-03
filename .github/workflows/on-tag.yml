@@ -2,6 +2,8 @@ name: Docker build on tag
 env:
   DOCKER_CLI_EXPERIMENTAL: enabled
   TAG_FMT: '^refs/tags/(((.?[0-9]+){3,4}))$'
+  DOCKER_BUILDKIT: 0
+  COMPOSE_DOCKER_CLI_BUILD: 0
 
 on:
   push:
