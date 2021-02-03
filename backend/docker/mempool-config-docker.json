@@ -1,0 +1,38 @@
+{
+  "MEMPOOL": {
+    "NETWORK": "mainnet",
+    "BACKEND": "electrum",
+    "HTTP_PORT": __MEMPOOL_BACKEND_MAINNET_HTTP_PORT__,
+    "SPAWN_CLUSTER_PROCS": 0,
+    "API_URL_PREFIX": "/api/v1/",
+    "POLL_RATE_MS": 2000,
+    "CACHE_DIR": "__MEMPOOL_BACKEND_MAINNET_CACHE_DIR__"
+  },
+  "CORE_RPC": {
+    "HOST": "__BITCOIN_MAINNET_RPC_HOST__",
+    "PORT": __BITCOIN_MAINNET_RPC_PORT__,
+    "USERNAME": "__BITCOIN_MAINNET_RPC_USER__",
+    "PASSWORD": "__BITCOIN_MAINNET_RPC_PASS__"
+  },
+  "ELECTRUM": {
+    "HOST": "__ELECTRS_MAINNET_HTTP_HOST__",
+    "PORT": __ELECTRS_MAINNET_HTTP_PORT__,
+    "TLS_ENABLED": false,
+    "TX_LOOKUPS": true
+  },
+  "ESPLORA": {
+    "REST_API_URL": "http://127.0.0.1:3000"
+  },
+  "DATABASE": {
+    "ENABLED": true,
+    "HOST": "__MYSQL_HOST__",
+    "PORT": __MYSQL_PORT__,
+    "DATABASE": "mempool",
+    "USERNAME": "mempool",
+    "PASSWORD": "mempool"
+  },
+  "STATISTICS": {
+    "ENABLED": true,
+    "TX_PER_SECOND_SAMPLE_PERIOD": 150
+  }
+}
