@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Init repo for Dockerization
-        run: docker/init.sh
+        run: docker/init.sh "$TAG"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
