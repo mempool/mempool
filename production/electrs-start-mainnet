@@ -11,6 +11,7 @@ do
 		-- \
 		-vvvv \
 		--address-search \
+		--db-dir /electrs \
 		--daemon-dir $HOME \
 		--http-addr '[::]:3000' \
 		--cookie 'user:pass' \

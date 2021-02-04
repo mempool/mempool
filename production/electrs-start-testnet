@@ -11,6 +11,7 @@ do
 		-- \
 		-vvvv \
 		--network testnet \
+		--db-dir /electrs \
 		--daemon-dir $HOME \
 		--http-addr '[::]:3002' \
 		--cookie 'user:pass' \
