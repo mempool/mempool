@@ -1,0 +1,77 @@
+# Docker
+
+## Initialization
+
+In an empty dir create 2 sub-dirs
+
+```bash
+mkdir -p data mysql/data
+```
+
+In the mysql sub-dir add the mariadb-structure.sql file from the mempool repo
+
+In the main dir add the following docker-compose.yml
+
+```bash
+version: "3.7"
+
+services:
+  web:
+    image: mempool/frontend:v2.1.0
+    user: "1000:1000"
+    restart: on-failure
+    stop_grace_period: 1m
+    command: "./wait-for db:3306 --timeout=720 -- nginx -g 'daemon off;'"
+    ports:
+      - 3020:8080
+    environment:
+      BACKEND_MAINNET_HTTP_HOST: "api"
+  api:
+    image: mempool/backend:v2.1.0
+    user: "1000:1000"
+    restart: on-failure
+    stop_grace_period: 1m
+    command: "./wait-for-it.sh db:3306 --timeout=720 --strict -- ./start.sh"
+    volumes:
+      - ./data:/backend/cache
+    environment:
+      RPC_HOST: "127.0.0.1"
+      RPC_PORT: "8332"
+      RPC_USER: "mempool"
+      RPC_PASS: "mempool"
+      ELECTRS_HOST: "127.0.0.1"
+      ELECTRS_PORT: "50002"
+      MYSQL_HOST: "db"
+      MYSQL_PORT: "3306"
+      BACKEND_MAINNET_HTTP_PORT: "8999"
+      CACHE_DIR: "/backend/cache/"
+  db:
+    image: mariadb:10.5.8
+    user: "1000:1000"
+    restart: on-failure
+    stop_grace_period: 1m
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/mariadb-structure.sql:/docker-entrypoint-initdb.d/mariadb-structure.sql
+    environment:
+      MYSQL_DATABASE: "mempool"
+      MYSQL_USER: "mempool"
+      MYSQL_PASSWORD: "mempool"
+      MYSQL_ROOT_PASSWORD: "admin"
+
+```
+
+You can update all the environment variables inside the API container, especially the RPC and ELECTRS ones
+
+## Run it
+
+To run our docker-compose use the following cmd:
+
+```bash
+docker-compose up
+```
+
+If everything went okay you should see the beautiful mempool :grin:
+
+If you get stuck on "loading blocks", this means the websocket can't connect.
+Check your nginx proxy setup, firewalls, etc. and open an issue if you need help.
