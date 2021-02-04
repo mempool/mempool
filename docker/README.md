@@ -5,10 +5,28 @@
 In an empty dir create 2 sub-dirs
 
 ```bash
-mkdir -p data mysql/data
+mkdir -p data mysql/data mysql/db-scripts
 ```
 
-In the mysql sub-dir add the mariadb-structure.sql file from the mempool repo
+In the mysql/db-scripts sub-dir add the mariadb-structure.sql file from the mempool repo
+
+Your dir should now look like that:
+
+```bash
+$ls -R
+.:
+data mysql
+
+./data:
+
+./mysql:
+data  db-scripts
+
+./mysql/data:
+
+./mysql/db-scripts:
+mariadb-structure.sql
+```
 
 In the main dir add the following docker-compose.yml
 
@@ -52,7 +70,7 @@ services:
     stop_grace_period: 1m
     volumes:
       - ./mysql/data:/var/lib/mysql
-      - ./mysql/mariadb-structure.sql:/docker-entrypoint-initdb.d/mariadb-structure.sql
+      - ./mysql/db-scripts:/docker-entrypoint-initdb.d
     environment:
       MYSQL_DATABASE: "mempool"
       MYSQL_USER: "mempool"
