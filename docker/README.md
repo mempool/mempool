@@ -43,6 +43,7 @@ services:
     ports:
       - 80:8080
     environment:
+      FRONTEND_HTTP_PORT: "8080"
       BACKEND_MAINNET_HTTP_HOST: "api"
   api:
     image: mempool/backend:v2.1.0
