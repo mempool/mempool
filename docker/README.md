@@ -41,7 +41,7 @@ services:
     stop_grace_period: 1m
     command: "./wait-for db:3306 --timeout=720 -- nginx -g 'daemon off;'"
     ports:
-      - 3020:8080
+      - 80:8080
     environment:
       BACKEND_MAINNET_HTTP_HOST: "api"
   api:
@@ -61,6 +61,9 @@ services:
       ELECTRS_PORT: "50002"
       MYSQL_HOST: "db"
       MYSQL_PORT: "3306"
+      MYSQL_DATABASE: "mempool"
+      MYSQL_USER: "mempool"
+      MYSQL_PASS: "mempool"
       BACKEND_MAINNET_HTTP_PORT: "8999"
       CACHE_DIR: "/backend/cache/"
   db:

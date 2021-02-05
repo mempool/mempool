@@ -14,6 +14,9 @@ __ELECTRS_MAINNET_HTTP_PORT__=${ELECTRS_PORT:=50002}
 # MYSQL
 __MYSQL_HOST__=${MYSQL_HOST:=127.0.0.1}
 __MYSQL_PORT__=${MYSQL_PORT:=3306}
+__MYSQL_DATABASE__=${MYSQL_DATABASE:=mempool}
+__MYSQL_USERNAME__=${MYSQL_USER:=mempool}
+__MYSQL_PASSWORD__=${MYSQL_PASS:=mempool}
 
 mkdir -p "${__MEMPOOL_BACKEND_MAINNET_CACHE_DIR__}"
 
@@ -25,6 +28,9 @@ sed -i "s/__ELECTRS_MAINNET_HTTP_HOST__/${__ELECTRS_MAINNET_HTTP_HOST__}/g" memp
 sed -i "s/__ELECTRS_MAINNET_HTTP_PORT__/${__ELECTRS_MAINNET_HTTP_PORT__}/g" mempool-config.json
 sed -i "s/__MYSQL_HOST__/${__MYSQL_HOST__}/g" mempool-config.json
 sed -i "s/__MYSQL_PORT__/${__MYSQL_PORT__}/g" mempool-config.json
+sed -i "s/__MYSQL_DATABASE__/${__MYSQL_DATABASE__}/g" mempool-config.json
+sed -i "s/__MYSQL_USERNAME__/${__MYSQL_USERNAME__}/g" mempool-config.json
+sed -i "s/__MYSQL_PASSWORD__/${__MYSQL_PASSWORD__}/g" mempool-config.json
 sed -i "s!__MEMPOOL_BACKEND_MAINNET_CACHE_DIR__!${__MEMPOOL_BACKEND_MAINNET_CACHE_DIR__}!g" mempool-config.json
 sed -i "s/__MEMPOOL_BACKEND_MAINNET_HTTP_PORT__/${__MEMPOOL_BACKEND_MAINNET_HTTP_PORT__}/g" mempool-config.json
 
