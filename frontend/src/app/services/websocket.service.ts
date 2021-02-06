@@ -126,10 +126,6 @@ export class WebsocketService {
     this.isTrackingTx = true;
   }
 
-  trackDonation(id: string) {
-    this.websocketSubject.next({ 'track-donation': id });
-  }
-
   stopTrackingTransaction() {
     if (!this.isTrackingTx) {
       return;
@@ -288,10 +284,6 @@ export class WebsocketService {
 
     if (response['git-commit']) {
       this.stateService.gitCommit$.next(response['git-commit']);
-    }
-
-    if (response.donationConfirmed) {
-      this.stateService.donationConfirmed$.next(true);
     }
   }
 }

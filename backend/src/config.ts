@@ -51,13 +51,6 @@ interface IConfig {
     ENABLED: boolean;
     DATA_PATH: string;
   };
-  SPONSORS: {
-    ENABLED: boolean;
-    BTCPAY_URL: string;
-    BTCPAY_AUTH: string;
-    BTCPAY_WEBHOOK_URL: string;
-    TWITTER_BEARER_AUTH: string;
-  };
 }
 
 const defaults: IConfig = {
@@ -111,13 +104,6 @@ const defaults: IConfig = {
     'ENABLED': false,
     'DATA_PATH': '/bisq/statsnode-data/btc_mainnet/db'
   },
-  'SPONSORS': {
-    'ENABLED': false,
-    'BTCPAY_URL': '',
-    'BTCPAY_AUTH': '',
-    'BTCPAY_WEBHOOK_URL': '',
-    'TWITTER_BEARER_AUTH': ''
-  }
 };
 
 class Config implements IConfig {
@@ -130,7 +116,6 @@ class Config implements IConfig {
   STATISTICS: IConfig['STATISTICS'];
   BISQ_BLOCKS: IConfig['BISQ_BLOCKS'];
   BISQ_MARKETS: IConfig['BISQ_MARKETS'];
-  SPONSORS: IConfig['SPONSORS'];
 
   constructor() {
     const configs = this.merge(configFile, defaults);
@@ -143,7 +128,6 @@ class Config implements IConfig {
     this.STATISTICS = configs.STATISTICS;
     this.BISQ_BLOCKS = configs.BISQ_BLOCKS;
     this.BISQ_MARKETS = configs.BISQ_MARKETS;
-    this.SPONSORS = configs.SPONSORS;
   }
 
   merge = (...objects: object[]): IConfig => {
