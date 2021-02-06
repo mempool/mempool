@@ -8,10 +8,9 @@ import mempool from './api/mempool';
 import bisq from './api/bisq/bisq';
 import websocketHandler from './api/websocket-handler';
 import bisqMarket from './api/bisq/markets-api';
-import { OptimizedStatistic, RequiredSpec, TransactionExtended } from './mempool.interfaces';
+import { RequiredSpec, TransactionExtended } from './mempool.interfaces';
 import { MarketsApiError } from './api/bisq/interfaces';
 import { IEsploraApi } from './api/bitcoin/esplora-api.interface';
-import donations from './api/donations';
 import logger from './logger';
 import bitcoinApi from './api/bitcoin/bitcoin-api-factory';
 import transactionUtils from './api/transaction-utils';
@@ -97,79 +96,6 @@ class Routes {
 
   public getBackendInfo(req: Request, res: Response) {
     res.json(backendInfo.getBackendInfo());
-  }
-
-  public async createDonationRequest(req: Request, res: Response) {
-    const constraints: RequiredSpec = {
-      'amount': {
-        required: true,
-        types: ['@float']
-      },
-      'orderId': {
-        required: true,
-        types: ['@string']
-      }
-    };
-
-    const p = this.parseRequestParameters(req.body, constraints);
-    if (p.error) {
-      res.status(400).send(p.error);
-      return;
-    }
-
-    if (p.orderId !== '' && !/^(@|)[a-zA-Z0-9_]{1,15}$/.test(p.orderId)) {
-      res.status(400).send('Invalid Twitter handle');
-      return;
-    }
-
-    if (p.amount < 0.001) {
-      res.status(400).send('Amount needs to be at least 0.001');
-      return;
-    }
-
-    if (p.amount > 1000) {
-      res.status(400).send('Amount too large');
-      return;
-    }
-
-    try {
-      const result = await donations.$createRequest(p.amount, p.orderId);
-      res.json(result);
-    } catch (e) {
-      res.status(500).send(e.message);
-    }
-  }
-
-  public async getDonations(req: Request, res: Response) {
-    try {
-      const result = await donations.$getDonationsFromDatabase('handle, imageUrl');
-      res.json(result);
-    } catch (e) {
-      res.status(500).send(e.message);
-    }
-  }
-
-  public async getSponsorImage(req: Request, res: Response) {
-    try {
-      const result = await donations.getSponsorImage(req.params.id);
-      if (result) {
-        res.set('Content-Type', 'image/jpeg');
-        res.send(result);
-      } else {
-        res.status(404).end();
-      }
-    } catch (e) {
-      res.status(500).send(e.message);
-    }
-  }
-
-  public async donationWebhook(req: Request, res: Response) {
-    try {
-      donations.$handleWebhookRequest(req.body);
-      res.end();
-    } catch (e) {
-      res.status(500).send(e);
-    }
   }
 
   public getBisqStats(req: Request, res: Response) {
