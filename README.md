@@ -16,39 +16,39 @@ Easy way to add Mempool API to your JS application.
 - :pushpin: [Usage](#usage)
 
   - Fees
-    - Get Fees Recommended
-    - Get Fees Mempool Blocks
+    - [Get Fees Recommended](#get-fees-recommended)
+    - [Get Fees Mempool Blocks](#get-fees-mempool-blocks)
   - Mempool
-    - Get Mempool
-    - Get Mempool Recent
-    - Get Mempool Txids
+    - [Get Mempool](#get-mempool)
+    - [Get Mempool Recent](#get-mempool-recent)
+    - [Get Mempool Txids](#get-mempool-txids)
   - Blocks
-    - Get Block
-    - Get Block Status
-    - Get Block Txs
-    - Get Block Txids
-    - Get Block Txid
-    - Get Block Raw
-    - Get Blocks Height
-    - Get Blocks
-    - Get Blocks Tip Height
-    - Get Blocks Tip Hash
+    - [Get Block](#get-block)
+    - [Get Block Status](#get-block-status)
+    - [Get Block Txs](#get-block-txs)
+    - [Get Block Txids](#get-block-txids)
+    - [Get Block Txid](#get-block-txid)
+    - [Get Block Raw](#get-block-raw)
+    - [Get Blocks Height](#get-blocks-height)
+    - [Get Blocks](#get-blocks)
+    - [Get Blocks Tip Height](#get-blocks-tip-height)
+    - [Get Blocks Tip Hash](#get-blocks-tip-hash)
   - Transactions
-    - Get Tx
-    - Get Tx Status
-    - Get Tx Hex
-    - Get Tx Raw
-    - Get Tx Merkle Block Proof
-    - Get Tx Merkle Proof
-    - Get Tx Outspend
-    - Get Tx Outspends
-    - Post Tx Outspends
+    - [Get Tx](#get-tx)
+    - [Get Tx Status](#get-tx-status)
+    - [Get Tx Hex](#get-tx-hex)
+    - [Get Tx Raw](#get-tx-raw)
+    - [Get Tx Merkle Block Proof](#get-tx-merkle-block-proof)
+    - [Get Tx Merkle Proof](#get-tx-merkle-proof)
+    - [Get Tx Outspend](#get-tx-outspend)
+    - [Get Tx Outspends](#get-tx-outspends)
+    - [Post Tx Outspends]($post-tx-outspends)
   - Addresses
-    - Get Address
-    - Get Address Txs
-    - Get Address Txs Chain
-    - Get Address Txs Mempool
-    - Get Address Txs Utxo
+    - [Get Address](#get-address)
+    - [Get Address Txs](#get-address-txs)
+    - [Get Address Txs Chain](#get-address-txs-chain)
+    - [Get Address Txs Mempool](#get-address-txs-mempool)
+    - [Get Address Txs Utxo](#get-address-txs-utxo)
 
 - :pushpin: [References](#references)
 - :pushpin: [Donate](#donate)
