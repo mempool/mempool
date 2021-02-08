@@ -62,13 +62,13 @@ Easy way to add Mempool API to your JS application.
 Using npm:
 
 ```bash
-$ npm install mempool-space-js
+$ npm install mempool-js
 ```
 
 Using yarn:
 
 ```bash
-$ yarn add mempool-space-js
+$ yarn add mempool-js
 ```
 
 ## Usage
