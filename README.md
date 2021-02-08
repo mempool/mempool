@@ -690,9 +690,9 @@ console.log(addressTxsUtxo);
 
 Help me to stack sats! :blush:
 
-[bc1q4m9hs4fv3etleyqgp4jhvak0q3w26mmkntqq02](bitcoin:bc1q4m9hs4fv3etleyqgp4jhvak0q3w26mmkntqq02)
+[bc1qy3pynpjjxx09s9wpmwy3qqv0m7tmkpjpk0ze8y](bitcoin:bc1qy3pynpjjxx09s9wpmwy3qqv0m7tmkpjpk0ze8y)
 
-[Or donate via Lightning Network!](https://paywall.link/to/lnpayapi)
+[Or donate via Lightning Network!](https://paywall.link/to/mempool)
 
 ---
 
