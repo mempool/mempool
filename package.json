@@ -1,5 +1,5 @@
 {
-  "name": "mempool-js",
+  "name": "mempool-space-js",
   "version": "1.0.0",
   "description": "NPM Package for Mempool.Space API.",
   "main": "lib/index.js",
@@ -8,7 +8,7 @@
   "url": "http://miguelmedeiros.com.br",
   "private": false,
   "license": "MIT",
-  "repository": "github:MiguelMedeiros/mempool-js",
+  "repository": "github:MiguelMedeiros/mempool-space-js",
   "types": "lib/index.d.ts",
   "scripts": {
     "start": "ts-node src/index.ts",
