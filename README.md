@@ -1,8 +1,8 @@
 # Mempool.Space JS API
 
-[![npm version](https://img.shields.io/npm/v/mempool-js.svg?style=flat-square)](https://www.npmjs.org/package/mempool-js)
-[![NPM](https://img.shields.io/david/MiguelMedeiros/mempool-js.svg?style=flat-square)](https://david-dm.org/MiguelMedeiros/mempool-js#info=dependencies)
-[![Known Vulnerabilities](https://snyk.io/test/github/MiguelMedeiros/mempool-js/badge.svg)](https://snyk.io/test/github/MiguelMedeiros/mempool-js)
+[![npm version](https://img.shields.io/npm/v/mempool-space-js.svg?style=flat-square)](https://www.npmjs.org/package/mempool-space-js)
+[![NPM](https://img.shields.io/david/MiguelMedeiros/mempool-space-js.svg?style=flat-square)](https://david-dm.org/MiguelMedeiros/mempool-space-js#info=dependencies)
+[![Known Vulnerabilities](https://snyk.io/test/github/MiguelMedeiros/mempool-space-js/badge.svg)](https://snyk.io/test/github/MiguelMedeiros/mempool-space-js)
 
 ---
 
