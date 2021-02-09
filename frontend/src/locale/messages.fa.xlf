@@ -49,7 +49,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">205</context>
+          <context context-type="linenumber">208</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transfers/bisq-transfers.component.html</context>
@@ -71,7 +71,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">206</context>
+          <context context-type="linenumber">209</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transfers/bisq-transfers.component.html</context>
@@ -86,14 +86,14 @@
       </trans-unit>
       <trans-unit datatype="html" id="ef772ce5cf98a47b29175e3d46b8a9816c7990a2">
         <source>Unconfirmed</source>
-        <target>تأیید نشده</target>
+        <target>تأییدنشده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">22</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">209</context>
+          <context context-type="linenumber">212</context>
         </context-group>
         <note from="description" priority="1">Transaction unconfirmed state</note>
         <note from="meaning" priority="1">transaction.unconfirmed</note>
@@ -258,7 +258,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">198</context>
+          <context context-type="linenumber">201</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
@@ -501,7 +501,7 @@
         <target>nSequence</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">92</context>
+          <context context-type="linenumber">95</context>
         </context-group>
         <note from="description" priority="1">transactions-list.nsequence</note>
       </trans-unit>
@@ -510,7 +510,7 @@
         <target>ScriptSig (ASM)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">71</context>
+          <context context-type="linenumber">74</context>
         </context-group>
         <note from="description" priority="1">ScriptSig (ASM)</note>
         <note from="meaning" priority="1">transactions-list.scriptsig.asm</note>
@@ -520,7 +520,7 @@
         <target>ScriptSig (HEX)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">75</context>
+          <context context-type="linenumber">78</context>
         </context-group>
         <note from="description" priority="1">ScriptSig (HEX)</note>
         <note from="meaning" priority="1">transactions-list.scriptsig.hex</note>
@@ -530,7 +530,7 @@
         <target>شاهد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">80</context>
+          <context context-type="linenumber">83</context>
         </context-group>
         <note from="description" priority="1">transactions-list.witness</note>
       </trans-unit>
@@ -539,7 +539,7 @@
         <target>اسکریپت نقد کردن P2SH</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">84</context>
+          <context context-type="linenumber">87</context>
         </context-group>
         <note from="description" priority="1">transactions-list.p2sh-redeem-script</note>
       </trans-unit>
@@ -548,7 +548,7 @@
         <target>اسکریپت شاهد P2WSH</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">88</context>
+          <context context-type="linenumber">91</context>
         </context-group>
         <note from="description" priority="1">transactions-list.p2wsh-witness-script</note>
       </trans-unit>
@@ -557,7 +557,7 @@
         <target>اسکریپت خروجی قبلی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">96</context>
+          <context context-type="linenumber">99</context>
         </context-group>
         <note from="description" priority="1">transactions-list.previous-output-script</note>
       </trans-unit>
@@ -566,11 +566,11 @@
         <target>بازکردن همه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">106</context>
+          <context context-type="linenumber">109</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">188</context>
+          <context context-type="linenumber">191</context>
         </context-group>
         <note from="description" priority="1">transactions-list.load-all</note>
       </trans-unit>
@@ -579,7 +579,7 @@
         <target>‏Peg-out به <x ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;" id="START_TAG_NG_CONTAINER"/><x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">125</context>
+          <context context-type="linenumber">128</context>
         </context-group>
         <note from="description" priority="1">transactions-list.peg-out-to</note>
       </trans-unit>
@@ -588,7 +588,7 @@
         <target>ScriptPubKey (ASM)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">170</context>
+          <context context-type="linenumber">173</context>
         </context-group>
         <note from="description" priority="1">ScriptPubKey (ASM)</note>
         <note from="meaning" priority="1">transactions-list.scriptpubkey.asm</note>
@@ -598,7 +598,7 @@
         <target>ScriptPubKey (HEX)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">174</context>
+          <context context-type="linenumber">177</context>
         </context-group>
         <note from="description" priority="1">ScriptPubKey (HEX)</note>
         <note from="meaning" priority="1">transactions-list.scriptpubkey.hex</note>
@@ -608,7 +608,7 @@
         <target>نوع</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">166</context>
+          <context context-type="linenumber">169</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction-details/bisq-transaction-details.component.html</context>
@@ -625,7 +625,7 @@
         <target>data</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">178</context>
+          <context context-type="linenumber">181</context>
         </context-group>
         <note from="description" priority="1">transactions-list.vout.scriptpubkey-type.data</note>
       </trans-unit>
@@ -634,7 +634,7 @@
         <target>ساتوشی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">198</context>
+          <context context-type="linenumber">201</context>
         </context-group>
         <note from="description" priority="1">sat</note>
         <note from="meaning" priority="1">shared.sat</note>
@@ -644,7 +644,7 @@
         <target>محرمانه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">214</context>
+          <context context-type="linenumber">217</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/amount/amount.component.html</context>
@@ -652,7 +652,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">132</context>
+          <context context-type="linenumber">134</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
@@ -905,12 +905,25 @@
         </context-group>
         <note from="description" priority="1">shared.address</note>
       </trans-unit>
+      <trans-unit datatype="html" id="7e69426bd97a606d8ae6026762858e6e7c86a1fd">
+        <source>Balance</source>
+        <target>موجودی</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+        <note from="description" priority="1">address.balance</note>
+      </trans-unit>
       <trans-unit datatype="html" id="a9b87c3aa4731edee661c8287ef3aab71799c0b8">
         <source>Total received</source>
         <target>مجموع دریافت‌ها</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">20</context>
+          <context context-type="linenumber">21</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
@@ -923,7 +936,7 @@
         <target>مجموع ارسال‌ها</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">24</context>
+          <context context-type="linenumber">25</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
@@ -935,25 +948,12 @@
         </context-group>
         <note from="description" priority="1">address.total-sent</note>
       </trans-unit>
-      <trans-unit datatype="html" id="7e69426bd97a606d8ae6026762858e6e7c86a1fd">
-        <source>Balance</source>
-        <target>موجودی</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">28</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
-          <context context-type="linenumber">28</context>
-        </context-group>
-        <note from="description" priority="1">address.balance</note>
-      </trans-unit>
       <trans-unit datatype="html" id="714e34125b3343df73f19ec800b43be95217d5d4">
         <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> transaction</source>
         <target><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> از <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> تراکنش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">48</context>
+          <context context-type="linenumber">50</context>
         </context-group>
         <note from="description" priority="1">X of X Address Transaction</note>
       </trans-unit>
@@ -962,7 +962,7 @@
         <target><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> از <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> تراکنش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">49</context>
+          <context context-type="linenumber">51</context>
         </context-group>
         <note from="description" priority="1">X of X Address Transactions (Plural)</note>
       </trans-unit>
@@ -971,7 +971,7 @@
         <target>حطا در بازکردن داده‌های آدرس.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">113</context>
+          <context context-type="linenumber">115</context>
         </context-group>
         <note from="description" priority="1">address.error.loading-address-data</note>
       </trans-unit>
@@ -1098,16 +1098,25 @@
         <target>چندامضایی <x equiv-text="{{ multisigM }}" id="INTERPOLATION"/> از <x equiv-text="{{ multisigN }}" id="INTERPOLATION_1"/> </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
-          <context context-type="linenumber">1</context>
+          <context context-type="linenumber">5</context>
         </context-group>
         <note from="description" priority="1">address-labels.multisig</note>
       </trans-unit>
-      <trans-unit datatype="html" id="aae004b987aaf258dea1829618651427b68283db">
-        <source>Layer<x equiv-text="{{ network === 'liquid' ? '3' : '2' }}" id="INTERPOLATION"/> Peg-out</source>
-        <target>Peg-out لایه <x equiv-text="{{ network === 'liquid' ? '3' : '2' }}" id="INTERPOLATION"/></target>
+      <trans-unit datatype="html" id="31c09dcc0ab351767631539b208d5f7de4005473">
+        <source>Lightning <x equiv-text="{{ lightning }}" id="INTERPOLATION"/></source>
+        <target>لایتنینگ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+        <note from="description" priority="1">address-labels.upper-layer-peg-out</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="696ade981a05c12e10df38ba6218c76e318813b3">
+        <source>Liquid <x equiv-text="{{ liquid }}" id="INTERPOLATION"/></source>
+        <target>لیکوئید</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
+          <context context-type="linenumber">17</context>
         </context-group>
         <note from="description" priority="1">address-labels.upper-layer-peg-out</note>
       </trans-unit>
@@ -1133,7 +1142,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.ts</context>
-          <context context-type="linenumber">37</context>
+          <context context-type="linenumber">38</context>
         </context-group>
         <note from="description" priority="1">master-page.about</note>
       </trans-unit>
@@ -1297,7 +1306,7 @@
         <target>شرایط خدمات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">206</context>
+          <context context-type="linenumber">205</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -1372,15 +1381,6 @@
           <context context-type="linenumber">175</context>
         </context-group>
         <note from="description" priority="1">about.sponsor.thank-you</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="981a90db6601297002689e5fae09d38b9e374b05">
-        <source>If you specified a Twitter handle, the profile photo should now be visible on this page when you reload.</source>
-        <target>اگر یک نام‌کاربری توئیتری مشخص کرده باشید، تصویر حساب شما بعد از بازنشانی به این صفحه اضافه خواهد شد.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">176</context>
-        </context-group>
-        <note from="description" priority="1">about.sponsor.sponsor-completed</note>
       </trans-unit>
       <trans-unit datatype="html" id="ff4b7f4070be9e876c7610d99b9dbd53ff19dceb">
         <source>Loading graphs...</source>
