@@ -47,7 +47,7 @@ export class AddressLabelsComponent implements OnInit {
       }
 
       [
-        {regexp: /^OP_DUP OP_HASH160/, label: 'HTLC'},
+        // {regexp: /^OP_DUP OP_HASH160/, label: 'HTLC'},
         {regexp: /^OP_IF OP_PUSHBYTES_33 \w{33} OP_ELSE OP_PUSHBYTES_2 \w{2} OP_CSV OP_DROP/, label: 'Force Close'}
       ].forEach((item) => {
           if (item.regexp.test(this.vin.inner_witnessscript_asm)) {
