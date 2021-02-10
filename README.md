@@ -727,7 +727,7 @@ ws.on('message', function incoming(data: any) {
 
 - Mempool.Space Website: [https://mempool.space](https://mempool.space)
 - Mempool.Space API Documentation: [https://mempool.space/api](https://mempool.space/api)
-- My Website: [https://miguelmedeiros.com](https://miguelmedeiros.com.br)
+- My Website: [https://miguelmedeiros.com.br](https://miguelmedeiros.com.br)
 
 ---
 
