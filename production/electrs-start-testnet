@@ -1,5 +1,5 @@
 #!/usr/local/bin/zsh
-cd /electrs
+cd $HOME/electrs
 source $HOME/.cargo/env
 export PATH=$HOME/.cargo/bin:$PATH
 
@@ -9,11 +9,13 @@ do
 		--release \
 		--bin electrs \
 		-- \
-		-vv \
+		-vvvv \
 		--network testnet \
-		--daemon-dir /bitcoin \
+		--db-dir /electrs \
+		--daemon-dir $HOME \
 		--http-addr '[::]:3002' \
 		--cookie 'user:pass' \
-		--precache-scripts /electrs/contrib/popular-scripts.txt
-	sleep 1
+		--precache-scripts $HOME/electrs/contrib/popular-scripts.txt
+
+	sleep 3
 done

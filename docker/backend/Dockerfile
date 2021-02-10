@@ -3,16 +3,11 @@ FROM node:12-buster-slim AS builder
 WORKDIR /build
 COPY . .
 
-RUN sed -i "s!../.git/refs/heads/master!master!g" ./src/api/backend-info.ts
-
 RUN apt-get update
 RUN apt-get install -y build-essential python3 pkg-config
 RUN npm ci --production
 RUN npm i typescript
 RUN npm run build
-
-RUN mv ./docker/* .
-RUN mv ./mempool-config-docker.json ./mempool-config.json
 
 FROM node:12-buster-slim
 

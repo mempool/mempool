@@ -1,19 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { WebsocketService } from '../../services/websocket.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { StateService } from 'src/app/services/state.service';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApiService } from 'src/app/services/api.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { map } from 'rxjs/operators';
+import { delay, map, retryWhen, switchMap, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-about',
   templateUrl: './about.component.html',
   styleUrls: ['./about.component.scss'],
 })
-export class AboutComponent implements OnInit {
+export class AboutComponent implements OnInit, OnDestroy {
   gitCommit$: Observable<string>;
   donationForm: FormGroup;
   paymentForm: FormGroup;
@@ -22,6 +22,7 @@ export class AboutComponent implements OnInit {
   donationObj: any;
   sponsorsEnabled = this.stateService.env.SPONSORS_ENABLED;
   sponsors = null;
+  requestSubscription: Subscription | undefined;
 
   constructor(
     private websocketService: WebsocketService,
@@ -50,23 +51,37 @@ export class AboutComponent implements OnInit {
       .subscribe((sponsors) => {
         this.sponsors = sponsors;
       });
+  }
 
-    this.apiService.getDonation$()
-    this.stateService.donationConfirmed$.subscribe(() => this.donationStatus = 4);
+  ngOnDestroy() {
+    if (this.requestSubscription) {
+      this.requestSubscription.unsubscribe();
+    }
   }
 
   submitDonation() {
     if (this.donationForm.invalid) {
       return;
     }
-    this.apiService.requestDonation$(
+    this.requestSubscription = this.apiService.requestDonation$(
       this.donationForm.get('amount').value,
       this.donationForm.get('handle').value
     )
-    .subscribe((response) => {
-      this.websocketService.trackDonation(response.id);
-      this.donationObj = response;
-      this.donationStatus = 3;
+    .pipe(
+      tap((response) => {
+        this.donationObj = response;
+        this.donationStatus = 3;
+      }),
+      switchMap(() => this.apiService.checkDonation$(this.donationObj.id)
+        .pipe(
+          retryWhen((errors) => errors.pipe(delay(2000)))
+        )
+      )
+    ).subscribe(() => {
+      this.donationStatus = 4;
+      if (this.donationForm.get('handle').value) {
+        this.sponsors.unshift({ handle: this.donationForm.get('handle').value });
+      }
     });
   }
 
