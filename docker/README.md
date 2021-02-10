@@ -46,7 +46,7 @@ services:
       FRONTEND_HTTP_PORT: "8080"
       BACKEND_MAINNET_HTTP_HOST: "api"
   api:
-    image: mempool/backend:v2.1.0
+    image: mempool/backend:latest
     user: "1000:1000"
     restart: on-failure
     stop_grace_period: 1m
