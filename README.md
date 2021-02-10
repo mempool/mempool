@@ -2,11 +2,22 @@
 
 [![npm version](https://img.shields.io/npm/v/mempool-space-js.svg?style=flat-square)](https://www.npmjs.org/package/mempool-space-js)
 [![NPM](https://img.shields.io/david/MiguelMedeiros/mempool-space-js.svg?style=flat-square)](https://david-dm.org/MiguelMedeiros/mempool-space-js#info=dependencies)
-[![Known Vulnerabilities](https://snyk.io/test/github/MiguelMedeiros/mempool-space-js/badge.svg)](https://snyk.io/test/github/MiguelMedeiros/mempool-space-js)
+[![Known Vulnerabilities](https://snyk.io/test/github/MiguelMedeiros/mempool-space-js/badge.svg?style=flat-square)](https://snyk.io/test/github/MiguelMedeiros/mempool-space-js)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
 ---
 
 Easy way to add Mempool API to your JS application.
+
+---
+
+## Donate
+
+Help me to stack sats! :blush:
+
+[bc1qy3pynpjjxx09s9wpmwy3qqv0m7tmkpjpk0ze8y](bitcoin:bc1qy3pynpjjxx09s9wpmwy3qqv0m7tmkpjpk0ze8y)
+
+[Or donate via Lightning Network!](https://paywall.link/to/mempool)
 
 ---
 
@@ -717,16 +728,6 @@ ws.on('message', function incoming(data: any) {
 - Mempool.Space Website: [https://mempool.space](https://mempool.space)
 - Mempool.Space API Documentation: [https://mempool.space/api](https://mempool.space/api)
 - My Website: [https://miguelmedeiros.com](https://miguelmedeiros.com.br)
-
----
-
-## Donate
-
-Help me to stack sats! :blush:
-
-[bc1qy3pynpjjxx09s9wpmwy3qqv0m7tmkpjpk0ze8y](bitcoin:bc1qy3pynpjjxx09s9wpmwy3qqv0m7tmkpjpk0ze8y)
-
-[Or donate via Lightning Network!](https://paywall.link/to/mempool)
 
 ---
 
