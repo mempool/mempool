@@ -35,7 +35,7 @@ version: "3.7"
 
 services:
   web:
-    image: mempool/frontend:v2.1.0
+    image: mempool/frontend:latest
     user: "1000:1000"
     restart: on-failure
     stop_grace_period: 1m
