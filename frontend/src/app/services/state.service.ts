@@ -64,7 +64,6 @@ export class StateService {
   vbytesPerSecond$ = new ReplaySubject<number>(1);
   lastDifficultyAdjustment$ = new ReplaySubject<number>(1);
   gitCommit$ = new ReplaySubject<string>(1);
-  donationConfirmed$ = new Subject();
   loadingIndicators$ = new ReplaySubject<ILoadingIndicators>(1);
 
   live2Chart$ = new Subject<OptimizedMempoolStats>();

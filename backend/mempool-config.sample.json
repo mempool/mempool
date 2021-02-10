@@ -48,12 +48,5 @@
   "BISQ_MARKETS": {
     "ENABLED": false,
     "DATA_PATH": "/bisq/statsnode-data/btc_mainnet/db"
-  },
-  "SPONSORS": {
-    "ENABLED": false,
-    "BTCPAY_URL": "",
-    "BTCPAY_AUTH": "",
-    "BTCPAY_WEBHOOK_URL": "",
-    "TWITTER_BEARER_AUTH": ""
   }
 }

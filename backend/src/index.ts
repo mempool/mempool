@@ -1,7 +1,6 @@
 import { Express, Request, Response, NextFunction } from 'express';
 import * as express from 'express';
 import * as http from 'http';
-import * as https from 'https';
 import * as WebSocket from 'ws';
 import * as cluster from 'cluster';
 import axios from 'axios';
@@ -17,7 +16,6 @@ import websocketHandler from './api/websocket-handler';
 import fiatConversion from './api/fiat-conversion';
 import bisq from './api/bisq/bisq';
 import bisqMarkets from './api/bisq/markets';
-import donations from './api/donations';
 import logger from './logger';
 import backendInfo from './api/backend-info';
 import loadingIndicators from './api/loading-indicators';
@@ -25,7 +23,7 @@ import mempool from './api/mempool';
 
 class Server {
   private wss: WebSocket.Server | undefined;
-  private server: https.Server | http.Server | undefined;
+  private server: http.Server | undefined;
   private app: Express;
   private currentBackendRetryInterval = 5;
 
@@ -87,10 +85,6 @@ class Server {
 
     fiatConversion.startService();
 
-    if (config.SPONSORS.ENABLED) {
-      donations.$updateCache();
-    }
-
     this.setUpHttpApiRoutes();
     this.setUpWebsocketHandling();
     this.runMainUpdateLoop();
@@ -144,7 +138,6 @@ class Server {
     statistics.setNewStatisticsEntryCallback(websocketHandler.handleNewStatistic.bind(websocketHandler));
     blocks.setNewBlockCallback(websocketHandler.handleNewBlock.bind(websocketHandler));
     memPool.setMempoolChangedCallback(websocketHandler.handleMempoolChange.bind(websocketHandler));
-    donations.setNotfyDonationStatusCallback(websocketHandler.handleNewDonation.bind(websocketHandler));
     fiatConversion.setProgressChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));
     loadingIndicators.setProgressChangedCallback(websocketHandler.handleLoadingChanged.bind(websocketHandler));
   }
@@ -156,6 +149,24 @@ class Server {
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/mempool-blocks', routes.getMempoolBlocks)
       .get(config.MEMPOOL.API_URL_PREFIX + 'backend-info', routes.getBackendInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'init-data', routes.getInitData)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'donations', async (req, res) => {
+        try {
+          const response = await axios.get('https://mempool.space/api/v1/donations', { responseType: 'stream', timeout: 10000 });
+          response.data.pipe(res);
+        } catch (e) {
+          res.status(500).end();
+        }
+      })
+      .get(config.MEMPOOL.API_URL_PREFIX + 'donations/images/:id', async (req, res) => {
+        try {
+          const response = await axios.get('https://mempool.space/api/v1/donations/images/' + req.params.id, {
+            responseType: 'stream', timeout: 10000
+          });
+          response.data.pipe(res);
+        } catch (e) {
+          res.status(500).end();
+        }
+      })
     ;
 
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
@@ -193,35 +204,6 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/trades', routes.getBisqMarketTrades.bind(routes))
         .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/volumes', routes.getBisqMarketVolumes.bind(routes))
         ;
-    }
-
-    if (config.SPONSORS.ENABLED) {
-      this.app
-        .get(config.MEMPOOL.API_URL_PREFIX + 'donations', routes.getDonations.bind(routes))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'donations/images/:id', routes.getSponsorImage.bind(routes))
-        .post(config.MEMPOOL.API_URL_PREFIX + 'donations', routes.createDonationRequest.bind(routes))
-        .post(config.MEMPOOL.API_URL_PREFIX + 'donations-webhook', routes.donationWebhook.bind(routes))
-      ;
-    } else {
-      this.app
-        .get(config.MEMPOOL.API_URL_PREFIX + 'donations', async (req, res) => {
-          try {
-            const response = await axios.get('https://mempool.space/api/v1/donations', { responseType: 'stream', timeout: 10000 });
-            response.data.pipe(res);
-          } catch (e) {
-            res.status(500).end();
-          }
-        })
-        .get(config.MEMPOOL.API_URL_PREFIX + 'donations/images/:id', async (req, res) => {
-          try {
-            const response = await axios.get('https://mempool.space/api/v1/donations/images/' + req.params.id, {
-              responseType: 'stream', timeout: 10000
-            });
-            response.data.pipe(res);
-          } catch (e) {
-            res.status(500).end();
-          }
-        });
     }
 
     if (config.MEMPOOL.BACKEND !== 'esplora') {

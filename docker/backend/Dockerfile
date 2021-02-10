@@ -9,7 +9,6 @@ RUN npm ci --production
 RUN npm i typescript
 RUN npm run build
 
-
 FROM node:12-buster-slim
 
 WORKDIR /backend

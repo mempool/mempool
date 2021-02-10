@@ -5,7 +5,7 @@
     <br>
 
     <div class="text-small text-center offset-md-1">
-      v2.1-SNAPSHOT ({{ gitCommit$ | async }})
+      v2.2-SNAPSHOT ({{ gitCommit$ | async }})
     </div>
 
     <br>
@@ -173,10 +173,9 @@
 
     <div *ngIf="donationStatus === 4" class="text-center">
       <h2><span i18n="about.sponsor.donation-confirmed">Donation confirmed!</span><br><span i18n="about.sponsor.thank-you">Thank you!</span></h2>
-      <p i18n="about.sponsor.sponsor-completed">If you specified a Twitter handle, the profile photo should now be visible on this page when you reload.</p>
     </div>
 
-    <br><br><br><br>
+    <br><br><br>
 
     <a target="_blank" class="m-2 fw6 mb3 mt2 truncate black-80 f4 link" href="https://github.com/mempool/mempool">
       <span class="dib v-mid">
