@@ -27,9 +27,9 @@
     "ENABLED": true,
     "HOST": "__MYSQL_HOST__",
     "PORT": __MYSQL_PORT__,
-    "DATABASE": "mempool",
-    "USERNAME": "mempool",
-    "PASSWORD": "mempool"
+    "DATABASE": "__MYSQL_DATABASE__",
+    "USERNAME": "__MYSQL_USERNAME__",
+    "PASSWORD": "__MYSQL_PASSWORD__"
   },
   "STATISTICS": {
     "ENABLED": true,

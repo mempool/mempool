@@ -7,8 +7,6 @@ RUN apt-get install -y build-essential rsync
 RUN npm i
 RUN npm run build
 
-RUN mv ./docker/* .
-
 FROM nginx:1.17.8-alpine
 
 WORKDIR /patch
@@ -25,13 +23,12 @@ RUN chmod +x /patch/wait-for
 RUN chown -R 1000:1000 /patch && chmod -R 755 /patch && \
         chown -R 1000:1000 /var/cache/nginx && \
         chown -R 1000:1000 /var/log/nginx && \
+        chown -R 1000:1000 /etc/nginx/nginx.conf && \
         chown -R 1000:1000 /etc/nginx/conf.d
 RUN touch /var/run/nginx.pid && \
         chown -R 1000:1000 /var/run/nginx.pid
 
 USER 1000
-
-EXPOSE 8080
 
 ENTRYPOINT ["/patch/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
