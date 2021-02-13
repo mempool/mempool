@@ -134,7 +134,6 @@ class Mempool {
 
     // Prevent mempool from clear on bitcoind restart by delaying the deletion
     if (this.mempoolProtection === 0
-      && config.MEMPOOL.BACKEND === 'esplora'
       && currentMempoolSize > 20000
       && transactions.length / currentMempoolSize <= 0.80
     ) {
