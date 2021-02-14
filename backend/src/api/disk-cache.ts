@@ -5,11 +5,13 @@ import memPool from './mempool';
 import blocks from './blocks';
 import logger from '../logger';
 import config from '../config';
+import { TransactionExtended } from '../mempool.interfaces';
 
 class DiskCache {
-  private static FILE_NAME = config.MEMPOOL.CACHE_DIR + 'cache.json';
-  private static FILE_NAMES = config.MEMPOOL.CACHE_DIR + 'cache{number}.json';
-  private static CHUNK_SIZE = 10000;
+  private static FILE_NAME = config.MEMPOOL.CACHE_DIR + '/cache.json';
+  private static FILE_NAMES = config.MEMPOOL.CACHE_DIR + '/cache{number}.json';
+  private static CHUNK_FILES = 25;
+
   constructor() { }
 
   async $saveCacheToDisk(): Promise<void> {
@@ -18,19 +20,24 @@ class DiskCache {
     }
     try {
       logger.debug('Writing mempool and blocks data to disk cache (async)...');
-      const mempoolChunk_1 = Object.fromEntries(Object.entries(memPool.getMempool()).slice(0, DiskCache.CHUNK_SIZE));
+
+      const mempool = memPool.getMempool();
+      const mempoolArray: TransactionExtended[] = [];
+      for (const tx in mempool) {
+        mempoolArray.push(mempool[tx]);
+      }
+
+      const chunkSize = Math.floor(mempoolArray.length / DiskCache.CHUNK_FILES);
+
       await fsPromises.writeFile(DiskCache.FILE_NAME, JSON.stringify({
         blocks: blocks.getBlocks(),
-        mempool: mempoolChunk_1
+        mempool: {},
+        mempoolArray: mempoolArray.splice(0, chunkSize),
       }), {flag: 'w'});
-      for (let i = 1; i < 10; i++) {
-        const mempoolChunk = Object.fromEntries(
-          Object.entries(memPool.getMempool()).slice(
-            DiskCache.CHUNK_SIZE * i, i === 9 ? undefined : DiskCache.CHUNK_SIZE * i + DiskCache.CHUNK_SIZE
-          )
-        );
+      for (let i = 1; i < DiskCache.CHUNK_FILES; i++) {
         await fsPromises.writeFile(DiskCache.FILE_NAMES.replace('{number}', i.toString()), JSON.stringify({
-          mempool: mempoolChunk
+          mempool: {},
+          mempoolArray: mempoolArray.splice(0, chunkSize),
         }), {flag: 'w'});
       }
       logger.debug('Mempool and blocks data saved to disk cache');
@@ -49,13 +56,24 @@ class DiskCache {
       if (cacheData) {
         logger.info('Restoring mempool and blocks data from disk cache');
         data = JSON.parse(cacheData);
+        if (data.mempoolArray) {
+          for (const tx of data.mempoolArray) {
+            data.mempool[tx.txid] = tx;
+          }
+        }
       }
 
-      for (let i = 1; i < 10; i++) {
+      for (let i = 1; i < DiskCache.CHUNK_FILES; i++) {
         const fileName = DiskCache.FILE_NAMES.replace('{number}', i.toString());
         if (fs.existsSync(fileName)) {
           const cacheData2 = JSON.parse(fs.readFileSync(fileName, 'utf8'));
-          Object.assign(data.mempool, cacheData2.mempool);
+          if (cacheData2.mempoolArray) {
+            for (const tx of cacheData2.mempoolArray) {
+              data.mempool[tx.txid] = tx;
+            }
+          } else {
+            Object.assign(data.mempool, cacheData2.mempool);
+          }
         }
       }
 
