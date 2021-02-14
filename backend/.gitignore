@@ -41,14 +41,3 @@ testem.log
 #System Files
 .DS_Store
 Thumbs.db
-
-cache.json
-cache1.json
-cache2.json
-cache3.json
-cache4.json
-cache5.json
-cache6.json
-cache7.json
-cache8.json
-cache9.json
