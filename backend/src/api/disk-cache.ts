@@ -8,8 +8,8 @@ import config from '../config';
 import { TransactionExtended } from '../mempool.interfaces';
 
 class DiskCache {
-  private static FILE_NAME = config.MEMPOOL.CACHE_DIR + 'cache.json';
-  private static FILE_NAMES = config.MEMPOOL.CACHE_DIR + 'cache{number}.json';
+  private static FILE_NAME = config.MEMPOOL.CACHE_DIR + '/cache.json';
+  private static FILE_NAMES = config.MEMPOOL.CACHE_DIR + '/cache{number}.json';
   private static CHUNK_FILES = 25;
 
   constructor() { }
