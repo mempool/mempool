@@ -6,7 +6,8 @@
     "SPAWN_CLUSTER_PROCS": 0,
     "API_URL_PREFIX": "/api/v1/",
     "POLL_RATE_MS": 2000,
-    "CACHE_DIR": "./cache"
+    "CACHE_DIR": "./cache",
+    "CLEAR_PROTECTION_MINUTES": 20
   },
   "CORE_RPC": {
     "HOST": "127.0.0.1",
