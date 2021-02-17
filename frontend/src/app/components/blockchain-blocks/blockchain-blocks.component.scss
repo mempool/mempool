@@ -11,6 +11,10 @@
   z-index: 10;
 }
 
+.blockLink:hover {
+  text-decoration: none;
+}
+
 .mined-block {
   position: absolute;
   top: 0px;
