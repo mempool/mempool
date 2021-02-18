@@ -20,7 +20,7 @@ export class AboutComponent implements OnInit, OnDestroy {
   donationStatus = 1;
   sponsors$: Observable<any>;
   donationObj: any;
-  sponsorsEnabled = this.stateService.env.SPONSORS_ENABLED;
+  sponsorsEnabled = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
   sponsors = null;
   requestSubscription: Subscription | undefined;
 
