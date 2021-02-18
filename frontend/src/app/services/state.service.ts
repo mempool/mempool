@@ -20,9 +20,9 @@ export interface Env {
   LIQUID_ENABLED: boolean;
   BISQ_ENABLED: boolean;
   BISQ_SEPARATE_BACKEND: boolean;
-  SPONSORS_ENABLED: boolean;
   ITEMS_PER_PAGE: number;
   KEEP_BLOCKS_AMOUNT: number;
+  OFFICIAL_MEMPOOL_SPACE: boolean;
   NGINX_PROTOCOL?: string;
   NGINX_HOSTNAME?: string;
   NGINX_PORT?: string;
@@ -33,9 +33,9 @@ const defaultEnv: Env = {
   'LIQUID_ENABLED': false,
   'BISQ_ENABLED': false,
   'BISQ_SEPARATE_BACKEND': false,
-  'SPONSORS_ENABLED': false,
   'ITEMS_PER_PAGE': 10,
   'KEEP_BLOCKS_AMOUNT': 8,
+  'OFFICIAL_MEMPOOL_SPACE': false,
   'NGINX_PROTOCOL': 'http',
   'NGINX_HOSTNAME': '127.0.0.1',
   'NGINX_PORT': '80',
