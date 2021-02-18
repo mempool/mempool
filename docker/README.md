@@ -8,7 +8,7 @@ In an empty dir create 2 sub-dirs
 mkdir -p data mysql/data mysql/db-scripts
 ```
 
-In the mysql/db-scripts sub-dir add the mariadb-structure.sql file from the mempool repo
+In the `mysql/db-scripts` sub-dir add the `mariadb-structure.sql` file from the mempool repo
 
 Your dir should now look like that:
 
@@ -28,7 +28,7 @@ data  db-scripts
 mariadb-structure.sql
 ```
 
-In the main dir add the following docker-compose.yml
+In the main dir add the following `docker-compose.yml`
 
 ```bash
 version: "3.7"
