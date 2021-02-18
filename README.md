@@ -1,10 +1,22 @@
 # The Mempool Open Source Project
 
-Mempool is the fully featured mempool visualizer and block explorer website and API service running on [mempool.space](https://mempool.space/). The instructions below are for most users at home running on low-powered Raspberry Pi devices, but if you want to run a production website on a powerful server, see the [production setup guide](https://github.com/mempool/mempool/tree/master/production)
+Mempool is the fully featured visualizer, explorer, and API service running on [mempool.space](https://mempool.space/), an open source project developed and operated for the benefit of the Bitcoin community, with a focus on the emerging transaction fee market to help our transition into a multi-layer ecosystem.
 
-![mempool](https://pbs.twimg.com/media/Ei8p_flUcAEjfXE?format=jpg&name=4096x4096)
+![mempool](https://mempool.space/resources/screenshots/v2.1.0-dashboard.png)
 
-# Installation
+## Installation Methods
+
+Mempool can be self-hosted on a wide variety of your own hardware, ranging from a simple one-click installation on a Raspberry Pi distro, all the way to an advanced high availability cluster of powerful servers for a production instance. We support the following installation methods, ranked in order from simple to advanced:
+
+1) One-click installation on: [Umbrel](https://github.com/getumbrel/umbrel), [RaspiBlitz](https://github.com/rootzoll/raspiblitz), [RoninDojo](https://code.samourai.io/ronindojo/RoninDojo), or [MyNode](https://github.com/mynodebtc/mynode).
+2) [Docker installation on Linux using docker-compose](https://github.com/mempool/mempool/tree/master/docker)
+3) [Manual installation on Linux or FreeBSD](https://github.com/mempool/mempool#manual-installation)
+4) [Production installation on a powerful FreeBSD server](https://github.com/mempool/mempool/tree/master/production)
+5) [High Availability cluster using powerful FreeBSD servers](https://github.com/mempool/mempool/tree/master/production#high-availability)
+
+# Manual Installation
+
+The following instructions are for a manual installation on Linux or FreeBSD. The file and directory paths may need to be changed to match your OS.
 
 ## Dependencies
 

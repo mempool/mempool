@@ -9,6 +9,7 @@ interface IConfig {
     API_URL_PREFIX: string;
     POLL_RATE_MS: number;
     CACHE_DIR: string;
+    CLEAR_PROTECTION_MINUTES: number;
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -61,7 +62,8 @@ const defaults: IConfig = {
     'SPAWN_CLUSTER_PROCS': 0,
     'API_URL_PREFIX': '/api/v1/',
     'POLL_RATE_MS': 2000,
-    'CACHE_DIR': './'
+    'CACHE_DIR': './cache',
+    'CLEAR_PROTECTION_MINUTES': 20,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',

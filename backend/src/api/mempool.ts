@@ -10,7 +10,6 @@ import loadingIndicators from './loading-indicators';
 
 class Mempool {
   private static WEBSOCKET_REFRESH_RATE_MS = 10000;
-  private static CLEAR_PROTECTION_MINUTES = 10;
   private inSync: boolean = false;
   private mempoolCache: { [txId: string]: TransactionExtended } = {};
   private mempoolInfo: IBitcoinApi.MempoolInfo = { loaded: false, size: 0, bytes: 0, usage: 0,
@@ -134,7 +133,6 @@ class Mempool {
 
     // Prevent mempool from clear on bitcoind restart by delaying the deletion
     if (this.mempoolProtection === 0
-      && config.MEMPOOL.BACKEND === 'esplora'
       && currentMempoolSize > 20000
       && transactions.length / currentMempoolSize <= 0.80
     ) {
@@ -144,7 +142,7 @@ class Mempool {
       setTimeout(() => {
         this.mempoolProtection = 2;
         logger.warn('Mempool clear protection resumed.');
-      }, 1000 * 60 * Mempool.CLEAR_PROTECTION_MINUTES);
+      }, 1000 * 60 * config.MEMPOOL.CLEAR_PROTECTION_MINUTES);
     }
 
     let newMempool = {};
