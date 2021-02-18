@@ -13,6 +13,7 @@ export class MasterPageComponent implements OnInit {
   connectionState$: Observable<number>;
   navCollapsed = false;
   isMobile = window.innerWidth <= 767.98;
+  officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
 
   constructor(
     private stateService: StateService,
