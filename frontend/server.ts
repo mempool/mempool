@@ -91,6 +91,17 @@ export function app(locale: string): express.Express {
   server.get('/testnet/tv', getLocalizedSSR(indexHtml));
   server.get('/testnet/status', getLocalizedSSR(indexHtml));
   server.get('/testnet/about', getLocalizedSSR(indexHtml));
+  server.get('/signet', getLocalizedSSR(indexHtml));
+  server.get('/signet/tx/*', getLocalizedSSR(indexHtml));
+  server.get('/signet/block/*', getLocalizedSSR(indexHtml));
+  server.get('/signet/mempool-block/*', getLocalizedSSR(indexHtml));
+  server.get('/signet/address/*', getLocalizedSSR(indexHtml));
+  server.get('/signet/blocks', getLocalizedSSR(indexHtml));
+  server.get('/signet/graphs', getLocalizedSSR(indexHtml));
+  server.get('/signet/api', getLocalizedSSR(indexHtml));
+  server.get('/signet/tv', getLocalizedSSR(indexHtml));
+  server.get('/signet/status', getLocalizedSSR(indexHtml));
+  server.get('/signet/about', getLocalizedSSR(indexHtml));
   server.get('/bisq', getLocalizedSSR(indexHtml));
   server.get('/bisq/tx/*', getLocalizedSSR(indexHtml));
   server.get('/bisq/blocks', getLocalizedSSR(indexHtml));
