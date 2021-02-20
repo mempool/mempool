@@ -24,7 +24,7 @@ git fetch "${REPO}"
 git reset --hard "${REPO}/${TAG}"
 cd "$HOME/"
 
-for site in mainnet liquid testnet bisq
+for site in mainnet liquid testnet bisq signet
 do
     cd "$HOME/${site}"
     git fetch "${REPO}"

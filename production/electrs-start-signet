@@ -1,0 +1,21 @@
+#!/usr/local/bin/zsh
+cd /bitcoin/electrs
+#source $HOME/.cargo/env
+#export PATH=$HOME/.cargo/bin:$PATH
+
+until false
+do
+	cargo run \
+		--release \
+		--bin electrs \
+		-- \
+		-vv \
+		--network signet \
+		--db-dir /electrs \
+		--daemon-rpc-addr '127.0.0.1:38332' \
+		--daemon-dir /bitcoin \
+		--http-addr '[::]:3003' \
+		--cookie 'user:pass' \
+		--precache-scripts /bitcoin/electrs/contrib/popular-scripts.txt
+	sleep 1
+done
