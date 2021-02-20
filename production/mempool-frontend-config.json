@@ -3,6 +3,7 @@
   "LIQUID_ENABLED": true,
   "BISQ_ENABLED": true,
   "BISQ_SEPARATE_BACKEND": true,
+  "SIGNET_ENABLED": true,
   "ITEMS_PER_PAGE": 25,
   "KEEP_BLOCKS_AMOUNT": 8,
   "NGINX_PROTOCOL": "http",
