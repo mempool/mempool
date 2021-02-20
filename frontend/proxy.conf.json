@@ -41,6 +41,28 @@
       "^/testnet/api": ""
     }
   },
+  "/signet/api/v1": {
+    "target": "http://localhost:8999/",
+    "secure": false,
+    "pathRewrite": {
+      "^/signet/api/v1": "/api/v1"
+    }
+  },
+  "/signet/api/v1/ws": {
+    "target": "http://localhost:8999/",
+    "secure": false,
+    "ws": true,
+    "pathRewrite": {
+      "^/signet/api": "/api/v1/ws"
+    }
+  },
+  "/signet/api/": {
+    "target": "http://localhost:50001/",
+    "secure": false,
+    "pathRewrite": {
+      "^/signet/api": ""
+    }
+  },
   "/liquid/api/v1/ws": {
     "target": "http://localhost:8999/",
     "secure": false,
