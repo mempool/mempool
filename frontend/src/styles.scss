@@ -94,6 +94,10 @@ body {
   background-color: #1d486f !important;
 }
 
+.navbar-nav.signet > .active {
+  background-color: #6f1d5d !important;
+}
+
 .form-control {
   color: #495057;
 }
@@ -423,6 +427,10 @@ h1, h2, h3 {
 
 .progress-mempool.testnet {
   background: repeating-linear-gradient(to right, #2d3348, #2d3348 0%, #1d486f 0%, #183550 100%);
+}
+
+.progress-mempool.signet {
+  background: repeating-linear-gradient(to right, #2d3348, #2d3348 0%, #6f1d5d 0%, #471850 100%);
 }
 
 .progress-mempool.liquid {

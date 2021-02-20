@@ -32,7 +32,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
     bisq: ['#9339f4', '#105fb0'],
     liquid: ['#116761', '#183550'],
     testnet: ['#1d486f', '#183550'],
-    signet: ['#1d486f', '#183550'],
+    signet: ['#6f1d5d', '#471850'],
   };
 
   constructor(
