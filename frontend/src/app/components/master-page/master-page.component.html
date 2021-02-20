@@ -11,12 +11,13 @@
     </ng-container>
   </a>
 
-  <div ngbDropdown display="dynamic" class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED">
+  <div ngbDropdown display="dynamic" class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED">
     <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split" aria-haspopup="true">
       <img src="./resources/{{ network.val === '' ? 'bitcoin' : network.val }}-logo.png" style="width: 25px; height: 25px;" class="mr-1">
     </button>
     <div ngbDropdownMenu>
       <button ngbDropdownItem class="mainnet" routerLink="/"><img src="./resources/bitcoin-logo.png" style="width: 30px;" class="mr-1"> Mainnet</button>
+      <button ngbDropdownItem *ngIf="env.SIGNET_ENABLED" class="signet" [class.active]="network.val === 'signet'" routerLink="/signet"><img src="./resources/signet-logo.png" style="width: 30px;" class="mr-1"> Signet</button>
       <button ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet" [class.active]="network.val === 'testnet'" routerLink="/testnet"><img src="./resources/testnet-logo.png" style="width: 30px;" class="mr-1"> Testnet</button>
       <h6 *ngIf="env.LIQUID_ENABLED || env.BISQ_ENABLED" class="dropdown-header" i18n="master-page.layer2-networks-header">Layer 2 Networks</h6>
       <button ngbDropdownItem *ngIf="env.BISQ_ENABLED" class="mainnet" [class.active]="network.val === 'bisq'" routerLink="/bisq"><img src="./resources/bisq-logo.png" style="width: 30px;" class="mr-1"> Bisq</button>
