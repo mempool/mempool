@@ -17,6 +17,7 @@ export interface ILoadingIndicators { [name: string]: number; }
 
 export interface Env {
   TESTNET_ENABLED: boolean;
+  SIGNET_ENABLED: boolean;
   LIQUID_ENABLED: boolean;
   BISQ_ENABLED: boolean;
   BISQ_SEPARATE_BACKEND: boolean;
@@ -30,6 +31,7 @@ export interface Env {
 
 const defaultEnv: Env = {
   'TESTNET_ENABLED': false,
+  'SIGNET_ENABLED': false,
   'LIQUID_ENABLED': false,
   'BISQ_ENABLED': false,
   'BISQ_SEPARATE_BACKEND': false,
@@ -102,12 +104,18 @@ export class StateService {
   }
 
   setNetworkBasedonUrl(url: string) {
-    const networkMatches = url.match(/\/(bisq|testnet|liquid)/);
+    const networkMatches = url.match(/\/(bisq|testnet|liquid|signet)/);
     switch (networkMatches && networkMatches[1]) {
       case 'liquid':
         if (this.network !== 'liquid') {
           this.network = 'liquid';
           this.networkChanged$.next('liquid');
+        }
+        return;
+      case 'signet':
+        if (this.network !== 'signet') {
+          this.network = 'signet';
+          this.networkChanged$.next('signet');
         }
         return;
       case 'testnet':

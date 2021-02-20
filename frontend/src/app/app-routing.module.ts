@@ -203,6 +203,68 @@ const routes: Routes = [
     ]
   },
   {
+    path: 'signet',
+    children: [
+      {
+        path: '',
+        component: MasterPageComponent,
+        children: [
+          {
+            path: '',
+            component: StartComponent,
+            children: [
+              {
+                path: '',
+                component: DashboardComponent
+              },
+              {
+                path: 'tx/:id',
+                component: TransactionComponent
+              },
+              {
+                path: 'block/:id',
+                component: BlockComponent
+              },
+              {
+                path: 'mempool-block/:id',
+                component: MempoolBlockComponent
+              },
+            ],
+          },
+          {
+            path: 'blocks',
+            component: LatestBlocksComponent,
+          },
+          {
+            path: 'graphs',
+            component: StatisticsComponent,
+          },
+          {
+            path: 'address/:id',
+            children: [],
+            component: AddressComponent
+          },
+          {
+            path: 'api',
+            component: ApiDocsComponent,
+          },
+        ],
+      },
+      {
+        path: 'tv',
+        component: TelevisionComponent
+      },
+      {
+        path: 'status',
+        component: StatusViewComponent
+      },
+      {
+        path: '**',
+        redirectTo: ''
+      },
+    ]
+  },
+  {
     path: 'bisq',
     component: MasterPageComponent,
     loadChildren: () => import('./bisq/bisq.module').then(m => m.BisqModule)
