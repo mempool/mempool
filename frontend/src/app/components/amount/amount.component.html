@@ -8,7 +8,7 @@
   <ng-template #default>
     &lrm;{{ satoshis / 100000000 | number : digitsInfo }}
     <ng-template [ngIf]="network === 'liquid'">L-</ng-template>
-    <ng-template [ngIf]="network === 'testnet'">t</ng-template>BTC
+    <ng-template [ngIf]="network === 'testnet'">t</ng-template>
     <ng-template [ngIf]="network === 'signet'">s</ng-template>BTC
   </ng-template>
 </ng-template>
