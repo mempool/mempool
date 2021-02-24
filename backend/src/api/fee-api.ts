@@ -11,13 +11,14 @@ class FeeApi {
   public getRecommendedFee() {
     const pBlocks = projectedBlocks.getMempoolBlocks();
     const mPool = mempool.getMempoolInfo();
+    const minimumFee = Math.ceil(mPool.mempoolminfee * 100000);
 
     if (!pBlocks.length) {
       return {
         'fastestFee': this.defaultFee,
         'halfHourFee': this.defaultFee,
         'hourFee': this.defaultFee,
-        'mempoolminfee': mPool.mempoolminfee,
+        'minimumFee': minimumFee,
       };
     }
 
@@ -29,7 +30,7 @@ class FeeApi {
       'fastestFee': firstMedianFee,
       'halfHourFee': secondMedianFee,
       'hourFee': thirdMedianFee,
-      'mempoolminfee': mPool.mempoolminfee,
+      'minimumFee': minimumFee,
     };
   }
 
