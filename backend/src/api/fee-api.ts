@@ -34,7 +34,7 @@ class FeeApi {
     if (pBlock.blockVSize <= 500000) {
       return this.defaultFee;
     }
-    if (pBlock.blockVSize <= 950000 && nextBlock) {
+    if (pBlock.blockVSize <= 950000 && !nextBlock) {
       const multiplier = (pBlock.blockVSize - 500000) / 500000;
       return Math.max(Math.round(useFee * multiplier), this.defaultFee);
     }
