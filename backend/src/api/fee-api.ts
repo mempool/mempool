@@ -1,5 +1,6 @@
 import config from '../config';
 import { MempoolBlock } from '../mempool.interfaces';
+import mempool from './mempool';
 import projectedBlocks from './mempool-blocks';
 
 class FeeApi {
@@ -9,12 +10,14 @@ class FeeApi {
 
   public getRecommendedFee() {
     const pBlocks = projectedBlocks.getMempoolBlocks();
+    const mPool = mempool.getMempoolInfo();
 
     if (!pBlocks.length) {
       return {
         'fastestFee': this.defaultFee,
         'halfHourFee': this.defaultFee,
         'hourFee': this.defaultFee,
+        'mempoolminfee': mPool.mempoolminfee,
       };
     }
 
@@ -26,6 +29,7 @@ class FeeApi {
       'fastestFee': firstMedianFee,
       'halfHourFee': secondMedianFee,
       'hourFee': thirdMedianFee,
+      'mempoolminfee': mPool.mempoolminfee,
     };
   }
 

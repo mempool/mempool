@@ -62,7 +62,7 @@ class Mempool {
     this.mempoolInfo = await bitcoinBaseApi.$getMempoolInfo();
   }
 
-  public getMempoolInfo(): IBitcoinApi.MempoolInfo | undefined {
+  public getMempoolInfo(): IBitcoinApi.MempoolInfo {
     return this.mempoolInfo;
   }
 
