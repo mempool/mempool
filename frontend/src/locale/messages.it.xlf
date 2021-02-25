@@ -1104,6 +1104,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="31c09dcc0ab351767631539b208d5f7de4005473">
         <source>Lightning <x equiv-text="{{ lightning }}" id="INTERPOLATION"/></source>
+        <target>Lightning <x equiv-text="{{ lightning }}" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1112,6 +1113,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="696ade981a05c12e10df38ba6218c76e318813b3">
         <source>Liquid <x equiv-text="{{ liquid }}" id="INTERPOLATION"/></source>
+        <target>Liquid <x equiv-text="{{ liquid }}" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
           <context context-type="linenumber">17</context>
@@ -1217,7 +1219,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ee8f8008bae6ce3a49840c4e1d39b4af23d4c263">
         <source>Assets</source>
-        <target>Attivi</target>
+        <target>Assets</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">55</context>
@@ -1239,7 +1241,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="489827bef9fd30645fd2a217aea141ac43bd01ef">
         <source>The mempool open-source project aims to implement a high quality explorer and visualization website for the entire Bitcoin ecosystem, without distractions like altcoins, advertising, or third-party trackers.</source>
-        <target>Il progetto open-source mempool vuole sviluppare un explorer di alta qualità per l'intero ecosistema del Bitcoin, senza distrazioni come altcoins, pubblicità e tracker esterni.</target>
+        <target>Il progetto open-source mempool si prefigge di sviluppare un explorer di alta qualità per l'intero ecosistema del Bitcoin, senza distrazioni quali altcoins, pubblicità e tracker esterni.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">16</context>
@@ -2709,7 +2711,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.mins.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> mins ago</source>
-        <target><x equiv-text="counter" id="INTERPOLATION"/> mins fa</target>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> min fa</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">90</context>
@@ -2725,7 +2727,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since.secs.ago">
         <source><x equiv-text="counter" id="INTERPOLATION"/> secs ago</source>
-        <target><x equiv-text="counter" id="INTERPOLATION"/> secs fa</target>
+        <target><x equiv-text="counter" id="INTERPOLATION"/> sec fa</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">95</context>
