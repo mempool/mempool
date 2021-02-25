@@ -19,7 +19,7 @@ export class AppComponent implements OnInit {
     private location: Location,
     @Inject(LOCALE_ID) private locale: string,
   ) {
-    if (this.locale.startsWith('ar') || this.locale.startsWith('fa')) {
+    if (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he')) {
       this.dir = 'rtl';
       this.class = 'rtl-layout';
     }
