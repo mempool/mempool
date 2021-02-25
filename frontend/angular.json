@@ -60,7 +60,7 @@
             "baseHref": "/it/"
           },
           "he": {
-            "translation": "src/locale/messages.it.xlf",
+            "translation": "src/locale/messages.he.xlf",
             "baseHref": "/he/"
           },
           "nl": {
