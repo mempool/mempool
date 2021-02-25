@@ -60,6 +60,7 @@ services:
       RPC_PASS: "mempool"
       ELECTRS_HOST: "127.0.0.1"
       ELECTRS_PORT: "50002"
+      ELECTRS_TLS: "false"
       MYSQL_HOST: "db"
       MYSQL_PORT: "3306"
       MYSQL_DATABASE: "mempool"
@@ -67,6 +68,7 @@ services:
       MYSQL_PASS: "mempool"
       BACKEND_MAINNET_HTTP_PORT: "8999"
       CACHE_DIR: "/backend/cache"
+      MEMPOOL_CLEAR_PROTECTION_MINUTES: "20"
   db:
     image: mariadb:10.5.8
     user: "1000:1000"
