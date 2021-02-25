@@ -66,7 +66,7 @@ services:
       MYSQL_USER: "mempool"
       MYSQL_PASS: "mempool"
       BACKEND_MAINNET_HTTP_PORT: "8999"
-      CACHE_DIR: "/backend/cache/"
+      CACHE_DIR: "/backend/cache"
   db:
     image: mariadb:10.5.8
     user: "1000:1000"
