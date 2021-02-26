@@ -1,0 +1,49 @@
+<div class="container-xl">
+
+  <ng-container *ngIf="hlocData$ | async as hlocData">
+
+    <ng-container *ngIf="currency$ | async as currency">
+      <h1>{{ currency.market.lname }} - {{ currency.pair }}</h1>
+      <div class="float-left">
+        <b>{{ hlocData[hlocData.length - 1].close | currency: currency.market.rsymbol }}</b>
+      </div>
+
+    </ng-container>
+  
+    <form [formGroup]="radioGroupForm" class="mb-3 float-right">
+      <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="interval">
+        <!--
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'minute'"> 1M
+        </label>
+        -->
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'half_hour'"> 30M
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'hour'"> 1H
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'half_day'"> 12H
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'day'"> 1D
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'week'"> 1W
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'month'"> 1M
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'year'"> 1Y
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'auto'" fragment="auto"> Auto
+        </label>
+      </div>
+    </form>
+
+    <app-lightweight-charts [data]="hlocData"></app-lightweight-charts>
+  </ng-container>
+</div>

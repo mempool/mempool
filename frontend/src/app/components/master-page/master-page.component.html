@@ -27,21 +27,21 @@
 
   <div class="navbar-collapse" id="navbarCollapse">
     <ul class="navbar-nav mr-auto pt-2 pb-2 pb-md-0 pt-md-0 {{ network.val }}">
+      <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        <a class="nav-link" [routerLink]="['/' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'tachometer-alt']" [fixedWidth]="true" i18n-title="master-page.dashboard" title="Dashboard"></fa-icon></a>
+      </li>
       <ng-template [ngIf]="network.val === 'bisq'" [ngIfElse]="notBisq">
         <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-          <a class="nav-link" [routerLink]="['/bisq']" (click)="collapse()"><fa-icon [icon]="['fas', 'list']" [fixedWidth]="true" i18n-title="master-page.transactions" title="Transactions"></fa-icon></a>
+          <a class="nav-link" [routerLink]="['/bisq/transactions']" (click)="collapse()"><fa-icon [icon]="['fas', 'list']" [fixedWidth]="true" i18n-title="master-page.transactions" title="Transactions"></fa-icon></a>
         </li>
         <li class="nav-item" routerLinkActive="active">
           <a class="nav-link" [routerLink]="['/bisq/blocks']" (click)="collapse()"><fa-icon [icon]="['fas', 'cubes']" [fixedWidth]="true" i18n-title="master-page.blocks" title="Blocks"></fa-icon></a>
         </li>
         <li class="nav-item" routerLinkActive="active">
-          <a class="nav-link" [routerLink]="['/bisq/stats']" (click)="collapse()"><fa-icon [icon]="['fas', 'tachometer-alt']" [fixedWidth]="true"  i18n-title="master-page.stats" title="Stats"></fa-icon></a>
+          <a class="nav-link" [routerLink]="['/bisq/stats']" (click)="collapse()"><fa-icon [icon]="['fas', 'file-alt']" [fixedWidth]="true"  i18n-title="master-page.stats" title="Stats"></fa-icon></a>
         </li>
       </ng-template>
       <ng-template #notBisq>
-        <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-          <a class="nav-link" [routerLink]="['/' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'tachometer-alt']" [fixedWidth]="true" i18n-title="master-page.dashboard" title="Dashboard"></fa-icon></a>
-        </li>
         <li class="nav-item" routerLinkActive="active">
           <a class="nav-link" [routerLink]="['/blocks' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'cubes']" [fixedWidth]="true" i18n-title="master-page.blocks" title="Blocks"></fa-icon></a>
         </li>

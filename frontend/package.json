@@ -61,6 +61,7 @@
     "clipboard": "^2.0.4",
     "domino": "^2.1.6",
     "express": "^4.15.2",
+    "lightweight-charts": "^3.3.0",
     "ngx-bootrap-multiselect": "^2.0.0",
     "ngx-infinite-scroll": "^9.0.0",
     "qrcode": "^1.4.4",

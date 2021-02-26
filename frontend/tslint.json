@@ -8,6 +8,7 @@
       ]
     },
     "array-type": false,
+    "forin": false,
     "arrow-parens": false,
     "arrow-return-shorthand": true,
     "curly": true,
