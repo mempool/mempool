@@ -3,10 +3,13 @@ import { BisqRoutingModule } from './bisq.routing.module';
 import { SharedModule } from '../shared/shared.module';
 import { NgxBootstrapMultiselectModule } from 'ngx-bootrap-multiselect';
 
+import { LightweightChartsComponent } from './lightweight-charts/lightweight-charts.component';
+import { BisqMarketComponent } from './bisq-market/bisq-market.component';
 import { BisqTransactionsComponent } from './bisq-transactions/bisq-transactions.component';
 import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { BisqTransactionComponent } from './bisq-transaction/bisq-transaction.component';
 import { BisqBlockComponent } from './bisq-block/bisq-block.component';
+import { BisqDashboardComponent } from './bisq-dashboard/bisq-dashboard.component';
 import { BisqIconComponent } from './bisq-icon/bisq-icon.component';
 import { BisqTransactionDetailsComponent } from './bisq-transaction-details/bisq-transaction-details.component';
 import { BisqTransfersComponent } from './bisq-transfers/bisq-transfers.component';
@@ -34,6 +37,9 @@ import { BsqAmountComponent } from './bsq-amount/bsq-amount.component';
     BisqAddressComponent,
     BisqStatsComponent,
     BsqAmountComponent,
+    LightweightChartsComponent,
+    BisqDashboardComponent,
+    BisqMarketComponent,
   ],
   imports: [
     BisqRoutingModule,

@@ -42,4 +42,21 @@ export class BisqApiService {
   getAddress$(address: string): Observable<BisqTransaction[]> {
     return this.httpClient.get<BisqTransaction[]>(API_BASE_URL + '/address/' + address);
   }
+
+  getMarkets$(): Observable<any[]> {
+    return this.httpClient.get<any[]>(API_BASE_URL + '/markets/markets');
+  }
+
+  getMarketsTicker$(): Observable<any[]> {
+    return this.httpClient.get<any[]>(API_BASE_URL + '/markets/ticker');
+  }
+
+  getMarketsCurrencies$(): Observable<any[]> {
+    return this.httpClient.get<any[]>(API_BASE_URL + '/markets/currencies');
+  }
+
+  getMarketsHloc$(market: string, interval: 'minute' | 'half_hour' | 'hour' | 'half_day' | 'day'
+  | 'week' | 'month' | 'year' | 'auto'): Observable<any[]> {
+    return this.httpClient.get<any[]>(API_BASE_URL + '/markets/hloc?market=' + market + '&interval=' + interval);
+  }
 }

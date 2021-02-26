@@ -1,0 +1,34 @@
+<div class="container-xl">  
+  <h1>Active Markets</h1>
+  <ng-container *ngIf="{ value: (tickers$ | async) } as tickers">
+
+  <table class="table table-borderless table-striped">
+    <thead>
+      <th style="width: 20%;" i18n>Coin</th>
+      <th class="d-none d-md-block" style="width: 100%;" i18n>Pair</th>
+      <th style="width: 20%;" i18n>Price</th>
+      <th style="width: 20%;" i18n>24h volume</th>
+      <th class="d-none d-md-block" i18n>Volume %</th>
+    </thead>
+    <tbody *ngIf="tickers.value; else loadingTmpl">
+      <tr *ngFor="let ticker of tickers.value; trackBy: trackByFn">
+        <td>{{ ticker.market.lname }}</td>
+        <td><a [routerLink]="['/market' | relativeUrl, ticker.pair_url]">{{ ticker.pair }}</a></td>
+        <td>
+          <app-fiat *ngIf="ticker.market.rtype === 'crypto'; else fiat" [value]="ticker.last * 100000000"></app-fiat>
+          <ng-template #fiat><span class="green-color">{{ ticker.last | currency: ticker.market.rsymbol }}</span></ng-template>
+        </td>
+      </tr> 
+    </tbody>
+  </table>
+
+  <br>
+
+  </ng-container>
+</div>
+
+<ng-template #loadingTmpl>
+  <tr *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]">
+    <td *ngFor="let j of [1, 2, 3, 4, 5]"><span class="skeleton-loader"></span></td>
+  </tr>
+</ng-template>

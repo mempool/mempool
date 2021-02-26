@@ -9,6 +9,8 @@ import { BisqExplorerComponent } from './bisq-explorer/bisq-explorer.component';
 import { BisqAddressComponent } from './bisq-address/bisq-address.component';
 import { BisqStatsComponent } from './bisq-stats/bisq-stats.component';
 import { ApiDocsComponent } from '../components/api-docs/api-docs.component';
+import { BisqDashboardComponent } from './bisq-dashboard/bisq-dashboard.component';
+import { BisqMarketComponent } from './bisq-market/bisq-market.component';
 
 const routes: Routes = [
   {
@@ -17,7 +19,15 @@ const routes: Routes = [
     children: [
       {
         path: '',
+        component: BisqDashboardComponent,
+      },
+      {
+        path: 'transactions',
         component: BisqTransactionsComponent
+      },
+      {
+        path: 'market/:pair',
+        component: BisqMarketComponent,
       },
       {
         path: 'tx/:id',
