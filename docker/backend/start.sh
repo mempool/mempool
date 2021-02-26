@@ -10,9 +10,9 @@ __BITCOIN_MAINNET_RPC_PORT__=${RPC_PORT:=8332}
 __BITCOIN_MAINNET_RPC_USER__=${RPC_USER:=mempool}
 __BITCOIN_MAINNET_RPC_PASS__=${RPC_PASS:=mempool}
 # ELECTRUM
-__ELECTRS_MAINNET_HTTP_HOST__=${ELECTRS_HOST:=127.0.0.1}
-__ELECTRS_MAINNET_HTTP_PORT__=${ELECTRS_PORT:=50002}
-__ELECTRS_MAINNET_TLS_ENABLED__=${ELECTRS_TLS:=false}
+__ELECTRUM_MAINNET_HTTP_HOST__=${ELECTRUM_HOST:=127.0.0.1}
+__ELECTRUM_MAINNET_HTTP_PORT__=${ELECTRUM_PORT:=50002}
+__ELECTRUM_MAINNET_TLS_ENABLED__=${ELECTRUM_TLS:=false}
 # MYSQL
 __MYSQL_HOST__=${MYSQL_HOST:=127.0.0.1}
 __MYSQL_PORT__=${MYSQL_PORT:=3306}
@@ -26,9 +26,9 @@ sed -i "s/__BITCOIN_MAINNET_RPC_HOST__/${__BITCOIN_MAINNET_RPC_HOST__}/g" mempoo
 sed -i "s/__BITCOIN_MAINNET_RPC_PORT__/${__BITCOIN_MAINNET_RPC_PORT__}/g" mempool-config.json
 sed -i "s/__BITCOIN_MAINNET_RPC_USER__/${__BITCOIN_MAINNET_RPC_USER__}/g" mempool-config.json
 sed -i "s/__BITCOIN_MAINNET_RPC_PASS__/${__BITCOIN_MAINNET_RPC_PASS__}/g" mempool-config.json
-sed -i "s/__ELECTRS_MAINNET_HTTP_HOST__/${__ELECTRS_MAINNET_HTTP_HOST__}/g" mempool-config.json
-sed -i "s/__ELECTRS_MAINNET_HTTP_PORT__/${__ELECTRS_MAINNET_HTTP_PORT__}/g" mempool-config.json
-sed -i "s/__ELECTRS_MAINNET_TLS_ENABLED__/${__ELECTRS_MAINNET_TLS_ENABLED__}/g" mempool-config.json
+sed -i "s/__ELECTRUM_MAINNET_HTTP_HOST__/${__ELECTRUM_MAINNET_HTTP_HOST__}/g" mempool-config.json
+sed -i "s/__ELECTRUM_MAINNET_HTTP_PORT__/${__ELECTRUM_MAINNET_HTTP_PORT__}/g" mempool-config.json
+sed -i "s/__ELECTRUM_MAINNET_TLS_ENABLED__/${__ELECTRUM_MAINNET_TLS_ENABLED__}/g" mempool-config.json
 sed -i "s/__MYSQL_HOST__/${__MYSQL_HOST__}/g" mempool-config.json
 sed -i "s/__MYSQL_PORT__/${__MYSQL_PORT__}/g" mempool-config.json
 sed -i "s/__MYSQL_DATABASE__/${__MYSQL_DATABASE__}/g" mempool-config.json

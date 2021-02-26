@@ -58,9 +58,9 @@ services:
       RPC_PORT: "8332"
       RPC_USER: "mempool"
       RPC_PASS: "mempool"
-      ELECTRS_HOST: "127.0.0.1"
-      ELECTRS_PORT: "50002"
-      ELECTRS_TLS: "false"
+      ELECTRUM_HOST: "127.0.0.1"
+      ELECTRUM_PORT: "50002"
+      ELECTRUM_TLS: "false"
       MYSQL_HOST: "db"
       MYSQL_PORT: "3306"
       MYSQL_DATABASE: "mempool"
@@ -85,7 +85,7 @@ services:
 
 ```
 
-You can update all the environment variables inside the API container, especially the RPC and ELECTRS ones
+You can update all the environment variables inside the API container, especially the RPC and ELECTRUM ones
 
 ## Run it
 
