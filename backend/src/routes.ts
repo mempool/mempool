@@ -401,6 +401,15 @@ class Routes {
     }
   }
 
+  public getBisqMarket24hVolumes(req: Request, res: Response) {
+    const result = bisqMarket.get24hVolumes();
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(500).json(this.getBisqMarketErrorResponse('getBisqMarket24hVolumes error'));
+    }
+  }
+
   private parseRequestParameters(requestParams: object, params: RequiredSpec): { [name: string]: any; } {
     const final = {};
     for (const i in params) {
