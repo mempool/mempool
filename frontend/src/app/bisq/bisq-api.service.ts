@@ -59,4 +59,8 @@ export class BisqApiService {
   | 'week' | 'month' | 'year' | 'auto'): Observable<any[]> {
     return this.httpClient.get<any[]>(API_BASE_URL + '/markets/hloc?market=' + market + '&interval=' + interval);
   }
+
+  getMarket24hVolumes$(): Observable<any[]> {
+    return this.httpClient.get<any[]>(API_BASE_URL + '/markets/24hvolumes');
+  }
 }

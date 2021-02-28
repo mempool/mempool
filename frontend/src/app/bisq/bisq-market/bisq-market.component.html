@@ -5,18 +5,17 @@
     <ng-container *ngIf="currency$ | async as currency">
       <h1>{{ currency.market.lname }} - {{ currency.pair }}</h1>
       <div class="float-left">
-        <b>{{ hlocData[hlocData.length - 1].close | currency: currency.market.rsymbol }}</b>
+        <ng-container *ngIf="currency.market.rtype === 'fiat'; else headerPriceCrypto">{{ hlocData[hlocData.length - 1].close | currency: currency.market.rsymbol }}</ng-container>
+        <ng-template #headerPriceCrypto>{{ hlocData[hlocData.length - 1].close | number: '1.' + currency.market.rprecision + '-' + currency.market.rprecision }} {{ currency.market.rsymbol }}</ng-template>
       </div>
 
     </ng-container>
   
     <form [formGroup]="radioGroupForm" class="mb-3 float-right">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="interval">
-        <!--
         <label ngbButtonLabel class="btn-primary btn-sm">
           <input ngbButton type="radio" [value]="'minute'"> 1M
         </label>
-        -->
         <label ngbButtonLabel class="btn-primary btn-sm">
           <input ngbButton type="radio" [value]="'half_hour'"> 30M
         </label>
