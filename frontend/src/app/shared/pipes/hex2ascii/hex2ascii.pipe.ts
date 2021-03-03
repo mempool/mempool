@@ -15,11 +15,11 @@ export class Hex2asciiPipe implements PipeTransform {
     if (!hex) {
       return '';
     }
-    let str = '';
+    let bytes: number[] = [];
     for (let i = 0; i < hex.length; i += 2) {
-      str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+      bytes.push(parseInt(hex.substr(i, 2), 16));
     }
-    return str;
+    return new TextDecoder('utf8').decode(Uint8Array.from(bytes));
   }
 
 }
