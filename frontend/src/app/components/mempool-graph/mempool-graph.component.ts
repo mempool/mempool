@@ -32,7 +32,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    const showLegend = !this.isMobile && this.showLegend;
     let labelHops = !this.showLegend ? 48 : 24;
     if (this.small) {
       labelHops = labelHops / 2;
@@ -73,12 +72,12 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       },
       axisY: {
         labelInterpolationFnc: (value: number): any => this.vbytesPipe.transform(value, 2),
-        offset: showLegend ? 160 : 60,
+        offset: this.showLegend ? 160 : 60,
       },
       plugins: this.inverted ? [Chartist.plugins.ctTargetLine({ value: 1000000 })] : []
     };
 
-    if (showLegend) {
+    if (this.showLegend) {
       this.mempoolVsizeFeesOptions.plugins.push(
         Chartist.plugins.legend({
           legendNames: [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
