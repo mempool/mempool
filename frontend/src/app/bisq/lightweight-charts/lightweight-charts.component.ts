@@ -1,10 +1,11 @@
 import { createChart, CrosshairMode } from 'lightweight-charts';
-import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-lightweight-charts',
   template: '<ng-component></ng-component>',
-  styleUrls: ['./lightweight-charts.component.scss']
+  styleUrls: ['./lightweight-charts.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LightweightChartsComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() data: any;

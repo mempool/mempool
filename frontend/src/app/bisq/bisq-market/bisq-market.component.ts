@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { combineLatest, merge, Observable, of } from 'rxjs';
@@ -8,11 +8,13 @@ import { BisqApiService } from '../bisq-api.service';
 @Component({
   selector: 'app-bisq-market',
   templateUrl: './bisq-market.component.html',
-  styleUrls: ['./bisq-market.component.scss']
+  styleUrls: ['./bisq-market.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BisqMarketComponent implements OnInit {
   hlocData$: Observable<any>;
   currency$: Observable<any>;
+  offers$: Observable<any>;
   radioGroupForm: FormGroup;
   defaultInterval = 'half_hour';
 
@@ -32,11 +34,19 @@ export class BisqMarketComponent implements OnInit {
         switchMap((markets) => combineLatest([of(markets), this.route.paramMap])),
         map(([markets, routeParams]) => {
           const pair = routeParams.get('pair');
-          console.log(markets);
           return {
             pair: pair.replace('_', '/').toUpperCase(),
             market: markets[pair],
           };
+        })
+      );
+
+    this.offers$ = this.route.paramMap
+      .pipe(
+        map(routeParams => routeParams.get('pair')),
+        switchMap((marketPair) => this.bisqApiService.getMarketOffers$(marketPair)),
+        map((offers) => {
+          return offers[Object.keys(offers)[0]];
         })
       );
 
@@ -54,9 +64,6 @@ export class BisqMarketComponent implements OnInit {
           h.time = h.period_start;
           return h;
         });
-      }),
-      tap((data) => {
-        console.log(data);
       }),
     );
   }

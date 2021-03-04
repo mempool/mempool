@@ -32,7 +32,6 @@ export class BisqDashboardComponent implements OnInit {
           tickers[t].volume = volumes[t];
           newTickers.push(tickers[t]);
         }
-        console.log(newTickers);
 
         newTickers.sort((a, b) => (b.volume && b.volume.volume || 0) - (a.volume && a.volume.volume || 0));
 
