@@ -449,30 +449,27 @@ Chartist.plugins.legend = function (options: any) {
                 const legendIndex = parseInt(li.getAttribute('data-legend'));
                 const legend = legends[legendIndex];
 
-                if (!legend.active) {
-                    legend.active = true;
-                    li.classList.remove('inactive');
+                const activateLegend = (_legendIndex: number): void => {
+                    legends[_legendIndex].active = true;
+                    legendElement.childNodes[_legendIndex].classList.remove('inactive');
 
-                    var indexOfInactiveLegend = cacheInactiveLegends.indexOf(legendIndex, 0)
+                    const indexOfInactiveLegend = cacheInactiveLegends.indexOf(_legendIndex, 0);
                     if (indexOfInactiveLegend > -1) {
                       cacheInactiveLegends.splice(indexOfInactiveLegend, 1);
                     }
+                }
 
-                } else {
-                    legend.active = false;
-                    li.classList.add('inactive');
-                    cacheInactiveLegends.push(legendIndex);
+                const deactivateLegend = (_legendIndex: number): void => {
+                    legends[_legendIndex].active = false;
+                    legendElement.childNodes[_legendIndex].classList.add('inactive');
+                    cacheInactiveLegends.push(_legendIndex);
+                }
 
-                    const activeCount = legends.filter(function(legend: any) { return legend.active; }).length;
-                    if (!options.removeAll && activeCount == 0) {
-                        // If we can't disable all series at the same time, let's
-                        // reenable all of them:
-                        for (let i = 0; i < legends.length; i++) {
-                            legends[i].active = true;
-                            legendElement.childNodes[i].classList.remove('inactive');
-                        }
-
-                        cacheInactiveLegends = [];
+                for (let i = legends.length - 1; i >= 0; i--) {
+                    if (i >= legendIndex) {
+                        if (!legend.active) activateLegend(i);
+                    } else {
+                        if (legend.active) deactivateLegend(i);
                     }
                 }
 
