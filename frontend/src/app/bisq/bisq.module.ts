@@ -17,7 +17,6 @@ import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontaweso
 import { faLeaf, faQuestion, faExclamationTriangle, faRocket, faRetweet, faFileAlt, faMoneyBill,
   faEye, faEyeSlash, faLock, faLockOpen, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { BisqBlocksComponent } from './bisq-blocks/bisq-blocks.component';
-import { BisqExplorerComponent } from './bisq-explorer/bisq-explorer.component';
 import { BisqApiService } from './bisq-api.service';
 import { BisqAddressComponent } from './bisq-address/bisq-address.component';
 import { BisqStatsComponent } from './bisq-stats/bisq-stats.component';
@@ -33,7 +32,6 @@ import { BsqAmountComponent } from './bsq-amount/bsq-amount.component';
     BisqTransactionDetailsComponent,
     BisqTransfersComponent,
     BisqBlocksComponent,
-    BisqExplorerComponent,
     BisqAddressComponent,
     BisqStatsComponent,
     BsqAmountComponent,

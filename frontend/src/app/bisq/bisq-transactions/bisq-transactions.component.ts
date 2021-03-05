@@ -8,6 +8,7 @@ import { SeoService } from 'src/app/services/seo.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IMultiSelectOption, IMultiSelectSettings, IMultiSelectTexts } from 'ngx-bootrap-multiselect';
+import { WebsocketService } from 'src/app/services/websocket.service';
 
 @Component({
   selector: 'app-bisq-transactions',
@@ -65,6 +66,7 @@ export class BisqTransactionsComponent implements OnInit {
     'PROOF_OF_BURN', 'PROPOSAL', 'REIMBURSEMENT_REQUEST', 'TRANSFER_BSQ', 'UNLOCK', 'VOTE_REVEAL', 'IRREGULAR'];
 
   constructor(
+    private websocketService: WebsocketService,
     private bisqApiService: BisqApiService,
     private seoService: SeoService,
     private formBuilder: FormBuilder,
@@ -74,6 +76,7 @@ export class BisqTransactionsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.websocketService.want(['blocks']);
     this.seoService.setTitle($localize`:@@add4cd82e3e38a3110fe67b3c7df56e9602644ee:Transactions`);
 
     this.radioGroupForm = this.formBuilder.group({

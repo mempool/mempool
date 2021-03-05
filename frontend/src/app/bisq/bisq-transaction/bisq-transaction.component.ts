@@ -9,6 +9,7 @@ import { BisqApiService } from '../bisq-api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { ElectrsApiService } from 'src/app/services/electrs-api.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { WebsocketService } from 'src/app/services/websocket.service';
 
 @Component({
   selector: 'app-bisq-transaction',
@@ -27,6 +28,7 @@ export class BisqTransactionComponent implements OnInit, OnDestroy {
   subscription: Subscription;
 
   constructor(
+    private websocketService: WebsocketService,
     private route: ActivatedRoute,
     private bisqApiService: BisqApiService,
     private electrsApiService: ElectrsApiService,
@@ -36,6 +38,8 @@ export class BisqTransactionComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.websocketService.want(['blocks']);
+
     this.subscription = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         this.isLoading = true;

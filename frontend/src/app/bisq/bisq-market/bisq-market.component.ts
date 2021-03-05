@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { combineLatest, merge, Observable, of } from 'rxjs';
 import { filter, map, mergeAll, switchMap, tap } from 'rxjs/operators';
+import { WebsocketService } from 'src/app/services/websocket.service';
 import { BisqApiService } from '../bisq-api.service';
 
 @Component({
@@ -11,7 +12,7 @@ import { BisqApiService } from '../bisq-api.service';
   styleUrls: ['./bisq-market.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BisqMarketComponent implements OnInit {
+export class BisqMarketComponent implements OnInit, OnDestroy {
   hlocData$: Observable<any>;
   currency$: Observable<any>;
   offers$: Observable<any>;
@@ -19,6 +20,7 @@ export class BisqMarketComponent implements OnInit {
   defaultInterval = 'half_hour';
 
   constructor(
+    private websocketService: WebsocketService,
     private route: ActivatedRoute,
     private bisqApiService: BisqApiService,
     private formBuilder: FormBuilder,
@@ -44,6 +46,7 @@ export class BisqMarketComponent implements OnInit {
     this.offers$ = this.route.paramMap
       .pipe(
         map(routeParams => routeParams.get('pair')),
+        tap((marketPair) => this.websocketService.startTrackBisqMarket(marketPair)),
         switchMap((marketPair) => this.bisqApiService.getMarketOffers$(marketPair)),
         map((offers) => {
           return offers[Object.keys(offers)[0]];
@@ -66,6 +69,10 @@ export class BisqMarketComponent implements OnInit {
         });
       }),
     );
+  }
+
+  ngOnDestroy(): void {
+    this.websocketService.stopTrackingBisqMarket();
   }
 
 }

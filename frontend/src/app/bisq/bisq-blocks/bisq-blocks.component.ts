@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { BisqBlock, BisqOutput, BisqTransaction } from '../bisq.interfaces';
 import { SeoService } from 'src/app/services/seo.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { WebsocketService } from 'src/app/services/websocket.service';
 
 @Component({
   selector: 'app-bisq-blocks',
@@ -25,6 +26,7 @@ export class BisqBlocksComponent implements OnInit {
   paginationMaxSize = 10;
 
   constructor(
+    private websocketService: WebsocketService,
     private bisqApiService: BisqApiService,
     private seoService: SeoService,
     private route: ActivatedRoute,
@@ -32,6 +34,7 @@ export class BisqBlocksComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.websocketService.want(['blocks']);
     this.seoService.setTitle($localize`:@@8a7b4bd44c0ac71b2e72de0398b303257f7d2f54:Blocks`);
     this.itemsPerPage = Math.max(Math.round(this.contentSpace / this.fiveItemsPxSize) * 5, 10);
     this.loadingItems = Array(this.itemsPerPage);

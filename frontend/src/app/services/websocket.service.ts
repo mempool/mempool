@@ -23,7 +23,7 @@ export class WebsocketService {
 
   private websocketSubject: WebSocketSubject<WebsocketResponse>;
   private goneOffline = false;
-  private lastWant: string[] | null = null;
+  private lastWant: string | null = null;
   private isTrackingTx = false;
   private latestGitCommit = '';
   private onlineCheckTimeout: number;
@@ -95,7 +95,7 @@ export class WebsocketService {
         if (this.goneOffline === true) {
           this.goneOffline = false;
           if (this.lastWant) {
-            this.want(this.lastWant, true);
+            this.want(JSON.parse(this.lastWant), true);
           }
           this.stateService.connectionState$.next(2);
         }
@@ -150,6 +150,14 @@ export class WebsocketService {
     this.websocketSubject.next({ 'track-asset': 'stop' });
   }
 
+  startTrackBisqMarket(market: string) {
+    this.websocketSubject.next({ 'track-bisq-market': market });
+  }
+
+  stopTrackingBisqMarket() {
+    this.websocketSubject.next({ 'track-bisq-market': 'stop' });
+  }
+
   fetchStatistics(historicalDate: string) {
     this.websocketSubject.next({ historicalDate });
   }
@@ -158,11 +166,11 @@ export class WebsocketService {
     if (!this.stateService.isBrowser) {
       return;
     }
-    if (data === this.lastWant && !force) {
+    if (JSON.stringify(data) === this.lastWant && !force) {
       return;
     }
     this.websocketSubject.next({action: 'want', data: data});
-    this.lastWant = data;
+    this.lastWant = JSON.stringify(data);
   }
 
   goOffline() {
