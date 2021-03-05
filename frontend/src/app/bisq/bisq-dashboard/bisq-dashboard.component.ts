@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Observable, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { WebsocketService } from 'src/app/services/websocket.service';
 import { BisqApiService } from '../bisq-api.service';
 
 @Component({
@@ -13,10 +14,13 @@ export class BisqDashboardComponent implements OnInit {
   tickers$: Observable<any>;
 
   constructor(
+    private websocketService: WebsocketService,
     private bisqApiService: BisqApiService,
   ) { }
 
   ngOnInit(): void {
+    this.websocketService.want(['blocks']);
+
     this.tickers$ = combineLatest([
       this.bisqApiService.getMarketsTicker$(),
       this.bisqApiService.getMarkets$(),
