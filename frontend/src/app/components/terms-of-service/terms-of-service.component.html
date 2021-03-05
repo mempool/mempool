@@ -1,15 +1,17 @@
 <div class="container-xl">
   <div class="text-center">
     <br />
-    <img src="./resources/mempool-logo-bigger.png" height="67.5" width="251">
+    <img [src]="officialMempoolSpace ? './resources/mempool-space-logo.png' : './resources/mempool-logo.png'">
     <br /><br />
 
     <h2>Terms of Service</h2>
-    <h6>Updated: October 12, 2020</h6>
+    <h6>Updated: March 05, 2021</h6>
 
     <br><br>
 
     <div class="text-left">
+
+        <p *ngIf="officialMempoolSpace">The official <a href="https://mempool.space/">mempool.space</a> website and <a href="https://mempool.space/api">its API service</a> are operated by Mempool Space K.K.</p>
 
         <h5>By using this website or accessing its API, you agree to these Terms of Service:</h5>
 
@@ -29,16 +31,51 @@
 
         <h4>PRIVACY POLICY</h4>
 
-        <p>The operators of this website may collect your IP address as part of basic webserver logs and a self-hosted statistics application, but this data will never be sold or shared with third parties. Please use Tor when accessing this website to protect your privacy.</p>
+        <p>Out of respect for our users, this website does not utilize any third-party trackers, and the operators of this website do not share any user data with third-parties. However, your IP address may incidentally be collected as part of basic webserver logs for systems administration purposes, and as part of an anonymized self-hosted statistics application for analytics. Therefore we recommend using Tor browser to conceal your IP address when accessing this website, or operating your own self-hosted instance of this website.</p>
 
-        <h4>SPONSOR POLICY</h4>
+        <br>
 
-        <p>If you donate at least 0.01 BTC to mempool.space and submit your Twitter username at the time of donation, we will generally feature your Twitter profile photo on our About page with a link to your Twitter account. However, we reserve the right to remove sponsors listed on our website that in our sole discretion are inappropriate. All donations made are non-refundable.</p>
+        <h4>BITCOIN ONLY</h4>
 
-    </div>
+        <p>Out of respect for our users, this website does not support altcoins, and is generally Bitcoin Only. However, in order to support various Bitcoin Layer 2 Networks, various fiat stablecoin tokens on Liquid, and the BSQ governance token for the Bisq DAO are not considered altcoins as they do not distract users from Bitcoin, and is part of our mission to support the full Bitcoin ecosystem.
 
-    <br><br>
+        <br>
+
+        <h4>EXTERNAL LINKS</h4>
+
+        <p>Out of respect for our users, this website does not display advertising, and generally does not link to external sources. However, to acknowledge members of the Bitcoin open-source community and direct supporters of <a href="https://github.com/mempool">The Mempool Open Source Project</a>, external links will be made in the following cases:</p>
+        <ul>
+          <li>If you are an individual contributor to <a href="https://github.com/mempool">The Mempool Open Source Project</a>, and have made regular contributions to the satisfaction of its maintainers, we may display your Twitter or GitHub profile photo on <a href="https://mempool.space/about">the About page</a>, with <u>a link to your Twitter or GitHub profile</u>.</li>
+          <li>If you are a member of the Bitcoin community on Twitter, and have made a one-time donation of at least 0.01 BTC to <a href="https://github.com/mempool">The Mempool Open Source Project</a> on <a href="https://mempool.space/about">mempool.space/about</a>, we will generally display your Twitter profile photo on <a href="https://mempool.space/about">the About page</a>, with <u>a link to your Twitter account</u>.</li>
+          <li>If you are a member of the Bitcoin community on GitHub, and have made recurring donations of at least $100 USD per month to <a href="https://github.com/mempool">The Mempool Open Source Project</a> through the GitHub Sponsors program for at least 6 months, we will generally display your GitHub profile photo on <a href="https://mempool.space/about">the About page</a>, with <u>a link to your GitHub account</u>.</li>
+          <li>If you represent an open source project that benefits the Bitcoin community, and have integrated <a href="https://github.com/mempool">The Mempool Open Source Project</a> into your project, we will generally feature the project's logo on <a href="https://mempool.space/about">the About page</a>, with <u>a link to the project's GitHub repository</u>.</li>
+          <li>If you represent an alliance of members of the Bitcoin community, and that alliance has a relationship to <a href="https://github.com/mempool">The Mempool Open Source Project</a>, we may display the alliance logo on <a href="https://mempool.space/about">the About page</a>, with <u>a link to the alliance website</u>.</li>
+          <li>If you represent an enterprise organization, and have made a one-time donation of at least $25,000 USD to <a href="https://github.com/mempool">The Mempool Open Source Project</a>, we will generally display your organization's logo on <a href="https://mempool.space/about">the About page</a>, with <u>a link to your organization's website</u>.</li>
+        </ul>
+        <p>However, we reserve the right to remove any links from our website that in our sole discretion are inappropriate. All donations are non-refundable.</p>
+
+        <br>
+
+        <h4>COPYRIGHT NOTICE</h4>
+
+        <p>Copyright &copy; 2019-2021 The Mempool Open Source Project
+
+        <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, and/or sublicense copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+        <p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+        <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+        <p>Commons Clause License Condition v1.0
+
+        <p>Without limiting other conditions in the License, the grant of rights under the License will not include, and the License does not grant to you, the right to Sell the Software.
+
+        <p>For purposes of the foregoing, “Sell” means practicing any or all of the rights granted to you under the License to provide to third parties, for a fee or other consideration (including without limitation fees for hosting or consulting/ support services related to the Software), a product or service whose value derives, entirely or substantially, from the functionality of the Software. Any license notice or attribution required by the License must also include this Commons Cause License Condition notice.
+
+      </div>
 
   </div>
+
+  <br><br>
 
 </div>
