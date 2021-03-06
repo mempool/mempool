@@ -78,22 +78,22 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     };
 
     if (this.showLegend) {
-      this.mempoolVsizeFeesOptions.plugins.push(
-        Chartist.plugins.legend({
-          legendNames: [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
+      const legendNames: string[] = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
             250, 300, 350, 400].map((sat, i, arr) => {
               if (sat === 400) {
-              return '350+';
+                return '350+';
               }
               if (i === 0) {
-                if (this.stateService.network === 'liquid') {
-                  return '0 - 1';
-                }
-                return '1 sat/vB';
+                return '0 - 1';
               }
               return arr[i - 1] + ' - ' + sat;
-            })
-        })
+            });
+      // Only Liquid has lower than 1 sat/vb transactions
+      if (this.stateService.network !== 'liquid') {
+        legendNames.shift();
+      }
+      this.mempoolVsizeFeesOptions.plugins.push(
+        Chartist.plugins.legend({ legendNames: legendNames })
       );
     }
   }
