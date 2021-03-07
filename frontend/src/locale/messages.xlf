@@ -1155,11 +1155,19 @@
           <context context-type="linenumber">16</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="bd17d8c151ed8e84b71b6aef6e7f5820296b6433" datatype="html">
+        <source>Enterprise Sponsors</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+        <note priority="1" from="description">about.sponsors.enterprise</note>
+      </trans-unit>
       <trans-unit id="a46e9bc519dc1c320d48635e924d444364845ca8" datatype="html">
         <source>Community Sponsors ❤️</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">46</context>
+          <context context-type="linenumber">48</context>
         </context-group>
         <note priority="1" from="description">about.sponsors.withHeart</note>
       </trans-unit>
@@ -1167,7 +1175,7 @@
         <source>Become a sponsor ❤️</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">62</context>
+          <context context-type="linenumber">64</context>
         </context-group>
         <note priority="1" from="description">about.become-a-sponsor</note>
       </trans-unit>
@@ -1175,7 +1183,7 @@
         <source>Request invoice</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">84</context>
+          <context context-type="linenumber">86</context>
         </context-group>
         <note priority="1" from="description">about.sponsor.request-invoice</note>
       </trans-unit>
@@ -1183,7 +1191,7 @@
         <source>Community Integrations</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">179</context>
+          <context context-type="linenumber">181</context>
         </context-group>
         <note priority="1" from="description">about.integrations</note>
       </trans-unit>
@@ -1191,7 +1199,7 @@
         <source>Community Alliances</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">253</context>
+          <context context-type="linenumber">255</context>
         </context-group>
         <note priority="1" from="description">about.alliances</note>
       </trans-unit>
@@ -1199,7 +1207,7 @@
         <source>Project Maintainers</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">269</context>
+          <context context-type="linenumber">271</context>
         </context-group>
         <note priority="1" from="description">about.maintainers</note>
       </trans-unit>
@@ -1207,7 +1215,7 @@
         <source>Terms of Service</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">293</context>
+          <context context-type="linenumber">295</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -1224,7 +1232,7 @@
         <source>Navigate to <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/about&quot; target=&quot;_blank&quot;&gt;"/>https://mempool.space/about<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt; "/> to sponsor</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">64</context>
+          <context context-type="linenumber">66</context>
         </context-group>
         <note priority="1" from="description">about.navigate-to-sponsor</note>
       </trans-unit>
@@ -1232,7 +1240,7 @@
         <source>Amount required</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">81</context>
+          <context context-type="linenumber">83</context>
         </context-group>
         <note priority="1" from="description">about.sponsor.amount-required</note>
       </trans-unit>
@@ -1240,7 +1248,7 @@
         <source>Minimum amount is 0.001 BTC</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">82</context>
+          <context context-type="linenumber">84</context>
         </context-group>
         <note priority="1" from="description">about.sponsor.minimum-amount</note>
       </trans-unit>
@@ -1248,7 +1256,7 @@
         <source>If you donate 0.01 BTC or more, your profile photo will be added to the list of sponsors above :)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">91</context>
+          <context context-type="linenumber">93</context>
         </context-group>
         <note priority="1" from="description">about.sponsor.description</note>
       </trans-unit>
@@ -1256,7 +1264,7 @@
         <source>Waiting for transaction... </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">169</context>
+          <context context-type="linenumber">171</context>
         </context-group>
         <note priority="1" from="description">about.sponsor.waiting-for-transaction</note>
       </trans-unit>
@@ -1264,7 +1272,7 @@
         <source>Donation confirmed!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">174</context>
+          <context context-type="linenumber">176</context>
         </context-group>
         <note priority="1" from="description">about.sponsor.donation-confirmed</note>
       </trans-unit>
@@ -1272,7 +1280,7 @@
         <source>Thank you!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">174</context>
+          <context context-type="linenumber">176</context>
         </context-group>
         <note priority="1" from="description">about.sponsor.thank-you</note>
       </trans-unit>
