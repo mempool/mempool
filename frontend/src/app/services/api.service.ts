@@ -77,6 +77,10 @@ export class ApiService {
     return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/donations');
   }
 
+  getContributor$(): Observable<any[]> {
+    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/contributors');
+  }
+
   checkDonation$(orderId: string): Observable<any[]> {
     return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/donations/check?order_id=' + orderId);
   }
