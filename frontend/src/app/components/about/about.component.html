@@ -281,18 +281,42 @@
       <div class="row row-cols-2" dir="ltr">
         <div class="col col-md-2 offset-md-4">
           <a href="https://twitter.com/softsimon_">
-            <div class="profile_photo mx-auto" style="background-image: url(/resources/profile/softsimon.jpg)"></div>
-            @softsimon_
+            <div class="profile_photo d-inline-block" title="softsimon">
+              <img class="profile_img" src="resources/profile/softsimon.jpg" />
+              softsimon
+            </div>
           </a>
         </div>
         <div class="col col-md-2">
           <a href="https://twitter.com/wiz">
-            <div class="profile_photo mx-auto" style="background-image: url(/resources/profile/wiz.png)"></div>
-            @wiz
+            <div class="profile_photo d-inline-block" title="wiz">
+              <img class="profile_img" src="resources/profile/wiz.png" />
+              wiz
+            </div>
           </a>
         </div>
       </div>
     </div>
+
+    <br><br>
+
+    <h3 i18n="about.contributors">Project Contributors</h3>
+
+    <div *ngIf="contributors === null">
+      <br>
+      <div class="spinner-border text-light"></div>
+    </div>
+
+    <ng-template ngFor let-contributor [ngForOf]="contributors">
+      <a [href]="'https://github.com/' + contributor.name" target="_blank">
+        <div class="profile_photo d-inline-block" [title]="contributor.name">
+          <img class="profile_img" [src]="'/api/v1/contributors/images/' + contributor.id" />
+          {{ contributor.name }}
+        </div>
+      </a>
+    </ng-template>
+
+    <br><br>
 
   </div>
 
