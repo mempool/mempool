@@ -309,7 +309,7 @@ const defaultOptions = {
 
 Chartist.plugins.legend = function (options: any) {
     let cachedDOMPosition;
-    let cacheInactiveLegends: any = [];
+    let cacheInactiveLegends: { [key:number]: boolean } = {};
     // Catch invalid options
     if (options && options.position) {
         if (!(options.position === 'top' || options.position === 'bottom' || options.position instanceof HTMLElement)) {
@@ -453,16 +453,13 @@ Chartist.plugins.legend = function (options: any) {
                     legends[_legendIndex].active = true;
                     legendElement.childNodes[_legendIndex].classList.remove('inactive');
 
-                    const indexOfInactiveLegend = cacheInactiveLegends.indexOf(_legendIndex, 0);
-                    if (indexOfInactiveLegend > -1) {
-                      cacheInactiveLegends.splice(indexOfInactiveLegend, 1);
-                    }
+                    cacheInactiveLegends[_legendIndex] = false;
                 }
 
                 const deactivateLegend = (_legendIndex: number): void => {
                     legends[_legendIndex].active = false;
                     legendElement.childNodes[_legendIndex].classList.add('inactive');
-                    cacheInactiveLegends.push(_legendIndex);
+                    cacheInactiveLegends[_legendIndex] = true;
                 }
 
                 for (let i = legends.length - 1; i >= 0; i--) {
@@ -472,6 +469,9 @@ Chartist.plugins.legend = function (options: any) {
                         if (legend.active) deactivateLegend(i);
                     }
                 }
+                // Make sure all values are undefined (falsy) when clicking the first legend
+                // After clicking the first legend all indices should be falsy
+                if (legendIndex === 0) cacheInactiveLegends = {};
 
                 const newSeries = [];
                 const newLabels = [];
@@ -509,7 +509,8 @@ Chartist.plugins.legend = function (options: any) {
             const legendSeries = legend.series || [i];
 
             const li = createNameElement(i, legendText, classNamesViable);
-            const isActive: boolean = !(cacheInactiveLegends.indexOf(i) > -1);
+            // If the value is undefined or false, isActive is true
+            const isActive: boolean = !cacheInactiveLegends[i];
             if (isActive) {
               activeSeries.push(seriesMetadata[i].data);
               activeLabels.push(seriesMetadata[i].label);
