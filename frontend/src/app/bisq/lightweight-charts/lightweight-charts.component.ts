@@ -9,7 +9,11 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, O
 })
 export class LightweightChartsComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() data: any;
+  @Input() volumeData: any;
+  @Input() precision: number;
+
   lineSeries: any;
+  volumeSeries: any;
   chart: any;
 
   constructor(
@@ -36,6 +40,18 @@ export class LightweightChartsComponent implements AfterViewInit, OnChanges, OnD
       },
     });
     this.lineSeries = this.chart.addCandlestickSeries();
+
+    this.volumeSeries = this.chart.addHistogramSeries({
+      color: '#26a69a',
+      priceFormat: {
+        type: 'volume',
+      },
+      priceScaleId: '',
+      scaleMargins: {
+        top: 0.8,
+        bottom: 0,
+      },
+    });
   }
 
   ngAfterViewInit(): void {
@@ -60,6 +76,15 @@ export class LightweightChartsComponent implements AfterViewInit, OnChanges, OnD
       return;
     }
     this.lineSeries.setData(this.data);
+    this.volumeSeries.setData(this.volumeData);
+
+    this.lineSeries.applyOptions({
+      priceFormat: {
+          type: 'price',
+          precision: this.precision,
+          minMove: 0.0000001,
+      },
+    });
   }
 
   ngOnDestroy() {

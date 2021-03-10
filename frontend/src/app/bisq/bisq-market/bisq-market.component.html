@@ -6,16 +6,13 @@
       <h1>{{ currency.market.lname }} - {{ currency.pair }}</h1>
       <div class="float-left">
         <span class="priceheader">
-          <ng-container *ngIf="currency.market.rtype === 'fiat'; else headerPriceCrypto"><span class="green-color">{{ hlocData[hlocData.length - 1].close | currency: currency.market.rsymbol }}</span></ng-container>
-          <ng-template #headerPriceCrypto>{{ hlocData[hlocData.length - 1].close | number: '1.' + currency.market.rprecision + '-' + currency.market.rprecision }} {{ currency.market.rsymbol }}</ng-template>
+          <ng-container *ngIf="currency.market.rtype === 'fiat'; else headerPriceCrypto"><span class="green-color">{{ hlocData.hloc[hlocData.hloc.length - 1].close | currency: currency.market.rsymbol }}</span></ng-container>
+          <ng-template #headerPriceCrypto>{{ hlocData.hloc[hlocData.hloc.length - 1].close | number: '1.' + currency.market.rprecision + '-' + currency.market.rprecision }} {{ currency.market.rsymbol }}</ng-template>
         </span> 
       </div>
   
       <form [formGroup]="radioGroupForm" class="mb-3 float-right">
         <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="interval">
-          <label ngbButtonLabel class="btn-primary btn-sm">
-            <input ngbButton type="radio" [value]="'minute'"> 1M
-          </label>
           <label ngbButtonLabel class="btn-primary btn-sm">
             <input ngbButton type="radio" [value]="'half_hour'"> 30M
           </label>
@@ -43,8 +40,10 @@
         </div>
       </form>
 
-      <app-lightweight-charts [data]="hlocData"></app-lightweight-charts>
-
+      <app-lightweight-charts [data]="hlocData.hloc" [volumeData]="hlocData.volume" [precision]="currency.market.rtype === 'crypto' ? currency.market.lprecision : currency.market.rprecision"></app-lightweight-charts>
+      
+      <div class="float-right small mt-2">Powered by <a href="https://www.tradingview.com/" target="_blank">Tradingview</a></div>
+      
       <br>
 
       <ng-container *ngIf="offers$ | async as offers">

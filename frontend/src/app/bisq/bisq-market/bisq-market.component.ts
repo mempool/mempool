@@ -46,11 +46,8 @@ export class BisqMarketComponent implements OnInit, OnDestroy {
     this.offers$ = this.route.paramMap
       .pipe(
         map(routeParams => routeParams.get('pair')),
-        tap((marketPair) => this.websocketService.startTrackBisqMarket(marketPair)),
         switchMap((marketPair) => this.bisqApiService.getMarketOffers$(marketPair)),
-        map((offers) => {
-          return offers[Object.keys(offers)[0]];
-        })
+        map((offers) => offers[Object.keys(offers)[0]])
       );
 
     this.hlocData$ = combineLatest([
@@ -62,11 +59,21 @@ export class BisqMarketComponent implements OnInit, OnDestroy {
         const pair = routeParams.get('pair');
         return this.bisqApiService.getMarketsHloc$(pair, interval);
       }),
-      map((hloc) => {
-        return hloc.map((h) => {
+      map((hlocData) => {
+        hlocData = hlocData.map((h) => {
           h.time = h.period_start;
           return h;
         });
+        return {
+          hloc: hlocData,
+          volume: hlocData.map((h) => {
+            return {
+              time: h.time,
+              value: h.volume_right,
+              color: h.close > h.avg ? 'rgba(0, 150, 136, 0.8)' : 'rgba(255,82,82, 0.8)',
+            };
+          })
+        };
       }),
     );
   }

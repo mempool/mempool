@@ -24,7 +24,7 @@ export class BisqDashboardComponent implements OnInit {
     this.tickers$ = combineLatest([
       this.bisqApiService.getMarketsTicker$(),
       this.bisqApiService.getMarkets$(),
-      this.bisqApiService.getMarket24hVolumes$(),
+      this.bisqApiService.getMarketVolumesByTime$('7d'),
     ])
     .pipe(
       map(([tickers, markets, volumes]) => {
@@ -37,7 +37,7 @@ export class BisqDashboardComponent implements OnInit {
           newTickers.push(tickers[t]);
         }
 
-        newTickers.sort((a, b) => (b.volume && b.volume.volume || 0) - (a.volume && a.volume.volume || 0));
+        newTickers.sort((a, b) => (b.volume && b.volume.num_trades || 0) - (a.volume && a.volume.num_trades || 0));
 
         return newTickers;
       })
