@@ -401,12 +401,12 @@ class Routes {
     }
   }
 
-  public getBisqMarket24hVolumes(req: Request, res: Response) {
-    const result = bisqMarket.get24hVolumes();
+  public getBisqMarketVolumes7d(req: Request, res: Response) {
+    const result = bisqMarket.getVolumesByTime(604800);
     if (result) {
       res.json(result);
     } else {
-      res.status(500).json(this.getBisqMarketErrorResponse('getBisqMarket24hVolumes error'));
+      res.status(500).json(this.getBisqMarketErrorResponse('getBisqMarketVolumes7d error'));
     }
   }
 

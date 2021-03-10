@@ -8,13 +8,13 @@
       <th i18n>Currency</th>
       <th i18n>Pair</th>
       <th i18n>Price</th>
-      <th i18n>Volume (24h)</th>
-      <th i18n>Trades (24h)</th>
+      <th i18n>Volume (7d)</th>
+      <th i18n>Trades (7d)</th>
     </thead>
     <tbody *ngIf="tickers.value; else loadingTmpl">
       <tr *ngFor="let ticker of tickers.value; trackBy: trackByFn; let i = index">
         <td>{{ i + 1 }}</td>
-        <td>{{ ticker.market.lname }}</td>
+        <td>{{ ticker.market.rtype === 'crypto' ? ticker.market.lname : ticker.market.rname }}</td>
         <td><a [routerLink]="['/market' | relativeUrl, ticker.pair_url]">{{ ticker.pair }}</a></td>
         <td>
           <app-fiat *ngIf="ticker.market.rtype === 'crypto'; else fiat" [value]="ticker.last * 100000000"></app-fiat>

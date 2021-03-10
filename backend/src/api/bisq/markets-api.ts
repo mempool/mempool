@@ -457,8 +457,8 @@ class BisqMarketsApi {
     }
   }
 
-  get24hVolumes(): MarketVolume[] {
-    const timestamp_from = new Date().getTime() / 1000 - 86400;
+  getVolumesByTime(time: number): MarketVolume[] {
+    const timestamp_from = new Date().getTime() / 1000 - time;
     const timestamp_to = new Date().getTime() / 1000;
 
     const trades = this.getTradesByCriteria(undefined, timestamp_to, timestamp_from,
