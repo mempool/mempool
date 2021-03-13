@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Observable, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
+import { StateService } from 'src/app/services/state.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { BisqApiService } from '../bisq-api.service';
 
@@ -12,10 +13,12 @@ import { BisqApiService } from '../bisq-api.service';
 })
 export class BisqDashboardComponent implements OnInit {
   tickers$: Observable<any>;
+  allowCryptoCoins = ['usdc', 'l-btc', 'bsq'];
 
   constructor(
     private websocketService: WebsocketService,
     private bisqApiService: BisqApiService,
+    private stateService: StateService,
   ) { }
 
   ngOnInit(): void {
@@ -28,8 +31,17 @@ export class BisqDashboardComponent implements OnInit {
     ])
     .pipe(
       map(([tickers, markets, volumes]) => {
+
         const newTickers = [];
         for (const t in tickers) {
+
+          if (!this.stateService.env.OFFICIAL_BISQ_MARKETS) {
+            const pair = t.split('_');
+            if (pair[1] === 'btc' && this.allowCryptoCoins.indexOf(pair[0]) === -1) {
+              continue;
+            }
+          }
+
           tickers[t].pair_url = t;
           tickers[t].pair = t.replace('_', '/').toUpperCase();
           tickers[t].market = markets[t];
