@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { combineLatest, merge, Observable, of } from 'rxjs';
-import { filter, map, mergeAll, switchMap, tap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { BisqApiService } from '../bisq-api.service';
 
