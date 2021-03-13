@@ -64,6 +64,10 @@ export class BisqApiService {
     return this.httpClient.get<any[]>(API_BASE_URL + '/markets/offers?market=' + market);
   }
 
+  getMarketTrades$(market: string): Observable<any[]> {
+    return this.httpClient.get<any[]>(API_BASE_URL + '/markets/trades?market=' + market);
+  }
+
   getMarketVolumesByTime$(period: string): Observable<any[]> {
     return this.httpClient.get<any[]>(API_BASE_URL + '/markets/volumes/' + period);
   }

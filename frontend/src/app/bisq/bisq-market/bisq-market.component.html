@@ -1,8 +1,8 @@
 <div class="container-xl">
 
-  <ng-container *ngIf="hlocData$ | async as hlocData">
+  <ng-container *ngIf="hlocData$ | async as hlocData; else loadingSpinner">
 
-    <ng-container *ngIf="currency$ | async as currency">
+    <ng-container *ngIf="currency$ | async as currency; else loadingSpinner">
       <h1>{{ currency.market.lname }} - {{ currency.pair }}</h1>
       <div class="float-left">
         <span class="priceheader">
@@ -40,18 +40,50 @@
         </div>
       </form>
 
-      <app-lightweight-charts [data]="hlocData.hloc" [volumeData]="hlocData.volume" [precision]="currency.market.rtype === 'crypto' ? currency.market.lprecision : currency.market.rprecision"></app-lightweight-charts>
-      
-      <div class="float-right small mt-2">Powered by <a href="https://www.tradingview.com/" target="_blank">Tradingview</a></div>
-      
+      <app-lightweight-charts [data]="hlocData.hloc" [volumeData]="hlocData.volume" [precision]="currency.market.rtype === 'crypto' ? currency.market.lprecision : currency.market.rprecision"></app-lightweight-charts>      
       <br>
 
-      <ng-container *ngIf="offers$ | async as offers">
+      <ng-container *ngIf="offers$ | async as offers; else loadingSpinner">
         <div class="row row-cols-1 row-cols-md-2">
           <ng-container *ngTemplateOutlet="offersList; context: { offers: offers.buys, direction: 'BUY', market: currency.market }"></ng-container>
           <ng-container *ngTemplateOutlet="offersList; context: { offers: offers.sells, direction: 'SELL', market: currency.market }"></ng-container>
         </div>
       </ng-container>
+
+      <br>
+
+      <ng-container *ngIf="trades$ | async as trades; else loadingSpinner">
+        <h2>Trade History (Last 100 trades)</h2>
+
+        <table class="table table-borderless table-striped">
+          <thead>
+            <th>Date</th>
+            <th>Price ({{ currency.market.rsymbol }})</th>
+            <th>Trade size ({{ currency.market.rsymbol }})</th>
+            <th>Trade size ({{ currency.market.lsymbol }})</th>
+          </thead>
+          <tbody>
+            <tr *ngFor="let trade of trades">
+              <td>
+                {{ trade.trade_date | date:'yyyy-MM-dd HH:mm' }}
+              </td>
+              <td>
+                <ng-container *ngIf="currency.market.rtype === 'fiat'; else priceCrypto"><span class="green-color">{{ trade.price | currency: currency.market.rsymbol }}</span></ng-container>
+                <ng-template #priceCrypto>{{ trade.price | number: '1.2-' + currency.market.rprecision }} {{ currency.market.rsymbol }}</ng-template>
+              </td>
+              <td>
+                <ng-container *ngIf="currency.market.rtype === 'fiat'; else volumeCrypto"><span class="green-color">{{ trade.volume | currency: currency.market.rsymbol }}</span></ng-container>
+                <ng-template #volumeCrypto>{{ trade.volume | number: '1.2-' + currency.market.rprecision }} {{ currency.market.rsymbol }}</ng-template>
+              </td>
+              <td>
+                <ng-container *ngIf="currency.market.ltype === 'fiat'; else amountCrypto"><span class="green-color">{{ trade.amount | currency: currency.market.rsymbol }}</span></ng-container>
+                <ng-template #amountCrypto>{{ trade.amount | number: '1.2-' + currency.market.lprecision }} {{ currency.market.lsymbol }}</ng-template>
+              </td>
+            </tr> 
+          </tbody>
+        </table>
+      </ng-container>
+
     </ng-container>
   </ng-container>
 
@@ -67,9 +99,9 @@
 
     <table class="table table-borderless table-striped">
       <thead>
-        <th i18n>Price</th>
-        <th i18n>Amount ({{ market.lsymbol }})</th>
-        <th i18n>Amount ({{ market.rsymbol }})</th>
+        <th>Price</th>
+        <th>Amount ({{ market.lsymbol }})</th>
+        <th>Amount ({{ market.rsymbol }})</th>
       </thead>
       <tbody>
         <tr *ngFor="let offer of offers">
@@ -88,6 +120,13 @@
         </tr> 
       </tbody>
     </table>
-  </div>           
-  
+  </div>
+</ng-template>
+
+<ng-template #loadingSpinner>
+  <br>
+  <br>
+  <div class="text-center">
+    <div class="spinner-border text-light"></div>
+  </div>
 </ng-template>

@@ -1,0 +1,30 @@
+<header>
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+  <a class="navbar-brand" [routerLink]="['/' | relativeUrl]" style="position: relative;">
+    <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
+      <img [src]="officialMempoolSpace ? './resources/mempool-space-logo.png' : './resources/mempool-logo.png'" height="35" width="140" class="logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }">
+      <div class="connection-badge">
+        <div class="badge badge-warning" *ngIf="connectionState.val === 0" i18n="master-page.offline">Offline</div>
+        <div class="badge badge-warning" *ngIf="connectionState.val === 1" i18n="master-page.reconnecting">Reconnecting...</div>
+      </div>
+    </ng-container>
+  </a>
+
+  <div class="navbar-collapse" id="navbarCollapse">
+    <ul class="navbar-nav mr-auto pt-2 pb-2 pb-md-0 pt-md-0">
+      <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        <a class="nav-link" [routerLink]="['/' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'tachometer-alt']" [fixedWidth]="true" i18n-title="master-page.dashboard" title="Dashboard"></fa-icon></a>
+      </li>
+      <li [hidden]="isMobile" class="nav-item mr-2" routerLinkActive="active">
+        <a class="nav-link" [routerLink]="['/api' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'cogs']" [fixedWidth]="true" i18n-title="master-page.api" title="API"></fa-icon></a>
+      </li>
+    </ul>
+  </div>
+</nav>
+</header>
+
+<br />
+
+<router-outlet></router-outlet>
+
+<br>
