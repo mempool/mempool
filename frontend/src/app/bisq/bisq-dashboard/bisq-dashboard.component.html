@@ -4,12 +4,12 @@
 
   <table class="table table-borderless table-striped">
     <thead>
-      <th i18n>Rank</th>
-      <th i18n>Currency</th>
-      <th i18n>Pair</th>
-      <th i18n>Price</th>
-      <th i18n>Volume (7d)</th>
-      <th i18n>Trades (7d)</th>
+      <th>Rank</th>
+      <th>Currency</th>
+      <th>Pair</th>
+      <th>Price</th>
+      <th>Volume (7d)</th>
+      <th>Trades (7d)</th>
     </thead>
     <tbody *ngIf="tickers.value; else loadingTmpl">
       <tr *ngFor="let ticker of tickers.value; trackBy: trackByFn; let i = index">

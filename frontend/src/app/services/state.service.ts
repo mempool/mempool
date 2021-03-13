@@ -24,6 +24,7 @@ export interface Env {
   ITEMS_PER_PAGE: number;
   KEEP_BLOCKS_AMOUNT: number;
   OFFICIAL_MEMPOOL_SPACE: boolean;
+  OFFICIAL_BISQ_MARKETS: boolean;
   NGINX_PROTOCOL?: string;
   NGINX_HOSTNAME?: string;
   NGINX_PORT?: string;
@@ -33,6 +34,7 @@ const defaultEnv: Env = {
   'TESTNET_ENABLED': false,
   'SIGNET_ENABLED': false,
   'LIQUID_ENABLED': false,
+  'OFFICIAL_BISQ_MARKETS': false,
   'BISQ_ENABLED': false,
   'BISQ_SEPARATE_BACKEND': false,
   'ITEMS_PER_PAGE': 10,

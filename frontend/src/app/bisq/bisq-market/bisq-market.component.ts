@@ -16,8 +16,9 @@ export class BisqMarketComponent implements OnInit, OnDestroy {
   hlocData$: Observable<any>;
   currency$: Observable<any>;
   offers$: Observable<any>;
+  trades$: Observable<any>;
   radioGroupForm: FormGroup;
-  defaultInterval = 'half_hour';
+  defaultInterval = 'day';
 
   constructor(
     private websocketService: WebsocketService,
@@ -41,6 +42,12 @@ export class BisqMarketComponent implements OnInit, OnDestroy {
             market: markets[pair],
           };
         })
+      );
+
+    this.trades$ = this.route.paramMap
+      .pipe(
+        map(routeParams => routeParams.get('pair')),
+        switchMap((marketPair) => this.bisqApiService.getMarketTrades$(marketPair)),
       );
 
     this.offers$ = this.route.paramMap

@@ -21,6 +21,7 @@ import { WebsocketService } from './services/websocket.service';
 import { AddressLabelsComponent } from './components/address-labels/address-labels.component';
 import { MempoolBlocksComponent } from './components/mempool-blocks/mempool-blocks.component';
 import { MasterPageComponent } from './components/master-page/master-page.component';
+import { BisqMasterPageComponent } from './components/bisq-master-page/bisq-master-page.component';
 import { AboutComponent } from './components/about/about.component';
 import { TelevisionComponent } from './components/television/television.component';
 import { StatisticsComponent } from './components/statistics/statistics.component';
@@ -55,6 +56,7 @@ import { HttpCacheInterceptor } from './services/http-cache.interceptor';
     AppComponent,
     AboutComponent,
     MasterPageComponent,
+    BisqMasterPageComponent,
     TelevisionComponent,
     BlockchainComponent,
     StartComponent,

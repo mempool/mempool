@@ -1,5 +1,5 @@
 import { createChart, CrosshairMode } from 'lightweight-charts';
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-lightweight-charts',
@@ -7,7 +7,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, O
   styleUrls: ['./lightweight-charts.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LightweightChartsComponent implements AfterViewInit, OnChanges, OnDestroy {
+export class LightweightChartsComponent implements OnChanges, OnDestroy {
   @Input() data: any;
   @Input() volumeData: any;
   @Input() precision: number;
@@ -48,27 +48,10 @@ export class LightweightChartsComponent implements AfterViewInit, OnChanges, OnD
       },
       priceScaleId: '',
       scaleMargins: {
-        top: 0.8,
+        top: 0.85,
         bottom: 0,
       },
     });
-  }
-
-  ngAfterViewInit(): void {
-    /*
-    lineSeries.setData([
-        { time: '2019-04-11', value: 80.01 },
-        { time: '2019-04-12', value: 96.63 },
-        { time: '2019-04-13', value: 76.64 },
-        { time: '2019-04-14', value: 81.89 },
-        { time: '2019-04-15', value: 74.43 },
-        { time: '2019-04-16', value: 80.01 },
-        { time: '2019-04-17', value: 96.63 },
-        { time: '2019-04-18', value: 76.64 },
-        { time: '2019-04-19', value: 81.89 },
-        { time: '2019-04-20', value: 74.43 },
-    ]);
-    */
   }
 
   ngOnChanges() {
