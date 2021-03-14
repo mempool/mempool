@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Observable, combineLatest } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
+import { SeoService } from 'src/app/services/seo.service';
 import { StateService } from 'src/app/services/state.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { BisqApiService } from '../bisq-api.service';
@@ -19,9 +20,11 @@ export class BisqDashboardComponent implements OnInit {
     private websocketService: WebsocketService,
     private bisqApiService: BisqApiService,
     private stateService: StateService,
+    private seoService: SeoService,
   ) { }
 
   ngOnInit(): void {
+    this.seoService.setTitle(`Markets`);
     this.websocketService.want(['blocks']);
 
     this.tickers$ = combineLatest([
