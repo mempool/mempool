@@ -275,6 +275,24 @@
 
     <br><br><br>
 
+    <h3 i18n="about.contributors">Project Contributors</h3>
+
+    <div *ngIf="contributors === null">
+      <br>
+      <div class="spinner-border text-light"></div>
+    </div>
+
+    <ng-template ngFor let-contributor [ngForOf]="contributors">
+      <a [href]="'https://github.com/' + contributor.name" target="_blank">
+        <div class="profile_photo d-inline-block" [title]="contributor.name">
+          <img class="profile_img" [src]="'/api/v1/contributors/images/' + contributor.id" />
+          {{ contributor.name }}
+        </div>
+      </a>
+    </ng-template>
+
+    <br><br><br>
+
     <h3 i18n="about.maintainers">Project Maintainers</h3>
 
     <div class="container text-center">
@@ -298,29 +316,27 @@
       </div>
     </div>
 
+    <br>
+    <code>Copyright (c) 2019-2021</code><br>
+    <code>The Mempool Open Source Project</code><br>
+    <br>
+    <code>This program is free software: you can redistribute it and/or modify it</code><br>
+    <code>under the terms of the GNU Affero General Public License as published by</code><br>
+    <code>the Free Software Foundation, either version 3 of the License, or (at your</code><br>
+    <code>option) any later version.</code><br>
+    <br>
+    <code>This program is distributed in the hope that it will be useful, but</code><br>
+    <code>WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY</code><br>
+    <code>or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public</code><br>
+    <code>License for more details.</code><br>
+    <br>
+    <a href="https://www.gnu.org/licenses/agpl-3.0-standalone.html">GNU Affero General Public License v3.0</a>
     <br><br>
-
-    <h3 i18n="about.contributors">Project Contributors</h3>
-
-    <div *ngIf="contributors === null">
-      <br>
-      <div class="spinner-border text-light"></div>
-    </div>
-
-    <ng-template ngFor let-contributor [ngForOf]="contributors">
-      <a [href]="'https://github.com/' + contributor.name" target="_blank">
-        <div class="profile_photo d-inline-block" [title]="contributor.name">
-          <img class="profile_img" [src]="'/api/v1/contributors/images/' + contributor.id" />
-          {{ contributor.name }}
-        </div>
-      </a>
-    </ng-template>
-
-    <br><br>
+    <a href="/3rdpartylicenses.txt">Third Party Licenses</a>
 
   </div>
 
-  <br><br>
+  <br>
 
   <div class="text-center">
     <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a>
