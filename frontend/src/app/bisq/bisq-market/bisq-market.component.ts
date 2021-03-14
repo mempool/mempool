@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { combineLatest, merge, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
+import { SeoService } from 'src/app/services/seo.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { BisqApiService } from '../bisq-api.service';
 
@@ -25,6 +26,7 @@ export class BisqMarketComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private bisqApiService: BisqApiService,
     private formBuilder: FormBuilder,
+    private seoService: SeoService,
   ) { }
 
   ngOnInit(): void {
@@ -37,8 +39,11 @@ export class BisqMarketComponent implements OnInit, OnDestroy {
         switchMap((markets) => combineLatest([of(markets), this.route.paramMap])),
         map(([markets, routeParams]) => {
           const pair = routeParams.get('pair');
+          const pairUpperCase = pair.replace('_', '/').toUpperCase();
+          this.seoService.setTitle(`Bisq market: ${pairUpperCase}`);
+
           return {
-            pair: pair.replace('_', '/').toUpperCase(),
+            pair: pairUpperCase,
             market: markets[pair],
           };
         })
