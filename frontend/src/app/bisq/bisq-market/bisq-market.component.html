@@ -3,7 +3,7 @@
   <ng-container *ngIf="hlocData$ | async as hlocData; else loadingSpinner">
 
     <ng-container *ngIf="currency$ | async as currency; else loadingSpinner">
-      <h1>{{ currency.market.lname }} - {{ currency.pair }}</h1>
+      <h1>{{ currency.market.rtype === 'crypto' ? currency.market.lname : currency.market.rname }} - {{ currency.pair }}</h1>
       <div class="float-left">
         <span class="priceheader">
           <ng-container *ngIf="currency.market.rtype === 'fiat'; else headerPriceCrypto"><span class="green-color">{{ hlocData.hloc[hlocData.hloc.length - 1].close | currency: currency.market.rsymbol }}</span></ng-container>
