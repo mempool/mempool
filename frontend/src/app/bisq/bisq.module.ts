@@ -4,6 +4,7 @@ import { SharedModule } from '../shared/shared.module';
 import { NgxBootstrapMultiselectModule } from 'ngx-bootrap-multiselect';
 
 import { LightweightChartsComponent } from './lightweight-charts/lightweight-charts.component';
+import { LightweightChartsAreaComponent } from './lightweight-charts-area/lightweight-charts-area.component';
 import { BisqMarketComponent } from './bisq-market/bisq-market.component';
 import { BisqTransactionsComponent } from './bisq-transactions/bisq-transactions.component';
 import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
@@ -36,6 +37,7 @@ import { BsqAmountComponent } from './bsq-amount/bsq-amount.component';
     BisqStatsComponent,
     BsqAmountComponent,
     LightweightChartsComponent,
+    LightweightChartsAreaComponent,
     BisqDashboardComponent,
     BisqMarketComponent,
   ],

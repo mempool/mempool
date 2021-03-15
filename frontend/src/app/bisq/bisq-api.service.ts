@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { BisqTransaction, BisqBlock, BisqStats } from './bisq.interfaces';
+import { BisqTransaction, BisqBlock, BisqStats, MarketVolume } from './bisq.interfaces';
 
 const API_BASE_URL = '/bisq/api';
 
@@ -70,5 +70,9 @@ export class BisqApiService {
 
   getMarketVolumesByTime$(period: string): Observable<any[]> {
     return this.httpClient.get<any[]>(API_BASE_URL + '/markets/volumes/' + period);
+  }
+
+  getAllVolumesDay$(): Observable<MarketVolume[]> {
+    return this.httpClient.get<MarketVolume[]>(API_BASE_URL + '/markets/volumes?interval=week');
   }
 }

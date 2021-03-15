@@ -14,6 +14,8 @@ import { BisqApiService } from '../bisq-api.service';
 })
 export class BisqDashboardComponent implements OnInit {
   tickers$: Observable<any>;
+  volumes$: Observable<any>;
+
   allowCryptoCoins = ['usdc', 'l-btc', 'bsq'];
 
   constructor(
@@ -26,6 +28,30 @@ export class BisqDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.seoService.setTitle(`Markets`);
     this.websocketService.want(['blocks']);
+
+    this.volumes$ = this.bisqApiService.getAllVolumesDay$()
+      .pipe(
+        map((volumes) => {
+          const data = volumes.map((volume) => {
+            return {
+              time: volume.period_start,
+              value: volume.volume,
+            };
+          });
+
+          const linesData = volumes.map((volume) => {
+            return {
+              time: volume.period_start,
+              value: volume.num_trades,
+            };
+          });
+
+          return {
+            data: data,
+            linesData: linesData,
+          };
+        })
+      );
 
     this.tickers$ = combineLatest([
       this.bisqApiService.getMarketsTicker$(),
