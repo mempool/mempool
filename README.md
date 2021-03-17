@@ -79,7 +79,7 @@ Install mempool dependencies from npm and build the backend:
 
 ```bash
   # backend
-  cd ../backend/
+  cd backend
   npm install
   npm run build
 ```
