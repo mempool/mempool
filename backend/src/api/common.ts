@@ -1,4 +1,4 @@
-import { TransactionExtended, TransactionStripped } from '../mempool.interfaces';
+import { CpfpInfo, TransactionExtended, TransactionStripped } from '../mempool.interfaces';
 
 export class Common {
   static median(numbers: number[]) {
@@ -13,16 +13,16 @@ export class Common {
   }
 
   static getFeesInRange(transactions: TransactionExtended[], rangeLength: number) {
-    const arr = [transactions[transactions.length - 1].feePerVsize];
+    const arr = [transactions[transactions.length - 1].effectiveFeePerVsize];
     const chunk = 1 / (rangeLength - 1);
     let itemsToAdd = rangeLength - 2;
 
     while (itemsToAdd > 0) {
-      arr.push(transactions[Math.floor(transactions.length * chunk * itemsToAdd)].feePerVsize);
+      arr.push(transactions[Math.floor(transactions.length * chunk * itemsToAdd)].effectiveFeePerVsize);
       itemsToAdd--;
     }
 
-    arr.push(transactions[0].feePerVsize);
+    arr.push(transactions[0].effectiveFeePerVsize);
     return arr;
   }
 
@@ -64,4 +64,63 @@ export class Common {
        }, ms);
     });
   }
+
+  static setRelativesAndGetCpfpInfo(tx: TransactionExtended, memPool: { [txid: string]: TransactionExtended }): CpfpInfo {
+    const parents = this.findAllParents(tx, memPool);
+
+    let totalWeight = tx.weight + parents.reduce((prev, val) => prev + val.weight, 0);
+    let totalFees = tx.fee + parents.reduce((prev, val) => prev + val.fee, 0);
+
+    tx.ancestors = parents
+      .map((t) => {
+        return {
+          txid: t.txid,
+          weight: t.weight,
+          fee: t.fee,
+        };
+      });
+
+    // Add high (high fee) decendant weight and fees
+    if (tx.descended) {
+      totalWeight += tx.descended.weight;
+      totalFees += tx.descended.fee;
+    }
+
+    tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
+    tx.cpfpChecked = true;
+
+    return {
+      ancestors: tx.ancestors,
+      descended: tx.descended || null,
+    };
+  }
+
+
+  private static findAllParents(tx: TransactionExtended, memPool: { [txid: string]: TransactionExtended }): TransactionExtended[] {
+    let parents: TransactionExtended[] = [];
+    tx.vin.forEach((parent) => {
+      const parentTx = memPool[parent.txid];
+      if (parentTx) {
+        if (tx.descended && tx.descended.fee / (tx.descended.weight / 4) > parentTx.feePerVsize) {
+          if (parentTx.descended && parentTx.descended.fee < tx.fee + tx.descended.fee) {
+            parentTx.descended = {
+              weight: tx.weight + tx.descended.weight,
+              fee: tx.fee + tx.descended.fee,
+              txid: tx.txid,
+            };
+          }
+        } else if (tx.feePerVsize > parentTx.feePerVsize) {
+          parentTx.descended = {
+            weight: tx.weight,
+            fee: tx.fee,
+            txid: tx.txid
+          };
+        }
+        parents.push(parentTx);
+        parents = parents.concat(this.findAllParents(parentTx, memPool));
+      }
+    });
+    return parents;
+  }
+
 }

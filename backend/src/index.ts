@@ -73,6 +73,8 @@ class Server {
     this.server = http.createServer(this.app);
     this.wss = new WebSocket.Server({ server: this.server });
 
+    this.setUpWebsocketHandling();
+
     diskCache.loadMempoolCache();
 
     if (config.DATABASE.ENABLED) {
@@ -86,7 +88,6 @@ class Server {
     fiatConversion.startService();
 
     this.setUpHttpApiRoutes();
-    this.setUpWebsocketHandling();
     this.runMainUpdateLoop();
 
     if (config.BISQ_BLOCKS.ENABLED) {
@@ -145,6 +146,7 @@ class Server {
   setUpHttpApiRoutes() {
     this.app
       .get(config.MEMPOOL.API_URL_PREFIX + 'transaction-times', routes.getTransactionTimes)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'cpfp-info/:txId', routes.getCpfpInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/recommended', routes.getRecommendedFees)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/mempool-blocks', routes.getMempoolBlocks)
       .get(config.MEMPOOL.API_URL_PREFIX + 'backend-info', routes.getBackendInfo)

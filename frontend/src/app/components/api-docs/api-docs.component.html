@@ -40,6 +40,10 @@
             <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/v1/fees/mempool-blocks" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/v1/fees/mempool-blocks</a></td>
             <td i18n="api-docs.fees.mempool-blocks|API Docs for /api/v1/fees/mempool-blocks">Returns current mempool as projected blocks.</td>
           </tr>
+          <tr>
+            <td class="nowrap"><a href="{{ network.val === '' ? '' : '/' + network.val }}/api/v1/cpfp-info/TXID" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/v1/cpfp-info</a></td>
+            <td i18n="api-docs.fees.cpfp-info|API Docs for /api/v1/fees/cpfp-info">Returns the ancestors and decendend fees for a transaction.</td>
+          </tr>
         </table>
 
       </ng-template>

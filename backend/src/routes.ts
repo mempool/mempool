@@ -94,6 +94,23 @@ class Routes {
     res.json(times);
   }
 
+  public getCpfpInfo(req: Request, res: Response) {
+    if (!/^[a-fA-F0-9]{64}$/.test(req.params.txId)) {
+      res.status(501).send(`Invalid transaction ID.`);
+      return;
+    }
+
+    const tx = mempool.getMempool()[req.params.txId];
+    if (!tx) {
+      res.status(404).send(`Transaction doesn't exist in the mempool.`);
+      return;
+    }
+
+    const cpfpInfo = Common.setRelativesAndGetCpfpInfo(tx, mempool.getMempool());
+
+    res.json(cpfpInfo);
+  }
+
   public getBackendInfo(req: Request, res: Response) {
     res.json(backendInfo.getBackendInfo());
   }

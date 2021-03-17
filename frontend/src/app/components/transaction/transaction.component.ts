@@ -91,10 +91,28 @@ export class TransactionComponent implements OnInit, OnDestroy {
           this.getTransactionTime();
         }
       }
+
       if (this.tx.status.confirmed) {
         this.stateService.markBlock$.next({ blockHeight: tx.status.block_height });
       } else {
-        this.stateService.markBlock$.next({ txFeePerVSize: tx.fee / (tx.weight / 4) });
+        if (tx.effectiveFeePerVsize) {
+          this.stateService.markBlock$.next({ txFeePerVSize: tx.effectiveFeePerVsize });
+        } else {
+          this.apiService.getCpfpinfo$(this.tx.txid)  
+            .subscribe((cpfpInfo) => {
+              let totalWeight = tx.weight + cpfpInfo.ancestors.reduce((prev, val) => prev + val.weight, 0);
+              let totalFees = tx.fee + cpfpInfo.ancestors.reduce((prev, val) => prev + val.fee, 0);
+
+              if (cpfpInfo.descended) {
+                totalWeight += cpfpInfo.descended.weight;
+                totalFees += cpfpInfo.descended.fee;
+              }
+
+              const effectiveFeePerVsize = totalFees / (totalWeight / 4);
+              this.tx.effectiveFeePerVsize = effectiveFeePerVsize;
+              this.stateService.markBlock$.next({ txFeePerVSize: effectiveFeePerVsize });
+            });
+        }
       }
     },
     (error) => {
@@ -139,7 +157,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
           return;
         }
 
-        const txFeePerVSize = this.tx.fee / (this.tx.weight / 4);
+        const txFeePerVSize = this.tx.effectiveFeePerVsize || this.tx.fee / (this.tx.weight / 4);
 
         for (const block of mempoolBlocks) {
           for (let i = 0; i < block.feeRange.length - 1; i++) {
