@@ -10,6 +10,7 @@ interface IConfig {
     POLL_RATE_MS: number;
     CACHE_DIR: string;
     CLEAR_PROTECTION_MINUTES: number;
+    RECOMMENDED_FEE_PERCENTILE: number;
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -64,6 +65,7 @@ const defaults: IConfig = {
     'POLL_RATE_MS': 2000,
     'CACHE_DIR': './cache',
     'CLEAR_PROTECTION_MINUTES': 20,
+    'RECOMMENDED_FEE_PERCENTILE': 50,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',

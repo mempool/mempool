@@ -2,7 +2,7 @@
   "name": "mempool-frontend",
   "version": "2.0.0",
   "description": "Bitcoin mempool visualizer and blockchain explorer backend",
-  "license": "MIT",
+  "license": "GNU Affero General Public License v3.0",
   "homepage": "https://mempool.space",
   "repository": {
     "type": "git",
