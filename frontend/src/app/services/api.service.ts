@@ -90,6 +90,6 @@ export class ApiService {
   }
 
   getCpfpinfo$(txid: string): Observable<CpfpInfo> {
-    return this.httpClient.get<CpfpInfo>(this.apiBaseUrl + this.apiBasePath + '/api/v1/cpfp-info/' + txid);
+    return this.httpClient.get<CpfpInfo>(this.apiBaseUrl + this.apiBasePath + '/api/v1/cpfp/' + txid);
   }
 }

@@ -146,7 +146,7 @@ class Server {
   setUpHttpApiRoutes() {
     this.app
       .get(config.MEMPOOL.API_URL_PREFIX + 'transaction-times', routes.getTransactionTimes)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'cpfp-info/:txId', routes.getCpfpInfo)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'cpfp/:txId', routes.getCpfpInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/recommended', routes.getRecommendedFees)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/mempool-blocks', routes.getMempoolBlocks)
       .get(config.MEMPOOL.API_URL_PREFIX + 'backend-info', routes.getBackendInfo)
