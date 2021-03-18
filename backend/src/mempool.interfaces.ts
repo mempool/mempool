@@ -26,6 +26,27 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
   vsize: number;
   feePerVsize: number;
   firstSeen?: number;
+  effectiveFeePerVsize: number;
+  ancestors?: Ancestor[];
+  bestDescendant?: BestDescendant | null;
+  cpfpChecked?: boolean;
+}
+
+interface Ancestor {
+  txid: string;
+  weight: number;
+  fee: number;
+}
+
+interface BestDescendant {
+  txid: string;
+  weight: number;
+  fee: number;
+}
+
+export interface CpfpInfo {
+  ancestors: Ancestor[];
+  bestDescendant: BestDescendant | null;
 }
 
 export interface TransactionStripped {

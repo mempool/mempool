@@ -22,16 +22,6 @@ class BitcoinApi implements AbstractBitcoinApi {
     });
   }
 
-  $getRawTransactionBitcoind(txId: string, skipConversion = false, addPrevout = false): Promise<IEsploraApi.Transaction> {
-    return this.bitcoindClient.getRawTransaction(txId, true)
-      .then((transaction: IBitcoinApi.Transaction) => {
-        if (skipConversion) {
-          return transaction;
-        }
-        return this.$convertTransaction(transaction, addPrevout);
-      });
-  }
-
   $getRawTransaction(txId: string, skipConversion = false, addPrevout = false): Promise<IEsploraApi.Transaction> {
     // If the transaction is in the mempool we already converted and fetched the fee. Only prevouts are missing
     const txInMempool = mempool.getMempool()[txId];
@@ -47,6 +37,9 @@ class BitcoinApi implements AbstractBitcoinApi {
     return this.bitcoindClient.getRawTransaction(txId, true)
       .then((transaction: IBitcoinApi.Transaction) => {
         if (skipConversion) {
+          transaction.vout.forEach((vout) => {
+            vout.value = vout.value * 100000000;
+          });
           return transaction;
         }
         return this.$convertTransaction(transaction, addPrevout);

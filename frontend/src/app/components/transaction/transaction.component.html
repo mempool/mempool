@@ -73,22 +73,7 @@
             </table>
           </div>
           <div class="col-sm">
-            <table class="table table-borderless table-striped">
-              <tbody>
-                <tr>
-                  <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
-                  <td>{{ tx.fee | number }} <span i18n="transaction.fee.sat|Transaction Fee sat">sat</span> (<app-fiat [value]="tx.fee"></app-fiat>)</td>
-                </tr>
-                <tr>
-                  <td i18n="transaction.fee-per-vbyte|Transaction fee">Fee per vByte</td>
-                  <td>
-                    {{ tx.fee / (tx.weight / 4) | number : '1.1-1' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
-                    &nbsp;
-                    <app-tx-fee-rating *ngIf="tx.fee" [tx]="tx"></app-tx-fee-rating>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <ng-container *ngTemplateOutlet="feeTable"></ng-container>
           </div>
 
         </div>
@@ -146,18 +131,7 @@
             </table>
           </div>
           <div class="col-sm">
-            <table class="table table-borderless table-striped">
-              <tbody>
-                <tr>
-                  <td class="td-width" i18n="transaction.fee|Transaction Fee">Fee</td>
-                  <td>{{ tx.fee | number }} <span i18n="transaction.fee.sat|Transaction Fee sat">sat</span> (<app-fiat [value]="tx.fee"></app-fiat>)</td>
-                </tr>
-                <tr>
-                  <td i18n="transaction.fee-per-vbyte|Transaction fee">Fee per vByte</td>
-                  <td>{{ tx.fee / (tx.weight / 4) | number : '1.1-1' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
-                </tr>
-              </tbody>
-            </table>
+            <ng-container *ngTemplateOutlet="feeTable"></ng-container>
           </div>
         </div>
       </div>
@@ -296,3 +270,35 @@
 
 <ng-template #blocksSingular let-i i18n="shared.block">{{ i }} block</ng-template>
 <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} blocks</ng-template>
+
+<ng-template #feeTable>
+  <table class="table table-borderless table-striped">
+    <tbody>
+      <tr>
+        <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
+        <td>{{ tx.fee | number }} <span i18n="transaction.fee.sat|Transaction Fee sat">sat</span> (<app-fiat [value]="tx.fee"></app-fiat>)</td>
+      </tr>
+      <tr>
+        <td i18n="transaction.fee-per-vbyte|Transaction fee">Fee per vByte</td>
+        <td>
+          {{ tx.fee / (tx.weight / 4) | number : '1.1-1' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+          <ng-template [ngIf]="tx.status.confirmed">
+            &nbsp;
+            <app-tx-fee-rating *ngIf="tx.fee && (!tx.effectiveFeePerVsize || tx.effectiveFeePerVsize === tx.fee / (tx.weight / 4))" [tx]="tx"></app-tx-fee-rating>
+          </ng-template>
+        </td>
+      </tr>
+      <tr *ngIf="tx.effectiveFeePerVsize && tx.effectiveFeePerVsize !== tx.fee / (tx.weight / 4)">
+        <td i18n="transaction.effective-fee|Effective transaction fee">Effective fee</td>
+        <td>
+          {{ tx.effectiveFeePerVsize | number : '1.1-1' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+          <ng-template [ngIf]="tx.status.confirmed">
+            &nbsp;
+            <app-tx-fee-rating *ngIf="tx.fee" [tx]="tx"></app-tx-fee-rating>
+          </ng-template>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</ng-template>
