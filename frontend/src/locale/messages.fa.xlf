@@ -1232,6 +1232,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4b137ec8bf73a47063740b75c0c40d5fd3c48015">
         <source>The Mempool Open Source Project</source>
+        <target>پروژهٔ متن‌باز ممپول</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">13</context>
@@ -1240,16 +1241,27 @@
       </trans-unit>
       <trans-unit datatype="html" id="35183d36272d152e9b838a42bafbe6526a55f7ee">
         <source>An explorer and API developed and operated for the Bitcoin community, focusing on the emerging transaction fee market to help our transition into a multi-layer ecosystem, without ads, altcoins, or third-party trackers.</source>
+        <target>یک کاوشگر و رابط برنامه‌نویسی نرم‌افزار که برای جامعه بیت‌کوین توسعه پیدا می‌کند و اجرا می‌شود. پروژه ممپول با تمرکز بر بازار نوظهور کارمزدِ تراکنش‌ها، انتقال ما به یک زیست‌بوم چند لایه را تسهیل می‌کند. بدون تبلیغات، آلت‌کوین‌ها و مزاحمت برنامه‌های ردیاب.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">16</context>
         </context-group>
       </trans-unit>
-      <trans-unit datatype="html" id="a46e9bc519dc1c320d48635e924d444364845ca8">
-        <source>Community Sponsors ❤️</source>
+      <trans-unit datatype="html" id="bd17d8c151ed8e84b71b6aef6e7f5820296b6433">
+        <source>Enterprise Sponsors</source>
+        <target>حامیان سازمانی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">46</context>
+        </context-group>
+        <note from="description" priority="1">about.sponsors.enterprise</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="a46e9bc519dc1c320d48635e924d444364845ca8">
+        <source>Community Sponsors ❤️</source>
+        <target>حامیان جامعه ❤️</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
+          <context context-type="linenumber">48</context>
         </context-group>
         <note from="description" priority="1">about.sponsors.withHeart</note>
       </trans-unit>
@@ -1258,7 +1270,7 @@
         <target>حامی شوید ❤️</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">62</context>
+          <context context-type="linenumber">64</context>
         </context-group>
         <note from="description" priority="1">about.become-a-sponsor</note>
       </trans-unit>
@@ -1267,31 +1279,34 @@
         <target>درخواست فاکتور</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">84</context>
+          <context context-type="linenumber">86</context>
         </context-group>
         <note from="description" priority="1">about.sponsor.request-invoice</note>
       </trans-unit>
       <trans-unit datatype="html" id="1405c5f1a9834338ff13442c550927ab7144fdc8">
         <source>Community Integrations</source>
+        <target>پیاده‌سازی‌ها</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">179</context>
+          <context context-type="linenumber">181</context>
         </context-group>
         <note from="description" priority="1">about.integrations</note>
       </trans-unit>
       <trans-unit datatype="html" id="020cce975a5d7e0cc0f4578903358459d693e4bb">
         <source>Community Alliances</source>
+        <target>متحدین جامعه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">253</context>
+          <context context-type="linenumber">255</context>
         </context-group>
         <note from="description" priority="1">about.alliances</note>
       </trans-unit>
       <trans-unit datatype="html" id="d177262e3a43b2a7221183812daf0ada97659436">
         <source>Project Maintainers</source>
+        <target>نگهدارندگان پروژه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">269</context>
+          <context context-type="linenumber">271</context>
         </context-group>
         <note from="description" priority="1">about.maintainers</note>
       </trans-unit>
@@ -1300,7 +1315,7 @@
         <target>شرایط خدمات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">293</context>
+          <context context-type="linenumber">295</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -1318,7 +1333,7 @@
         <target>برای حامی شدن به اینجا برو <x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/about&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/>https://mempool.space/about<x ctype="x-a" equiv-text="&lt;/a&gt; " id="CLOSE_LINK"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">64</context>
+          <context context-type="linenumber">66</context>
         </context-group>
         <note from="description" priority="1">about.navigate-to-sponsor</note>
       </trans-unit>
@@ -1327,7 +1342,7 @@
         <target>مبلغ مورد نیاز است</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">81</context>
+          <context context-type="linenumber">83</context>
         </context-group>
         <note from="description" priority="1">about.sponsor.amount-required</note>
       </trans-unit>
@@ -1336,7 +1351,7 @@
         <target>حداقل مبلغ 0.001 بیت‌کوین است</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">82</context>
+          <context context-type="linenumber">84</context>
         </context-group>
         <note from="description" priority="1">about.sponsor.minimum-amount</note>
       </trans-unit>
@@ -1345,7 +1360,7 @@
         <target>اگر 0.01 بیت‌کوین یا بیشتر اهدا کنید، تصویر شما به لیست حامیان بالا اضافه می‌شود :)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">91</context>
+          <context context-type="linenumber">93</context>
         </context-group>
         <note from="description" priority="1">about.sponsor.description</note>
       </trans-unit>
@@ -1354,7 +1369,7 @@
         <target>منتظر تراکنش...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">169</context>
+          <context context-type="linenumber">171</context>
         </context-group>
         <note from="description" priority="1">about.sponsor.waiting-for-transaction</note>
       </trans-unit>
@@ -1363,7 +1378,7 @@
         <target>اهدا هدیه تایید شد!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">174</context>
+          <context context-type="linenumber">176</context>
         </context-group>
         <note from="description" priority="1">about.sponsor.donation-confirmed</note>
       </trans-unit>
@@ -1372,7 +1387,7 @@
         <target>ممنون!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">174</context>
+          <context context-type="linenumber">176</context>
         </context-group>
         <note from="description" priority="1">about.sponsor.thank-you</note>
       </trans-unit>
