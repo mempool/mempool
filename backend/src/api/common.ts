@@ -81,9 +81,9 @@ export class Common {
       });
 
     // Add high (high fee) decendant weight and fees
-    if (tx.descended) {
-      totalWeight += tx.descended.weight;
-      totalFees += tx.descended.fee;
+    if (tx.bestDescendant) {
+      totalWeight += tx.bestDescendant.weight;
+      totalFees += tx.bestDescendant.fee;
     }
 
     tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
@@ -91,7 +91,7 @@ export class Common {
 
     return {
       ancestors: tx.ancestors,
-      descended: tx.descended || null,
+      bestDescendant: tx.bestDescendant || null,
     };
   }
 
@@ -101,16 +101,16 @@ export class Common {
     tx.vin.forEach((parent) => {
       const parentTx = memPool[parent.txid];
       if (parentTx) {
-        if (tx.descended && tx.descended.fee / (tx.descended.weight / 4) > parentTx.feePerVsize) {
-          if (parentTx.descended && parentTx.descended.fee < tx.fee + tx.descended.fee) {
-            parentTx.descended = {
-              weight: tx.weight + tx.descended.weight,
-              fee: tx.fee + tx.descended.fee,
+        if (tx.bestDescendant && tx.bestDescendant.fee / (tx.bestDescendant.weight / 4) > parentTx.feePerVsize) {
+          if (parentTx.bestDescendant && parentTx.bestDescendant.fee < tx.fee + tx.bestDescendant.fee) {
+            parentTx.bestDescendant = {
+              weight: tx.weight + tx.bestDescendant.weight,
+              fee: tx.fee + tx.bestDescendant.fee,
               txid: tx.txid,
             };
           }
         } else if (tx.feePerVsize > parentTx.feePerVsize) {
-          parentTx.descended = {
+          parentTx.bestDescendant = {
             weight: tx.weight,
             fee: tx.fee,
             txid: tx.txid

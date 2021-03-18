@@ -106,6 +106,13 @@ class Routes {
       return;
     }
 
+    if (tx.cpfpChecked) {
+      res.json({
+        ancestors: tx.ancestors,
+        bestDescendant: tx.bestDescendant || null,
+      });
+    }
+
     const cpfpInfo = Common.setRelativesAndGetCpfpInfo(tx, mempool.getMempool());
 
     res.json(cpfpInfo);

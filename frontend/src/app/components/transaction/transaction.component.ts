@@ -103,9 +103,9 @@ export class TransactionComponent implements OnInit, OnDestroy {
               let totalWeight = tx.weight + cpfpInfo.ancestors.reduce((prev, val) => prev + val.weight, 0);
               let totalFees = tx.fee + cpfpInfo.ancestors.reduce((prev, val) => prev + val.fee, 0);
 
-              if (cpfpInfo.descended) {
-                totalWeight += cpfpInfo.descended.weight;
-                totalFees += cpfpInfo.descended.fee;
+              if (cpfpInfo.bestDescendant) {
+                totalWeight += cpfpInfo.bestDescendant.weight;
+                totalFees += cpfpInfo.bestDescendant.fee;
               }
 
               const effectiveFeePerVsize = totalFees / (totalWeight / 4);

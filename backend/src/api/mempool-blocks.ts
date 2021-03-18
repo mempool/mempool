@@ -35,10 +35,11 @@ class MempoolBlocks {
     }
     const start = new Date().getTime();
 
-    // Clear descendants & ancestors
+    // Clear bestDescendants & ancestors
     memPoolArray.forEach((tx) => {
-      tx.descended = null;
+      tx.bestDescendant = null;
       tx.ancestors = [];
+      tx.cpfpChecked = false;
       if (!tx.effectiveFeePerVsize) {
         tx.effectiveFeePerVsize = tx.feePerVsize;
       }

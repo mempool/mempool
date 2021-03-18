@@ -15,7 +15,7 @@ interface Ancestor {
   fee: number;
 }
 
-interface DescendedFees {
+interface BestDescendant {
   txid: string;
   weight: number;
   fee: number;
@@ -23,5 +23,5 @@ interface DescendedFees {
 
 export interface CpfpInfo {
   ancestors: Ancestor[];
-  descended: DescendedFees | null;
+  bestDescendant: BestDescendant | null;
 }
