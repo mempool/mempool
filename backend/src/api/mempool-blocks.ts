@@ -1,5 +1,6 @@
 import { MempoolBlock, TransactionExtended, MempoolBlockWithTransactions } from '../mempool.interfaces';
 import { Common } from './common';
+import config from '../config';
 
 class MempoolBlocks {
   private static DEFAULT_PROJECTED_BLOCKS_AMOUNT = 8;
@@ -76,7 +77,7 @@ class MempoolBlocks {
       blockVSize: blockVSize,
       nTx: transactions.length,
       totalFees: transactions.reduce((acc, cur) => acc + cur.fee, 0),
-      medianFee: Common.median(transactions.map((tx) => tx.feePerVsize)),
+      medianFee: Common.percentile(transactions.map((tx) => tx.feePerVsize), config.MEMPOOL.RECOMMENDED_FEE_PERCENTILE),
       feeRange: Common.getFeesInRange(transactions, rangeLength),
       transactionIds: transactions.map((tx) => tx.txid),
     };
