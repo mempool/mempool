@@ -52,7 +52,7 @@ export class TxFeeRatingComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   calculateRatings(block: Block) {
-    const feePervByte = this.tx.fee / (this.tx.weight / 4);
+    const feePervByte = this.tx.effectiveFeePerVsize || this.tx.fee / (this.tx.weight / 4);
     this.medianFeeNeeded = block.medianFee;
 
     // Block not filled

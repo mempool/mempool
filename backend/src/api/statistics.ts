@@ -68,13 +68,13 @@ class Statistics {
       }
     }
     // Remove 0 and undefined
-    memPoolArray = memPoolArray.filter((tx) => tx.feePerVsize);
+    memPoolArray = memPoolArray.filter((tx) => tx.effectiveFeePerVsize);
 
     if (!memPoolArray.length) {
       return;
     }
 
-    memPoolArray.sort((a, b) => a.feePerVsize - b.feePerVsize);
+    memPoolArray.sort((a, b) => a.effectiveFeePerVsize - b.effectiveFeePerVsize);
     const totalWeight = memPoolArray.map((tx) => tx.vsize).reduce((acc, curr) => acc + curr) * 4;
     const totalFee = memPoolArray.map((tx) => tx.fee).reduce((acc, curr) => acc + curr);
 
@@ -85,7 +85,7 @@ class Statistics {
 
     memPoolArray.forEach((transaction) => {
       for (let i = 0; i < logFees.length; i++) {
-        if ((logFees[i] === 2000 && transaction.feePerVsize >= 2000) || transaction.feePerVsize <= logFees[i]) {
+        if ((logFees[i] === 2000 && transaction.effectiveFeePerVsize >= 2000) || transaction.effectiveFeePerVsize <= logFees[i]) {
           if (weightVsizeFees[logFees[i]]) {
             weightVsizeFees[logFees[i]] += transaction.vsize;
           } else {
