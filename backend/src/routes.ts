@@ -111,6 +111,7 @@ class Routes {
         ancestors: tx.ancestors,
         bestDescendant: tx.bestDescendant || null,
       });
+      return;
     }
 
     const cpfpInfo = Common.setRelativesAndGetCpfpInfo(tx, mempool.getMempool());
