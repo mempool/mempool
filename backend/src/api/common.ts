@@ -12,6 +12,13 @@ export class Common {
     return medianNr;
   }
 
+  static percentile(numbers: number[], percentile: number) {
+    if (percentile === 50) return this.median(numbers);
+    const index = Math.ceil(numbers.length * (100 - percentile) * 1e-2);
+    if (index < 0 || index > numbers.length - 1) return 0;
+    return numbers[index];
+  }
+
   static getFeesInRange(transactions: TransactionExtended[], rangeLength: number) {
     const arr = [transactions[transactions.length - 1].feePerVsize];
     const chunk = 1 / (rangeLength - 1);
