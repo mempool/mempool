@@ -26,6 +26,11 @@ class TransactionUtils {
   }
 
   private extendTransaction(transaction: IEsploraApi.Transaction): TransactionExtended {
+    // @ts-ignore
+    if (transaction.vsize) {
+      // @ts-ignore
+      return transaction;
+    }
     const feePerVbytes = Math.max(1, (transaction.fee || 0) / (transaction.weight / 4));
     const transactionExtended: TransactionExtended = Object.assign({
       vsize: Math.round(transaction.weight / 4),
