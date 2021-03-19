@@ -6,6 +6,7 @@ import blocks from './blocks';
 import logger from '../logger';
 import config from '../config';
 import { TransactionExtended } from '../mempool.interfaces';
+import { Common } from './common';
 
 class DiskCache {
   private static FILE_NAME = config.MEMPOOL.CACHE_DIR + '/cache.json';
@@ -26,6 +27,8 @@ class DiskCache {
       for (const tx in mempool) {
         mempoolArray.push(mempool[tx]);
       }
+
+      Common.shuffleArray(mempoolArray);
 
       const chunkSize = Math.floor(mempoolArray.length / DiskCache.CHUNK_FILES);
 
