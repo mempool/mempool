@@ -12,6 +12,7 @@ do
 		-- \
 		-vvv \
 		--address-search \
+		--cors '*' \
 		--network liquid \
 		--daemon-dir /elements \
 		--http-addr '[::]:3001' \
