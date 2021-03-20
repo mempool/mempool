@@ -194,9 +194,14 @@ class WebsocketHandler {
 
     mempoolBlocks.updateMempoolBlocks(newMempool);
     const mBlocks = mempoolBlocks.getMempoolBlocks();
+    const mempool = memPool.getMempool();
     const mempoolInfo = memPool.getMempoolInfo();
     const vBytesPerSecond = memPool.getVBytesPerSecond();
     const rbfTransactions = Common.findRbfTransactions(newTransactions, deletedTransactions);
+
+    for (const rbfTransaction in rbfTransactions) {
+      delete mempool[rbfTransaction];
+    }
 
     this.wss.clients.forEach(async (client: WebSocket) => {
       if (client.readyState !== WebSocket.OPEN) {
@@ -329,28 +334,23 @@ class WebsocketHandler {
       throw new Error('WebSocket.Server is not set');
     }
 
-    // Check how many transactions in the new block matches the latest projected mempool block
-    // If it's more than 0, recalculate the mempool blocks and send to client in the same update
     let mBlocks: undefined | MempoolBlock[];
     let matchRate = 0;
+    const _memPool = memPool.getMempool();
     const _mempoolBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
+
     if (_mempoolBlocks[0]) {
       const matches: string[] = [];
       for (const txId of txIds) {
         if (_mempoolBlocks[0].transactionIds.indexOf(txId) > -1) {
           matches.push(txId);
         }
+        delete _memPool[txId];
       }
 
       matchRate = Math.round((matches.length / (txIds.length - 1)) * 100);
-      if (matchRate > 0) {
-        const currentMemPool = memPool.getMempool();
-        for (const txId of matches) {
-          delete currentMemPool[txId];
-        }
-        mempoolBlocks.updateMempoolBlocks(currentMemPool);
-        mBlocks = mempoolBlocks.getMempoolBlocks();
-      }
+      mempoolBlocks.updateMempoolBlocks(_memPool);
+      mBlocks = mempoolBlocks.getMempoolBlocks();
     }
 
     block.matchRate = matchRate;
