@@ -1014,11 +1014,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">35</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">45</context>
+          <context context-type="linenumber">46</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.ts</context>
@@ -1073,7 +1073,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">31</context>
+          <context context-type="linenumber">32</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
@@ -1123,7 +1123,7 @@
         <target>API</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">58</context>
+          <context context-type="linenumber">59</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.ts</context>
@@ -1136,7 +1136,7 @@
         <target>A propos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">61</context>
+          <context context-type="linenumber">62</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.ts</context>
@@ -1167,7 +1167,7 @@
         <target>Réseaux de couche 2</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">21</context>
+          <context context-type="linenumber">22</context>
         </context-group>
         <note from="description" priority="1">master-page.layer2-networks-header</note>
       </trans-unit>
@@ -1176,7 +1176,7 @@
         <target>Statistiques</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">37</context>
+          <context context-type="linenumber">38</context>
         </context-group>
         <note from="description" priority="1">master-page.stats</note>
       </trans-unit>
@@ -1185,7 +1185,7 @@
         <target>Tableau de bord</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">42</context>
+          <context context-type="linenumber">43</context>
         </context-group>
         <note from="description" priority="1">master-page.dashboard</note>
       </trans-unit>
@@ -1194,7 +1194,7 @@
         <target>Graphiques</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">48</context>
+          <context context-type="linenumber">49</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.ts</context>
@@ -1207,7 +1207,7 @@
         <target>Vue TV</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">51</context>
+          <context context-type="linenumber">52</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/television/television.component.ts</context>
@@ -1220,7 +1220,7 @@
         <target>Actifs</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">55</context>
+          <context context-type="linenumber">56</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.ts</context>
@@ -1228,56 +1228,26 @@
         </context-group>
         <note from="description" priority="1">master-page.assets</note>
       </trans-unit>
-      <trans-unit datatype="html" id="de1392124ed7b6c274917f8049f2fbc9975f20b3">
-        <source>About the project</source>
-        <target>À propos du projet</target>
+      <trans-unit datatype="html" id="4b137ec8bf73a47063740b75c0c40d5fd3c48015">
+        <source>The Mempool Open Source Project</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">13</context>
         </context-group>
         <note from="description" priority="1">about.about-the-project</note>
       </trans-unit>
-      <trans-unit datatype="html" id="489827bef9fd30645fd2a217aea141ac43bd01ef">
-        <source>The mempool open-source project aims to implement a high quality explorer and visualization website for the entire Bitcoin ecosystem, without distractions like altcoins, advertising, or third-party trackers.</source>
-        <target>Le projet open-source mempool vise à implémenter un explorateur de haute qualité pour l'entièreté de l'éco-système Bitcoin, sans distraction telles que les altcoins, les publicités, ou les traqueurs tiers.</target>
+      <trans-unit datatype="html" id="35183d36272d152e9b838a42bafbe6526a55f7ee">
+        <source>An explorer and API developed and operated for the Bitcoin community, focusing on the emerging transaction fee market to help our transition into a multi-layer ecosystem, without ads, altcoins, or third-party trackers.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">16</context>
         </context-group>
       </trans-unit>
-      <trans-unit datatype="html" id="def6d893b4c04ddb5f3aa01c150d587059738282">
-        <source>Maintainers</source>
-        <target>Mainteneurs</target>
+      <trans-unit datatype="html" id="a46e9bc519dc1c320d48635e924d444364845ca8">
+        <source>Community Sponsors ❤️</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">22</context>
-        </context-group>
-        <note from="description" priority="1">about.maintainers</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="7f3f6a4fb2545cacf800f0623582b6d41d1f8791">
-        <source>Development</source>
-        <target>Développement</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">32</context>
-        </context-group>
-        <note from="description" priority="1">about.development</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="7d9b2050c14256d89dfd7260e7fde4c17f77255d">
-        <source>Operations</source>
-        <target>Opérations</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">40</context>
-        </context-group>
-        <note from="description" priority="1">about.operations</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="3f9ef8d00399db6891b99155dfcda3e26da215e8">
-        <source>Sponsors ❤️</source>
-        <target>Sponsors ❤️</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">47</context>
+          <context context-type="linenumber">46</context>
         </context-group>
         <note from="description" priority="1">about.sponsors.withHeart</note>
       </trans-unit>
@@ -1286,7 +1256,7 @@
         <target>Devenir sponsor ❤️</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">63</context>
+          <context context-type="linenumber">62</context>
         </context-group>
         <note from="description" priority="1">about.become-a-sponsor</note>
       </trans-unit>
@@ -1295,16 +1265,40 @@
         <target>Demander une facture</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">85</context>
+          <context context-type="linenumber">84</context>
         </context-group>
         <note from="description" priority="1">about.sponsor.request-invoice</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="1405c5f1a9834338ff13442c550927ab7144fdc8">
+        <source>Community Integrations</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
+          <context context-type="linenumber">179</context>
+        </context-group>
+        <note from="description" priority="1">about.integrations</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="020cce975a5d7e0cc0f4578903358459d693e4bb">
+        <source>Community Alliances</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
+          <context context-type="linenumber">253</context>
+        </context-group>
+        <note from="description" priority="1">about.alliances</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="d177262e3a43b2a7221183812daf0ada97659436">
+        <source>Project Maintainers</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
+          <context context-type="linenumber">269</context>
+        </context-group>
+        <note from="description" priority="1">about.maintainers</note>
       </trans-unit>
       <trans-unit datatype="html" id="94731fb77c18c6d537337dddc3699f67a0587985">
         <source>Terms of Service</source>
         <target>Conditions d'utilisation</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">205</context>
+          <context context-type="linenumber">293</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -1322,7 +1316,7 @@
         <target>Aller à <x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/about&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/>https://mempool.space/about<x ctype="x-a" equiv-text="&lt;/a&gt; " id="CLOSE_LINK"/>pour sponsoriser </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">65</context>
+          <context context-type="linenumber">64</context>
         </context-group>
         <note from="description" priority="1">about.navigate-to-sponsor</note>
       </trans-unit>
@@ -1331,7 +1325,7 @@
         <target>Montant requis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">82</context>
+          <context context-type="linenumber">81</context>
         </context-group>
         <note from="description" priority="1">about.sponsor.amount-required</note>
       </trans-unit>
@@ -1340,7 +1334,7 @@
         <target>Le montant minimum est de 0,001 BTC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">83</context>
+          <context context-type="linenumber">82</context>
         </context-group>
         <note from="description" priority="1">about.sponsor.minimum-amount</note>
       </trans-unit>
@@ -1349,7 +1343,7 @@
         <target>Si vous donnez 0,01 BTC ou plus, votre photo de profil sera ajoutée à la liste des sponsors ci-dessus :)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">92</context>
+          <context context-type="linenumber">91</context>
         </context-group>
         <note from="description" priority="1">about.sponsor.description</note>
       </trans-unit>
@@ -1358,7 +1352,7 @@
         <target>En attente de la transaction...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">170</context>
+          <context context-type="linenumber">169</context>
         </context-group>
         <note from="description" priority="1">about.sponsor.waiting-for-transaction</note>
       </trans-unit>
@@ -1367,7 +1361,7 @@
         <target>Don confirmé!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">175</context>
+          <context context-type="linenumber">174</context>
         </context-group>
         <note from="description" priority="1">about.sponsor.donation-confirmed</note>
       </trans-unit>
@@ -1376,7 +1370,7 @@
         <target>Merci!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">175</context>
+          <context context-type="linenumber">174</context>
         </context-group>
         <note from="description" priority="1">about.sponsor.thank-you</note>
       </trans-unit>

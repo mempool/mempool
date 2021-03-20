@@ -309,7 +309,7 @@ const defaultOptions = {
 
 Chartist.plugins.legend = function (options: any) {
     let cachedDOMPosition;
-    let cacheInactiveLegends: any = [];
+    let cacheInactiveLegends: { [key:number]: boolean } = {};
     // Catch invalid options
     if (options && options.position) {
         if (!(options.position === 'top' || options.position === 'bottom' || options.position instanceof HTMLElement)) {
@@ -449,32 +449,29 @@ Chartist.plugins.legend = function (options: any) {
                 const legendIndex = parseInt(li.getAttribute('data-legend'));
                 const legend = legends[legendIndex];
 
-                if (!legend.active) {
-                    legend.active = true;
-                    li.classList.remove('inactive');
+                const activateLegend = (_legendIndex: number): void => {
+                    legends[_legendIndex].active = true;
+                    legendElement.childNodes[_legendIndex].classList.remove('inactive');
 
-                    var indexOfInactiveLegend = cacheInactiveLegends.indexOf(legendIndex, 0)
-                    if (indexOfInactiveLegend > -1) {
-                      cacheInactiveLegends.splice(indexOfInactiveLegend, 1);
-                    }
+                    cacheInactiveLegends[_legendIndex] = false;
+                }
 
-                } else {
-                    legend.active = false;
-                    li.classList.add('inactive');
-                    cacheInactiveLegends.push(legendIndex);
+                const deactivateLegend = (_legendIndex: number): void => {
+                    legends[_legendIndex].active = false;
+                    legendElement.childNodes[_legendIndex].classList.add('inactive');
+                    cacheInactiveLegends[_legendIndex] = true;
+                }
 
-                    const activeCount = legends.filter(function(legend: any) { return legend.active; }).length;
-                    if (!options.removeAll && activeCount == 0) {
-                        // If we can't disable all series at the same time, let's
-                        // reenable all of them:
-                        for (let i = 0; i < legends.length; i++) {
-                            legends[i].active = true;
-                            legendElement.childNodes[i].classList.remove('inactive');
-                        }
-
-                        cacheInactiveLegends = [];
+                for (let i = legends.length - 1; i >= 0; i--) {
+                    if (i >= legendIndex) {
+                        if (!legend.active) activateLegend(i);
+                    } else {
+                        if (legend.active) deactivateLegend(i);
                     }
                 }
+                // Make sure all values are undefined (falsy) when clicking the first legend
+                // After clicking the first legend all indices should be falsy
+                if (legendIndex === 0) cacheInactiveLegends = {};
 
                 const newSeries = [];
                 const newLabels = [];
@@ -512,7 +509,8 @@ Chartist.plugins.legend = function (options: any) {
             const legendSeries = legend.series || [i];
 
             const li = createNameElement(i, legendText, classNamesViable);
-            const isActive: boolean = !(cacheInactiveLegends.indexOf(i) > -1);
+            // If the value is undefined or false, isActive is true
+            const isActive: boolean = !cacheInactiveLegends[i];
             if (isActive) {
               activeSeries.push(seriesMetadata[i].data);
               activeLabels.push(seriesMetadata[i].label);

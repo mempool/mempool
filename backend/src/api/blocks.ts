@@ -84,14 +84,21 @@ class Blocks {
         }
       }
 
+      transactions.forEach((tx) => {
+        if (!tx.cpfpChecked) {
+          Common.setRelativesAndGetCpfpInfo(tx, mempool);
+        }
+      });
+
       logger.debug(`${transactionsFound} of ${txIds.length} found in mempool. ${txIds.length - transactionsFound} not found.`);
 
       const blockExtended: BlockExtended = Object.assign({}, block);
       blockExtended.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
       blockExtended.coinbaseTx = transactionUtils.stripCoinbaseTransaction(transactions[0]);
-      transactions.sort((a, b) => b.feePerVsize - a.feePerVsize);
-      blockExtended.medianFee = transactions.length > 1 ? Common.median(transactions.map((tx) => tx.feePerVsize)) : 0;
-      blockExtended.feeRange = transactions.length > 1 ? Common.getFeesInRange(transactions.slice(0, transactions.length - 1), 8) : [0, 0];
+      transactions.shift();
+      transactions.sort((a, b) => b.effectiveFeePerVsize - a.effectiveFeePerVsize);
+      blockExtended.medianFee = transactions.length > 1 ? Common.median(transactions.map((tx) => tx.effectiveFeePerVsize)) : 0;
+      blockExtended.feeRange = transactions.length > 1 ? Common.getFeesInRange(transactions, 8) : [0, 0];
 
       if (block.height % 2016 === 0) {
         this.lastDifficultyAdjustmentTime = block.timestamp;

@@ -19,9 +19,11 @@ export class AboutComponent implements OnInit, OnDestroy {
   paymentForm: FormGroup;
   donationStatus = 1;
   sponsors$: Observable<any>;
+  contributors$: Observable<any>;
   donationObj: any;
   sponsorsEnabled = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
   sponsors = null;
+  contributors = null;
   requestSubscription: Subscription | undefined;
 
   constructor(
@@ -50,6 +52,11 @@ export class AboutComponent implements OnInit, OnDestroy {
     this.apiService.getDonation$()
       .subscribe((sponsors) => {
         this.sponsors = sponsors;
+      });
+
+    this.apiService.getContributor$()
+      .subscribe((contributors) => {
+        this.contributors = contributors;
       });
   }
 

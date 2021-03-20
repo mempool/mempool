@@ -11,6 +11,7 @@ export interface Transaction {
 
   // Custom properties
   firstSeen?: number;
+  effectiveFeePerVsize?: number;
 }
 
 export interface Recent {
