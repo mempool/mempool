@@ -2406,6 +2406,10 @@
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
         <note priority="1" from="description">TX Fee Rating is Warning</note>
         <note priority="1" from="meaning">tx-fee-rating.overpaid.warning</note>
       </trans-unit>
@@ -2415,16 +2419,7 @@
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <note priority="1" from="description">tx-fee-rating.danger-tooltip</note>
-      </trans-unit>
-      <trans-unit id="f948156b1396cbbf78bbbce437c4d73a1f0770f3" datatype="html">
-        <source>Overpaid <x id="INTERPOLATION" equiv-text="{{ overpaidTimes }}"/>x</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
-          <context context-type="linenumber">3</context>
-        </context-group>
-        <note priority="1" from="description">TX Fee Rating is Danger</note>
-        <note priority="1" from="meaning">tx-fee-rating.overpaid.danger</note>
+        <note priority="1" from="description">tx-fee-rating.warning-tooltip</note>
       </trans-unit>
       <trans-unit id="time-since.just-now" datatype="html">
         <source>Just now</source>
@@ -2559,6 +2554,13 @@
           <context context-type="linenumber">97</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="bisq-address.component.browser-title" datatype="html">
+        <source>Address: <x id="INTERPOLATION" equiv-text="this.addressString"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.ts</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="2a30a4cdb123a03facc5ab8c5b3e6d8b8dbbc3d4" datatype="html">
         <source>BSQ statistics</source>
         <context-group purpose="location">
@@ -2669,13 +2671,6 @@
           <context context-type="linenumber">82</context>
         </context-group>
         <note priority="1" from="description">BSQ token market cap</note>
-      </trans-unit>
-      <trans-unit id="bisq-address.component.browser-title" datatype="html">
-        <source>Address: <x id="INTERPOLATION" equiv-text="this.addressString"/></source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.ts</context>
-          <context context-type="linenumber">39</context>
-        </context-group>
       </trans-unit>
       <trans-unit id="a1daf43d26259bffdd5eb2d405c61583540b113b" datatype="html">
         <source>Confirmed</source>
