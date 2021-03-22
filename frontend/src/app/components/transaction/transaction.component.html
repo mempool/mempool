@@ -137,6 +137,57 @@
       </div>
     </ng-template>
 
+    <ng-template [ngIf]="showCpfpDetails">
+      <br>
+
+      <h2 class="text-left">CPFP <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true" size="xs"></fa-icon></h2>
+      <div class="box">
+        <table class="table table-borderless table-striped">
+          <thead>
+            <tr>
+              <th i18n="transactions-list.vout.scriptpubkey-type">Type</th>
+              <th i18n="dashboard.latest-transactions.txid">TXID</th>
+              <th class="d-none d-lg-table-cell" i18n="transaction.vsize|Transaction Virtual Size">Virtual size</th>
+              <th i18n="transaction.fee-rate|Transaction fee rate">Fee rate</th>
+              <th class="d-none d-lg-table-cell"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-template [ngIf]="cpfpInfo.bestDescendant">
+              <tr>
+                <td><span class="badge badge-success" i18n="transaction.descendant|Descendant">Descendant</span></td>
+                <td>
+                  <a [routerLink]="['/tx' | relativeUrl, cpfpInfo.bestDescendant.txid]">
+                    <span class="d-inline d-lg-none">{{ cpfpInfo.bestDescendant.txid | shortenString : 10 }}</span>
+                    <span class="d-none d-lg-inline">{{ cpfpInfo.bestDescendant.txid }}</span>
+                  </a>
+                </td>
+                <td class="d-none d-lg-table-cell">{{ cpfpInfo.bestDescendant.weight / 4 | vbytes: 2 }}</td>
+                <td>{{ cpfpInfo.bestDescendant.fee / (cpfpInfo.bestDescendant.weight / 4) | number : '1.1-1' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
+                <td class="d-none d-lg-table-cell"><fa-icon class="arrow-green" [icon]="['fas', 'angle-double-up']" [fixedWidth]="true"></fa-icon></td>
+              </tr>
+            </ng-template>
+            <ng-template [ngIf]="cpfpInfo.ancestors.length">
+              <tr *ngFor="let cpfpTx of cpfpInfo.ancestors">
+                <td><span class="badge badge-primary" i18n="transaction.ancestor|Transaction Ancestor">Ancestor</span></td>
+                  <td><a [routerLink]="['/tx' | relativeUrl, cpfpTx.txid]">
+                    <span class="d-inline d-lg-none">{{ cpfpTx.txid | shortenString : 10 }}</span>
+                    <span class="d-none d-lg-inline">{{ cpfpTx.txid }}</span>
+                  </a>
+                </td>
+                <td class="d-none d-lg-table-cell">{{ cpfpTx.weight / 4 | vbytes: 2 }}</td>
+                <td>{{ roundToOneDecimal(cpfpTx) | number : '1.1-1' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
+                <td class="d-none d-lg-table-cell"><fa-icon *ngIf="roundToOneDecimal(cpfpTx) > tx.feePerVsize; else arrowDown" class="arrow-green" [icon]="['fas', 'angle-double-up']" [fixedWidth]="true"></fa-icon></td>
+                <ng-template #arrowDown>
+                  <fa-icon *ngIf="roundToOneDecimal(cpfpTx) !== tx.effectiveFeePerVsize" class="arrow-red" [icon]="['fas', 'angle-double-down']" [fixedWidth]="true"></fa-icon>
+                </ng-template>
+              </tr>
+            </ng-template>
+          </tbody>
+        </table>
+      </div>
+    </ng-template>
+
     <br>
 
     <h2 class="float-left" i18n="transaction.inputs-and-outputs|Transaction inputs and outputs">Inputs & Outputs</h2>
@@ -279,26 +330,25 @@
         <td>{{ tx.fee | number }} <span i18n="transaction.fee.sat|Transaction Fee sat">sat</span> (<app-fiat [value]="tx.fee"></app-fiat>)</td>
       </tr>
       <tr>
-        <td i18n="transaction.fee-per-vbyte|Transaction fee">Fee per vByte</td>
+        <td i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
         <td>
-          {{ tx.fee / (tx.weight / 4) | number : '1.1-1' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+          {{ tx.feePerVsize }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
           <ng-template [ngIf]="tx.status.confirmed">
             &nbsp;
-            <app-tx-fee-rating *ngIf="tx.fee && (!tx.effectiveFeePerVsize || tx.effectiveFeePerVsize === tx.fee / (tx.weight / 4))" [tx]="tx"></app-tx-fee-rating>
+            <app-tx-fee-rating *ngIf="tx.fee && (cpfpInfo && !cpfpInfo.bestDescendant && !cpfpInfo.ancestors.length)" [tx]="tx"></app-tx-fee-rating>
           </ng-template>
         </td>
       </tr>
-      <tr *ngIf="tx.effectiveFeePerVsize && tx.effectiveFeePerVsize !== tx.fee / (tx.weight / 4)">
-        <td i18n="transaction.effective-fee|Effective transaction fee">Effective fee</td>
+      <tr *ngIf="cpfpInfo && (cpfpInfo.bestDescendant || cpfpInfo.ancestors.length)">
+        <td i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
         <td>
           {{ tx.effectiveFeePerVsize | number : '1.1-1' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
           <ng-template [ngIf]="tx.status.confirmed">
-            &nbsp;
-            <app-tx-fee-rating *ngIf="tx.fee" [tx]="tx"></app-tx-fee-rating>
+            <app-tx-fee-rating class="d-none d-lg-inline ml-2" *ngIf="tx.fee" [tx]="tx"></app-tx-fee-rating>
           </ng-template>
+          <button type="button" class="btn btn-outline-info btn-sm btn-small-height ml-2 float-right" (click)="showCpfpDetails = !showCpfpDetails">CPFP <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></button>
         </td>
       </tr>
     </tbody>
   </table>
-
 </ng-template>
