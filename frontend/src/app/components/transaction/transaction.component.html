@@ -332,7 +332,7 @@
       <tr>
         <td i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
         <td>
-          {{ tx.feePerVsize }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+          {{ tx.feePerVsize | number : '1.1-1' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
           <ng-template [ngIf]="tx.status.confirmed">
             &nbsp;
             <app-tx-fee-rating *ngIf="tx.fee && (cpfpInfo && !cpfpInfo.bestDescendant && !cpfpInfo.ancestors.length)" [tx]="tx"></app-tx-fee-rating>
