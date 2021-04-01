@@ -113,6 +113,10 @@ export class Common {
   private static findAllParents(tx: TransactionExtended, memPool: { [txid: string]: TransactionExtended }): TransactionExtended[] {
     let parents: TransactionExtended[] = [];
     tx.vin.forEach((parent) => {
+      if (parents.find((p) => p.txid === parent.txid)) {
+        return;
+      }
+
       const parentTx = memPool[parent.txid];
       if (parentTx) {
         if (tx.bestDescendant && tx.bestDescendant.fee / (tx.bestDescendant.weight / 4) > parentTx.feePerVsize) {
