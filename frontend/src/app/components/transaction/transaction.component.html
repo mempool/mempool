@@ -177,10 +177,7 @@
                 </td>
                 <td class="d-none d-lg-table-cell">{{ cpfpTx.weight / 4 | vbytes: 2 }}</td>
                 <td>{{ roundToOneDecimal(cpfpTx) | number : '1.1-1' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
-                <td class="d-none d-lg-table-cell"><fa-icon *ngIf="roundToOneDecimal(cpfpTx) > tx.feePerVsize; else arrowDown" class="arrow-green" [icon]="['fas', 'angle-double-up']" [fixedWidth]="true"></fa-icon></td>
-                <ng-template #arrowDown>
-                  <fa-icon *ngIf="roundToOneDecimal(cpfpTx) !== tx.feePerVsize" class="arrow-red" [icon]="['fas', 'angle-double-down']" [fixedWidth]="true"></fa-icon>
-                </ng-template>
+                <td class="d-none d-lg-table-cell"><fa-icon *ngIf="roundToOneDecimal(cpfpTx) < tx.feePerVsize" class="arrow-red" [icon]="['fas', 'angle-double-down']" [fixedWidth]="true"></fa-icon></td>
               </tr>
             </ng-template>
           </tbody>
