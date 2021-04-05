@@ -81,9 +81,10 @@ export class Common {
 
   static setRelativesAndGetCpfpInfo(tx: TransactionExtended, memPool: { [txid: string]: TransactionExtended }): CpfpInfo {
     const parents = this.findAllParents(tx, memPool);
+    const lowerFeeParents = parents.filter((parent) => parent.feePerVsize < tx.feePerVsize);
 
-    let totalWeight = tx.weight + parents.reduce((prev, val) => prev + val.weight, 0);
-    let totalFees = tx.fee + parents.reduce((prev, val) => prev + val.fee, 0);
+    let totalWeight = tx.weight + lowerFeeParents.reduce((prev, val) => prev + val.weight, 0);
+    let totalFees = tx.fee + lowerFeeParents.reduce((prev, val) => prev + val.fee, 0);
 
     tx.ancestors = parents
       .map((t) => {
