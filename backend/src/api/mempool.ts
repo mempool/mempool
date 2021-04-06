@@ -14,7 +14,7 @@ class Mempool {
   private inSync: boolean = false;
   private mempoolCache: { [txId: string]: TransactionExtended } = {};
   private mempoolInfo: IBitcoinApi.MempoolInfo = { loaded: false, size: 0, bytes: 0, usage: 0,
-                                                    maxmempool: 0, mempoolminfee: 0, minrelaytxfee: 0 };
+                                                    maxmempool: 300000000, mempoolminfee: 0.00001000, minrelaytxfee: 0.00001000 };
   private mempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
     deletedTransactions: TransactionExtended[]) => void) | undefined;
 
