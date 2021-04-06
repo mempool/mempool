@@ -109,8 +109,9 @@ export class TransactionComponent implements OnInit, OnDestroy {
         } else {
           this.apiService.getCpfpinfo$(this.tx.txid)  
             .subscribe((cpfpInfo) => {
-              let totalWeight = tx.weight + cpfpInfo.ancestors.reduce((prev, val) => prev + val.weight, 0);
-              let totalFees = tx.fee + cpfpInfo.ancestors.reduce((prev, val) => prev + val.fee, 0);
+              const lowerFeeParents = cpfpInfo.ancestors.filter((ancestor) => (ancestor.fee / (ancestor.weight / 4)) < tx.feePerVsize);
+              let totalWeight = tx.weight + lowerFeeParents.reduce((prev, val) => prev + val.weight, 0);
+              let totalFees = tx.fee + lowerFeeParents.reduce((prev, val) => prev + val.fee, 0);
 
               if (cpfpInfo.bestDescendant) {
                 totalWeight += cpfpInfo.bestDescendant.weight;
