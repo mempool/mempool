@@ -111,7 +111,16 @@ class Server {
 
   async runMainUpdateLoop() {
     try {
-      await memPool.$updateMemPoolInfo();
+      try {
+        await memPool.$updateMemPoolInfo();
+      } catch (e) {
+        const msg = `updateMempoolInfo: ${(e.message || e)}`;
+        if (config.CORE_RPC_MINFEE.ENABLED) {
+          logger.warn(msg);
+        } else {
+          logger.debug(msg);
+        }
+      }
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
