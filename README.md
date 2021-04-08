@@ -1,38 +1,29 @@
-# Mempool.Space JS API
+# Mempool JS API
 
-[![npm version](https://img.shields.io/npm/v/mempool-space-js.svg?style=flat-square)](https://www.npmjs.org/package/mempool-space-js)
-[![NPM](https://img.shields.io/david/MiguelMedeiros/mempool-space-js.svg?style=flat-square)](https://david-dm.org/MiguelMedeiros/mempool-space-js#info=dependencies)
-[![Known Vulnerabilities](https://snyk.io/test/github/MiguelMedeiros/mempool-space-js/badge.svg?style=flat-square)](https://snyk.io/test/github/MiguelMedeiros/mempool-space-js)
+[![npm version](https://img.shields.io/npm/v/mempool-js.svg?style=flat-square)](https://www.npmjs.org/package/mempool-js)
+[![NPM](https://img.shields.io/david/mempool/mempool-js.svg?style=flat-square)](https://david-dm.org/mempool/mempool-js#info=dependencies)
+[![Known Vulnerabilities](https://snyk.io/test/github/mempool/mempool-js/badge.svg?style=flat-square)](https://snyk.io/test/github/mempool/mempool-js)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
----
+NPM package module for Mempool JS API.
 
-Easy way to add Mempool API to your JS application.
-
----
-
-## Donate
-
-Help me to stack sats! :blush:
-
-[bc1qy3pynpjjxx09s9wpmwy3qqv0m7tmkpjpk0ze8y](bitcoin:bc1qy3pynpjjxx09s9wpmwy3qqv0m7tmkpjpk0ze8y)
-
-[Or donate via Lightning Network!](https://paywall.link/to/mempool)
+Documentation: [https://mempool.space/api](https://mempool.space/api)
 
 ---
 
 ## Features
 
-- :pushpin: [Instalation](#installation)
-- :pushpin: [Usage](#usage)
+- [Instalation](#installation)
+  - [CommonJS](#commonjs)
+  - [NodeJS](#es-modules)
+- [Usage](#usage)
 
-  - Fees
-    - [Get Fees Recommended](#get-fees-recommended)
-    - [Get Fees Mempool Blocks](#get-fees-mempool-blocks)
-  - Mempool
-    - [Get Mempool](#get-mempool)
-    - [Get Mempool Recent](#get-mempool-recent)
-    - [Get Mempool Txids](#get-mempool-txids)
+  - Addresses
+    - [Get Address](#get-address)
+    - [Get Address Txs](#get-address-txs)
+    - [Get Address Txs Chain](#get-address-txs-chain)
+    - [Get Address Txs Mempool](#get-address-txs-mempool)
+    - [Get Address Txs Utxo](#get-address-txs-utxo)
   - Blocks
     - [Get Block](#get-block)
     - [Get Block Status](#get-block-status)
@@ -44,6 +35,13 @@ Help me to stack sats! :blush:
     - [Get Blocks](#get-blocks)
     - [Get Blocks Tip Height](#get-blocks-tip-height)
     - [Get Blocks Tip Hash](#get-blocks-tip-hash)
+  - Fees
+    - [Get Fees Recommended](#get-fees-recommended)
+    - [Get Fees Mempool Blocks](#get-fees-mempool-blocks)
+  - Mempool
+    - [Get Mempool](#get-mempool)
+    - [Get Mempool Recent](#get-mempool-recent)
+    - [Get Mempool Txids](#get-mempool-txids)
   - Transactions
     - [Get Tx](#get-tx)
     - [Get Tx Status](#get-tx-status)
@@ -54,157 +52,203 @@ Help me to stack sats! :blush:
     - [Get Tx Outspend](#get-tx-outspend)
     - [Get Tx Outspends](#get-tx-outspends)
     - [Post Tx Outspends]($post-tx-outspends)
-  - Addresses
-    - [Get Address](#get-address)
-    - [Get Address Txs](#get-address-txs)
-    - [Get Address Txs Chain](#get-address-txs-chain)
-    - [Get Address Txs Mempool](#get-address-txs-mempool)
-    - [Get Address Txs Utxo](#get-address-txs-utxo)
   - [Websocket](#websocket)
 
-- :pushpin: [References](#references)
-- :pushpin: [Donate](#donate)
-- :pushpin: [Contribute](#contribute)
-- :pushpin: [License](#license)
+- [Contribute](#contribute)
+- [License](#license)
 
 ---
 
-## Installation
+## **Installation**
 
-Using npm:
+### **ES Modules**
 
-```bash
-$ npm install mempool-space-js
-```
-
-Using yarn:
+First, install the npm module.
 
 ```bash
-$ yarn add mempool-space-js
+# npm
+$ npm install @mempool/mempool-js --save
+
+# yarn
+$ yarn add @mempool/mempool-js
 ```
 
-## Usage
+Or if you're not into package management, just [download a ZIP](https://github.com/mempool/mempool-js/archive/refs/heads/main.zip) file.
 
-### Get Fees Recommended
-
-Returns our currently suggested fees for new transactions.
-
-[Code Example](examples/fees.ts)
+Then import the module.
 
 ```js
-import { fees } from 'mempool-space-js';
-...
-const feesRecommended = await fees.getFeesRecommended();
-console.log(feesRecommended);
+import mempoolJS from '@mempool/mempool-js';
+const {
+  addresses,
+  blocks,
+  fees,
+  mempool,
+  transactions,
+  websocket,
+} = mempoolJS();
 ```
 
-<br/>
+**Custom Endpoints (Optional)**
 
-### Get Fees Mempool Blocks
-
-Returns current mempool as projected blocks.
-
-[Code Example](examples/fees.ts)
+You can set your custom **API** and **WS** endpoints.
 
 ```js
-import { fees } from 'mempool-space-js';
-...
-const feesMempoolBlocks = await fees.getFeesMempoolBlocks();
-console.log(feesMempoolBlocks);
+import mempoolJS from '@mempool/mempool-js';
+
+const { address } = mempoolJS({
+  apiEndpoint: 'https://mempool.space/api/',
+  websocketEndpoint: 'wss://mempool.space/api/v1/ws',
+});
 ```
 
-<br/>
+### **CommonJS**
 
-### Get Mempool
+First, include the script located on the `dist` folder.
 
-Returns current mempool backlog statistics.
+```html
+<script type="text/javascript" src="./dist/mempool.min.js"></script>
+```
 
-[Code Example](examples/mempool.ts)
+Now, you have an access to a variable function to access the API methods.
 
 ```js
-import { mempool } from 'mempool-space-js';
-...
-const getMempool = await mempool.getMempool();
-console.log(getMempool);
+const {
+  addresses,
+  blocks,
+  fees,
+  mempool,
+  transactions,
+  websocket,
+} = mempoolJS();
 ```
 
-<br/>
+## **Usage**
 
-### Get Mempool Txids
+### **Get Address**
 
-Get the full list of txids in the mempool as an array. The order of the txids is arbitrary and does not match bitcoind.
-
-[Code Example](examples/mempool.ts)
-
-```js
-import { mempool } from './../src/';
-...
-const getMempoolTxids = await mempool.getMempoolTxids();
-console.log(getMempoolTxids);
-```
-
-<br/>
-
-### Get Mempool Recent
-
-Get a list of the last 10 transactions to enter the mempool. Each transaction object contains simplified overview data, with the following fields: txid, fee, vsize, and value.
-
-[Code Example](examples/mempool.ts)
-
-```js
-import { mempool } from 'mempool-space-js';
-...
-const getMempoolRecent = await mempool.getMempoolRecent();
-console.log(getMempoolRecent);
-```
-
-<br/>
-
-### Get Block
-
-Returns details about a block. Available fields: id, height, version, timestamp, bits, nonce, merkle_root, tx_count, size, weight, and previousblockhash.
+Returns details about an address. Available fields: `address`, `chain_stats`, and `mempool_stats`. `{chain,mempool}\_stats` each contain an object with `tx_count`, `funded_txo_count`, `funded_txo_sum`, `spent_txo_count`, and `spent_txo_sum`.
 
 Parameters:
 
-- {Object} params - Params object.
-- {string} params.hash - Hash from a block
+- {string} address - Address id.
 
-[Code Example](examples/blocks.ts)
+[ [NodeJS Example](examples/nodejs/addresses.ts) ] [ [HTML Example](examples/html/addresses.html) ] [ [Top](#features) ]
 
 ```js
-import { blocks } from 'mempool-space-js';
-...
-const block = await blocks.getBlock({
-  hash: '000000000000000015dc...'
-});
+const { addresses } = mempoolJS();
+
+const address = await addresses.getAddress('15e10745f15593a...');
+console.log(address);
+```
+
+### **Get Address Txs**
+
+Get transaction history for the specified address/scripthash, sorted with newest first. Returns up to 50 mempool transactions plus the first 25 confirmed transactions. You can request more confirmed transactions using `:last_seen_txid` (see below).
+
+Parameters:
+
+- {string} address - Address id.
+
+[ [NodeJS Example](examples/nodejs/addresses.ts) ] [ [HTML Example](examples/html/addresses.html) ] [ [Top](#features) ]
+
+```js
+const { addresses } = mempoolJS();
+
+const addressTxs = await addresses.getAddressTxs('15e10745f15593a...');
+console.log(addressTxs);
+```
+
+### **Get Address Txs Chain**
+
+Get confirmed transaction history for the specified address/scripthash, sorted with newest first. Returns 25 transactions per page. More can be requested by specifying the last txid seen by the previous query.
+
+Parameters:
+
+- {string} address - Address id.
+
+[ [NodeJS Example](examples/nodejs/addresses.ts) ] [ [HTML Example](examples/html/addresses.html) ] [ [Top](#features) ]
+
+```js
+const { addresses } = mempoolJS();
+
+const addressTxsChain = await addresses.getAddressTxsChain(
+  '15e10745f15593a...'
+);
+console.log(addressTxsChain);
+```
+
+### **Get Address Txs Mempool**
+
+Get unconfirmed transaction history for the specified address/scripthash. Returns up to 50 transactions (no paging).
+
+Parameters:
+
+- {string} address - Address id.
+
+[ [NodeJS Example](examples/nodejs/addresses.ts) ] [ [HTML Example](examples/html/addresses.html) ] [ [Top](#features) ]
+
+```js
+const { addresses } = mempoolJS();
+
+const addressTxsMempool = await addresses.getAddressTxsMempool(
+  '15e10745f15593a...'
+);
+console.log(addressTxsMempool);
+```
+
+### **Get Address Txs Utxo**
+
+Get unconfirmed transaction history for the specified address/scripthash. Returns up to 50 transactions (no paging).
+
+Parameters:
+
+- {string} address - Address id.
+
+[ [NodeJS Example](examples/nodejs/addresses.ts) ] [ [HTML Example](examples/html/addresses.html) ] [ [Top](#features) ]
+
+```js
+const { addresses } = mempoolJS();
+
+const addressTxsUtxo = await addresses.getAddressTxsUtxo('15e10745f15593a...');
+console.log(addressTxsUtxo);
+```
+
+### **Get Block**
+
+Returns details about a block. Available fields: `id`, `height`, `version`, `timestamp`, `bits`, `nonce`, `merkle_root`, `tx_count`, `size`, `weight`, and `previousblockhash`.
+
+Parameters:
+
+- {string} hash - Hash from a block
+
+[ [NodeJS Example](examples/nodejs/blocks.ts) ] [ [HTML Example](examples/html/blocks.html) ] [ [Top](#features) ]
+
+```js
+const { blocks } = mempoolJS();
+
+const block = await blocks.getBlock('000000000000000015dc...');
 console.log(block);
 ```
 
-<br/>
+### **Get Block Status**
 
-### Get Block Status
-
-Returns the confirmation status of a block. Available fields: in_best_chain (boolean, false for orphaned blocks), next_best (the hash of the next block, only available for blocks in the best chain).
+Returns the confirmation status of a block. Available fields: `in_best_chain` (boolean, false for orphaned blocks), `next_best` (the hash of the next block, only available for blocks in the best chain).
 
 Parameters:
 
-- {Object} params - Params object.
-- {string} params.hash - Hash from a block
+- {string} hash - Hash from a block
 
-[Code Example](examples/blocks.ts)
+[ [NodeJS Example](examples/nodejs/blocks.ts) ] [ [HTML Example](examples/html/blocks.html) ] [ [Top](#features) ]
 
 ```js
-import { blocks } from 'mempool-space-js';
-...
-const blockStatus = await blocks.getBlockStatus({
-  hash: '000000000000000015dc...'
-});
+const { blocks } = mempoolJS();
+
+const blockStatus = await blocks.getBlockStatus('000000000000000015dc...');
 console.log(blockStatus);
 ```
 
-<br/>
-
-### Get Block Txs
+### **Get Block Txs**
 
 Returns a list of transactions in the block (up to 25 transactions beginning at start_index). Transactions returned here do not have the status field, since all the transactions share the same block and confirmation status.
 
@@ -214,42 +258,35 @@ Parameters:
 - {string} params.hash - Hash from a block
 - {number} params.start_index - Default: 25
 
-[Code Example](examples/blocks.ts)
+[ [NodeJS Example](examples/nodejs/blocks.ts) ] [ [HTML Example](examples/html/blocks.html) ] [ [Top](#features) ]
 
 ```js
-import { blocks } from 'mempool-space-js';
-...
+const { blocks } = mempoolJS();
+
 const blockTxs = await blocks.getBlockTxs({
-  hash: '000000000000000015dc...'
+  hash: '000000000000000015dc...',
 });
 console.log(blockTxs);
 ```
 
-<br/>
-
-### Get Block Txids
+### **Get Block Txids**
 
 Returns a list of all txids in the block.
 
 Parameters:
 
-- {Object} params - Params object.
-- {string} params.hash - Hash from a block
+- {string} hash - Hash from a block
 
-[Code Example](examples/blocks.ts)
+[ [NodeJS Example](examples/nodejs/blocks.ts) ] [ [HTML Example](examples/html/blocks.html) ] [ [Top](#features) ]
 
 ```js
-import { blocks } from 'mempool-space-js';
-...
-const blockTxids = await blocks.getBlockTxids({
-  hash: '000000000000000015dc...'
-});
+const { blocks } = mempoolJS();
+
+const blockTxids = await blocks.getBlockTxids('000000000000000015dc...');
 console.log(blockTxids);
 ```
 
-<br/>
-
-### Get Block Txid
+### **Get Block Txid**
 
 Returns the transaction at index :index within the specified block.
 
@@ -259,272 +296,287 @@ Parameters:
 - {string} params.hash - Hash from a block
 - {number} params.index - Index
 
-[Code Example](examples/blocks.ts)
+[ [NodeJS Example](examples/nodejs/blocks.ts) ] [ [HTML Example](examples/html/blocks.html) ] [ [Top](#features) ]
 
 ```js
-import { blocks } from 'mempool-space-js';
-...
+const { blocks } = mempoolJS();
+
 const blockTxid = await blocks.getBlockTxid({
   hash: '000000000000000015dc...',
-  index: 218
+  index: 218,
 });
 console.log(blockTxids);
 ```
 
-<br/>
-
-### Get Block Raw
+### **Get Block Raw**
 
 Returns the raw block representation in binary.
 
 Parameters:
 
-- {Object} params - Params object.
-- {string} params.hash - Hash from a block
+- {string} hash - Hash from a block
 
-[Code Example](examples/blocks.ts)
+[ [NodeJS Example](examples/nodejs/blocks.ts) ] [ [HTML Example](examples/html/blocks.html) ] [ [Top](#features) ]
 
 ```js
-import { blocks } from 'mempool-space-js';
-...
-const blockRaw = await blocks.getBlockRaw({
-  hash: '000000000000000015dc...'
-});
+const { blocks } = mempoolJS();
+
+const blockRaw = await blocks.getBlockRaw('000000000000000015dc...');
 console.log(blockRaw);
 ```
 
-<br/>
+### **Get Blocks Height**
 
-### Get Blocks Height
-
-Returns the hash of the block currently at :height.
+Returns the hash of the block currently at `:height`.
 
 Parameters:
 
-- {Object} params - Params object.
-- {number} params.height - Height from a block
+- {number} height - Height number from a block
 
-[Code Example](examples/blocks.ts)
+[ [NodeJS Example](examples/nodejs/blocks.ts) ] [ [HTML Example](examples/html/blocks.html) ] [ [Top](#features) ]
 
 ```js
-import { blocks } from 'mempool-space-js';
-...
-const blockHeight = await blocks.getBlockHeight({
-  height: 66666,
-});
+const { blocks } = mempoolJS();
+
+const blockHeight = await blocks.getBlockHeight(42);
 console.log(blockHeight);
 ```
 
-<br/>
+### **Get Blocks**
 
-### Get Blocks
-
-Returns the 10 newest blocks starting at the tip or at :start_height if specified.
+Returns the 10 newest blocks starting at the tip or at `:start_height` if specified.
 
 Parameters:
 
 - {Object} params - Params object.
 - {number} params.start_height - Height from a block
 
-[Code Example](examples/blocks.ts)
+[ [NodeJS Example](examples/nodejs/blocks.ts) ] [ [HTML Example](examples/html/blocks.html) ] [ [Top](#features) ]
 
 ```js
-import { blocks } from 'mempool-space-js';
-...
+const { blocks } = mempoolJS();
+
 const getBlocks = await blocks.getBlocks({
-  start_height: 66666
+  start_height: 66666,
 });
 console.log(getBlocks);
 ```
 
-<br/>
+### **Get Blocks Tip Height**
 
-### Get Blocks Tip Height
-
-Returns the 10 newest blocks starting at the tip or at :start_height if specified.
+Returns the 10 newest blocks starting at the tip or at `:start_height` if specified.
 
 Parameters:
 
 - {Object} params - Params object.
 - {number} params.start_height - Height from a block
 
-[Code Example](examples/blocks.ts)
+[ [NodeJS Example](examples/nodejs/blocks.ts) ] [ [HTML Example](examples/html/blocks.html) ] [ [Top](#features) ]
 
 ```js
-import { blocks } from 'mempool-space-js';
-...
+const { blocks } = mempoolJS();
+
 const blocksTipHeight = await blocks.getBlocksTipHeight();
 console.log(blocksTipHeight);
 ```
 
-<br/>
-
-### Get Blocks Tip Hash
+### **Get Blocks Tip Hash**
 
 Returns the hash of the last block.
 
-Parameters:
-
-- {Object} params - Params object.
-- {number} params.start_height - Height from a block
-
-[Code Example](examples/blocks.ts)
+[ [NodeJS Example](examples/nodejs/blocks.ts) ] [ [HTML Example](examples/html/blocks.html) ] [ [Top](#features) ]
 
 ```js
-import { blocks } from 'mempool-space-js';
-...
+const { blocks } = mempoolJS();
+
 const blocksTipHash = await blocks.getBlocksTipHash();
 console.log(blocksTipHash);
 ```
 
-<br/>
+### **Get Fees Recommended**
 
-### Get Tx
+Returns our currently suggested fees for new transactions.
 
-Returns details about a transaction. Available fields: txid, version, locktime, size, weight, fee, vin, vout, and status.
+[ [NodeJS Example](examples/nodejs/fees.ts) ] [ [HTML Example](examples/html/fees.html) ] [ [Top](#features) ]
+
+```js
+const { fees } = mempoolJS();
+
+const feesRecommended = await fees.getFeesRecommended();
+console.log(feesRecommended);
+```
+
+### **Get Fees Mempool Blocks**
+
+Returns current mempool as projected blocks.
+
+[ [NodeJS Example](examples/nodejs/fees.ts) ] [ [HTML Example](examples/html/fees.html) ] [ [Top](#features) ]
+
+```js
+const { fees } = mempoolJS();
+
+const feesMempoolBlocks = await fees.getFeesMempoolBlocks();
+console.log(feesMempoolBlocks);
+```
+
+### **Get Mempool**
+
+Returns current mempool backlog statistics.
+
+[ [NodeJS Example](examples/nodejs/mempool.ts) ] [ [HTML Example](examples/html/mempool.html) ] [ [Top](#features) ]
+
+```js
+const { mempool } = mempoolJS();
+
+const getMempool = await mempool.getMempool();
+console.log(getMempool);
+```
+
+### **Get Mempool Txids**
+
+Get the full list of txids in the mempool as an array. The order of the `txids` is arbitrary and does not match bitcoind.
+
+[ [NodeJS Example](examples/nodejs/mempool.ts) ] [ [HTML Example](examples/html/mempool.html) ] [ [Top](#features) ]
+
+```js
+const { mempool } = mempoolJS();
+
+const getMempoolTxids = await mempool.getMempoolTxids();
+console.log(getMempoolTxids);
+```
+
+### **Get Mempool Recent**
+
+Get a list of the last 10 transactions to enter the mempool. Each transaction object contains simplified overview data, with the following fields: `txid`, `fee`, `vsize`, and `value`.
+
+[ [NodeJS Example](examples/nodejs/mempool.ts) ] [ [HTML Example](examples/html/mempool.html) ] [ [Top](#features) ]
+
+```js
+const { mempool } = mempoolJS();
+
+const getMempoolRecent = await mempool.getMempoolRecent();
+console.log(getMempoolRecent);
+```
+
+### **Get Tx**
+
+Returns details about a transaction. Available fields: `txid`, `version`, `locktime`, `size`, `weight`, `fee`, `vin`, `vout`, and `status`.
 
 Parameters:
 
-- {Object} params - Params object.
-- {string} params.txid - Transactions id.
+- {string} txid - Transactions id.
 
-[Code Example](examples/transactions.ts)
+[ [NodeJS Example](examples/nodejs/transactions.ts) ] [ [HTML Example](examples/html/transactions.html) ] [ [Top](#features) ]
 
 ```js
-import { transactions } from 'mempool-space-js';
-...
-const tx = await transactions.getTx({
-  txid: '15e10745f15593...'
-});
+const { transactions } = mempoolJS();
+
+const tx = await transactions.getTx('15e10745f15593...');
 console.log(tx);
 ```
 
-<br/>
+### **Get Tx Status**
 
-### Get Tx Status
-
-Returns the confirmation status of a transaction. Available fields: confirmed (boolean), block_height (optional), and block_hash (optional).
+Returns the confirmation status of a transaction. Available fields: `confirmed` (boolean), `block_height` (optional), and `block_hash` (optional).
 
 Parameters:
 
-- {Object} params - Params object.
-- {string} params.txid - Transactions id.
+- {string} txid - Transactions id.
 
-[Code Example](examples/transactions.ts)
+[ [NodeJS Example](examples/nodejs/transactions.ts) ] [ [HTML Example](examples/html/transactions.html) ] [ [Top](#features) ]
 
 ```js
-import { transactions } from 'mempool-space-js';
-...
-const txStatus = await transactions.getTxStatus({
-  txid: '15e10745f15593...'
-});
+const { transactions } = mempoolJS();
+
+const txStatus = await transactions.getTxStatus('15e10745f15593...');
 console.log(txStatus);
 ```
 
-<br/>
-
-### Get Tx Hex
+### **Get Tx Hex**
 
 Returns a transaction serialized as hex.
 
 Parameters:
 
-- {Object} params - Params object.
-- {string} params.txid - Transactions id.
+- {string} txid - Transactions id.
 
-[Code Example](examples/transactions.ts)
+[ [NodeJS Example](examples/nodejs/transactions.ts) ] [ [HTML Example](examples/html/transactions.html) ] [ [Top](#features) ]
 
 ```js
-import { transactions } from 'mempool-space-js';
-...
-const txHex = await transactions.getTxHex({
-  txid: '15e10745f15593...'
-});
+const { transactions } = mempoolJS();
+
+const txHex = await transactions.getTxHex('15e10745f15593...');
 console.log(txHex);
 ```
 
-<br/>
-
-### Get Tx Raw
+### **Get Tx Raw**
 
 Returns a transaction as binary data.
 
 Parameters:
 
-- {Object} params - Params object.
-- {string} params.txid - Transactions id.
+- {string} txid - Transactions id.
 
-[Code Example](examples/transactions.ts)
+[ [NodeJS Example](examples/nodejs/transactions.ts) ] [ [HTML Example](examples/html/transactions.html) ] [ [Top](#features) ]
 
 ```js
-import { transactions } from 'mempool-space-js';
-...
-const txRaw = await transactions.getTxRaw({
-  txid: '15e10745f15593...'
-});
+const { transactions } = mempoolJS();
+
+const txRaw = await transactions.getTxRaw('15e10745f15593...');
 console.log(txRaw);
 ```
 
-<br/>
-
-### Get Tx Merkle Block Proof
+### **Get Tx Merkle Block Proof**
 
 Returns a merkle inclusion proof for the transaction using bitcoind's merkleblock format.
 
 Parameters:
 
-- {Object} params - Params object.
-- {string} params.txid - Transactions id.
+- {string} txid - Transactions id.
 
-[Code Example](examples/transactions.ts)
+[ [NodeJS Example](examples/nodejs/transactions.ts) ] [ [HTML Example](examples/html/transactions.html) ] [ [Top](#features) ]
 
 ```js
-import { transactions } from 'mempool-space-js';
-...
-const txMerkleBlockProof = await transactions.getTxMerkleBlockProof({
-  txid: '15e10745f15593...'
-});
+const { transactions } = mempoolJS();
+
+const txMerkleBlockProof = await transactions.getTxMerkleBlockProof(
+  '15e10745f15593...'
+);
 console.log(txMerkleBlockProof);
 ```
 
-<br/>
-
-### Get Tx Merkle Proof
+### **Get Tx Merkle Proof**
 
 Returns a merkle inclusion proof for the transaction using Electrum's blockchain.transaction.get_merkle format.
 
 Parameters:
 
-- {Object} params - Params object.
-- {string} params.txid - Transactions id.
+- {string} txid - Transactions id.
 
-[Code Example](examples/transactions.ts)
+[ [NodeJS Example](examples/nodejs/transactions.ts) ] [ [HTML Example](examples/html/transactions.html) ] [ [Top](#features) ]
 
 ```js
-import { transactions } from 'mempool-space-js';
-...
-const txMerkleProof = await transactions.getTxMerkleProof({
-  txid: '15e10745f15593...'
-});
+const { transactions } = mempoolJS();
+
+const txMerkleProof = await transactions.getTxMerkleProof('15e10745f15593...');
 console.log(txMerkleProof);
 ```
 
-<br/>
+### **Get Tx Outspend**
 
-### Get Tx Outspend
-
-Returns the spending status of a transaction output. Available fields: spent (boolean), txid (optional), vin (optional), and status (optional, the status of the spending tx).
+Returns the spending status of a transaction output. Available fields: `spent` (boolean), `txid` (optional), `vin` (optional), and `status` (optional, the status of the spending tx).
 
 Parameters:
 
 - {Object} params - Params object.
 - {string} params.txid - Transactions id.
+- {number} params.vout - Vout number.
 
-[Code Example](examples/transactions.ts)
+[ [NodeJS Example](examples/nodejs/transactions.ts) ] [ [HTML Example](examples/html/transactions.html) ] [ [Top](#features) ]
 
 ```js
-import { transactions } from 'mempool-space-js';
-...
+const { transactions } = mempoolJS();
+
 const txOutspend = await transactions.getTxOutspend({
   txid: '15e10745f15593...',
   vout: 3,
@@ -532,182 +584,59 @@ const txOutspend = await transactions.getTxOutspend({
 console.log(txOutspend);
 ```
 
-<br/>
-
-### Get Tx Outspends
+### **Get Tx Outspends**
 
 Returns the spending status of all transaction outputs.
 
 Parameters:
 
-- {Object} params - Params object.
-- {string} params.txid - Transactions id.
+- {string} txid - Transactions id.
 
-[Code Example](examples/transactions.ts)
+[ [NodeJS Example](examples/nodejs/transactions.ts) ] [ [HTML Example](examples/html/transactions.html) ] [ [Top](#features) ]
 
 ```js
-import { transactions } from 'mempool-space-js';
-...
-const txOutspends = await transactions.getTxOutspends({
-  txid: '15e10745f15593...'
-});
+const { transactions } = mempoolJS();
+
+const txOutspends = await transactions.getTxOutspends('15e10745f15593...');
 console.log(txOutspends);
 ```
 
-<br/>
+### **Post Tx Outspends**
 
-### Post Tx Outspends
-
-Broadcast a raw transaction to the network. The transaction should be provided as hex in the request body. The txid will be returned on success.
+Broadcast a raw transaction to the network. The transaction should be provided as hex in the request body. The `txid` will be returned on success.
 
 Parameters:
 
-- {Object} params - Params object.
-- {string} params.txid - Transactions id.
+- {string} txid - Transactions id.
 
-[Code Example](examples/transactions.ts)
+[ [NodeJS Example](examples/nodejs/transactions.ts) ] [ [HTML Example](examples/html/transactions.html) ] [ [Top](#features) ]
 
 ```js
-import { transactions } from 'mempool-space-js';
-...
-const postTx = await transactions.postTx({
-  txid: '15e10745f15593...'
-});
+const { transactions } = mempoolJS();
+
+const postTx = await transactions.postTx('15e10745f15593...');
 console.log(postTx);
 ```
 
-<br/>
+### **Websocket**
 
----
+Default push: `{ action: 'want', data: ['blocks', ...] }` to express what you want pushed. Available: blocks, mempool-block, live-2h-chart, and stats.
 
-### Get Address
+Push transactions related to address: `{ 'track-address': '3PbJ...bF9B' }` to receive all new transactions containing that address as input or output. Returns an array of transactions. address-transactions for new mempool transactions, and block-transactions for new block confirmed transactions.
 
-Returns details about an address. Available fields: address, chain_stats, and mempool_stats. {chain,mempool}\_stats each contain an object with tx_count, funded_txo_count, funded_txo_sum, spent_txo_count, and spent_txo_sum.
-
-Parameters:
-
-- {Object} params - Params object.
-- {string} params.address - Address id.
-
-[Code Example](examples/addresses.ts)
+[ [NodeJS Example](examples/nodejs/addresses.ts) ] [ [HTML Example](examples/html/addresses.html) ] [ [Top](#features) ]
 
 ```js
-import { addresses } from 'mempool-space-js';
-...
-const addressTest = await addresses.getAddress({
-  address: '15e10745f15593a...'
+const { websocket } = mempoolJS();
+
+const ws = websocket.initServer({
+  options: ['blocks', 'stats', 'mempool-blocks', 'live-2h-chart'],
 });
-console.log(addressTest);
-```
 
-<br/>
-
-### Get Address Txs
-
-Get transaction history for the specified address/scripthash, sorted with newest first. Returns up to 50 mempool transactions plus the first 25 confirmed transactions. You can request more confirmed transactions using :last_seen_txid (see below).
-
-Parameters:
-
-- {Object} params - Params object.
-- {string} params.address - Address id.
-
-[Code Example](examples/addresses.ts)
-
-```js
-import { addresses } from 'mempool-space-js';
-...
-const addressTxs = await addresses.getAddressTxs({
-  address: '15e10745f15593a...'
-});
-console.log(addressTxs);
-```
-
-<br/>
-
-### Get Address Txs Chain
-
-Get confirmed transaction history for the specified address/scripthash, sorted with newest first. Returns 25 transactions per page. More can be requested by specifying the last txid seen by the previous query.
-
-Parameters:
-
-- {Object} params - Params object.
-- {string} params.address - Address id.
-
-[Code Example](examples/addresses.ts)
-
-```js
-import { addresses } from 'mempool-space-js';
-...
-const addressTxsChain = await addresses.getAddressTxsChain({
-  address: '15e10745f15593a...'
-});
-console.log(addressTxsChain);
-```
-
-<br/>
-
-### Get Address Txs Mempool
-
-Get unconfirmed transaction history for the specified address/scripthash. Returns up to 50 transactions (no paging).
-
-Parameters:
-
-- {Object} params - Params object.
-- {string} params.address - Address id.
-
-[Code Example](examples/addresses.ts)
-
-```js
-import { addresses } from 'mempool-space-js';
-...
-const addressTxsMempool = await addresses.getAddressTxsMempool({
-  address: '15e10745f15593a...'
-});
-console.log(addressTxsMempool);
-```
-
-<br/>
-
-### Get Address Txs Utxo
-
-Get unconfirmed transaction history for the specified address/scripthash. Returns up to 50 transactions (no paging).
-
-Parameters:
-
-- {Object} params - Params object.
-- {string} params.address - Address id.
-
-[Code Example](examples/addresses.ts)
-
-```js
-import { addresses } from 'mempool-space-js';
-...
-const addressTxsUtxo = await addresses.getAddressTxsUtxo({
-  address: '15e10745f15593a...'
-});
-console.log(addressTxsUtxo);
-```
-
-<br/>
-
-### Websocket
-
-```js
-import { websocket } from 'mempool-space-js';
-...
-const ws = await websocket.init({
-    options: [
-      'blocks',
-      'stats',
-      'mempool-blocks',
-      'live-2h-chart'
-      ],
-  });
-
-ws.on('message', function incoming(data: any) {
-  const res = JSON.parse(data);
+ws.on('message', function incoming(data) {
+  const res = JSON.parse(data.toString());
   if (res.blocks) {
-    res.blocks.forEach((block: any) => {
+    res.blocks.forEach((block: { height }) => {
       console.log(block.height);
     });
   }
@@ -723,20 +652,12 @@ ws.on('message', function incoming(data: any) {
 });
 ```
 
-## References
-
-- Mempool.Space Website: [https://mempool.space](https://mempool.space)
-- Mempool.Space API Documentation: [https://mempool.space/api](https://mempool.space/api)
-- My Website: [https://miguelmedeiros.com.br](https://miguelmedeiros.com.br)
-
 ---
 
-## Contributing
+## **Contributing**
 
 Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
 
 ---
 
-## License
-
-[MIT](https://choosealicense.com/licenses/mit/)
+## **License** [MIT](https://choosealicense.com/licenses/mit/)

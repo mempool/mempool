@@ -1,6 +1,8 @@
-import { fees } from './../src/index';
+import mempoolJS from '../../src/index';
 
 const init = async () => {
+  const { fees } = mempoolJS();
+
   const feesRecommended = await fees.getFeesRecommended();
   console.log(feesRecommended);
 

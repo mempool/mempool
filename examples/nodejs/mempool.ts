@@ -1,6 +1,8 @@
-import { mempool } from '../src/index';
+import mempoolJS from '../../src/index';
 
 const init = async () => {
+  const { mempool } = mempoolJS();
+
   const getMempool = await mempool.getMempool();
   console.log(getMempool);
 

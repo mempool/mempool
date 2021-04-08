@@ -1,14 +1,17 @@
-import { websocket } from '../src/index';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import mempoolJS from '../../src/index';
 
 const init = async () => {
-  const ws = await websocket.init({
+  const { websocket } = mempoolJS();
+
+  const ws = websocket.initServer({
     options: ['blocks', 'stats', 'mempool-blocks', 'live-2h-chart'],
   });
 
-  ws.on('message', function incoming(data: any) {
-    const res = JSON.parse(data);
+  ws.on('message', function incoming(data) {
+    const res = JSON.parse(data.toString());
     if (res.blocks) {
-      res.blocks.forEach((block: any) => {
+      res.blocks.forEach((block: { height: any }) => {
         console.log(block.height);
       });
     }
