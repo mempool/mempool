@@ -328,7 +328,7 @@
 
     <ng-template ngFor let-contributor [ngForOf]="contributors">
       <a [href]="'https://github.com/' + contributor.name" target="_blank">
-        <div class="profile_photo d-inline-block" [title]="contributor.name">
+        <div class="profile_photo project_contributor d-inline-block" [title]="contributor.name">
           <img class="profile_img" [src]="'/api/v1/contributors/images/' + contributor.id" />
           {{ contributor.name }}
         </div>
