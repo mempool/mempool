@@ -1,9 +1,9 @@
 # Mempool JS API
 
-[![npm version](https://img.shields.io/npm/v/mempool-js.svg?style=flat-square)](https://www.npmjs.org/package/mempool-js)
-[![NPM](https://img.shields.io/david/mempool/mempool-js.svg?style=flat-square)](https://david-dm.org/mempool/mempool-js#info=dependencies)
-[![Known Vulnerabilities](https://snyk.io/test/github/mempool/mempool-js/badge.svg?style=flat-square)](https://snyk.io/test/github/mempool/mempool-js)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![npm version](https://badge.fury.io/js/%40mempool%2Fmempool-js.svg)](https://badge.fury.io/js/%40mempool%2Fmempool-js)
+[![NPM](https://img.shields.io/david/mempool/mempool-js.svg)](https://david-dm.org/mempool/mempool-js#info=dependencies)
+[![Known Vulnerabilities](https://snyk.io/test/github/mempool/mempool-js/badge.svg)](https://snyk.io/test/github/mempool/mempool-js)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 NPM package module for Mempool JS API.
 
@@ -13,7 +13,7 @@ Documentation: [https://mempool.space/api](https://mempool.space/api)
 
 ## Features
 
-- [Instalation](#installation)
+- [Installation](#installation)
   - [CommonJS](#commonjs)
   - [NodeJS](#es-modules)
 - [Usage](#usage)
@@ -79,6 +79,7 @@ Then import the module.
 
 ```js
 import mempoolJS from '@mempool/mempool-js';
+
 const {
   addresses,
   blocks,
@@ -104,7 +105,23 @@ const { address } = mempoolJS({
 
 ### **CommonJS**
 
-First, include the script located on the `dist` folder.
+We provide you our own link to `mempool-js`:
+
+```html
+<script type="text/javascript" src="https://mempool.space/mempool.js"></script>
+```
+
+If you want to run your own build, run the script:
+
+```bash
+# npm
+$ npm run build
+
+# yarn
+$ yarn build
+```
+
+And, include the script located on the `dist` folder.
 
 ```html
 <script type="text/javascript" src="./dist/mempool.min.js"></script>
