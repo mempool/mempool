@@ -118,8 +118,8 @@ export class TransactionComponent implements OnInit, OnDestroy {
                 totalFees += cpfpInfo.bestDescendant.fee;
               }
 
-              const effectiveFeePerVsize = +(totalFees / (totalWeight / 4)).toFixed(1);
-              this.tx.effectiveFeePerVsize = effectiveFeePerVsize;
+              const effectiveFeePerVsize = totalFees / (totalWeight / 4);
+              this.tx.effectiveFeePerVsize = +effectiveFeePerVsize.toFixed(1);
               this.stateService.markBlock$.next({ txFeePerVSize: effectiveFeePerVsize });
               this.cpfpInfo = cpfpInfo;
             });
