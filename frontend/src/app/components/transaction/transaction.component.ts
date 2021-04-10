@@ -80,7 +80,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
       if (tx.fee === undefined) {
         this.tx.fee = 0;
       }
-      this.tx.feePerVsize = +(tx.fee / (tx.weight / 4)).toFixed(1);
+      this.tx.feePerVsize = tx.fee / (tx.weight / 4);
       this.isLoadingTx = false;
       this.error = undefined;
       this.waitingForTransaction = false;
@@ -105,11 +105,10 @@ export class TransactionComponent implements OnInit, OnDestroy {
             ancestors: tx.ancestors,
             bestDescendant: tx.bestDescendant,
           };
-          tx.effectiveFeePerVsize = +(tx.effectiveFeePerVsize).toFixed(1);
         } else {
-          this.apiService.getCpfpinfo$(this.tx.txid)  
+          this.apiService.getCpfpinfo$(this.tx.txid)
             .subscribe((cpfpInfo) => {
-              const lowerFeeParents = cpfpInfo.ancestors.filter((ancestor) => (ancestor.fee / (ancestor.weight / 4)) < tx.feePerVsize);
+              const lowerFeeParents = cpfpInfo.ancestors.filter((parent) => (parent.fee / (parent.weight / 4)) < tx.effectiveFeePerVsize);
               let totalWeight = tx.weight + lowerFeeParents.reduce((prev, val) => prev + val.weight, 0);
               let totalFees = tx.fee + lowerFeeParents.reduce((prev, val) => prev + val.fee, 0);
 
@@ -118,9 +117,8 @@ export class TransactionComponent implements OnInit, OnDestroy {
                 totalFees += cpfpInfo.bestDescendant.fee;
               }
 
-              const effectiveFeePerVsize = totalFees / (totalWeight / 4);
-              this.tx.effectiveFeePerVsize = +effectiveFeePerVsize.toFixed(1);
-              this.stateService.markBlock$.next({ txFeePerVSize: effectiveFeePerVsize });
+              this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
+              this.stateService.markBlock$.next({ txFeePerVSize: this.tx.effectiveFeePerVsize });
               this.cpfpInfo = cpfpInfo;
             });
         }
