@@ -25,7 +25,7 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "dev": "nodemon src/index.ts",
-    "build": "tsc | browserify lib/index.js --standalone mempoolJS > dist/mempool.js | browserify -p tinyify lib/index.js -o dist/mempool.min.js ",
+    "build": "tsc | browserify lib/index.js --standalone mempoolJS > dist/mempool.js | browserify -p tinyify lib/index.js --standalone mempoolJS > dist/mempool.min.js",
     "prepare": "npm run build",
     "postversion": "git push && git push --tags"
   },
