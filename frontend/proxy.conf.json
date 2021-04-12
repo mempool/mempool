@@ -1,8 +1,4 @@
 {
-  "/api/v1/donations": {
-    "target": "http://localhost:9000/",
-    "secure": false
-  },
   "/api/v1": {
     "target": "http://localhost:8999/",
     "secure": false

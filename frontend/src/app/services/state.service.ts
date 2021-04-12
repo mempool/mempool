@@ -1,7 +1,7 @@
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable } from 'rxjs';
 import { Block, Transaction } from '../interfaces/electrs.interface';
-import { MempoolBlock, MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
+import { IBackendInfo, MempoolBlock, MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
 import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
@@ -27,6 +27,8 @@ export interface Env {
   NGINX_PROTOCOL?: string;
   NGINX_HOSTNAME?: string;
   NGINX_PORT?: string;
+  GIT_COMMIT_HASH: string;
+  PACKAGE_JSON_VERSION: string;
 }
 
 const defaultEnv: Env = {
@@ -41,6 +43,8 @@ const defaultEnv: Env = {
   'NGINX_PROTOCOL': 'http',
   'NGINX_HOSTNAME': '127.0.0.1',
   'NGINX_PORT': '80',
+  'GIT_COMMIT_HASH': '',
+  'PACKAGE_JSON_VERSION': '',
 };
 
 @Injectable({
@@ -65,7 +69,7 @@ export class StateService {
   isLoadingWebSocket$ = new ReplaySubject<boolean>(1);
   vbytesPerSecond$ = new ReplaySubject<number>(1);
   lastDifficultyAdjustment$ = new ReplaySubject<number>(1);
-  gitCommit$ = new ReplaySubject<string>(1);
+  backendInfo$ = new ReplaySubject<IBackendInfo>(1);
   loadingIndicators$ = new ReplaySubject<ILoadingIndicators>(1);
 
   live2Chart$ = new Subject<OptimizedMempoolStats>();
