@@ -9,6 +9,7 @@ import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
+import { CpfpInfo } from 'src/app/interfaces/node-api.interface';
 
 @Component({
   selector: 'app-transaction',
@@ -27,6 +28,8 @@ export class TransactionComponent implements OnInit, OnDestroy {
   transactionTime = -1;
   subscription: Subscription;
   rbfTransaction: undefined | Transaction;
+  cpfpInfo: CpfpInfo | null;
+  showCpfpDetails = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -77,6 +80,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
       if (tx.fee === undefined) {
         this.tx.fee = 0;
       }
+      this.tx.feePerVsize = tx.fee / (tx.weight / 4);
       this.isLoadingTx = false;
       this.error = undefined;
       this.waitingForTransaction = false;
@@ -97,20 +101,25 @@ export class TransactionComponent implements OnInit, OnDestroy {
       } else {
         if (tx.effectiveFeePerVsize) {
           this.stateService.markBlock$.next({ txFeePerVSize: tx.effectiveFeePerVsize });
+          this.cpfpInfo = {
+            ancestors: tx.ancestors,
+            bestDescendant: tx.bestDescendant,
+          };
         } else {
-          this.apiService.getCpfpinfo$(this.tx.txid)  
+          this.apiService.getCpfpinfo$(this.tx.txid)
             .subscribe((cpfpInfo) => {
-              let totalWeight = tx.weight + cpfpInfo.ancestors.reduce((prev, val) => prev + val.weight, 0);
-              let totalFees = tx.fee + cpfpInfo.ancestors.reduce((prev, val) => prev + val.fee, 0);
+              const lowerFeeParents = cpfpInfo.ancestors.filter((parent) => (parent.fee / (parent.weight / 4)) < tx.feePerVsize);
+              let totalWeight = tx.weight + lowerFeeParents.reduce((prev, val) => prev + val.weight, 0);
+              let totalFees = tx.fee + lowerFeeParents.reduce((prev, val) => prev + val.fee, 0);
 
               if (cpfpInfo.bestDescendant) {
                 totalWeight += cpfpInfo.bestDescendant.weight;
                 totalFees += cpfpInfo.bestDescendant.fee;
               }
 
-              const effectiveFeePerVsize = totalFees / (totalWeight / 4);
-              this.tx.effectiveFeePerVsize = effectiveFeePerVsize;
-              this.stateService.markBlock$.next({ txFeePerVSize: effectiveFeePerVsize });
+              this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
+              this.stateService.markBlock$.next({ txFeePerVSize: this.tx.effectiveFeePerVsize });
+              this.cpfpInfo = cpfpInfo;
             });
         }
       }
@@ -183,6 +192,8 @@ export class TransactionComponent implements OnInit, OnDestroy {
     this.isLoadingTx = true;
     this.rbfTransaction = undefined;
     this.transactionTime = -1;
+    this.cpfpInfo = null;
+    this.showCpfpDetails = false;
     document.body.scrollTo(0, 0);
     this.leaveTransaction();
   }
@@ -190,6 +201,10 @@ export class TransactionComponent implements OnInit, OnDestroy {
   leaveTransaction() {
     this.websocketService.stopTrackingTransaction();
     this.stateService.markBlock$.next({});
+  }
+
+  roundToOneDecimal(cpfpTx: any): number {
+    return +(cpfpTx.fee / (cpfpTx.weight / 4)).toFixed(1);
   }
 
   ngOnDestroy() {

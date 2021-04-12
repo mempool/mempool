@@ -53,7 +53,7 @@ class MempoolBlocks {
     // Pass down size + fee to all unconfirmed children
     let sizes = 0;
     memPoolArray.forEach((tx, i) => {
-      sizes += tx.weight
+      sizes += tx.weight;
       if (sizes > 4000000 * 8) {
         return;
       }

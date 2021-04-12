@@ -111,7 +111,16 @@ class Server {
 
   async runMainUpdateLoop() {
     try {
-      await memPool.$updateMemPoolInfo();
+      try {
+        await memPool.$updateMemPoolInfo();
+      } catch (e) {
+        const msg = `updateMempoolInfo: ${(e.message || e)}`;
+        if (config.CORE_RPC_MINFEE.ENABLED) {
+          logger.warn(msg);
+        } else {
+          logger.debug(msg);
+        }
+      }
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
@@ -162,6 +171,24 @@ class Server {
       .get(config.MEMPOOL.API_URL_PREFIX + 'donations/images/:id', async (req, res) => {
         try {
           const response = await axios.get('https://mempool.space/api/v1/donations/images/' + req.params.id, {
+            responseType: 'stream', timeout: 10000
+          });
+          response.data.pipe(res);
+        } catch (e) {
+          res.status(500).end();
+        }
+      })
+      .get(config.MEMPOOL.API_URL_PREFIX + 'contributors', async (req, res) => {
+        try {
+          const response = await axios.get('https://mempool.space/api/v1/contributors', { responseType: 'stream', timeout: 10000 });
+          response.data.pipe(res);
+        } catch (e) {
+          res.status(500).end();
+        }
+      })
+      .get(config.MEMPOOL.API_URL_PREFIX + 'contributors/images/:id', async (req, res) => {
+        try {
+          const response = await axios.get('https://mempool.space/api/v1/contributors/images/' + req.params.id, {
             responseType: 'stream', timeout: 10000
           });
           response.data.pipe(res);

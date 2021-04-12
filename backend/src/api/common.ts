@@ -13,9 +13,13 @@ export class Common {
   }
 
   static percentile(numbers: number[], percentile: number) {
-    if (percentile === 50) return this.median(numbers);
+    if (percentile === 50) {
+      return this.median(numbers);
+    }
     const index = Math.ceil(numbers.length * (100 - percentile) * 1e-2);
-    if (index < 0 || index > numbers.length - 1) return 0;
+    if (index < 0 || index > numbers.length - 1) {
+      return 0;
+    }
     return numbers[index];
   }
 
@@ -71,7 +75,7 @@ export class Common {
        }, ms);
     });
   }
-  
+
   static shuffleArray(array: any[]) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -81,9 +85,10 @@ export class Common {
 
   static setRelativesAndGetCpfpInfo(tx: TransactionExtended, memPool: { [txid: string]: TransactionExtended }): CpfpInfo {
     const parents = this.findAllParents(tx, memPool);
+    const lowerFeeParents = parents.filter((parent) => parent.feePerVsize < tx.effectiveFeePerVsize);
 
-    let totalWeight = tx.weight + parents.reduce((prev, val) => prev + val.weight, 0);
-    let totalFees = tx.fee + parents.reduce((prev, val) => prev + val.fee, 0);
+    let totalWeight = tx.weight + lowerFeeParents.reduce((prev, val) => prev + val.weight, 0);
+    let totalFees = tx.fee + lowerFeeParents.reduce((prev, val) => prev + val.fee, 0);
 
     tx.ancestors = parents
       .map((t) => {
@@ -113,6 +118,10 @@ export class Common {
   private static findAllParents(tx: TransactionExtended, memPool: { [txid: string]: TransactionExtended }): TransactionExtended[] {
     let parents: TransactionExtended[] = [];
     tx.vin.forEach((parent) => {
+      if (parents.find((p) => p.txid === parent.txid)) {
+        return;
+      }
+
       const parentTx = memPool[parent.txid];
       if (parentTx) {
         if (tx.bestDescendant && tx.bestDescendant.fee / (tx.bestDescendant.weight / 4) > parentTx.feePerVsize) {
