@@ -1,20 +1,24 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import logger from '../logger';
+import { IBackendInfo } from '../mempool.interfaces';
 
 class BackendInfo {
-  gitCommitHash = '';
-  hostname = '';
+  private gitCommitHash = '';
+  private hostname = '';
+  private version = '';
 
   constructor() {
     this.setLatestCommitHash();
+    this.setVersion();
     this.hostname = os.hostname();
   }
 
-  public getBackendInfo() {
+  public getBackendInfo(): IBackendInfo {
     return {
-      'hostname': this.hostname,
-      'git-commit': this.gitCommitHash,
+      hostname: this.hostname,
+      gitCommit: this.gitCommitHash,
+      version: this.version,
     };
   }
 
@@ -27,6 +31,15 @@ class BackendInfo {
       this.gitCommitHash = fs.readFileSync('../.git/refs/heads/master').toString().trim();
     } catch (e) {
       logger.err('Could not load git commit info: ' + e.message || e);
+    }
+  }
+
+  private setVersion(): void {
+    try {
+      const packageJson = fs.readFileSync('package.json').toString();
+      this.version = JSON.parse(packageJson).version;
+    } catch (e) {
+      throw new Error(e);
     }
   }
 }

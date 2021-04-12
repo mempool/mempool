@@ -16,6 +16,7 @@ export interface WebsocketResponse {
   rbfTransaction?: Transaction;
   transactions?: TransactionStripped[];
   loadingIndicators?: ILoadingIndicators;
+  backendInfo?: IBackendInfo;
   'track-tx'?: string;
   'track-address'?: string;
   'track-asset'?: string;
@@ -49,3 +50,8 @@ export interface TransactionStripped {
   value: number;
 }
 
+export interface IBackendInfo {
+  hostname: string;
+  gitCommit: string;
+  version: string;
+}

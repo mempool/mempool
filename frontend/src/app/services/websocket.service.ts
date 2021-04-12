@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { WebsocketResponse } from '../interfaces/websocket.interface';
+import { WebsocketResponse, IBackendInfo } from '../interfaces/websocket.interface';
 import { StateService } from './state.service';
 import { Block, Transaction } from '../interfaces/electrs.interface';
 import { Subscription } from 'rxjs';
@@ -236,13 +236,13 @@ export class WebsocketService {
       this.stateService.bsqPrice$.next(response['bsq-price']);
     }
 
-    if (response['git-commit']) {
-      this.stateService.gitCommit$.next(response['git-commit']);
+    if (response.backendInfo) {
+      this.stateService.backendInfo$.next(response.backendInfo);
 
       if (!this.latestGitCommit) {
-        this.latestGitCommit = response['git-commit'];
+        this.latestGitCommit = response.backendInfo.gitCommit;
       } else {
-        if (this.latestGitCommit !== response['git-commit']) {
+        if (this.latestGitCommit !== response.backendInfo.gitCommit) {
           setTimeout(() => {
             window.location.reload();
           }, Math.floor(Math.random() * 60000) + 60000);
@@ -283,7 +283,7 @@ export class WebsocketService {
     }
 
     if (response['git-commit']) {
-      this.stateService.gitCommit$.next(response['git-commit']);
+      this.stateService.backendInfo$.next(response['git-commit']);
     }
   }
 }
