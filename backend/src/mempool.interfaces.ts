@@ -30,6 +30,7 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
   ancestors?: Ancestor[];
   bestDescendant?: BestDescendant | null;
   cpfpChecked?: boolean;
+  deleteAfter?: number;
 }
 
 interface Ancestor {

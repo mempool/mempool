@@ -11,7 +11,24 @@ export interface Transaction {
 
   // Custom properties
   firstSeen?: number;
+  feePerVsize?: number;
   effectiveFeePerVsize?: number;
+  ancestors?: Ancestor[];
+  bestDescendant?: BestDescendant | null;
+  cpfpChecked?: boolean;
+  deleteAfter?: number;
+}
+
+interface Ancestor {
+  txid: string;
+  weight: number;
+  fee: number;
+}
+
+interface BestDescendant {
+  txid: string;
+  weight: number;
+  fee: number;
 }
 
 export interface Recent {

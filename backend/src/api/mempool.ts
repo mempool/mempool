@@ -10,10 +10,11 @@ import loadingIndicators from './loading-indicators';
 
 class Mempool {
   private static WEBSOCKET_REFRESH_RATE_MS = 10000;
+  private static LAZY_DELETE_AFTER_SECONDS = 30;
   private inSync: boolean = false;
   private mempoolCache: { [txId: string]: TransactionExtended } = {};
   private mempoolInfo: IBitcoinApi.MempoolInfo = { loaded: false, size: 0, bytes: 0, usage: 0,
-                                                    maxmempool: 0, mempoolminfee: 0, minrelaytxfee: 0 };
+                                                    maxmempool: 300000000, mempoolminfee: 0.00001000, minrelaytxfee: 0.00001000 };
   private mempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
     deletedTransactions: TransactionExtended[]) => void) | undefined;
 
@@ -27,6 +28,7 @@ class Mempool {
 
   constructor() {
     setInterval(this.updateTxPerSecond.bind(this), 1000);
+    setInterval(this.deleteExpiredTransactions.bind(this), 20000);
   }
 
   public isInSync(): boolean {
@@ -145,7 +147,6 @@ class Mempool {
       }, 1000 * 60 * config.MEMPOOL.CLEAR_PROTECTION_MINUTES);
     }
 
-    let newMempool = {};
     const deletedTransactions: TransactionExtended[] = [];
 
     if (this.mempoolProtection !== 1) {
@@ -154,35 +155,31 @@ class Mempool {
       const transactionsObject = {};
       transactions.forEach((txId) => transactionsObject[txId] = true);
 
-      // Replace mempool to separate deleted transactions
+      // Flag transactions for lazy deletion
       for (const tx in this.mempoolCache) {
-        if (transactionsObject[tx]) {
-          newMempool[tx] = this.mempoolCache[tx];
-        } else {
+        if (!transactionsObject[tx] && !this.mempoolCache[tx].deleteAfter) {
           deletedTransactions.push(this.mempoolCache[tx]);
+          this.mempoolCache[tx].deleteAfter = new Date().getTime() + Mempool.LAZY_DELETE_AFTER_SECONDS * 1000;
         }
       }
-    } else {
-      newMempool = this.mempoolCache;
     }
 
     const newTransactionsStripped = newTransactions.map((tx) => Common.stripTransaction(tx));
     this.latestTransactions = newTransactionsStripped.concat(this.latestTransactions).slice(0, 6);
 
-    if (!this.inSync && transactions.length === Object.keys(newMempool).length) {
+    if (!this.inSync && transactions.length === Object.keys(this.mempoolCache).length) {
       this.inSync = true;
       logger.info('The mempool is now in sync!');
       loadingIndicators.setProgress('mempool', 100);
     }
 
     if (this.mempoolChangedCallback && (hasChange || deletedTransactions.length)) {
-      this.mempoolCache = newMempool;
       this.mempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
     }
 
     const end = new Date().getTime();
     const time = end - start;
-    logger.debug(`New mempool size: ${Object.keys(newMempool).length} Change: ${diff}`);
+    logger.debug(`New mempool size: ${Object.keys(this.mempoolCache).length} Change: ${diff}`);
     logger.debug('Mempool updated in ' + time / 1000 + ' seconds');
   }
 
@@ -196,6 +193,16 @@ class Mempool {
       this.vBytesPerSecond = Math.round(
         this.vBytesPerSecondArray.map((data) => data.vSize).reduce((a, b) => a + b) / config.STATISTICS.TX_PER_SECOND_SAMPLE_PERIOD
       );
+    }
+  }
+
+  private deleteExpiredTransactions() {
+    const now = new Date().getTime();
+    for (const tx in this.mempoolCache) {
+      const lazyDeleteAt = this.mempoolCache[tx].deleteAfter;
+      if (lazyDeleteAt && lazyDeleteAt < now) {
+        delete this.mempoolCache[tx];
+      }
     }
   }
 }

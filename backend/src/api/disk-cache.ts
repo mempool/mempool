@@ -12,6 +12,7 @@ class DiskCache {
   private static FILE_NAME = config.MEMPOOL.CACHE_DIR + '/cache.json';
   private static FILE_NAMES = config.MEMPOOL.CACHE_DIR + '/cache{number}.json';
   private static CHUNK_FILES = 25;
+  private isWritingCache = false;
 
   constructor() { }
 
@@ -19,8 +20,13 @@ class DiskCache {
     if (!cluster.isMaster) {
       return;
     }
+    if (this.isWritingCache) {
+      logger.debug('Saving cache already in progress. Skipping.')
+      return;
+    }
     try {
       logger.debug('Writing mempool and blocks data to disk cache (async)...');
+      this.isWritingCache = true;
 
       const mempool = memPool.getMempool();
       const mempoolArray: TransactionExtended[] = [];
@@ -44,8 +50,10 @@ class DiskCache {
         }), {flag: 'w'});
       }
       logger.debug('Mempool and blocks data saved to disk cache');
+      this.isWritingCache = false;
     } catch (e) {
       logger.warn('Error writing to cache file: ' + e.message || e);
+      this.isWritingCache = false;
     }
   }
 
@@ -68,22 +76,26 @@ class DiskCache {
 
       for (let i = 1; i < DiskCache.CHUNK_FILES; i++) {
         const fileName = DiskCache.FILE_NAMES.replace('{number}', i.toString());
-        if (fs.existsSync(fileName)) {
-          const cacheData2 = JSON.parse(fs.readFileSync(fileName, 'utf8'));
-          if (cacheData2.mempoolArray) {
-            for (const tx of cacheData2.mempoolArray) {
-              data.mempool[tx.txid] = tx;
+        try {
+          if (fs.existsSync(fileName)) {
+            const cacheData2 = JSON.parse(fs.readFileSync(fileName, 'utf8'));
+            if (cacheData2.mempoolArray) {
+              for (const tx of cacheData2.mempoolArray) {
+                data.mempool[tx.txid] = tx;
+              }
+            } else {
+              Object.assign(data.mempool, cacheData2.mempool);
             }
-          } else {
-            Object.assign(data.mempool, cacheData2.mempool);
           }
+        } catch (e) {
+          logger.debug('Error parsing ' + fileName + '. Skipping.');
         }
       }
 
       memPool.setMempool(data.mempool);
       blocks.setBlocks(data.blocks);
     } catch (e) {
-      logger.warn('Failed to parse mempoool and blocks cache. Skipping...');
+      logger.warn('Failed to parse mempoool and blocks cache. Skipping.');
     }
   }
 }
