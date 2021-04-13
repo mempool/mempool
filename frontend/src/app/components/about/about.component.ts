@@ -6,7 +6,7 @@ import { Observable, Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApiService } from 'src/app/services/api.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { delay, map, retryWhen, switchMap, tap } from 'rxjs/operators';
+import { delay, retryWhen, switchMap, tap } from 'rxjs/operators';
 import { IBackendInfo } from 'src/app/interfaces/websocket.interface';
 
 @Component({
@@ -25,7 +25,7 @@ export class AboutComponent implements OnInit, OnDestroy {
   sponsorsEnabled = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
   frontendGitCommitHash = this.stateService.env.GIT_COMMIT_HASH.substr(0, 8);
   packetJsonVersion = this.stateService.env.PACKAGE_JSON_VERSION;
-  hostname = document.location.hostname;
+  officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
   sponsors = null;
   contributors = null;
   requestSubscription: Subscription | undefined;
