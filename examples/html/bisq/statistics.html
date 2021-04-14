@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Page Title</title>
+    <script src="https://mempool.space/mempool.js"></script>
+    <script>
+      const init = async () => {
+        const {
+          bisq: { statistics },
+        } = mempoolJS();
+
+        const stats = await statistics.getStats();
+        console.log(stats);
+      };
+      init();
+    </script>
+  </head>
+  <body></body>
+</html>

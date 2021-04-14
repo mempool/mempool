@@ -1,31 +1,70 @@
-import { MempoolConfig, MempoolReturn } from './interfaces';
-import { makeAPI } from './services/api';
+import { MempoolConfig, MempoolReturn } from './interfaces/index';
+import {
+  makeBitcoinAPI,
+  makeBisqAPI,
+  makeLiquidAPI,
+} from './services/api/index';
 
-import { useAddresses } from './app/addresses';
-import { useBlocks } from './app/blocks';
-import { useFees } from './app/fees';
-import { useMempool } from './app/mempool';
-import { useTransactions } from './app/transactions';
-import { useWebsocket } from './app/websocket';
+import { useAddresses } from './app/bitcoin/addresses';
+import { useBlocks } from './app/bitcoin/blocks';
+import { useFees } from './app/bitcoin/fees';
+import { useMempool } from './app/bitcoin/mempool';
+import { useTransactions } from './app/bitcoin/transactions';
+import { useWebsocket } from './app/bitcoin/websocket';
 
-const apiEndpointDefault = 'https://mempool.space/api/';
-const websocketEndpointDefault = 'wss://mempool.space/api/v1/ws';
+import { useAddresses as useAddressesBisq } from './app/bisq/addresses';
+import { useBlocks as useBlocksBisq } from './app/bisq/blocks';
+import { useStatistics as useStatisticsBisq } from './app/bisq/statistics';
+import { useTransactions as useTransactionsBisq } from './app/bisq/transactions';
+
+import { useAssets as useAssetsLiquid } from './app/liquid/assets';
+import { useAddresses as useAddressesLiquid } from './app/liquid/addresses';
+import { useBlocks as useBlocksLiquid } from './app/liquid/blocks';
+import { useFees as useFeesLiquid } from './app/liquid/fees';
+import { useMempool as useMempoolLiquid } from './app/liquid/mempool';
+import { useTransactions as useTransactionsLiquid } from './app/liquid/transactions';
+import { useWebsocket as useWebsocketLiquid } from './app/liquid/websocket';
+
+const hostnameEndpointDefault = 'mempool.space';
+const networkEndpointDefault = 'main';
 
 const mempool = (
-  { apiEndpoint, websocketEndpoint }: MempoolConfig = {
-    apiEndpoint: apiEndpointDefault,
-    websocketEndpoint: websocketEndpointDefault,
+  { hostname, network }: MempoolConfig = {
+    hostname: hostnameEndpointDefault,
+    network: networkEndpointDefault,
   }
 ): MempoolReturn => {
-  const { api } = makeAPI(apiEndpoint);
+  if (!hostname) hostname = hostnameEndpointDefault;
+  if (!network) network = networkEndpointDefault;
+
+  const { api: apiBitcoin } = makeBitcoinAPI({ hostname, network });
+  const { api: apiBisq } = makeBisqAPI(hostname);
+  const { api: apiLiquid } = makeLiquidAPI(hostname);
 
   return {
-    addresses: useAddresses(api),
-    blocks: useBlocks(api),
-    fees: useFees(api),
-    mempool: useMempool(api),
-    transactions: useTransactions(api),
-    websocket: useWebsocket(websocketEndpoint),
+    bitcoin: {
+      addresses: useAddresses(apiBitcoin),
+      blocks: useBlocks(apiBitcoin),
+      fees: useFees(apiBitcoin),
+      mempool: useMempool(apiBitcoin),
+      transactions: useTransactions(apiBitcoin),
+      websocket: useWebsocket(hostname),
+    },
+    bisq: {
+      statistics: useStatisticsBisq(apiBisq),
+      addresses: useAddressesBisq(apiBisq),
+      blocks: useBlocksBisq(apiBisq),
+      transactions: useTransactionsBisq(apiBisq),
+    },
+    liquid: {
+      addresses: useAddressesLiquid(apiLiquid),
+      assets: useAssetsLiquid(apiLiquid),
+      blocks: useBlocksLiquid(apiLiquid),
+      fees: useFeesLiquid(apiLiquid),
+      mempool: useMempoolLiquid(apiLiquid),
+      transactions: useTransactionsLiquid(apiLiquid),
+      websocket: useWebsocketLiquid(hostname),
+    },
   };
 };
 
