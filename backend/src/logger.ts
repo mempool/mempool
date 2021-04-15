@@ -50,17 +50,11 @@ class Logger {
   public debug: ((msg: string) => void);
 
   private name = 'mempool';
-  private fac: any;
-  private loghost: string;
-  private logport: number;
   private client: dgram.Socket;
   private network: string;
 
-  constructor(fac) {
+  constructor() {
     let prio;
-    this.fac = fac != null ? fac : Logger.facilities.local0;
-    this.loghost = '127.0.0.1';
-    this.logport = 514;
     for (prio in Logger.priorities) {
       if (true) {
         this.addprio(prio);
@@ -97,10 +91,12 @@ class Logger {
     }
     const network = this.network ? ' <' + this.network + '>' : '';
     prionum = Logger.priorities[priority] || Logger.priorities.info;
-    syslogmsg = `<${(this.fac * 8 + prionum)}> ${this.name}[${process.pid}]: ${priority.toUpperCase()}${network} ${msg}`;
     consolemsg = `${this.ts()} [${process.pid}] ${priority.toUpperCase()}:${network} ${msg}`;
 
-    this.syslog(syslogmsg);
+    if (config.SYSLOG.ENABLED && Logger.priorities[priority] <= Logger.priorities[config.SYSLOG.MIN_PRIORITY]) {
+      syslogmsg = `<${(Logger.facilities[config.SYSLOG.FACILITY] * 8 + prionum)}> ${this.name}[${process.pid}]: ${priority.toUpperCase()}${network} ${msg}`;
+      this.syslog(syslogmsg);
+    }
     if (priority === 'warning') {
       priority = 'warn';
     }
@@ -116,7 +112,7 @@ class Logger {
   private syslog(msg) {
     let msgbuf;
     msgbuf = Buffer.from(msg);
-    this.client.send(msgbuf, 0, msgbuf.length, this.logport, this.loghost, function(err, bytes) {
+    this.client.send(msgbuf, 0, msgbuf.length, config.SYSLOG.PORT, config.SYSLOG.HOST, function(err, bytes) {
       if (err) {
         console.log(err);
       }
@@ -146,4 +142,4 @@ class Logger {
   }
 }
 
-export default new Logger(Logger.facilities.local7);
+export default new Logger();
