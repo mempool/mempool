@@ -93,7 +93,7 @@ class Logger {
     prionum = Logger.priorities[priority] || Logger.priorities.info;
     consolemsg = `${this.ts()} [${process.pid}] ${priority.toUpperCase()}:${network} ${msg}`;
 
-    if (config.SYSLOG.ENABLED && Logger.priorities[priority] >= Logger.priorities[config.SYSLOG.MIN_PRIORITY]) {
+    if (config.SYSLOG.ENABLED && Logger.priorities[priority] <= Logger.priorities[config.SYSLOG.MIN_PRIORITY]) {
       syslogmsg = `<${(Logger.facilities[config.SYSLOG.FACILITY] * 8 + prionum)}> ${this.name}[${process.pid}]: ${priority.toUpperCase()}${network} ${msg}`;
       this.syslog(syslogmsg);
     }
