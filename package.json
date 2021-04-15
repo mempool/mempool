@@ -1,11 +1,16 @@
 {
   "name": "@mempool/mempool-js",
-  "version": "2.3.0",
-  "description": "NPM Package for Mempool JS API.",
+  "version": "2.2.0",
+  "description": "NPM package module for Mempool APIs.",
   "main": "lib/index.js",
   "keywords": [
     "axios",
     "bitcoin",
+    "bisq",
+    "liquid",
+    "mainet",
+    "testnet",
+    "signet",
     "blockchain",
     "html",
     "mempool-space",
