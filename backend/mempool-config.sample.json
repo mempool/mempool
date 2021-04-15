@@ -39,6 +39,13 @@
     "USERNAME": "mempool",
     "PASSWORD": "mempool"
   },
+  "SYSLOG": {
+    "ENABLED": true,
+    "HOST": "127.0.0.1",
+    "PORT": 514,
+    "MIN_PRIORITY": "info",
+    "FACILITY": "local7"
+  },
   "STATISTICS": {
     "ENABLED": true,
     "TX_PER_SECOND_SAMPLE_PERIOD": 150

@@ -41,6 +41,13 @@ interface IConfig {
     USERNAME: string;
     PASSWORD: string;
   };
+  SYSLOG: {
+    ENABLED: boolean;
+    HOST: string;
+    PORT: number;
+    MIN_PRIORITY: 'emerg' | 'alert' | 'crit' | 'err' |'warn' | 'notice' | 'info' | 'debug';
+    FACILITY: string;
+  };
   STATISTICS: {
     ENABLED: boolean;
     TX_PER_SECOND_SAMPLE_PERIOD: number;
@@ -96,6 +103,13 @@ const defaults: IConfig = {
     'USERNAME': 'mempool',
     'PASSWORD': 'mempool'
   },
+  'SYSLOG': {
+    'ENABLED': true,
+    'HOST': '127.0.0.1',
+    'PORT': 514,
+    'MIN_PRIORITY': 'info',
+    'FACILITY': 'local7'
+  },
   'STATISTICS': {
     'ENABLED': true,
     'TX_PER_SECOND_SAMPLE_PERIOD': 150
@@ -117,6 +131,7 @@ class Config implements IConfig {
   CORE_RPC: IConfig['CORE_RPC'];
   CORE_RPC_MINFEE: IConfig['CORE_RPC_MINFEE'];
   DATABASE: IConfig['DATABASE'];
+  SYSLOG: IConfig['SYSLOG'];
   STATISTICS: IConfig['STATISTICS'];
   BISQ_BLOCKS: IConfig['BISQ_BLOCKS'];
   BISQ_MARKETS: IConfig['BISQ_MARKETS'];
@@ -129,6 +144,7 @@ class Config implements IConfig {
     this.CORE_RPC = configs.CORE_RPC;
     this.CORE_RPC_MINFEE = configs.CORE_RPC_MINFEE;
     this.DATABASE = configs.DATABASE;
+    this.SYSLOG = configs.SYSLOG;
     this.STATISTICS = configs.STATISTICS;
     this.BISQ_BLOCKS = configs.BISQ_BLOCKS;
     this.BISQ_MARKETS = configs.BISQ_MARKETS;
