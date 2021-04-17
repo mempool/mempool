@@ -1,13 +1,15 @@
 # Mempool JS API
 
-[![npm version](https://img.shields.io/npm/v/@mempool/mempool-js.svg?style=flat-square)](https://www.npmjs.org/package/@mempool/mempool-js)
-[![NPM](https://img.shields.io/david/mempool/mempool-js.svg?style=flat-square)](https://david-dm.org/mempool/mempool-js#info=dependencies)
+[![npm version](https://img.shields.io/npm/v/@mempool/mempool.js.svg?style=flat-square)](https://www.npmjs.org/package/@mempool/mempool.js)
+[![NPM](https://img.shields.io/david/mempool/mempool.js.svg?style=flat-square)](https://david-dm.org/mempool/mempool.js#info=dependencies)
 [![Known Vulnerabilities](https://snyk.io/test/github/mempool/mempool-js/badge.svg?style=flat-square)](https://snyk.io/test/github/mempool/mempool-js)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
 NPM package module for Mempool APIs.
 
-## [https://mempool.tools/mempool-js](https://mempool.tools/mempool-js)
+Documentation: [https://mempool.tools/mempool-js](https://mempool.tools/mempool-js)
+
+---
 
 ## **Installation**
 
@@ -17,10 +19,10 @@ Install the npm module.
 
 ```bash
 # npm
-$ npm install @mempool/mempool-js --save
+$ npm install @mempool/mempool.js --save
 
 # yarn
-$ yarn add @mempool/mempool-js
+$ yarn add @mempool/mempool.js
 ```
 
 Or if you're not into package management, just [download a ZIP](https://github.com/mempool/mempool-js/archive/refs/heads/main.zip) file.
@@ -28,7 +30,7 @@ Or if you're not into package management, just [download a ZIP](https://github.c
 Import the module.
 
 ```js
-import mempoolJS from '@mempool/mempool-js';
+import mempoolJS from '@mempool/mempool.js';
 
 // default mempool.space endpoints
 const { bitcoin, bisq, liquid } = mempoolJS();
