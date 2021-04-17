@@ -13,8 +13,8 @@
     "signet",
     "blockchain",
     "html",
-    "mempool-space",
-    "mempool-js",
+    "mempool.space",
+    "mempool.js",
     "mempool",
     "nodejs",
     "typescript"
@@ -24,7 +24,7 @@
   "private": false,
   "repository": {
     "type": "git",
-    "url": "git://github.com/mempool/mempool-js.git"
+    "url": "git://github.com/mempool/mempool.js.git"
   },
   "types": "lib/index.d.ts",
   "scripts": {
