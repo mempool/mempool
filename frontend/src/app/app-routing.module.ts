@@ -124,6 +124,10 @@ const routes: Routes = [
             path: 'api',
             component: ApiDocsComponent,
           },
+          {
+            path: 'about',
+            component: AboutComponent,
+          },
         ],
       },
       {
@@ -185,6 +189,10 @@ const routes: Routes = [
           {
             path: 'api',
             component: ApiDocsComponent,
+          },
+          {
+            path: 'about',
+            component: AboutComponent,
           },
         ],
       },
@@ -276,6 +284,10 @@ const routes: Routes = [
   {
     path: 'status',
     component: StatusViewComponent
+  },
+  {
+    path: 'about',
+    component: AboutComponent,
   },
   {
     path: '**',

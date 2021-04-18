@@ -59,7 +59,7 @@
         <a class="nav-link" [routerLink]="['/api' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'cogs']" [fixedWidth]="true" i18n-title="master-page.api" title="API"></fa-icon></a>
       </li>
       <li class="nav-item" routerLinkActive="active">
-        <a class="nav-link" [routerLink]="['/about']" (click)="collapse()"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true" i18n-title="master-page.about" title="About"></fa-icon></a>
+        <a class="nav-link" [routerLink]="'/' + network.val + '/about'" (click)="collapse()"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true" i18n-title="master-page.about" title="About"></fa-icon></a>
       </li>
     </ul>
     <app-search-form location="top" (searchTriggered)="collapse()"></app-search-form>
