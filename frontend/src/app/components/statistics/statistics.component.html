@@ -14,29 +14,28 @@
       <div class="card mb-3" *ngIf="mempoolStats.length">
         <div class="card-header">
           <i class="fa fa-area-chart"></i> <span i18n="statistics.memory-by-vBytes">Mempool by vBytes (sat/vByte)</span>
-
-          <form [formGroup]="radioGroupForm" style="float: right;">
+          <form [formGroup]="radioGroupForm" style="float: right;" (click)='saveGraphPreference()'>
             <div class="spinner-border text-light bootstrap-spinner" *ngIf="spinnerLoading"></div>
             <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
-              <label ngbButtonLabel class="btn-primary btn-sm">
+              <label ngbButtonLabel class="btn-primary btn-sm" [class.active]="graphWindowPreference === '2h'">
                 <input ngbButton type="radio" [value]="'2h'" [routerLink]="['/graphs' | relativeUrl]" fragment="2h"> 2H (LIVE)
               </label>
-              <label ngbButtonLabel class="btn-primary btn-sm">
+              <label ngbButtonLabel class="btn-primary btn-sm" [class.active]="graphWindowPreference === '24h'">
                 <input ngbButton type="radio" [value]="'24h'" [routerLink]="['/graphs' | relativeUrl]" fragment="24h"> 24H
               </label>
-              <label ngbButtonLabel class="btn-primary btn-sm">
+              <label ngbButtonLabel class="btn-primary btn-sm" [class.active]="graphWindowPreference === '1w'">
                 <input ngbButton type="radio" [value]="'1w'" [routerLink]="['/graphs' | relativeUrl]" fragment="1w"> 1W
               </label>
-              <label ngbButtonLabel class="btn-primary btn-sm">
+              <label ngbButtonLabel class="btn-primary btn-sm" [class.active]="graphWindowPreference === '1m'">
                 <input ngbButton type="radio" [value]="'1m'" [routerLink]="['/graphs' | relativeUrl]" fragment="1m"> 1M
               </label>
-              <label ngbButtonLabel class="btn-primary btn-sm">
+              <label ngbButtonLabel class="btn-primary btn-sm" [class.active]="graphWindowPreference === '3m'">
                 <input ngbButton type="radio" [value]="'3m'" [routerLink]="['/graphs' | relativeUrl]" fragment="3m"> 3M
               </label>
-              <label ngbButtonLabel class="btn-primary btn-sm">
+              <label ngbButtonLabel class="btn-primary btn-sm" [class.active]="graphWindowPreference === '6m'">
                 <input ngbButton type="radio" [value]="'6m'" [routerLink]="['/graphs' | relativeUrl]" fragment="6m"> 6M
               </label>
-              <label ngbButtonLabel class="btn-primary btn-sm">
+              <label ngbButtonLabel class="btn-primary btn-sm" [class.active]="graphWindowPreference === '1y'">
                 <input ngbButton type="radio" [value]="'1y'" [routerLink]="['/graphs' | relativeUrl]" fragment="1y"> 1Y
               </label>
             </div>
