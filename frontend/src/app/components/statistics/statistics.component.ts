@@ -47,8 +47,9 @@ export class StatisticsComponent implements OnInit {
     private seoService: SeoService,
     private storageService: StorageService,
   ) {
+    this.graphWindowPreference = this.storageService.getValue('graphWindowPreference') ? this.storageService.getValue('graphWindowPreference').trim() : '2h';
     this.radioGroupForm = this.formBuilder.group({
-      dateSpan: '2h'
+      dateSpan: this.graphWindowPreference
     });
    }
 
@@ -56,7 +57,6 @@ export class StatisticsComponent implements OnInit {
     this.seoService.setTitle($localize`:@@5d4f792f048fcaa6df5948575d7cb325c9393383:Graphs`);
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.inverted = this.storageService.getValue('inverted-graph') === 'true';
-    this.graphWindowPreference = this.storageService.getValue('graphWindowPreference') ? this.storageService.getValue('graphWindowPreference').trim() : '24h';
     const isMobile = window.innerWidth <= 767.98;
     let labelHops = isMobile ? 48 : 24;
 
