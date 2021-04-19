@@ -5,12 +5,53 @@
   text-overflow: ellipsis;
 }
 
+form {
+  margin-top: 5px;
+}
+
+@media (min-width: 576px) {
+  form {
+    margin-top: 0px;
+    margin-left: 8px;
+  }
+}
+
+@media (min-width: 992px) {
+  form {
+    width: 100%;
+  }
+}
+
+.btn-block {
+  width: 58.55px;
+}
+
 .search-box-container {
   width: 100%;
 }
 
+.search-box-container input {
+  border: 0px;
+}
+
+.search-box-container .btn {
+  width: 100px;
+}
+
+@media (min-width: 768px) {
+  .search-box-container {
+    min-width: 400px;
+  }
+}
+
 @media (min-width: 992px) {
   .search-box-container {
-    width: 350px;
+    min-width: 260px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .search-box-container {
+    min-width: 300px;
   }
 }
