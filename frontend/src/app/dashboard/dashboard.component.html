@@ -1,5 +1,5 @@
 
-<div class="container-xl mt-2">
+<div class="container-xl mt-2 dashboard-container">
 
   <div class="row row-cols-1 row-cols-md-2" *ngIf="{ value: (mempoolInfoData$ | async) } as mempoolInfoData">
     <ng-template [ngIf]="collapseLevel === 'three'" [ngIfElse]="expanded">
