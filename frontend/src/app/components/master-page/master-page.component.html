@@ -26,7 +26,7 @@
   </div>
 
   <div class="navbar-collapse" id="navbarCollapse">
-    <ul class="navbar-nav mr-auto pt-2 pb-2 pb-md-0 pt-md-0 {{ network.val }}">
+    <ul class="navbar-nav {{ network.val }}">
       <ng-template [ngIf]="network.val === 'bisq'" [ngIfElse]="notBisq">
         <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
           <a class="nav-link" [routerLink]="['/bisq']" (click)="collapse()"><fa-icon [icon]="['fas', 'list']" [fixedWidth]="true" i18n-title="master-page.transactions" title="Transactions"></fa-icon></a>
@@ -62,7 +62,7 @@
         <a class="nav-link" [routerLink]="['/about']" (click)="collapse()"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true" i18n-title="master-page.about" title="About"></fa-icon></a>
       </li>
     </ul>
-    <app-search-form location="top" (searchTriggered)="collapse()"></app-search-form>
+    <app-search-form class="search-form-container" location="top" (searchTriggered)="collapse()"></app-search-form>
   </div>
 </nav>
 </header>
