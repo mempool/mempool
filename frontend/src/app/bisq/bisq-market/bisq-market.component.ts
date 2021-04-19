@@ -82,7 +82,7 @@ export class BisqMarketComponent implements OnInit, OnDestroy {
             return {
               time: h.time,
               value: h.volume_right,
-              color: h.close > h.avg ? 'rgba(0, 150, 136, 0.8)' : 'rgba(255,82,82, 0.8)',
+              color: h.close > h.avg ? 'rgba(0, 41, 74, 0.7)' : 'rgba(0, 41, 74, 1)',
             };
           })
         };

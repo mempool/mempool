@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Observable, combineLatest } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { SeoService } from 'src/app/services/seo.service';
 import { StateService } from 'src/app/services/state.service';
 import { WebsocketService } from 'src/app/services/websocket.service';

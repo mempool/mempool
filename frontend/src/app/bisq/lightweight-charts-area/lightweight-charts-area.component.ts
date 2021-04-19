@@ -24,7 +24,6 @@ export class LightweightChartsAreaComponent implements OnChanges, OnDestroy {
   constructor(
     private element: ElementRef,
   ) {
-    
     this.container = document.createElement('div');
     const chartholder = this.element.nativeElement.appendChild(this.container);
 
@@ -54,20 +53,20 @@ export class LightweightChartsAreaComponent implements OnChanges, OnDestroy {
       },
     });
 
-    this.areaSeries = this.chart.addAreaSeries({
-      topColor: 'rgba(33, 150, 243, 0.9)',
-      bottomColor: 'rgba(33, 150, 243, 0.1)',
-      lineColor: 'rgba(33, 150, 243, 1)',
-      lineWidth: 2,
-    });
-
     this.lineSeries = this.chart.addLineSeries({
       color: 'rgba(37, 177, 53, 1)',
       lineColor: 'rgba(216, 27, 96, 1)',
       lineWidth: 2,
     });
 
-    var toolTip = document.createElement('div');
+    this.areaSeries = this.chart.addAreaSeries({
+      topColor: 'rgba(33, 150, 243, 0.7)',
+      bottomColor: 'rgba(33, 150, 243, 0.1)',
+      lineColor: 'rgba(33, 150, 243, 0.1)',
+      lineWidth: 2,
+    });
+
+    const toolTip = document.createElement('div');
     toolTip.className = 'floating-tooltip-2';
     chartholder.appendChild(toolTip);
 
@@ -76,37 +75,37 @@ export class LightweightChartsAreaComponent implements OnChanges, OnDestroy {
         toolTip.style.display = 'none';
         return;
       }
-    
-      var dateStr = isBusinessDay(param.time)
+
+      const dateStr = isBusinessDay(param.time)
         ? this.businessDayToString(param.time)
         : new Date(param.time * 1000).toLocaleDateString();
-    
-      toolTip.style.display = 'block';
-      var price = param.seriesPrices.get(this.areaSeries);
-      var line = param.seriesPrices.get(this.lineSeries);
 
-      toolTip.innerHTML = 
-      `<table><tr><td class="volumeText">Volume:<td class="text-right volumeText">${Math.round(price * 100) / 100} BTC</td></tr>
+      toolTip.style.display = 'block';
+      const price = param.seriesPrices.get(this.areaSeries);
+      const line = param.seriesPrices.get(this.lineSeries);
+
+      toolTip.innerHTML = `<table>
         <tr><td class="tradesText"># of trades:</td><td class="text-right tradesText">${Math.round(line * 100) / 100}</td></tr>
+        <tr><td class="volumeText">Volume:<td class="text-right volumeText">${Math.round(price * 100) / 100} BTC</td></tr>
         </table>
         <div>${dateStr}</div>`;
-    
-      var y = param.point.y;
 
-      var toolTipWidth = 100;
-      var toolTipHeight = 80;
-      var toolTipMargin = 15;
-    
-      var left = param.point.x + toolTipMargin;
+      const y = param.point.y;
+
+      const toolTipWidth = 100;
+      const toolTipHeight = 80;
+      const toolTipMargin = 15;
+
+      let left = param.point.x + toolTipMargin;
       if (left > this.width - toolTipWidth) {
         left = param.point.x - toolTipMargin - toolTipWidth;
       }
-    
-      var top = y + toolTipMargin;
+
+      let top = y + toolTipMargin;
       if (top > this.height - toolTipHeight) {
         top = y - toolTipHeight - toolTipMargin;
       }
-    
+
       toolTip.style.left = left + 'px';
       toolTip.style.top = top + 'px';
     });
