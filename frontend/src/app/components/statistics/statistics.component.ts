@@ -35,6 +35,7 @@ export class StatisticsComponent implements OnInit {
 
   radioGroupForm: FormGroup;
   inverted: boolean;
+  graphWindowPreference: String;
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
@@ -46,8 +47,9 @@ export class StatisticsComponent implements OnInit {
     private seoService: SeoService,
     private storageService: StorageService,
   ) {
+    this.graphWindowPreference = this.storageService.getValue('graphWindowPreference') ? this.storageService.getValue('graphWindowPreference').trim() : '2h';
     this.radioGroupForm = this.formBuilder.group({
-      dateSpan: '2h'
+      dateSpan: this.graphWindowPreference
     });
    }
 
@@ -63,7 +65,7 @@ export class StatisticsComponent implements OnInit {
     }
 
     const labelInterpolationFnc = (value: any, index: any) => {
-      switch (this.radioGroupForm.controls.dateSpan.value) {
+      switch (this.graphWindowPreference) {
         case '2h':
         case '24h':
           value = formatDate(value, 'HH:mm', this.locale);
@@ -114,24 +116,24 @@ export class StatisticsComponent implements OnInit {
     .pipe(
       switchMap(() => {
         this.spinnerLoading = true;
-        if (this.radioGroupForm.controls.dateSpan.value === '2h') {
+        if (this.graphWindowPreference === '2h') {
           this.websocketService.want(['blocks', 'live-2h-chart']);
           return this.apiService.list2HStatistics$();
         }
         this.websocketService.want(['blocks']);
-        if (this.radioGroupForm.controls.dateSpan.value === '24h') {
+        if (this.graphWindowPreference === '24h') {
           return this.apiService.list24HStatistics$();
         }
-        if (this.radioGroupForm.controls.dateSpan.value === '1w') {
+        if (this.graphWindowPreference === '1w') {
           return this.apiService.list1WStatistics$();
         }
-        if (this.radioGroupForm.controls.dateSpan.value === '1m') {
+        if (this.graphWindowPreference === '1m') {
           return this.apiService.list1MStatistics$();
         }
-        if (this.radioGroupForm.controls.dateSpan.value === '3m') {
+        if (this.graphWindowPreference === '3m') {
           return this.apiService.list3MStatistics$();
         }
-        if (this.radioGroupForm.controls.dateSpan.value === '6m') {
+        if (this.graphWindowPreference === '6m') {
           return this.apiService.list6MStatistics$();
         }
         return this.apiService.list1YStatistics$();
@@ -164,6 +166,11 @@ export class StatisticsComponent implements OnInit {
 
   invertGraph() {
     this.storageService.setValue('inverted-graph', !this.inverted);
+    document.location.reload();
+  }
+
+  saveGraphPreference() {
+    this.storageService.setValue('graphWindowPreference', this.radioGroupForm.controls.dateSpan.value);
     document.location.reload();
   }
 }
