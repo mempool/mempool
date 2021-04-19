@@ -81,7 +81,7 @@ class Server {
       await checkDbConnection();
     }
 
-    if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
+    if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && cluster.isMaster) {
       statistics.startStatistics();
     }
 
