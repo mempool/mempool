@@ -1,3 +1,56 @@
 .card-title {
   color: #4a68b9;
+  font-size: 10px;
+  margin-bottom: 4px;  
+  @media (min-width: 376px) {
+    font-size: 0.9rem;
+  }
+  @media (min-width: 768px) {
+    font-size: 0.75rem;
+  }
+  @media (min-width: 992px) {
+    font-size: 1rem;
+  }
+}
+
+.card-text {
+  font-size: 22px;
+  span {
+    font-size: 11px;
+    position: relative;
+    top: -2px;
+    display: grid;
+    @media (min-width: 376px) {
+      display: inline-flex;
+    }    
+  }
+  .green-color {
+    font-size: 12px;
+    display: block;
+  }
+}
+
+.fee-estimation-container {
+  display: flex;
+  @media (min-width: 376px) {
+    flex-direction: row;
+  }  
+  .item {
+    max-width: 150px;
+    margin: 0 auto;
+    @media (min-width: 376px) {
+      margin: 0 auto 0px;
+    }    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    .card-text span {
+      color: #ffffff61;
+      font-size: 12px;
+    }
+    .fiat {
+      display: block;
+      font-size: 14px;
+    }
+  }
 }

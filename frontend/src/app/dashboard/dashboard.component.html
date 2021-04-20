@@ -102,19 +102,19 @@
         <div class="card text-center">
           <div class="card-body">
             <h5 class="card-title" i18n="dashboard.latest-transactions">Latest transactions</h5>
-            <table class="table table-borderless text-left">
+            <table class="table table-borderless text-left latest-transactions">
               <thead>
                 <th style="width: 20%;" i18n="dashboard.latest-transactions.txid">TXID</th>
-                <th style="width: 35%;" class="text-right d-none d-lg-table-cell" i18n="dashboard.latest-transactions.amount">Amount</th>
-                <th *ngIf="(network$ | async) === ''" style="width: 20%;" class="text-right d-none d-lg-table-cell" i18n="dashboard.latest-transactions.USD">USD</th>
+                <th style="width: 35%;" class="table-cell-satoshis" i18n="dashboard.latest-transactions.amount">Amount</th>
+                <th *ngIf="(network$ | async) === ''" class="table-cell-fiat text-right" i18n="dashboard.latest-transactions.USD">USD</th>
                 <th style="width: 25%;" class="text-right" i18n="dashboard.latest-transactions.fee">Fee</th>
               </thead>
               <tbody>
                 <tr *ngFor="let transaction of transactions$ | async; let i = index;">
                   <td><a [routerLink]="['/tx' | relativeUrl, transaction.txid]">{{ transaction.txid | shortenString : 10 }}</a></td>
-                  <td class="text-right d-none d-lg-table-cell"><app-amount [satoshis]="transaction.value" digitsInfo="1.8-8" [noFiat]="true"></app-amount></td>
-                  <td *ngIf="(network$ | async) === ''" class="text-right d-none d-lg-table-cell"><app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat></td>
-                  <td class="text-right">{{ transaction.fee / transaction.vsize | number : '1.1-1' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
+                  <td class="table-cell-satoshis"><app-amount [satoshis]="transaction.value" digitsInfo="1.8-8" [noFiat]="true"></app-amount></td>
+                  <td *ngIf="(network$ | async) === ''" class="table-cell-fiat"><app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat></td>
+                  <td class="text-right">{{ transaction.fee / transaction.vsize | number : '1.1-1' }} <span class="fiat" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
                 </tr>
               </tbody>
             </table>
@@ -160,32 +160,30 @@
 </ng-template>
 
 <ng-template #mempoolTable let-mempoolInfoData>
-  <table style="width: 100%;">
-    <tr>
-      <td style="width: 33%;">
-        <h5 *ngIf="!mempoolInfoData.value || mempoolInfoData.value.memPoolInfo.mempoolminfee === 0.00001 else purgingText" class="card-title" i18n="dashboard.minimum-fee|Minimum mempool fee">Minimum fee</h5>
-        <ng-template #purgingText><h5 class="card-title" i18n="dashboard.purging|Purgin below fee">Purging</h5></ng-template>
-        <p class="card-text" *ngIf="mempoolInfoData.value; else loading">
-          <ng-template [ngIf]="mempoolInfoData.value.memPoolInfo.mempoolminfee > 0.00001">&lt; </ng-template>{{ mempoolInfoData.value.memPoolInfo.mempoolminfee * 100000 | number : '1.1-1' }} <ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
-        </p>
-      </td>
-      <td style="width: 33%;">
-        <h5 class="card-title" i18n="dashboard.memory-usage|Memory usage">Memory usage</h5>
-        <div class="card-text" *ngIf="mempoolInfoData.value; else loadingsmall">
-          <div class="progress" style="max-width: 250px;">
-            <div class="progress-bar {{ mempoolInfoData.value.mempoolSizeProgress }}" style="padding: 4px;" role="progressbar" [ngStyle]="{'width': (mempoolInfoData.value.memPoolInfo.usage / mempoolInfoData.value.memPoolInfo.maxmempool * 100) + '%' }">&nbsp;</div>
-            <div class="progress-text">{{ mempoolInfoData.value.memPoolInfo.usage | bytes }} / {{ mempoolInfoData.value.memPoolInfo.maxmempool | bytes }}</div>
-          </div>
+  <div class="mempool-info-data">
+    <div class="item">
+      <h5 *ngIf="!mempoolInfoData.value || mempoolInfoData.value.memPoolInfo.mempoolminfee === 0.00001 else purgingText" class="card-title" i18n="dashboard.minimum-fee|Minimum mempool fee">Minimum fee</h5>
+      <ng-template #purgingText><h5 class="card-title" i18n="dashboard.purging|Purgin below fee">Purging</h5></ng-template>
+      <p class="card-text" *ngIf="mempoolInfoData.value; else loading">
+        <ng-template [ngIf]="mempoolInfoData.value.memPoolInfo.mempoolminfee > 0.00001">&lt; </ng-template>{{ mempoolInfoData.value.memPoolInfo.mempoolminfee * 100000 | number : '1.1-1' }} <span><ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container></span>
+      </p>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="dashboard.unconfirmed|Unconfirmed count">Unconfirmed</h5>
+      <p class="card-text" *ngIf="mempoolInfoData.value; else loading">
+        {{ mempoolInfoData.value.memPoolInfo.size | number }} <span i18n="dashboard.txs">TXs</span>
+      </p>
+    </div>
+    <div class="item bar">
+      <h5 class="card-title" i18n="dashboard.memory-usage|Memory usage">Memory usage</h5>
+      <div class="card-text" *ngIf="mempoolInfoData.value; else loadingsmall">
+        <div class="progress">
+          <div class="progress-bar {{ mempoolInfoData.value.mempoolSizeProgress }}" role="progressbar" [ngStyle]="{'width': (mempoolInfoData.value.memPoolInfo.usage / mempoolInfoData.value.memPoolInfo.maxmempool * 100) + '%' }">&nbsp;</div>
+          <div class="progress-text">{{ mempoolInfoData.value.memPoolInfo.usage | bytes }} / {{ mempoolInfoData.value.memPoolInfo.maxmempool | bytes }}</div>
         </div>
-      </td>
-      <td class="d-none d-md-table-cell" style="width: 33%;">
-        <h5 class="card-title" i18n="dashboard.unconfirmed|Unconfirmed count">Unconfirmed</h5>
-        <p class="card-text" *ngIf="mempoolInfoData.value; else loading">
-          {{ mempoolInfoData.value.memPoolInfo.size | number }} <span i18n="dashboard.txs">TXs</span>
-        </p>
-      </td>
-    </tr>
-  </table>
+      </div>
+    </div>
+  </div>
 </ng-template>
 
 <ng-template #txPerSecond let-mempoolInfoData>
