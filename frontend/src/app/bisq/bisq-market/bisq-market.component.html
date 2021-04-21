@@ -40,7 +40,15 @@
         </div>
       </form>
 
-      <app-lightweight-charts [data]="hlocData.hloc" [volumeData]="hlocData.volume" [precision]="currency.market.rtype === 'crypto' ? currency.market.lprecision : currency.market.rprecision"></app-lightweight-charts>      
+      <div class="clearfix"></div>
+
+      <div id="graphHolder">
+        <div class="text-center loadingChart" [hidden]="!isLoadingGraph">
+          <div class="spinner-border text-light"></div>
+        </div>
+        <app-lightweight-charts [data]="hlocData.hloc" [volumeData]="hlocData.volume" [precision]="currency.market.rtype === 'crypto' ? currency.market.lprecision : currency.market.rprecision"></app-lightweight-charts>      
+      </div>
+
       <br>
 
       <ng-container *ngIf="offers$ | async as offers; else loadingSpinner">
