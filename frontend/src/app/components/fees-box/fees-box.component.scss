@@ -3,13 +3,13 @@
   font-size: 10px;
   margin-bottom: 4px;  
   @media (min-width: 376px) {
-    font-size: 0.9rem;
+    font-size: 0.75rem;
   }
   @media (min-width: 768px) {
     font-size: 0.75rem;
   }
   @media (min-width: 992px) {
-    font-size: 1rem;
+    font-size: 1.15rem;
   }
 }
 
@@ -25,19 +25,20 @@
     }    
   }
   .green-color {
-    font-size: 12px;
     display: block;
   }
 }
 
 .fee-estimation-container {
   display: flex;
+  justify-content: space-between;
   @media (min-width: 376px) {
     flex-direction: row;
   }  
   .item {
     max-width: 150px;
-    margin: 0 auto;
+    margin: 0;
+    width: -webkit-fill-available;
     @media (min-width: 376px) {
       margin: 0 auto 0px;
     }    
@@ -47,10 +48,12 @@
     .card-text span {
       color: #ffffff61;
       font-size: 12px;
+      top: 0px;
     }
     .fiat {
       display: block;
-      font-size: 14px;
+      font-size: 14px !important;
+      top: -2px !important;
     }
   }
 }

@@ -4,7 +4,7 @@
     padding-bottom: 0px;
   }
   .table {
-    font-size: 0.8em;
+    font-size: 0.9em;
     @media (min-width: 1200px) {
       font-size: 1em;
     }
@@ -30,7 +30,7 @@
     font-size: 0.75rem;
   }
   @media (min-width: 992px) {
-    font-size: 1rem;
+    font-size: 1.15rem;
   }
 }
 
@@ -52,7 +52,7 @@
 }
 
 .skeleton-loader {
-  max-width: 200px;
+  max-width: 100%;
 }
 
 .more-padding {
@@ -116,9 +116,13 @@
 }
 
 .latest-transactions {
+  .table-cell-fee {
+    min-width: 100px;
+  }
   .table-cell-satoshis {
     display: none;
-
+    text-align: right;
+    width: 180px;
     @media (min-width: 576px) {
       display: table-cell;
     }
@@ -132,6 +136,7 @@
   .table-cell-fiat{
     display: none;
     text-align: right !important;
+    width: 110px;
     @media (min-width: 376px) {
       display: block;
       width: 80%;
