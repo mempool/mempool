@@ -21,6 +21,8 @@ export class BisqMarketComponent implements OnInit, OnDestroy {
   radioGroupForm: FormGroup;
   defaultInterval = 'day';
 
+  isLoadingGraph = false;
+
   constructor(
     private websocketService: WebsocketService,
     private route: ActivatedRoute,
@@ -68,10 +70,13 @@ export class BisqMarketComponent implements OnInit, OnDestroy {
     ])
     .pipe(
       switchMap(([routeParams, interval]) => {
+        this.isLoadingGraph = true;
         const pair = routeParams.get('pair');
         return this.bisqApiService.getMarketsHloc$(pair, interval);
       }),
       map((hlocData) => {
+        this.isLoadingGraph = false;
+
         hlocData = hlocData.map((h) => {
           h.time = h.period_start;
           return h;

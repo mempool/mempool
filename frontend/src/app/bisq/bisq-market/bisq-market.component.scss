@@ -1,3 +1,14 @@
 .priceheader {
     font-size: 24px;
 }
+
+.loadingChart {
+    z-index: 100;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+
+#graphHolder {
+    height: 550px;
+}

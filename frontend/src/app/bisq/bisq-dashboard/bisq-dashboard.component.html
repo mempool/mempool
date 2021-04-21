@@ -3,7 +3,12 @@
   <h1>Trading volume</h1>
 
   <div id="volumeHolder">
-    <ng-container *ngIf="volumes$ | async as volumes">
+    <ng-template #loadingVolumes>
+      <div class="text-center loadingVolumes">
+        <div class="spinner-border text-light"></div>
+      </div>  
+    </ng-template>
+    <ng-container *ngIf="volumes$ | async as volumes; else loadingVolumes">
       <app-lightweight-charts-area [data]="volumes.data" [lineData]="volumes.linesData"></app-lightweight-charts-area>
     </ng-container>
   </div>
