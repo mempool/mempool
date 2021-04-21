@@ -14,28 +14,28 @@
       <form [formGroup]="radioGroupForm" class="mb-3 float-right">
         <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="interval">
           <label ngbButtonLabel class="btn-primary btn-sm">
-            <input ngbButton type="radio" [value]="'half_hour'"> 30M
+            <input ngbButton type="radio" [value]="'half_hour'" (click)="setFragment('half_hour')"> 30M
           </label>
           <label ngbButtonLabel class="btn-primary btn-sm">
-            <input ngbButton type="radio" [value]="'hour'"> 1H
+            <input ngbButton type="radio" [value]="'hour'" (click)="setFragment('hour')"> 1H
           </label>
           <label ngbButtonLabel class="btn-primary btn-sm">
-            <input ngbButton type="radio" [value]="'half_day'"> 12H
+            <input ngbButton type="radio" [value]="'half_day'" (click)="setFragment('half_day')"> 12H
           </label>
           <label ngbButtonLabel class="btn-primary btn-sm">
-            <input ngbButton type="radio" [value]="'day'"> 1D
+            <input ngbButton type="radio" [value]="'day'" (click)="setFragment('day')"> 1D
           </label>
           <label ngbButtonLabel class="btn-primary btn-sm">
-            <input ngbButton type="radio" [value]="'week'"> 1W
+            <input ngbButton type="radio" [value]="'week'" (click)="setFragment('week')"> 1W
           </label>
           <label ngbButtonLabel class="btn-primary btn-sm">
-            <input ngbButton type="radio" [value]="'month'"> 1M
+            <input ngbButton type="radio" [value]="'month'" (click)="setFragment('month')"> 1M
           </label>
           <label ngbButtonLabel class="btn-primary btn-sm">
-            <input ngbButton type="radio" [value]="'year'"> 1Y
+            <input ngbButton type="radio" [value]="'year'" (click)="setFragment('year')"> 1Y
           </label>
           <label ngbButtonLabel class="btn-primary btn-sm">
-            <input ngbButton type="radio" [value]="'auto'" fragment="auto"> Auto
+            <input ngbButton type="radio" [value]="'auto'" (click)="setFragment('auto')"> Auto
           </label>
         </div>
       </form>

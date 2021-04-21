@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, merge, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { SeoService } from 'src/app/services/seo.service';
@@ -29,12 +29,17 @@ export class BisqMarketComponent implements OnInit, OnDestroy {
     private bisqApiService: BisqApiService,
     private formBuilder: FormBuilder,
     private seoService: SeoService,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
     this.radioGroupForm = this.formBuilder.group({
       interval: [this.defaultInterval],
     });
+
+    if (['half_hour', 'hour', 'half_day', 'day', 'week', 'month', 'year', 'auto'].indexOf(this.route.snapshot.fragment) > -1) {
+      this.radioGroupForm.controls.interval.setValue(this.route.snapshot.fragment, { emitEvent: false });
+    }
 
     this.currency$ = this.bisqApiService.getMarkets$()
       .pipe(
@@ -66,7 +71,7 @@ export class BisqMarketComponent implements OnInit, OnDestroy {
 
     this.hlocData$ = combineLatest([
       this.route.paramMap,
-      merge(this.radioGroupForm.get('interval').valueChanges, of(this.defaultInterval)),
+      merge(this.radioGroupForm.get('interval').valueChanges, of(this.radioGroupForm.get('interval').value)),
     ])
     .pipe(
       switchMap(([routeParams, interval]) => {
@@ -93,6 +98,14 @@ export class BisqMarketComponent implements OnInit, OnDestroy {
         };
       }),
     );
+  }
+
+  setFragment(fragment: string) {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParamsHandling: 'merge',
+      fragment: fragment
+    });
   }
 
   ngOnDestroy(): void {
