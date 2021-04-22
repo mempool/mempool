@@ -138,7 +138,7 @@ interface Pair {
 
 export interface Offers { [market: string]: OffersMarket; }
 
-interface OffersMarket {
+export interface OffersMarket {
   buys: Offer[] | null;
   sells: Offer[] | null;
 }
@@ -193,13 +193,14 @@ export interface Ticker {
 }
 
 export interface Trade {
-  direction: string;
+  market?: string;
   price: string;
   amount: string;
   volume: string;
   payment_method: string;
   trade_id: string;
   trade_date: number;
+  _market: Pair;
 }
 
 export interface TradesData {
