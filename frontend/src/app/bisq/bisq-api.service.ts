@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { BisqTransaction, BisqBlock, BisqStats, MarketVolume } from './bisq.interfaces';
+import { BisqTransaction, BisqBlock, BisqStats, MarketVolume, Trade, Markets, Tickers, Offers, Currencies, HighLowOpenClose } from './bisq.interfaces';
 
 const API_BASE_URL = '/bisq/api';
 
@@ -43,16 +43,16 @@ export class BisqApiService {
     return this.httpClient.get<BisqTransaction[]>(API_BASE_URL + '/address/' + address);
   }
 
-  getMarkets$(): Observable<any[]> {
-    return this.httpClient.get<any[]>(API_BASE_URL + '/markets/markets');
+  getMarkets$(): Observable<Markets> {
+    return this.httpClient.get<Markets>(API_BASE_URL + '/markets/markets');
   }
 
-  getMarketsTicker$(): Observable<any[]> {
-    return this.httpClient.get<any[]>(API_BASE_URL + '/markets/ticker');
+  getMarketsTicker$(): Observable<Tickers> {
+    return this.httpClient.get<Tickers>(API_BASE_URL + '/markets/ticker');
   }
 
-  getMarketsCurrencies$(): Observable<any[]> {
-    return this.httpClient.get<any[]>(API_BASE_URL + '/markets/currencies');
+  getMarketsCurrencies$(): Observable<Currencies> {
+    return this.httpClient.get<Currencies>(API_BASE_URL + '/markets/currencies');
   }
 
   getMarketsHloc$(market: string, interval: 'minute' | 'half_hour' | 'hour' | 'half_day' | 'day'
@@ -60,16 +60,16 @@ export class BisqApiService {
     return this.httpClient.get<any[]>(API_BASE_URL + '/markets/hloc?market=' + market + '&interval=' + interval);
   }
 
-  getMarketOffers$(market: string): Observable<any[]> {
-    return this.httpClient.get<any[]>(API_BASE_URL + '/markets/offers?market=' + market);
+  getMarketOffers$(market: string): Observable<Offers> {
+    return this.httpClient.get<Offers>(API_BASE_URL + '/markets/offers?market=' + market);
   }
 
-  getMarketTrades$(market: string): Observable<any[]> {
-    return this.httpClient.get<any[]>(API_BASE_URL + '/markets/trades?market=' + market);
+  getMarketTrades$(market: string): Observable<Trade[]> {
+    return this.httpClient.get<Trade[]>(API_BASE_URL + '/markets/trades?market=' + market);
   }
 
-  getMarketVolumesByTime$(period: string): Observable<any[]> {
-    return this.httpClient.get<any[]>(API_BASE_URL + '/markets/volumes/' + period);
+  getMarketVolumesByTime$(period: string): Observable<HighLowOpenClose[]> {
+    return this.httpClient.get<HighLowOpenClose[]>(API_BASE_URL + '/markets/volumes/' + period);
   }
 
   getAllVolumesDay$(): Observable<MarketVolume[]> {

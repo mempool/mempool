@@ -6,6 +6,7 @@ import { map, switchMap } from 'rxjs/operators';
 import { SeoService } from 'src/app/services/seo.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { BisqApiService } from '../bisq-api.service';
+import { OffersMarket, Trade } from '../bisq.interfaces';
 
 @Component({
   selector: 'app-bisq-market',
@@ -16,8 +17,8 @@ import { BisqApiService } from '../bisq-api.service';
 export class BisqMarketComponent implements OnInit, OnDestroy {
   hlocData$: Observable<any>;
   currency$: Observable<any>;
-  offers$: Observable<any>;
-  trades$: Observable<any>;
+  offers$: Observable<OffersMarket>;
+  trades$: Observable<Trade[]>;
   radioGroupForm: FormGroup;
   defaultInterval = 'day';
 
