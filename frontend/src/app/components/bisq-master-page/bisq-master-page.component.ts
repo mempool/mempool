@@ -10,7 +10,6 @@ import { Observable } from 'rxjs';
 export class BisqMasterPageComponent implements OnInit {
   connectionState$: Observable<number>;
   navCollapsed = false;
-  isMobile = window.innerWidth <= 767.98;
 
   constructor(
     private stateService: StateService,

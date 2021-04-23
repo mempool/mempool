@@ -11,11 +11,11 @@
   </a>
 
   <div class="navbar-collapse" id="navbarCollapse">
-    <ul class="navbar-nav mr-auto pt-2 pb-2 pb-md-0 pt-md-0">
+    <ul class="navbar-nav">
       <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
         <a class="nav-link" [routerLink]="['/' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'tachometer-alt']" [fixedWidth]="true" i18n-title="master-page.dashboard" title="Dashboard"></fa-icon></a>
       </li>
-      <li [hidden]="isMobile" class="nav-item mr-2" routerLinkActive="active">
+      <li class="nav-item mr-2" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/api' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'cogs']" [fixedWidth]="true" i18n-title="master-page.api" title="API"></fa-icon></a>
       </li>
     </ul>
