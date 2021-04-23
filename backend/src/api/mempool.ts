@@ -169,7 +169,7 @@ class Mempool {
 
     if (!this.inSync && transactions.length === Object.keys(this.mempoolCache).length) {
       this.inSync = true;
-      logger.info('The mempool is now in sync!');
+      logger.notice('The mempool is now in sync!');
       loadingIndicators.setProgress('mempool', 100);
     }
 

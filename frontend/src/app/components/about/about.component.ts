@@ -6,7 +6,8 @@ import { Observable, Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApiService } from 'src/app/services/api.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { delay, map, retryWhen, switchMap, tap } from 'rxjs/operators';
+import { delay, retryWhen, switchMap, tap } from 'rxjs/operators';
+import { IBackendInfo } from 'src/app/interfaces/websocket.interface';
 
 @Component({
   selector: 'app-about',
@@ -14,7 +15,7 @@ import { delay, map, retryWhen, switchMap, tap } from 'rxjs/operators';
   styleUrls: ['./about.component.scss'],
 })
 export class AboutComponent implements OnInit, OnDestroy {
-  gitCommit$: Observable<string>;
+  backendInfo$: Observable<IBackendInfo>;
   donationForm: FormGroup;
   paymentForm: FormGroup;
   donationStatus = 1;
@@ -22,6 +23,9 @@ export class AboutComponent implements OnInit, OnDestroy {
   contributors$: Observable<any>;
   donationObj: any;
   sponsorsEnabled = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
+  frontendGitCommitHash = this.stateService.env.GIT_COMMIT_HASH.substr(0, 8);
+  packetJsonVersion = this.stateService.env.PACKAGE_JSON_VERSION;
+  officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
   sponsors = null;
   contributors = null;
   requestSubscription: Subscription | undefined;
@@ -36,7 +40,7 @@ export class AboutComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.gitCommit$ = this.stateService.gitCommit$.pipe(map((str) => str.substr(0, 8)));
+    this.backendInfo$ = this.stateService.backendInfo$;
     this.seoService.setTitle($localize`:@@004b222ff9ef9dd4771b777950ca1d0e4cd4348a:About`);
     this.websocketService.want(['blocks']);
 

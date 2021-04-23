@@ -35,6 +35,7 @@ export class StatisticsComponent implements OnInit {
 
   radioGroupForm: FormGroup;
   inverted: boolean;
+  graphWindowPreference: String;
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
@@ -45,16 +46,13 @@ export class StatisticsComponent implements OnInit {
     private stateService: StateService,
     private seoService: SeoService,
     private storageService: StorageService,
-  ) {
-    this.radioGroupForm = this.formBuilder.group({
-      dateSpan: '2h'
-    });
-   }
+  ) { }
 
   ngOnInit() {
     this.seoService.setTitle($localize`:@@5d4f792f048fcaa6df5948575d7cb325c9393383:Graphs`);
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.inverted = this.storageService.getValue('inverted-graph') === 'true';
+    this.graphWindowPreference = this.storageService.getValue('graphWindowPreference') ? this.storageService.getValue('graphWindowPreference').trim() : '2h';
     const isMobile = window.innerWidth <= 767.98;
     let labelHops = isMobile ? 48 : 24;
 
@@ -62,8 +60,12 @@ export class StatisticsComponent implements OnInit {
       labelHops = 96;
     }
 
+    this.radioGroupForm = this.formBuilder.group({
+      dateSpan: this.graphWindowPreference
+    });
+
     const labelInterpolationFnc = (value: any, index: any) => {
-      switch (this.radioGroupForm.controls.dateSpan.value) {
+      switch (this.graphWindowPreference) {
         case '2h':
         case '24h':
           value = formatDate(value, 'HH:mm', this.locale);
@@ -165,5 +167,9 @@ export class StatisticsComponent implements OnInit {
   invertGraph() {
     this.storageService.setValue('inverted-graph', !this.inverted);
     document.location.reload();
+  }
+
+  saveGraphPreference() {
+    this.storageService.setValue('graphWindowPreference', this.radioGroupForm.controls.dateSpan.value);
   }
 }

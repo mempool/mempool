@@ -5,7 +5,7 @@
     <br>
 
     <div class="text-small text-center offset-md-1">
-      v2.2-dev ({{ gitCommit$ | async }})
+      v{{ packetJsonVersion }} [{{ frontendGitCommitHash }}]
     </div>
 
     <br>
@@ -48,7 +48,7 @@
 
     <a href="https://squarecrypto.org/" target="_blank">
       <div class="profile_photo enterprise_sponsor d-inline-block" title="Square Crypto">
-        <img class="profile_img" src="/resources/profile/sqcrypto.png" />
+        <img class="profile_img" src="/resources/profile/sqcrypto.svg" />
         Square
       </div>
     </a>
@@ -57,6 +57,13 @@
       <div class="profile_photo enterprise_sponsor d-inline-block" title="Gemini">
         <img class="profile_img" src="/resources/profile/gemini.svg" />
         Gemini
+      </div>
+    </a>
+
+    <a href="https://exodus.com/" target="_blank">
+      <div class="profile_photo enterprise_sponsor d-inline-block" title="Exodus">
+        <img class="profile_img" src="/resources/profile/exodus.svg" />
+        Exodus
       </div>
     </a>
 
@@ -390,6 +397,12 @@
     <br>
     <br>
     <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a>
+  </div>
+
+  <br>
+
+  <div class="text-small text-center" *ngIf="officialMempoolSpace">
+    {{ (backendInfo$ | async)?.hostname }} (v{{ (backendInfo$ | async )?.version }}) [{{ (backendInfo$ | async )?.gitCommit | slice:0:8 }}]
   </div>
 
 </div>
