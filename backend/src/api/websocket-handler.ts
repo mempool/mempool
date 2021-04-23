@@ -167,8 +167,7 @@ class WebsocketHandler {
       'conversions': fiatConversion.getConversionRates(),
       'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
       'transactions': memPool.getLatestTransactions(),
-      'git-commit': backendInfo.gitCommitHash,
-      'hostname': backendInfo.hostname,
+      'backendInfo': backendInfo.getBackendInfo(),
       'loadingIndicators': loadingIndicators.getLoadingIndicators(),
       ...this.extraInitProperties
     };

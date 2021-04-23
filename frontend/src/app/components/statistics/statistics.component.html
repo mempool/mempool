@@ -15,7 +15,7 @@
         <div class="card-header">
           <i class="fa fa-area-chart"></i> <span i18n="statistics.memory-by-vBytes">Mempool by vBytes (sat/vByte)</span>
 
-          <form [formGroup]="radioGroupForm" style="float: right;">
+          <form [formGroup]="radioGroupForm" style="float: right;" (click)="saveGraphPreference()">
             <div class="spinner-border text-light bootstrap-spinner" *ngIf="spinnerLoading"></div>
             <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
               <label ngbButtonLabel class="btn-primary btn-sm">

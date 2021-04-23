@@ -50,11 +50,11 @@ $dropdown-link-active-bg: #11131f;
 
 html, body {
   height: 100%;
-  overflow-x: hidden;
 }
 
 body {
   background-color: #11131f;
+  min-width: 320px;
 }
 
 .container {
