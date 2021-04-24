@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { BisqTransaction, BisqBlock, BisqStats, MarketVolume, Trade, Markets, Tickers, Offers, Currencies, HighLowOpenClose } from './bisq.interfaces';
+import { BisqTransaction, BisqBlock, BisqStats, MarketVolume, Trade, Markets, Tickers, Offers, Currencies, HighLowOpenClose, SummarizedInterval } from './bisq.interfaces';
 
 const API_BASE_URL = '/bisq/api';
 
@@ -56,8 +56,8 @@ export class BisqApiService {
   }
 
   getMarketsHloc$(market: string, interval: 'minute' | 'half_hour' | 'hour' | 'half_day' | 'day'
-  | 'week' | 'month' | 'year' | 'auto'): Observable<any[]> {
-    return this.httpClient.get<any[]>(API_BASE_URL + '/markets/hloc?market=' + market + '&interval=' + interval);
+  | 'week' | 'month' | 'year' | 'auto'): Observable<SummarizedInterval[]> {
+    return this.httpClient.get<SummarizedInterval[]>(API_BASE_URL + '/markets/hloc?market=' + market + '&interval=' + interval);
   }
 
   getMarketOffers$(market: string): Observable<Offers> {
