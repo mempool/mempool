@@ -106,6 +106,12 @@ export class BisqDashboardComponent implements OnInit {
     ])
     .pipe(
       map(([trades, markets]) => {
+        if (!this.stateService.env.OFFICIAL_BISQ_MARKETS) {
+          trades = trades.filter((trade) => {
+            const pair = trade.market.split('_');
+            return !(pair[1] === 'btc' && this.allowCryptoCoins.indexOf(pair[0]) === -1);
+          });
+        }
         return trades.map((trade => {
           trade._market = markets[trade.market];
           return trade;
