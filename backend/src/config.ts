@@ -52,11 +52,7 @@ interface IConfig {
     ENABLED: boolean;
     TX_PER_SECOND_SAMPLE_PERIOD: number;
   };
-  BISQ_BLOCKS: {
-    ENABLED: boolean;
-    DATA_PATH: string;
-  };
-  BISQ_MARKETS: {
+  BISQ: {
     ENABLED: boolean;
     DATA_PATH: string;
   };
@@ -114,11 +110,7 @@ const defaults: IConfig = {
     'ENABLED': true,
     'TX_PER_SECOND_SAMPLE_PERIOD': 150
   },
-  'BISQ_BLOCKS': {
-    'ENABLED': false,
-    'DATA_PATH': '/bisq/statsnode-data/btc_mainnet/db/json'
-  },
-  'BISQ_MARKETS': {
+  'BISQ': {
     'ENABLED': false,
     'DATA_PATH': '/bisq/statsnode-data/btc_mainnet/db'
   },
@@ -133,8 +125,7 @@ class Config implements IConfig {
   DATABASE: IConfig['DATABASE'];
   SYSLOG: IConfig['SYSLOG'];
   STATISTICS: IConfig['STATISTICS'];
-  BISQ_BLOCKS: IConfig['BISQ_BLOCKS'];
-  BISQ_MARKETS: IConfig['BISQ_MARKETS'];
+  BISQ: IConfig['BISQ'];
 
   constructor() {
     const configs = this.merge(configFile, defaults);
@@ -146,8 +137,7 @@ class Config implements IConfig {
     this.DATABASE = configs.DATABASE;
     this.SYSLOG = configs.SYSLOG;
     this.STATISTICS = configs.STATISTICS;
-    this.BISQ_BLOCKS = configs.BISQ_BLOCKS;
-    this.BISQ_MARKETS = configs.BISQ_MARKETS;
+    this.BISQ = configs.BISQ;
   }
 
   merge = (...objects: object[]): IConfig => {
