@@ -34,9 +34,6 @@
           <label ngbButtonLabel class="btn-primary btn-sm">
             <input ngbButton type="radio" [value]="'year'" (click)="setFragment('year')"> 1Y
           </label>
-          <label ngbButtonLabel class="btn-primary btn-sm">
-            <input ngbButton type="radio" [value]="'auto'" (click)="setFragment('auto')"> Auto
-          </label>
         </div>
       </form>
 
@@ -58,10 +55,10 @@
         </div>
       </ng-container>
 
-      <br>
+      <br><br>
 
       <ng-container *ngIf="trades$ | async as trades; else loadingSpinner">
-        <h2>Trade History (Last 100 trades)</h2>
+        <h2>Latest trades</h2>
 
         <table class="table table-borderless table-striped">
           <thead>

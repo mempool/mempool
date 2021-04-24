@@ -249,12 +249,13 @@ export type Interval = 'minute' | 'half_hour' | 'hour' | 'half_day' | 'day' | 'w
 
 export interface SummarizedIntervals { [market: string]: SummarizedInterval; }
 export interface SummarizedInterval {
-  'period_start': number;
-  'open': number;
-  'close': number;
-  'high': number;
-  'low': number;
-  'avg': number;
-  'volume_right': number;
-  'volume_left': number;
+  period_start: number;
+  open: number;
+  close: number;
+  high: number;
+  low: number;
+  avg: number;
+  volume_right: number;
+  volume_left: number;
+  time?: number;
 }

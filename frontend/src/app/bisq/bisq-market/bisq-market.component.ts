@@ -87,15 +87,44 @@ export class BisqMarketComponent implements OnInit, OnDestroy {
           h.time = h.period_start;
           return h;
         });
+
+        const hlocVolume = hlocData.map((h) => {
+          return {
+            time: h.time,
+            value: h.volume_right,
+            color: h.close > h.avg ? 'rgba(0, 41, 74, 0.7)' : 'rgba(0, 41, 74, 1)',
+          };
+        });
+
+        // Add whitespace
+        if (hlocData.length > 1) {
+          const newHloc = [];
+          newHloc.push(hlocData[0]);
+
+          const period = this.getUnixTimestampFromInterval(this.radioGroupForm.get('interval').value); // temp
+          let periods = 0;
+          const startingDate = hlocData[0].period_start;
+          let index = 1;
+          while (true) {
+            periods++;
+            if (hlocData[index].period_start > startingDate + period * periods) {
+              newHloc.push({
+                time: startingDate + period * periods,
+              });
+            } else {
+              newHloc.push(hlocData[index]);
+              index++;
+              if (!hlocData[index]) {
+                break;
+              }
+            }
+          }
+          hlocData = newHloc;
+        }
+
         return {
           hloc: hlocData,
-          volume: hlocData.map((h) => {
-            return {
-              time: h.time,
-              value: h.volume_right,
-              color: h.close > h.avg ? 'rgba(0, 41, 74, 0.7)' : 'rgba(0, 41, 74, 1)',
-            };
-          })
+          volume: hlocVolume,
         };
       }),
     );
@@ -111,6 +140,19 @@ export class BisqMarketComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.websocketService.stopTrackingBisqMarket();
+  }
+
+  getUnixTimestampFromInterval(interval: string): number {
+    switch (interval) {
+      case 'minute': return 60;
+      case 'half_hour': return 1800;
+      case 'hour': return 3600;
+      case 'half_day': return 43200;
+      case 'day': return 86400;
+      case 'week': return 604800;
+      case 'month': return 2592000;
+      case 'year': return 31579200;
+    }
   }
 
 }
