@@ -8,7 +8,7 @@ import { StaticPool } from 'node-worker-threads-pool';
 import logger from '../../logger';
 
 class Bisq {
-  private static BLOCKS_JSON_FILE_PATH = config.BISQ_BLOCKS.DATA_PATH + '/all/blocks.json';
+  private static BLOCKS_JSON_FILE_PATH = config.BISQ.DATA_PATH + '/json/all/blocks.json';
   private latestBlockHeight = 0;
   private blocks: BisqBlock[] = [];
   private transactions: BisqTransaction[] = [];
@@ -98,7 +98,7 @@ class Bisq {
       this.topDirectoryWatcher.close();
     }
     let fsWait: NodeJS.Timeout | null = null;
-    this.topDirectoryWatcher = fs.watch(config.BISQ_BLOCKS.DATA_PATH, () => {
+    this.topDirectoryWatcher = fs.watch(config.BISQ.DATA_PATH + '/json', () => {
       if (fsWait) {
         clearTimeout(fsWait);
       }
@@ -126,7 +126,7 @@ class Bisq {
       return;
     }
     let fsWait: NodeJS.Timeout | null = null;
-    this.subdirectoryWatcher = fs.watch(config.BISQ_BLOCKS.DATA_PATH + '/all', () => {
+    this.subdirectoryWatcher = fs.watch(config.BISQ.DATA_PATH + '/json/all', () => {
       if (fsWait) {
         clearTimeout(fsWait);
       }
