@@ -100,7 +100,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="31d8d7f29ddbd3f64d374a132ddacd5e4a0835a2">
         <source>Inputs &amp; Outputs</source>
-        <target>Wejścia i Wyjścia</target>
+        <target>Wejścia i wyjścia</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">193</context>
@@ -321,7 +321,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3e322ffba6477484e0dd2e65650fdd70322ea6d0">
         <source>Fee rate</source>
-        <target>Poziom opłaty</target>
+        <target>Poziom opłat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">151</context>
@@ -808,7 +808,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0b47a777f024ab4e3cdf0062acb4d86e9ae1f635">
         <source>Median fee</source>
-        <target>Mediana opłaty</target>
+        <target>Mediana opłat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">45</context>
@@ -1288,7 +1288,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="35183d36272d152e9b838a42bafbe6526a55f7ee">
         <source>An explorer and API developed and operated for the Bitcoin community, focusing on the emerging transaction fee market to help our transition into a multi-layer ecosystem, without ads, altcoins, or third-party trackers.</source>
-        <target>Eksplorator oraz API napisane i prowadzone przez społeczność Bitconiową. Koncentruje się na powstającym rynku opłat transakcyjnych, aby pomóc nam przejść do wielowarstwowego ekosystemu, bez reklam, altcoinów lub zewnętrznych narzędzi śledzących. </target>
+        <target>Eksplorator oraz API napisane i prowadzone przez społeczność Bitcoina. Koncentruje się na powstającym rynku opłat transakcyjnych, aby pomóc nam przejść do wielowarstwowego ekosystemu, bez reklam, altcoinów lub zewnętrznych narzędzi śledzących. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">16</context>
@@ -2127,7 +2127,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fe56475a8f4cf4bfc3acaafa215a7dd60d9ed7da">
         <source>Default push: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> action: 'want', data: ['blocks', ...] <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> to express what you want pushed. Available: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>blocks<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool-block<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>live-2h-chart<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>stats<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>.<x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/>Push transactions related to address: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> 'track-address': '3PbJ...bF9B' <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address-transactions<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> for new mempool transactions, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block-transactions<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> for new block confirmed transactions.</source>
-        <target>Domyślny push: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> action: 'want', data: ['blocks', ...] <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, aby wyrazić to, co chcesz przekazać. Dostępne: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>blocks<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool-block<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>live-2h-chart<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> i <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>stats<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>. <x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/> <x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/>Transakcje push związane z adresem: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/>'track-address': '3PbJ...bF9B' <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> aby otrzymać wszystkie nowe transakcje zawierające ten adres jako dane wejściowe lub wyjściowe. Zwraca tablicę transakcji. <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address-transactions<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> dla transakcji nowych w mempool, i <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block-transactions<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> dla nowo potwierdzonych transakcji w bloku.</target>
+        <target>Domyślny push: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> action: 'want', data: ['blocks', ...] <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, aby wyrazić to, co chcesz przekazać. Dostępne: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>blocks<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool-block<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>live-2h-chart<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> i <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>stats<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>. <x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/> <x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/>Transakcje push związane z adresem: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/>'track-address': '3PbJ...bF9B'<x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> aby otrzymać wszystkie nowe transakcje zawierające ten adres jako dane wejściowe lub wyjściowe. Zwraca tablicę transakcji. <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address-transactions<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> dla transakcji nowych w mempool, i <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block-transactions<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> dla nowo potwierdzonych transakcji w bloku.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">19</context>
@@ -2206,7 +2206,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="af1a465e50097fabbe55bf5dbcf5d0702bdbc98b">
         <source>Get a list of the last 10 transactions to enter the mempool. Each transaction object contains simplified overview data, with the following fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>fee<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vsize<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
-        <target>Pobiera listę 10 ostatnich transakcji, które weszły do mempoola. Każdy obiekt transakcji zawiera uproszczone dane poglądowe, z następującymi polami: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>fee<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vsize<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
+        <target>Pobiera listę 10 ostatnich transakcji, które weszły do mempoola. Każdy obiekt transakcji zawiera uproszczone dane poglądowe, z następującymi polami: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>fee<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vsize<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, oraz <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">71</context>
@@ -2224,7 +2224,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1126cb2e03d0371d03b57047052d4ff1b6556753">
         <source>Returns a list of transactions in the block (up to 25 transactions beginning at <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>start_index<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>). Transactions returned here do not have the <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> field, since all the transactions share the same block and confirmation status.</source>
-        <target>Zwraca listę transakcji w bloku (do 25 transakcji zaczynających się od <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>start_index<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>). Transakcje zwrócone nie mają pola <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status <x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, ponieważ wszystkie transakcje mają ten sam status bloku i potwierdzenia.</target>
+        <target>Zwraca listę transakcji w bloku (do 25 transakcji zaczynających się od <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>start_index<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>). Transakcje zwrócone nie mają pola <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/>, ponieważ wszystkie transakcje mają ten sam status bloku i potwierdzenia.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">97</context>
@@ -2256,7 +2256,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="36df9865e9099d98537ea69c9cfdc035d1b64116">
         <source>Returns the hash of the block currently at <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
-        <target>Zwraca wartość skrótu bloku znajdującego się obecnie na<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
+        <target>Zwraca wartość skrótu bloku znajdującego się obecnie na <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">113</context>
@@ -2396,7 +2396,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bdc501d28e02e07f692859977fdaee8c52eea401">
         <source>Get transaction history for the specified address/scripthash, sorted with newest first. Returns up to 50 mempool transactions plus the first 25 confirmed transactions. You can request more confirmed transactions using <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:last_seen_txid<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (see below). </source>
-        <target>Uzyskaj historię transakcji dla określonego adresu / hasha skryptu, posortowaną od najnowszych. Zwraca do 50 transakcji mempool plus pierwszych 25 potwierdzonych transakcji. Możesz poprosić o więcej potwierdzonych transakcji za pomocą <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:last_seen_txid <x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (patrz poniżej).</target>
+        <target>Uzyskaj historię transakcji dla określonego adresu / hasha skryptu, posortowaną od najnowszych. Zwraca do 50 transakcji mempool plus pierwszych 25 potwierdzonych transakcji. Możesz poprosić o więcej potwierdzonych transakcji za pomocą <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:last_seen_txid<x ctype="x-code" equiv-text="&lt;/code&gt; " id="CLOSE_TAG_CODE"/> (patrz poniżej).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">197,198</context>
