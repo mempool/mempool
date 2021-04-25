@@ -45,33 +45,7 @@
   <br><br>
 
   <h2>Latest trades</h2>
-  <table class="table table-borderless table-striped">
-    <thead>
-      <th>Date</th>
-      <th>Price</th>
-      <th>Trade amount</th>
-      <th>Trade amount</th>
-    </thead>
-    <tbody *ngIf="trades$ | async as trades; else loadingTmpl">
-      <tr *ngFor="let trade of trades">
-        <td>
-          {{ trade.trade_date | date:'yyyy-MM-dd HH:mm' }}
-        </td>
-        <td>
-          <ng-container *ngIf="trade._market.rtype === 'fiat'; else priceCrypto"><span class="green-color">{{ trade.price | currency: trade._market.rsymbol }}</span></ng-container>
-          <ng-template #priceCrypto>{{ trade.price | number: '1.2-' + trade._market.rprecision }} {{ trade._market.rsymbol }}</ng-template>
-        </td>
-        <td>
-          <ng-container *ngIf="trade._market.rtype === 'fiat'; else volumeCrypto"><span class="green-color">{{ trade.volume | currency: trade._market.rsymbol }}</span></ng-container>
-          <ng-template #volumeCrypto>{{ trade.volume | number: '1.2-' + trade._market.rprecision }} {{ trade._market.rsymbol }}</ng-template>
-        </td>
-        <td>
-          <ng-container *ngIf="trade._market.ltype === 'fiat'; else amountCrypto"><span class="green-color">{{ trade.amount | currency: trade._market.rsymbol }}</span></ng-container>
-          <ng-template #amountCrypto>{{ trade.amount | number: '1.2-' + trade._market.lprecision }} {{ trade._market.lsymbol }}</ng-template>
-        </td>
-      </tr> 
-    </tbody>
-  </table>
+  <app-bisq-trades [trades$]="trades$"></app-bisq-trades>
 
   </ng-container>
 </div>
