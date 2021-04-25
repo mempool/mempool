@@ -514,27 +514,11 @@
           <context context-type="linenumber">89</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="8a7b4bd44c0ac71b2e72de0398b303257f7d2f54" datatype="html">
-        <source>Blocks</source>
+      <trans-unit id="6c2ae4f9da67155a00f8db40ac22315eeaff33e2" datatype="html">
+        <source>BSQ Blocks</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
           <context context-type="linenumber">2,7</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.ts</context>
-          <context context-type="linenumber">38</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
-          <context context-type="linenumber">2,7</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">38,40</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">46,48</context>
         </context-group>
         <note priority="1" from="description">Bisq blocks header</note>
       </trans-unit>
@@ -577,10 +561,6 @@
           <context context-type="linenumber">15,18</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
-          <context context-type="linenumber">2,5</context>
-        </context-group>
-        <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">80</context>
         </context-group>
@@ -597,6 +577,25 @@
           <context context-type="linenumber">28,32</context>
         </context-group>
         <note priority="1" from="description">Bisq block transactions title</note>
+      </trans-unit>
+      <trans-unit id="8a7b4bd44c0ac71b2e72de0398b303257f7d2f54" datatype="html">
+        <source>Blocks</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.ts</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
+          <context context-type="linenumber">2,7</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
+          <context context-type="linenumber">38,40</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
+          <context context-type="linenumber">46,48</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="6b2fdbdddef74630e1076d58786ca339a8c030f0" datatype="html">
         <source>Bisq Trading Volume</source>
@@ -893,10 +892,6 @@
           <context context-type="linenumber">3,7</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
-          <context context-type="linenumber">18,19</context>
-        </context-group>
-        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">12</context>
         </context-group>
@@ -1029,6 +1024,28 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.ts</context>
           <context context-type="linenumber">51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4d6066e445db90780e4b30ca93398be0b6567eda" datatype="html">
+        <source>BSQ Transactions</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
+          <context context-type="linenumber">2,5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="94c248797dd2b6af49068cb49c3b4bc26bec6a16" datatype="html">
+        <source>TXID</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
+          <context context-type="linenumber">18,19</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">149</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">107,108</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8411955056013208681" datatype="html">
@@ -2753,18 +2770,6 @@
         </context-group>
         <note priority="1" from="description">Transaction ETA in several hours or more</note>
         <note priority="1" from="meaning">transaction.eta.in-several-hours</note>
-      </trans-unit>
-      <trans-unit id="94c248797dd2b6af49068cb49c3b4bc26bec6a16" datatype="html">
-        <source>TXID</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">149</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">107,108</context>
-        </context-group>
-        <note priority="1" from="description">dashboard.latest-transactions.txid</note>
       </trans-unit>
       <trans-unit id="54c58b39481f1749fce23fa8a77f616eee84d761" datatype="html">
         <source>Virtual size</source>
