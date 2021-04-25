@@ -72,8 +72,12 @@
 
     <br>
 
-    <h2><ng-template [ngIf]="transactions?.length" i18n="asset.M_of_N">{{ (transactions?.length | number) || '?' }} of </ng-template>{{ txCount | number }} <ng-template [ngIf]="isNativeAsset" [ngIfElse]="defaultAsset" i18n="Liquid native asset transactions title">Peg In/Out and Burn Transactions</ng-template><ng-template #defaultAsset i18n="Default asset transactions title">Issuance and Burn Transactions</ng-template></h2>
-
+    <h2>
+      <ng-template [ngIf]="transactions?.length" i18n="asset.M_of_N">{{ (transactions?.length | number) || '?' }} of {{ txCount | number }}</ng-template>
+      <ng-template [ngIf]="isNativeAsset" [ngIfElse]="defaultAsset" i18n="Liquid native asset transactions title">Peg In/Out and Burn Transactions</ng-template>
+      <ng-template #defaultAsset i18n="Default asset transactions title">Issuance and Burn Transactions</ng-template>
+    </h2>
+    
     <app-transactions-list [transactions]="transactions" [showConfirmations]="true" (loadMore)="loadMore()"></app-transactions-list>
 
     <div class="text-center">
