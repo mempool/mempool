@@ -26,19 +26,19 @@ export class BisqTransactionsComponent implements OnInit {
   types: string[] = [];
 
   txTypeOptions: IMultiSelectOption[] = [
-      { id: 1, name: 'Asset listing fee' },
-      { id: 2, name: 'Blind vote' },
-      { id: 3, name: 'Compensation request' },
-      { id: 4, name: 'Genesis' },
-      { id: 13, name: 'Irregular' },
-      { id: 5, name: 'Lockup' },
-      { id: 6, name: 'Pay trade fee' },
-      { id: 7, name: 'Proof of burn' },
-      { id: 8, name: 'Proposal' },
-      { id: 9, name: 'Reimbursement request' },
-      { id: 10, name: 'Transfer BSQ' },
-      { id: 11, name: 'Unlock' },
-      { id: 12, name: 'Vote reveal' },
+      { id: 1, name: $localize`Asset listing fee` },
+      { id: 2, name: $localize`Blind vote` },
+      { id: 3, name: $localize`Compensation request` },
+      { id: 4, name: $localize`Genesis` },
+      { id: 13, name: $localize`Irregular` },
+      { id: 5, name: $localize`Lockup` },
+      { id: 6, name: $localize`Pay trade fee` },
+      { id: 7, name: $localize`Proof of burn` },
+      { id: 8, name: $localize`Proposal` },
+      { id: 9, name: $localize`Reimbursement request` },
+      { id: 10, name: $localize`Transfer BSQ` },
+      { id: 11, name: $localize`Unlock` },
+      { id: 12, name: $localize`Vote reveal` },
   ];
   txTypesDefaultChecked = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 
