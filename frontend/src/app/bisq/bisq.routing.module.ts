@@ -5,55 +5,58 @@ import { BisqTransactionsComponent } from './bisq-transactions/bisq-transactions
 import { BisqTransactionComponent } from './bisq-transaction/bisq-transaction.component';
 import { BisqBlockComponent } from './bisq-block/bisq-block.component';
 import { BisqBlocksComponent } from './bisq-blocks/bisq-blocks.component';
-import { BisqExplorerComponent } from './bisq-explorer/bisq-explorer.component';
 import { BisqAddressComponent } from './bisq-address/bisq-address.component';
 import { BisqStatsComponent } from './bisq-stats/bisq-stats.component';
 import { ApiDocsComponent } from '../components/api-docs/api-docs.component';
+import { BisqDashboardComponent } from './bisq-dashboard/bisq-dashboard.component';
+import { BisqMarketComponent } from './bisq-market/bisq-market.component';
 
 const routes: Routes = [
   {
-    path: '',
-    component: BisqExplorerComponent,
-    children: [
-      {
-        path: '',
-        component: BisqTransactionsComponent
-      },
-      {
-        path: 'tx/:id',
-        component: BisqTransactionComponent
-      },
-      {
-        path: 'blocks',
-        children: [],
-        component: BisqBlocksComponent
-      },
-      {
-        path: 'block/:id',
-        component: BisqBlockComponent,
-      },
-      {
-        path: 'address/:id',
-        component: BisqAddressComponent,
-      },
-      {
-        path: 'stats',
-        component: BisqStatsComponent,
-      },
-      {
-        path: 'about',
-        component: AboutComponent,
-      },
-      {
-        path: 'api',
-        component: ApiDocsComponent,
-      },
-      {
-        path: '**',
-        redirectTo: ''
-      }
-    ]
-  }
+      path: '',
+      component: BisqDashboardComponent,
+    },
+    {
+      path: 'transactions',
+      component: BisqTransactionsComponent
+    },
+    {
+      path: 'market/:pair',
+      component: BisqMarketComponent,
+    },
+    {
+      path: 'tx/:id',
+      component: BisqTransactionComponent
+    },
+    {
+      path: 'blocks',
+      children: [],
+      component: BisqBlocksComponent
+    },
+    {
+      path: 'block/:id',
+      component: BisqBlockComponent,
+    },
+    {
+      path: 'address/:id',
+      component: BisqAddressComponent,
+    },
+    {
+      path: 'stats',
+      component: BisqStatsComponent,
+    },
+    {
+      path: 'about',
+      component: AboutComponent,
+    },
+    {
+      path: 'api',
+      component: ApiDocsComponent,
+    },
+    {
+      path: '**',
+      redirectTo: ''
+    }
 ];
 
 @NgModule({

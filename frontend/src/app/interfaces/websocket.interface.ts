@@ -21,6 +21,7 @@ export interface WebsocketResponse {
   'track-address'?: string;
   'track-asset'?: string;
   'watch-mempool'?: boolean;
+  'track-bisq-market'?: string;
 }
 
 export interface MempoolBlock {

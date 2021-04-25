@@ -16,8 +16,9 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { LatestBlocksComponent } from './components/latest-blocks/latest-blocks.component';
 import { ApiDocsComponent } from './components/api-docs/api-docs.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
+import { BisqMasterPageComponent } from './components/bisq-master-page/bisq-master-page.component';
 
-const routes: Routes = [
+let routes: Routes = [
   {
     path: '',
     component: MasterPageComponent,
@@ -282,6 +283,18 @@ const routes: Routes = [
     redirectTo: ''
   },
 ];
+
+const browserWindow = window || {};
+// @ts-ignore
+const browserWindowEnv = browserWindow.__env || {};
+
+if (browserWindowEnv && browserWindowEnv.OFFICIAL_BISQ_MARKETS) {
+  routes = [{
+    path: '',
+    component: BisqMasterPageComponent,
+    loadChildren: () => import('./bisq/bisq.module').then(m => m.BisqModule)
+  }];
+}
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, {

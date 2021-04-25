@@ -21,6 +21,7 @@ import { WebsocketService } from './services/websocket.service';
 import { AddressLabelsComponent } from './components/address-labels/address-labels.component';
 import { MempoolBlocksComponent } from './components/mempool-blocks/mempool-blocks.component';
 import { MasterPageComponent } from './components/master-page/master-page.component';
+import { BisqMasterPageComponent } from './components/bisq-master-page/bisq-master-page.component';
 import { AboutComponent } from './components/about/about.component';
 import { TelevisionComponent } from './components/television/television.component';
 import { StatisticsComponent } from './components/statistics/statistics.component';
@@ -44,7 +45,7 @@ import { FeesBoxComponent } from './components/fees-box/fees-box.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faAngleDown, faAngleUp, faBolt, faChartArea, faCogs, faCubes, faDatabase, faExchangeAlt, faInfoCircle,
-  faLink, faList, faSearch, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faAngleDoubleUp } from '@fortawesome/free-solid-svg-icons';
+  faLink, faList, faSearch, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faAngleDoubleUp, faSort, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { ApiDocsComponent } from './components/api-docs/api-docs.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 import { StorageService } from './services/storage.service';
@@ -55,6 +56,7 @@ import { HttpCacheInterceptor } from './services/http-cache.interceptor';
     AppComponent,
     AboutComponent,
     MasterPageComponent,
+    BisqMasterPageComponent,
     TelevisionComponent,
     BlockchainComponent,
     StartComponent,
@@ -127,5 +129,6 @@ export class AppModule {
     library.addIcons(faExchangeAlt);
     library.addIcons(faAngleDoubleUp);
     library.addIcons(faAngleDoubleDown);
+    library.addIcons(faChevronDown);
   }
 }
