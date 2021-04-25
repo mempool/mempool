@@ -1,9 +1,12 @@
 <table class="table table-borderless table-striped">
   <thead>
-    <th>Date</th>
-    <th>Price</th>
-    <th>Amount (BTC)</th>
-    <th>Amount <ng-template [ngIf]="market">({{ market.lsymbol === 'BTC' ? market.rsymbol : market.lsymbol }})</ng-template></th>
+    <th i18n>Date</th>
+    <th i18n>Price</th>
+    <th><ng-container *ngTemplateOutlet="amount; context: {$implicit:  'BTC' }"></ng-container></th>
+    <th>
+      <ng-template [ngIf]="market" [ngIfElse]="noMarket"><ng-container *ngTemplateOutlet="amount; context: {$implicit: market.lsymbol === 'BTC' ? market.rsymbol : market.lsymbol }"></ng-container></ng-template>
+      <ng-template #noMarket i18n>Amount</ng-template>
+    </th>
   </thead>
   <tbody *ngIf="(trades$ | async) as trades; else loadingTmpl">
     <tr *ngFor="let trade of trades;">
@@ -37,3 +40,5 @@
     <td *ngFor="let j of [1, 2, 3, 4]"><span class="skeleton-loader"></span></td>
   </tr>
 </ng-template>
+
+<ng-template #amount let-i i18n="Trade amount (Symbol)">Amount ({{ i }})</ng-template>

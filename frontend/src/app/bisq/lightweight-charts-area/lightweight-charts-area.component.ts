@@ -84,9 +84,12 @@ export class LightweightChartsAreaComponent implements OnChanges, OnDestroy {
       const price = param.seriesPrices.get(this.areaSeries);
       const line = param.seriesPrices.get(this.lineSeries);
 
+      const tradesText = $localize`:@@bisq-graph-trades:Trades`;
+      const volumeText = $localize`:@@bisq-graph-volume:Volume`;
+
       toolTip.innerHTML = `<table>
-        <tr><td class="tradesText"># of trades:</td><td class="text-right tradesText">${Math.round(line * 100) / 100}</td></tr>
-        <tr><td class="volumeText">Volume:<td class="text-right volumeText">${Math.round(price * 100) / 100} BTC</td></tr>
+          <tr><td class="tradesText">${tradesText}:</td><td class="text-right tradesText">${Math.round(line * 100) / 100}</td></tr>
+          <tr><td class="volumeText">${volumeText}:<td class="text-right volumeText">${Math.round(price * 100) / 100} BTC</td></tr>
         </table>
         <div>${dateStr}</div>`;
 
