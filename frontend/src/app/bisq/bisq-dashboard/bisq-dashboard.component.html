@@ -1,6 +1,6 @@
 <div class="container-xl">
 
-  <h1 i18n="Bisq markets title">Bisq trading volume</h1>
+  <h1 i18n="Bisq markets title">Bisq Trading Volume</h1>
 
   <div id="volumeHolder">
     <ng-template #loadingVolumes>
@@ -16,8 +16,8 @@
   <br><br>
 
   <h1>
-    <ng-template [ngIf]="stateService.env.OFFICIAL_BISQ_MARKETS" [ngIfElse]="nonOfficialMarkets" i18n="Bisq markets all">Markets</ng-template>
-    <ng-template #nonOfficialMarkets i18n="Bisq Bitcoin markets">Bitcoin markets</ng-template>
+    <ng-template [ngIf]="stateService.env.OFFICIAL_BISQ_MARKETS" [ngIfElse]="nonOfficialMarkets" i18n="Bisq All Markets">Markets</ng-template>
+    <ng-template #nonOfficialMarkets i18n="Bisq Bitcoin Markets">Bitcoin Markets</ng-template>
   </h1>
   <ng-container *ngIf="{ value: (tickers$ | async) } as tickers">
 
@@ -47,7 +47,7 @@
 
   <br><br>
 
-  <h2 i18n="Latest trades header">Latest trades</h2>
+  <h2 i18n="Latest Trades header">Latest Trades</h2>
   <app-bisq-trades [trades$]="trades$"></app-bisq-trades>
 
   </ng-container>

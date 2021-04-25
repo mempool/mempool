@@ -598,8 +598,8 @@
         </context-group>
         <note priority="1" from="description">Bisq block transactions title</note>
       </trans-unit>
-      <trans-unit id="186599e33aa13ffd3160319e1638e50b47889ba5" datatype="html">
-        <source>Bisq trading volume</source>
+      <trans-unit id="6b2fdbdddef74630e1076d58786ca339a8c030f0" datatype="html">
+        <source>Bisq Trading Volume</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">3,7</context>
@@ -612,15 +612,15 @@
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">19,20</context>
         </context-group>
-        <note priority="1" from="description">Bisq markets all</note>
+        <note priority="1" from="description">Bisq All Markets</note>
       </trans-unit>
-      <trans-unit id="5582c5ac64a0a1fa846d92bc5380426792a28a64" datatype="html">
-        <source>Bitcoin markets</source>
+      <trans-unit id="ece163b62f5e9b0b68a8d6a2d93e216318f557ba" datatype="html">
+        <source>Bitcoin Markets</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">20,22</context>
         </context-group>
-        <note priority="1" from="description">Bisq Bitcoin markets</note>
+        <note priority="1" from="description">Bisq Bitcoin Markets</note>
       </trans-unit>
       <trans-unit id="32072c7fb0469aaf82d256a59b3e0d6ecce973b9" datatype="html">
         <source>Currency</source>
@@ -668,8 +668,8 @@
         </context-group>
         <note priority="1" from="description">Trades amount 7D</note>
       </trans-unit>
-      <trans-unit id="4df4f71c23bc364bb76b210d7aa041406da4dc48" datatype="html">
-        <source>Latest trades</source>
+      <trans-unit id="8d54d714a00023ea23b58d8642980ef41cea0cb3" datatype="html">
+        <source>Latest Trades</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">50,54</context>
@@ -678,23 +678,23 @@
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
           <context context-type="linenumber">61,63</context>
         </context-group>
-        <note priority="1" from="description">Latest trades header</note>
+        <note priority="1" from="description">Latest Trades header</note>
       </trans-unit>
-      <trans-unit id="7619018be5b260c8645a2d424399bceac1be9995" datatype="html">
-        <source>Buy offers</source>
+      <trans-unit id="f4ebbeea643a58f45e665e960b494b2ea30b87da" datatype="html">
+        <source>Buy Offers</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
           <context context-type="linenumber">75,76</context>
         </context-group>
-        <note priority="1" from="description">Bisq buy offers</note>
+        <note priority="1" from="description">Bisq Buy Offers</note>
       </trans-unit>
-      <trans-unit id="444ef745f7da15c1e95bdb631ee266345a788992" datatype="html">
-        <source>Sell offers</source>
+      <trans-unit id="abf29235edbf341b6f626c315ff509f38fbf728a" datatype="html">
+        <source>Sell Offers</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
           <context context-type="linenumber">76,79</context>
         </context-group>
-        <note priority="1" from="description">Bisq sell offers</note>
+        <note priority="1" from="description">Bisq Sell Offers</note>
       </trans-unit>
       <trans-unit id="74d80a5b284beb81e8aeb3b8efca0f78cd4b7560" datatype="html">
         <source>Amount (<x id="INTERPOLATION" equiv-text="{{ i }}"/>)</source>
