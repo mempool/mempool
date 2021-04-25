@@ -73,7 +73,7 @@ class Logger {
   }
 
   private getNetwork(): string {
-    if (config.BISQ_BLOCKS.ENABLED) {
+    if (config.BISQ.ENABLED) {
       return 'bisq';
     }
     if (config.MEMPOOL.NETWORK && config.MEMPOOL.NETWORK !== 'mainnet') {

@@ -426,6 +426,15 @@ class Routes {
     }
   }
 
+  public getBisqMarketVolumes7d(req: Request, res: Response) {
+    const result = bisqMarket.getVolumesByTime(604800);
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(500).json(this.getBisqMarketErrorResponse('getBisqMarketVolumes7d error'));
+    }
+  }
+
   private parseRequestParameters(requestParams: object, params: RequiredSpec): { [name: string]: any; } {
     const final = {};
     for (const i in params) {

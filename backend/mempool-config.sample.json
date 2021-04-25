@@ -50,11 +50,7 @@
     "ENABLED": true,
     "TX_PER_SECOND_SAMPLE_PERIOD": 150
   },
-  "BISQ_BLOCKS": {
-    "ENABLED": false,
-    "DATA_PATH": "/bisq/statsnode-data/btc_mainnet/db/json"
-  },
-  "BISQ_MARKETS": {
+  "BISQ": {
     "ENABLED": false,
     "DATA_PATH": "/bisq/statsnode-data/btc_mainnet/db"
   }

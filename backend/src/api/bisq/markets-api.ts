@@ -457,6 +457,30 @@ class BisqMarketsApi {
     }
   }
 
+  getVolumesByTime(time: number): MarketVolume[] {
+    const timestamp_from = new Date().getTime() / 1000 - time;
+    const timestamp_to = new Date().getTime() / 1000;
+
+    const trades = this.getTradesByCriteria(undefined, timestamp_to, timestamp_from,
+      undefined, undefined, undefined, 'asc', Number.MAX_SAFE_INTEGER);
+
+    const markets: any = {};
+
+    for (const trade of trades) {
+      if (!markets[trade._market]) {
+        markets[trade._market] = {
+          'volume': 0,
+          'num_trades': 0,
+        };
+      }
+
+      markets[trade._market]['volume'] += this.fiatCurrenciesIndexed[trade.currency] ? trade._tradeAmount : trade._tradeVolume;
+      markets[trade._market]['num_trades']++;
+    }
+
+    return markets;
+  }
+
   private getTradesSummarized(trades: TradesData[], timestamp_from: number, interval?: string): SummarizedIntervals {
     const intervals: any = {};
     const intervals_prices: any = {};

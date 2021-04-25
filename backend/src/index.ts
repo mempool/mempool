@@ -90,13 +90,10 @@ class Server {
     this.setUpHttpApiRoutes();
     this.runMainUpdateLoop();
 
-    if (config.BISQ_BLOCKS.ENABLED) {
+    if (config.BISQ.ENABLED) {
       bisq.startBisqService();
       bisq.setPriceCallbackFunction((price) => websocketHandler.setExtraInitProperties('bsq-price', price));
       blocks.setNewBlockCallback(bisq.handleNewBitcoinBlock.bind(bisq));
-    }
-
-    if (config.BISQ_MARKETS.ENABLED) {
       bisqMarkets.startBisqService();
     }
 
@@ -210,7 +207,7 @@ class Server {
         ;
     }
 
-    if (config.BISQ_BLOCKS.ENABLED) {
+    if (config.BISQ.ENABLED) {
       this.app
         .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/stats', routes.getBisqStats)
         .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/tx/:txId', routes.getBisqTransaction)
@@ -219,11 +216,6 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/blocks/:index/:length', routes.getBisqBlocks)
         .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/address/:address', routes.getBisqAddress)
         .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/txs/:index/:length', routes.getBisqTransactions)
-      ;
-    }
-
-    if (config.BISQ_MARKETS.ENABLED) {
-      this.app
         .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/currencies', routes.getBisqMarketCurrencies.bind(routes))
         .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/depth', routes.getBisqMarketDepth.bind(routes))
         .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/hloc', routes.getBisqMarketHloc.bind(routes))
@@ -232,6 +224,7 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/ticker', routes.getBisqMarketTicker.bind(routes))
         .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/trades', routes.getBisqMarketTrades.bind(routes))
         .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/volumes', routes.getBisqMarketVolumes.bind(routes))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/volumes/7d', routes.getBisqMarketVolumes7d.bind(routes))
         ;
     }
 

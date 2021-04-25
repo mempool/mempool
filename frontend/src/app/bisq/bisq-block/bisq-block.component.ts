@@ -8,6 +8,7 @@ import { switchMap, catchError } from 'rxjs/operators';
 import { SeoService } from 'src/app/services/seo.service';
 import { ElectrsApiService } from 'src/app/services/electrs-api.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { WebsocketService } from 'src/app/services/websocket.service';
 
 @Component({
   selector: 'app-bisq-block',
@@ -23,6 +24,7 @@ export class BisqBlockComponent implements OnInit, OnDestroy {
   error: HttpErrorResponse | null;
 
   constructor(
+    private websocketService: WebsocketService,
     private bisqApiService: BisqApiService,
     private route: ActivatedRoute,
     private seoService: SeoService,
@@ -32,6 +34,8 @@ export class BisqBlockComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.websocketService.want(['blocks']);
+
     this.subscription = this.route.paramMap
       .pipe(
         switchMap((params: ParamMap) => {
