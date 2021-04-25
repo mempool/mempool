@@ -1,5 +1,5 @@
 <div class="container-xl">
-  <h1 style="float: left;">Asset</h1>
+  <h1 style="float: left;" i18n="asset|Liquid Asset page title">Asset</h1>
   <a [routerLink]="['/asset/' | relativeUrl, assetString]" style="line-height: 56px; margin-left: 10px;">
     <span class="d-inline d-lg-none">{{ assetString | shortenString : 24 }}</span>
     <span class="d-none d-lg-inline">{{ assetString }}</span>
@@ -72,7 +72,7 @@
 
     <br>
 
-    <h2><ng-template [ngIf]="transactions?.length">{{ (transactions?.length | number) || '?' }} of </ng-template>{{ txCount | number }} <ng-template [ngIf]="isNativeAsset" [ngIfElse]="defaultAsset" i18n="Liquid native asset transactions title">Peg In/Out and Burn Transactions</ng-template><ng-template #defaultAsset i18n="Default asset transactions title">Issuance and Burn Transactions</ng-template></h2>
+    <h2><ng-template [ngIf]="transactions?.length" i18n="asset.M_of_N">{{ (transactions?.length | number) || '?' }} of </ng-template>{{ txCount | number }} <ng-template [ngIf]="isNativeAsset" [ngIfElse]="defaultAsset" i18n="Liquid native asset transactions title">Peg In/Out and Burn Transactions</ng-template><ng-template #defaultAsset i18n="Default asset transactions title">Issuance and Burn Transactions</ng-template></h2>
 
     <app-transactions-list [transactions]="transactions" [showConfirmations]="true" (loadMore)="loadMore()"></app-transactions-list>
 

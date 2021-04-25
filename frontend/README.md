@@ -22,6 +22,7 @@ https://www.transifex.com/mempool/mempool/dashboard/
 * Dutch @m__btc
 * Japanese @wiz @japananon
 * Norwegian @T82771355
+* Polish @maciejsoltysiak
 * Portugese @jgcastro1985
 * Slovenian @thepkbadger
 * Finnish @bio_bitcoin
