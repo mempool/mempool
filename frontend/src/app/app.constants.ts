@@ -71,7 +71,7 @@ export const languages: Language[] = [
    { code: 'ja', name: '日本語' },          // Japanese
    { code: 'nb', name: 'Norsk' },           // Norwegian Bokmål
 // { code: 'nn', name: 'Norsk Nynorsk' },   // Norwegian Nynorsk
-// { code: 'pl', name: 'Polski' },          // Polish
+   { code: 'pl', name: 'Polski' },          // Polish
    { code: 'pt', name: 'Português' },       // Portuguese
 // { code: 'pt-BR', name: 'Português (Brazil)' }, // Portuguese (Brazil)
 // { code: 'ro', name: 'Română' },          // Romanian

@@ -71,6 +71,10 @@
             "translation": "src/locale/messages.nb.xlf",
             "baseHref": "/nb/"
           },
+          "pl": {
+            "translation": "src/locale/messages.pl.xlf",
+            "baseHref": "/pl/"
+          },
           "pt": {
             "translation": "src/locale/messages.pt.xlf",
             "baseHref": "/pt/"
