@@ -58,7 +58,7 @@
       <br><br>
 
       <ng-container *ngIf="trades$ | async as trades; else loadingSpinner">
-        <h2 i18n="Latest trades header">Latest trades</h2>
+        <h2 i18n="Latest Trades header">Latest Trades</h2>
 
         <app-bisq-trades [trades$]="trades$" [market]="currency.market"></app-bisq-trades>
       </ng-container>
@@ -72,8 +72,8 @@
 <ng-template #offersList let-offers="offers" let-direction="direction", let-market="market">
   <div class="col">
     <h2>
-      <ng-template [ngIf]="direction === 'BUY'" [ngIfElse]="sellOffers" i18n="Bisq buy offers">Buy offers</ng-template>
-      <ng-template #sellOffers i18n="Bisq sell offers">Sell offers</ng-template>
+      <ng-template [ngIf]="direction === 'BUY'" [ngIfElse]="sellOffers" i18n="Bisq Buy Offers">Buy Offers</ng-template>
+      <ng-template #sellOffers i18n="Bisq Sell Offers">Sell Offers</ng-template>
     </h2>
 
     <table class="table table-borderless table-striped">
