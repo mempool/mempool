@@ -24,7 +24,7 @@ export class BisqDashboardComponent implements OnInit {
   constructor(
     private websocketService: WebsocketService,
     private bisqApiService: BisqApiService,
-    private stateService: StateService,
+    public stateService: StateService,
     private seoService: SeoService,
   ) { }
 

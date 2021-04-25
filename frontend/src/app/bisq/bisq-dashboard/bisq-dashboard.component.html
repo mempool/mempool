@@ -1,6 +1,6 @@
 <div class="container-xl">
 
-  <h1>Trading volume</h1>
+  <h1>Bisq trading volume</h1>
 
   <div id="volumeHolder">
     <ng-template #loadingVolumes>
@@ -13,9 +13,12 @@
     </ng-container>
   </div>
 
-  <br>
+  <br><br>
 
-  <h1>Markets</h1>
+  <h1>
+    <ng-template [ngIf]="stateService.env.OFFICIAL_BISQ_MARKETS" [ngIfElse]="nonOfficialMarkets">Markets</ng-template>
+    <ng-template #nonOfficialMarkets>Bitcoin markets</ng-template>
+  </h1>
   <ng-container *ngIf="{ value: (tickers$ | async) } as tickers">
 
   <table class="table table-borderless table-striped">
