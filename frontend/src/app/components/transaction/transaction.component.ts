@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { switchMap, filter, catchError } from 'rxjs/operators';
+import { switchMap, filter, catchError, retryWhen, delay } from 'rxjs/operators';
 import { Transaction, Block } from '../../interfaces/electrs.interface';
-import { of, merge, Subscription, Observable } from 'rxjs';
+import { of, merge, Subscription, Observable, Subject } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from 'src/app/services/audio.service';
@@ -27,9 +27,11 @@ export class TransactionComponent implements OnInit, OnDestroy {
   latestBlock: Block;
   transactionTime = -1;
   subscription: Subscription;
+  fetchCpfpSubscription: Subscription;
   rbfTransaction: undefined | Transaction;
   cpfpInfo: CpfpInfo | null;
   showCpfpDetails = false;
+  fetchCpfp$ = new Subject<string>();
 
   constructor(
     private route: ActivatedRoute,
@@ -99,28 +101,14 @@ export class TransactionComponent implements OnInit, OnDestroy {
       if (this.tx.status.confirmed) {
         this.stateService.markBlock$.next({ blockHeight: tx.status.block_height });
       } else {
-        if (tx.effectiveFeePerVsize) {
+        if (tx.cpfpChecked) {
           this.stateService.markBlock$.next({ txFeePerVSize: tx.effectiveFeePerVsize });
           this.cpfpInfo = {
             ancestors: tx.ancestors,
             bestDescendant: tx.bestDescendant,
           };
         } else {
-          this.apiService.getCpfpinfo$(this.tx.txid)
-            .subscribe((cpfpInfo) => {
-              const lowerFeeParents = cpfpInfo.ancestors.filter((parent) => (parent.fee / (parent.weight / 4)) < tx.feePerVsize);
-              let totalWeight = tx.weight + lowerFeeParents.reduce((prev, val) => prev + val.weight, 0);
-              let totalFees = tx.fee + lowerFeeParents.reduce((prev, val) => prev + val.fee, 0);
-
-              if (cpfpInfo.bestDescendant) {
-                totalWeight += cpfpInfo.bestDescendant.weight;
-                totalFees += cpfpInfo.bestDescendant.fee;
-              }
-
-              this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
-              this.stateService.markBlock$.next({ txFeePerVSize: this.tx.effectiveFeePerVsize });
-              this.cpfpInfo = cpfpInfo;
-            });
+          this.fetchCpfp$.next(this.tx.txid);
         }
       }
     },
@@ -128,6 +116,32 @@ export class TransactionComponent implements OnInit, OnDestroy {
       this.error = error;
       this.isLoadingTx = false;
     });
+
+    this.fetchCpfpSubscription = this.fetchCpfp$
+      .pipe(
+        switchMap((txId) => this.apiService.getCpfpinfo$(txId)
+          .pipe(
+            retryWhen((errors) => errors.pipe(delay(2000)))
+          )
+        ),
+      )
+      .subscribe((cpfpInfo) => {
+        if (!this.tx) {
+          return;
+        }
+        const lowerFeeParents = cpfpInfo.ancestors.filter((parent) => (parent.fee / (parent.weight / 4)) < this.tx.feePerVsize);
+        let totalWeight = this.tx.weight + lowerFeeParents.reduce((prev, val) => prev + val.weight, 0);
+        let totalFees = this.tx.fee + lowerFeeParents.reduce((prev, val) => prev + val.fee, 0);
+
+        if (cpfpInfo.bestDescendant) {
+          totalWeight += cpfpInfo.bestDescendant.weight;
+          totalFees += cpfpInfo.bestDescendant.fee;
+        }
+
+        this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
+        this.stateService.markBlock$.next({ txFeePerVSize: this.tx.effectiveFeePerVsize });
+        this.cpfpInfo = cpfpInfo;
+      });
 
     this.stateService.blocks$
       .subscribe(([block, txConfirmed]) => {
@@ -209,6 +223,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+    this.fetchCpfpSubscription.unsubscribe();
     this.leaveTransaction();
   }
 }
