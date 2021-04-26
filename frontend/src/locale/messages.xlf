@@ -3107,6 +3107,10 @@
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
         <note priority="1" from="description">tx-fee-rating.warning-tooltip</note>
       </trans-unit>
       <trans-unit id="0fa66b0c410bef320d3f370d7c98c51754b5f28f" datatype="html">
@@ -3121,14 +3125,6 @@
         </context-group>
         <note priority="1" from="description">TX Fee Rating is Warning</note>
         <note priority="1" from="meaning">tx-fee-rating.overpaid.warning</note>
-      </trans-unit>
-      <trans-unit id="34c2bcb58f4d34598076134799a4c92eec7ba43c" datatype="html">
-        <source>Only ~<x id="INTERPOLATION" equiv-text="{{ medianFeeNeeded | number : &apos;1.1-1&apos;  }}"/> sat/vB was needed to get into this block</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
-          <context context-type="linenumber">3</context>
-        </context-group>
-        <note priority="1" from="description">tx-fee-rating.warning-tooltip</note>
       </trans-unit>
       <trans-unit id="e1139ea570985b3f114e18876f09fd7223429983" datatype="html">
         <source>Latest blocks</source>
