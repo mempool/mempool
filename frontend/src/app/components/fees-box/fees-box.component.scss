@@ -50,10 +50,16 @@
       font-size: 12px;
       top: 0px;
     }
+    .fee-text{
+      border-bottom: 1px solid #ffffff1c;
+      width: fit-content;
+      margin: auto;
+      line-height: 1.45;
+      padding: 0px 2px;
+    }
     .fiat {
       display: block;
       font-size: 14px !important;
-      top: -2px !important;
     }
   }
 }
