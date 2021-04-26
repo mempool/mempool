@@ -55,10 +55,15 @@ html, body {
 body {
   background-color: #11131f;
   min-width: 320px;
+  padding-bottom: 60px;
 }
 
 .container {
   position: relative;
+  padding-bottom: 60px;
+}
+.container-xl {
+  padding-bottom: 60px;
 }
 
 :focus {
