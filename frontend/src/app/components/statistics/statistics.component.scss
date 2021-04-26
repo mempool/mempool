@@ -24,3 +24,15 @@
     padding-right: 0;
   }
 }
+
+.formRadioGroup{
+  @media (min-width: 653px) {
+    float: right;
+  }
+  .btn-sm {
+    font-size: 12px;
+    @media (min-width: 768px) {
+      font-size: 14px;
+    }
+  }
+}
