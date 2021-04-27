@@ -34,7 +34,7 @@ class WebsocketHandler {
 
     this.wss.on('connection', (client: WebSocket) => {
       client.on('error', logger.info);
-      client.on('message', (message: string) => {
+      client.on('message', async (message: string) => {
         try {
           const parsedMessage: WebsocketResponse = JSON.parse(message);
           const response = {};
@@ -53,7 +53,16 @@ class WebsocketHandler {
               if (parsedMessage['watch-mempool']) {
                 const tx = memPool.getMempool()[client['track-tx']];
                 if (tx) {
-                  response['tx'] = tx;
+                  if (config.MEMPOOL.BACKEND !== 'esplora') {
+                    try {
+                      const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, true);
+                      response['tx'] = fullTx;
+                    } catch (e) {
+                      logger.debug('Error finding transaction in mempool: ' + e.message || e);
+                    }
+                  } else {
+                    response['tx'] = tx;
+                  }
                 } else {
                   client['track-mempool-tx'] = parsedMessage['track-tx'];
                 }
