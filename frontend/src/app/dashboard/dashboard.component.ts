@@ -130,7 +130,7 @@ export class DashboardComponent implements OnInit {
         const diff = now - DATime;
         const blocksInEpoch = block.height % 2016;
         const estimatedBlocks = Math.round(diff / 60 / 10);
-        const difficultyChange = (blocksInEpoch - (diff / 60 / 10)) / blocksInEpoch * 100;
+        const difficultyChange = (600 / (diff / blocksInEpoch ) -1) * 100;
 
         let base = 0;
         let green = 0;
