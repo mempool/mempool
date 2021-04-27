@@ -20,7 +20,6 @@ import { LatestBlocksComponent } from './components/latest-blocks/latest-blocks.
 import { WebsocketService } from './services/websocket.service';
 import { AddressLabelsComponent } from './components/address-labels/address-labels.component';
 import { MempoolBlocksComponent } from './components/mempool-blocks/mempool-blocks.component';
-import { LogoComponent } from './components/logo/logo.component';
 import { MasterPageComponent } from './components/master-page/master-page.component';
 import { BisqMasterPageComponent } from './components/bisq-master-page/bisq-master-page.component';
 import { AboutComponent } from './components/about/about.component';
@@ -56,7 +55,6 @@ import { HttpCacheInterceptor } from './services/http-cache.interceptor';
   declarations: [
     AppComponent,
     AboutComponent,
-    LogoComponent,
     MasterPageComponent,
     BisqMasterPageComponent,
     TelevisionComponent,
