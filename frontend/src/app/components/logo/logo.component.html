@@ -1,0 +1,10 @@
+<div  class="logo-container" [ngClass]="{'big': sizeBig}">
+  <div class="logo">
+    <div class="rectangle-light"></div>
+    <div class="square-dark"></div>
+    <div class="square-light"></div>
+  </div>
+  <div class="text">
+    mempool<span *ngIf="!officialMempoolSpace">.space</span>
+  </div>
+</div>
