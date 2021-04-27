@@ -60,7 +60,7 @@ export class BisqTransactionsComponent implements OnInit {
 
   // @ts-ignore
   paginationSize: 'sm' | 'lg' = 'md';
-  paginationMaxSize = 10;
+  paginationMaxSize = 4;
 
   txTypes = ['ASSET_LISTING_FEE', 'BLIND_VOTE', 'COMPENSATION_REQUEST', 'GENESIS', 'LOCKUP', 'PAY_TRADE_FEE',
     'PROOF_OF_BURN', 'PROPOSAL', 'REIMBURSEMENT_REQUEST', 'TRANSFER_BSQ', 'UNLOCK', 'VOTE_REVEAL', 'IRREGULAR'];
