@@ -1,13 +1,13 @@
-<div class="container-xl">
+<div class="container-graph">
   <div>
-    <div class="" *ngIf="loading">
+    <div *ngIf="loading">
       <div class="text-center">
         <h3 i18n="statistics.loading-graphs">Loading graphs...</h3>
         <br>
         <div class="spinner-border text-light"></div>
       </div>
     </div>
-    <div class="">
+    <div>
       <div class="card mb-3" *ngIf="mempoolStats.length">
         <div class="card-header">
           <i class="fa fa-area-chart"></i> <span i18n="statistics.memory-by-vBytes">Mempool by vBytes (sat/vByte)</span>
