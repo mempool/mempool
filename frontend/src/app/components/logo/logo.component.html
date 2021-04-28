@@ -1,0 +1,13 @@
+<div  class="logo-container" [ngClass]="{'big': sizeBig}">
+    <div class="logo">
+        <div class="rectangle-light"></div>
+        <div class="square-dark"></div>
+        <div class="square-light"></div>
+    </div>
+    <div class="image" *ngIf="sizeBig === false">
+        <img [src]="officialMempoolSpace ? './resources/mempool-space-logo.png' : './resources/mempool-logo.png'" >
+    </div>
+    <div class="image" *ngIf="sizeBig === true">
+        <img src="./resources/mempool-logo-bigger.png" />
+    </div>
+</div>

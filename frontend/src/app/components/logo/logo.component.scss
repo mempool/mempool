@@ -1,0 +1,106 @@
+@keyframes squareDark {
+    0% {
+        height: 45%;
+    }
+    75% {
+        height: 65%;
+    }
+    100% {
+        height: 45%;
+    }
+}
+  
+@keyframes squareLight {
+    0% {
+        height: 55%;
+    }
+    75% {
+        height: 35%;
+    }
+    100% {
+        height: 55%;
+    }
+}
+
+.logo-container {
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    .image {
+        img{
+            max-width: 100%;
+            width: 100%;
+        }
+    }
+}
+
+.logo {
+    display: inline-block;
+    width: 66px;
+    height: 36px;
+    margin-right: 10px;
+    border-radius: 4px;
+    overflow: hidden;
+    .square-dark {
+        animation: squareDark infinite 3000ms cubic-bezier(0.47, 0.3, 0.74, 0.69);
+        background-color: #2e3349;
+        height: 50%;
+    }
+
+    .square-light {
+        animation: squareLight infinite 3000ms cubic-bezier(0.47, 0.3, 0.74, 0.69);
+        background-color: purple;
+        background-image: linear-gradient(#8982f5,#7198f0, #51cee3);
+        height: 50%;
+    }
+
+    .rectangle-light {
+        background-color: #fff;
+        border-radius: 2px;
+        height: 50%;
+        margin: 7px 0px 0px 23px;
+        opacity: 0.25;
+        position: absolute;
+        width: 8px;
+    }
+}
+
+.big {
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    max-width: 440px;
+    margin: auto;
+    width: 310px;
+    .logo{
+        display: inline-block;
+        width: 64px;
+        height: 62px;
+        margin-right: 10px;
+        border-radius: 4px;
+        overflow: hidden;
+        top: 10px;
+        position: relative;
+        left: -6px;
+        @media (min-width: 576px) {
+            width: 76px;
+            height: 76px;
+            top: 3px;
+            left: -8px;            
+        }
+        .rectangle-light{
+            border-radius: 3px;
+            height: 48px;
+            margin: 9px 0px 0px 46px;
+            width: 11px;
+            @media (min-width: 576px) {
+                height: 56px;
+                margin: 9px 0px 0px 55px;
+            }
+        }
+    }
+    .image {
+        width: 230px;
+        max-width: 100%;
+    }
+}

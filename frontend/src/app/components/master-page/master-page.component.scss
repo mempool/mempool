@@ -56,21 +56,24 @@ li.nav-item {
 .navbar-collapse {
   flex-basis: auto;
   justify-content: flex-end;
-}
-
-@media (min-width: 992px) {
-  .navbar-collapse {
+  align-self: start;
+  @media (min-width: 576px) {
+    align-self: auto;
+  }
+  @media (min-width: 992px) {
     justify-content: space-between;
   }
 }
 
+
 .navbar-brand {
-  width: 60%;
+  width: 100%;
+  max-width: 155px;
 }
 
 @media (min-width: 576px) {
   .navbar-brand {
-    width: 140px;
+    max-width: 155px;
   }
 }
 
