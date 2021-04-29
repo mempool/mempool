@@ -73,19 +73,19 @@
         <div class="card text-center">
           <div class="card-body">
             <h5 class="card-title" i18n="dashboard.latest-blocks">Latest blocks</h5>
-            <table class="table table-borderless text-left">
+            <table class="table lastest-blocks-table">
               <thead>
-                <th style="width: 15%;" i18n="dashboard.latest-blocks.height">Height</th>
-                <th style="width: 35%;" i18n="dashboard.latest-blocks.mined">Mined</th>
-                <th style="width: 20%;" class="d-none d-lg-table-cell" i18n="dashboard.latest-blocks.transaction-count">TXs</th>
-                <th style="width: 30%;" i18n="dashboard.latest-blocks.size">Size</th>
+                <th class="table-cell-height" i18n="dashboard.latest-blocks.height">Height</th>
+                <th class="table-cell-mined" i18n="dashboard.latest-blocks.mined">Mined</th>
+                <th class="table-cell-transaction-count" i18n="dashboard.latest-blocks.transaction-count">TXs</th>
+                <th class="table-cell-size" i18n="dashboard.latest-blocks.size">Size</th>
               </thead>
               <tbody>
                 <tr *ngFor="let block of blocks$ | async; let i = index; trackBy: trackByBlock">
-                  <td><a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
-                  <td><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since></td>
-                  <td class="d-none d-lg-table-cell">{{ block.tx_count | number }}</td>
-                  <td>
+                  <td class="table-cell-height" ><a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
+                  <td class="table-cell-mined" ><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since></td>
+                  <td class="table-cell-transaction-count">{{ block.tx_count | number }}</td>
+                  <td class="table-cell-size">
                     <div class="progress">
                       <div class="progress-bar progress-mempool {{ network$ | async }}" role="progressbar" [ngStyle]="{'width': (block.weight / 4000000)*100 + '%' }">&nbsp;</div>
                       <div class="progress-text">{{ block.size | bytes: 2 }}</div>
@@ -102,19 +102,19 @@
         <div class="card text-center">
           <div class="card-body">
             <h5 class="card-title" i18n="dashboard.latest-transactions">Latest transactions</h5>
-            <table class="table table-borderless text-left latest-transactions">
+            <table class="table latest-transactions">
               <thead>
-                <th style="width: 20%;" i18n="dashboard.latest-transactions.txid">TXID</th>
-                <th style="width: 35%;" class="table-cell-satoshis" i18n="dashboard.latest-transactions.amount">Amount</th>
-                <th *ngIf="(network$ | async) === ''" class="table-cell-fiat text-right" i18n="dashboard.latest-transactions.USD">USD</th>
-                <th style="width: 25%;" class="text-right" i18n="dashboard.latest-transactions.fee">Fee</th>
+                <th class="table-cell-txid" i18n="dashboard.latest-transactions.txid">TXID</th>
+                <th class="table-cell-satoshis" i18n="dashboard.latest-transactions.amount">Amount</th>
+                <th class="table-cell-fiat" *ngIf="(network$ | async) === ''" i18n="dashboard.latest-transactions.USD">USD</th>
+                <th class="table-cell-fees" i18n="dashboard.latest-transactions.fee">Fee</th>
               </thead>
               <tbody>
                 <tr *ngFor="let transaction of transactions$ | async; let i = index;">
-                  <td><a [routerLink]="['/tx' | relativeUrl, transaction.txid]">{{ transaction.txid | shortenString : 10 }}</a></td>
+                  <td class="table-cell-txid"><a [routerLink]="['/tx' | relativeUrl, transaction.txid]">{{ transaction.txid | shortenString : 10 }}</a></td>
                   <td class="table-cell-satoshis"><app-amount [satoshis]="transaction.value" digitsInfo="1.8-8" [noFiat]="true"></app-amount></td>
-                  <td *ngIf="(network$ | async) === ''" class="table-cell-fiat"><app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat></td>
-                  <td class="text-right">{{ transaction.fee / transaction.vsize | number : '1.1-1' }} <span class="fiat" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
+                  <td class="table-cell-fiat" *ngIf="(network$ | async) === ''" ><app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat></td>
+                  <td class="table-cell-fees">{{ transaction.fee / transaction.vsize | number : '1.1-1' }} <span class="fiat" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
                 </tr>
               </tbody>
             </table>

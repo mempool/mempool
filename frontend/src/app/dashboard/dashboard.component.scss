@@ -116,14 +116,71 @@
 }
 
 .latest-transactions {
-  .table-cell-fee {
-    min-width: 100px;
+  width: 100%;
+  text-align: left;
+  tr, td, th {
+    border: 0px;
+  }
+  .table-cell-txid {
+    width: 20%;
   }
   .table-cell-satoshis {
     display: none;
     text-align: right;
-    width: 180px;
+    width: 30%;
     @media (min-width: 576px) {
+      display: table-cell;
+    }
+    @media (min-width: 768px) {
+      display: none;
+    }
+    @media (min-width: 1100px) {
+      display: table-cell;
+    }
+  }
+  .table-cell-fiat {
+    display: none;
+    text-align: right;
+    width: 30%;
+    @media (min-width: 485px) {
+      display: table-cell;
+    }
+  }
+  .table-cell-fees {
+    width: 25%;
+    text-align: right;
+  }
+}
+
+.lastest-blocks-table {
+  width: 100%;
+  text-align: left;
+  tr, td, th {
+    border: 0px;
+  }
+  .table-cell-height {
+    width: 15%;
+  }
+  .table-cell-mined {
+    width: 35%;
+    text-align: right;
+    @media (min-width: 376px) {
+      text-align: left;
+    }
+  }
+  .table-cell-transaction-count {
+    display: none;
+    text-align: right;
+    width: 20%;
+    @media (min-width: 376px) {
+      display: table-cell;
+    }
+  }
+  .table-cell-size {
+    display: none;
+    text-align: center;
+    width: 30%;
+    @media (min-width: 485px) {
       display: table-cell;
     }
     @media (min-width: 768px) {
@@ -131,18 +188,6 @@
     }
     @media (min-width: 992px) {
       display: table-cell;
-    }
-  }
-  .table-cell-fiat{
-    display: none;
-    text-align: right !important;
-    width: 110px;
-    @media (min-width: 376px) {
-      display: block;
-      width: 80%;
-    }
-    @media (min-width: 992px) {
-      width: 100%;
     }
   }
 }
