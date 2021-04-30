@@ -98,7 +98,7 @@ export interface Block {
   version: number;
   timestamp: number;
   bits: number;
-  nounce: number;
+  nonce: number;
   difficulty: number;
   merkle_root: string;
   tx_count: number;

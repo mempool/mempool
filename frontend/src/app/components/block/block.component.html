@@ -80,6 +80,51 @@
       </div>
     </div>
 
+    <div [hidden]="!showDetails">
+      <br>
+
+      <div class="box">
+        <div class="row">
+          <div class="col-sm">
+            <table class="table table-borderless table-striped">
+              <tbody>
+                <tr>
+                  <td class="td-width" i18n="transaction.version">Version</td>
+                  <td>{{ block.version | decimal2hex }} <span class="badge ml-1" [ngClass]="{'badge-success': hasTaproot(block.version), 'badge-danger': !hasTaproot(block.version) }">Taproot</span></td>
+                </tr>
+                <tr>
+                  <td i18n="block.merkle-root">Merkle root</td>
+                  <td><p class="break-all">{{ block.merkle_root }}</p></td>
+                </tr>
+                <tr>
+                  <td i18n="block.bits">Bits</td>
+                  <td>{{ block.bits | decimal2hex }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-sm">
+            <table class="table table-borderless table-striped">
+              <tbody>
+                <tr>
+                  <td class="td-width" i18n="block.difficulty">Difficulty</td>
+                  <td>{{ block.difficulty }}</td>
+                </tr>
+                <tr>
+                  <td i18n="block.nonce">Nonce</td>
+                  <td>{{ block.nonce | decimal2hex }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-right mt-3">
+      <button type="button" class="btn btn-outline-info btn-sm" (click)="toggleShowDetails()" i18n="transaction.details|Transaction Details">Details</button>
+    </div>
+
     <br>
 
     <h2 class="float-left">

@@ -32,6 +32,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   page = 1;
   itemsPerPage: number;
   txsLoadingStatus$: Observable<number>;
+  showDetails = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -144,6 +145,14 @@ export class BlockComponent implements OnInit, OnDestroy {
 
     this.stateService.networkChanged$
       .subscribe((network) => this.network = network);
+
+    this.route.queryParams.subscribe((params) => {
+      if (params.showDetails === 'true') {
+        this.showDetails = true;
+      } else {
+        this.showDetails = false;
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -174,5 +183,27 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.transactions = transactions;
         this.isLoadingTransactions = false;
       });
+  }
+
+  toggleShowDetails() {
+    if (this.showDetails) {
+      this.showDetails = false;
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { showDetails: false },
+        queryParamsHandling: 'merge',
+      });
+    } else {
+      this.showDetails = true;
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { showDetails: true },
+        queryParamsHandling: 'merge',
+      });
+    }
+  }
+
+  hasTaproot(version: number): boolean {
+    return (Number(version) & (1 << 2)) > 0;
   }
 }
