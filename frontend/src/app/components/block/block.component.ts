@@ -212,6 +212,6 @@ export class BlockComponent implements OnInit, OnDestroy {
     if (this.stateService.network !== '') {
       return false;
     }
-    return this.block && this.block.height > 681407 && (new Date().getTime() / 1000) < 1628640000;
+    return this.block && this.block.height > 681393 && (new Date().getTime() / 1000) < 1628640000;
   }
 }
