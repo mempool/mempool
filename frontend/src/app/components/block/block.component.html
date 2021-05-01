@@ -90,7 +90,7 @@
               <tbody>
                 <tr>
                   <td class="td-width" i18n="transaction.version">Version</td>
-                  <td>{{ block.version | decimal2hex }} <span *ngIf="block.height > 681407" class="badge ml-1" [ngClass]="{'badge-success': hasTaproot(block.version), 'badge-danger': !hasTaproot(block.version) }">Taproot</span></td>
+                  <td>{{ block.version | decimal2hex }} <span *ngIf="displayTaprootStatus() && hasTaproot(block.version)" class="badge badge-success ml-1" >Taproot</span></td>
                 </tr>
                 <tr>
                   <td i18n="block.merkle-root">Merkle root</td>

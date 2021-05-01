@@ -204,6 +204,14 @@ export class BlockComponent implements OnInit, OnDestroy {
   }
 
   hasTaproot(version: number): boolean {
-    return (Number(version) & (1 << 2)) > 0;
+    const versionBit = 2; // Taproot
+    return (Number(version) & (1 << versionBit)) === (1 << versionBit);
+  }
+
+  displayTaprootStatus(): boolean {
+    if (this.stateService.network !== '') {
+      return false;
+    }
+    return this.block && this.block.height > 681407 && (new Date().getTime() / 1000) < 1628640000;
   }
 }
