@@ -1,5 +1,7 @@
 .progress {
   background-color: #2d3348;
+  position: relative;
+  top: 5px;
 }
 
 .title-block {
@@ -7,4 +9,33 @@
   padding-top: 20px;
   padding-bottom: 3px;
   border-top: 3px solid #FFF;
+}
+
+.fiat {
+  font-size: 13px;
+  display: block;
+  @media (min-width: 992px) {
+    display: inline-block;
+    margin-left: 10px;
+  }
+}
+
+.table {
+  tr td {
+    &:last-child{
+      text-align: right;
+      @media (min-width: 992px) {
+        text-align: left;
+      }
+    }
+  }
+}
+
+h1 {
+  margin: 0px;
+  padding: 0px;
+  @media (min-width: 576px) {
+    float: left;
+    margin-right: 10px;
+  }
 }

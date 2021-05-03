@@ -9,7 +9,7 @@
       font-size: 1em;
     }
     .fiat{
-      color: #ffffff61;
+      color: #ffffff66;
       font-size: 10px;
     }
   }
@@ -23,15 +23,6 @@
 .card-title {
   color: #4a68b9;
   font-size: 1rem;
-  @media (min-width: 376px) {
-    font-size: 0.9rem;
-  }
-  @media (min-width: 768px) {
-    font-size: 0.75rem;
-  }
-  @media (min-width: 992px) {
-    font-size: 1.15rem;
-  }
 }
 
 .info-block {
@@ -68,7 +59,7 @@
 
 .mempool-info-data {
   display: block;
-  @media (min-width: 376px) {
+  @media (min-width: 485px) {
     display: flex;
     flex-direction: row; 
   }
@@ -79,37 +70,46 @@
     width: 124px;
     margin: 0px auto 20px;
     display: inline-block;
-    @media (min-width: 376px) {
-      width: 100%;
-      margin: 0px auto 0px;
+    @media (min-width: 485px) {
+      width: 50%;
+      margin: 0px auto 20px;
+      display: inline-block;
     }
     &:last-child {
       margin: 0px auto 0px;
     }
     &:nth-child(2) {
       order: 2;
-      @media (min-width: 376px) {
-        order: 3
+      @media (min-width: 485px) {
+        order: 3;
       }
     }
     &:nth-child(3) {
       order: 3;
-      @media (min-width: 376px) {
-        order: 2
+      @media (min-width: 485px) {
+        order: 2;
+        display: block;
+      }
+      @media (min-width: 768px) {
+        display: none;
+      }
+      @media (min-width: 992px) {
+        display: block;
       }
     }
     .card-text {
       font-size: 18px;
       span {
-        color: #ffffff61;
+        color: #ffffff66;
         font-size: 12px;
       }
     }
   }
   .bar {
-    width: 100%;
-    margin: 0px auto 20px;
-    @media (min-width: 376px) {
+    width: 93%;
+    margin: 0px 5px 20px;
+    @media (min-width: 485px) {
+      max-width: 200px;
       margin: 0px auto 0px;
     }
   }

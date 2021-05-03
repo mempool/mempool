@@ -6,7 +6,48 @@
   color: #FFF;
   padding-top: 20px;
   border-top: 3px solid #FFF;
+  width: 100%;
+  padding-bottom: 30px;
+  @media (min-width: 768px) {
+  	padding-bottom: 0px;
+  }
 }
+
+
+h1{
+	font-size: 1.75rem;
+    margin-top: 2px;
+	margin-bottom: 0;
+	float: left;
+	@media (min-width: 375px){
+		margin-top: 0px;
+		font-size: 2rem;
+	}
+}
+
+.container-buttons {
+	text-align: right;
+    width: 100%;
+	@media (min-width: 992px) {
+		width: 300px;
+	}
+}
+
+.tx-link {
+	display: block;
+	width: auto;
+	margin-bottom: 10px;
+    margin-left: 2px;
+	margin-top: 40px;
+    position: absolute;
+	@media (min-width: 768px) {
+	  margin-top: 14px;
+	  margin-left: 10px;
+	  position: relative;	  
+	  text-align: left;
+	  width: 100%;
+	}
+  }
 
 @media (max-width: 767.98px) {
 	.mobile-bottomcol {
@@ -15,17 +56,11 @@
 }
 
 .td-width {
-  width: 175px;
-}
+	width: 150px;
 
-@media (max-width: 767.98px) {
-	.td-width {
-		width: 150px;
+	@media (max-width: 768px) {
+	  width: 175px;
 	}
-}
-
-h1 {
-	margin-bottom: 0;
 }
 
 .badge {
@@ -44,3 +79,78 @@ h1 {
 .arrow-red {
 	color: #dc3545;
 }
+
+.btn {
+	// float: right;
+	// margin-bottom: 0px;
+	margin-top: 5px;
+}
+
+.container-xl {
+	margin-bottom: 40px;
+}
+
+.row{
+	flex-direction: column;
+	@media (min-width: 850px) {
+		flex-direction: row;
+	}
+}
+
+.scriptmessage {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	vertical-align: middle;
+	max-width: 50px;
+	@media (min-width: 576px) {
+		max-width: 200px;
+	}
+}
+
+.scriptmessage.longer {
+	max-width: 500px;
+}
+
+@media (max-width: 767.98px) {
+	.mobile-bottomcol {
+		margin-top: 15px;
+	}
+	.scriptmessage.longer {
+		max-width: 200px !important;
+	}
+
+	.details-table td:first-child {
+		white-space: pre-wrap;
+	}
+}
+
+.fiat {
+	display: block;
+	@media (min-width: 768px){
+		display: inline-block;
+		margin-left: 15px;
+		text-align: left;
+	}
+}
+
+.table {
+	font-size: 0.8rem;
+	@media (min-width: 576px) {
+		font-size: 1rem;
+  }
+  tr td {
+		&:last-child {
+			text-align: right;
+			@media (min-width: 768px) {
+			text-align: left;
+			}
+		}
+    .btn {
+      display: block;
+    }
+	}
+}
+// .container-buttons{
+// 	width: 100%;
+// 	display: inline-block;
+// }

@@ -2,15 +2,7 @@
   color: #4a68b9;
   font-size: 10px;
   margin-bottom: 4px;  
-  @media (min-width: 376px) {
-    font-size: 0.75rem;
-  }
-  @media (min-width: 768px) {
-    font-size: 0.75rem;
-  }
-  @media (min-width: 992px) {
-    font-size: 1.15rem;
-  }
+  font-size: 1rem;
 }
 
 .card-text {
@@ -19,10 +11,7 @@
     font-size: 11px;
     position: relative;
     top: -2px;
-    display: grid;
-    @media (min-width: 376px) {
-      display: inline-flex;
-    }    
+    display: inline-flex;
   }
   .green-color {
     display: block;
@@ -42,11 +31,23 @@
     @media (min-width: 376px) {
       margin: 0 auto 0px;
     }    
+    &:first-child{
+      display: none;
+      @media (min-width: 485px) {
+        display: block;
+      }    
+      @media (min-width: 768px) {
+        display: none;
+      }    
+      @media (min-width: 992px) {
+        display: block;
+      }    
+    }
     &:last-child {
       margin-bottom: 0;
     }
     .card-text span {
-      color: #ffffff61;
+      color: #ffffff66;
       font-size: 12px;
       top: 0px;
     }
@@ -60,6 +61,24 @@
     .fiat {
       display: block;
       font-size: 14px !important;
+    }
+  }
+}
+
+.loading-container{
+  min-height: 76px;
+}
+
+.card-text {
+  .skeleton-loader {
+    width: 100%;
+    display: block;
+    margin: 9px auto;
+    &:first-child {
+      max-width: 90px;
+    }
+    &:last-child {
+      max-width: 55px;
     }
   }
 }

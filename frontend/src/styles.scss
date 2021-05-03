@@ -166,6 +166,26 @@ body {
   }
 }
 
+.symbol {
+	color: #ffffff66;
+	font-size: 11px;
+}
+
+.break-all {
+  white-space: normal;
+  word-break: break-all;
+}
+
+.title-block {
+  color: #FFF;
+  padding-top: 20px;
+  padding-bottom: 10px;
+  border-top: 3px solid #FFF;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 .smaller-text {
   font-size: 14px;
 }

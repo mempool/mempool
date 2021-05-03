@@ -9,26 +9,29 @@
       </a>
     </div>
   
-    <h1 class="float-left mr-3 mb-md-3" i18n="shared.transaction">Transaction</h1>
+    <h1 i18n="shared.transaction">Transaction</h1>
 
-    <ng-template [ngIf]="tx?.status?.confirmed">
-      <button *ngIf="latestBlock" type="button" class="btn btn-sm btn-success float-right mr-2 mt-1 mt-md-3">
-        <ng-container *ngTemplateOutlet="latestBlock.height - tx.status.block_height + 1 == 1 ? confirmationSingular : confirmationPlural; context: {$implicit: latestBlock.height - tx.status.block_height + 1}"></ng-container>
-        <ng-template #confirmationSingular let-i i18n="shared.confirmation-count.singular|Transaction singular confirmation count">{{ i }} confirmation</ng-template>
-        <ng-template #confirmationPlural let-i i18n="shared.confirmation-count.plural|Transaction plural confirmation count">{{ i }} confirmations</ng-template>
-      </button>
-    </ng-template>
-    <ng-template [ngIf]="tx && !tx?.status.confirmed">
-      <button type="button" class="btn btn-sm btn-danger float-right mr-2 mt-1 mt-md-3" i18n="transaction.unconfirmed|Transaction unconfirmed state">Unconfirmed</button>
-    </ng-template>
-
-    <div>
-      <a [routerLink]="['/tx/' | relativeUrl, txId]" style="line-height: 56px;">
+    <div class="tx-link">
+      <a [routerLink]="['/tx/' | relativeUrl, txId]">
         <span class="d-inline d-lg-none">{{ txId | shortenString : 24 }}</span>
         <span class="d-none d-lg-inline">{{ txId }}</span>
       </a>
       <app-clipboard [text]="txId"></app-clipboard>
     </div>
+
+    <div class="container-buttons" >
+      <ng-template [ngIf]="tx?.status?.confirmed">
+        <button *ngIf="latestBlock" type="button" class="btn btn-sm btn-success">
+          <ng-container *ngTemplateOutlet="latestBlock.height - tx.status.block_height + 1 == 1 ? confirmationSingular : confirmationPlural; context: {$implicit: latestBlock.height - tx.status.block_height + 1}"></ng-container>
+          <ng-template #confirmationSingular let-i i18n="shared.confirmation-count.singular|Transaction singular confirmation count">{{ i }} confirmation</ng-template>
+          <ng-template #confirmationPlural let-i i18n="shared.confirmation-count.plural|Transaction plural confirmation count">{{ i }} confirmations</ng-template>
+        </button>
+      </ng-template>
+      <ng-template [ngIf]="tx && !tx?.status.confirmed">
+        <button type="button" class="btn btn-sm btn-danger" i18n="transaction.unconfirmed|Transaction unconfirmed state">Unconfirmed</button>
+      </ng-template>
+    </div>
+
     <div class="clearfix"></div>
   </div>
   <div class="clearfix"></div>
@@ -163,7 +166,7 @@
                   </a>
                 </td>
                 <td class="d-none d-lg-table-cell">{{ cpfpInfo.bestDescendant.weight / 4 | vbytes: 2 }}</td>
-                <td>{{ cpfpInfo.bestDescendant.fee / (cpfpInfo.bestDescendant.weight / 4) | number : '1.1-1' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
+                <td>{{ cpfpInfo.bestDescendant.fee / (cpfpInfo.bestDescendant.weight / 4) | number : '1.1-1' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
                 <td class="d-none d-lg-table-cell"><fa-icon class="arrow-green" [icon]="['fas', 'angle-double-up']" [fixedWidth]="true"></fa-icon></td>
               </tr>
             </ng-template>
@@ -176,7 +179,7 @@
                   </a>
                 </td>
                 <td class="d-none d-lg-table-cell">{{ cpfpTx.weight / 4 | vbytes: 2 }}</td>
-                <td>{{ cpfpTx.fee / (cpfpTx.weight / 4) | number : '1.1-1' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
+                <td>{{ cpfpTx.fee / (cpfpTx.weight / 4) | number : '1.1-1' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
                 <td class="d-none d-lg-table-cell"><fa-icon *ngIf="roundToOneDecimal(cpfpTx) < roundToOneDecimal(tx)" class="arrow-red" [icon]="['fas', 'angle-double-down']" [fixedWidth]="true"></fa-icon></td>
               </tr>
             </ng-template>
@@ -324,12 +327,12 @@
     <tbody>
       <tr>
         <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
-        <td>{{ tx.fee | number }} <span i18n="transaction.fee.sat|Transaction Fee sat">sat</span> (<app-fiat [value]="tx.fee"></app-fiat>)</td>
+        <td>{{ tx.fee | number }} <span class="symbol" i18n="transaction.fee.sat|Transaction Fee sat">sat</span> <span class="fiat"><app-fiat [value]="tx.fee"></app-fiat></span></td>
       </tr>
       <tr>
         <td i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
         <td>
-          {{ tx.feePerVsize | number : '1.1-1' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+          {{ tx.feePerVsize | number : '1.1-1' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
           <ng-template [ngIf]="tx.status.confirmed">
             &nbsp;
             <app-tx-fee-rating *ngIf="tx.fee && (cpfpInfo && !cpfpInfo.bestDescendant && !cpfpInfo.ancestors.length)" [tx]="tx"></app-tx-fee-rating>
@@ -339,7 +342,7 @@
       <tr *ngIf="cpfpInfo && (cpfpInfo.bestDescendant || cpfpInfo.ancestors.length)">
         <td i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
         <td>
-          {{ tx.effectiveFeePerVsize | number : '1.1-1' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+          {{ tx.effectiveFeePerVsize | number : '1.1-1' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
           <ng-template [ngIf]="tx.status.confirmed">
             <app-tx-fee-rating class="d-none d-lg-inline ml-2" *ngIf="tx.fee" [tx]="tx"></app-tx-fee-rating>
           </ng-template>
