@@ -22,10 +22,6 @@
 }
 
 .table {
-  font-size: 0.8rem;
-  @media (min-width: 576px) {
-    font-size: 1rem;
-  }
   tr td {
     &:last-child {
       text-align: right;

@@ -21,23 +21,15 @@ h1 {
 	}
 }
 
-.block-container {
-	font-size: 0.85rem;
-	@media (min-width: 376px) {
-		font-size: 1rem;
-	}
+.block-container {	
 	.table {
-		tbody {
-		tr {
-			td {
+		tr td {
 			&:last-child {
 				text-align: right;
 				@media (min-width: 992px) {
 					text-align: left;
 				}
 			}
-			}
-		}
 		}
 	}
 	.fiat {

@@ -4,10 +4,6 @@
     padding-bottom: 0px;
   }
   .table {
-    font-size: 0.9em;
-    @media (min-width: 1200px) {
-      font-size: 1em;
-    }
     .fiat{
       color: #ffffff66;
       font-size: 10px;
@@ -143,6 +139,12 @@
     text-align: right;
     width: 30%;
     @media (min-width: 485px) {
+      display: table-cell;
+    }
+    @media (min-width: 768px) {
+      display: none;
+    }
+    @media (min-width: 992px) {
       display: table-cell;
     }
   }

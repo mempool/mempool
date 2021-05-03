@@ -134,20 +134,16 @@ h1{
 }
 
 .table {
-	font-size: 0.8rem;
-	@media (min-width: 576px) {
-		font-size: 1rem;
-  }
-  tr td {
+  	tr td {
 		&:last-child {
 			text-align: right;
 			@media (min-width: 768px) {
 			text-align: left;
 			}
 		}
-    .btn {
-      display: block;
-    }
+		.btn {
+			display: block;
+		}
 	}
 }
 // .container-buttons{
