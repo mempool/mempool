@@ -66,10 +66,8 @@
     width: 124px;
     margin: 0px auto 20px;
     display: inline-block;
-    @media (min-width: 485px) {
+    @media (min-width: 400px) {
       width: 50%;
-      margin: 0px auto 20px;
-      display: inline-block;
     }
     &:last-child {
       margin: 0px auto 0px;
