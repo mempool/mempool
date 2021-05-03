@@ -31,10 +31,10 @@
         <td>
           <app-bisq-icon class="d-inline d-md-none mr-1" [txType]="tx.txType"></app-bisq-icon>
           <ng-template [ngIf]="tx.txType === 'PAY_TRADE_FEE' || tx.txType === 'ASSET_LISTING_FEE'" [ngIfElse]="defaultTxType">
-            {{ tx.burntFee / 100 | number: '1.2-2' }}<span class="d-none d-md-inline"> BSQ</span>
+            {{ tx.burntFee / 100 | number: '1.2-2' }} <span class="d-none d-md-inline symbol">BSQ</span>
           </ng-template>
           <ng-template #defaultTxType>
-            {{ calculateTotalOutput(tx.outputs) / 100 | number: '1.2-2' }}<span class="d-none d-md-inline"> BSQ</span>
+            {{ calculateTotalOutput(tx.outputs) / 100 | number: '1.2-2' }} <span class="d-none d-md-inline symbol">BSQ</span>
           </ng-template>
         </td>
         <td><app-time-since [time]="tx.time / 1000" [fastRender]="true"></app-time-since></td>

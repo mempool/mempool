@@ -23,30 +23,31 @@
       <ng-template #nonOfficialMarkets i18n="Bisq Bitcoin Markets">Bitcoin Markets</ng-template>
     </h1>
     <ng-container *ngIf="{ value: (tickers$ | async) } as tickers">
-
-      <table class="table table-borderless table-striped">
-        <thead>
-          <th><ng-container i18n>Currency</ng-container> <button [disabled]="(sort$ | async) === 'name'" class="btn btn-link btn-sm" (click)="sort('name')"><fa-icon [icon]="['fas', 'chevron-down']" [fixedWidth]="true"></fa-icon></button></th>
-          <th i18n>Price</th>
-          <th><ng-container i18n="Trading volume 7D">Volume (7d)</ng-container> <button [disabled]="(sort$ | async) === 'volumes'" class="btn btn-link btn-sm" (click)="sort('volumes')"><fa-icon [icon]="['fas', 'chevron-down']" [fixedWidth]="true"></fa-icon></button></th>
-          <th><ng-container i18n="Trades amount 7D">Trades (7d)</ng-container> <button [disabled]="(sort$ | async) === 'trades'" class="btn btn-link btn-sm" (click)="sort('trades')"><fa-icon [icon]="['fas', 'chevron-down']" [fixedWidth]="true"></fa-icon></button></th>
-        </thead>
-        <tbody *ngIf="tickers.value; else loadingTmpl">
-          <tr *ngFor="let ticker of tickers.value; trackBy: trackByFn;">
-            <td><a [routerLink]="['/market' | relativeUrl, ticker.pair_url]">{{ ticker.name }})</a></td>
-            <td>
-              <app-fiat *ngIf="ticker.market.rtype === 'crypto'; else fiat" [value]="ticker.last * 100000000"></app-fiat>
-              <ng-template #fiat>
-                <span class="green-color">{{ ticker.last | currency: ticker.market.rsymbol }}</span>
-              </ng-template>
-            </td>
-            <td>
-              <app-fiat [value]="ticker.volume?.volume"></app-fiat>
-            </td>
-            <td>{{ ticker.volume?.num_trades ? ticker.volume?.num_trades : 0 }}</td>
-          </tr> 
-        </tbody>
-      </table>
+      <div class="table-container">
+        <table class="table table-borderless table-striped">
+          <thead>
+            <th><ng-container i18n>Currency</ng-container> <button [disabled]="(sort$ | async) === 'name'" class="btn btn-link btn-sm" (click)="sort('name')"><fa-icon [icon]="['fas', 'chevron-down']" [fixedWidth]="true"></fa-icon></button></th>
+            <th i18n>Price</th>
+            <th><ng-container i18n="Trading volume 7D">Volume (7d)</ng-container> <button [disabled]="(sort$ | async) === 'volumes'" class="btn btn-link btn-sm" (click)="sort('volumes')"><fa-icon [icon]="['fas', 'chevron-down']" [fixedWidth]="true"></fa-icon></button></th>
+            <th><ng-container i18n="Trades amount 7D">Trades (7d)</ng-container> <button [disabled]="(sort$ | async) === 'trades'" class="btn btn-link btn-sm" (click)="sort('trades')"><fa-icon [icon]="['fas', 'chevron-down']" [fixedWidth]="true"></fa-icon></button></th>
+          </thead>
+          <tbody *ngIf="tickers.value; else loadingTmpl">
+            <tr *ngFor="let ticker of tickers.value; trackBy: trackByFn;">
+              <td><a [routerLink]="['/market' | relativeUrl, ticker.pair_url]">{{ ticker.name }})</a></td>
+              <td>
+                <app-fiat *ngIf="ticker.market.rtype === 'crypto'; else fiat" [value]="ticker.last * 100000000"></app-fiat>
+                <ng-template #fiat>
+                  <span class="green-color">{{ ticker.last | currency: ticker.market.rsymbol }}</span>
+                </ng-template>
+              </td>
+              <td>
+                <app-fiat [value]="ticker.volume?.volume"></app-fiat>
+              </td>
+              <td>{{ ticker.volume?.num_trades ? ticker.volume?.num_trades : 0 }}</td>
+            </tr> 
+          </tbody>
+        </table>
+      </div>
 
       <br><br>
 

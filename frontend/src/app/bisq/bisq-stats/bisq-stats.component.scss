@@ -7,3 +7,12 @@
 		width: 175px;
 	}
 }
+
+.fiat {
+	display: block;
+	font-size: 13px;
+	@media (min-width: 768px) {
+	  	font-size: 14px;
+	  	display: inline-block;
+	}
+}

@@ -3,21 +3,95 @@
   padding: 10px;
   padding-bottom: 5px;
   display: inline-block;
-  margin-right: 25px;
 }
 
-@media (min-width: 576px) {
-  .qrcode-col {
-    text-align: right;
-  }
+.qrcode-col {
+  text-align: center;
 }
-@media (max-width: 575.98px) {
-  .qrcode-col {
+
+.qrcode-col > div {
+  margin: 20px auto 5px;
+  @media (min-width: 768px) {
     text-align: center;
+    margin: auto;
   }
+}
 
-  .qrcode-col > div {
-    margin-top: 20px;
-    margin-right: 0px;
+.fiat {
+  display: block;
+  font-size: 13px;
+  @media (min-width: 768px) {
+    display: inline-block;
+    font-size: 14px;
+    margin-left: 10px;
   }
+}
+.table {
+  font-size: 0.8rem;
+  @media (min-width: 576px) {
+    font-size: 1rem;
+  }
+  tr td {
+    &:last-child {
+      text-align: right;
+      @media (min-width: 768px) {
+        text-align: left;
+      }
+    }
+  }
+}
+
+h1 {
+  margin: 0px;
+  padding: 0px;
+  @media (min-width: 576px) {
+    float: left;
+    margin-right: 10px;
+  }
+}
+
+.address-link {
+  line-height: 26px;
+  margin-left: 0px;
+  top: 14px;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  @media (min-width: 768px) {
+    line-height: 38px;
+  }
+}
+
+.row{
+	flex-direction: column;
+	@media (min-width: 576px) {
+		flex-direction: row;
+	}
+}
+
+.scriptmessage {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	vertical-align: middle;
+	max-width: 50px;
+	@media (min-width: 576px) {
+		max-width: 200px;
+	}
+}
+
+.scriptmessage.longer {
+	max-width: 500px;
+}
+
+@media (max-width: 767.98px) {
+	.mobile-bottomcol {
+		margin-top: 15px;
+	}
+	.scriptmessage.longer {
+		max-width: 200px !important;
+	}
+
+	.details-table td:first-child {
+		white-space: pre-wrap;
+	}
 }

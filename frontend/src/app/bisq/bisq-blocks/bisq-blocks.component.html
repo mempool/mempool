@@ -18,7 +18,7 @@
         <tr *ngFor="let block of blocks.value[0]; trackBy: trackByFn">
           <td><a [routerLink]="['/block/' | relativeUrl, block.hash]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
           <td><app-time-since [time]="block.time / 1000" [fastRender]="true"></app-time-since></td>
-          <td>{{ calculateTotalOutput(block) / 100 | number: '1.2-2' }}<span class="d-none d-md-inline"> BSQ</span></td>
+          <td>{{ calculateTotalOutput(block) / 100 | number: '1.2-2' }} <span class="symbol">BSQ</span></td>
           <td class="d-none d-md-block">{{ block.txs.length }}</td>
         </tr> 
       </tbody>

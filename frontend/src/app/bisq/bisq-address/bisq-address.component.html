@@ -1,10 +1,12 @@
 <div class="container-xl">
-  <h1 style="float: left;" i18n="shared.address">Address</h1>
-  <a [routerLink]="['/address/' | relativeUrl, addressString]" style="line-height: 56px; margin-left: 10px;">
-    <span class="d-inline d-lg-none">{{ addressString | shortenString : 24 }}</span>
-    <span class="d-none d-lg-inline">{{ addressString }}</span>
-  </a>
-  <app-clipboard [text]="addressString"></app-clipboard>
+  <h1 i18n="shared.address">Address</h1>
+  <span class="address-link">
+    <a  [routerLink]="['/address/' | relativeUrl, addressString]">
+      <span class="d-inline d-lg-none">{{ addressString | shortenString : 24 }}</span>
+      <span class="d-none d-lg-inline">{{ addressString }}</span>
+    </a>
+    <app-clipboard [text]="addressString"></app-clipboard>
+  </span>
   <br>
 
   <div class="clearfix"></div>
@@ -13,26 +15,26 @@
     <div class="box">
 
       <div class="row">
-        <div class="col">
+        <div class="col-md">
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
                 <td i18n="address.total-received">Total received</td>
-                <td>{{ totalReceived / 100 | number: '1.2-2' }} BSQ</td>
+                <td>{{ totalReceived / 100 | number: '1.2-2' }} <span class="symbol">BSQ</span></td>
               </tr>
               <tr>
                 <td i18n="address.total-sent">Total sent</td>
-                <td>{{ totalSent / 100 | number: '1.2-2' }} BSQ</td>
+                <td>{{ totalSent / 100 | number: '1.2-2' }} <span class="symbol">BSQ</span></td>
               </tr>
               <tr>
                 <td i18n="address.balance">Balance</td>
-                <td>{{ (totalReceived - totalSent) / 100 | number: '1.2-2' }} BSQ (<app-bsq-amount [bsq]="totalReceived - totalSent" [forceFiat]="true" [green]="true"></app-bsq-amount>)</td>
+                <td>{{ (totalReceived - totalSent) / 100 | number: '1.2-2' }} <span class="symbol">BSQ</span> <span class="fiat"><app-bsq-amount [bsq]="totalReceived - totalSent" [forceFiat]="true" [green]="true"></app-bsq-amount></span></td>
               </tr>
             </tbody>
           </table>
         </div>
         <div class="w-100 d-block d-md-none"></div>
-        <div class="col qrcode-col">
+        <div class="col-md qrcode-col">
           <div class="qr-wrapper">
             <app-qrcode [data]="addressString"></app-qrcode>
           </div>
