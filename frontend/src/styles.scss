@@ -55,10 +55,15 @@ html, body {
 body {
   background-color: #11131f;
   min-width: 320px;
+  padding-bottom: 60px;
 }
 
 .container {
   position: relative;
+  padding-bottom: 60px;
+}
+.container-xl {
+  padding-bottom: 60px;
 }
 
 :focus {
@@ -161,6 +166,26 @@ body {
   }
 }
 
+.symbol {
+	color: #ffffff66;
+	font-size: 11px;
+}
+
+.break-all {
+  white-space: normal;
+  word-break: break-all;
+}
+
+.title-block {
+  color: #FFF;
+  padding-top: 20px;
+  padding-bottom: 10px;
+  border-top: 3px solid #FFF;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 .smaller-text {
   font-size: 14px;
 }
@@ -175,6 +200,10 @@ body {
 
 .table {
   margin-bottom: 0;
+  font-size: 0.9rem;
+  @media (min-width: 576px) {
+    font-size: 1rem;
+  }
 }
 
 .close {

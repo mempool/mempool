@@ -23,7 +23,7 @@ export class BisqBlocksComponent implements OnInit {
   isLoading = true;
   // @ts-ignore
   paginationSize: 'sm' | 'lg' = 'md';
-  paginationMaxSize = 10;
+  paginationMaxSize = 4;
 
   constructor(
     private websocketService: WebsocketService,

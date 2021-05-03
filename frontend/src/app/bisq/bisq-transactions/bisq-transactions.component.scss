@@ -7,3 +7,14 @@ label {
   right: 0px;
   left: inherit;
 }
+
+.pagination {
+  overflow: hidden;
+}
+
+h1{
+  font-size: 1.5rem;
+  @media(min-width: 375px){
+    font-size: 2rem;
+  }
+}

@@ -1,10 +1,35 @@
 #volumeHolder {
     height: 500px;
     background-color: #000;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+}
+
+.table {
+    max-width: 100%;
+    overflow: scroll;
 }
 
 .loadingVolumes {
     position: relative;
-    top: 50%;
+    top: 45%;
     z-index: 100;
+}
+
+.table-container {
+    overflow: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    font-size: 13px;
+    @media(min-width: 576px){
+        font-size: 16px;
+    }
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.container-info{
+    overflow-x: scroll;
 }

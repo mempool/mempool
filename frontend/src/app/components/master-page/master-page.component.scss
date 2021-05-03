@@ -42,16 +42,20 @@ li.nav-item {
   justify-content: center;
   position: fixed;
   width: 100%;
-}
-
-@media (min-width: 992px) {
-  .navbar-nav {
+  @media (min-width: 992px) {
     background: transparent;
     box-shadow: none;
     position: relative;
     width: auto;
   }
+  a {
+    font-size: 0.8em;
+    @media (min-width: 375px) {
+      font-size: 1em;
+    }
+  }
 }
+
 
 .navbar-collapse {
   flex-basis: auto;

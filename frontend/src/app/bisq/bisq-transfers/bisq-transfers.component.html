@@ -58,11 +58,11 @@
   </div>
 
   <div>
-    <div class="float-left mt-2-5" *ngIf="showConfirmations && tx.burntFee">
-      <ng-container i18n="BSQ burnt amount">Burnt amount</ng-container>: {{ tx.burntFee / 100 | number: '1.2-2' }} BSQ (<app-bsq-amount [bsq]="tx.burntFee" [forceFiat]="true" [green]="true"></app-bsq-amount>)
+    <div class="transaction-fee" *ngIf="showConfirmations && tx.burntFee">
+      <ng-container i18n="BSQ burnt amount">Burnt amount</ng-container>: {{ tx.burntFee / 100 | number: '1.2-2' }} <span class="symbol">BSQ</span> <span class="extra-info"><span class="fiat"><app-bsq-amount [bsq]="tx.burntFee" [forceFiat]="true" [green]="true"></app-bsq-amount></span></span>
     </div>
 
-    <div class="float-right">
+    <div class="btn-container">
       <span *ngIf="showConfirmations && latestBlock$ | async as latestBlock">
         <button type="button" class="btn btn-sm btn-success mt-2">
           <ng-container *ngTemplateOutlet="latestBlock.height - tx.blockHeight + 1 == 1 ? confirmationSingular : confirmationPlural; context: {$implicit: latestBlock.height - tx.blockHeight + 1}"></ng-container>

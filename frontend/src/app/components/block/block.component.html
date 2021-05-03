@@ -1,8 +1,8 @@
 <div class="container-xl">
 
   <div class="title-block">
-    <h1 class="float-left"><ng-template [ngIf]="blockHeight === 0" i18n="block.genesis">Genesis </ng-template><ng-template [ngIf]="blockHeight" i18n="block.block">Block <a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a></ng-template></h1>
-    <button [routerLink]="['/' | relativeUrl]" class="btn btn-sm float-right mr-2 mt-2">&#10005;</button>
+    <h1><ng-template [ngIf]="blockHeight === 0" i18n="block.genesis">Genesis </ng-template><ng-template [ngIf]="blockHeight" i18n="block.block">Block <a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a></ng-template></h1>
+    <button [routerLink]="['/' | relativeUrl]" class="btn btn-sm">&#10005;</button>
   </div>
 
   <div class="clearfix"></div>
@@ -43,12 +43,12 @@
             <tbody>
               <tr *ngIf="block.medianFee !== undefined">
                 <td class="td-width" i18n="block.median-fee">Median fee</td>
-                <td>~{{ block.medianFee | number:'1.0-0' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span> (<app-fiat [value]="block.medianFee * 140" digitsInfo="1.2-2" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat>)</td>
+                <td>~{{ block.medianFee | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span> <span class="fiat"><app-fiat [value]="block.medianFee * 140" digitsInfo="1.2-2" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat></span></td>
               </tr>
               <ng-template [ngIf]="fees !== undefined" [ngIfElse]="loadingFees">
                 <tr>
                   <td i18n="block.total-fees|Total fees in a block">Total fees</td>
-                  <td *ngIf="network !== 'liquid'; else liquidTotalFees"><app-amount [satoshis]="fees * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount> (<app-fiat [value]="fees * 100000000" digitsInfo="1.0-0"></app-fiat>)</td>
+                  <td *ngIf="network !== 'liquid'; else liquidTotalFees"><app-amount [satoshis]="fees * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="fees * 100000000" digitsInfo="1.0-0"></app-fiat></span></td>
                   <ng-template #liquidTotalFees>
                     <td>{{ fees * 100000000 | number }} L-sat (<app-fiat [value]="fees * 100000000" digitsInfo="1.2-2"></app-fiat>)</td>
                   </ng-template>
@@ -56,7 +56,7 @@
                 <tr *ngIf="network !== 'liquid'">
                   <td i18n="block.subsidy-and-fees|Total subsidy and fees in a block">Subsidy + fees:</td>
                   <td>
-                    <app-amount [satoshis]="(blockSubsidy + fees) * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount> (<app-fiat [value]="(blockSubsidy + fees) * 100000000" digitsInfo="1.0-0"></app-fiat>)
+                    <app-amount [satoshis]="(blockSubsidy + fees) * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="(blockSubsidy + fees) * 100000000" digitsInfo="1.0-0"></app-fiat></span>
                   </td>
                 </tr>
               </ng-template>

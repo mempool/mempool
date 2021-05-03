@@ -4,14 +4,12 @@
 
     <ng-container *ngIf="currency$ | async as currency; else loadingSpinner">
       <h1>{{ currency.market.rtype === 'crypto' ? currency.market.lname : currency.market.rname }} - {{ currency.pair }}</h1>
-      <div class="float-left">
-        <span class="priceheader">
+      <div class="priceheader">
           <ng-container *ngIf="currency.market.rtype === 'fiat'; else headerPriceCrypto"><span class="green-color">{{ hlocData.hloc[hlocData.hloc.length - 1].close | currency: currency.market.rsymbol }}</span></ng-container>
           <ng-template #headerPriceCrypto>{{ hlocData.hloc[hlocData.hloc.length - 1].close | number: '1.' + currency.market.rprecision + '-' + currency.market.rprecision }} {{ currency.market.rsymbol }}</ng-template>
-        </span> 
       </div>
   
-      <form [formGroup]="radioGroupForm" class="mb-3 float-right">
+      <form [formGroup]="radioGroupForm" class="mb-3 radio-form">
         <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="interval">
           <label ngbButtonLabel class="btn-primary btn-sm">
             <input ngbButton type="radio" [value]="'half_hour'" (click)="setFragment('half_hour')"> 30M
@@ -75,30 +73,31 @@
       <ng-template [ngIf]="direction === 'BUY'" [ngIfElse]="sellOffers" i18n="Bisq Buy Offers">Buy Offers</ng-template>
       <ng-template #sellOffers i18n="Bisq Sell Offers">Sell Offers</ng-template>
     </h2>
-
-    <table class="table table-borderless table-striped">
-      <thead>
-        <th i18n>Price</th>
-        <th><ng-container *ngTemplateOutlet="amount; context: {$implicit: market.lsymbol }"></ng-container></th>
-        <th><ng-container *ngTemplateOutlet="amount; context: {$implicit: market.rsymbol }"></ng-container></th>
-      </thead>
-      <tbody>
-        <tr *ngFor="let offer of offers">
-          <td>
-            <ng-container *ngIf="market.rtype === 'fiat'; else priceCrypto"><span class="green-color">{{ offer.price | currency: market.rsymbol }}</span></ng-container>
-            <ng-template #priceCrypto>{{ offer.price | number: '1.2-' + market.rprecision }} {{ market.rsymbol }}</ng-template>
-          </td>
-          <td>
-            <ng-container *ngIf="market.ltype === 'fiat'; else amountCrypto"><span class="green-color">{{ offer.amount | currency: market.rsymbol }}</span></ng-container>
-            <ng-template #amountCrypto>{{ offer.amount | number: '1.2-' + market.lprecision }} {{ market.lsymbol }}</ng-template>
-          </td>
-          <td>
-            <ng-container *ngIf="market.rtype === 'fiat'; else volumeCrypto"><span class="green-color">{{ offer.volume | currency: market.rsymbol }}</span></ng-container>
-            <ng-template #volumeCrypto>{{ offer.volume | number: '1.2-' + market.rprecision }} {{ market.rsymbol }}</ng-template>
-          </td>
-        </tr> 
-      </tbody>
-    </table>
+    <div class="table-container">
+      <table class="table table-borderless table-striped">
+        <thead>
+          <th i18n>Price</th>
+          <th><ng-container *ngTemplateOutlet="amount; context: {$implicit: market.lsymbol }"></ng-container></th>
+          <th><ng-container *ngTemplateOutlet="amount; context: {$implicit: market.rsymbol }"></ng-container></th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let offer of offers">
+            <td>
+              <ng-container *ngIf="market.rtype === 'fiat'; else priceCrypto"><span class="green-color">{{ offer.price | currency: market.rsymbol }}</span></ng-container>
+              <ng-template #priceCrypto>{{ offer.price | number: '1.2-' + market.rprecision }} <span class="symbol">{{ market.rsymbol }}</span></ng-template>
+            </td>
+            <td>
+              <ng-container *ngIf="market.ltype === 'fiat'; else amountCrypto"><span class="green-color">{{ offer.amount | currency: market.rsymbol }}</span></ng-container>
+              <ng-template #amountCrypto>{{ offer.amount | number: '1.2-' + market.lprecision }} <span class="symbol">{{ market.lsymbol }}</span></ng-template>
+            </td>
+            <td>
+              <ng-container *ngIf="market.rtype === 'fiat'; else volumeCrypto"><span class="green-color">{{ offer.volume | currency: market.rsymbol }}</span></ng-container>
+              <ng-template #volumeCrypto>{{ offer.volume | number: '1.2-' + market.rprecision }} <span class="symbol">{{ market.rsymbol }}</span></ng-template>
+            </td>
+          </tr> 
+        </tbody>
+      </table>
+    </div>
   </div>
 </ng-template>
 

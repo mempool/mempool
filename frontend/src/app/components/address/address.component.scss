@@ -3,21 +3,94 @@
   padding: 10px;
   padding-bottom: 5px;
   display: inline-block;
-  margin-right: 25px;
 }
 
-@media (min-width: 576px) {
-  .qrcode-col {
-    text-align: right;
+.qrcode-col {
+  margin: 20px auto 10px;
+  text-align: center;
+  @media (min-width: 992px){
+    margin: 0px auto 0px;
   }
 }
-@media (max-width: 575.98px) {
-  .qrcode-col {
-    text-align: center;
-  }
 
-  .qrcode-col > div {
-    margin-top: 20px;
-    margin-right: 0px;
+.fiat {
+  display: block;
+  @media (min-width: 992px){
+    display: inline-block;
+    margin-left: 10px;
+  }
+}
+
+.table {
+  tr td {
+    &:last-child {
+      text-align: right;
+      @media (min-width: 576px) {
+        text-align: left;
+      }
+    }
+  }
+}
+
+h1 {
+  margin: 0px;
+  padding: 0px;
+  @media (min-width: 576px) {
+    float: left;
+    margin-right: 10px;
+  }
+}
+
+.address-link {
+  line-height: 56px; 
+  margin-left: 0px;
+  top: -2px;
+  position: relative;  
+  @media (min-width: 768px) {
+    line-height: 69px;
+  }
+}
+
+.row{
+	flex-direction: column;
+	@media (min-width: 576px) {
+		flex-direction: row;
+	}
+}
+
+.scriptmessage {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	vertical-align: middle;
+	max-width: 50px;
+	@media (min-width: 576px) {
+		max-width: 200px;
+	}
+}
+
+.scriptmessage.longer {
+	max-width: 500px;
+}
+
+@media (max-width: 767.98px) {
+	.mobile-bottomcol {
+		margin-top: 15px;
+	}
+	.scriptmessage.longer {
+		max-width: 200px !important;
+	}
+
+	.details-table td:first-child {
+		white-space: pre-wrap;
+	}
+}
+
+.tx-link {
+  display: block;
+  width: 100%;
+  top: 14px;
+  position: relative;
+  @media (min-width: 768px) {
+    top: 20px;
   }
 }
