@@ -2,7 +2,7 @@
 
   <div class="title-block">
     <h1 class="float-left">{{ ordinal$ | async }}</h1>
-    <button [routerLink]="['/' | relativeUrl]" class="btn btn-sm float-right mr-2 mt-2">&#10005;</button>
+    <button [routerLink]="['/' | relativeUrl]" class="btn btn-sm float-right">&#10005;</button>
   </div>
 
   <div class="clearfix"></div>
@@ -14,15 +14,15 @@
           <tbody>
             <tr>
               <td i18n="mempool-block.median-fee">Median fee</td>
-              <td>~{{ mempoolBlock.medianFee | number:'1.0-0' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span> (<app-fiat [value]="mempoolBlock.medianFee * 140" digitsInfo="1.2-2" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat>)</td>
+              <td>~{{ mempoolBlock.medianFee | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span> <span class="fiat"><app-fiat [value]="mempoolBlock.medianFee * 140" digitsInfo="1.2-2" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat></span></td>
             </tr>
             <tr>
               <td i18n="mempool-block.fee-span">Fee span</td>
-              <td><span class="yellow-color">{{ mempoolBlock.feeRange[0] | number:'1.0-0' }} - {{ mempoolBlock.feeRange[mempoolBlock.feeRange.length - 1] | number:'1.0-0' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></span></td>
+              <td><span class="yellow-color">{{ mempoolBlock.feeRange[0] | number:'1.0-0' }} - {{ mempoolBlock.feeRange[mempoolBlock.feeRange.length - 1] | number:'1.0-0' }} <span class="symbol yellow-color" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></span></td>
             </tr>
             <tr>
               <td i18n="mempool-block.total-fees">Total fees</td>
-              <td><app-amount [satoshis]="mempoolBlock.totalFees" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount> (<app-fiat [value]="mempoolBlock.totalFees" digitsInfo="1.0-0"></app-fiat>)</td>
+              <td><app-amount [satoshis]="mempoolBlock.totalFees" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="mempoolBlock.totalFees" digitsInfo="1.0-0"></app-fiat></span></td>
             </tr>
             <tr>
               <td i18n="mempool-block.transactions">Transactions</td>

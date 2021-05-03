@@ -5,20 +5,20 @@
   <div class="clearfix"></div>
 
   <div class="row">
-    <div class="col-sm">
+    <div class="col-md">
       <table class="table table-borderless table-striped">
         <tbody *ngIf="!isLoading; else loadingTemplate">
           <tr>
             <td class="td-width" i18n="BSQ existing amount">Existing amount</td>
-            <td>{{ (stats.minted - stats.burnt) | number: '1.2-2' }} BSQ</td>
+            <td>{{ (stats.minted - stats.burnt) | number: '1.2-2' }} <span class="symbol">BSQ</span></td>
           </tr>
           <tr>
             <td i18n="BSQ minted amount">Minted amount</td>
-            <td>{{ stats.minted | number: '1.2-2' }} BSQ</td>
+            <td>{{ stats.minted | number: '1.2-2' }} <span class="symbol">BSQ</span></td>
           </tr>
           <tr>
             <td i18n="BSQ burnt amount">Burnt amount</td>
-            <td>{{ stats.burnt | number: '1.2-2' }} BSQ</td>
+            <td>{{ stats.burnt | number: '1.2-2' }} <span class="symbol">BSQ</span></td>
           </tr>
           <tr>
             <td i18n="BSQ addresses">Addresses</td>
@@ -33,7 +33,7 @@
             <td>{{ stats.spent_txos | number }}</td>
           </tr>
           <tr>
-            <td i18n="BSQ token price">Price</td>
+            <td i1r8n="BSQ token price">Price</td>
             <td><app-fiat [value]="price"></app-fiat></td>
           </tr>
           <tr>
@@ -44,7 +44,7 @@
       </table>
 
     </div>
-    <div class="col-sm"></div>
+    <div class="col-md"></div>
   </div>
 </div>
 

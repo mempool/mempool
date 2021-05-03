@@ -1,18 +1,24 @@
 .dashboard-container {
   padding-bottom: 60px;
-}
-@media (min-width: 992px) {
-  .dashboard-container {
+  @media (min-width: 992px) {
     padding-bottom: 0px;
+  }
+  .table {
+    .fiat{
+      color: #ffffff66;
+      font-size: 10px;
+    }
   }
 }
 
 .card {
   background-color: #1d1f31;
+  height: 100%;
 }
 
 .card-title {
   color: #4a68b9;
+  font-size: 1rem;
 }
 
 .info-block {
@@ -33,7 +39,7 @@
 }
 
 .skeleton-loader {
-  max-width: 200px;
+  max-width: 100%;
 }
 
 .more-padding {
@@ -41,5 +47,147 @@
 }
 
 .graph-card {
-  height: 385px;
+  height: 100%;
+  @media (min-width: 992px) {
+    height: 385px;
+  }
+}
+
+.mempool-info-data {
+  display: block;
+  @media (min-width: 485px) {
+    display: flex;
+    flex-direction: row; 
+  }
+  h5 {
+    margin-bottom: 10px;
+  } 
+  .item {
+    width: 124px;
+    margin: 0px auto 20px;
+    display: inline-block;
+    @media (min-width: 400px) {
+      width: 50%;
+    }
+    &:last-child {
+      margin: 0px auto 0px;
+    }
+    &:nth-child(2) {
+      order: 2;
+      @media (min-width: 485px) {
+        order: 3;
+      }
+    }
+    &:nth-child(3) {
+      order: 3;
+      @media (min-width: 485px) {
+        order: 2;
+        display: block;
+      }
+      @media (min-width: 768px) {
+        display: none;
+      }
+      @media (min-width: 992px) {
+        display: block;
+      }
+    }
+    .card-text {
+      font-size: 18px;
+      span {
+        color: #ffffff66;
+        font-size: 12px;
+      }
+    }
+  }
+  .bar {
+    width: 93%;
+    margin: 0px 5px 20px;
+    @media (min-width: 485px) {
+      max-width: 200px;
+      margin: 0px auto 0px;
+    }
+  }
+}
+
+.latest-transactions {
+  width: 100%;
+  text-align: left;
+  tr, td, th {
+    border: 0px;
+  }
+  .table-cell-txid {
+    width: 20%;
+  }
+  .table-cell-satoshis {
+    display: none;
+    text-align: right;
+    width: 30%;
+    @media (min-width: 576px) {
+      display: table-cell;
+    }
+    @media (min-width: 768px) {
+      display: none;
+    }
+    @media (min-width: 1100px) {
+      display: table-cell;
+    }
+  }
+  .table-cell-fiat {
+    display: none;
+    text-align: right;
+    width: 30%;
+    @media (min-width: 485px) {
+      display: table-cell;
+    }
+    @media (min-width: 768px) {
+      display: none;
+    }
+    @media (min-width: 992px) {
+      display: table-cell;
+    }
+  }
+  .table-cell-fees {
+    width: 25%;
+    text-align: right;
+  }
+}
+
+.lastest-blocks-table {
+  width: 100%;
+  text-align: left;
+  tr, td, th {
+    border: 0px;
+  }
+  .table-cell-height {
+    width: 15%;
+  }
+  .table-cell-mined {
+    width: 35%;
+    text-align: right;
+    @media (min-width: 376px) {
+      text-align: left;
+    }
+  }
+  .table-cell-transaction-count {
+    display: none;
+    text-align: right;
+    width: 20%;
+    @media (min-width: 376px) {
+      display: table-cell;
+    }
+  }
+  .table-cell-size {
+    display: none;
+    text-align: center;
+    width: 30%;
+    @media (min-width: 485px) {
+      display: table-cell;
+    }
+    @media (min-width: 768px) {
+      display: none;
+    }
+    @media (min-width: 992px) {
+      display: table-cell;
+    }
+  }
 }

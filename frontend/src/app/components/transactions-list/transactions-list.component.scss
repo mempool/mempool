@@ -19,9 +19,9 @@
 	left: 0;
 	right: calc(-1*30px/3);
 	width: 0;
-  height: 0;
+  	height: 0;
 	border-top: 6.66px solid transparent;
-  border-bottom: 6.66px solid transparent
+  	border-bottom: 6.66px solid transparent
 }
 
 .arrow:after {
@@ -38,52 +38,49 @@
 }
 
 .arrow.green:before {
-  border-left: 10px solid #28a745;
+  	border-left: 10px solid #28a745;
 }
 .arrow.green:after {
-  background-color:#28a745;
+  	background-color:#28a745;
 }
 
 .arrow.red:before {
-  border-left: 10px solid #dc3545;
+  	border-left: 10px solid #dc3545;
 }
 .arrow.red:after {
-  background-color:#dc3545;
+  	background-color:#dc3545;
 }
 
 .arrow.grey:before {
-  border-left: 10px solid #6c757d;
+  	border-left: 10px solid #6c757d;
 }
 
 .arrow.grey:after {
-  background-color:#6c757d;
+  	background-color:#6c757d;
 }
 
 .scriptmessage {
-	max-width: 280px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	vertical-align: middle;
+	width: 100%;
+	max-width: 50px;
+	@media (min-width: 768px) {
+		max-width: 200px;
+	}
 }
 
 .scriptmessage.longer {
 	max-width: 500px;
+	@media (min-width: 375px) {
+		max-width: 200px !important;
+	}
 }
 
-@media (max-width: 767.98px) {
-	.mobile-bottomcol {
-		margin-top: 15px;
-	}
-
-	.scriptmessage {
-		max-width: 90px !important;
-	}
-	.scriptmessage.longer {
-		max-width: 280px !important;
-	}
-
-	.details-table td:first-child {
-		white-space: pre-wrap;
+.mobile-bottomcol {
+	margin-top: 15px;
+	@media (min-width: 992px) {
+		margin-top: 0px;
 	}
 }
 
@@ -93,6 +90,9 @@
 
 .details-table td {
 	padding: 0.75rem;
+	&:first-child {
+		white-space: pre-wrap;
+	}
 }
 
 .details-table td:nth-child(2) {
@@ -100,4 +100,59 @@
 	white-space: normal;
 	font-family: "Courier New", Courier, monospace;
 	font-size: 12px;
+}
+
+.smaller-text {
+	font-size: 12px;
+	@media (min-width: 576px) {
+		font-size: 14px !important;
+	}
+}
+
+.longer {
+	max-width: 100% !important;
+    width: 200px;
+    display: inline-block;
+}
+
+.row{
+	flex-direction: column;
+	@media (min-width: 992px) {
+		flex-direction: row;
+	}
+}
+
+.extra-info {	
+	display: none;
+	@media (min-width: 576px) {
+		display: inline-table;
+	}
+	.fiat {
+		font-size: 14px;
+		margin-left: 10px;
+		text-align: right;
+	}
+	.sats {
+		color: #ffffff66;
+		font-size: 11px;
+	}
+}
+
+.transaction-fee {
+	display: block;
+	margin: 0px auto 5px;
+	@media (min-width: 576px) {
+		display: inline-table;
+	}
+}
+
+.btn-container {
+	text-align: right;
+	@media (min-width: 576px) {
+		display: inline-table;
+		float: right;
+	}
+}
+.fiat {
+	margin-left: 10px; 
 }

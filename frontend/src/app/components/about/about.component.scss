@@ -48,3 +48,25 @@
   color: #FF0000;
   font-weight: bold;
 }
+
+.alliances {
+  a {    
+    &:nth-child(3){
+      position: relative;
+      top: 10px;
+    }
+  }
+  img {
+    display: inline-block;
+    margin: 15px auto;
+    @media (min-width: 425px) {
+      margin: 15px 60px;
+    }
+    @media (min-width: 576px) {
+      margin: 15px 120px;
+    }
+    @media (min-width: 850px) {
+      margin: 50px 30px 0px;
+    }
+  }
+}

@@ -1,5 +1,14 @@
 .priceheader {
     font-size: 24px;
+    @media(min-width: 576px){
+        float: left;
+    }
+}
+
+.radio-form {
+    @media(min-width: 576px){
+        float: right;
+    }
 }
 
 .loadingChart {
@@ -11,4 +20,32 @@
 
 #graphHolder {
     height: 550px;
+    overflow: hidden;
+}
+
+.col {
+    &:last-child{
+        margin-top: 50px;
+        @media(min-width: 576px){
+            margin-top: 0px;
+        }
+    }
+}
+
+.symbol {
+	color: #ffffff66;
+	font-size: 11px;
+}
+
+.table-container {
+    overflow: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    font-size: 13px;
+    @media(min-width: 576px){
+        font-size: 16px;
+    }
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
