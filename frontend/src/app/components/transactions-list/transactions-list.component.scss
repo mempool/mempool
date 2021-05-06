@@ -63,20 +63,30 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	vertical-align: middle;
-	width: 100%;
 	max-width: 50px;
-	@media (min-width: 768px) {
-		max-width: 200px;
+	width: 100%;
+	@media (min-width: 376px) {
+		max-width: 90px;
+	}
+	@media (min-width: 476px) {
+		max-width: 120px;
+	}
+	@media (min-width: 576px) {
+		max-width: 260px;
+	}
+	@media (min-width: 992px) {
+		max-width: 170px;
 	}
 }
 
 .scriptmessage.longer {
-	max-width: 500px;
-	@media (min-width: 375px) {
-		max-width: 200px !important;
+	display: inline-block;
+	max-width: 250px;
+	width: 100%;
+	@media (min-width: 576px) {
+		max-width: 300px;
 	}
 }
-
 .mobile-bottomcol {
 	margin-top: 15px;
 	@media (min-width: 992px) {
@@ -107,12 +117,6 @@
 	@media (min-width: 576px) {
 		font-size: 14px !important;
 	}
-}
-
-.longer {
-	max-width: 100% !important;
-    width: 200px;
-    display: inline-block;
 }
 
 .row{
