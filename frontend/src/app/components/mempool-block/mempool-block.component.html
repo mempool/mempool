@@ -18,7 +18,7 @@
             </tr>
             <tr>
               <td i18n="mempool-block.fee-span">Fee span</td>
-              <td><span class="yellow-color">{{ mempoolBlock.feeRange[0] | number:'1.0-0' }} - {{ mempoolBlock.feeRange[mempoolBlock.feeRange.length - 1] | number:'1.0-0' }} <span class="symbol yellow-color" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></span></td>
+              <td><span class="yellow-color">{{ mempoolBlock.feeRange[0] | number:'1.0-0' }} - {{ mempoolBlock.feeRange[mempoolBlock.feeRange.length - 1] | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></span></td>
             </tr>
             <tr>
               <td i18n="mempool-block.total-fees">Total fees</td>
@@ -33,7 +33,7 @@
               <td>
                 <div class="progress">
                   <div class="progress-bar progress-mempool {{ (network$ | async) }}" role="progressbar" [ngStyle]="{'width': (mempoolBlock.blockVSize / 1000000) * 100 + '%' }"></div>
-                  <div class="progress-text">{{ mempoolBlock.blockSize | bytes: 2 }}</div>
+                  <div class="progress-text" [innerHTML]="mempoolBlock.blockSize | bytes: 2"></div>
                 </div>
               </td>
             </tr>

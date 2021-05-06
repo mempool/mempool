@@ -110,6 +110,10 @@ h1{
 
 .table {
   	tr td {
+		padding: 0.75rem 0.5rem;
+		@media (min-width: 576px) {
+			padding: 0.75rem 0.75rem;
+		}
 		&:last-child {
 			text-align: right;
 			@media (min-width: 768px) {
@@ -119,5 +123,12 @@ h1{
 		.btn {
 			display: block;
 		}
+	}
+}
+
+.effective-fee-container{
+	display: block;
+	@media (min-width: 768px){
+		display: inline-block;
 	}
 }

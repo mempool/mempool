@@ -171,6 +171,19 @@ body {
 	font-size: 11px;
 }
 
+.progress-text {
+  span {
+    color: #fff !important;
+  }
+}
+
+.block-size, .blocks-container {
+  span {
+    font-size: 16px;
+    color: #fff !important;
+  }
+}
+
 .break-all {
   white-space: normal;
   word-break: break-all;

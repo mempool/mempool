@@ -88,7 +88,7 @@
                   <td class="table-cell-size">
                     <div class="progress">
                       <div class="progress-bar progress-mempool {{ network$ | async }}" role="progressbar" [ngStyle]="{'width': (block.weight / 4000000)*100 + '%' }">&nbsp;</div>
-                      <div class="progress-text">{{ block.size | bytes: 2 }}</div>
+                      <div class="progress-text" [innerHTML]="block.size | bytes: 2"></div>
                     </div>
                   </td>
                 </tr>
@@ -175,7 +175,7 @@
       <div class="card-text" *ngIf="mempoolInfoData.value; else loadingsmall">
         <div class="progress">
           <div class="progress-bar {{ mempoolInfoData.value.mempoolSizeProgress }}" role="progressbar" [ngStyle]="{'width': (mempoolInfoData.value.memPoolInfo.usage / mempoolInfoData.value.memPoolInfo.maxmempool * 100) + '%' }">&nbsp;</div>
-          <div class="progress-text">{{ mempoolInfoData.value.memPoolInfo.usage | bytes }} / {{ mempoolInfoData.value.memPoolInfo.maxmempool | bytes }}</div>
+          <div class="progress-text"><span [innerHTML]="mempoolInfoData.value.memPoolInfo.usage | bytes"></span> / <span [innerHTML]="mempoolInfoData.value.memPoolInfo.maxmempool | bytes"></span></div>
         </div>
       </div>
     </div>
