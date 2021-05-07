@@ -59,34 +59,6 @@
   	background-color:#6c757d;
 }
 
-.scriptmessage {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	vertical-align: middle;
-	max-width: 50px;
-	width: 100%;
-	@media (min-width: 376px) {
-		max-width: 90px;
-	}
-	@media (min-width: 476px) {
-		max-width: 120px;
-	}
-	@media (min-width: 576px) {
-		max-width: 260px;
-	}
-	@media (min-width: 992px) {
-		max-width: 170px;
-	}
-}
-
-.scriptmessage.longer {
-	display: inline-block;
-	max-width: 250px;
-	width: 100%;
-	@media (min-width: 576px) {
-		max-width: 300px;
-	}
-}
 .mobile-bottomcol {
 	margin-top: 15px;
 	@media (min-width: 992px) {
