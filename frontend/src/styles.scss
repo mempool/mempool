@@ -549,3 +549,57 @@ th {
         direction: rtl;
     }
 }
+
+
+.scriptmessage {
+	overflow: hidden;
+	display: inline-block;
+	text-overflow: ellipsis;
+	vertical-align: middle;
+	max-width: 50px;
+	width: 100%;
+  text-align: center;
+	@media (min-width: 376px) {
+		max-width: 90px;
+	}
+	@media (min-width: 476px) {
+		max-width: 180px;
+	}
+	@media (min-width: 576px) {
+		max-width: 260px;
+	}
+	@media (min-width: 768px) {
+    max-width: 400px;
+	}
+	@media (min-width: 850px) {
+    max-width: 522px;
+	}
+	@media (min-width: 992px) {
+		max-width: 190px;
+	}
+	@media (min-width: 1200px) {
+		max-width: 250px;
+	}
+}
+
+.scriptmessage.longer {
+	max-width: 230px;
+	@media (min-width: 376px) {
+		max-width: 290px;
+	}
+	@media (min-width: 476px) {
+		max-width: 380px;
+	}
+	@media (min-width: 576px) {
+		max-width: 470px;
+	}
+	@media (min-width: 768px) {
+    max-width: 850px;
+	}
+	@media (min-width: 992px) {
+		max-width: 410px;
+	}
+	@media (min-width: 1200px) {
+		max-width: 480px;
+	}
+}

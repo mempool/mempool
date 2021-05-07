@@ -64,29 +64,10 @@ h1 {
 		flex-direction: row;
 	}
 }
-
-.scriptmessage {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	vertical-align: middle;
-	max-width: 50px;
-	@media (min-width: 576px) {
-		max-width: 200px;
-	}
-}
-
-.scriptmessage.longer {
-	max-width: 500px;
-}
-
 @media (max-width: 767.98px) {
 	.mobile-bottomcol {
 		margin-top: 15px;
 	}
-	.scriptmessage.longer {
-		max-width: 200px !important;
-	}
-
 	.details-table td:first-child {
 		white-space: pre-wrap;
 	}
