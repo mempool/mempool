@@ -3,6 +3,7 @@
     <body>
       <trans-unit datatype="html" id="ngb.alert.close">
         <source>Close</source>
+        <target>Zavřít</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/alert/alert.ts</context>
           <context context-type="linenumber">74</context>
@@ -10,6 +11,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.carousel.previous">
         <source>Previous</source>
+        <target>Předchozí</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/carousel/carousel.ts</context>
           <context context-type="linenumber">349</context>
@@ -17,6 +19,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.carousel.next">
         <source>Next</source>
+        <target>Další</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/carousel/carousel.ts</context>
           <context context-type="linenumber">349</context>
@@ -24,6 +27,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.datepicker.previous-month">
         <source>Previous month</source>
+        <target>Předchozí měsíc</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/datepicker/datepicker-month.ts</context>
           <context context-type="linenumber">62,64</context>
@@ -35,6 +39,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.datepicker.next-month">
         <source>Next month</source>
+        <target>Příští měsíc</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/datepicker/datepicker-month.ts</context>
           <context context-type="linenumber">72</context>
@@ -46,6 +51,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.datepicker.select-month">
         <source>Select month</source>
+        <target>Vybrat měsíc</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/datepicker/datepicker-navigation-select.ts</context>
           <context context-type="linenumber">74</context>
@@ -57,6 +63,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.datepicker.select-year">
         <source>Select year</source>
+        <target>Vybrat rok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/datepicker/datepicker-navigation-select.ts</context>
           <context context-type="linenumber">74</context>
@@ -68,6 +75,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.pagination.first">
         <source>««</source>
+        <target>««</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/pagination/pagination.ts</context>
           <context context-type="linenumber">404</context>
@@ -75,6 +83,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.pagination.previous">
         <source>«</source>
+        <target>«</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/pagination/pagination.ts</context>
           <context context-type="linenumber">404</context>
@@ -82,6 +91,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.pagination.next">
         <source>»</source>
+        <target>»</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/pagination/pagination.ts</context>
           <context context-type="linenumber">404</context>
@@ -89,6 +99,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.pagination.last">
         <source>»»</source>
+        <target>»»</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/pagination/pagination.ts</context>
           <context context-type="linenumber">404</context>
@@ -96,6 +107,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.pagination.first-aria">
         <source>First</source>
+        <target>První</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/pagination/pagination.ts</context>
           <context context-type="linenumber">404</context>
@@ -103,6 +115,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.pagination.previous-aria">
         <source>Previous</source>
+        <target>Předchozí</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/pagination/pagination.ts</context>
           <context context-type="linenumber">404</context>
@@ -110,6 +123,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.pagination.next-aria">
         <source>Next</source>
+        <target>Další</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/pagination/pagination.ts</context>
           <context context-type="linenumber">404</context>
@@ -117,6 +131,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.pagination.last-aria">
         <source>Last</source>
+        <target>Poslední</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/pagination/pagination.ts</context>
           <context context-type="linenumber">404</context>
@@ -124,6 +139,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.progressbar.value">
         <source><x id="INTERPOLATION"/></source>
+        <target><x id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/progressbar/progressbar.ts</context>
           <context context-type="linenumber">101</context>
@@ -131,6 +147,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.HH">
         <source>HH</source>
+        <target>HH</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -138,6 +155,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.hours">
         <source>Hours</source>
+        <target>Hodiny</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -145,6 +163,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.MM">
         <source>MM</source>
+        <target>MM</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -152,6 +171,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.minutes">
         <source>Minutes</source>
+        <target>Minuty</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -159,6 +179,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.increment-hours">
         <source>Increment hours</source>
+        <target>Přírůstek hodin</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -166,6 +187,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.decrement-hours">
         <source>Decrement hours</source>
+        <target>Snížení hodin</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -173,6 +195,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.increment-minutes">
         <source>Increment minutes</source>
+        <target>Přírůstek minut</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -180,6 +203,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.decrement-minutes">
         <source>Decrement minutes</source>
+        <target>Snížení minut</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -187,6 +211,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.SS">
         <source>SS</source>
+        <target>SS</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -194,6 +219,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.seconds">
         <source>Seconds</source>
+        <target>Sekundy</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -201,6 +227,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.increment-seconds">
         <source>Increment seconds</source>
+        <target>Přírůstek sekund</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -208,6 +235,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.decrement-seconds">
         <source>Decrement seconds</source>
+        <target>Snížení sekund</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -215,6 +243,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.PM">
         <source><x id="INTERPOLATION"/></source>
+        <target><x id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -222,6 +251,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.AM">
         <source><x id="INTERPOLATION"/></source>
+        <target><x id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -229,6 +259,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.toast.close-aria">
         <source>Close</source>
+        <target>Zavřít</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/toast/toast.ts</context>
           <context context-type="linenumber">137</context>
@@ -356,7 +387,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">2,3</context>
+          <context context-type="linenumber">2,4</context>
         </context-group>
         <note from="description" priority="1">shared.address</note>
       </trans-unit>
@@ -365,11 +396,11 @@
         <target>Celkem přijato</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
-          <context context-type="linenumber">20</context>
+          <context context-type="linenumber">22</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">21,22</context>
+          <context context-type="linenumber">23,24</context>
         </context-group>
         <note from="description" priority="1">address.total-received</note>
       </trans-unit>
@@ -378,7 +409,7 @@
         <target>Celkem odesláno</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
-          <context context-type="linenumber">24</context>
+          <context context-type="linenumber">26</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
@@ -386,7 +417,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">25,26</context>
+          <context context-type="linenumber">27,28</context>
         </context-group>
         <note from="description" priority="1">address.total-sent</note>
       </trans-unit>
@@ -395,11 +426,11 @@
         <target>Zůstatek</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
-          <context context-type="linenumber">28</context>
+          <context context-type="linenumber">30</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">30,31</context>
+          <context context-type="linenumber">32,33</context>
         </context-group>
         <note from="description" priority="1">address.balance</note>
       </trans-unit>
@@ -408,7 +439,7 @@
         <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> transakce</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
-          <context context-type="linenumber">48</context>
+          <context context-type="linenumber">50</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
@@ -416,7 +447,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">87,88</context>
+          <context context-type="linenumber">132,133</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
@@ -433,7 +464,7 @@
         <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> transakcí</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
-          <context context-type="linenumber">49</context>
+          <context context-type="linenumber">51</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
@@ -441,7 +472,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">88,89</context>
+          <context context-type="linenumber">133,134</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
@@ -504,11 +535,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">27,30</context>
+          <context context-type="linenumber">29,32</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">46</context>
+          <context context-type="linenumber">49</context>
         </context-group>
         <note from="description" priority="1">Transaction Timestamp</note>
         <note from="meaning" priority="1">transaction.timestamp</note>
@@ -537,6 +568,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="6c2ae4f9da67155a00f8db40ac22315eeaff33e2">
         <source>BSQ Blocks</source>
+        <target>BSQ Bloky</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
           <context context-type="linenumber">2,7</context>
@@ -560,7 +592,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">78,80</context>
+          <context context-type="linenumber">78,79</context>
         </context-group>
         <note from="description" priority="1">Bisq block height header</note>
       </trans-unit>
@@ -624,6 +656,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="6b2fdbdddef74630e1076d58786ca339a8c030f0">
         <source>Bisq Trading Volume</source>
+        <target>Objem obchodování Bisq</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">3,7</context>
@@ -632,25 +665,28 @@
       </trans-unit>
       <trans-unit datatype="html" id="d3ad0babadabfa3e3b7f51637651822f3e56a7b1">
         <source>Markets</source>
+        <target>Trhy</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
-          <context context-type="linenumber">19,20</context>
+          <context context-type="linenumber">22,23</context>
         </context-group>
         <note from="description" priority="1">Bisq All Markets</note>
       </trans-unit>
       <trans-unit datatype="html" id="ece163b62f5e9b0b68a8d6a2d93e216318f557ba">
         <source>Bitcoin Markets</source>
+        <target>Bitcoinové trhy</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
-          <context context-type="linenumber">20,22</context>
+          <context context-type="linenumber">23,25</context>
         </context-group>
         <note from="description" priority="1">Bisq Bitcoin Markets</note>
       </trans-unit>
       <trans-unit datatype="html" id="32072c7fb0469aaf82d256a59b3e0d6ecce973b9">
         <source>Currency</source>
+        <target>Měna</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
-          <context context-type="linenumber">26</context>
+          <context context-type="linenumber">29</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="4d6ee53858628de558a18623894a03c8673bce9e">
@@ -658,15 +694,11 @@
         <target>Cena</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
-          <context context-type="linenumber">27,28</context>
+          <context context-type="linenumber">30,31</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
-          <context context-type="linenumber">81,82</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="linenumber">79,80</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
@@ -674,62 +706,68 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-trades/bisq-trades.component.html</context>
-          <context context-type="linenumber">4,5</context>
+          <context context-type="linenumber">5,6</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="b666c0101ab9ef128a75fdf05a43184a57de0cff">
         <source>Volume (7d)</source>
+        <target>Objem (7d)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
-          <context context-type="linenumber">28</context>
+          <context context-type="linenumber">31</context>
         </context-group>
         <note from="description" priority="1">Trading volume 7D</note>
       </trans-unit>
       <trans-unit datatype="html" id="faf7b6da436cb9342858ec551aecdab8052dbde6">
         <source>Trades (7d)</source>
+        <target>Obchody (7d)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
-          <context context-type="linenumber">29</context>
+          <context context-type="linenumber">32</context>
         </context-group>
         <note from="description" priority="1">Trades amount 7D</note>
       </trans-unit>
       <trans-unit datatype="html" id="8d54d714a00023ea23b58d8642980ef41cea0cb3">
         <source>Latest Trades</source>
+        <target>Poslední obchody</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
-          <context context-type="linenumber">50,54</context>
+          <context context-type="linenumber">54,57</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
-          <context context-type="linenumber">61,63</context>
+          <context context-type="linenumber">59,61</context>
         </context-group>
         <note from="description" priority="1">Latest Trades header</note>
       </trans-unit>
       <trans-unit datatype="html" id="f4ebbeea643a58f45e665e960b494b2ea30b87da">
         <source>Buy Offers</source>
+        <target>Nabídky k nákupu</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
-          <context context-type="linenumber">75,76</context>
+          <context context-type="linenumber">73,74</context>
         </context-group>
         <note from="description" priority="1">Bisq Buy Offers</note>
       </trans-unit>
       <trans-unit datatype="html" id="abf29235edbf341b6f626c315ff509f38fbf728a">
         <source>Sell Offers</source>
+        <target>Nabídky k prodeji</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
-          <context context-type="linenumber">76,79</context>
+          <context context-type="linenumber">74,77</context>
         </context-group>
         <note from="description" priority="1">Bisq Sell Offers</note>
       </trans-unit>
       <trans-unit datatype="html" id="74d80a5b284beb81e8aeb3b8efca0f78cd4b7560">
         <source>Amount (<x equiv-text="{{ i }}" id="INTERPOLATION"/>)</source>
+        <target>Množství (<x equiv-text="{{ i }}" id="INTERPOLATION"/>)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
-          <context context-type="linenumber">113,114</context>
+          <context context-type="linenumber">112,113</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-trades/bisq-trades.component.html</context>
-          <context context-type="linenumber">44,45</context>
+          <context context-type="linenumber">46,47</context>
         </context-group>
         <note from="description" priority="1">Trade amount (Symbol)</note>
       </trans-unit>
@@ -785,7 +823,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">57,59</context>
+          <context context-type="linenumber">59,61</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transfers/bisq-transfers.component.html</context>
@@ -843,9 +881,10 @@
       </trans-unit>
       <trans-unit datatype="html" id="2f933b826a570836cab04f683970a2d22068458c">
         <source>Date</source>
+        <target>Datum</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-trades/bisq-trades.component.html</context>
-          <context context-type="linenumber">3,5</context>
+          <context context-type="linenumber">4,6</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="dfc2fb58e2a04ed944a4bd80f0a2087775134068">
@@ -853,7 +892,7 @@
         <target>Množství</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-trades/bisq-trades.component.html</context>
-          <context context-type="linenumber">8,11</context>
+          <context context-type="linenumber">9,12</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
@@ -909,7 +948,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">148</context>
+          <context context-type="linenumber">151</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -923,27 +962,18 @@
           <context context-type="sourcefile">src/app/bisq/bisq-transaction-details/bisq-transaction-details.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
+          <context context-type="linenumber">92,93</context>
+        </context-group>
         <note from="description" priority="1">transaction.version</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="b59ea65c89a5ae15b787d8318fdad9edd6fec243">
-        <source>Transaction</source>
-        <target>Transakce</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">3,7</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">12</context>
-        </context-group>
-        <note from="description" priority="1">shared.transaction</note>
       </trans-unit>
       <trans-unit datatype="html" id="8e623d3cfecb7c560c114390db53c1f430ffd0de">
         <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> confirmation</source>
         <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> potvrzení</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">9,10</context>
+          <context context-type="linenumber">7,8</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transfers/bisq-transfers.component.html</context>
@@ -951,7 +981,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">17</context>
+          <context context-type="linenumber">26</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -965,7 +995,7 @@
         <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> potvrzení</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">10,11</context>
+          <context context-type="linenumber">8,9</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transfers/bisq-transfers.component.html</context>
@@ -973,7 +1003,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">18</context>
+          <context context-type="linenumber">27</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -982,16 +1012,29 @@
         <note from="description" priority="1">Transaction plural confirmation count</note>
         <note from="meaning" priority="1">shared.confirmation-count.plural</note>
       </trans-unit>
+      <trans-unit datatype="html" id="b59ea65c89a5ae15b787d8318fdad9edd6fec243">
+        <source>Transaction</source>
+        <target>Transakce</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
+          <context context-type="linenumber">12,15</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <note from="description" priority="1">shared.transaction</note>
+      </trans-unit>
       <trans-unit datatype="html" id="0d6ed649666c5cdcf12be0216d82051bba3614b0">
         <source>Included in block</source>
         <target>Zahrnuto v bloku</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">36,38</context>
+          <context context-type="linenumber">38,40</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">55</context>
+          <context context-type="linenumber">58</context>
         </context-group>
         <note from="description" priority="1">Transaction included in block</note>
         <note from="meaning" priority="1">transaction.included-in-block</note>
@@ -1001,15 +1044,15 @@
         <target>Funkce</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">42,44</context>
+          <context context-type="linenumber">44,46</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">67</context>
+          <context context-type="linenumber">70</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">125</context>
+          <context context-type="linenumber">128</context>
         </context-group>
         <note from="description" priority="1">Transaction features</note>
         <note from="meaning" priority="1">transaction.features</note>
@@ -1019,7 +1062,7 @@
         <target>Poplatek za vByte</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">62,64</context>
+          <context context-type="linenumber">64,66</context>
         </context-group>
         <note from="description" priority="1">Transaction fee</note>
         <note from="meaning" priority="1">transaction.fee-per-vbyte</note>
@@ -1029,19 +1072,19 @@
         <target>Detaily</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">81,84</context>
+          <context context-type="linenumber">83,86</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">127,129</context>
+          <context context-type="linenumber">129,131</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">198</context>
+          <context context-type="linenumber">201</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">274</context>
+          <context context-type="linenumber">277</context>
         </context-group>
         <note from="description" priority="1">transaction.details</note>
       </trans-unit>
@@ -1050,15 +1093,15 @@
         <target>Vstupy a Výstupy</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">88,96</context>
+          <context context-type="linenumber">90,98</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
-          <context context-type="linenumber">148,153</context>
+          <context context-type="linenumber">150,155</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">190</context>
+          <context context-type="linenumber">193</context>
         </context-group>
         <note from="description" priority="1">Transaction inputs and outputs</note>
         <note from="meaning" priority="1">transaction.inputs-and-outputs</note>
@@ -1072,11 +1115,12 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.ts</context>
-          <context context-type="linenumber">51</context>
+          <context context-type="linenumber">53</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="4d6066e445db90780e4b30ca93398be0b6567eda">
         <source>BSQ Transactions</source>
+        <target>BSQ Transakce</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
           <context context-type="linenumber">2,5</context>
@@ -1091,7 +1135,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">149</context>
+          <context context-type="linenumber">152</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -1100,6 +1144,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8411955056013208681">
         <source>Asset listing fee</source>
+        <target>Poplatek za zařazení aktiva</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">30</context>
@@ -1107,6 +1152,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4096113720451832029">
         <source>Blind vote</source>
+        <target>Slepý hlas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">31</context>
@@ -1114,6 +1160,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8029165479004970466">
         <source>Compensation request</source>
+        <target>Žádost o náhradu škody</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">32</context>
@@ -1121,6 +1168,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2303359202781425764">
         <source>Genesis</source>
+        <target>Genesis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">33</context>
@@ -1128,6 +1176,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1805880753357861573">
         <source>Irregular</source>
+        <target>Nepravidelný</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">34</context>
@@ -1135,6 +1184,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1899519213652410949">
         <source>Lockup</source>
+        <target>Zamknout</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">35</context>
@@ -1142,6 +1192,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="450749685636583691">
         <source>Pay trade fee</source>
+        <target>Zaplatit obchodní poplatek</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">36</context>
@@ -1149,6 +1200,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4844032232639560116">
         <source>Proof of burn</source>
+        <target>Důkaz spálení</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">37</context>
@@ -1156,6 +1208,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2011097393756618787">
         <source>Proposal</source>
+        <target>Návrh</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">38</context>
@@ -1163,6 +1216,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3275831985256202873">
         <source>Reimbursement request</source>
+        <target>Žádost o vrácení peněz</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">39</context>
@@ -1170,6 +1224,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1226904538495857889">
         <source>Transfer BSQ</source>
+        <target>Převést BSQ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">40</context>
@@ -1177,6 +1232,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4545041448523656285">
         <source>Unlock</source>
+        <target>Odemknout</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">41</context>
@@ -1184,6 +1240,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8694527859973232423">
         <source>Vote reveal</source>
+        <target>Odhalení hlasu</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">42</context>
@@ -1215,6 +1272,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq-graph-trades">
         <source>Trades</source>
+        <target>Obchody</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/lightweight-charts-area/lightweight-charts-area.component.ts</context>
           <context context-type="linenumber">87</context>
@@ -1222,6 +1280,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq-graph-volume">
         <source>Volume</source>
+        <target>Objem</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/lightweight-charts-area/lightweight-charts-area.component.ts</context>
           <context context-type="linenumber">88</context>
@@ -1246,6 +1305,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a24b1c6a9c4334ba204e4cec2dd9f32ea33d043f">
         <source>Enterprise Sponsors 🚀</source>
+        <target>Firemní sponzoři 🚀</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">47,50</context>
@@ -1272,6 +1332,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="90a59434bf67130fb2531e0610f10d28af0fcc87">
         <source>Navigate to <x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/about&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/>https://mempool.space/about<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/> to sponsor</source>
+        <target>Přejděte na <x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/about&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/>https://mempool.space/about<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/> a podpořte nás</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">91</context>
@@ -1364,7 +1425,7 @@
         <target>Přispěvatelé projektu</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">334,338</context>
+          <context context-type="linenumber">335,339</context>
         </context-group>
         <note from="description" priority="1">about.contributors</note>
       </trans-unit>
@@ -1373,7 +1434,7 @@
         <target>Správci projektu</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">353,356</context>
+          <context context-type="linenumber">354,357</context>
         </context-group>
         <note from="description" priority="1">about.maintainers</note>
       </trans-unit>
@@ -1382,7 +1443,7 @@
         <target>Podmínky služby</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">399,405</context>
+          <context context-type="linenumber">400,406</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
@@ -1439,7 +1500,7 @@
         <target><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> z <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> transakce</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">50,51</context>
+          <context context-type="linenumber">52,53</context>
         </context-group>
         <note from="description" priority="1">X of X Address Transaction</note>
       </trans-unit>
@@ -1448,7 +1509,7 @@
         <target><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> z <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> transakcí</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">51,52</context>
+          <context context-type="linenumber">53,54</context>
         </context-group>
         <note from="description" priority="1">X of X Address Transactions (Plural)</note>
       </trans-unit>
@@ -1457,16 +1518,24 @@
         <target>Chyba při načítání údajů o adrese.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">115,118</context>
+          <context context-type="linenumber">117,120</context>
         </context-group>
         <note from="description" priority="1">address.error.loading-address-data</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="cedcc9d48ffb2714e7b2f012ab67bd21f8e96a18">
+        <source><x ctype="x-i" equiv-text="&lt;i&gt;" id="START_ITALIC_TEXT"/>The number of transactions on this address exceeds the Electrum server limit<x ctype="x-i" equiv-text="&lt;/i&gt;" id="CLOSE_ITALIC_TEXT"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/> Consider viewing this address on the official Mempool website instead: </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address/address.component.html</context>
+          <context context-type="linenumber">122,125</context>
+        </context-group>
+        <note from="description" priority="1">Electrum server limit exceeded error</note>
       </trans-unit>
       <trans-unit datatype="html" id="30751732ff4b8f6ddb2a906e0173072ac29d412a">
         <source>Confidential</source>
         <target>Důvěrné</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">134,136</context>
+          <context context-type="linenumber">139,141</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/amount/amount.component.html</context>
@@ -1587,6 +1656,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a706b1ded7506620b153dbcdea8108e6691bbbd9">
         <source>Default push: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> action: 'want', data: ['blocks', ...] <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> to express what you want pushed. Available: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>blocks<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool-blocks<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>live-2h-chart<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/>Push transactions related to address: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> 'track-address': '3PbJ...bF9B' <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> for new mempool transactions, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> for new block confirmed transactions.</source>
+        <target>Východí push: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> action: 'want', data: ['blocks', ...] <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> k vyjádření toho, co chcete pushovat. K dispozici: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>blocks<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool-blocks<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>live-2h-chart<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/>Push transakce souvisejících s adresou: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> 'track-address': '3PbJ...bF9B' <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> získáte všechny nové transakce obsahující tuto adresu jako vstup nebo výstup. Vrátí pole transakcí. <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> pro nové mempool transakce, a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> pro nové transakce potvrzené blokem.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">19,20</context>
@@ -1689,6 +1759,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="194d480219559b855b01ea58459066e3c63acdb2">
         <source>Returns details about a block. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>id<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>version<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>timestamp<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>bits<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>merkle_root<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>size<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>weight<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/><x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/> and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>previousblockhash<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
+        <target>Vrátí podrobnosti o bloku. Dostupná pole: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>id<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>version<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>timestamp<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>bits<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>merkle_root<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>size<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>weight<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/><x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/> and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>previousblockhash<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">89,90</context>
@@ -1696,6 +1767,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a2c00fbdcce9d6291c3b04c67979f9694be23f28">
         <source>Returns the confirmation status of a block. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>in_best_chain<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean, false for orphaned blocks), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>next_best<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (the hash of the next block, only available for blocks in the best chain).</source>
+        <target>Vrátí stav potvrzení bloku. Dostupná pole: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>in_best_chain<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean, false pro osiřelé bloky), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>next_best<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (hash dalšího bloku, k dispozici pouze pro bloky v nejlepším řetězci).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">93,94</context>
@@ -1703,6 +1775,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1126cb2e03d0371d03b57047052d4ff1b6556753">
         <source>Returns a list of transactions in the block (up to 25 transactions beginning at <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>start_index<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>). Transactions returned here do not have the <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> field, since all the transactions share the same block and confirmation status.</source>
+        <target>Vrátí seznam transakcí v bloku (až 25 transakcí začínajících na <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>start_index<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>). Transakce zde vrácené nemají <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> pole, protože všechny transakce sdílejí stejný blok a stav potvrzení.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">97,98</context>
@@ -1718,6 +1791,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3e08815110b2e5ce8aa7256ed05a2faf6dbb7077">
         <source>Returns the transaction at index <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:index<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> within the specified block.</source>
+        <target>Vrátí transakci v indexu <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:index<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> v zadaném bloku.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">105,106</context>
@@ -1741,6 +1815,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f8380186899495340cbfe7fb836ba664fb4b52af">
         <source>Returns the 10 newest blocks starting at the tip or at <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:start_height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> if specified.</source>
+        <target>Vrátí 10 nejnovějších bloků začínajících na špičce nebo na <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:start_height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, pokud je zadáno.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">117,118</context>
@@ -1782,6 +1857,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7e784cfa5833e7b54d4dfc723fabde94f66ebde3">
         <source>Returns the confirmation status of a transaction. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>confirmed<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional), and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_hash<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional).</source>
+        <target>Vrátí stav potvrzení transakce. Dostupná pole: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>confirmed<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (volitelně) a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_hash<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (volitelně).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">147,148</context>
@@ -1805,6 +1881,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d51106cc898981e9862d35a4db40796f0cf464f8">
         <source>Returns a merkle inclusion proof for the transaction using <x ctype="x-a" equiv-text="&lt;a href=&quot;https://bitcoin.org/en/glossary/merkle-block&quot;&gt;" id="START_LINK"/>bitcoind's merkleblock<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/> format.</source>
+        <target>Vrátí merklův důkaz zahrnutí pro transakci ve formátu <x ctype="x-a" equiv-text="&lt;a href=&quot;https://bitcoin.org/en/glossary/merkle-block&quot;&gt;" id="START_LINK"/>merkleblock bitcoindu<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">159,160</context>
@@ -1820,6 +1897,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fe9a40b2ff9674b4ab7d82624ffed340c9ee5b89">
         <source>Returns the spending status of a transaction output. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vin<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional), and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional, the status of the spending tx).</source>
+        <target>Vrátí stav útraty výstupu transakce. Dostupná pole: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (volitelně), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vin<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (volitelně) a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (volitelně, stav utrácení tx).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">167,168</context>
@@ -1835,6 +1913,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="01723473ecc53cab60ef1b37dc39d8941994d56f">
         <source>Broadcast a raw transaction to the network. The transaction should be provided as hex in the request body. The <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> will be returned on success.</source>
+        <target>Vyslat surovou transakci do sítě. Transakce by měla být v těle žádosti uvedena jako hex. Při úspěchu bude vrácen <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">175,176</context>
@@ -1860,6 +1939,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bdc501d28e02e07f692859977fdaee8c52eea401">
         <source>Get transaction history for the specified address/scripthash, sorted with newest first. Returns up to 50 mempool transactions plus the first 25 confirmed transactions. You can request more confirmed transactions using <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:last_seen_txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (see below). </source>
+        <target>Získat historii transakcí pro zadanou adresu/scripthash, seřazené podle nejnovějších jako první. Vrátí až 50 mempool transakcí plus prvních 25 potvrzených transakcí. O více potvrzených transakcí můžete požádat pomocí <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:last_seen_txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (viz níže).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">197,199</context>
@@ -2007,6 +2087,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f8c91b77ad53ccd0f6adb4a6ea3a0f5c3329688b">
         <source>Asset</source>
+        <target>Aktivum</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">2</context>
@@ -2100,6 +2181,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f8c95f48130898dbd3b09638813b5f61c77ef7ee">
         <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/></source>
+        <target><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> z <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">76</context>
@@ -2290,19 +2372,19 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">166</context>
+          <context context-type="linenumber">169</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">179</context>
+          <context context-type="linenumber">182</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">332</context>
+          <context context-type="linenumber">335</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">342</context>
+          <context context-type="linenumber">345</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -2314,7 +2396,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">169,173</context>
+          <context context-type="linenumber">168,172</context>
         </context-group>
         <note from="description" priority="1">sat/vB</note>
         <note from="meaning" priority="1">shared.sat-vbyte</note>
@@ -2381,12 +2463,58 @@
         </context-group>
         <note from="description" priority="1">block.miner</note>
       </trans-unit>
+      <trans-unit datatype="html" id="d71be278785ad5940aacaf2b29a67bdbf6fc6be8">
+        <source>Merkle root</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
+          <context context-type="linenumber">96,98</context>
+        </context-group>
+        <note from="description" priority="1">block.merkle-root</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="fd04710d1a54d46cd1b81a13fc98e3d561b92141">
+        <source>Bits</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
+          <context context-type="linenumber">100,102</context>
+        </context-group>
+        <note from="description" priority="1">block.bits</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="25148835d92465353fc5fe8897c27d5369978e5a">
+        <source>Difficulty</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
+          <context context-type="linenumber">110,113</context>
+        </context-group>
+        <note from="description" priority="1">block.difficulty</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="a6bb63d98a8a67689070a79ccf13960c25b572ef">
+        <source>Nonce</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
+          <context context-type="linenumber">114,116</context>
+        </context-group>
+        <note from="description" priority="1">block.nonce</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="5f32c623f92bf3ca31202cc6281d4abd5febaf6a">
+        <source>Details</source>
+        <target>Detaily</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
+          <context context-type="linenumber">125,131</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">195</context>
+        </context-group>
+        <note from="description" priority="1">Transaction Details</note>
+        <note from="meaning" priority="1">transaction.details</note>
+      </trans-unit>
       <trans-unit datatype="html" id="56ad2f3895f350abdd3cee2d95498deb8819afac">
         <source>Error loading block data.</source>
         <target>Chyba při načítání dat bloku.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">176,184</context>
+          <context context-type="linenumber">221,229</context>
         </context-group>
         <note from="description" priority="1">block.error.loading-block-data</note>
       </trans-unit>
@@ -2395,7 +2523,7 @@
         <target>Blok <x equiv-text="block.height" id="BLOCK_HEIGHT"/>: <x equiv-text="block.id" id="BLOCK_ID"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.ts</context>
-          <context context-type="linenumber">105</context>
+          <context context-type="linenumber">106</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="e8104ec47dbdca878cd9d7aba4a3cb59378fcaf7">
@@ -2438,7 +2566,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">31,32</context>
+          <context context-type="linenumber">34,37</context>
         </context-group>
         <note from="description" priority="1">fees-box.medium-priority</note>
       </trans-unit>
@@ -2451,7 +2579,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">35,38</context>
+          <context context-type="linenumber">41,44</context>
         </context-group>
         <note from="description" priority="1">fees-box.high-priority</note>
       </trans-unit>
@@ -2473,7 +2601,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">195,197</context>
+          <context context-type="linenumber">193,195</context>
         </context-group>
         <note from="description" priority="1">footer.backend-is-synchronizing</note>
       </trans-unit>
@@ -2486,7 +2614,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">200,206</context>
+          <context context-type="linenumber">198,204</context>
         </context-group>
         <note from="description" priority="1">vB/s</note>
         <note from="meaning" priority="1">shared.vbytes-per-second</note>
@@ -2500,7 +2628,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">182,184</context>
+          <context context-type="linenumber">172,174</context>
         </context-group>
         <note from="description" priority="1">Unconfirmed count</note>
         <note from="meaning" priority="1">dashboard.unconfirmed</note>
@@ -2524,7 +2652,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">319</context>
+          <context context-type="linenumber">322</context>
         </context-group>
         <note from="description" priority="1">shared.block</note>
       </trans-unit>
@@ -2541,7 +2669,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">320</context>
+          <context context-type="linenumber">323</context>
         </context-group>
         <note from="description" priority="1">shared.blocks</note>
       </trans-unit>
@@ -2653,7 +2781,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">315</context>
+          <context context-type="linenumber">318</context>
         </context-group>
         <note from="description" priority="1">Block Frequency (plural)</note>
         <note from="meaning" priority="1">mempool-blocks.eta-of-next-block-plural</note>
@@ -2667,7 +2795,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">317</context>
+          <context context-type="linenumber">320</context>
         </context-group>
         <note from="description" priority="1">Block Frequency</note>
         <note from="meaning" priority="1">mempool-blocks.eta-of-next-block</note>
@@ -2720,7 +2848,7 @@
         <target>Načítání grafů...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
-          <context context-type="linenumber">6</context>
+          <context context-type="linenumber">5</context>
         </context-group>
         <note from="description" priority="1">statistics.loading-graphs</note>
       </trans-unit>
@@ -2729,7 +2857,7 @@
         <target>Mempool v vBytes (sat/vByte)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
-          <context context-type="linenumber">16</context>
+          <context context-type="linenumber">13</context>
         </context-group>
         <note from="description" priority="1">statistics.memory-by-vBytes</note>
       </trans-unit>
@@ -2738,7 +2866,7 @@
         <target>Převrátit</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
-          <context context-type="linenumber">43</context>
+          <context context-type="linenumber">39</context>
         </context-group>
         <note from="description" priority="1">statistics.component-invert.title</note>
       </trans-unit>
@@ -2747,7 +2875,7 @@
         <target>Transakce vBytů za sekundu (vB/s)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
-          <context context-type="linenumber">57</context>
+          <context context-type="linenumber">53</context>
         </context-group>
         <note from="description" priority="1">statistics.transaction-vbytes-per-second</note>
       </trans-unit>
@@ -2918,7 +3046,7 @@
         <target>Nepotvrzeno</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">22</context>
+          <context context-type="linenumber">31</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -2932,7 +3060,7 @@
         <target>Potvrzeno</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">62</context>
+          <context context-type="linenumber">65</context>
         </context-group>
         <note from="description" priority="1">Transaction Confirmed state</note>
         <note from="meaning" priority="1">transaction.confirmed</note>
@@ -2942,7 +3070,7 @@
         <target>Po <x ctype="x-app_timespan" equiv-text="&lt;app-timespan [time]=&quot;tx.status.block_time - transactionTime&quot;&gt;" id="START_TAG_APP_TIMESPAN"/><x ctype="x-app_timespan" equiv-text="&lt;/app-timespan&gt;" id="CLOSE_TAG_APP_TIMESPAN"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">63</context>
+          <context context-type="linenumber">66</context>
         </context-group>
         <note from="description" priority="1">Transaction confirmed after</note>
         <note from="meaning" priority="1">transaction.confirmed.after</note>
@@ -2952,7 +3080,7 @@
         <target>Poprvé viděna</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">98</context>
+          <context context-type="linenumber">101</context>
         </context-group>
         <note from="description" priority="1">Transaction first seen</note>
         <note from="meaning" priority="1">transaction.first-seen</note>
@@ -2962,7 +3090,7 @@
         <target>ETA</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">104</context>
+          <context context-type="linenumber">107</context>
         </context-group>
         <note from="description" priority="1">Transaction ETA</note>
         <note from="meaning" priority="1">transaction.eta</note>
@@ -2972,7 +3100,7 @@
         <target>Za několik hodin (nebo více)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">111</context>
+          <context context-type="linenumber">114</context>
         </context-group>
         <note from="description" priority="1">Transaction ETA in several hours or more</note>
         <note from="meaning" priority="1">transaction.eta.in-several-hours</note>
@@ -2982,11 +3110,11 @@
         <target>Virtuální velikost</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">150</context>
+          <context context-type="linenumber">153</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">207</context>
+          <context context-type="linenumber">210</context>
         </context-group>
         <note from="description" priority="1">Transaction Virtual Size</note>
         <note from="meaning" priority="1">transaction.vsize</note>
@@ -2996,11 +3124,11 @@
         <target>Poplatek</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">151</context>
+          <context context-type="linenumber">154</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">330</context>
+          <context context-type="linenumber">333</context>
         </context-group>
         <note from="description" priority="1">Transaction fee rate</note>
         <note from="meaning" priority="1">transaction.fee-rate</note>
@@ -3010,7 +3138,7 @@
         <target>Potomek</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">158</context>
+          <context context-type="linenumber">161</context>
         </context-group>
         <note from="description" priority="1">Descendant</note>
         <note from="meaning" priority="1">transaction.descendant</note>
@@ -3020,27 +3148,17 @@
         <target>Předek</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">172</context>
+          <context context-type="linenumber">175</context>
         </context-group>
         <note from="description" priority="1">Transaction Ancestor</note>
         <note from="meaning" priority="1">transaction.ancestor</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="5f32c623f92bf3ca31202cc6281d4abd5febaf6a">
-        <source>Details</source>
-        <target>Detaily</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">192</context>
-        </context-group>
-        <note from="description" priority="1">Transaction Details</note>
-        <note from="meaning" priority="1">transaction.details</note>
       </trans-unit>
       <trans-unit datatype="html" id="35214e7a6aec1b0317e0fa1eb32e8caf6757b147">
         <source>Size</source>
         <target>Velikost</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">203</context>
+          <context context-type="linenumber">206</context>
         </context-group>
         <note from="description" priority="1">Transaction Size</note>
         <note from="meaning" priority="1">transaction.size</note>
@@ -3050,7 +3168,7 @@
         <target>Váha</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">211</context>
+          <context context-type="linenumber">214</context>
         </context-group>
         <note from="description" priority="1">Transaction Weight</note>
         <note from="meaning" priority="1">transaction.weight</note>
@@ -3060,7 +3178,7 @@
         <target>Transakce nebyla nalezena.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">299</context>
+          <context context-type="linenumber">302</context>
         </context-group>
         <note from="description" priority="1">transaction.error.transaction-not-found</note>
       </trans-unit>
@@ -3069,7 +3187,7 @@
         <target>Čekání na to, až se objeví v mempoolu...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">300</context>
+          <context context-type="linenumber">303</context>
         </context-group>
         <note from="description" priority="1">transaction.error.waiting-for-it-to-appear</note>
       </trans-unit>
@@ -3078,7 +3196,7 @@
         <target>Poplatek</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">326</context>
+          <context context-type="linenumber">329</context>
         </context-group>
         <note from="description" priority="1">Transaction fee</note>
         <note from="meaning" priority="1">transaction.fee</note>
@@ -3088,7 +3206,7 @@
         <target>sat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">327</context>
+          <context context-type="linenumber">330</context>
         </context-group>
         <note from="description" priority="1">Transaction Fee sat</note>
         <note from="meaning" priority="1">transaction.fee.sat</note>
@@ -3098,7 +3216,7 @@
         <target>Efektivní poplatek</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">340</context>
+          <context context-type="linenumber">343</context>
         </context-group>
         <note from="description" priority="1">Effective transaction fee rate</note>
         <note from="meaning" priority="1">transaction.effective-fee-rate</note>
@@ -3251,13 +3369,14 @@
         <target>sat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">201,204</context>
+          <context context-type="linenumber">201</context>
         </context-group>
         <note from="description" priority="1">sat</note>
         <note from="meaning" priority="1">shared.sat</note>
       </trans-unit>
       <trans-unit datatype="html" id="f85c05147b720576e50336cf26f63d3b05601699">
         <source>This transaction saved <x equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}" id="INTERPOLATION"/>% on fees by using native SegWit-Bech32</source>
+        <target>Tato transakce ušetřila <x equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}" id="INTERPOLATION"/>% na poplatcích pomocí nativního SegWit-Bech32</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">1</context>
@@ -3284,6 +3403,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="975f46d122f2ca0a187308399a58b44d61ef08eb">
         <source>This transaction saved <x equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}" id="INTERPOLATION"/>% on fees by using SegWit and could save <x equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}" id="INTERPOLATION_1"/>% more by fully upgrading to native SegWit-Bech32</source>
+        <target>Tato transakce ušetřila <x equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}" id="INTERPOLATION"/>% na poplatcích pomocí SegWit a mohla by ušetřit o <x equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}" id="INTERPOLATION_1"/>% více úplným upgradem na nativní SegWit-Bech32</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">3</context>
@@ -3292,6 +3412,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1be04d5407059059b596f72696a3d1704ce9c0ef">
         <source>This transaction could save <x equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}" id="INTERPOLATION"/>% on fees by upgrading to native SegWit-Bech32 or <x equiv-text="{{ segwitGains.potentialP2shGains * 100 | number:  '1.0-0' }}" id="INTERPOLATION_1"/>% by upgrading to SegWit-P2SH</source>
+        <target>Tato transakce by mohla ušetřit <x equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}" id="INTERPOLATION"/>% na poplatcích upgradem na nativní SegWit-Bech32 nebo <x equiv-text="{{ segwitGains.potentialP2shGains * 100 | number:  '1.0-0' }}" id="INTERPOLATION_1"/>% upgradem na SegWit-P2SH</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">5</context>
@@ -3342,6 +3463,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="9d92d02835569b64f0dce58e81a0d22dd798f6e5">
         <source>Only ~<x equiv-text="{{ medianFeeNeeded | number : '1.1-1' }}" id="INTERPOLATION"/> sat/vB was needed to get into this block</source>
+        <target>K vstupu do tohoto bloku bylo zapotřebí pouze ~<x equiv-text="{{ medianFeeNeeded | number : '1.1-1' }}" id="INTERPOLATION"/>sat/vB</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
@@ -3371,7 +3493,7 @@
         <target>Poslední bloky</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">75,77</context>
+          <context context-type="linenumber">75,78</context>
         </context-group>
         <note from="description" priority="1">dashboard.latest-blocks</note>
       </trans-unit>
@@ -3384,7 +3506,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">184,191</context>
+          <context context-type="linenumber">174,178</context>
         </context-group>
         <note from="description" priority="1">dashboard.latest-blocks.transaction-count</note>
       </trans-unit>
@@ -3447,7 +3569,7 @@
         <target>Minimální poplatek</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">166,167</context>
+          <context context-type="linenumber">165,166</context>
         </context-group>
         <note from="description" priority="1">Minimum mempool fee</note>
         <note from="meaning" priority="1">dashboard.minimum-fee</note>
@@ -3457,7 +3579,7 @@
         <target>Čištění</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">167,169</context>
+          <context context-type="linenumber">166,168</context>
         </context-group>
         <note from="description" priority="1">Purgin below fee</note>
         <note from="meaning" priority="1">dashboard.purging</note>
@@ -3467,7 +3589,7 @@
         <target>Využití paměti</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">173,175</context>
+          <context context-type="linenumber">178,180</context>
         </context-group>
         <note from="description" priority="1">Memory usage</note>
         <note from="meaning" priority="1">dashboard.memory-usage</note>
@@ -3477,7 +3599,7 @@
         <target>Příchozí transakce</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">192,194</context>
+          <context context-type="linenumber">190,192</context>
         </context-group>
         <note from="description" priority="1">dashboard.incoming-transactions</note>
       </trans-unit>
@@ -3486,12 +3608,13 @@
         <target>Úprava obtížnosti</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">209,210</context>
+          <context context-type="linenumber">207,208</context>
         </context-group>
         <note from="description" priority="1">dashboard.difficulty-adjustment</note>
       </trans-unit>
       <trans-unit datatype="html" id="2799825781368047816">
         <source>Transaction fee</source>
+        <target>Transakční poplatek</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/pipes/scriptpubkey-type-pipe/scriptpubkey-type.pipe.ts</context>
           <context context-type="linenumber">11</context>
