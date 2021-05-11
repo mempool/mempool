@@ -192,6 +192,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         relativeTo: this.route,
         queryParams: { showDetails: false },
         queryParamsHandling: 'merge',
+        fragment: 'block'
       });
     } else {
       this.showDetails = true;
@@ -199,6 +200,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         relativeTo: this.route,
         queryParams: { showDetails: true },
         queryParamsHandling: 'merge',
+        fragment: 'details'
       });
     }
   }
