@@ -10,10 +10,15 @@ import { BisqStatsComponent } from './bisq-stats/bisq-stats.component';
 import { ApiDocsComponent } from '../components/api-docs/api-docs.component';
 import { BisqDashboardComponent } from './bisq-dashboard/bisq-dashboard.component';
 import { BisqMarketComponent } from './bisq-market/bisq-market.component';
+import { BisqMainDashboardComponent } from './bisq-main-dashboard/bisq-main-dashboard.component';
 
 const routes: Routes = [
-  {
+    {
       path: '',
+      component: BisqMainDashboardComponent,
+    },
+    {
+      path: 'markets',
       component: BisqDashboardComponent,
     },
     {

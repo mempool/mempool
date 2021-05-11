@@ -1,5 +1,5 @@
 import { createChart, CrosshairMode } from 'lightweight-charts';
-import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-lightweight-charts',
@@ -7,10 +7,11 @@ import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, OnDes
   styleUrls: ['./lightweight-charts.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LightweightChartsComponent implements OnChanges, OnDestroy {
+export class LightweightChartsComponent implements OnInit, OnChanges, OnDestroy {
   @Input() data: any;
   @Input() volumeData: any;
   @Input() precision: number;
+  @Input() height = 500;
 
   lineSeries: any;
   volumeSeries: any;
@@ -18,10 +19,12 @@ export class LightweightChartsComponent implements OnChanges, OnDestroy {
 
   constructor(
     private element: ElementRef,
-  ) {
+  ) { }
+
+  ngOnInit() {
     this.chart = createChart(this.element.nativeElement, {
-      width: 1110,
-      height: 500,
+      width: this.element.nativeElement.parentElement.offsetWidth,
+      height: this.height,
       layout: {
         backgroundColor: '#000000',
         textColor: '#d1d4dc',
@@ -52,12 +55,22 @@ export class LightweightChartsComponent implements OnChanges, OnDestroy {
         bottom: 0,
       },
     });
+
+    this.updateData();
   }
 
-  ngOnChanges() {
-    if (!this.data) {
+  ngOnChanges(changes: SimpleChanges) {
+    if (!changes.value || changes.value.isFirstChange()){
       return;
     }
+    this.updateData();
+  }
+
+  ngOnDestroy() {
+    this.chart.remove();
+  }
+
+  updateData() {
     this.lineSeries.setData(this.data);
     this.volumeSeries.setData(this.volumeData);
 
@@ -68,10 +81,6 @@ export class LightweightChartsComponent implements OnChanges, OnDestroy {
           minMove: 0.0000001,
       },
     });
-  }
-
-  ngOnDestroy() {
-    this.chart.remove();
   }
 
 }
