@@ -11,6 +11,7 @@ import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { BisqTransactionComponent } from './bisq-transaction/bisq-transaction.component';
 import { BisqBlockComponent } from './bisq-block/bisq-block.component';
 import { BisqDashboardComponent } from './bisq-dashboard/bisq-dashboard.component';
+import { BisqMainDashboardComponent } from './bisq-main-dashboard/bisq-main-dashboard.component';
 import { BisqIconComponent } from './bisq-icon/bisq-icon.component';
 import { BisqTransactionDetailsComponent } from './bisq-transaction-details/bisq-transaction-details.component';
 import { BisqTransfersComponent } from './bisq-transfers/bisq-transfers.component';
@@ -42,6 +43,7 @@ import { BisqTradesComponent } from './bisq-trades/bisq-trades.component';
     BisqDashboardComponent,
     BisqMarketComponent,
     BisqTradesComponent,
+    BisqMainDashboardComponent,
   ],
   imports: [
     BisqRoutingModule,

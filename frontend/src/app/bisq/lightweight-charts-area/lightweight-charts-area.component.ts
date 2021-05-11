@@ -1,5 +1,5 @@
 import { createChart, CrosshairMode, isBusinessDay } from 'lightweight-charts';
-import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-lightweight-charts-area',
@@ -7,10 +7,11 @@ import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, OnDes
   styleUrls: ['./lightweight-charts-area.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LightweightChartsAreaComponent implements OnChanges, OnDestroy {
+export class LightweightChartsAreaComponent implements OnInit, OnChanges, OnDestroy {
   @Input() data: any;
   @Input() lineData: any;
   @Input() precision: number;
+  @Input() height = 500;
 
   areaSeries: any;
   volumeSeries: any;
@@ -18,12 +19,14 @@ export class LightweightChartsAreaComponent implements OnChanges, OnDestroy {
   lineSeries: any;
   container: any;
 
-  width = 1110;
-  height = 500;
+  width: number;
 
   constructor(
     private element: ElementRef,
-  ) {
+  ) { }
+
+  ngOnInit() {
+    this.width = this.element.nativeElement.parentElement.offsetWidth;
     this.container = document.createElement('div');
     const chartholder = this.element.nativeElement.appendChild(this.container);
 
@@ -112,16 +115,22 @@ export class LightweightChartsAreaComponent implements OnChanges, OnDestroy {
       toolTip.style.left = left + 'px';
       toolTip.style.top = top + 'px';
     });
+
+    this.updateData();
   }
 
   businessDayToString(businessDay) {
     return businessDay.year + '-' + businessDay.month + '-' + businessDay.day;
   }
 
-  ngOnChanges() {
-    if (!this.data) {
+  ngOnChanges(changes: SimpleChanges) {
+    if (!changes.value || changes.value.isFirstChange()){
       return;
     }
+    this.updateData();
+  }
+
+  updateData() {
     this.areaSeries.setData(this.data);
     this.lineSeries.setData(this.lineData);
   }
