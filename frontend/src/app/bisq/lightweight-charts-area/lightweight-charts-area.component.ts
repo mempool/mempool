@@ -124,7 +124,7 @@ export class LightweightChartsAreaComponent implements OnInit, OnChanges, OnDest
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (!changes.value || changes.value.isFirstChange()){
+    if (!changes.data || changes.data.isFirstChange()){
       return;
     }
     this.updateData();
