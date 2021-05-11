@@ -8,11 +8,9 @@
         <div class="spinner-border text-light"></div>
       </div>  
     </ng-template>
-    <div class="chart-container">
-      <ng-container *ngIf="volumes$ | async as volumes; else loadingVolumes">
-        <app-lightweight-charts-area [data]="volumes.data" [lineData]="volumes.linesData"></app-lightweight-charts-area>
-      </ng-container>
-    </div>
+    <ng-container *ngIf="volumes$ | async as volumes; else loadingVolumes">
+      <app-lightweight-charts-area [data]="volumes.data" [lineData]="volumes.linesData"></app-lightweight-charts-area>
+    </ng-container>
   </div>
 
   <br><br>

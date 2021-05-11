@@ -2,7 +2,7 @@
   <table class="table table-borderless table-striped">
     <thead>
       <th i18n>Date</th>
-      <th i18n>Price</th>
+      <th *ngIf="view === 'all'" i18n>Price</th>
       <th><ng-container *ngTemplateOutlet="amount; context: {$implicit:  'BTC' }"></ng-container></th>
       <th>
         <ng-template [ngIf]="market" [ngIfElse]="noMarket"><ng-container *ngTemplateOutlet="amount; context: {$implicit: market.lsymbol === 'BTC' ? market.rsymbol : market.lsymbol }"></ng-container></ng-template>
@@ -14,7 +14,7 @@
         <td>
           {{ trade.trade_date | date:'yyyy-MM-dd HH:mm' }}
         </td>
-        <td>
+        <td *ngIf="view === 'all'">
           <ng-container *ngIf="(trade._market || market).rtype === 'fiat'; else priceCrypto"><span class="green-color">{{ trade.price | currency: (trade._market || market).rsymbol }}</span></ng-container>
           <ng-template #priceCrypto>{{ trade.price | number: '1.2-' + (trade._market || market).rprecision }} <span class="symbol">{{ (trade._market || market).rsymbol }}</span></ng-template>
         </td>
@@ -39,7 +39,7 @@
 
 <ng-template #loadingTmpl>
   <tr *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]">
-    <td *ngFor="let j of [1, 2, 3, 4]"><span class="skeleton-loader"></span></td>
+    <td *ngFor="let j of loadingColumns"><span class="skeleton-loader"></span></td>
   </tr>
 </ng-template>
 
