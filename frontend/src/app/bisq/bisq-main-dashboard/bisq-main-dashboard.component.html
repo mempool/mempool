@@ -6,9 +6,9 @@
     <div class="col mb-4">
       <div class="card text-center">
         <div class="card-body">
-          <h5 class="card-title" i18n="bisq-dashboard.market-price-title">Bisq Market Price</h5>
+          <h5 class="card-title" i18n="bisq-dashboard.price-index-title">Bisq Price Index</h5>
           <div class="big-fiat">
-            <span class="green-color" *ngIf="bisqMarketPrice; else loading">{{ bisqMarketPrice | currency:'USD':'symbol':'1.2-2' }}</span>
+            <span class="green-color" *ngIf="usdPrice$ | async as usdPrice; else loading">{{ usdPrice | currency:'USD':'symbol':'1.2-2' }}</span>
           </div>
         </div>
       </div>
@@ -16,9 +16,9 @@
     <div class="col mb-4">
       <div class="card text-center">
         <div class="card-body">
-          <h5 class="card-title" i18n="bisq-dashboard.price-index-title">Bisq Price Index</h5>
+          <h5 class="card-title" i18n="bisq-dashboard.market-price-title">Bisq Market Price</h5>
           <div class="big-fiat">
-            <span class="green-color" *ngIf="usdPrice$ | async as usdPrice; else loading">{{ usdPrice | currency:'USD':'symbol':'1.2-2' }}</span>
+            <span class="green-color" *ngIf="bisqMarketPrice; else loading">{{ bisqMarketPrice | currency:'USD':'symbol':'1.2-2' }}</span>
           </div>
         </div>
       </div>
