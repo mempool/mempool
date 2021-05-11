@@ -627,13 +627,21 @@
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">3,7</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
+          <context context-type="linenumber">46,48</context>
+        </context-group>
         <note from="description" priority="1">Bisq markets title</note>
       </trans-unit>
       <trans-unit datatype="html" id="d3ad0babadabfa3e3b7f51637651822f3e56a7b1">
         <source>Markets</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
-          <context context-type="linenumber">22,23</context>
+          <context context-type="linenumber">20,21</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
+          <context context-type="linenumber">66,67</context>
         </context-group>
         <note from="description" priority="1">Bisq All Markets</note>
       </trans-unit>
@@ -641,7 +649,11 @@
         <source>Bitcoin Markets</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
-          <context context-type="linenumber">23,25</context>
+          <context context-type="linenumber">21,23</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
+          <context context-type="linenumber">67,71</context>
         </context-group>
         <note from="description" priority="1">Bisq Bitcoin Markets</note>
       </trans-unit>
@@ -649,7 +661,11 @@
         <source>Currency</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
-          <context context-type="linenumber">29</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
+          <context context-type="linenumber">73</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="4d6ee53858628de558a18623894a03c8673bce9e">
@@ -657,7 +673,11 @@
         <target>价格</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
-          <context context-type="linenumber">30,31</context>
+          <context context-type="linenumber">28,29</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
+          <context context-type="linenumber">74,75</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
@@ -676,7 +696,7 @@
         <source>Volume (7d)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
-          <context context-type="linenumber">31</context>
+          <context context-type="linenumber">29</context>
         </context-group>
         <note from="description" priority="1">Trading volume 7D</note>
       </trans-unit>
@@ -684,7 +704,11 @@
         <source>Trades (7d)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
-          <context context-type="linenumber">32</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
+          <context context-type="linenumber">75</context>
         </context-group>
         <note from="description" priority="1">Trades amount 7D</note>
       </trans-unit>
@@ -692,13 +716,58 @@
         <source>Latest Trades</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
-          <context context-type="linenumber">54,57</context>
+          <context context-type="linenumber">52,55</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
+          <context context-type="linenumber">99,101</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
           <context context-type="linenumber">59,61</context>
         </context-group>
         <note from="description" priority="1">Latest Trades header</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="3f42ea126dba9186d89dffe43937f2b9c17858d6">
+        <source>Bisq Price Index</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
+          <context context-type="linenumber">9,11</context>
+        </context-group>
+        <note from="description" priority="1">bisq-dashboard.price-index-title</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="e32fd95e667cfcee9948135918a151a614d5d349">
+        <source>Bisq Market Price</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
+          <context context-type="linenumber">19,21</context>
+        </context-group>
+        <note from="description" priority="1">bisq-dashboard.market-price-title</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="1915fb658404dd3fa2a05f7d5fdd774ad72ef422">
+        <source>View all »</source>
+        <target>查看全部 »</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
+          <context context-type="linenumber">37,41</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
+          <context context-type="linenumber">51,55</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
+          <context context-type="linenumber">92,97</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
+          <context context-type="linenumber">101,107</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">97,101</context>
+        </context-group>
+        <note from="description" priority="1">dashboard.view-all</note>
       </trans-unit>
       <trans-unit datatype="html" id="f4ebbeea643a58f45e665e960b494b2ea30b87da">
         <source>Buy Offers</source>
@@ -1213,14 +1282,14 @@
         <source>Trades</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/lightweight-charts-area/lightweight-charts-area.component.ts</context>
-          <context context-type="linenumber">87</context>
+          <context context-type="linenumber">90</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="bisq-graph-volume">
         <source>Volume</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/lightweight-charts-area/lightweight-charts-area.component.ts</context>
-          <context context-type="linenumber">88</context>
+          <context context-type="linenumber">91</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="4b137ec8bf73a47063740b75c0c40d5fd3c48015">
@@ -3381,15 +3450,6 @@
           <context context-type="linenumber">174,178</context>
         </context-group>
         <note from="description" priority="1">dashboard.latest-blocks.transaction-count</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="1915fb658404dd3fa2a05f7d5fdd774ad72ef422">
-        <source>View all »</source>
-        <target>查看全部 »</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">97,101</context>
-        </context-group>
-        <note from="description" priority="1">dashboard.view-all</note>
       </trans-unit>
       <trans-unit datatype="html" id="46ae0bacea22bcf409534f1c314735e4983e398a">
         <source>Latest transactions</source>
