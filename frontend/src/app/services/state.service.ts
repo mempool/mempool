@@ -39,7 +39,7 @@ const defaultEnv: Env = {
   'OFFICIAL_BISQ_MARKETS': false,
   'BISQ_ENABLED': false,
   'BISQ_SEPARATE_BACKEND': false,
-  'ITEMS_PER_PAGE': 10,
+  'ITEMS_PER_PAGE': 25,
   'KEEP_BLOCKS_AMOUNT': 8,
   'OFFICIAL_MEMPOOL_SPACE': false,
   'NGINX_PROTOCOL': 'http',
