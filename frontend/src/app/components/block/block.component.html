@@ -1,6 +1,6 @@
 <div class="container-xl">
 
-  <div class="title-block">
+  <div class="title-block" id="block">
     <h1><ng-template [ngIf]="blockHeight === 0" i18n="block.genesis">Genesis </ng-template><ng-template [ngIf]="blockHeight" i18n="block.block">Block <a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a></ng-template></h1>
     <button [routerLink]="['/' | relativeUrl]" class="btn btn-sm">&#10005;</button>
   </div>
@@ -80,7 +80,7 @@
       </div>
     </div>
 
-    <div [hidden]="!showDetails">
+    <div [hidden]="!showDetails" id="details">
       <br>
 
       <div class="box">
