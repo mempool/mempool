@@ -34,7 +34,7 @@
             <ng-container *ngIf="hlocData$ | async as hlocData; else loadingSpinner">
               <app-lightweight-charts [height]="300" [data]="hlocData.hloc" [volumeData]="hlocData.volume" [precision]="2"></app-lightweight-charts>      
               <br>
-              <div class="text-center"><a href="" [routerLink]="['/bisq/market/btc_usd']" i18n="dashboard.view-all">View all &raquo;</a></div>
+              <div class="text-center"><a href="" [routerLink]="['/market/btc_usd' | relativeUrl]" i18n="dashboard.view-all">View all &raquo;</a></div>
             </ng-container>
           </div>
         </div>
@@ -48,7 +48,7 @@
             <ng-container *ngIf="volumes$ | async as volumes; else loadingSpinner">
               <app-lightweight-charts-area [height]="300" [data]="volumes.data" [lineData]="volumes.linesData"></app-lightweight-charts-area>
               <br>
-              <div class="text-center"><a href="" [routerLink]="['/bisq/markets']" i18n="dashboard.view-all">View all &raquo;</a></div>
+              <div class="text-center"><a href="" [routerLink]="['/markets' | relativeUrl]" i18n="dashboard.view-all">View all &raquo;</a></div>
             </ng-container>
           </div>
         </div>
@@ -89,7 +89,7 @@
             </table>
           </div>
 
-          <div class="text-center"><a href="" [routerLink]="['/bisq/markets']" i18n="dashboard.view-all">View all &raquo;</a></div>
+          <div class="text-center"><a href="" [routerLink]="['/markets' | relativeUrl]" i18n="dashboard.view-all">View all &raquo;</a></div>
         </div>
       </div>
     </div>
@@ -98,7 +98,7 @@
         <div class="card-body">
           <h5 class="card-title text-center" i18n="Latest Trades header">Latest Trades</h5>
           <app-bisq-trades [trades$]="trades$" view="small"></app-bisq-trades>
-          <div class="text-center"><a href="" [routerLink]="['/bisq/markets']" i18n="dashboard.view-all">View all &raquo;</a></div>
+          <div class="text-center"><a href="" [routerLink]="['/markets' | relativeUrl]" i18n="dashboard.view-all">View all &raquo;</a></div>
         </div>
       </div>
     </div>
