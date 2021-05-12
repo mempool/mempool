@@ -43,7 +43,7 @@ class FeeApi {
       const multiplier = (pBlock.blockVSize - 500000) / 500000;
       return Math.max(Math.round(useFee * multiplier), this.defaultFee);
     }
-    return Math.round(useFee);
+    return Math.ceil(useFee);
   }
 }
 
