@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { AssetsService } from 'src/app/services/assets.service';
 import { StateService } from 'src/app/services/state.service';
 import { Observable, of, Subject, merge } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap, filter, catchError } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, switchMap, filter, catchError, map } from 'rxjs/operators';
 import { ElectrsApiService } from 'src/app/services/electrs-api.service';
 import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
 
@@ -18,6 +18,7 @@ export class SearchFormComponent implements OnInit {
   network = '';
   assets: object = {};
   isSearching = false;
+  typeaheadSearchFn: ((text: Observable<string>) => Observable<readonly any[]>);
 
   searchForm: FormGroup;
   @Output() searchTriggered = new EventEmitter();
@@ -31,21 +32,6 @@ export class SearchFormComponent implements OnInit {
   focus$ = new Subject<string>();
   click$ = new Subject<string>();
 
-  typeaheadSearch = (text$: Observable<string>) => {
-    const debouncedText$ = text$.pipe(debounceTime(200), distinctUntilChanged());
-    const clicksWithClosedPopup$ = this.click$.pipe(filter(() => !this.instance.isPopupOpen()));
-    const inputFocus$ = this.focus$;
-
-    return merge(debouncedText$, inputFocus$, clicksWithClosedPopup$)
-      .pipe(
-        switchMap((text) => {
-          if (!text.length) { return of([]); }
-          return this.electrsApiService.getAddressesByPrefix$(text)
-            .pipe(catchError(() => of([])));
-        })
-      );
-    }
-
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
@@ -55,11 +41,13 @@ export class SearchFormComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.typeaheadSearchFn = this.typeaheadSearch;
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     this.searchForm = this.formBuilder.group({
       searchText: ['', Validators.required],
     });
+
     if (this.network === 'liquid') {
       this.assetsService.getAssetsMinimalJson$
         .subscribe((assets) => {
@@ -67,6 +55,37 @@ export class SearchFormComponent implements OnInit {
         });
     }
   }
+
+  typeaheadSearch = (text$: Observable<string>) => {
+    const debouncedText$ = text$.pipe(
+      map((text) => {
+        if (this.network === 'bisq' && text.match(/^(b)[^c]/i)) {
+          return text.substr(1);
+        }
+        return text;
+      }),
+      debounceTime(200),
+      distinctUntilChanged()
+    );
+    const clicksWithClosedPopup$ = this.click$.pipe(filter(() => !this.instance.isPopupOpen()));
+    const inputFocus$ = this.focus$;
+
+    return merge(debouncedText$, inputFocus$, clicksWithClosedPopup$)
+      .pipe(
+        switchMap((text) => {
+          if (!text.length) {
+            return of([]);
+          }
+          return this.electrsApiService.getAddressesByPrefix$(text).pipe(catchError(() => of([])));
+        }),
+        map((result: string[]) => {
+          if (this.network === 'bisq') {
+            return result.map((address: string) => 'B' + address);
+          }
+          return result;
+        })
+      );
+    }
 
   itemSelected() {
     setTimeout(() => this.search());
