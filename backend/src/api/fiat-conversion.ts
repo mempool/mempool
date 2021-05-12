@@ -16,7 +16,7 @@ class FiatConversion {
 
   public startService() {
     logger.info('Starting currency rates service');
-    setInterval(this.updateCurrency.bind(this), 1000 * 60 * 60);
+    setInterval(this.updateCurrency.bind(this), 1000 * 60);
     this.updateCurrency();
   }
 
