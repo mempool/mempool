@@ -298,7 +298,9 @@ if (browserWindowEnv && browserWindowEnv.OFFICIAL_BISQ_MARKETS) {
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, {
-    initialNavigation: 'enabled'
+    initialNavigation: 'enabled',
+    scrollPositionRestoration: 'enabled',
+    anchorScrolling: 'enabled'
 })],
   exports: [RouterModule]
 })
