@@ -33,8 +33,6 @@
           <div class="chart-container">
             <ng-container *ngIf="hlocData$ | async as hlocData; else loadingSpinner">
               <app-lightweight-charts [height]="300" [data]="hlocData.hloc" [volumeData]="hlocData.volume" [precision]="2"></app-lightweight-charts>      
-              <br>
-              <div class="text-center"><a href="" [routerLink]="['/market/btc_usd' | relativeUrl]" i18n="dashboard.view-all">View all &raquo;</a></div>
             </ng-container>
           </div>
         </div>
@@ -47,8 +45,6 @@
           <div class="chart-container">
             <ng-container *ngIf="volumes$ | async as volumes; else loadingSpinner">
               <app-lightweight-charts-area [height]="300" [data]="volumes.data" [lineData]="volumes.linesData"></app-lightweight-charts-area>
-              <br>
-              <div class="text-center"><a href="" [routerLink]="['/markets' | relativeUrl]" i18n="dashboard.view-all">View all &raquo;</a></div>
             </ng-container>
           </div>
         </div>
@@ -103,6 +99,12 @@
       </div>
     </div>
   </ng-container>
+  </div>
+
+  <app-language-selector *ngIf="!stateService.env.OFFICIAL_BISQ_MARKETS"></app-language-selector>
+
+  <div class="text-small text-center mt-3">
+    <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a>
   </div>
 
 </div>
