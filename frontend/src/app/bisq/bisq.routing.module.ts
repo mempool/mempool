@@ -11,6 +11,7 @@ import { ApiDocsComponent } from '../components/api-docs/api-docs.component';
 import { BisqDashboardComponent } from './bisq-dashboard/bisq-dashboard.component';
 import { BisqMarketComponent } from './bisq-market/bisq-market.component';
 import { BisqMainDashboardComponent } from './bisq-main-dashboard/bisq-main-dashboard.component';
+import { TermsOfServiceComponent } from '../components/terms-of-service/terms-of-service.component';
 
 const routes: Routes = [
     {
@@ -57,6 +58,10 @@ const routes: Routes = [
     {
       path: 'api',
       component: ApiDocsComponent,
+    },
+    {
+      path: 'terms-of-service',
+      component: TermsOfServiceComponent
     },
     {
       path: '**',
