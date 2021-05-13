@@ -19,6 +19,7 @@ import { TxFeaturesComponent } from '../components/tx-features/tx-features.compo
 import { TxFeeRatingComponent } from '../components/tx-fee-rating/tx-fee-rating.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LanguageSelectorComponent } from '../components/language-selector/language-selector.component';
+import { ColoredPriceDirective } from './directives/colored-price.directive';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { LanguageSelectorComponent } from '../components/language-selector/langu
     CeilPipe,
     ShortenStringPipe,
     Decimal2HexPipe,
+    ColoredPriceDirective,
   ],
   imports: [
     CommonModule,
@@ -77,6 +79,7 @@ import { LanguageSelectorComponent } from '../components/language-selector/langu
     CeilPipe,
     ShortenStringPipe,
     Decimal2HexPipe,
+    ColoredPriceDirective,
   ]
 })
 export class SharedModule {}
