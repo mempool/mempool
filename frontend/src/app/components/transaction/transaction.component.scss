@@ -8,6 +8,9 @@
   border-top: 3px solid #FFF;
   width: 100%;
   padding-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   @media (min-width: 768px) {
   	padding-bottom: 0px;
   }
