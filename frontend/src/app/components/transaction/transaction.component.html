@@ -2,13 +2,14 @@
 
   <div class="title-block">
     <div *ngIf="rbfTransaction" class="alert alert-mempool" role="alert">
-      <span i18n="transaction.rbf.replacement|RBF replacement">This transaction has been replaced by:</span>&nbsp;
+      <span i18n="transaction.rbf.replacement|RBF replacement">This transaction has been replaced by:</span>
       <a class="alert-link" [routerLink]="['/tx/' | relativeUrl, rbfTransaction.txid]" [state]="{ data: rbfTransaction }">
         <span class="d-inline d-lg-none">{{ rbfTransaction.txid | shortenString : 24 }}</span>
         <span class="d-none d-lg-inline">{{ rbfTransaction.txid }}</span>
       </a>
     </div>
   
+  <div class="flex">
     <h1 i18n="shared.transaction">Transaction</h1>
 
     <div class="tx-link">
@@ -31,6 +32,7 @@
         <button type="button" class="btn btn-sm btn-danger" i18n="transaction.unconfirmed|Transaction unconfirmed state">Unconfirmed</button>
       </ng-template>
     </div>
+  </div>
 
     <div class="clearfix"></div>
   </div>
