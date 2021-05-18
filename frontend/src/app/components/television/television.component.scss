@@ -1,49 +1,96 @@
+
+.loading {
+  margin: auto;
+  width: 100%;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  height: 100vh;
+  align-items: center;
+}
+
 #tv-wrapper {
-  height: 100%;
-  padding: 10px;
-  padding-top: 20px;
-}
-
-.blockchain-wrapper {
+  height: 100vh;
   overflow: hidden;
-}
-
-.position-container {
-  position: absolute;
-  left: 50%;
-  bottom: 170px;
+  position: relative;
 }
 
 .chart-holder {
-  height: calc(100% - 220px);
+  height: calc(100vh - 270px);
+  min-height: 600px;
+  padding-left: 20px;
+  width: 97%;
+  padding-top: 70px;
+  @media(min-width: 992px){
+    padding-top: 30px;
+  }
 }
 
-#divider {
-  width: 3px;
-  height: 175px;
-  left: 0;
-  top: -40px;
-  background-image: url('/resources/divider-new.png');
-  background-repeat: repeat-y;
-  position: absolute;
-}
+.blockchain-wrapper {
 
-#divider > img {
-  position: absolute;
-  left: -100px;
-  top: -28px;
-}
-
-@media (min-width: 1920px) {
   .position-container {
-    transform: scale(1.3);
-    bottom: 210px;
+    position: absolute;
+    left: 50%;
+    bottom: 170px;
   }
+
   .chart-holder {
-    height: calc(100% - 280px);
+    height: calc(100% - 220px);
+  }
+
+  #divider {
+    width: 3px;
+    height: 175px;
+    left: 0;
+    top: -40px;
+    background-image: url('/resources/divider-new.png');
+    background-repeat: repeat-y;
+    position: absolute;
+    img {
+      position: absolute;
+      left: -100px;
+      top: -28px;
+    }
+  }
+
+  @media (min-width: 1920px) {
+    .position-container {
+      transform: scale(1.3);
+      bottom: 210px;
+    }
+    .chart-holder {
+      height: calc(100% - 280px);
+    }
+  }
+
+  :host ::ng-deep .ct-legend {
+    top: 25px;
   }
 }
 
-:host ::ng-deep .ct-legend {
-  top: 25px;
+.tv-only {
+  display: block;    
+  height: 100vh;
+  width: 100%;
+  position: relative;
+  display: flex;
+  text-align: center;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  @media(min-width: 768px) {
+    display: none;
+  }
+  @media(max-height: 720px) {
+    display: flex;
+  }
+}
+.tv-container {
+  display: none;
+  @media(min-width: 768px) {
+    display: flex;
+  }
+  @media(max-height: 720px) {
+    display: none;
+  }
 }
