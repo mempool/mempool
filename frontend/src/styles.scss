@@ -500,6 +500,17 @@ h1, h2, h3 {
   color: #ffffff;
   background-color: #653b9c;
   border-color: #3a1c61;
+  width: 100%;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: space-between;
+  @media (min-width: 676px){
+    flex-direction: row;
+  }
+}
+
+.flex{
+	display: flex;
 }
 
 th {
