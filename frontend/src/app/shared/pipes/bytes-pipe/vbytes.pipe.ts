@@ -17,7 +17,7 @@ export class VbytesPipe implements PipeTransform {
         'TvB': {max: Number.MAX_SAFE_INTEGER, prev: 'GvB'}
     };
 
-    transform(input: any, decimal: number = 0, from: ByteUnit = 'vB', to?: ByteUnit): any {
+    transform(input: any, decimal: number = 0, from: ByteUnit = 'vB', to?: ByteUnit, plainText?: boolean): any {
 
         if (!(isNumberFinite(input) &&
                 isNumberFinite(decimal) &&
@@ -38,7 +38,7 @@ export class VbytesPipe implements PipeTransform {
 
             const result = toDecimal(VbytesPipe.calculateResult(format, bytes), decimal);
 
-            return VbytesPipe.formatResult(result, to);
+            return VbytesPipe.formatResult(result, to, plainText);
         }
 
         for (const key in VbytesPipe.formats) {
@@ -47,13 +47,16 @@ export class VbytesPipe implements PipeTransform {
 
                 const result = toDecimal(VbytesPipe.calculateResult(format, bytes), decimal);
 
-                return VbytesPipe.formatResult(result, key);
+                return VbytesPipe.formatResult(result, key, plainText);
             }
         }
     }
 
-    static formatResult(result: number, unit: string): string {
-        return `${result} ${unit}`;
+    static formatResult(result: number, unit: string, plainText: boolean): string {
+        if(plainText){
+            return `${result} ${unit}`;
+        }
+        return `${result} <span class="symbol">${unit}</span>`;
     }
 
     static calculateResult(format: { max: number, prev?: ByteUnit }, bytes: number) {
