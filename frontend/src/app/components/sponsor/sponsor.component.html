@@ -17,23 +17,23 @@
 
             <div class="flex-container">
               <div class="card" (click)="setSelection(0.001)" [class.shiny-border]="donationForm.get('selection').value === 0.001">
-                <div class="card-header">Pleb sponsor</div>
+                <div class="card-header">Support the Project</div>
                 <div class="card-body">
                   <h5 class="card-title">100K sats</h5>
-                    <p class="card-text">Thank you for supporting the mempool project</p>
+                    <p class="card-text">Make a donation and support the project</p>
                 </div>
               </div>
 
               <div class="card bigger" (click)="setSelection(0.01)" [class.shiny-border]="donationForm.get('selection').value === 0.01">
-                <div class="card-header">Community sponsor</div>
+                <div class="card-header">Community Sponsor</div>
                 <div class="card-body">
                   <h5 class="card-title">1M sats</h5>
-                    <p class="card-text">Your profile photo featured on our about page</p>
+                    <p class="card-text">Display your Twitter profile photo on our About page</p>
                 </div>
               </div>
 
               <div class="card" (click)="setSelection(1)" [class.shiny-border]="donationForm.get('selection').value === 1">
-                <div class="card-header">Enterprise sponsor</div>
+                <div class="card-header">Enterprise Sponsor</div>
                 <div class="card-body">
                   <h5 class="card-title">1 BTC</h5>
                   <p class="card-text">Backlink to your organization's website</p>
@@ -41,7 +41,6 @@
               </div>
             </div>
             
-            <br>
             <br>
 
             <div style="max-width: 300px;" class="mx-auto">
@@ -57,6 +56,15 @@
             </div>
           </form>
         </div>
+
+
+        <br><br>
+
+        <p style="max-width: 500px; margin: auto;">If you make a donation and visit our booth at the Bitcoin 2021 conference in Miami, we'll give you a set of mempool and bisq t-shirts as our Thank You gift :) (While supplies last)</p>
+
+        <br><br>
+
+        <img src="/resources/tshirts.png" width="477">
 
       </ng-template>
 
