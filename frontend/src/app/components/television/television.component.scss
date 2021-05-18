@@ -17,12 +17,15 @@
 
 .chart-holder {
   height: calc(100vh - 270px);
-  min-height: 600px;
+  min-height: 525px;
   padding-left: 20px;
   width: 97%;
   padding-top: 70px;
   @media(min-width: 992px){
-    padding-top: 30px;
+    padding-top: 10px;
+  }
+  @media(min-height: 800px){
+    padding-top: 60px !important;
   }
 }
 
@@ -63,8 +66,11 @@
     }
   }
 
-  :host ::ng-deep .ct-legend {
-    top: 25px;
+}
+:host ::ng-deep .ct-legend {
+  top: 20px !important;
+  @media(min-height: 800px){
+    padding-top: 40px !important;
   }
 }
 
