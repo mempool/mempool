@@ -17,6 +17,7 @@ import { LatestBlocksComponent } from './components/latest-blocks/latest-blocks.
 import { ApiDocsComponent } from './components/api-docs/api-docs.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 import { BisqMasterPageComponent } from './components/bisq-master-page/bisq-master-page.component';
+import { SponsorComponent } from './components/sponsor/sponsor.component';
 
 let routes: Routes = [
   {
@@ -69,6 +70,10 @@ let routes: Routes = [
         path: 'address/:id',
         children: [],
         component: AddressComponent
+      },
+      {
+        path: 'sponsor',
+        component: SponsorComponent,
       },
     ],
   },
