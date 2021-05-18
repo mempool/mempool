@@ -1,0 +1,40 @@
+.qr-wrapper {
+    background-color: #FFF;
+    padding: 10px;
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+.info-group {
+  max-width: 400px;
+}
+
+.card {
+  width: 220px;
+  height: 200px;
+  background-color: #1d1f31;
+  margin: 10px 20px 20px 20px;
+  border: 2px solid #1d1f31;
+  cursor: pointer;
+
+  &.bigger {
+    height: 220px;
+    width: 240px;
+    margin-top: 0px;
+  }
+}
+
+.card-header {
+  background-color: #171929;
+}
+
+.flex-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.shiny-border {
+  border: 2px solid #505892;
+}
