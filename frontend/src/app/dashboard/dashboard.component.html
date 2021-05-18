@@ -88,7 +88,7 @@
                   <td class="table-cell-size">
                     <div class="progress">
                       <div class="progress-bar progress-mempool {{ network$ | async }}" role="progressbar" [ngStyle]="{'width': (block.weight / 4000000)*100 + '%' }">&nbsp;</div>
-                      <div class="progress-text">{{ block.size | bytes: 2 }}</div>
+                      <div class="progress-text" [innerHTML]="block.size | bytes: 2"></div>
                     </div>
                   </td>
                 </tr>
@@ -114,7 +114,7 @@
                   <td class="table-cell-txid"><a [routerLink]="['/tx' | relativeUrl, transaction.txid]">{{ transaction.txid | shortenString : 10 }}</a></td>
                   <td class="table-cell-satoshis"><app-amount [satoshis]="transaction.value" digitsInfo="1.8-8" [noFiat]="true"></app-amount></td>
                   <td class="table-cell-fiat" *ngIf="(network$ | async) === ''" ><app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat></td>
-                  <td class="table-cell-fees">{{ transaction.fee / transaction.vsize | number : '1.1-1' }} <span class="fiat" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
+                  <td class="table-cell-fees">{{ transaction.fee / transaction.vsize | number : '1.1-1' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
                 </tr>
               </tbody>
             </table>
@@ -175,7 +175,7 @@
       <div class="card-text" *ngIf="mempoolInfoData.value; else loadingsmall">
         <div class="progress">
           <div class="progress-bar {{ mempoolInfoData.value.mempoolSizeProgress }}" role="progressbar" [ngStyle]="{'width': (mempoolInfoData.value.memPoolInfo.usage / mempoolInfoData.value.memPoolInfo.maxmempool * 100) + '%' }">&nbsp;</div>
-          <div class="progress-text">{{ mempoolInfoData.value.memPoolInfo.usage | bytes }} / {{ mempoolInfoData.value.memPoolInfo.maxmempool | bytes }}</div>
+          <div class="progress-text"><span [innerHTML]="mempoolInfoData.value.memPoolInfo.usage | bytes"></span> / <span [innerHTML]="mempoolInfoData.value.memPoolInfo.maxmempool | bytes"></span></div>
         </div>
       </div>
     </div>

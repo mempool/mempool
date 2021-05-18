@@ -53,7 +53,7 @@ export class WuBytesPipe implements PipeTransform {
     }
 
     static formatResult(result: number, unit: string): string {
-        return `${result} ${unit}`;
+        return `${result} <span class="symbol">${unit}</span>`;
     }
 
     static calculateResult(format: { max: number, prev?: ByteUnit }, bytes: number) {
