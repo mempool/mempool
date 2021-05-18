@@ -43,6 +43,13 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
       });
   }
 
+  async $checkAddresses(addresses: string[]): Promise<boolean[]> {
+    addresses.forEach((a) => logger.info(a));
+    const histories = await Promise.all(addresses.map((scripthash) => this.$getScriptHashHistory(scripthash)));
+    histories.forEach((h) => logger.info(String(h.length)));
+    const used = histories.map((history) => history ? history.length > 0 : false);
+    return used;
+  }
   async $getAddress(address: string): Promise<IEsploraApi.Address> {
     const addressInfo = await this.$validateAddress(address);
     if (!addressInfo || !addressInfo.isvalid) {
@@ -68,6 +75,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     try {
       const balance = await this.$getScriptHashBalance(addressInfo.scriptPubKey);
       const history = await this.$getScriptHashHistory(addressInfo.scriptPubKey);
+      logger.info(`scriptpubkey: ${addressInfo.scriptPubKey}`);
 
       const unconfirmed = history.filter((h) => h.fee).length;
 

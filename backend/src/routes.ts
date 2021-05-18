@@ -543,6 +543,23 @@ class Routes {
     }
   }
 
+  public async checkAddresses(req: Request, res: Response) {
+    if (config.MEMPOOL.BACKEND === 'none') {
+      res.status(405).send('Address lookups cannot be used with bitcoind as backend.');
+      return;
+    }
+
+    try {
+      const addressData = await bitcoinApi.$checkAddresses(req.body);
+      logger.debug(JSON.stringify(req.body));
+      res.json(addressData);
+    } catch (e) {
+      if (e.message && e.message.indexOf('exceeds') > 0) {
+        return res.status(413).send(e.message);
+      }
+      res.status(500).send(e.message || e);
+    }
+  }
   public async getAddress(req: Request, res: Response) {
     if (config.MEMPOOL.BACKEND === 'none') {
       res.status(405).send('Address lookups cannot be used with bitcoind as backend.');

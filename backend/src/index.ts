@@ -4,6 +4,7 @@ import * as http from 'http';
 import * as WebSocket from 'ws';
 import * as cluster from 'cluster';
 import axios from 'axios';
+import * as cors from 'cors';
 
 import { checkDbConnection } from './database';
 import config from './config';
@@ -63,6 +64,7 @@ class Server {
     logger.debug(`Starting Mempool Server${worker ? ' (worker)' : ''}... (${backendInfo.getShortCommitHash()})`);
 
     this.app
+      .use(cors())
       .use((req: Request, res: Response, next: NextFunction) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
         next();
@@ -222,6 +224,7 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txs/:index', routes.getBlockTransactions)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txids', routes.getTxIdsForBlock)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block-height/:height', routes.getBlockHeight)
+        .post(config.MEMPOOL.API_URL_PREFIX + 'check', routes.checkAddresses)
         .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address', routes.getAddress)
         .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs', routes.getAddressTransactions)
         .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs/chain/:txId', routes.getAddressTransactions)
