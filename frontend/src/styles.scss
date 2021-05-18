@@ -585,8 +585,8 @@ th {
 	text-overflow: ellipsis;
 	vertical-align: middle;
 	max-width: 50px;
-	width: 100%;
-  text-align: center;
+	width: auto;
+  text-align: left;
 	@media (min-width: 376px) {
 		max-width: 90px;
 	}
