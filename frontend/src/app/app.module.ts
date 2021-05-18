@@ -50,6 +50,7 @@ import { ApiDocsComponent } from './components/api-docs/api-docs.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 import { StorageService } from './services/storage.service';
 import { HttpCacheInterceptor } from './services/http-cache.interceptor';
+import { SponsorComponent } from './components/sponsor/sponsor.component';
 
 @NgModule({
   declarations: [
@@ -85,6 +86,7 @@ import { HttpCacheInterceptor } from './services/http-cache.interceptor';
     DashboardComponent,
     ApiDocsComponent,
     TermsOfServiceComponent,
+    SponsorComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
