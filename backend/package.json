@@ -32,7 +32,6 @@
     "@mempool/electrum-client": "^1.1.7",
     "axios": "^0.21.1",
     "bitcoinjs-lib": "^5.2.0",
-    "cors": "^2.8.5",
     "crypto-js": "^4.0.0",
     "express": "^4.17.1",
     "locutus": "^2.0.12",

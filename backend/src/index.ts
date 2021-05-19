@@ -4,7 +4,6 @@ import * as http from 'http';
 import * as WebSocket from 'ws';
 import * as cluster from 'cluster';
 import axios from 'axios';
-import * as cors from 'cors';
 
 import { checkDbConnection } from './database';
 import config from './config';
@@ -64,7 +63,6 @@ class Server {
     logger.debug(`Starting Mempool Server${worker ? ' (worker)' : ''}... (${backendInfo.getShortCommitHash()})`);
 
     this.app
-      .use(cors())
       .use((req: Request, res: Response, next: NextFunction) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
         next();
@@ -89,7 +87,7 @@ class Server {
 
     this.setUpHttpApiRoutes();
     this.setUpWebsocketHandling();
-    this.runMainUpdateLoop();
+    //this.runMainUpdateLoop();
 
     if (config.BISQ_BLOCKS.ENABLED) {
       bisq.startBisqService();
