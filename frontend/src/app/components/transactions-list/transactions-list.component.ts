@@ -74,7 +74,14 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   }
 
   onScroll() {
-    this.loadMore.emit();
+    const scrollHeight = document.body.scrollHeight;
+    const scrollTop = document.documentElement.scrollTop;
+    if(scrollHeight > 0){
+      const percentageScrolled = scrollTop * 100 / scrollHeight;
+      if(percentageScrolled > 90){
+        this.loadMore.emit();
+      }
+    }
   }
 
   getTotalTxOutput(tx: Transaction) {
