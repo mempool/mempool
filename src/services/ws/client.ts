@@ -1,23 +1,25 @@
-const browserWS = (
+const serverWS = (
   options: string[],
-  defaultWs: string,
-  websocketEndpoint?: string
+  endpoint: string,
 ): WebSocket => {
-  const ws = new WebSocket(websocketEndpoint || defaultWs);
-  ws.addEventListener('open', function open() {
-    handleMessage(ws, options);
+  const ws = new WebSocket(endpoint);
+
+  ws.addEventListener("open", function open() {
+    ws.send(JSON.stringify({ action: "want", data: options }));
+  });
+
+  ws.addEventListener("close", async function close() {
+    await sleep(60000);
+    serverWS(options, endpoint);
   });
   return ws;
+}
+
+const sleep = (ms: number) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 };
 
-const handleMessage = (ws: WebSocket, options: string[]) => {
-  ws.send(JSON.stringify({ action: 'init' }));
-  ws.send(
-    JSON.stringify({
-      action: 'want',
-      data: options,
-    })
-  );
-};
+export default serverWS;
 
-export default browserWS;

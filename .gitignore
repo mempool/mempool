@@ -2,3 +2,5 @@
 /lib
 /dist/*
 !.gitkeep
+
+yarn-error.log

@@ -8,12 +8,12 @@
         const {
           bitcoin: { websocket },
         } = mempoolJS();
-        // console.log(mempoolJS());
+        
         const ws = websocket.initClient({
           options: ['blocks', 'stats', 'mempool-blocks', 'live-2h-chart'],
         });
 
-        ws.on('message', function incoming(data) {
+        ws.addEventListener('message', function incoming({data}) {
           const res = JSON.parse(data.toString());
           if (res.blocks) {
             console.log(res.blocks);

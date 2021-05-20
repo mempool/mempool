@@ -1,4 +1,4 @@
-import mempoolJS from '../../../src/index';
+import mempoolJS from "@mempool/mempool.js";
 
 const init = async () => {
   const {

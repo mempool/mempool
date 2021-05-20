@@ -630,60 +630,69 @@ Default push: `{ action: 'want', data: ['blocks', ...] }` to express what you wa
 
 Push transactions related to address: `{ 'track-address': '3PbJ...bF9B' }` to receive all new transactions containing that address as input or output. Returns an array of transactions. address-transactions for new mempool transactions, and block-transactions for new block confirmed transactions.
 
-[ [NodeJS Example](examples/nodejs/bitcoin/addresses.ts) ] [ [HTML Example](examples/html/bitcoin/addresses.html) ] [ [Top](#features) ]
+[ [NodeJS Example](examples/nodejs/bitcoin/websocket.ts) ] [ [HTML Example](examples/html/bitcoin/websocket.html) ] [ [Top](#features) ]
 
 #### **Websocket Server**
 
+Only use on server side apps.
+
 ```js
-const {
-  bitcoin: { websocket },
-} = mempoolJS();
+const { bitcoin: { websocket } } = mempoolJS();
 
-const ws = websocket.initServer({
-  options: ['blocks', 'stats', 'mempool-blocks', 'live-2h-chart'],
-});
-
-ws.on('message', function incoming(data) {
-  const res = JSON.parse(data.toString());
-  if (res.blocks) {
-    console.log(res.blocks);
-  }
-  if (res.mempoolInfo) {
-    console.log(res.mempoolInfo);
-  }
-  if (res.transactions) {
-    console.log(res.transactions);
-  }
-  if (res.mempoolBlocks) {
-    console.log(res.mempoolBlocks);
-  }
-});
+const init = async () => {
+  
+  const ws = websocket.initServer({
+    options: ["blocks", "stats", "mempool-blocks", "live-2h-chart"],
+  });
+  
+  ws.on("message", function incoming(data) {
+    const res = JSON.parse(data.toString());
+    if (res.blocks) {
+      console.log(res.blocks);
+    }
+    if (res.mempoolInfo) {
+      console.log(res.mempoolInfo);
+    }
+    if (res.transactions) {
+      console.log(res.transactions);
+    }
+    if (res.mempoolBlocks) {
+      console.log(res.mempoolBlocks);
+    }
+  });
+}
+init();
 ```
 
 #### **Websocket Client**
 
+Only use on browser apps.
+
 ```js
-const {
-  bitcoin: { websocket },
-} = mempoolJS();
+const init = async () => {
+  const {
+    bitcoin: { websocket },
+  } = mempoolJS();
+  
+  const ws = websocket.initClient({
+    options: ['blocks', 'stats', 'mempool-blocks', 'live-2h-chart'],
+  });
 
-const ws = websocket.initClient({
-  options: ['blocks', 'stats', 'mempool-blocks', 'live-2h-chart'],
-});
-
-ws.on('message', function incoming(data) {
-  const res = JSON.parse(data.toString());
-  if (res.blocks) {
-    console.log(res.blocks);
-  }
-  if (res.mempoolInfo) {
-    console.log(res.mempoolInfo);
-  }
-  if (res.transactions) {
-    console.log(res.transactions);
-  }
-  if (res.mempoolBlocks) {
-    console.log(res.mempoolBlocks);
-  }
-});
+  ws.addEventListener('message', function incoming({data}) {
+    const res = JSON.parse(data.toString());
+    if (res.blocks) {
+      console.log(res.blocks);
+    }
+    if (res.mempoolInfo) {
+      console.log(res.mempoolInfo);
+    }
+    if (res.transactions) {
+      console.log(res.transactions);
+    }
+    if (res.mempoolBlocks) {
+      console.log(res.mempoolBlocks);
+    }
+  });
+};
+init();
 ```

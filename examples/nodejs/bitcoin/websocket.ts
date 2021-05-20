@@ -1,15 +1,14 @@
-import mempoolJS from '../../../src/index';
+import mempoolJS from "@mempool/mempool.js";
+
+const { bitcoin: { websocket } } = mempoolJS();
 
 const init = async () => {
-  const {
-    bitcoin: { websocket },
-  } = mempoolJS();
-
+  
   const ws = websocket.initServer({
-    options: ['blocks', 'stats', 'mempool-blocks', 'live-2h-chart'],
+    options: ["blocks", "stats", "mempool-blocks", "live-2h-chart"],
   });
-
-  ws.on('message', function incoming(data) {
+  
+  ws.on("message", function incoming(data) {
     const res = JSON.parse(data.toString());
     if (res.blocks) {
       console.log(res.blocks);
@@ -24,5 +23,5 @@ const init = async () => {
       console.log(res.mempoolBlocks);
     }
   });
-};
+}
 init();

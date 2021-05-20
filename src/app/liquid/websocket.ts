@@ -2,13 +2,13 @@ import { WsInterface, WsInstance } from '../../interfaces/bitcoin/websockets';
 import wsClient from '../../services/ws/client';
 import wsServer from '../../services/ws/server';
 
-const defaultWs = 'wss://mempool.space/liquid/api/v1/ws';
+export const useWebsocket = (hostname: string): WsInstance => {
 
-export const useWebsocket = (hostname?: string): WsInstance => {
+  const wsEndpoint = `wss://${hostname}/liquid/api/v1/ws`;
   return {
     initClient: ({ options }: WsInterface) =>
-      wsClient(options, defaultWs, hostname),
+      wsClient(options, wsEndpoint),
     initServer: ({ options }: WsInterface) =>
-      wsServer(options, defaultWs, hostname),
+      wsServer(options, wsEndpoint),
   };
 };
