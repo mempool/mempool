@@ -47,6 +47,32 @@ export class TransactionComponent implements OnInit, OnDestroy {
     this.websocketService.want(['blocks', 'mempool-blocks']);
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
+    this.fetchCpfpSubscription = this.fetchCpfp$
+      .pipe(
+        switchMap((txId) => this.apiService.getCpfpinfo$(txId)
+          .pipe(
+            retryWhen((errors) => errors.pipe(delay(2000)))
+          )
+        ),
+      )
+      .subscribe((cpfpInfo) => {
+        if (!this.tx) {
+          return;
+        }
+        const lowerFeeParents = cpfpInfo.ancestors.filter((parent) => (parent.fee / (parent.weight / 4)) < this.tx.feePerVsize);
+        let totalWeight = this.tx.weight + lowerFeeParents.reduce((prev, val) => prev + val.weight, 0);
+        let totalFees = this.tx.fee + lowerFeeParents.reduce((prev, val) => prev + val.fee, 0);
+
+        if (cpfpInfo.bestDescendant) {
+          totalWeight += cpfpInfo.bestDescendant.weight;
+          totalFees += cpfpInfo.bestDescendant.fee;
+        }
+
+        this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
+        this.stateService.markBlock$.next({ txFeePerVSize: this.tx.effectiveFeePerVsize });
+        this.cpfpInfo = cpfpInfo;
+      });
+
     this.subscription = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         this.txId = params.get('id') || '';
@@ -116,32 +142,6 @@ export class TransactionComponent implements OnInit, OnDestroy {
       this.error = error;
       this.isLoadingTx = false;
     });
-
-    this.fetchCpfpSubscription = this.fetchCpfp$
-      .pipe(
-        switchMap((txId) => this.apiService.getCpfpinfo$(txId)
-          .pipe(
-            retryWhen((errors) => errors.pipe(delay(2000)))
-          )
-        ),
-      )
-      .subscribe((cpfpInfo) => {
-        if (!this.tx) {
-          return;
-        }
-        const lowerFeeParents = cpfpInfo.ancestors.filter((parent) => (parent.fee / (parent.weight / 4)) < this.tx.feePerVsize);
-        let totalWeight = this.tx.weight + lowerFeeParents.reduce((prev, val) => prev + val.weight, 0);
-        let totalFees = this.tx.fee + lowerFeeParents.reduce((prev, val) => prev + val.fee, 0);
-
-        if (cpfpInfo.bestDescendant) {
-          totalWeight += cpfpInfo.bestDescendant.weight;
-          totalFees += cpfpInfo.bestDescendant.fee;
-        }
-
-        this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
-        this.stateService.markBlock$.next({ txFeePerVSize: this.tx.effectiveFeePerVsize });
-        this.cpfpInfo = cpfpInfo;
-      });
 
     this.stateService.blocks$
       .subscribe(([block, txConfirmed]) => {
