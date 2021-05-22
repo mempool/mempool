@@ -41,3 +41,11 @@
     }
   }
 }
+
+.loading{
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  height: 80vh;
+  justify-content: center;
+}
