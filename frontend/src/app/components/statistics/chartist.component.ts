@@ -72,7 +72,7 @@ export class ChartistComponent implements OnInit, OnChanges, OnDestroy {
   // @ts-ignore
   public chart: ChartInterfaces;
 
-  private element: HTMLElement;
+  private element: HTMLElement;  
 
   constructor(
     element: ElementRef,
@@ -367,6 +367,10 @@ Chartist.plugins.legend = function (options: any) {
         function createLegendElement() {
             const legendElement = document.createElement('ul');
             legendElement.className = 'ct-legend';
+            const inverted = localStorage.getItem('inverted-graph') === 'true';
+            if (inverted){
+                legendElement.classList.add('inverted');
+            }
             if (chart instanceof Chartist.Pie) {
                 legendElement.classList.add('ct-legend-inside');
             }

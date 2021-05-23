@@ -69,6 +69,8 @@
 }
 :host ::ng-deep .ct-legend {
   top: 20px !important;
+  display: flex;
+  flex-direction: column-reverse;
   @media(min-height: 800px){
     padding-top: 40px !important;
   }
