@@ -23,6 +23,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   isLoadingAddress = true;
   transactions: Transaction[];
   isLoadingTransactions = true;
+  retryLoadmore = false;
   error: any;
   mainSubscription: Subscription;
   addressLoadingStatus$: Observable<number>;
@@ -183,12 +184,17 @@ export class AddressComponent implements OnInit, OnDestroy {
       return;
     }
     this.isLoadingTransactions = true;
+    this.retryLoadmore = false;
     this.electrsApiService.getAddressTransactionsFromHash$(this.address.address, this.lastTransactionTxId)
       .subscribe((transactions: Transaction[]) => {
         this.lastTransactionTxId = transactions[transactions.length - 1].txid;
         this.loadedConfirmedTxCount += transactions.length;
         this.transactions = this.transactions.concat(transactions);
         this.isLoadingTransactions = false;
+      },
+      (error) => {
+        this.isLoadingTransactions = false;
+        this.retryLoadmore = true;
       });
   }
 
