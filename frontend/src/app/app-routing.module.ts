@@ -18,6 +18,7 @@ import { ApiDocsComponent } from './components/api-docs/api-docs.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 import { BisqMasterPageComponent } from './components/bisq-master-page/bisq-master-page.component';
 import { SponsorComponent } from './components/sponsor/sponsor.component';
+import { SlideshowComponent } from './components/slideshow/slideshow.component';
 
 let routes: Routes = [
   {
@@ -282,6 +283,39 @@ let routes: Routes = [
   {
     path: 'status',
     component: StatusViewComponent
+  },
+  {
+    path: 'slideshow',
+    component: SlideshowComponent,
+    children: [{
+      path: '',
+      component: MasterPageComponent,
+      children: [
+        {
+          path: '',
+          component: StartComponent,
+          children: [
+            {
+              path: '',
+              component: DashboardComponent,
+            },
+          ]
+        },
+        {
+          path: 'graphs',
+          component: StatisticsComponent,
+        },
+      ]},
+      {
+        path: 'bisq',
+        component: MasterPageComponent,
+        loadChildren: () => import('./bisq/bisq.module').then(m => m.BisqModule)
+      },
+      {
+        path: 'tv',
+        component: TelevisionComponent,
+      },
+    ]
   },
   {
     path: '**',
