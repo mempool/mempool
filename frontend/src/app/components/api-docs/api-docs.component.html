@@ -364,7 +364,7 @@
       </ng-template>
     </li>
 
-    <li *ngIf="network.val === 'bisq'" [ngbNavItem]="3">
+    <li *ngIf="network.val === 'bisq'" [ngbNavItem]="0">
       <a ngbNavLink i18n="api-docs.tab.bsq|API Docs tab for BSQ">BSQ</a>
       <ng-template ngbNavContent>
         <ngb-accordion [closeOthers]="true" animated="true" type="dark" >
@@ -826,7 +826,7 @@
             <div class="subtitle">Description</div>          
             <div i18n="api-docs.websocket.websocket">Default push: <code>{{ '{' }} action: 'want', data: ['blocks', ...] {{ '}' }}</code> to express what you want pushed. Available: <code>blocks</code>, <code>mempool-blocks</code>, <code>live-2h-chart</code>, and <code>stats</code>.<br><br>Push transactions related to address: <code>{{ '{' }} 'track-address': '3PbJ...bF9B' {{ '}' }}</code> to receive all new transactions containing that address as input or output. Returns an array of transactions. <code>address-transactions</code> for new mempool transactions, and <code>block-transactions</code> for new block confirmed transactions.</div>
           </div>
-          <app-code-template [code]="code.recommendedFees" [network]="network.val" ></app-code-template>
+          <app-code-template [code]="code.websocket" [network]="network.val" ></app-code-template>
         </div>
       </ng-template>
     </li>
