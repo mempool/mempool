@@ -14,7 +14,7 @@
         <textarea highlight-js [options]="{}" [innerText]="wrapCommonJS(code.codeSample.commonJS)"></textarea>
       </ng-template>
     </li>
-    <li ngbNavItem>
+    <li ngbNavItem *ngIf="code.codeSample.curl">
       <a ngbNavLink>CURL</a>
       <ng-template ngbNavContent>
         <div class="subtitle">Code Example <app-clipboard [text]="code.codeSample.curl"></app-clipboard></div>

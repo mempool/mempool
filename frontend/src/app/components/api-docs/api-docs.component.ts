@@ -44,7 +44,7 @@ export class ApiDocsComponent implements OnInit {
 
         const feesMempoolBlocks = await fees.getFeesMempoolBlocks();
         console.log(feesMempoolBlocks);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/v1/fees/mempool-blocks"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -64,7 +64,7 @@ export class ApiDocsComponent implements OnInit {
         const txid = 'txid';
 
         const feesCPFP = await fees.getCPFP({ txid });`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/v1/cpfp/:txid"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -83,7 +83,7 @@ export class ApiDocsComponent implements OnInit {
 
         const getMempool = await mempool.getMempool();
         console.log(getMempool);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/mempool"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -102,7 +102,7 @@ export class ApiDocsComponent implements OnInit {
 
         const getMempoolTxids = await mempool.getMempoolTxids();
         console.log(getMempoolTxids);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/mempool/txids"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -122,7 +122,7 @@ export class ApiDocsComponent implements OnInit {
 
         const getMempoolRecent = await mempool.getMempoolRecent();
         console.log(getMempoolRecent);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/mempool/recent"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -145,7 +145,7 @@ export class ApiDocsComponent implements OnInit {
 
         const block = await blocks.getBlock({ hash });
         console.log(block);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/block/:hash"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -165,7 +165,7 @@ export class ApiDocsComponent implements OnInit {
 
         const blockHeight = await blocks.getBlockHeight({ height: 0 });
         console.log(blockHeight);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/block-height/:height"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -189,7 +189,7 @@ export class ApiDocsComponent implements OnInit {
 
         const blockRaw = await blocks.getBlockRaw({ hash });
         console.log(blockRaw);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/block/:hash/raw"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -213,7 +213,7 @@ export class ApiDocsComponent implements OnInit {
 
         const blockStatus = await blocks.getBlockStatus({ hash });
         console.log(blockStatus);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/block/:hash/status"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -232,7 +232,7 @@ export class ApiDocsComponent implements OnInit {
 
         const blocksTipHeight = await blocks.getBlocksTipHeight();
         console.log(blocksTipHeight);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/blocks/tip/height"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -251,7 +251,7 @@ export class ApiDocsComponent implements OnInit {
 
         const blocksTipHash = await blocks.getBlocksTipHash();
         console.log(blocksTipHash);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/blocks/tip/hash"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -275,7 +275,7 @@ export class ApiDocsComponent implements OnInit {
 
         const blockTxid = await blocks.getBlockTxid({ hash, index: 218 });
         console.log(blockTxid);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/block/:hash/txid/:index"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -299,7 +299,7 @@ export class ApiDocsComponent implements OnInit {
 
         const blockTxids = await blocks.getBlockTxids({ hash });
         console.log(blockTxids);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/block/:hash/txids"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -323,7 +323,7 @@ export class ApiDocsComponent implements OnInit {
 
         const blockTxs = await blocks.getBlockTxs({ hash });
         console.log(blockTxs);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/block/:hash/txs[/:start_index]"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -343,7 +343,7 @@ export class ApiDocsComponent implements OnInit {
 
         const getBlocks = await blocks.getBlocks({ start_height: 9999 });
         console.log(getBlocks);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/blocks[/:start_height]"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -367,7 +367,7 @@ export class ApiDocsComponent implements OnInit {
 
         const tx = await transactions.getTx({ txid });
         console.log(tx);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/tx/:txid"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -391,7 +391,7 @@ export class ApiDocsComponent implements OnInit {
 
         const txHex = await transactions.getTxHex({ txid });
         console.log(txHex);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/tx/:txid/hex"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -415,7 +415,7 @@ export class ApiDocsComponent implements OnInit {
 
         const txMerkleBlockProof = await transactions.getTxMerkleBlockProof({ txid });
         console.log(txMerkleBlockProof);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/tx/:txid/merkleblock-proof"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -439,7 +439,7 @@ export class ApiDocsComponent implements OnInit {
 
         const txMerkleProof = await transactions.getTxMerkleProof({ txid });
         console.log(txMerkleProof);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/tx/:txid/merkle-proof"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -469,7 +469,7 @@ export class ApiDocsComponent implements OnInit {
           vout: 3,
         });
         console.log(txOutspend);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/tx/:txid/outspend/:vout"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -493,7 +493,7 @@ export class ApiDocsComponent implements OnInit {
 
         const txOutspends = await transactions.getTxOutspends({ txid });
         console.log(txOutspends);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/tx/:txid/outspends"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -517,7 +517,7 @@ export class ApiDocsComponent implements OnInit {
 
         const txRaw = await transactions.getTxRaw({ txid });
         console.log(txRaw);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/tx/:txid/raw"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -541,7 +541,7 @@ export class ApiDocsComponent implements OnInit {
 
         const txStatus = await transactions.getTxStatus({ txid });
         console.log(txStatus);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/tx/:txid/status"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -565,7 +565,7 @@ export class ApiDocsComponent implements OnInit {
 
         const postTx = await transactions.postTx({ txid });
         console.log(postTx);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X POST "https://mempool.space/api/tx"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -587,7 +587,7 @@ export class ApiDocsComponent implements OnInit {
 
         const myAddress = await addresses.getAddress({ address });
         console.log(myAddress);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/address/:address"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -609,7 +609,7 @@ export class ApiDocsComponent implements OnInit {
 
         const addressTxs = await addresses.getAddressTxs({ address });
         console.log(addressTxs);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/address/:address/txs"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -631,7 +631,7 @@ export class ApiDocsComponent implements OnInit {
 
         const addressTxsChain = await addresses.getAddressTxsChain({ address });
         console.log(addressTxsChain);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/address/:address/txs/chain"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -653,7 +653,7 @@ export class ApiDocsComponent implements OnInit {
 
         const addressTxsMempool = await addresses.getAddressTxsMempool({ address });
         console.log(addressTxsMempool);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/address/:address/txs/mempool"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -675,7 +675,7 @@ export class ApiDocsComponent implements OnInit {
 
         const addressTxsUtxo = await addresses.getAddressTxsUtxo({ address });
         console.log(addressTxsUtxo);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/address/:address/utxo"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -697,7 +697,7 @@ export class ApiDocsComponent implements OnInit {
 
         const myAddress = await addresses.getAddress({ address });
         console.log(myAddress);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/address/:address"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -719,7 +719,7 @@ export class ApiDocsComponent implements OnInit {
 
         const block = await blocks.getBlock({ hash });
         console.log(block);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/block/:hash"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -747,7 +747,7 @@ export class ApiDocsComponent implements OnInit {
           length: 1,
         });
         console.log(myBlocksHeight);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/blocks/tip/height"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -769,7 +769,7 @@ export class ApiDocsComponent implements OnInit {
 
         const myBlocks = await blocks.getBlocks({ index: 0, length: 1 });
         console.log(myBlocks);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/blocks/:index/:length"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -791,7 +791,7 @@ export class ApiDocsComponent implements OnInit {
 
         const stats = await statistics.getStats();
         console.log(stats);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/stats"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -813,7 +813,7 @@ export class ApiDocsComponent implements OnInit {
 
         const tx = await transactions.getTx({ txid });
         console.log(tx);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/tx/:txid"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -833,7 +833,7 @@ export class ApiDocsComponent implements OnInit {
 
         const txs = await transactions.getTxs({ index: 0, length: 1 });
         console.log(txs);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/txs/:index/:length"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -853,7 +853,7 @@ export class ApiDocsComponent implements OnInit {
 
         const txs = await transactions.getTxs({ index: 0, length: 1 });
         console.log(txs);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/asset/:asset_id"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -873,7 +873,7 @@ export class ApiDocsComponent implements OnInit {
 
         const txs = await transactions.getTxs({ index: 0, length: 1 });
         console.log(txs);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/asset/:asset_id/txs[/mempool|/chain]"`,
       },
       responseSample: `{
   fastestFee: 88,
@@ -893,7 +893,60 @@ export class ApiDocsComponent implements OnInit {
 
         const txs = await transactions.getTxs({ index: 0, length: 1 });
         console.log(txs);`,
-        curl: `curl -X GET "https://mempool.space/"`,
+        curl: `curl -X GET "https://mempool.space/api/asset/:asset_id/supply[/decimal]"`,
+      },
+      responseSample: `{
+  fastestFee: 88,
+  halfHourFee: 49,
+  hourFee: 29,
+  minimumFee: 1
+}`,
+    },
+    websocket: {
+      codeSample: {
+        esModule: `const { bitcoin: { websocket } } = mempoolJS();
+
+  const ws = websocket.initServer({
+    options: ["blocks", "stats", "mempool-blocks", "live-2h-chart"],
+  });
+
+  ws.on("message", function incoming(data) {
+    const res = JSON.parse(data.toString());
+    if (res.blocks) {
+      console.log(res.blocks);
+    }
+    if (res.mempoolInfo) {
+      console.log(res.mempoolInfo);
+    }
+    if (res.transactions) {
+      console.log(res.transactions);
+    }
+    if (res.mempoolBlocks) {
+      console.log(res.mempoolBlocks);
+    }
+  });`,
+        commonJS: `const { bitcoin: { websocket } } = mempoolJS();
+
+          const ws = websocket.initClient({
+            options: ['blocks', 'stats', 'mempool-blocks', 'live-2h-chart'],
+          });
+
+          ws.addEventListener('message', function incoming({data}) {
+            const res = JSON.parse(data.toString());
+            if (res.blocks) {
+              console.log(res.blocks);
+            }
+            if (res.mempoolInfo) {
+              console.log(res.mempoolInfo);
+            }
+            if (res.transactions) {
+              console.log(res.transactions);
+            }
+            if (res.mempoolBlocks) {
+              console.log(res.mempoolBlocks);
+            }
+          });`,
+        curl: ``,
       },
       responseSample: `{
   fastestFee: 88,
