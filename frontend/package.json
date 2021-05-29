@@ -68,6 +68,7 @@
     "express": "^4.17.1",
     "lightweight-charts": "^3.3.0",
     "ngx-bootrap-multiselect": "^2.0.0",
+    "ngx-highlight-js": "^11.1.0",
     "ngx-infinite-scroll": "^10.0.1",
     "qrcode": "^1.4.4",
     "rxjs": "^6.6.7",
