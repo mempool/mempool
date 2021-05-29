@@ -25,7 +25,7 @@
                 <div class="subtitle">Description</div>
                   <div i18n>Returns details about an address. Available fields: <code>address</code>, <code>chain_stats</code>, and <code>mempool_stats</code>. {{ '{' }}chain,mempool{{ '}' }}_stats each contain an object with <code>tx_count</code>, <code>funded_txo_count</code>, <code>funded_txo_sum</code>, <code>spent_txo_count</code>, and <code>spent_txo_sum</code>.</div>
               </div>      
-              <app-code-template [code]="code.address" ></app-code-template>
+              <app-code-template [code]="code.address" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -43,7 +43,7 @@
                 <div class="subtitle">Description</div>
                 <div i18n>Get transaction history for the specified address/scripthash, sorted with newest first. Returns up to 50 mempool transactions plus the first 25 confirmed transactions. You can request more confirmed transactions using <code>:last_seen_txid</code> (see below).</div>
               </div>
-              <app-code-template [code]="code.addressTransactions" ></app-code-template>      
+              <app-code-template [code]="code.addressTransactions" [network]="network.val" ></app-code-template>      
             </ng-template>
           </ngb-panel>
 
@@ -60,7 +60,7 @@
                 <div class="subtitle">Description</div>
                 <div i18n>Get confirmed transaction history for the specified address/scripthash, sorted with newest first. Returns 25 transactions per page. More can be requested by specifying the last txid seen by the previous query.</div>
               </div>
-              <app-code-template [code]="code.addressTransactionsChain" ></app-code-template>
+              <app-code-template [code]="code.addressTransactionsChain" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -80,7 +80,7 @@
                 <div i18n>Get unconfirmed transaction history for the specified address/scripthash. Returns up to 50 transactions (no paging).</div>
               </div>
 
-              <app-code-template [code]="code.addressTransactionsMempool" ></app-code-template>
+              <app-code-template [code]="code.addressTransactionsMempool" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -100,7 +100,7 @@
                 <div i18n>Get the list of unspent transaction outputs associated with the address/scripthash. Available fields: <code>txid</code>, <code>vout</code>, <code>value</code>, and <code>status</code> (with the status of the funding tx).<ng-container *ngIf="network.val === 'liquid'">There is also a <code>valuecommitment</code> field that may appear in place of <code>value</code>, plus the following additional fields: <code>asset</code>/<code>assetcommitment</code>, <code>nonce</code>/<code>noncecommitment</code>, <code>surjection_proof</code>, and <code>range_proof</code>.</ng-container></div>
               </div>
 
-              <app-code-template [code]="code.addressUTXO" ></app-code-template>
+              <app-code-template [code]="code.addressUTXO" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
         </ngb-accordion>
@@ -125,7 +125,7 @@
                 <div i18n>Returns information about a Liquid asset.</div>
               </div>
       
-              <app-code-template [code]="code.assets" ></app-code-template>
+              <app-code-template [code]="code.assets" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -143,7 +143,7 @@
                 <div i18n>Returns transactions associated with the specified Liquid asset. For the network's native asset, returns a list of peg in, peg out, and burn transactions. For user-issued assets, returns a list of issuance, reissuance, and burn transactions. Does not include regular transactions transferring this asset.</div>
               </div>
       
-              <app-code-template [code]="code.assetTransactions" ></app-code-template>
+              <app-code-template [code]="code.assetTransactions" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -162,7 +162,7 @@
                 <div i18n>Get the current total supply of the specified asset. For the native asset (L-BTC), this is calculated as [chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount. For issued assets, this is calculated as [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount. Not available for assets with blinded issuances. If /decimal is specified, returns the supply as a decimal according to the asset's divisibility. Otherwise, returned in base units.</div>
               </div>
       
-              <app-code-template [code]="code.assetSupply" ></app-code-template>
+              <app-code-template [code]="code.assetSupply" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
         </ngb-accordion>
@@ -186,7 +186,7 @@
                 <div class="subtitle">Description</div>
                 <div i18n>Returns details about a block. Available fields: <code>id</code>, <code>height</code>, <code>version</code>, <code>timestamp</code>, <code>bits</code>, <code>nonce</code>, <code>merkle_root</code>, <code>tx_count</code>, <code>size</code>, <code>weight</code>,<ng-container *ngIf="network.val === 'liquid'"> <code>proof</code>,</ng-container> and <code>previousblockhash</code>.</div>
               </div>
-              <app-code-template [code]="code.block" ></app-code-template>
+              <app-code-template [code]="code.block" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -203,7 +203,7 @@
                 <div class="subtitle">Description</div>
                 <div i18n>Returns the hash of the block currently at <code>:height</code>.</div>
               </div>
-              <app-code-template [code]="code.blockHeight" ></app-code-template>
+              <app-code-template [code]="code.blockHeight" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -220,7 +220,7 @@
                 <div i18n>Returns the raw block representation in binary.</div>
               </div>
 
-              <app-code-template [code]="code.blockRaw" ></app-code-template>
+              <app-code-template [code]="code.blockRaw" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -239,7 +239,7 @@
                 <div i18n>Returns the confirmation status of a block. Available fields: <code>in_best_chain</code> (boolean, false for orphaned blocks), <code>next_best</code> (the hash of the next block, only available for blocks in the best chain).</div>
               </div>
 
-              <app-code-template [code]="code.blockStatus" ></app-code-template>
+              <app-code-template [code]="code.blockStatus" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -259,7 +259,7 @@
                 <div i18n>Returns the height of the last block.</div>
               </div>
 
-              <app-code-template [code]="code.blockTipHeight" ></app-code-template>
+              <app-code-template [code]="code.blockTipHeight" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
           
@@ -278,7 +278,7 @@
                 <div i18n>Returns the hash of the last block.</div>
               </div>
 
-              <app-code-template [code]="code.blockTipHash" ></app-code-template>
+              <app-code-template [code]="code.blockTipHash" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -298,7 +298,7 @@
                 <div i18n>Returns the transaction at index <code>:index</code> within the specified block.</div>
               </div>
 
-              <app-code-template [code]="code.blockTxId" ></app-code-template>
+              <app-code-template [code]="code.blockTxId" [network]="network.val" ></app-code-template>
 
             </ng-template>
           </ngb-panel>
@@ -318,7 +318,7 @@
                 <div i18n>Returns a list of all txids in the block.</div>
               </div>
               
-              <app-code-template [code]="code.blockTxIds" ></app-code-template>
+              <app-code-template [code]="code.blockTxIds" [network]="network.val" ></app-code-template>
 
             </ng-template>
           </ngb-panel>
@@ -337,7 +337,7 @@
                 <div i18n>Returns a list of transactions in the block (up to 25 transactions beginning at <code>start_index</code>). Transactions returned here do not have the <code>status</code> field, since all the transactions share the same block and confirmation status.</div>
               </div>
 
-              <app-code-template [code]="code.blockTxs" ></app-code-template>
+              <app-code-template [code]="code.blockTxs" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -357,7 +357,7 @@
                 <div i18n>Returns the 10 newest blocks starting at the tip or at <code>:start_height</code> if specified.</div>
               </div>
 
-              <app-code-template [code]="code.blocks" ></app-code-template>
+              <app-code-template [code]="code.blocks" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
         </ngb-accordion>
@@ -385,7 +385,7 @@
                 <div i18n>Returns all Bisq transactions belonging to a Bitcoin address, with 'B' prefixed in front of the address.</div>
               </div>
 
-              <app-code-template [code]="code.bisqAddress" ></app-code-template>
+              <app-code-template [code]="code.bisqAddress" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -405,7 +405,7 @@
                 <div i18n>Returns all Bisq transactions that exist in a Bitcoin block.</div>
               </div>
 
-              <app-code-template [code]="code.bisqBlock" ></app-code-template>
+              <app-code-template [code]="code.bisqBlock" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -424,7 +424,7 @@
                 <div i18n>Returns the most recently processed Bitcoin block height processed by Bisq.</div>
               </div>
 
-              <app-code-template [code]="code.bisqBlockTipHeight" ></app-code-template>
+              <app-code-template [code]="code.bisqBlockTipHeight" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -444,7 +444,7 @@
                 <div i18n>Returns :length Bitcoin blocks that contain Bisq transactions, starting from :index.</div>
               </div>
 
-              <app-code-template [code]="code.bisqBlockIndex" ></app-code-template>
+              <app-code-template [code]="code.bisqBlockIndex" [network]="network.val" ></app-code-template>
 
             </ng-template>
           </ngb-panel>
@@ -465,7 +465,7 @@
                 <div i18n>Returns statistics about all Bisq transactions.</div>
               </div>
       
-              <app-code-template [code]="code.bisqStats" ></app-code-template>
+              <app-code-template [code]="code.bisqStats" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -485,7 +485,7 @@
                 <div i18n>Returns details about a Bisq transaction.</div>
               </div>
 
-              <app-code-template [code]="code.bisqTransaction" ></app-code-template>
+              <app-code-template [code]="code.bisqTransaction" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -506,7 +506,7 @@
                 <div i18n>Returns :length of latest Bisq transactions, starting from :index.</div>
               </div>
 
-              <app-code-template [code]="code.bisqTransactions" ></app-code-template>
+              <app-code-template [code]="code.bisqTransactions" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
         </ngb-accordion>
@@ -550,7 +550,7 @@
                   Returns current mempool as projected blocks.
                 </div>
               </div>
-              <app-code-template [code]="code.mempoolBlocks" ></app-code-template>
+              <app-code-template [code]="code.mempoolBlocks" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
           <ngb-panel id="cpfp">
@@ -568,7 +568,7 @@
                   Returns the ancestors and the best descendant fees for a transaction.
                 </div>
               </div>
-              <app-code-template [code]="code.cpfp" ></app-code-template>
+              <app-code-template [code]="code.cpfp" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
         </ngb-accordion>
@@ -593,7 +593,7 @@
                 <div class="subtitle">Description</div>
                 <div i18n="api-docs.mempool.mempool|API Docs for /api/mempool">Returns current mempool backlog statistics.</div>
               </div>
-              <app-code-template [code]="code.mempool" ></app-code-template>
+              <app-code-template [code]="code.mempool" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
           <ngb-panel id="mempoolTxs">
@@ -612,7 +612,7 @@
                 </div>
               </div>
 
-              <app-code-template [code]="code.mempoolTxs" ></app-code-template>
+              <app-code-template [code]="code.mempoolTxs" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -629,7 +629,7 @@
                 <div class="subtitle">Description</div>
                 <div i18n="api-docs.mempool.recent|API Docs for /api/mempool/recent">Get a list of the last 10 transactions to enter the mempool. Each transaction object contains simplified overview data, with the following fields: <code>txid</code>, <code>fee</code>, <code>vsize</code>, and <code>value</code>.</div>
               </div>
-              <app-code-template [code]="code.mempoolRecent" ></app-code-template>
+              <app-code-template [code]="code.mempoolRecent" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -655,7 +655,7 @@
                 <div i18n>Returns details about a transaction. Available fields: <code>txid</code>, <code>version</code>, <code>locktime</code>, <code>size</code>, <code>weight</code>, <code>fee</code>, <code>vin</code>, <code>vout</code>, and <code>status</code>.</div>
               </div>
       
-              <app-code-template [code]="code.transaction" ></app-code-template>
+              <app-code-template [code]="code.transaction" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -674,7 +674,7 @@
                 <div i18n>Returns a transaction serialized as hex.</div>
               </div>
       
-              <app-code-template [code]="code.transactionHex" ></app-code-template>
+              <app-code-template [code]="code.transactionHex" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -692,7 +692,7 @@
                 <div i18n>Returns a merkle inclusion proof for the transaction using <a href="https://bitcoin.org/en/glossary/merkle-block">bitcoind's merkleblock</a> format.</div>
               </div>
     
-              <app-code-template [code]="code.transactionMerkleblockProof" ></app-code-template>
+              <app-code-template [code]="code.transactionMerkleblockProof" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -712,7 +712,7 @@
                 <div i18n>Returns a merkle inclusion proof for the transaction using <a href="https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle">Electrum's blockchain.transaction.get_merkle format.</a></div>
               </div>
       
-              <app-code-template [code]="code.tramsactionMerkleProof" ></app-code-template>
+              <app-code-template [code]="code.tramsactionMerkleProof" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
           
@@ -731,7 +731,7 @@
                 <div i18n>Returns the spending status of a transaction output. Available fields: <code>spent</code> (boolean), <code>txid</code> (optional), <code>vin</code> (optional), and <code>status</code> (optional, the status of the spending tx).</div>
               </div>
       
-              <app-code-template [code]="code.transactionOutspend" ></app-code-template>
+              <app-code-template [code]="code.transactionOutspend" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
           
@@ -750,7 +750,7 @@
                 <div i18n>Returns the spending status of all transaction outputs.</div>
               </div>
       
-              <app-code-template [code]="code.transactionOutspends" ></app-code-template>
+              <app-code-template [code]="code.transactionOutspends" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
           
@@ -769,7 +769,7 @@
                 <div i18n>Returns a transaction as binary data.</div>
               </div>
       
-              <app-code-template [code]="code.transactionRaw" ></app-code-template>
+              <app-code-template [code]="code.transactionRaw" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
 
@@ -788,7 +788,7 @@
                 <div i18n>Returns the confirmation status of a transaction. Available fields: <code>confirmed</code> (boolean), <code>block_height</code> (optional), and <code>block_hash</code> (optional).</div>
               </div>
 
-              <app-code-template [code]="code.transactionStatus" ></app-code-template>
+              <app-code-template [code]="code.transactionStatus" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
           
@@ -807,7 +807,7 @@
                 <div class="subtitle">Description</div>
                 <div i18n>Broadcast a raw transaction to the network. The transaction should be provided as hex in the request body. The <code>txid</code> will be returned on success.</div>
               </div>
-              <app-code-template [code]="code.postTransaction" ></app-code-template>
+              <app-code-template [code]="code.postTransaction" [network]="network.val" ></app-code-template>
             </ng-template>
           </ngb-panel>
         </ngb-accordion>
