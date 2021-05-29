@@ -3,28 +3,37 @@
     <li ngbNavItem>
       <a ngbNavLink>ES Module</a>
       <ng-template ngbNavContent>
+        <div class="subtitle">Install Package <app-clipboard [text]="esModuleInstall"></app-clipboard></div>
+        <div class="links">
+          <a href="https://github.com/mempool/mempool.js">github repository</a>
+          <a href="https://www.npmjs.org/package/@mempool/mempool.js">npm package</a>
+        </div>
+        <textarea highlight-js [lang]="'javascript'" [innerText]="esModuleInstall"></textarea>
         <div class="subtitle">Code Example <app-clipboard [text]="code.codeSample.esModule"></app-clipboard></div>
-        <textarea highlight-js [options]="{}" [lang]="'javascript'" [innerText]="wrapESmodule(code.codeSample.esModule)"></textarea>
+        <textarea highlight-js [lang]="'javascript'" [innerText]="wrapESmodule(code.codeSample.esModule)"></textarea>
       </ng-template>
     </li>
     <li ngbNavItem>
       <a ngbNavLink>Common JS</a>
       <ng-template ngbNavContent>
         <div class="subtitle">Code Example <app-clipboard [text]="code.codeSample.commonJS"></app-clipboard></div>
-        <textarea highlight-js [options]="{}" [innerText]="wrapCommonJS(code.codeSample.commonJS)"></textarea>
+        <div class="links">
+          <a href="https://github.com/mempool/mempool.js">github repository</a>
+        </div>
+        <textarea highlight-js [innerText]="wrapCommonJS(code.codeSample.commonJS)"></textarea>
       </ng-template>
     </li>
     <li ngbNavItem *ngIf="code.codeSample.curl">
       <a ngbNavLink>CURL</a>
       <ng-template ngbNavContent>
         <div class="subtitle">Code Example <app-clipboard [text]="code.codeSample.curl"></app-clipboard></div>
-        <textarea highlight-js [options]="{}" [lang]="'javascript'" [innerText]="code.codeSample.curl"></textarea>
+        <textarea highlight-js [lang]="'javascript'" [innerText]="code.codeSample.curl"></textarea>
       </ng-template>
     </li>
   </ul>
   <div [ngbNavOutlet]="navCodeTemplate"></div>
   <div class="response">
     <div class="subtitle">Response <app-clipboard [text]="code.responseSample"></app-clipboard></div>
-    <textarea highlight-js [options]="{}" [lang]="'json'" [innerText]="code.responseSample"></textarea>
+    <textarea highlight-js [lang]="'json'" [innerText]="code.responseSample"></textarea>
   </div>
 </div>

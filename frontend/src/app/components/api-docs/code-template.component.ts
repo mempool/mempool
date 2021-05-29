@@ -17,6 +17,11 @@ export class CodeTemplateComponent {
     responseSample: string;
   };
   hostname = document.location.hostname;
+  esModuleInstall = `# npm
+npm install @mempool/mempool.js --save
+
+# yarn
+yarn add @mempool/mempool.js`;
 
   constructor(
   ) { }
