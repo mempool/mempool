@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { HighlightJsModule } from 'ngx-highlight-js';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app/app.component';
@@ -40,6 +41,7 @@ import { AssetsComponent } from './assets/assets.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
 import { MinerComponent } from './components/miner/miner.component';
 import { SharedModule } from './shared/shared.module';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { FeesBoxComponent } from './components/fees-box/fees-box.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -47,6 +49,7 @@ import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontaweso
 import { faAngleDown, faAngleUp, faBolt, faChartArea, faCogs, faCubes, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faAngleDoubleUp, faChevronDown, faFileAlt } from '@fortawesome/free-solid-svg-icons';
 import { ApiDocsComponent } from './components/api-docs/api-docs.component';
+import { CodeTemplateComponent } from './components/api-docs/code-template.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 import { StorageService } from './services/storage.service';
 import { HttpCacheInterceptor } from './services/http-cache.interceptor';
@@ -85,6 +88,7 @@ import { SponsorComponent } from './components/sponsor/sponsor.component';
     FeesBoxComponent,
     DashboardComponent,
     ApiDocsComponent,
+    CodeTemplateComponent,
     TermsOfServiceComponent,
     SponsorComponent,
   ],
@@ -98,6 +102,8 @@ import { SponsorComponent } from './components/sponsor/sponsor.component';
     NgbTypeaheadModule,
     FontAwesomeModule,
     SharedModule,
+    HighlightJsModule,
+    NgbModule,
   ],
   providers: [
     ElectrsApiService,

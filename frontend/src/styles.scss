@@ -54,7 +54,7 @@ html, body {
 
 body {
   background-color: #11131f;
-  min-width: 320px;
+  min-width: 375px;
   padding-bottom: 60px;
 }
 
@@ -630,4 +630,35 @@ th {
 	@media (min-width: 1200px) {
 		max-width: 480px;
 	}
+}
+
+.hljs {
+  padding: 1.5rem 1.5rem !important;
+}
+.card {
+  background-color: transparent;
+  padding: 0;
+
+  button {
+    text-align: left;
+    display: block;
+    width: 100%;
+    padding: 1rem 2rem;
+    color: #fff;
+    font-weight: bold;
+    &:focus, &:hover, &:active {
+      text-decoration: none;
+      outline: none;
+      box-shadow: none;
+    }
+  }
+
+  .card-header {
+    padding: 0;
+  }
+
+  .collapsed{
+    background-color: #2d3348;
+    color: #1bd8f4;
+  }
 }

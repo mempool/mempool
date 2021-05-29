@@ -1,0 +1,30 @@
+<div class="code">
+  <ul ngbNav #navCodeTemplate="ngbNav" class="nav-tabs code-tab">
+    <li ngbNavItem>
+      <a ngbNavLink>ES Module</a>
+      <ng-template ngbNavContent>
+        <div class="subtitle">Code Example <app-clipboard [text]="code.codeSample.esModule"></app-clipboard></div>
+        <textarea highlight-js [options]="{}" [lang]="'javascript'" [innerText]="wrapESmodule(code.codeSample.esModule)"></textarea>
+      </ng-template>
+    </li>
+    <li ngbNavItem>
+      <a ngbNavLink>Common JS</a>
+      <ng-template ngbNavContent>
+        <div class="subtitle">Code Example <app-clipboard [text]="code.codeSample.commonJS"></app-clipboard></div>
+        <textarea highlight-js [options]="{}" [innerText]="wrapCommonJS(code.codeSample.commonJS)"></textarea>
+      </ng-template>
+    </li>
+    <li ngbNavItem>
+      <a ngbNavLink>CURL</a>
+      <ng-template ngbNavContent>
+        <div class="subtitle">Code Example <app-clipboard [text]="code.codeSample.curl"></app-clipboard></div>
+        <textarea highlight-js [options]="{}" [lang]="'javascript'" [innerText]="code.codeSample.curl"></textarea>
+      </ng-template>
+    </li>
+  </ul>
+  <div [ngbNavOutlet]="navCodeTemplate"></div>
+  <div class="response">
+    <div class="subtitle">Response <app-clipboard [text]="code.responseSample"></app-clipboard></div>
+    <textarea highlight-js [options]="{}" [lang]="'json'" [innerText]="code.responseSample"></textarea>
+  </div>
+</div>
