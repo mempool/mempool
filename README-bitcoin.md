@@ -2,7 +2,7 @@
 
 Interface to access the Bitcoin `mainet`, `testnet`, `signet` APIs.
 
-[Back to home](#)
+[Back to home](./README.md)
 
 ---
 
@@ -384,6 +384,22 @@ const {
 
 const feesMempoolBlocks = await fees.getFeesMempoolBlocks();
 console.log(feesMempoolBlocks);
+```
+
+### **Get Children Pay for Parent**
+
+Returns current mempool as projected blocks.
+
+[ [NodeJS Example](examples/nodejs/bitcoin/fees.ts) ] [ [HTML Example](examples/html/bitcoin/fees.html) ] [ [Top](#features) ]
+
+```js
+  const { 
+    bitcoin: { fees },
+  } = mempoolJS();
+  const txid = 'txid';
+
+  const feesCPFP = await fees.getCPFP({ txid });
+  console.log(feesCPFP);
 ```
 
 ### **Get Mempool**

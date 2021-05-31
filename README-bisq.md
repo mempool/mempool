@@ -2,7 +2,7 @@
 
 Interface to access the Bisq API.
 
-[Back to home](./README-bitcoin.md)
+[Back to home](./README.md)
 
 ---
 

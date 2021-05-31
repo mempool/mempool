@@ -35,9 +35,10 @@ import mempoolJS from '@mempool/mempool.js';
 // default mempool.space endpoints
 const { bitcoin, bisq, liquid } = mempoolJS();
 
-// (alternative) your custom endpoints
+// (optional) your custom endpoints
 const { bitcoin, bisq, liquid } = mempoolJS({
-  homespace: 'mempool.space',
+  hostname: 'mempool.space', 
+  network: 'testnet' // 'signet' | 'testnet' | 'mainnet'
 });
 ```
 
@@ -49,15 +50,16 @@ Include the line below in the `head` tag of your html file.
 <script type="text/javascript" src="https://mempool.space/mempool.js"></script>
 ```
 
-Call `mempoolJS` function to access the API methods.
+Call `mempoolJS()` function to access the API methods.
 
 ```js
 // default mempool.space endpoints
 const { bitcoin, bisq, liquid } = mempoolJS();
 
-// (alternative) your custom endpoints
+// (optional) your custom endpoints
 const { bitcoin, bisq, liquid } = mempoolJS({
-  homespace: 'mempool.space',
+  hostname: 'mempool.space',
+  network: 'testnet' // 'signet' | 'testnet' | 'mainnet'
 });
 ```
 
