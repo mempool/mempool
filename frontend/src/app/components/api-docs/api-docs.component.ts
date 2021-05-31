@@ -28,9 +28,9 @@ export class ApiDocsComponent implements OnInit {
         curl: `curl -X GET "https://mempool.space/api/v1/fees/recommended"`,
       },
       responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
+  fastestFee: 60,
+  halfHourFee: 35,
+  hourFee: 20,
   minimumFee: 1
 }`,
     },
@@ -46,12 +46,26 @@ export class ApiDocsComponent implements OnInit {
         console.log(feesMempoolBlocks);`,
         curl: `curl -X GET "https://mempool.space/api/v1/fees/mempool-blocks"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `[
+  {
+    blockSize: 1325044,
+    blockVSize: 974920,
+    nTx: 2314,
+    totalFees: 57600850,
+    medianFee: 59.73444413716814,
+    feeRange: [
+      14.091264667535855,
+      27.88170055452865,
+      50.123893805309734,
+      59,
+      60.267857142857146,
+      65.47085201793722,
+      100,
+      474.934036939314
+    ]
+  },
+  ...
+]`,
     },
     cpfp: {
       codeSample: {
@@ -66,12 +80,7 @@ export class ApiDocsComponent implements OnInit {
         const feesCPFP = await fees.getCPFP({ txid });`,
         curl: `curl -X GET "https://mempool.space/api/v1/cpfp/:txid"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: ``,
     },
     mempool: {
       codeSample: {
@@ -86,10 +95,13 @@ export class ApiDocsComponent implements OnInit {
         curl: `curl -X GET "https://mempool.space/api/mempool"`,
       },
       responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
+  count: 12262,
+  vsize: 18726518,
+  total_fee: 99943359,
+  fee_histogram: [
+    [ 121.72455, 50049 ],
+    ... 142 more items
+  ]
 }`,
     },
     mempoolTxs: {
@@ -104,12 +116,10 @@ export class ApiDocsComponent implements OnInit {
         console.log(getMempoolTxids);`,
         curl: `curl -X GET "https://mempool.space/api/mempool/txids"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `[
+  '0873cc5e6c63704a27c63d5b86231db2a688d1e8dee466c8162aa6a398e719c5',
+  ... 12308 more items
+]`,
     },
     mempoolRecent: {
       codeSample: {
@@ -124,12 +134,15 @@ export class ApiDocsComponent implements OnInit {
         console.log(getMempoolRecent);`,
         curl: `curl -X GET "https://mempool.space/api/mempool/recent"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `[
+  {
+    txid: '4ab126bfde126a7824336080cbad0e6c3db0d39873b2093080ec5dc09205dca6',
+    fee: 8520,
+    vsize: 141,
+    value: 3428127849
+  },
+  ...
+]`,
     },
     block: {
       codeSample: {
@@ -148,11 +161,20 @@ export class ApiDocsComponent implements OnInit {
         curl: `curl -X GET "https://mempool.space/api/block/:hash"`,
       },
       responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+    id: "000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce",
+    height: 363366,
+    version: 2,
+    timestamp: 1435766771,
+    tx_count: 494,
+    size: 286494,
+    weight: 1145976,
+    merkle_root: "9d3cb87bf05ebae366b4262ed5f768ce8c62fc385c3886c9cb097647b04b686c",
+    previousblockhash: "000000000000000010c545b6fa3ef1f7cf45a2a8760b1ee9f2e89673218207ce",
+    mediantime: 1435763435,
+    nonce: 2892644888,
+    bits: 404111758,
+    difficulty: 49402014931
+  }`,
     },
     blockHeight: {
       codeSample: {
@@ -167,12 +189,7 @@ export class ApiDocsComponent implements OnInit {
         console.log(blockHeight);`,
         curl: `curl -X GET "https://mempool.space/api/block-height/:height"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f`,
     },
     blockRaw: {
       codeSample: {
@@ -191,12 +208,7 @@ export class ApiDocsComponent implements OnInit {
         console.log(blockRaw);`,
         curl: `curl -X GET "https://mempool.space/api/block/:hash/raw"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: ``,
     },
     blockStatus: {
       codeSample: {
@@ -216,10 +228,9 @@ export class ApiDocsComponent implements OnInit {
         curl: `curl -X GET "https://mempool.space/api/block/:hash/status"`,
       },
       responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
+  in_best_chain: true,
+  height: 363366,
+  next_best: "000000000000000015eb17c390eb4a920fc745332fda6a62179a6afe0d6a6548"
 }`,
     },
     blockTipHeight: {
@@ -234,12 +245,7 @@ export class ApiDocsComponent implements OnInit {
         console.log(blocksTipHeight);`,
         curl: `curl -X GET "https://mempool.space/api/blocks/tip/height"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `685442`,
     },
     blockTipHash: {
       codeSample: {
@@ -253,12 +259,7 @@ export class ApiDocsComponent implements OnInit {
         console.log(blocksTipHash);`,
         curl: `curl -X GET "https://mempool.space/api/blocks/tip/hash"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `00000000000000000009165c5600f52cb7436b40f3ad48e996de63d63e1a124e`,
     },
     blockTxId: {
       codeSample: {
@@ -277,12 +278,7 @@ export class ApiDocsComponent implements OnInit {
         console.log(blockTxid);`,
         curl: `curl -X GET "https://mempool.space/api/block/:hash/txid/:index"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `0fa6da60e484941f255cbb025c3d6440e5a7e970119e899b4065c7999360e406`,
     },
     blockTxIds: {
       codeSample: {
@@ -301,12 +297,12 @@ export class ApiDocsComponent implements OnInit {
         console.log(blockTxids);`,
         curl: `curl -X GET "https://mempool.space/api/block/:hash/txids"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `[
+  "cfe624ccdd8010cf78dbedd1b25e1ff601b470c4d7d90fa9fc8c1bcc5cdc6e0e",
+  "a5ef89881bd5103f223a0fa285dfc75f4718974cb792cf85e623a7de05801bc9",
+  "94e8c35414db17cd10efa0ac4115e086edb168ba7bd86e737e5b8cab96821580",
+  ...
+]`,
     },
     blockTxs: {
       codeSample: {
@@ -325,12 +321,25 @@ export class ApiDocsComponent implements OnInit {
         console.log(blockTxs);`,
         curl: `curl -X GET "https://mempool.space/api/block/:hash/txs[/:start_index]"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `[
+  {
+    txid: "cfe624ccdd8010cf78dbedd1b25e1ff601b470c4d7d90fa9fc8c1bcc5cdc6e0e",
+    version: 1,
+    locktime: 0,
+    vin: [ [Object] ],
+    vout: [ [Object] ],
+    size: 102,
+    weight: 408,
+    fee: 0,
+    status: {
+      confirmed: true,
+      block_height: 363366,
+      block_hash: "000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce",
+      block_time: 1435766771
+    }
+  },
+  ...
+]`,
     },
     blocks: {
       codeSample: {
@@ -345,12 +354,24 @@ export class ApiDocsComponent implements OnInit {
         console.log(getBlocks);`,
         curl: `curl -X GET "https://mempool.space/api/blocks[/:start_height]"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `[
+  {
+    id: '00000000fbc97cc6c599ce9c24dd4a2243e2bfd518eda56e1d5e47d29e29c3a7',
+    height: 9999,
+    version: 1,
+    timestamp: 1238987491,
+    tx_count: 1,
+    size: 216,
+    weight: 864,
+    merkle_root: '5012c1d2a46d5684aa0331f0d8a900767c86c0fd83bb632f357b1ea11fa69179',
+    previousblockhash: '000000003dd32df94cfafd16e0a8300ea14d67dcfee9e1282786c2617b8daa09',
+    mediantime: 1238984702,
+    nonce: 3568610608,
+    bits: 486604799,
+    difficulty: 1
+  },
+  ...
+]`,
     },
     transaction: {
       codeSample: {
@@ -362,18 +383,48 @@ export class ApiDocsComponent implements OnInit {
   console.log(tx);
 `,
         commonJS: `const { %{1}: { transactions } } = mempoolJS();
-        const txid =
-        '15e10745f15593a899cef391191bdd3d7c12412cc4696b7bcb669d0feadc8521';
+  const txid =
+  '15e10745f15593a899cef391191bdd3d7c12412cc4696b7bcb669d0feadc8521';
 
-        const tx = await transactions.getTx({ txid });
-        console.log(tx);`,
-        curl: `curl -X GET "https://mempool.space/api/tx/:txid"`,
-      },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
+  const tx = await transactions.getTx({ txid });
+  console.log(tx);`,
+  curl: `curl -X GET "https://mempool.space/api/tx/:txid"`,
+},
+responseSample: `{
+  txid: "15e10745f15593a899cef391191bdd3d7c12412cc4696b7bcb669d0feadc8521",
+  version: 1,
+  locktime: 0,
+  vin: [
+    {
+      txid: "1fdfed84588cb826b876cd761ecebcf1726453437f0a6826e82ed54b2807a036",
+      vout: 12,
+      prevout: [Object],
+      scriptsig: "483045022100bcdf40fb3b5ebfa2c158ac8d1a41c03eb3dba4e180b00e81836bafd56d946efd022005cc40e35022b614275c1e485c409599667cbd41f6e5d78f421cb260a020a24f01210255ea3f53ce3ed1ad2c08dfc23b211b15b852afb819492a9a0f3f99e5747cb5f0",
+      scriptsig_asm: "OP_PUSHBYTES_72 3045022100bcdf40fb3b5ebfa2c158ac8d1a41c03eb3dba4e180b00e81836bafd56d946efd022005cc40e35022b614275c1e485c409599667cbd41f6e5d78f421cb260a020a24f01 OP_PUSHBYTES_33 0255ea3f53ce3ed1ad2c08dfc23b211b15b852afb819492a9a0f3f99e5747cb5f0",
+      is_coinbase: false,
+      sequence: 4294967295
+    },
+    ...
+  ],
+  vout: [
+    {
+      scriptpubkey: "76a91472d52e2f5b88174c35ee29844cce0d6d24b921ef88ac",
+      scriptpubkey_asm: "OP_DUP OP_HASH160 OP_PUSHBYTES_20 72d52e2f5b88174c35ee29844cce0d6d24b921ef OP_EQUALVERIFY OP_CHECKSIG",
+      scriptpubkey_type: "p2pkh",
+      scriptpubkey_address: "1BUBQuPV3gEV7P2XLNuAJQjf5t265Yyj9t",
+      value: 1240000000
+    },
+    ...
+  ],
+  size: 884,
+  weight: 3536,
+  fee: 20000,
+  status: {
+    confirmed: true,
+    block_height: 363348,
+    block_hash: "0000000000000000139385d7aa78ffb45469e0c715b8d6ea6cb2ffa98acc7171",
+    block_time: 1435754650
+  }
 }`,
     },
     transactionHex: {
@@ -393,12 +444,7 @@ export class ApiDocsComponent implements OnInit {
         console.log(txHex);`,
         curl: `curl -X GET "https://mempool.space/api/tx/:txid/hex"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `010000000536a007284bd52ee826680a7f43536472f1bcce1e76cd76b826b88c5884eddf1f0c0000006b483045022100bcdf40fb3b5ebfa2c158ac8d1a41c03eb3dba4e180b00e81836bafd56d946efd022005cc40e35022b614275c1e485c409599667cbd41f6e5d78f421cb260a020a24f01210255ea3f53ce3ed1ad2c08dfc23b211b15b852afb819492a9a0f3f99e5747cb5f0ffffffffee08cb90c4e84dd7952b2cfad81ed3b088f5b32183da2894c969f6aa7ec98405020000006a47304402206332beadf5302281f88502a53cc4dd492689057f2f2f0f82476c1b5cd107c14a02207f49abc24fc9d94270f53a4fb8a8fbebf872f85fff330b72ca91e06d160dcda50121027943329cc801a8924789dc3c561d89cf234082685cbda90f398efa94f94340f2ffffffff36a007284bd52ee826680a7f43536472f1bcce1e76cd76b826b88c5884eddf1f060000006b4830450221009c97a25ae70e208b25306cc870686c1f0c238100e9100aa2599b3cd1c010d8ff0220545b34c80ed60efcfbd18a7a22f00b5f0f04cfe58ca30f21023b873a959f1bd3012102e54cd4a05fe29be75ad539a80e7a5608a15dffbfca41bec13f6bf4a32d92e2f4ffffffff73cabea6245426bf263e7ec469a868e2e12a83345e8d2a5b0822bc7f43853956050000006b483045022100b934aa0f5cf67f284eebdf4faa2072345c2e448b758184cee38b7f3430129df302200dffac9863e03e08665f3fcf9683db0000b44bf1e308721eb40d76b180a457ce012103634b52718e4ddf125f3e66e5a3cd083765820769fd7824fd6aa38eded48cd77fffffffff36a007284bd52ee826680a7f43536472f1bcce1e76cd76b826b88c5884eddf1f0b0000006a47304402206348e277f65b0d23d8598944cc203a477ba1131185187493d164698a2b13098a02200caaeb6d3847b32568fd58149529ef63f0902e7d9c9b4cc5f9422319a8beecd50121025af6ba0ccd2b7ac96af36272ae33fa6c793aa69959c97989f5fa397eb8d13e69ffffffff0400e6e849000000001976a91472d52e2f5b88174c35ee29844cce0d6d24b921ef88ac20aaa72e000000001976a914c15b731d0116ef8192f240d4397a8cdbce5fe8bc88acf02cfa51000000001976a914c7ee32e6945d7de5a4541dd2580927128c11517488acf012e39b000000001976a9140a59837ccd4df25adc31cdad39be6a8d97557ed688ac00000000`,
     },
     transactionMerkleblockProof: {
       codeSample: {
@@ -417,12 +463,7 @@ export class ApiDocsComponent implements OnInit {
         console.log(txMerkleBlockProof);`,
         curl: `curl -X GET "https://mempool.space/api/tx/:txid/merkleblock-proof"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `0300000058f6dd09ac5aea942c01d12e75b351e73f4304cc442741000000000000000000ef0c2fa8517414b742094a020da7eba891b47d660ef66f126ad01e5be99a2fd09ae093558e411618c14240df820700000ce4d15e17594f257b22d1ddf47d07b3b88779a8374fcd515ad883d79726c6027da6abfcbc1341a049b30277d3bf14e4663ecaa55b76cb638bb92b028e9bdeeeba65a06adaae75df61e79677b13b5d45523d5ab4067f6f3c89e27458b9c1072910436afdd26b9b89489d89f2a7daaad6d375e3ebafb169bfa3cf266b9605964debb72a79a6491481295dc5ed5198b989c6126c8b4d354c274f115a91b7d01d878c01c9a70ba5d78e11c38d1f7b94692afb177e63a9371b60665ee4cfc49cd9cffa78244de209537d97b19d5938a67078af79f7258d7afe325b16c68089fe31f9ac2185dcea0f9d66cb7b6b69c42c41127c3ddd1b1991f3ce99a89355f14507e115f92356b4c0984e291567cf9d869918726b0e650274a6c692682320257c9925eeb7240c4ced055b8b8cf804d33bbec407b4058b1e1f7c5a7127770f7cac890879706e1e34ef8e1b715e182cc691524135bc78da898afc89b401862af259dca1da9065dad015d747181e12ffb73ea0ba0480a0b89ff33fb3884514554be97bf0b603add505`,
     },
     tramsactionMerkleProof: {
       codeSample: {
@@ -442,10 +483,12 @@ export class ApiDocsComponent implements OnInit {
         curl: `curl -X GET "https://mempool.space/api/tx/:txid/merkle-proof"`,
       },
       responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
+  block_height: 363348,
+  merkle: [
+    "acf931fe8980c6165b32fe7a8d25f779af7870a638599db1977d5309e24d2478",
+    ...
+  ],
+  pos: 1465
 }`,
     },
     transactionOutspend: {
@@ -472,10 +515,15 @@ export class ApiDocsComponent implements OnInit {
         curl: `curl -X GET "https://mempool.space/api/tx/:txid/outspend/:vout"`,
       },
       responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
+  spent: true,
+  txid: "2a1b8ec06d68096911da82b02806c3848c415b0044a0046850c4a97cbffac7b1",
+  vin: 1,
+  status: {
+    confirmed: true,
+    block_height: 363354,
+    block_hash: "000000000000000012e6130dec174ca877bf39ead6e3d04a8ba3b0cd683c1661",
+    block_time: 1435758032
+  }
 }`,
     },
     transactionOutspends: {
@@ -495,12 +543,20 @@ export class ApiDocsComponent implements OnInit {
         console.log(txOutspends);`,
         curl: `curl -X GET "https://mempool.space/api/tx/:txid/outspends"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `[
+  {
+    spent: true,
+    txid: "34de8ba520eb846da8831fa47c06eef9b4eb4a2ff6a3271165fd6b9aafc5a20c",
+    vin: 12,
+    status: {
+      confirmed: true,
+      block_height: 363349,
+      block_hash: "000000000000000012ad81b3ea2cb1c4ba115901bd1b41cd05a6a8d736691322",
+      block_time: 1435754897
+    }
+  },
+  ...
+]`,
     },
     transactionRaw: {
       codeSample: {
@@ -519,12 +575,7 @@ export class ApiDocsComponent implements OnInit {
         console.log(txRaw);`,
         curl: `curl -X GET "https://mempool.space/api/tx/:txid/raw"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: ``,
     },
     transactionStatus: {
       codeSample: {
@@ -544,10 +595,10 @@ export class ApiDocsComponent implements OnInit {
         curl: `curl -X GET "https://mempool.space/api/tx/:txid/status"`,
       },
       responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
+  confirmed: true,
+  block_height: 363348,
+  block_hash: "0000000000000000139385d7aa78ffb45469e0c715b8d6ea6cb2ffa98acc7171",
+  block_time: 1435754650
 }`,
     },
     postTransaction: {
@@ -567,12 +618,7 @@ export class ApiDocsComponent implements OnInit {
         console.log(postTx);`,
         curl: `curl -X POST "https://mempool.space/api/tx"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: ``,
     },
     address: {
       codeSample: {
@@ -590,10 +636,21 @@ export class ApiDocsComponent implements OnInit {
         curl: `curl -X GET "https://mempool.space/api/address/:address"`,
       },
       responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
+  address: "1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC",
+  chain_stats: {
+    funded_txo_count: 765,
+    funded_txo_sum: 87749875807,
+    spent_txo_count: 765,
+    spent_txo_sum: 87749875807,
+    tx_count: 875
+  },
+  mempool_stats: {
+    funded_txo_count: 0,
+    funded_txo_sum: 0,
+    spent_txo_count: 0,
+    spent_txo_sum: 0,
+    tx_count: 0
+  }
 }`,
     },
     addressTransactions: {
@@ -611,12 +668,25 @@ export class ApiDocsComponent implements OnInit {
         console.log(addressTxs);`,
         curl: `curl -X GET "https://mempool.space/api/address/:address/txs"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `[
+  {
+    txid: "f39fbfd2482ac8a7174fe27caddd66aec05eec0d0e988ddf0de2136a416394c4",
+    version: 2,
+    locktime: 0,
+    vin: [ [Object] ],
+    vout: [ [Object], [Object] ],
+    size: 251,
+    weight: 1004,
+    fee: 8212,
+    status: {
+      confirmed: true,
+      block_height: 684536,
+      block_hash: "00000000000000000008df08f428ca4e8251ba9171d9060b056f1f94d4fefbc7",
+      block_time: 1621687336
+    }
+  },
+  ...
+]`,
     },
     addressTransactionsChain: {
       codeSample: {
@@ -633,56 +703,83 @@ export class ApiDocsComponent implements OnInit {
         console.log(addressTxsChain);`,
         curl: `curl -X GET "https://mempool.space/api/address/:address/txs/chain"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `[
+  {
+    txid: "f39fbfd2482ac8a7174fe27caddd66aec05eec0d0e988ddf0de2136a416394c4",
+    version: 2,
+    locktime: 0,
+    vin: [ [Object] ],
+    vout: [ [Object], [Object] ],
+    size: 251,
+    weight: 1004,
+    fee: 8212,
+    status: {
+      confirmed: true,
+      block_height: 684536,
+      block_hash: "00000000000000000008df08f428ca4e8251ba9171d9060b056f1f94d4fefbc7",
+      block_time: 1621687336
+    }
+  },
+  ...
+]`,
     },
     addressTransactionsMempool: {
       codeSample: {
         esModule: `const { %{1}: { addresses } } = mempoolJS();
-  const address = '1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC';
+  const address = '1EnX7FFCzdBjpYnErSTaxaWyTND4m86ebK';
 
   const addressTxsMempool = await addresses.getAddressTxsMempool({ address });
-  console.log(addressTxsMempool);
-`,
+  console.log(addressTxsMempool);`,
         commonJS: `const { %{1}: { addresses } } = mempoolJS();
-        const address = '1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC';
+        const address = '1EnX7FFCzdBjpYnErSTaxaWyTND4m86ebK';
 
         const addressTxsMempool = await addresses.getAddressTxsMempool({ address });
         console.log(addressTxsMempool);`,
         curl: `curl -X GET "https://mempool.space/api/address/:address/txs/mempool"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `[
+  {
+    txid: "16cd9bbc6b62313a22d16671fa559aec6bf581df8b5853d37775c84b0fddfa90",
+    version: 2,
+    locktime: 0,
+    vin: [ [Object] ],
+    vout: [ [Object], [Object] ],
+    size: 226,
+    weight: 904,
+    fee: 6720,
+    status: { confirmed: false }
+  }
+]`,
     },
     addressUTXO: {
       codeSample: {
         esModule: `const { %{1}: { addresses } } = mempoolJS();
-  const address = '1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC';
+  const address = '1PQwtwajfHWyAkedss5utwBvULqbGocRpu';
 
   const addressTxsUtxo = await addresses.getAddressTxsUtxo({ address });
   console.log(addressTxsUtxo);
 `,
         commonJS: `const { %{1}: { addresses } } = mempoolJS();
-        const address = '1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC';
+        const address = '1PQwtwajfHWyAkedss5utwBvULqbGocRpu';
 
         const addressTxsUtxo = await addresses.getAddressTxsUtxo({ address });
         console.log(addressTxsUtxo);`,
         curl: `curl -X GET "https://mempool.space/api/address/:address/utxo"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `[
+  {
+    txid: 'a3e4a5ce88c9a73983aaba34243472377e478c3ca77258018222b813e1256307',
+    vout: 0,
+    status: {
+      confirmed: true,
+      block_height: 685094,
+      block_hash: '00000000000000000002af00dc86cfc99c8843c7a4906a1ec3b0a79712334d81',
+      block_time: 1622081201
+    },
+    value: 723191295
+  },
+  ...
+]`,
     },
     bisqAddress: {
       codeSample: {
@@ -699,12 +796,23 @@ export class ApiDocsComponent implements OnInit {
         console.log(myAddress);`,
         curl: `curl -X GET "https://mempool.space/api/address/:address"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `[]
+  {
+    "txVersion": "1",
+    "id": "d6f0a6fd191ac907ff88fc51af91cae8d50e596a846952ffa0ad0cea84eedc9a",
+    "blockHeight": 679129,
+    "blockHash": "00000000000000000001328850b0482312325f7f4abd5457e45d37cad664675d",
+    "time": 1618369311000,
+    "inputs": [ ... ],
+    "outputs": [ ... ],
+    "txType": "PAY_TRADE_FEE",
+    "txTypeDisplayString": "Pay trade fee",
+    "burntFee": 6,
+    "invalidatedBsq": 0,
+    "unlockBlockHeight": 0
+  },
+  ...
+]`,
     },
     bisqBlock: {
       codeSample: {
@@ -722,10 +830,26 @@ export class ApiDocsComponent implements OnInit {
         curl: `curl -X GET "https://mempool.space/api/block/:hash"`,
       },
       responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
+  height: 571747,
+  time: 1555340856000,
+  hash: "000000000000000000079aa6bfa46eb8fc20474e8673d6e8a123b211236bf82d",
+  previousBlockHash: "0000000000000000001b8c271a4477a28d4ea7d4d4d1add6d96f386e3f151709",
+  txs: [
+    {
+      txVersion: "1",
+      id: "4b5417ec5ab6112bedf539c3b4f5a806ed539542d8b717e1c4470aa3180edce5",
+      blockHeight: 571747,
+      blockHash: "000000000000000000079aa6bfa46eb8fc20474e8673d6e8a123b211236bf82d",
+      time: 1555340856000,
+      inputs: [],
+      outputs: [Array],
+      txType: "GENESIS",
+      txTypeDisplayString: "Genesis",
+      burntFee: 0,
+      invalidatedBsq: 0,
+      unlockBlockHeight: 0
+    }
+  ]
 }`,
     },
     bisqBlockTipHeight: {
@@ -749,34 +873,37 @@ export class ApiDocsComponent implements OnInit {
         console.log(myBlocksHeight);`,
         curl: `curl -X GET "https://mempool.space/api/blocks/tip/height"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `685657`,
     },
     bisqBlockIndex: {
       codeSample: {
         esModule: `const { bisq: { blocks } } = mempoolJS();
-  const hash = '000000000000000000079aa6bfa46eb8fc20474e8673d6e8a123b211236bf82d';
 
   const myBlocks = await blocks.getBlocks({ index: 0, length: 1 });
   console.log(myBlocks);
 `,
         commonJS: `const { bisq: { blocks } } = mempoolJS();
-        const hash = '000000000000000000079aa6bfa46eb8fc20474e8673d6e8a123b211236bf82d';
 
         const myBlocks = await blocks.getBlocks({ index: 0, length: 1 });
         console.log(myBlocks);`,
         curl: `curl -X GET "https://mempool.space/api/blocks/:index/:length"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `[
+  {
+    height: 685656,
+    time: 1622468887000,
+    hash: "00000000000000000004c7046979024bd8e8f07389ca53f4f1d7dcf84eefdb21",
+    previousBlockHash: "0000000000000000000bf982d024e5afa38be8fc08c3a9b6a2bd89dbd18de832",
+    txs: [
+      [Object], [Object],
+      [Object], [Object],
+      [Object], [Object],
+      [Object], [Object],
+      [Object], [Object],
+      [Object]
+    ]
+  }
+]`,
     },
     bisqStats: {
       codeSample: {
@@ -816,10 +943,18 @@ export class ApiDocsComponent implements OnInit {
         curl: `curl -X GET "https://mempool.space/api/tx/:txid"`,
       },
       responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
+  "txVersion":"1",
+  "id":"4b5417ec5ab6112bedf539c3b4f5a806ed539542d8b717e1c4470aa3180edce5",
+  "blockHeight":571747,
+  "blockHash":"000000000000000000079aa6bfa46eb8fc20474e8673d6e8a123b211236bf82d",
+  "time":1555340856000,
+  "inputs": [ [Object], [Object] ],
+  "outputs": [ [Object], [Object] ],
+  "txType":"GENESIS",
+  "txTypeDisplayString":"Genesis",
+  "burntFee":0,
+  "invalidatedBsq":0,
+  "unlockBlockHeight":0
 }`,
     },
     bisqTransactions: {
@@ -835,72 +970,113 @@ export class ApiDocsComponent implements OnInit {
         console.log(txs);`,
         curl: `curl -X GET "https://mempool.space/api/txs/:index/:length"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `[
+  {
+    txVersion: "1",
+    id: "084e94afb67df0e6dff2e9ae6913d5ccb58f3b2dab0c4543a7c90c33b70c9bed",
+    blockHeight: 685656,
+    blockHash: "00000000000000000004c7046979024bd8e8f07389ca53f4f1d7dcf84eefdb21",
+    time: 1622468887000,
+    inputs: [ [Object], [Object] ],
+    outputs: [ [Object], [Object], [Object] ],
+    txType: "PAY_TRADE_FEE",
+    txTypeDisplayString: "Pay trade fee",
+    burntFee: 57,
+    invalidatedBsq: 0,
+    unlockBlockHeight: 0
+  }
+]`,
     },
     assets: {
       codeSample: {
-        esModule: `const { bisq: { transactions } } = mempoolJS();
+        esModule: `const { liquid: { assets } } = mempoolJS();
+  const asset_id =
+    '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
 
-  const txs = await transactions.getTxs({ index: 0, length: 1 });
-  console.log(txs);
-`,
-        commonJS: `const { bisq: { transactions } } = mempoolJS();
+  const txs = await assets.getAsset({ asset_id });
+  console.log(txs);`,
+        commonJS: `const { liquid: { assets } } = mempoolJS();
+        const asset_id =
+          '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
 
-        const txs = await transactions.getTxs({ index: 0, length: 1 });
-        console.log(txs);`,
+        const asset = await assets.getAsset({ asset_id });
+        console.log(asset);`,
         curl: `curl -X GET "https://mempool.space/api/asset/:asset_id"`,
       },
       responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
+  asset_id: "6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d",
+  chain_stats: {
+    tx_count: 3013,
+    peg_in_count: 1832,
+    peg_in_amount: 298054170045,
+    peg_out_count: 982,
+    peg_out_amount: 3905921326,
+    burn_count: 199,
+    burned_amount: 516003151
+  },
+  mempool_stats: {
+    tx_count: 0,
+    peg_in_count: 0,
+    peg_in_amount: 0,
+    peg_out_count: 0,
+    peg_out_amount: 0,
+    burn_count: 0,
+    burned_amount: 0
+  }
 }`,
     },
     assetTransactions: {
       codeSample: {
-        esModule: `const { bisq: { transactions } } = mempoolJS();
+        esModule: `const { liquid: { assets } } = mempoolJS();
+  const asset_id =
+        '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
 
-  const txs = await transactions.getTxs({ index: 0, length: 1 });
-  console.log(txs);
-`,
-        commonJS: `const { bisq: { transactions } } = mempoolJS();
+  const assetTxs = await assets.getAssetTxs({ asset_id, is_mempool: false });
+  console.log(asset);`,
+        commonJS: `const { liquid: { assets } } = mempoolJS();
+      const asset_id =
+        '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
 
-        const txs = await transactions.getTxs({ index: 0, length: 1 });
-        console.log(txs);`,
+      const assetTxs = await assets.getAssetTxs({ asset_id, is_mempool: false });
+      console.log(asset);`,
         curl: `curl -X GET "https://mempool.space/api/asset/:asset_id/txs[/mempool|/chain]"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `[
+  {
+    txid: "74057c98274a5e529bd3fcf5b906b235937cea5aed7e43132856b402006068e5",
+    version: 2,
+    locktime: 0,
+    vin: [ [Object] ],
+    vout: [ [Object], [Object] ],
+    size: 975,
+    weight: 1461,
+    fee: 42,
+    status: {
+      confirmed: true,
+      block_height: 1337495,
+      block_hash: "e73bfee19c8e1b59967cb035f835347a78818f8639ee7ccd157d3372cdcd236e",
+      block_time: 1622328838
+    }
+  },
+  ...
+]`,
     },
     assetSupply: {
       codeSample: {
-        esModule: `const { bisq: { transactions } } = mempoolJS();
+        esModule: `const { liquid: { assets } } = mempoolJS();
 
   const txs = await transactions.getTxs({ index: 0, length: 1 });
   console.log(txs);
 `,
-        commonJS: `const { bisq: { transactions } } = mempoolJS();
+        commonJS: `const { liquid: { assets } } = mempoolJS();
+      const asset_id =
+        '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
 
-        const txs = await transactions.getTxs({ index: 0, length: 1 });
-        console.log(txs);`,
+      const assetSupply = await assets.getAssetSupply({ asset_id, decimal: false });
+      console.log(assetSupply);`,
         curl: `curl -X GET "https://mempool.space/api/asset/:asset_id/supply[/decimal]"`,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: `293689745913`,
     },
     websocket: {
       codeSample: {
@@ -927,33 +1103,28 @@ export class ApiDocsComponent implements OnInit {
   });`,
         commonJS: `const { bitcoin: { websocket } } = mempoolJS();
 
-          const ws = websocket.initClient({
-            options: ['blocks', 'stats', 'mempool-blocks', 'live-2h-chart'],
-          });
+        const ws = websocket.initClient({
+          options: ['blocks', 'stats', 'mempool-blocks', 'live-2h-chart'],
+        });
 
-          ws.addEventListener('message', function incoming({data}) {
-            const res = JSON.parse(data.toString());
-            if (res.blocks) {
-              console.log(res.blocks);
-            }
-            if (res.mempoolInfo) {
-              console.log(res.mempoolInfo);
-            }
-            if (res.transactions) {
-              console.log(res.transactions);
-            }
-            if (res.mempoolBlocks) {
-              console.log(res.mempoolBlocks);
-            }
-          });`,
+        ws.addEventListener('message', function incoming({data}) {
+          const res = JSON.parse(data.toString());
+          if (res.blocks) {
+            console.log(res.blocks);
+          }
+          if (res.mempoolInfo) {
+            console.log(res.mempoolInfo);
+          }
+          if (res.transactions) {
+            console.log(res.transactions);
+          }
+          if (res.mempoolBlocks) {
+            console.log(res.mempoolBlocks);
+          }
+        });`,
         curl: ``,
       },
-      responseSample: `{
-  fastestFee: 88,
-  halfHourFee: 49,
-  hourFee: 29,
-  minimumFee: 1
-}`,
+      responseSample: ``,
     }
   };
 

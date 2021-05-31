@@ -75,5 +75,11 @@ init();`;
   <body></body>
 </html>`;
   }
+  wrapCurl(code: string) {
+    if (this.network && this.network !== 'mainnet') {
+      return code.replace('mempool.space/', `mempool.space/${this.network}/`);
+    }
+    return code;
+  }
 
 }
