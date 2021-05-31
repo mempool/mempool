@@ -133,6 +133,7 @@
               "node_modules/@fortawesome/fontawesome-svg-core/styles.css"
             ],
             "scripts": [
+              "src/resources/highlight.min.js",
               "generated-config.js"
             ]
           },
