@@ -88,6 +88,10 @@ body {
   }
 }
 
+.navbar-nav.mainnet > .active {
+  background-color: #fb8c00 !important;
+}
+
 .navbar-nav.liquid > .active {
   background-color: #116761 !important;
 }
@@ -98,6 +102,10 @@ body {
 
 .navbar-nav.signet > .active {
   background-color: #6f1d5d !important;
+}
+
+.navbar-nav.bisq > .active {
+  background-color: #653b9c !important;
 }
 
 .form-control {
