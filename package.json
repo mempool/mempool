@@ -1,6 +1,6 @@
 {
   "name": "@mempool/mempool.js",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "NPM package module for Mempool APIs.",
   "main": "lib/index.js",
   "keywords": [
