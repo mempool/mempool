@@ -95,23 +95,43 @@ nav {
 }
 
 .mainnet.active {
-  background-color: #FB8C00;
+  background-color: rgb(251 140 0 / 55%);
 }
 
 .liquid.active {
-  background-color: #116761;
+  background-color: rgb(17 103 97 / 55%);
 }
 
 .testnet.active {
-  background-color: #1d486f;
+  background-color: rgb(29 72 111 / 55%);
 }
 
 .signet.active {
-  background-color: #6f1d5d;
+  background-color: rgb(111 29 93 / 55%);
 }
 
 .bisq.active {
-  background-color: #653b9c;
+  background-color: rgb(101 59 156 / 55%);
+}
+
+.navbar-nav.mainnet > .active {
+  background-color: #fb8c00 !important;
+}
+
+.navbar-nav.liquid > .active {
+  background-color: #116761 !important;
+}
+
+.navbar-nav.testnet > .active {
+  background-color: #1d486f !important;
+}
+
+.navbar-nav.signet > .active {
+  background-color: #6f1d5d !important;
+}
+
+.navbar-nav.bisq > .active {
+  background-color: #653b9c !important;
 }
 
 .dropdown-divider {
