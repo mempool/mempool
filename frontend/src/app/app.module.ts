@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
-import { HighlightJsModule } from 'ngx-highlight-js';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app/app.component';
@@ -102,7 +101,6 @@ import { SponsorComponent } from './components/sponsor/sponsor.component';
     NgbTypeaheadModule,
     FontAwesomeModule,
     SharedModule,
-    HighlightJsModule,
     NgbModule,
   ],
   providers: [

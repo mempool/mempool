@@ -78,3 +78,14 @@ li.nav-item {
     margin: 0px 10px 0px 0px;
   }
 }
+
+pre {
+  display: block;
+  font-size: 87.5%;
+  color: #f18920;
+  background-color: #1d1f31;
+  padding: 30px;
+  code{
+    background-color: transparent;
+  }
+}

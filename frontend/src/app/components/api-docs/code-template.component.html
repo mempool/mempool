@@ -8,9 +8,9 @@
           <a href="https://github.com/mempool/mempool.js">github repository</a>
           <a href="https://www.npmjs.org/package/@mempool/mempool.js">npm package</a>
         </div>
-        <textarea highlight-js [lang]="'javascript'" [innerText]="esModuleInstall"></textarea>
+        <pre><code [innerText]="esModuleInstall"></code></pre>
         <div class="subtitle">Code Example <app-clipboard [text]="wrapESmodule(code.codeSample.esModule)"></app-clipboard></div>
-        <textarea highlight-js [lang]="'javascript'" [innerText]="wrapESmodule(code.codeSample.esModule)"></textarea>
+        <pre><code [innerText]="wrapESmodule(code.codeSample.esModule)"></code></pre>
       </ng-template>
     </li>
     <li ngbNavItem>
@@ -20,20 +20,20 @@
         <div class="links">
           <a href="https://github.com/mempool/mempool.js">github repository</a>
         </div>
-        <textarea highlight-js [innerText]="wrapCommonJS(code.codeSample.commonJS)"></textarea>
+        <pre><code [innerText]="wrapCommonJS(code.codeSample.commonJS)"></code></pre>
       </ng-template>
     </li>
     <li ngbNavItem *ngIf="code.codeSample.curl">
       <a ngbNavLink>CURL</a>
       <ng-template ngbNavContent>
         <div class="subtitle">Code Example <app-clipboard [text]="wrapCurl(code.codeSample.curl)"></app-clipboard></div>
-        <textarea highlight-js [lang]="'javascript'" [innerText]="wrapCurl(code.codeSample.curl)"></textarea>
+        <pre><code [innerText]="wrapCurl(code.codeSample.curl)"></code></pre>
       </ng-template>
     </li>
   </ul>
   <div [ngbNavOutlet]="navCodeTemplate"></div>
   <div *ngIf="code.responseSample" class="response">
     <div class="subtitle">Response <app-clipboard [text]="code.responseSample"></app-clipboard></div>
-    <textarea highlight-js [lang]="'json'" [innerText]="code.responseSample"></textarea>
+    <pre><code [innerText]="code.responseSample"></code></pre>
   </div>
 </div>
