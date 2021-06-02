@@ -40,7 +40,6 @@ import { AssetsComponent } from './assets/assets.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
 import { MinerComponent } from './components/miner/miner.component';
 import { SharedModule } from './shared/shared.module';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { FeesBoxComponent } from './components/fees-box/fees-box.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -101,7 +100,6 @@ import { SponsorComponent } from './components/sponsor/sponsor.component';
     NgbTypeaheadModule,
     FontAwesomeModule,
     SharedModule,
-    NgbModule,
   ],
   providers: [
     ElectrsApiService,
