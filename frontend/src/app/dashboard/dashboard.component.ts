@@ -90,7 +90,7 @@ export class DashboardComponent implements OnInit {
           progressClass = 'bg-warning';
         }
 
-        const mempoolSizePercentage = (mempoolInfo.usage / mempoolInfo.maxmempool * 100)
+        const mempoolSizePercentage = (mempoolInfo.usage / mempoolInfo.maxmempool * 100);
         let mempoolSizeProgress = 'bg-danger';
         if (mempoolSizePercentage <= 50) {
           mempoolSizeProgress = 'bg-success';
@@ -118,7 +118,7 @@ export class DashboardComponent implements OnInit {
         const diff = now - DATime;
         const blocksInEpoch = block.height % 2016;
         const estimatedBlocks = Math.round(diff / 60 / 10);
-        const difficultyChange = (600 / (diff / blocksInEpoch ) -1) * 100;
+        const difficultyChange = (600 / (diff / blocksInEpoch ) - 1) * 100;
 
         let base = 0;
         let green = 0;
