@@ -1,7 +1,11 @@
 .dashboard-container {
   padding-bottom: 60px;
+  text-align: center;
   @media (min-width: 992px) {
     padding-bottom: 0px;
+  }
+  .col {
+    margin-bottom: 1.5rem;
   }
 }
 
@@ -190,4 +194,11 @@
       display: table-cell;
     }
   }
+}
+
+.mempool-graph {
+  height: 250px;
+}
+.inc-tx-progress-bar{
+  max-width: 250px;;
 }
