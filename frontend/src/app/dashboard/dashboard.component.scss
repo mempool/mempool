@@ -203,9 +203,14 @@
 .mempool-graph {
   height: 250px;
 }
+
 .inc-tx-progress-bar {
   max-width: 250px;
   .progress-bar {
     padding: 4px;
   }
+}
+
+.terms-of-service {
+  margin-top: 1rem;
 }
