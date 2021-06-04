@@ -58,7 +58,7 @@
   } 
   .item {
     width: 124px;
-    margin: 0px auto 0px;
+    margin: 0px auto 20px;
     display: inline-block;
     @media (min-width: 400px) {
       width: 50%;
@@ -90,6 +90,12 @@
       span {
         color: #ffffff66;
         font-size: 12px;
+      }
+    }
+    .progress {
+      width: 90%;
+      @media (min-width: 768px) {
+        width: 100%;
       }
     }
   }
