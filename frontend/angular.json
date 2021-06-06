@@ -232,7 +232,7 @@
         "e2e": {
           "builder": "@cypress/schematic:cypress",
           "options": {
-            "devServerTarget": "mempool:serve",
+            "devServerTarget": "mempool:serve:local-prod",
             "watch": true,
             "headless": false
           },
