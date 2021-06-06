@@ -31,6 +31,23 @@
     },
     "timeout": 3600000
   },
+  "/signet/api/v1/ws": {
+    "target": "https://mempool.ninja/signet",
+    "secure": false,
+    "ws": true,
+    "pathRewrite": {
+      "^/signet/api": "/api/v1/ws"
+    }
+  },
+  "/signet/api/v1/*": {
+    "target": "https://mempool.ninja/signet",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/signet/api/v1": "/api/v1"
+    },
+    "timeout": 3600000
+  },
   "/bisq/api/v1/ws": {
     "target": "https://mempool.ninja/bisq",
     "secure": false,
