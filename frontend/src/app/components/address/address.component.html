@@ -80,6 +80,11 @@
         </ng-container>
 
       </ng-template>
+
+      <ng-template [ngIf]="retryLoadmore">
+        <br>
+        <button type="button" class="btn btn-outline-info btn-sm" (click)="loadMore()"><fa-icon [icon]="['fas', 'redo-alt']" [fixedWidth]="true"></fa-icon></button>
+      </ng-template>
     </div>
 
   </ng-template>
