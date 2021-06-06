@@ -31,7 +31,7 @@ export class SponsorComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`:@@sponsor.title:Sponsor`);
+    this.seoService.setTitle($localize`:@@dfd99c62b5b308fc5b1ad7adbbf9d526d2b31516:Sponsor`);
     this.websocketService.want(['blocks']);
 
     this.paymentForm = this.formBuilder.group({
