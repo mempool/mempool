@@ -92,6 +92,7 @@
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.11.1",
     "codelyzer": "^6.0.1",
+    "concurrently": "^6.2.0",
     "cypress": "7.4.0",
     "cypress-wait-until": "^1.7.1",
     "http-proxy-middleware": "^1.0.5",
