@@ -173,6 +173,22 @@
           "configurations": {
             "production": {
               "browserTarget": "mempool:build:production"
+            },
+            "local": {
+              "proxyConfig": "proxy.prod.conf.json",
+              "verbose": true
+            },
+            "staging": {
+              "proxyConfig": "proxy.stg.conf.json",
+              "disableHostCheck": true,
+              "host": "0.0.0.0",
+              "verbose": true
+            },
+            "local-prod": {
+              "proxyConfig": "proxy.prod.conf.json",
+              "disableHostCheck": true,
+              "host": "0.0.0.0",
+              "verbose": true
             }
           }
         },
