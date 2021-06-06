@@ -47,6 +47,7 @@ import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontaweso
 import { faAngleDown, faAngleUp, faBolt, faChartArea, faCogs, faCubes, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faAngleDoubleUp, faChevronDown, faFileAlt } from '@fortawesome/free-solid-svg-icons';
 import { ApiDocsComponent } from './components/api-docs/api-docs.component';
+import { CodeTemplateComponent } from './components/api-docs/code-template.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 import { StorageService } from './services/storage.service';
 import { HttpCacheInterceptor } from './services/http-cache.interceptor';
@@ -85,6 +86,7 @@ import { SponsorComponent } from './components/sponsor/sponsor.component';
     FeesBoxComponent,
     DashboardComponent,
     ApiDocsComponent,
+    CodeTemplateComponent,
     TermsOfServiceComponent,
     SponsorComponent,
   ],
