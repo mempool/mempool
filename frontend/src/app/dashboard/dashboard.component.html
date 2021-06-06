@@ -1,64 +1,64 @@
 
-<div class="container-xl mt-2 dashboard-container">
+<div class="container-xl dashboard-container">
 
   <div class="row row-cols-1 row-cols-md-2" *ngIf="{ value: (mempoolInfoData$ | async) } as mempoolInfoData">
     <ng-template [ngIf]="collapseLevel === 'three'" [ngIfElse]="expanded">
-      <div class="col mb-4">
-        <div class="card text-center">
+      <div class="col">
+        <div class="card">
           <div class="card-body">
             <app-fees-box class="d-block"></app-fees-box>
           </div>
         </div>
       </div>
-      <div class="col mb-4">
-        <div class="card text-center">
+      <div class="col">
+        <div class="card">
           <div class="card-body">
             <ng-container *ngTemplateOutlet="mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
           </div>
         </div>
       </div>
-      <div class="col mb-4">
-        <div class="card text-center">
+      <div class="col">
+        <div class="card">
           <div class="card-body">
             <ng-container *ngTemplateOutlet="txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
           </div>
         </div>
       </div>
-      <div class="col mb-4" *ngIf="(network$ | async) !== 'liquid'; else emptyBlock">
+      <div class="col" *ngIf="(network$ | async) !== 'liquid'; else emptyBlock">
         <ng-container *ngTemplateOutlet="difficultyEpoch"></ng-container>
       </div>
     </ng-template>
     <ng-template #expanded>
-      <div class="col mb-4">
-        <div class="card text-center">
+      <div class="col">
+        <div class="card">
           <div class="card-body">
             <app-fees-box class="d-block"></app-fees-box>
           </div>
         </div>
       </div>
-      <div class="col mb-4" *ngIf="(network$ | async) !== 'liquid'; else emptyBlock">
+      <div class="col" *ngIf="(network$ | async) !== 'liquid'; else emptyBlock">
         <ng-container *ngTemplateOutlet="difficultyEpoch"></ng-container>
       </div>
-      <div class="col mb-4">
-        <div class="card text-center graph-card">
+      <div class="col">
+        <div class="card graph-card">
           <div class="card-body pl-0">
             <div style="padding-left: 1.25rem;">
               <ng-container *ngTemplateOutlet="mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
               <hr>
             </div>
-            <div style="height: 250px;" *ngIf="(mempoolStats$ | async) as mempoolStats">
+            <div class="mempool-graph" *ngIf="(mempoolStats$ | async) as mempoolStats">
               <app-mempool-graph [data]="mempoolStats.mempool" [showLegend]="false" [offsetX]="20" [small]="true"></app-mempool-graph>
             </div>
           </div>
         </div>
       </div>
-      <div class="col mb-4">
-        <div class="card text-center graph-card">
+      <div class="col">
+        <div class="card graph-card">
           <div class="card-body">
             <ng-container *ngTemplateOutlet="txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
             <br>
             <hr>
-            <div style="height: 250px;" *ngIf="(mempoolStats$ | async) as mempoolStats">
+            <div class="mempool-graph" *ngIf="(mempoolStats$ | async) as mempoolStats">
               <app-chartist
                   [data]="mempoolStats.weightPerSecond"
                   [type]="'Line'"
@@ -69,8 +69,8 @@
         </div>
       </div>
       <ng-template [ngIf]="collapseLevel === 'one'">
-      <div class="col mb-4">
-        <div class="card text-center">
+      <div class="col">
+        <div class="card">
           <div class="card-body">
             <h5 class="card-title" i18n="dashboard.latest-blocks">Latest blocks</h5>
             <table class="table lastest-blocks-table">
@@ -94,12 +94,12 @@
                 </tr>
               </tbody>
             </table>
-            <div class="text-center"><a href="" [routerLink]="['/blocks' | relativeUrl]" i18n="dashboard.view-all">View all &raquo;</a></div>
+            <div class=""><a href="" [routerLink]="['/blocks' | relativeUrl]" i18n="dashboard.view-all">View all &raquo;</a></div>
           </div>
         </div>
       </div>
-      <div class="col mb-4">
-        <div class="card text-center">
+      <div class="col">
+        <div class="card">
           <div class="card-body">
             <h5 class="card-title" i18n="dashboard.latest-transactions">Latest transactions</h5>
             <table class="table latest-transactions">
@@ -118,7 +118,7 @@
                 </tr>
               </tbody>
             </table>
-            <div class="text-center">&nbsp;</div>
+            <div class="">&nbsp;</div>
           </div>
         </div>
       </div>
@@ -135,7 +135,7 @@
 
   <app-language-selector></app-language-selector>
 
-  <div class="text-small text-center mt-3">
+  <div class="terms-of-service">
     <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a>
   </div>
 
@@ -150,7 +150,7 @@
 </ng-template>
 
 <ng-template #emptyBlock>
-  <div class="col mb-4">
+  <div class="col">
 
   </div>
 </ng-template>
@@ -189,8 +189,8 @@
       &nbsp;<span class="badge badge-pill badge-warning"><ng-container i18n="dashboard.backend-is-synchronizing">Backend is synchronizing</ng-container> ({{ mempoolLoadingStatus$ | async }}%)</span>
     </span>
     <ng-template #inSync>
-      <div class="progress" style="max-width: 250px;">
-        <div class="progress-bar {{ mempoolInfoData.value.progressClass }}" style="padding: 4px;" role="progressbar" [ngStyle]="{'width': mempoolInfoData.value.progressWidth}">&nbsp;</div>
+      <div class="progress inc-tx-progress-bar">
+        <div class="progress-bar {{ mempoolInfoData.value.progressClass }}" role="progressbar" [ngStyle]="{'width': mempoolInfoData.value.progressWidth}">&nbsp;</div>
         <div class="progress-text">{{ mempoolInfoData.value.vBytesPerSecond | ceil | number }} <ng-container i18n="shared.vbytes-per-second|vB/s">vB/s</ng-container></div>
       </div>
     </ng-template>
@@ -198,7 +198,7 @@
 </ng-template>
 
 <ng-template #difficultyEpoch>
-  <div class="card text-center">
+  <div class="card">
     <div class="card-body more-padding">
       <h5 class="card-title" i18n="dashboard.difficulty-adjustment">Difficulty adjustment</h5>
       <div class="progress" *ngIf="(difficultyEpoch$ | async) as epochData; else loading">
