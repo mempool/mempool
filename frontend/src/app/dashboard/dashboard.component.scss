@@ -1,7 +1,12 @@
 .dashboard-container {
   padding-bottom: 60px;
+  text-align: center;
+  margin-top: 0.5rem;
   @media (min-width: 992px) {
     padding-bottom: 0px;
+  }
+  .col {
+    margin-bottom: 1.5rem;
   }
 }
 
@@ -57,11 +62,14 @@
     margin-bottom: 10px;
   } 
   .item {
-    width: 124px;
-    margin: 0px auto 0px;
+    width: 50%;
+    margin: 0px auto 20px;
     display: inline-block;
-    @media (min-width: 400px) {
-      width: 50%;
+    @media (min-width: 485px) {
+      margin: 0px auto 10px;
+    }
+    @media (min-width: 785px) {
+      margin: 0px auto 0px;
     }
     &:last-child {
       margin: 0px auto 0px;
@@ -90,6 +98,12 @@
       span {
         color: #ffffff66;
         font-size: 12px;
+      }
+    }
+    .progress {
+      width: 90%;
+      @media (min-width: 768px) {
+        width: 100%;
       }
     }
   }
@@ -184,4 +198,19 @@
       display: table-cell;
     }
   }
+}
+
+.mempool-graph {
+  height: 250px;
+}
+
+.inc-tx-progress-bar {
+  max-width: 250px;
+  .progress-bar {
+    padding: 4px;
+  }
+}
+
+.terms-of-service {
+  margin-top: 1rem;
 }
