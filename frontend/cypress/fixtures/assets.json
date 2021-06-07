@@ -1,0 +1,119 @@
+{
+    "f59c5f3e8141f322276daa63ed5f307085808aea6d4ef9ba61e28154533fdec7": {
+      "asset_id": "f59c5f3e8141f322276daa63ed5f307085808aea6d4ef9ba61e28154533fdec7",
+      "contract": {
+        "entity": {
+          "domain": "listedreserve.com"
+        },
+        "issuer_pubkey": "031cc579d142a03b33cdd745922112821c16e5e8b74e3bd57f16f7fda872b6f1d0",
+        "name": "Liquid AUD",
+        "precision": 2,
+        "ticker": "AUDL",
+        "version": 0
+      },
+      "issuance_txin": {
+        "txid": "e5c5144ba3dc48259ae29023fe9f7775dec1fc049f456dd3d1f7178e31901fb5",
+        "vin": 0
+      },
+      "issuance_prevout": {
+        "txid": "ed48be2e035ffa425d2c6faaa82b6a7b648aed1246b6ac76c72e0408db8cf057",
+        "vout": 1
+      },
+      "name": "Liquid AUD",
+      "ticker": "AUDL",
+      "precision": 2,
+      "entity": {
+        "domain": "listedreserve.com"
+      },
+      "version": 0,
+      "issuer_pubkey": "031cc579d142a03b33cdd745922112821c16e5e8b74e3bd57f16f7fda872b6f1d0"
+    },
+    "0e99c1a6da379d1f4151fb9df90449d40d0608f6cb33a5bcbfc8c265f42bab0a": {
+      "asset_id": "0e99c1a6da379d1f4151fb9df90449d40d0608f6cb33a5bcbfc8c265f42bab0a",
+      "contract": {
+        "entity": {
+          "domain": "lcad.bullbitcoin.com"
+        },
+        "issuer_pubkey": "027fa34026195b05f3aa217335416811dca4f5b579d00271a1bb6304c0152458a8",
+        "name": "Liquid CAD",
+        "precision": 8,
+        "ticker": "LCAD",
+        "version": 0
+      },
+      "issuance_txin": {
+        "txid": "238badf029cadcf546d90ce23c7eafc2fa2082585c9bd62dc26f1aa11c7bd850",
+        "vin": 0
+      },
+      "issuance_prevout": {
+        "txid": "a87f13917c08c7ccd8eddb1830c5c9a2bcd59c7d167e9d528659ba40808a6b76",
+        "vout": 0
+      },
+      "name": "Liquid CAD",
+      "ticker": "LCAD",
+      "precision": 8,
+      "entity": {
+        "domain": "lcad.bullbitcoin.com"
+      },
+      "version": 0,
+      "issuer_pubkey": "027fa34026195b05f3aa217335416811dca4f5b579d00271a1bb6304c0152458a8"
+    },
+    "3438ecb49fc45c08e687de4749ed628c511e326460ea4336794e1cf02741329e": {
+      "asset_id": "3438ecb49fc45c08e687de4749ed628c511e326460ea4336794e1cf02741329e",
+      "contract": {
+        "entity": {
+          "domain": "settlenet.io"
+        },
+        "issuer_pubkey": "037b09d542bf7cea6a19fa624b4441790c1a6e44823597bf190e981a846a196541",
+        "name": "SETTLENET JPY Stablecoin by Crypto Garage",
+        "precision": 0,
+        "ticker": "JPYS",
+        "version": 0
+      },
+      "issuance_txin": {
+        "txid": "e33ad5ce8879297d8bfa7daa193920b94abd3fb12f4e8dade9543dbb292387cb",
+        "vin": 0
+      },
+      "issuance_prevout": {
+        "txid": "328c4fadd817ea75e634e3648eb4be0bf7e669539b8da921c0f77af3bc148894",
+        "vout": 1
+      },
+      "name": "SETTLENET JPY Stablecoin by Crypto Garage",
+      "ticker": "JPYS",
+      "precision": 0,
+      "entity": {
+        "domain": "settlenet.io"
+      },
+      "version": 0,
+      "issuer_pubkey": "037b09d542bf7cea6a19fa624b4441790c1a6e44823597bf190e981a846a196541"
+    },
+    "ce091c998b83c78bb71a632313ba3760f1763d9cfcffae02258ffa9865a37bd2": {
+      "asset_id": "ce091c998b83c78bb71a632313ba3760f1763d9cfcffae02258ffa9865a37bd2",
+      "contract": {
+        "entity": {
+          "domain": "tether.to"
+        },
+        "issuer_pubkey": "0337cceec0beea0232ebe14cba0197a9fbd45fcf2ec946749de920e71434c2b904",
+        "name": "Tether USD",
+        "precision": 8,
+        "ticker": "USDt",
+        "version": 0
+      },
+      "issuance_txin": {
+        "txid": "abb4080d91849e933ee2ed65da6b436f7c385cf363fb4aa08399f1e27c58ff3d",
+        "vin": 0
+      },
+      "issuance_prevout": {
+        "txid": "9596d259270ef5bac0020435e6d859aea633409483ba64e232b8ba04ce288668",
+        "vout": 0
+      },
+      "name": "Tether USD",
+      "ticker": "USDt",
+      "precision": 8,
+      "entity": {
+        "domain": "tether.to"
+      },
+      "version": 0,
+      "issuer_pubkey": "0337cceec0beea0232ebe14cba0197a9fbd45fcf2ec946749de920e71434c2b904"
+    }
+  }
+  

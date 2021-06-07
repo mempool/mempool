@@ -1,55 +1,60 @@
 {
   "/api/v1/ws": {
-    "target": "https://mempool.ninja",
+    "target": "https://mempool.space",
     "secure": false,
     "ws": true
   },
   "/api/*": {
-    "target": "https://mempool.ninja",
+    "target": "https://mempool.space",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug",
     "pathRewrite": {
-      "^/api": "https://mempool.ninja/api"
+      "^/api": "https://mempool.space/api"
     },
     "timeout": 3600000
   },
   "/testnet/api/v1/ws": {
-    "target": "https://mempool.ninja/testnet",
+    "target": "https://mempool.space/testnet",
     "secure": false,
     "ws": true,
+    "loglevel": "debug",
     "pathRewrite": {
       "^/testnet/api": "/api/v1/ws"
     }
   },
-  "/testnet/api/v1/*": {
-    "target": "https://mempool.ninja/testnet",
-    "secure": false,
+  "/testnet/api/*": {
+    "target": "https://mempool.space",
+    "secure": true,
     "changeOrigin": true,
+    "loglevel": "debug",
     "pathRewrite": {
-      "^/testnet/api/v1": "/api/v1"
+      "/testnet/api": "/testnet/api"
     },
     "timeout": 3600000
   },
   "/signet/api/v1/ws": {
-    "target": "https://mempool.ninja/signet",
+    "target": "https://mempool.space/signet",
     "secure": false,
     "ws": true,
+    "loglevel": "debug",
     "pathRewrite": {
       "^/signet/api": "/api/v1/ws"
     }
   },
-  "/signet/api/v1/*": {
-    "target": "https://mempool.ninja/signet",
-    "secure": false,
+  "/signet/api/*": {
+    "target": "https://mempool.space",
+    "secure": true,
     "changeOrigin": true,
+    "loglevel": "debug",
     "pathRewrite": {
-      "^/signet/api/v1": "/api/v1"
+      "/signet/api": "/signet/api"
     },
     "timeout": 3600000
   },
+
   "/bisq/api/v1/ws": {
-    "target": "https://mempool.ninja/bisq",
+    "target": "https://mempool.space/bisq",
     "secure": false,
     "ws": true,
     "pathRewrite": {
@@ -57,7 +62,7 @@
     }
   },
   "/bisq/api/*": {
-    "target": "https://mempool.ninja/bisq",
+    "target": "https://mempool.space/bisq",
     "secure": false,
     "changeOrigin": true,
     "pathRewrite": {
@@ -66,19 +71,16 @@
     "timeout": 3600000
   },
   "/liquid/api/v1/ws": {
-    "target": "https://mempool.ninja/liquid",
+    "target": "https://mempool.space",
     "secure": false,
-    "ws": true,
-    "pathRewrite": {
-      "^/liquid/api": "/api/v1/ws"
-    }
+    "ws": true
   },
   "/liquid/api/*": {
-    "target": "https://mempool.ninja/liquid",
+    "target": "https://mempool.space",
     "secure": false,
     "changeOrigin": true,
     "pathRewrite": {
-      "^/liquid/api/": "/api/v1/liquid/"
+      "^/liquid/api/": "/liquid/api/"
     },
     "timeout": 3600000
   }
