@@ -54,3 +54,8 @@ src/resources/pools.json
 # environment config
 mempool-frontend-config.json
 generated-config.js
+
+# e2e results
+cypress/videos
+cypress/screenshots
+
