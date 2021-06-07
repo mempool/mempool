@@ -11,6 +11,7 @@ class Bisq {
   private static BLOCKS_JSON_FILE_PATH = config.BISQ.DATA_PATH + '/json/all/blocks.json';
   private latestBlockHeight = 0;
   private blocks: BisqBlock[] = [];
+  private allBlocks: BisqBlock[] = [];
   private transactions: BisqTransaction[] = [];
   private transactionIndex: { [txId: string]: BisqTransaction } = {};
   private blockIndex: { [hash: string]: BisqBlock } = {};
@@ -171,7 +172,7 @@ class Bisq {
     this.transactionIndex = {};
     this.addressIndex = {};
 
-    this.blocks.forEach((block) => {
+    this.allBlocks.forEach((block) => {
       /* Build block index */
       if (!this.blockIndex[block.hash]) {
         this.blockIndex[block.hash] = block;
@@ -245,8 +246,9 @@ class Bisq {
     if (cacheData && cacheData.length !== 0) {
       logger.debug('Processing Bisq data dump...');
       const data: BisqBlocks = await this.jsonParsePool.exec(cacheData);
-      if (data.blocks && data.blocks.length !== this.blocks.length) {
-        this.blocks = data.blocks.filter((block) => block.txs.length > 0);
+      if (data.blocks && data.blocks.length !== this.allBlocks.length) {
+        this.allBlocks = data.blocks;
+        this.blocks = this.allBlocks.filter((block) => block.txs.length > 0);
         this.blocks.reverse();
         this.latestBlockHeight = data.chainHeight;
         const time = new Date().getTime() - start;

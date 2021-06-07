@@ -1,0 +1,39 @@
+<div class="code">
+  <ul ngbNav #navCodeTemplate="ngbNav" class="nav-tabs code-tab">
+    <li ngbNavItem>
+      <a ngbNavLink>ES Module</a>
+      <ng-template ngbNavContent>
+        <div class="subtitle">Install Package <app-clipboard [text]="esModuleInstall"></app-clipboard></div>
+        <div class="links">
+          <a href="https://github.com/mempool/mempool.js">github repository</a>
+          <a href="https://www.npmjs.org/package/@mempool/mempool.js">npm package</a>
+        </div>
+        <pre><code [innerText]="esModuleInstall"></code></pre>
+        <div class="subtitle">Code Example <app-clipboard [text]="wrapESmodule(code.codeSample.esModule)"></app-clipboard></div>
+        <pre><code [innerText]="wrapESmodule(code.codeSample.esModule)"></code></pre>
+      </ng-template>
+    </li>
+    <li ngbNavItem>
+      <a ngbNavLink>Common JS</a>
+      <ng-template ngbNavContent>
+        <div class="subtitle">Code Example <app-clipboard [text]="wrapCommonJS(code.codeSample.commonJS)"></app-clipboard></div>
+        <div class="links">
+          <a href="https://github.com/mempool/mempool.js">github repository</a>
+        </div>
+        <pre><code [innerText]="wrapCommonJS(code.codeSample.commonJS)"></code></pre>
+      </ng-template>
+    </li>
+    <li ngbNavItem *ngIf="code.codeSample.curl">
+      <a ngbNavLink>CURL</a>
+      <ng-template ngbNavContent>
+        <div class="subtitle">Code Example <app-clipboard [text]="wrapCurl(code.codeSample.curl)"></app-clipboard></div>
+        <pre><code [innerText]="wrapCurl(code.codeSample.curl)"></code></pre>
+      </ng-template>
+    </li>
+  </ul>
+  <div [ngbNavOutlet]="navCodeTemplate"></div>
+  <div *ngIf="code.responseSample" class="response">
+    <div class="subtitle">Response <app-clipboard [text]="code.responseSample"></app-clipboard></div>
+    <pre><code [innerText]="code.responseSample"></code></pre>
+  </div>
+</div>
