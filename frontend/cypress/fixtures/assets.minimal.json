@@ -1,0 +1,33 @@
+{
+    "f59c5f3e8141f322276daa63ed5f307085808aea6d4ef9ba61e28154533fdec7": [
+      "listedreserve.com",
+      "AUDL",
+      "Liquid AUD",
+      2
+    ],
+    "0e99c1a6da379d1f4151fb9df90449d40d0608f6cb33a5bcbfc8c265f42bab0a": [
+      "lcad.bullbitcoin.com",
+      "LCAD",
+      "Liquid CAD",
+      8
+    ],
+    "6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d": [
+      null,
+      "L-BTC",
+      "Liquid Bitcoin",
+      8
+    ],
+    "ce091c998b83c78bb71a632313ba3760f1763d9cfcffae02258ffa9865a37bd2": [
+      "tether.to",
+      "USDt",
+      "Tether USD",
+      8
+    ],
+    "3438ecb49fc45c08e687de4749ed628c511e326460ea4336794e1cf02741329e": [
+      "settlenet.io",
+      "JPYS",
+      "SETTLENET JPY Stablecoin by Crypto Garage",
+      0
+    ]
+  }
+  
