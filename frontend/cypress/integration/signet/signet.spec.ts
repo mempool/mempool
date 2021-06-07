@@ -1,11 +1,10 @@
 describe('Signet', () => {
     it('loads the dashboard', () => {
-      cy.visit('/signet')
-    })
+      cy.visit('/signet');
+    });
 
     it.skip('loads all the pages properly', () => {
-        
-    })
 
-  })
-  
+    });
+
+  });
