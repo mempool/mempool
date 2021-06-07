@@ -42,8 +42,8 @@
     "serve:ssr": "node server.run.js",
     "build:ssr": "npm run build && ng run mempool:server:production && ./node_modules/typescript/bin/tsc server.run.ts",
     "prerender": "ng run mempool:prerender",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
+    "cypress:open": "concurrently \"ng serve -c local-prod\" \"cypress open\" --kill-others",
+    "cypress:run": "concurrently \"ng serve -c local-prod\" \"cypress run\" --kill-others"
   },
   "dependencies": {
     "@angular/animations": "~11.2.8",
