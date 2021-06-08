@@ -19,6 +19,12 @@
   width: 22px;
   height: 22px;
   margin-right: 10px;
+  order: 2;
+  margin-left: 10px;
+  @media (min-width: 653px) {
+    margin-left: 0px;
+    order: 1;
+  }
 }
 
 .card-body {
@@ -30,7 +36,9 @@
 
 .formRadioGroup{
   margin-top: 6px;
+  display: flex;
   @media (min-width: 653px) {
+    display: block;
     float: right;
     margin-top: 0px;
   }
