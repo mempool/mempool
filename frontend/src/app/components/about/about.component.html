@@ -1,290 +1,204 @@
-<div class="container-xl">
-  <div class="text-center">
-    <br>
-    <img src="./resources/mempool-logo-bigger.png" height="62.5" width="250">
-    <br>
+<div class="container-xl about-page">
 
-    <div class="text-small text-center offset-md-1">
+  <div class="intro">
+    <img class="logo" src="./resources/mempool-logo-bigger.png" />
+    <div class="version">
       v{{ packetJsonVersion }} [{{ frontendGitCommitHash }}]
     </div>
+  </div>
 
-    <br>
-
+  <div class="about-text">
     <h5 i18n="about.about-the-project">The Mempool Open Source Project</h5>
-    <div class="row row-cols-1">
-      <div class="col col-md-6 mx-auto">
-        <p i18n>An explorer and API developed and operated for the Bitcoin community, focusing on the emerging transaction fee market to help our transition into a multi-layer ecosystem, without ads, altcoins, or third-party trackers.</p>
-      </div>
-    </div>
+    <p i18n>An explorer and API developed and operated for the Bitcoin community, focusing on the emerging transaction fee market to help our transition into a multi-layer ecosystem, without ads, altcoins, or third-party trackers.</p>
+  </div>
 
-    <a target="_blank" class="m-2 fw6 mb3 mt2 truncate black-80 f4 link" href="https://github.com/mempool/mempool">
-      <span class="dib v-mid">
-        <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="github" class="svg-inline--fa fa-github fa-w-16 fa-4x" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path fill="currentColor" d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"></path></svg>
-      </span>
+  <div class="social-icons">
+    <a target="_blank" href="https://github.com/mempool/mempool">
+      <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="github" class="svg-inline--fa fa-github fa-w-16 fa-4x" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path fill="currentColor" d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"></path></svg>
     </a>
-
-    <a target="_blank" class="m-2 fw6 mb3 mt2 truncate black-80 f4 link" href="https://twitter.com/mempool">
-      <span class="dib v-mid">
-        <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="twitter" class="svg-inline--fa fa-twitter fa-w-16 fa-4x" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path></svg>
-      </span>
+    <a target="_blank" href="https://twitter.com/mempool">
+      <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="twitter" class="svg-inline--fa fa-twitter fa-w-16 fa-4x" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path></svg>
     </a>
-
-    <a target="_blank" class="m-2 fw6 mb3 mt2 truncate black-80 f4 link" href="https://t.me/mempoolspace">
-      <span class="dib v-mid">
-        <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="telegram-plane" class="svg-inline--fa fa-telegram-plane fa-w-14 fa-4x" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M446.7 98.6l-67.6 318.8c-5.1 22.5-18.4 28.1-37.3 17.5l-103-75.9-49.7 47.8c-5.5 5.5-10.1 10.1-20.7 10.1l7.4-104.9 190.9-172.5c8.3-7.4-1.8-11.5-12.9-4.1L117.8 284 16.2 252.2c-22.1-6.9-22.5-22.1 4.6-32.7L418.2 66.4c18.4-6.9 34.5 4.1 28.5 32.2z"></path></svg>
-      </span>
+    <a target="_blank" href="https://t.me/mempoolspace">
+      <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="telegram-plane" class="svg-inline--fa fa-telegram-plane fa-w-14 fa-4x" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M446.7 98.6l-67.6 318.8c-5.1 22.5-18.4 28.1-37.3 17.5l-103-75.9-49.7 47.8c-5.5 5.5-10.1 10.1-20.7 10.1l7.4-104.9 190.9-172.5c8.3-7.4-1.8-11.5-12.9-4.1L117.8 284 16.2 252.2c-22.1-6.9-22.5-22.1 4.6-32.7L418.2 66.4c18.4-6.9 34.5 4.1 28.5 32.2z"></path></svg>
     </a>
-
-    <a target="_blank" class="m-2 fw6 mb3 mt2 truncate black-80 f4 link" href="https://keybase.io/team/mempool">
-      <span class="dib v-mid">
-        <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="keybase" class="svg-inline--fa fa-keybase fa-w-14 fa-4x" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M286.17 419a18 18 0 1 0 18 18 18 18 0 0 0-18-18zm111.92-147.6c-9.5-14.62-39.37-52.45-87.26-73.71q-9.1-4.06-18.38-7.27a78.43 78.43 0 0 0-47.88-104.13c-12.41-4.1-23.33-6-32.41-5.77-.6-2-1.89-11 9.4-35L198.66 32l-5.48 7.56c-8.69 12.06-16.92 23.55-24.34 34.89a51 51 0 0 0-8.29-1.25c-41.53-2.45-39-2.33-41.06-2.33-50.61 0-50.75 52.12-50.75 45.88l-2.36 36.68c-1.61 27 19.75 50.21 47.63 51.85l8.93.54a214 214 0 0 0-46.29 35.54C14 304.66 14 374 14 429.77v33.64l23.32-29.8a148.6 148.6 0 0 0 14.56 37.56c5.78 10.13 14.87 9.45 19.64 7.33 4.21-1.87 10-6.92 3.75-20.11a178.29 178.29 0 0 1-15.76-53.13l46.82-59.83-24.66 74.11c58.23-42.4 157.38-61.76 236.25-38.59 34.2 10.05 67.45.69 84.74-23.84.72-1 1.2-2.16 1.85-3.22a156.09 156.09 0 0 1 2.8 28.43c0 23.3-3.69 52.93-14.88 81.64-2.52 6.46 1.76 14.5 8.6 15.74 7.42 1.57 15.33-3.1 18.37-11.15C429 443 434 414 434 382.32c0-38.58-13-77.46-35.91-110.92zM142.37 128.58l-15.7-.93-1.39 21.79 13.13.78a93 93 0 0 0 .32 19.57l-22.38-1.34a12.28 12.28 0 0 1-11.76-12.79L107 119c1-12.17 13.87-11.27 13.26-11.32l29.11 1.73a144.35 144.35 0 0 0-7 19.17zm148.42 172.18a10.51 10.51 0 0 1-14.35-1.39l-9.68-11.49-34.42 27a8.09 8.09 0 0 1-11.13-1.08l-15.78-18.64a7.38 7.38 0 0 1 1.34-10.34l34.57-27.18-14.14-16.74-17.09 13.45a7.75 7.75 0 0 1-10.59-1s-3.72-4.42-3.8-4.53a7.38 7.38 0 0 1 1.37-10.34L214 225.19s-18.51-22-18.6-22.14a9.56 9.56 0 0 1 1.74-13.42 10.38 10.38 0 0 1 14.3 1.37l81.09 96.32a9.58 9.58 0 0 1-1.74 13.44zM187.44 419a18 18 0 1 0 18 18 18 18 0 0 0-18-18z"></path></svg>
-      </span>
+    <a target="_blank" href="https://keybase.io/team/mempool">
+      <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="keybase" class="svg-inline--fa fa-keybase fa-w-14 fa-4x" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M286.17 419a18 18 0 1 0 18 18 18 18 0 0 0-18-18zm111.92-147.6c-9.5-14.62-39.37-52.45-87.26-73.71q-9.1-4.06-18.38-7.27a78.43 78.43 0 0 0-47.88-104.13c-12.41-4.1-23.33-6-32.41-5.77-.6-2-1.89-11 9.4-35L198.66 32l-5.48 7.56c-8.69 12.06-16.92 23.55-24.34 34.89a51 51 0 0 0-8.29-1.25c-41.53-2.45-39-2.33-41.06-2.33-50.61 0-50.75 52.12-50.75 45.88l-2.36 36.68c-1.61 27 19.75 50.21 47.63 51.85l8.93.54a214 214 0 0 0-46.29 35.54C14 304.66 14 374 14 429.77v33.64l23.32-29.8a148.6 148.6 0 0 0 14.56 37.56c5.78 10.13 14.87 9.45 19.64 7.33 4.21-1.87 10-6.92 3.75-20.11a178.29 178.29 0 0 1-15.76-53.13l46.82-59.83-24.66 74.11c58.23-42.4 157.38-61.76 236.25-38.59 34.2 10.05 67.45.69 84.74-23.84.72-1 1.2-2.16 1.85-3.22a156.09 156.09 0 0 1 2.8 28.43c0 23.3-3.69 52.93-14.88 81.64-2.52 6.46 1.76 14.5 8.6 15.74 7.42 1.57 15.33-3.1 18.37-11.15C429 443 434 414 434 382.32c0-38.58-13-77.46-35.91-110.92zM142.37 128.58l-15.7-.93-1.39 21.79 13.13.78a93 93 0 0 0 .32 19.57l-22.38-1.34a12.28 12.28 0 0 1-11.76-12.79L107 119c1-12.17 13.87-11.27 13.26-11.32l29.11 1.73a144.35 144.35 0 0 0-7 19.17zm148.42 172.18a10.51 10.51 0 0 1-14.35-1.39l-9.68-11.49-34.42 27a8.09 8.09 0 0 1-11.13-1.08l-15.78-18.64a7.38 7.38 0 0 1 1.34-10.34l34.57-27.18-14.14-16.74-17.09 13.45a7.75 7.75 0 0 1-10.59-1s-3.72-4.42-3.8-4.53a7.38 7.38 0 0 1 1.37-10.34L214 225.19s-18.51-22-18.6-22.14a9.56 9.56 0 0 1 1.74-13.42 10.38 10.38 0 0 1 14.3 1.37l81.09 96.32a9.58 9.58 0 0 1-1.74 13.44zM187.44 419a18 18 0 1 0 18 18 18 18 0 0 0-18-18z"></path></svg>
     </a>
+  </div>
 
-    <br><br>
-    <br><br>
-
+  <div class="enterprise-sponsor">
     <h3 i18n="about.sponsors.enterprise.withRocket">Enterprise Sponsors 🚀</h3>
+    <div class="wrapper">
+      <a href="https://squarecrypto.org/" target="_blank" title="Square Crypto">
+        <img class="image" src="/resources/profile/sqcrypto.svg" />
+        <span>Square</span>
+      </a>
+      <a href="https://gemini.com/" target="_blank" title="Gemini">
+        <img class="image" src="/resources/profile/gemini.svg" />
+        <span>Gemini</span>
+      </a>
+      <a href="https://exodus.com/" target="_blank" title="Exodus">
+        <img class="image" src="/resources/profile/exodus.svg" />
+        <span>Exodus</span>
+      </a>
+    </div>
+  </div>
 
-    <a href="https://squarecrypto.org/" target="_blank">
-      <div class="profile_photo enterprise_sponsor d-inline-block" title="Square Crypto">
-        <img class="profile_img" src="/resources/profile/sqcrypto.svg" />
-        Square
-      </div>
-    </a>
-
-    <a href="https://gemini.com/" target="_blank">
-      <div class="profile_photo enterprise_sponsor d-inline-block" title="Gemini">
-        <img class="profile_img" src="/resources/profile/gemini.svg" />
-        Gemini
-      </div>
-    </a>
-
-    <a href="https://exodus.com/" target="_blank">
-      <div class="profile_photo enterprise_sponsor d-inline-block" title="Exodus">
-        <img class="profile_img" src="/resources/profile/exodus.svg" />
-        Exodus
-      </div>
-    </a>
-
-    <br><br>
-    <br><br>
-
+  <div class="community-sponsor">
     <h3 i18n="about.sponsors.withHeart">Community Sponsors ❤️</h3>
 
-    <ng-container *ngIf="sponsors$ | async as sponsors; else loadingSponsors">
-      <ng-template ngFor let-sponsor [ngForOf]="sponsors">
-        <a [href]="'https://twitter.com/' + sponsor.handle" target="_blank" rel="sponsored">
-          <div class="profile_photo community_sponsor d-inline-block" [title]="sponsor.handle">
-            <img class="profile_img" [src]="'/api/v1/donations/images/' + sponsor.handle" />
-          </div>
-        </a>
-      </ng-template>
-    </ng-container>
-    <br><br>
-    
+    <div class="wrapper">
+      <ng-container *ngIf="sponsors$ | async as sponsors; else loadingSponsors">
+        <ng-template ngFor let-sponsor [ngForOf]="sponsors">
+          <a [href]="'https://twitter.com/' + sponsor.handle" target="_blank" rel="sponsored" [title]="sponsor.handle">
+            <img class="image" [src]="sponsor.imageUrl" />
+          </a>
+        </ng-template>
+      </ng-container>
+    </div>
+
     <button [hidden]="showNavigateToSponsor" type="button" class="btn btn-primary" (click)="sponsor()" i18n="about.become-a-sponsor">Become a sponsor ❤️</button>
     <ng-container *ngIf="showNavigateToSponsor" i18n="about.navigate-to-sponsor">Navigate to <a href="https://mempool.space/sponsor" target="_blank">https://mempool.space/sponsor</a> to sponsor</ng-container>
+  </div>
 
-    <br><br>
-    <br>
-
+  <div class="community-integrations-sponsor">
     <h3 i18n="about.integrations">Community Integrations</h3>
 
-    <a href="https://github.com/bisq-network/bisq" target="_blank">
-      <div class="profile_photo d-inline-block" title="Bisq">
-        <img class="profile_img" src="/resources/profile/bisq_network.png" />
-       Bisq
-      </div>
-    </a>
-
-    <a href="https://github.com/getumbrel/umbrel" target="_blank">
-      <div class="profile_photo d-inline-block" title="Umbrel">
-        <img class="profile_img" src="/resources/profile/umbrel.png" />
-	Umbrel
-      </div>
-    </a>
-
-    <a href="https://github.com/rootzoll/raspiblitz" target="_blank">
-      <div class="profile_photo d-inline-block" title="RaspiBlitz">
-        <img class="profile_img" src="/resources/profile/raspiblitz.jpg" />
-	RaspiBlitz
-      </div>
-    </a>
-
-    <a href="https://github.com/mynodebtc/mynode" target="_blank">
-      <div class="profile_photo d-inline-block" title="MyNode">
-        <img class="profile_img" src="/resources/profile/mynodebtc.jpg" />
-	MyNode
-      </div>
-    </a>
-
-    <a href="https://github.com/RoninDojo/RoninDojo" target="_blank">
-      <div class="profile_photo d-inline-block" title="RoninDojo">
-        <img class="profile_img" src="/resources/profile/ronindojo.png" />
-	RoninDojo
-      </div>
-    </a>
-
-    <a href="https://github.com/spesmilo/electrum" target="_blank">
-      <div class="profile_photo d-inline-block" title="Electrum Wallet">
-        <img class="profile_img" src="/resources/profile/electrum.jpg" />
-	Electrum
-      </div>
-    </a>
-
-    <a href="https://github.com/cryptoadvance/specter-desktop" target="_blank">
-      <div class="profile_photo d-inline-block" title="Specter Wallet">
-        <img class="profile_img" src="/resources/profile/specter.png" />
-        Specter
-      </div>
-    </a>
-
-    <a href="https://github.com/sparrowwallet/sparrow" target="_blank">
-      <div class="profile_photo d-inline-block" title="Sparrow Wallet">
-        <img class="profile_img" src="/resources/profile/sparrow.png" />
-        Sparrow
-      </div>
-    </a>
-
-    <a href="https://github.com/ACINQ/phoenix" target="_blank">
-      <div class="profile_photo d-inline-block" title="Phoenix Wallet by ACINQ">
-        <img class="profile_img" src="/resources/profile/phoenix.jpg" />
-	Phoenix
-      </div>
-    </a>
-
-    <a href="https://github.com/muun/apollo" target="_blank">
-      <div class="profile_photo d-inline-block" title="Muun Wallet">
-        <img class="profile_img" src="/resources/profile/muun.png" />
-        Muun
-      </div>
-    </a>
-
-    <a href="https://github.com/BlueWallet/BlueWallet" target="_blank">
-      <div class="profile_photo d-inline-block" title="BlueWallet">
-        <img class="profile_img" src="/resources/profile/bluewallet.png" />
-        BlueWallet
-      </div>
-    </a>
-
-    <a href="https://github.com/hsjoberg/blixt-wallet" target="_blank">
-      <div class="profile_photo d-inline-block" title="Blixt Wallet">
-        <img class="profile_img" src="/resources/profile/blixt.png" />
-	Blixt
-      </div>
-    </a>
-
-    <a href="https://github.com/Satpile/satpile" target="_blank">
-      <div class="profile_photo d-inline-block" title="Satpile Watch-Only Wallet">
-        <img class="profile_img" src="/resources/profile/satpile.jpg" />
-	Satpile
-      </div>
-    </a>
-
-    <a href="https://github.com/btcontract/lnwallet" target="_blank">
-      <div class="profile_photo d-inline-block" title="Bitcoin Lightning Wallet">
-        <img class="profile_img" src="/resources/profile/blw.png" />
-	BLW
-      </div>
-    </a>
-
-    <a href="https://github.com/pxsocs/warden" target="_blank">
-      <div class="profile_photo d-inline-block" title="WARden Portfolio">
-        <img class="profile_img" src="/resources/profile/warden.jpg" />
-        WARden
-      </div>
-    </a>
-
-    <br><br>
-    <br><br>
-    <div class="alliances">
-      <h3 i18n="about.alliances">Community Alliances</h3>
-
-      <a href="https://liquid.net/">
-        <img src="/resources/profile/liquid.svg" height="52">
+    <div class="wrapper">
+      <a href="https://github.com/bisq-network/bisq" target="_blank" title="Bisq">
+        <img class="image" src="/resources/profile/bisq_network.png" />
+        <span>Bisq</span>
       </a>
-
-      <a href="https://opencrypto.org/">
-        <img src="/resources/profile/copa.png" height="62">
+      <a href="https://github.com/getumbrel/umbrel" target="_blank" title="Umbrel">
+        <img class="image" src="/resources/profile/umbrel.png" />
+        <span>Umbrel</span>
       </a>
-
-      <a href="https://bisq.network/">
-        <img src="/resources/profile/bisq.svg" height="62">
+      <a href="https://github.com/rootzoll/raspiblitz" target="_blank" title="RaspiBlitz">
+        <img class="image" src="/resources/profile/raspiblitz.jpg" />
+        <span>RaspiBlitz</span>
+      </a>
+      <a href="https://github.com/mynodebtc/mynode" target="_blank" title="MyNode">
+        <img class="image" src="/resources/profile/mynodebtc.jpg" />
+        <span>MyNode</span>
+      </a>
+      <a href="https://github.com/RoninDojo/RoninDojo" target="_blank" title="RoninDojo">
+        <img class="image" src="/resources/profile/ronindojo.png" />
+        <span>RoninDojo</span>
+      </a>
+      <a href="https://github.com/spesmilo/electrum" target="_blank" title="Electrum Wallet">
+        <img class="image" src="/resources/profile/electrum.jpg" />
+        <span>Electrum</span>
+      </a>
+      <a href="https://github.com/cryptoadvance/specter-desktop" target="_blank" title="Specter Wallet">
+        <img class="image" src="/resources/profile/specter.png" />
+        <span>Specter</span>
+      </a>
+      <a href="https://github.com/sparrowwallet/sparrow" target="_blank" title="Sparrow Wallet">
+        <img class="image" src="/resources/profile/sparrow.png" />
+        <span>Sparrow</span>
+      </a>
+      <a href="https://github.com/ACINQ/phoenix" target="_blank" title="Phoenix Wallet by ACINQ">
+        <img class="image" src="/resources/profile/phoenix.jpg" />
+        <span>Phoenix</span>
+      </a>
+      <a href="https://github.com/muun/apollo" target="_blank" title="Muun Wallet">
+        <img class="image" src="/resources/profile/muun.png" />
+        <span>Muun</span>
+      </a>
+      <a href="https://github.com/BlueWallet/BlueWallet" target="_blank" title="BlueWallet">
+        <img class="image" src="/resources/profile/bluewallet.png" />
+        <span>BlueWallet</span>
+      </a>
+      <a href="https://github.com/hsjoberg/blixt-wallet" target="_blank" title="Blixt Wallet">
+        <img class="image" src="/resources/profile/blixt.png" />
+        <span>Blixt</span>
+      </a>
+      <a href="https://github.com/Satpile/satpile" target="_blank" title="Satpile Watch-Only Wallet">
+        <img class="image" src="/resources/profile/satpile.jpg" />
+        <span>Satpile</span>
+      </a>
+      <a href="https://github.com/btcontract/lnwallet" target="_blank" title="Bitcoin Lightning Wallet">
+        <img class="image" src="/resources/profile/blw.png" />
+        <span>BLW</span>
+      </a>
+      <a href="https://github.com/pxsocs/warden" target="_blank" title="WARden Portfolio">
+        <img class="image" src="/resources/profile/warden.jpg" />
+        <span>WARden</span>
       </a>
     </div>
-
-    <br><br>
-    <br><br>
-
-    <h3 i18n="about.contributors">Project Contributors</h3>
-
-    <ng-container *ngIf="contributors$ | async as contributors; else loadingSponsors">
-      <ng-template ngFor let-contributor [ngForOf]="contributors">
-        <a [href]="'https://github.com/' + contributor.name" target="_blank">
-          <div class="profile_photo project_contributor d-inline-block" [title]="contributor.name">
-            <img class="profile_img" [src]="'/api/v1/contributors/images/' + contributor.id" />
-            {{ contributor.name }}
-          </div>
-        </a>
-      </ng-template>
-    </ng-container>
-
-    <br><br>
-    <br><br>
-
-    <h3 i18n="about.maintainers">Project Maintainers</h3>
-
-    <a href="https://twitter.com/softsimon_" target="_blank">
-      <div class="profile_photo d-inline-block" title="softsimon">
-        <img class="profile_img" src="/resources/profile/softsimon.jpg" />
-        softsimon
-      </div>
-    </a>
-
-    <a href="https://twitter.com/wiz" target="_blank">
-      <div class="profile_photo d-inline-block" title="wiz">
-        <img class="profile_img" src="/resources/profile/wiz.png" />
-        wiz
-      </div>
-    </a>
-
-    <br><br>
-
-    <br>
-    <div class="col-md-8 offset-md-2 text-center">
-      <code>Copyright (c) 2019-2021</code><br>
-      <code>The Mempool Open Source Project</code><br>
-    </div>
-    <br>
-    <div class="col-md-8 offset-md-2 text-left" style="padding-left: 20px">
-      <code>This program is free software; you can redistribute it and/or modify it under the terms of (at your option) either:</code><br>
-    </div>
-    <br>
-    <div class="col-md-8 offset-md-2 text-left" style="padding-left: 40px">
-      <code> 1) the <a href="https://www.gnu.org/licenses/agpl-3.0-standalone.html">GNU Affero General Public License</a> as published by the Free Software Foundation, either version 3 of the License or any later version approved by a proxy statement published on <https://mempool.space/about>; or</code><br>
-      <br>
-      <code> 2) the <a href="https://www.gnu.org/licenses/gpl-3.0-standalone.html">GNU General Public License</a> as published by the Free Software Foundation, either version 3 of the License or any later version approved by a proxy statement published on <https://mempool.space/about>.</code><br>
-    </div>
-    <br>
-    <div class="col-md-8 offset-md-2 text-left" style="padding-left: 20px">
-      <code>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the full license terms for more details.</code><br>
-    </div>
-
   </div>
 
-  <br>
+  <div class="alliances">
+    <h3 i18n="about.alliances">Community Alliances</h3>
+    <div class="wrapper">
+      <a href="https://liquid.net/" title="Liquid Network">
+        <img class="liquid" src="/resources/profile/liquid.svg" />
+      </a>
+      <a href="https://opencrypto.org/" title="Coppa - Crypto Open Patent Alliance">
+        <img class="copa" src="/resources/profile/copa.png" />
+      </a>
+      <a href="https://bisq.network/" title="Bisq Network">
+        <img src="/resources/profile/bisq.svg" />
+      </a>
+    </div>
+  </div>
 
-  <div class="text-center">
+  <div class="contributors">
+    <h3 i18n="about.contributors">Project Contributors</h3>
+    <div class="wrapper">
+      <ng-container *ngIf="contributors$ | async as contributors; else loadingSponsors">
+        <ng-template ngFor let-contributor [ngForOf]="contributors">
+          <a [href]="'https://github.com/' + contributor.name" target="_blank" [title]="contributor.name">
+            <img class="image" [src]="'/api/v1/contributors/images/' + contributor.id" />
+            <span>{{ contributor.name }}</span>
+          </a>
+        </ng-template>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="maintainers">
+    <h3 i18n="about.maintainers">Project Maintainers</h3>
+    <div class="wrapper">
+        <a href="https://twitter.com/softsimon_" target="_blank" title="softsimon">
+          <img class="image" src="/resources/profile/softsimon.jpg" />
+          <span>softsimon</span>
+        </a>
+        <a href="https://twitter.com/wiz" target="_blank" title="wiz">
+          <img class="image" src="/resources/profile/wiz.png" />
+          <span>wiz</span>
+        </a>
+    </div>
+  </div>
+
+  <div class="copyright">
+    <div class="title">
+      Copyright (c) 2019-2021<br />
+      The Mempool Open Source Project
+    </div>
+    <p>
+      This program is free software; you can redistribute it and/or modify it under the terms of (at your option) either:<br>
+    </p>
+    <ul>
+      <li>
+        1) the <a href="https://www.gnu.org/licenses/agpl-3.0-standalone.html">GNU Affero General Public License</a> as published by the Free Software Foundation, either version 3 of the License or any later version approved by a proxy statement published on <https://mempool.space/about>; or<br>
+      </li>
+      <li>
+        2) the <a href="https://www.gnu.org/licenses/gpl-3.0-standalone.html">GNU General Public License</a> as published by the Free Software Foundation, either version 3 of the License or any later version approved by a proxy statement published on <https://mempool.space/about>.<br>
+      </li>
+    </ul>
+    <p>
+      This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the full license terms for more details.<br>
+    </p>
+  </div>
+
+  <div class="footer-links">
     <a href="/3rdpartylicenses.txt">Third-party Licenses</a>
-    <br>
-    <br>
     <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a>
   </div>
-
-  <br>
-
-  <div class="text-small text-center" *ngIf="officialMempoolSpace">
+  
+  <div class="footer-version" *ngIf="officialMempoolSpace">
     {{ (backendInfo$ | async)?.hostname }} (v{{ (backendInfo$ | async )?.version }}) [{{ (backendInfo$ | async )?.gitCommit | slice:0:8 }}]
   </div>
 
