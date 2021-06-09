@@ -52,7 +52,7 @@
       <ng-container *ngIf="sponsors$ | async as sponsors; else loadingSponsors">
         <ng-template ngFor let-sponsor [ngForOf]="sponsors">
           <a [href]="'https://twitter.com/' + sponsor.handle" target="_blank" rel="sponsored" [title]="sponsor.handle">
-            <img class="image" [src]="sponsor.imageUrl" />
+            <img class="image" [src]="'/api/v1/donations/images/' + sponsor.handle" />
           </a>
         </ng-template>
       </ng-container>
@@ -139,7 +139,7 @@
         <img class="copa" src="/resources/profile/copa.png" />
       </a>
       <a href="https://bisq.network/" title="Bisq Network">
-        <img src="/resources/profile/bisq.svg" />
+        <img class="bisq" src="/resources/profile/bisq.svg" />
       </a>
     </div>
   </div>

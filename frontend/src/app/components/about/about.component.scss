@@ -40,27 +40,35 @@
     }
   }
 
+  .alliances,
   .enterprise-sponsor, 
   .community-integrations-sponsor,
   .maintainers {
-    margin-top: 100px;
-    margin-bottom: 100px;
+    margin-top: 68px;
+    margin-bottom: 68px;
   }
 
   .maintainers {
     margin-bottom: 50px;
   }
 
-  .ccommunity-sponsor {
+  .community-sponsor {
+    display: flex;
+    flex-direction: column;
     .wrapper {
       margin: 20px auto;
+    }
+    .btn-primary {   
+      max-width: 250px;
+      margin: auto;
+      height: 45px;
+      width: 100%;
     }
   }
 
   .alliances {
-    margin: 100px auto;
+    margin-bottom: 100px;
     a {    
-      margin: auto 10px;
       &:nth-child(3) {
         position: relative;
         top: 10px;
@@ -80,13 +88,18 @@
         margin: 50px 30px 0px;
       }
     }
-    .liquid {
-      top: 10px;
+    .liquid {    
+      top: 7px;
       position: relative;
     }
-    .copa {
-      height: 52px;
-      top: 15px;
+    .copa {    
+      height: auto;
+      top: 23px;
+      position: relative;
+      width: 300px;
+    }
+    .bisq {    
+      top: 3px;
       position: relative;
     }
   }
@@ -126,7 +139,7 @@
 
   .copyright {
     text-align: left;
-    max-width: 740px;
+    max-width: 620px;
     padding: 0px 15px;
     margin: auto;
     line-height: 1.8;
