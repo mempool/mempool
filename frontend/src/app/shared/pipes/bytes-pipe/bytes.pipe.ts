@@ -1,4 +1,4 @@
-/* tslint:disable */
+/* eslint-disable */
 import { Pipe, PipeTransform } from '@angular/core';
 import { isNumberFinite, isPositive, isInteger, toDecimal } from './utils';
 

@@ -1,4 +1,4 @@
-/* tslint:disable */
+/* eslint-disable */
 
 export type CollectionPredicate = (item?: any, index?: number, collection?: any[]) => boolean;
 
