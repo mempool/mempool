@@ -3,7 +3,7 @@ import { Component, Input } from '@angular/core';
 @Component({
   selector: 'app-code-template',
   templateUrl: './code-template.component.html',
-  styleUrls: ['./code-template.component.scss']
+  styleUrls: ['./code-template.component.scss'],
 })
 export class CodeTemplateComponent {
   @Input() network: string;
@@ -12,7 +12,7 @@ export class CodeTemplateComponent {
       esModule: string;
       commonJS: string;
       curl: string;
-    },
+    };
     responseSample: string;
   };
   hostname = document.location.hostname;
@@ -22,14 +22,13 @@ npm install @mempool/mempool.js --save
 # yarn
 yarn add @mempool/mempool.js`;
 
-  constructor(
-  ) { }
+  constructor() {}
 
   normalizeCodeHostname(code: string) {
     let codeText: string;
-    if (this.network === 'bisq' || this.network === 'liquid'){
+    if (this.network === 'bisq' || this.network === 'liquid') {
       codeText = code.replace('%{1}', this.network);
-    }else{
+    } else {
       codeText = code.replace('%{1}', 'bitcoin');
     }
     return codeText;
@@ -39,9 +38,12 @@ yarn add @mempool/mempool.js`;
     let codeText = this.normalizeCodeHostname(code);
 
     if (this.network && this.network !== 'mainnet') {
-      codeText = codeText.replace('mempoolJS();', `mempoolJS({
+      codeText = codeText.replace(
+        'mempoolJS();',
+        `mempoolJS({
     hostname: '${this.hostname}/${this.network}'
-  });` );
+  });`
+      );
     }
 
     return `import mempoolJS from "@mempool/mempool.js";
@@ -56,9 +58,12 @@ init();`;
     let codeText = this.normalizeCodeHostname(code);
 
     if (this.network && this.network !== 'mainnet') {
-      codeText = codeText.replace('mempoolJS();', `mempoolJS({
+      codeText = codeText.replace(
+        'mempoolJS();',
+        `mempoolJS({
           hostname: '${this.hostname}/${this.network}'
-        });` );
+        });`
+      );
     }
     return `<!DOCTYPE html>
 <html>
@@ -80,5 +85,4 @@ init();`;
     }
     return code;
   }
-
 }

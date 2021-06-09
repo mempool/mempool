@@ -11,9 +11,7 @@ export class BisqMasterPageComponent implements OnInit {
   connectionState$: Observable<number>;
   navCollapsed = false;
 
-  constructor(
-    private stateService: StateService,
-  ) { }
+  constructor(private stateService: StateService) {}
 
   ngOnInit() {
     this.connectionState$ = this.stateService.connectionState$;

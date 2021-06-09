@@ -27,8 +27,8 @@ export class AboutComponent implements OnInit {
     private seoService: SeoService,
     private stateService: StateService,
     private apiService: ApiService,
-    private router: Router,
-  ) { }
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.backendInfo$ = this.stateService.backendInfo$;

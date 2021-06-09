@@ -1,7 +1,7 @@
 <div class="header-bg box">
   <div class="row">
     <div class="col">
-      <table class="table table-borderless smaller-text table-xs" style="margin: 0;">
+      <table class="table table-borderless smaller-text table-xs" style="margin: 0">
         <tbody>
           <ng-template ngFor let-input [ngForOf]="tx.inputs" [ngForTrackBy]="trackByIndexFn">
             <tr *ngIf="input.isVerified">
@@ -17,8 +17,8 @@
               </td>
               <td>
                 <a [routerLink]="['/address/' | relativeUrl, 'B' + input.address]" title="B{{ input.address }}">
-                  <span class="d-block d-lg-none">B{{ input.address | shortenString : 16 }}</span>
-                  <span class="d-none d-lg-block">B{{ input.address | shortenString : 35 }}</span>
+                  <span class="d-block d-lg-none">B{{ input.address | shortenString: 16 }}</span>
+                  <span class="d-none d-lg-block">B{{ input.address | shortenString: 35 }}</span>
                 </a>
               </td>
               <td class="text-right nowrap">
@@ -31,14 +31,14 @@
     </div>
     <div class="w-100 d-block d-md-none"></div>
     <div class="col mobile-bottomcol">
-      <table class="table table-borderless smaller-text table-xs"  style="margin: 0;">
+      <table class="table table-borderless smaller-text table-xs" style="margin: 0">
         <tbody>
           <ng-template ngFor let-output [ngForOf]="tx.outputs" [ngForTrackBy]="trackByIndexFn">
             <tr *ngIf="output.isVerified && output.opReturn === undefined">
               <td>
                 <a [routerLink]="['/address/' | relativeUrl, 'B' + output.address]" title="B{{ output.address }}">
-                  <span class="d-block d-lg-none">B{{ output.address | shortenString : 16 }}</span>
-                  <span class="d-none d-lg-block">B{{ output.address | shortenString : 35 }}</span>
+                  <span class="d-block d-lg-none">B{{ output.address | shortenString: 16 }}</span>
+                  <span class="d-none d-lg-block">B{{ output.address | shortenString: 35 }}</span>
                 </a>
               </td>
               <td class="text-right nowrap">
@@ -59,15 +59,35 @@
 
   <div>
     <div class="transaction-fee" *ngIf="showConfirmations && tx.burntFee">
-      <ng-container i18n="BSQ burnt amount">Burnt amount</ng-container>: {{ tx.burntFee / 100 | number: '1.2-2' }} <span class="symbol">BSQ</span> <span class="extra-info"><span class="fiat"><app-bsq-amount [bsq]="tx.burntFee" [forceFiat]="true" [green]="true"></app-bsq-amount></span></span>
+      <ng-container i18n="BSQ burnt amount">Burnt amount</ng-container>: {{ tx.burntFee / 100 | number: '1.2-2' }}
+      <span class="symbol">BSQ</span>
+      <span class="extra-info"
+        ><span class="fiat"
+          ><app-bsq-amount [bsq]="tx.burntFee" [forceFiat]="true" [green]="true"></app-bsq-amount></span
+      ></span>
     </div>
 
     <div class="btn-container">
       <span *ngIf="showConfirmations && latestBlock$ | async as latestBlock">
         <button type="button" class="btn btn-sm btn-success mt-2">
-          <ng-container *ngTemplateOutlet="latestBlock.height - tx.blockHeight + 1 == 1 ? confirmationSingular : confirmationPlural; context: {$implicit: latestBlock.height - tx.blockHeight + 1}"></ng-container>
-          <ng-template #confirmationSingular let-i i18n="shared.confirmation-count.singular|Transaction singular confirmation count">{{ i }} confirmation</ng-template>
-          <ng-template #confirmationPlural let-i i18n="shared.confirmation-count.plural|Transaction plural confirmation count">{{ i }} confirmations</ng-template>
+          <ng-container
+            *ngTemplateOutlet="
+              latestBlock.height - tx.blockHeight + 1 == 1 ? confirmationSingular : confirmationPlural;
+              context: { $implicit: latestBlock.height - tx.blockHeight + 1 }
+            "
+          ></ng-container>
+          <ng-template
+            #confirmationSingular
+            let-i
+            i18n="shared.confirmation-count.singular|Transaction singular confirmation count"
+            >{{ i }} confirmation</ng-template
+          >
+          <ng-template
+            #confirmationPlural
+            let-i
+            i18n="shared.confirmation-count.plural|Transaction plural confirmation count"
+            >{{ i }} confirmations</ng-template
+          >
         </button>
         &nbsp;
       </span>
@@ -77,5 +97,4 @@
     </div>
     <div class="clearfix"></div>
   </div>
-
 </div>

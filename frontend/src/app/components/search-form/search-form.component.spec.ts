@@ -8,9 +8,8 @@ describe('SearchFormComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SearchFormComponent ]
-    })
-    .compileComponents();
+      declarations: [SearchFormComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

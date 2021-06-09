@@ -44,8 +44,29 @@ import { NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { FeesBoxComponent } from './components/fees-box/fees-box.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faAngleDown, faAngleUp, faBolt, faChartArea, faCogs, faCubes, faDatabase, faExchangeAlt, faInfoCircle,
-  faLink, faList, faSearch, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faAngleDoubleUp, faChevronDown, faFileAlt, faRedoAlt } from '@fortawesome/free-solid-svg-icons';
+import {
+  faAngleDown,
+  faAngleUp,
+  faBolt,
+  faChartArea,
+  faCogs,
+  faCubes,
+  faDatabase,
+  faExchangeAlt,
+  faInfoCircle,
+  faLink,
+  faList,
+  faSearch,
+  faTachometerAlt,
+  faThList,
+  faTint,
+  faTv,
+  faAngleDoubleDown,
+  faAngleDoubleUp,
+  faChevronDown,
+  faFileAlt,
+  faRedoAlt,
+} from '@fortawesome/free-solid-svg-icons';
 import { ApiDocsComponent } from './components/api-docs/api-docs.component';
 import { CodeTemplateComponent } from './components/api-docs/code-template.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
@@ -108,9 +129,9 @@ import { SponsorComponent } from './components/sponsor/sponsor.component';
     AudioService,
     SeoService,
     StorageService,
-    { provide: HTTP_INTERCEPTORS, useClass: HttpCacheInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: HttpCacheInterceptor, multi: true },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {
   constructor(library: FaIconLibrary) {

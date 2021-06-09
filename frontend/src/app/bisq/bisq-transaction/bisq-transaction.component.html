@@ -1,19 +1,31 @@
 <div class="container-xl">
-
   <ng-template [ngIf]="!isLoading && !error">
-
-    <button *ngIf="(latestBlock$ | async) as latestBlock" type="button" class="btn btn-sm btn-success float-right">
-      <ng-container *ngTemplateOutlet="latestBlock.height - bisqTx.blockHeight + 1 == 1 ? confirmationSingular : confirmationPlural; context: {$implicit: latestBlock.height - bisqTx.blockHeight + 1}"></ng-container>
-      <ng-template #confirmationSingular let-i i18n="shared.confirmation-count.singular|Transaction singular confirmation count">{{ i }} confirmation</ng-template>
-      <ng-template #confirmationPlural let-i i18n="shared.confirmation-count.plural|Transaction plural confirmation count">{{ i }} confirmations</ng-template>
+    <button *ngIf="latestBlock$ | async as latestBlock" type="button" class="btn btn-sm btn-success float-right">
+      <ng-container
+        *ngTemplateOutlet="
+          latestBlock.height - bisqTx.blockHeight + 1 == 1 ? confirmationSingular : confirmationPlural;
+          context: { $implicit: latestBlock.height - bisqTx.blockHeight + 1 }
+        "
+      ></ng-container>
+      <ng-template
+        #confirmationSingular
+        let-i
+        i18n="shared.confirmation-count.singular|Transaction singular confirmation count"
+        >{{ i }} confirmation</ng-template
+      >
+      <ng-template
+        #confirmationPlural
+        let-i
+        i18n="shared.confirmation-count.plural|Transaction plural confirmation count"
+        >{{ i }} confirmations</ng-template
+      >
     </button>
-
 
     <h1 i18n="shared.transaction">Transaction</h1>
 
     <div class="tx-link">
       <a [routerLink]="['/bisq-tx' | relativeUrl, bisqTx.id]">
-        <span class="d-inline d-lg-none">{{ bisqTx.id | shortenString : 24 }}</span>
+        <span class="d-inline d-lg-none">{{ bisqTx.id | shortenString: 24 }}</span>
         <span class="d-none d-lg-inline">{{ bisqTx.id }}</span>
       </a>
       <app-clipboard [text]="bisqTx.id"></app-clipboard>
@@ -28,16 +40,24 @@
               <tr>
                 <td i18n="transaction.timestamp|Transaction Timestamp">Timestamp</td>
                 <td>
-                  {{ bisqTx.time | date:'yyyy-MM-dd HH:mm' }}
+                  {{ bisqTx.time | date: 'yyyy-MM-dd HH:mm' }}
                   <div class="lg-inline">
-                    <i class="symbol">(<app-time-since [time]="bisqTx.time / 1000" [fastRender]="true"></app-time-since>)</i>
+                    <i class="symbol"
+                      >(<app-time-since [time]="bisqTx.time / 1000" [fastRender]="true"></app-time-since>)</i
+                    >
                   </div>
                 </td>
               </tr>
               <tr>
-                <td class="td-width" i18n="transaction.included-in-block|Transaction included in block">Included in block</td>
+                <td class="td-width" i18n="transaction.included-in-block|Transaction included in block">
+                  Included in block
+                </td>
                 <td>
-                  <a [routerLink]="['/block/' | relativeUrl, bisqTx.blockHash]" [state]="{ data: { blockHeight: bisqTx.blockHeight } }">{{ bisqTx.blockHeight }}</a>
+                  <a
+                    [routerLink]="['/block/' | relativeUrl, bisqTx.blockHash]"
+                    [state]="{ data: { blockHeight: bisqTx.blockHeight } }"
+                    >{{ bisqTx.blockHeight }}</a
+                  >
                 </td>
               </tr>
               <tr>
@@ -58,12 +78,17 @@
               <tr>
                 <td class="td-width" i18n="BSQ burnt amount">Burnt amount</td>
                 <td>
-                  {{ bisqTx.burntFee / 100 | number: '1.2-2' }} <span class="symbol">BSQ</span> <span class="fiat"><app-bsq-amount [bsq]="bisqTx.burntFee" [forceFiat]="true" [green]="true"></app-bsq-amount></span>
+                  {{ bisqTx.burntFee / 100 | number: '1.2-2' }} <span class="symbol">BSQ</span>
+                  <span class="fiat"
+                    ><app-bsq-amount [bsq]="bisqTx.burntFee" [forceFiat]="true" [green]="true"></app-bsq-amount
+                  ></span>
+                </td>
               </tr>
+
               <tr>
                 <td i18n="transaction.fee-per-vbyte|Transaction fee">Fee per vByte</td>
                 <td *ngIf="!isLoadingTx; else loadingTxFee">
-                  {{ tx.fee / (tx.weight / 4) | number : '1.1-1' }} <span class="symbol">sat/vB</span>
+                  {{ tx.fee / (tx.weight / 4) | number: '1.1-1' }} <span class="symbol">sat/vB</span>
                   &nbsp;
                   <app-tx-fee-rating [tx]="tx"></app-tx-fee-rating>
                 </td>
@@ -74,29 +99,25 @@
             </tbody>
           </table>
         </div>
-
       </div>
     </div>
 
-    <br>
+    <br />
 
     <h2 i18n="transaction.details">Details</h2>
 
-
     <app-bisq-transaction-details [tx]="bisqTx"></app-bisq-transaction-details>
 
-    <br>
+    <br />
 
     <h2 i18n="transaction.inputs-and-outputs|Transaction inputs and outputs">Inputs & Outputs</h2>
 
     <app-bisq-transfers [tx]="bisqTx"></app-bisq-transfers>
 
-    <br>
-
+    <br />
   </ng-template>
 
   <ng-template [ngIf="isLoading && !error">
-
     <div class="clearfix"></div>
 
     <div class="box">
@@ -124,7 +145,7 @@
       </div>
     </div>
 
-    <br>
+    <br />
 
     <h2 i18n="transaction.details">Details</h2>
     <div class="box">
@@ -145,7 +166,7 @@
       </table>
     </div>
 
-    <br>
+    <br />
 
     <h2 i18n="transaction.inputs-and-outputs|Transaction inputs and outputs">Inputs & Outputs</h2>
 
@@ -161,7 +182,6 @@
         </table>
       </div>
     </div>
-
   </ng-template>
 
   <ng-template [ngIf]="error">
@@ -169,9 +189,8 @@
 
     <div class="text-center">
       Error loading Bisq transaction
-      <br><br>
+      <br /><br />
       <i>{{ error.status }}: {{ error.statusText }}</i>
     </div>
   </ng-template>
-
 </div>

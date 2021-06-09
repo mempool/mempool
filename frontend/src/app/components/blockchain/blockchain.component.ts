@@ -11,9 +11,7 @@ import { Subscription, Observable } from 'rxjs';
 export class BlockchainComponent implements OnInit {
   isLoading$: Observable<boolean>;
 
-  constructor(
-    private stateService: StateService,
-  ) {}
+  constructor(private stateService: StateService) {}
 
   ngOnInit() {
     this.isLoading$ = this.stateService.isLoadingWebSocket$;

@@ -1,10 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'scriptpubkeyType'
+  name: 'scriptpubkeyType',
 })
 export class ScriptpubkeyTypePipe implements PipeTransform {
-
   transform(value: string): string {
     switch (value) {
       case 'fee':
@@ -17,5 +16,4 @@ export class ScriptpubkeyTypePipe implements PipeTransform {
         return value.toUpperCase();
     }
   }
-
 }

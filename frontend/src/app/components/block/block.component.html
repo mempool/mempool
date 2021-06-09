@@ -1,14 +1,17 @@
 <div class="container-xl">
-
   <div class="title-block" id="block">
-    <h1><ng-template [ngIf]="blockHeight === 0" i18n="block.genesis">Genesis </ng-template><ng-template [ngIf]="blockHeight" i18n="block.block">Block <a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a></ng-template></h1>
+    <h1>
+      <ng-template [ngIf]="blockHeight === 0" i18n="block.genesis">Genesis </ng-template
+      ><ng-template [ngIf]="blockHeight" i18n="block.block"
+        >Block <a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a></ng-template
+      >
+    </h1>
     <button [routerLink]="['/' | relativeUrl]" class="btn btn-sm">&#10005;</button>
   </div>
 
   <div class="clearfix"></div>
 
   <ng-template [ngIf]="!isLoadingBlock && !error">
-
     <div class="box">
       <div class="row">
         <div class="col-sm">
@@ -16,14 +19,21 @@
             <tbody>
               <tr>
                 <td class="td-width" i18n="block.hash">Hash</td>
-                <td><a [routerLink]="['/block/' | relativeUrl, block.id]" title="{{ block.id }}">{{ block.id | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="block.id"></app-clipboard></td>
+                <td>
+                  <a [routerLink]="['/block/' | relativeUrl, block.id]" title="{{ block.id }}">{{
+                    block.id | shortenString: 13
+                  }}</a>
+                  <app-clipboard class="d-none d-sm-inline-block" [text]="block.id"></app-clipboard>
+                </td>
               </tr>
               <tr>
                 <td i18n="block.timestamp">Timestamp</td>
                 <td>
-                  {{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
+                  {{ block.timestamp * 1000 | date: 'yyyy-MM-dd HH:mm' }}
                   <div class="lg-inline">
-                    <i class="symbol">(<app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since>)</i>
+                    <i class="symbol"
+                      >(<app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since>)</i
+                    >
                   </div>
                 </td>
               </tr>
@@ -43,27 +53,55 @@
             <tbody>
               <tr *ngIf="block.medianFee !== undefined">
                 <td class="td-width" i18n="block.median-fee">Median fee</td>
-                <td>~{{ block.medianFee | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span> <span class="fiat"><app-fiat [value]="block.medianFee * 140" digitsInfo="1.2-2" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat></span></td>
+                <td>
+                  ~{{ block.medianFee | number: '1.0-0' }}
+                  <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+                  <span class="fiat"
+                    ><app-fiat
+                      [value]="block.medianFee * 140"
+                      digitsInfo="1.2-2"
+                      i18n-ngbTooltip="Transaction fee tooltip"
+                      ngbTooltip="Based on average native segwit transaction of 140 vBytes"
+                      placement="bottom"
+                    ></app-fiat
+                  ></span>
+                </td>
               </tr>
               <ng-template [ngIf]="fees !== undefined" [ngIfElse]="loadingFees">
                 <tr>
                   <td i18n="block.total-fees|Total fees in a block">Total fees</td>
-                  <td *ngIf="network !== 'liquid'; else liquidTotalFees"><app-amount [satoshis]="fees * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="fees * 100000000" digitsInfo="1.0-0"></app-fiat></span></td>
+                  <td *ngIf="network !== 'liquid'; else liquidTotalFees">
+                    <app-amount [satoshis]="fees * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
+                    <span class="fiat"><app-fiat [value]="fees * 100000000" digitsInfo="1.0-0"></app-fiat></span>
+                  </td>
                   <ng-template #liquidTotalFees>
-                    <td>{{ fees * 100000000 | number }} L-sat (<app-fiat [value]="fees * 100000000" digitsInfo="1.2-2"></app-fiat>)</td>
+                    <td>
+                      {{ fees * 100000000 | number }} L-sat (<app-fiat
+                        [value]="fees * 100000000"
+                        digitsInfo="1.2-2"
+                      ></app-fiat
+                      >)
+                    </td>
                   </ng-template>
                 </tr>
                 <tr *ngIf="network !== 'liquid'">
                   <td i18n="block.subsidy-and-fees|Total subsidy and fees in a block">Subsidy + fees:</td>
                   <td>
-                    <app-amount [satoshis]="(blockSubsidy + fees) * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="(blockSubsidy + fees) * 100000000" digitsInfo="1.0-0"></app-fiat></span>
+                    <app-amount
+                      [satoshis]="(blockSubsidy + fees) * 100000000"
+                      digitsInfo="1.2-2"
+                      [noFiat]="true"
+                    ></app-amount>
+                    <span class="fiat"
+                      ><app-fiat [value]="(blockSubsidy + fees) * 100000000" digitsInfo="1.0-0"></app-fiat
+                    ></span>
                   </td>
                 </tr>
               </ng-template>
               <ng-template #loadingFees>
                 <tr>
                   <td i18n="block.total-fees|Total fees in a block">Total fees</td>
-                  <td style="width: 75%;"><span class="skeleton-loader"></span></td>
+                  <td style="width: 75%"><span class="skeleton-loader"></span></td>
                 </tr>
                 <tr *ngIf="network !== 'liquid'">
                   <td i18n="block.subsidy-and-fees|Total subsidy and fees in a block">Subsidy + fees:</td>
@@ -81,7 +119,7 @@
     </div>
 
     <div [hidden]="!showDetails" id="details">
-      <br>
+      <br />
 
       <div class="box">
         <div class="row">
@@ -90,11 +128,18 @@
               <tbody>
                 <tr>
                   <td class="td-width" i18n="transaction.version">Version</td>
-                  <td>{{ block.version | decimal2hex }} <span *ngIf="displayTaprootStatus() && hasTaproot(block.version)" class="badge badge-success ml-1" >Taproot</span></td>
+                  <td>
+                    {{ block.version | decimal2hex }}
+                    <span *ngIf="displayTaprootStatus() && hasTaproot(block.version)" class="badge badge-success ml-1"
+                      >Taproot</span
+                    >
+                  </td>
                 </tr>
                 <tr>
                   <td i18n="block.merkle-root">Merkle root</td>
-                  <td><p class="break-all">{{ block.merkle_root }}</p></td>
+                  <td>
+                    <p class="break-all">{{ block.merkle_root }}</p>
+                  </td>
                 </tr>
                 <tr>
                   <td i18n="block.bits">Bits</td>
@@ -122,18 +167,41 @@
     </div>
 
     <div class="text-right mt-3">
-      <button type="button" class="btn btn-outline-info btn-sm" (click)="toggleShowDetails()" i18n="transaction.details|Transaction Details">Details</button>
+      <button
+        type="button"
+        class="btn btn-outline-info btn-sm"
+        (click)="toggleShowDetails()"
+        i18n="transaction.details|Transaction Details"
+      >
+        Details
+      </button>
     </div>
 
-    <br>
+    <br />
 
     <h2 class="float-left">
-      <ng-container *ngTemplateOutlet="block.tx_count === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: block.tx_count | number}"></ng-container>
-      <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
+      <ng-container
+        *ngTemplateOutlet="
+          block.tx_count === 1 ? transactionsSingular : transactionsPlural;
+          context: { $implicit: block.tx_count | number }
+        "
+      ></ng-container>
+      <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular"
+        >{{ i }} transaction</ng-template
+      >
       <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
     </h2>
 
-    <ngb-pagination class="float-right" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true"></ngb-pagination>
+    <ngb-pagination
+      class="float-right"
+      [collectionSize]="block.tx_count"
+      [rotate]="true"
+      [pageSize]="itemsPerPage"
+      [(page)]="page"
+      (pageChange)="pageChange(page)"
+      [maxSize]="paginationMaxSize"
+      [boundaryLinks]="true"
+    ></ngb-pagination>
 
     <div class="clearfix"></div>
 
@@ -141,13 +209,12 @@
 
     <ng-template [ngIf]="isLoadingTransactions">
       <div class="text-center mb-4">
-
-        <div class="header-bg box" style="padding: 10px; margin-bottom: 10px;">
+        <div class="header-bg box" style="padding: 10px; margin-bottom: 10px">
           <span class="skeleton-loader"></span>
         </div>
 
         <div class="header-bg box">
-          <div class="row" style="height: 107px;">
+          <div class="row" style="height: 107px">
             <div class="col-sm">
               <span class="skeleton-loader"></span>
             </div>
@@ -158,22 +225,32 @@
           </div>
         </div>
 
-        <ng-container *ngIf="(txsLoadingStatus$ | async) as txsLoadingStatus">
-          <br>
+        <ng-container *ngIf="txsLoadingStatus$ | async as txsLoadingStatus">
+          <br />
           <div class="progress progress-dark">
-            <div class="progress-bar progress-darklight" role="progressbar" [ngStyle]="{'width': txsLoadingStatus + '%' }"></div>
+            <div
+              class="progress-bar progress-darklight"
+              role="progressbar"
+              [ngStyle]="{ width: txsLoadingStatus + '%' }"
+            ></div>
           </div>
         </ng-container>
-        
       </div>
     </ng-template>
 
-    <ngb-pagination class="float-right" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true"></ngb-pagination>
-
+    <ngb-pagination
+      class="float-right"
+      [collectionSize]="block.tx_count"
+      [rotate]="true"
+      [pageSize]="itemsPerPage"
+      [(page)]="page"
+      (pageChange)="pageChange(page)"
+      [maxSize]="paginationMaxSize"
+      [boundaryLinks]="true"
+    ></ngb-pagination>
   </ng-template>
 
   <ng-template [ngIf]="isLoadingBlock && !error">
-    
     <div class="box">
       <div class="row">
         <div class="col-sm">
@@ -219,12 +296,11 @@
   <ng-template [ngIf]="error">
     <div class="text-center">
       <span i18n="block.error.loading-block-data">Error loading block data.</span>
-      <br><br>
+      <br /><br />
       <i>{{ error.error }}</i>
     </div>
   </ng-template>
-
 </div>
 
-<br>
-<br>
+<br />
+<br />

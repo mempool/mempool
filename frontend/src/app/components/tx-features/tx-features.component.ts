@@ -18,7 +18,7 @@ export class TxFeaturesComponent implements OnChanges {
   };
   isRbfTransaction: boolean;
 
-  constructor() { }
+  constructor() {}
 
   ngOnChanges() {
     if (!this.tx) {

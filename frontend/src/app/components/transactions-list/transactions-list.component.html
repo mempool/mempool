@@ -1,23 +1,38 @@
 <ng-container *ngFor="let tx of transactions; let i = index; trackBy: trackByFn">
-  <div *ngIf="!transactionPage" class="header-bg box" style="padding: 10px; margin-bottom: 10px;">
+  <div *ngIf="!transactionPage" class="header-bg box" style="padding: 10px; margin-bottom: 10px">
     <a class="float-left" [routerLink]="['/tx/' | relativeUrl, tx.txid]" [state]="{ data: tx }">
-      <span style="float: left;" class="d-block d-md-none">{{ tx.txid | shortenString : 16 }}</span>
-      <span style="float: left;" class="d-none d-md-block">{{ tx.txid }}</span>
+      <span style="float: left" class="d-block d-md-none">{{ tx.txid | shortenString: 16 }}</span>
+      <span style="float: left" class="d-none d-md-block">{{ tx.txid }}</span>
     </a>
     <div class="float-right">
-      <ng-template [ngIf]="tx.status.confirmed">{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}</ng-template>
+      <ng-template [ngIf]="tx.status.confirmed">{{
+        tx.status.block_time * 1000 | date: 'yyyy-MM-dd HH:mm'
+      }}</ng-template>
       <ng-template [ngIf]="!tx.status.confirmed && tx.firstSeen">
         <i><app-time-since [time]="tx.firstSeen" [fastRender]="true"></app-time-since></i>
       </ng-template>
     </div>
     <div class="clearfix"></div>
   </div>
-  <div class="header-bg box" infiniteScroll [alwaysCallback]="true" [infiniteScrollDistance]="2" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50" (scrolled)="onScroll()">
+  <div
+    class="header-bg box"
+    infiniteScroll
+    [alwaysCallback]="true"
+    [infiniteScrollDistance]="2"
+    [infiniteScrollUpDistance]="1.5"
+    [infiniteScrollThrottle]="50"
+    (scrolled)="onScroll()"
+  >
     <div class="row">
       <div class="col">
-        <table class="table table-borderless smaller-text table-xs" style="margin: 0;">
+        <table class="table table-borderless smaller-text table-xs" style="margin: 0">
           <tbody>
-            <ng-template ngFor let-vin [ngForOf]="tx['@vinLimit'] ? tx.vin.slice(0, 10) : tx.vin" [ngForTrackBy]="trackByIndexFn">
+            <ng-template
+              ngFor
+              let-vin
+              [ngForOf]="tx['@vinLimit'] ? tx.vin.slice(0, 10) : tx.vin"
+              [ngForTrackBy]="trackByIndexFn"
+            >
               <tr>
                 <td class="arrow-td">
                   <ng-template [ngIf]="vin.prevout === null && !vin.is_pegin" [ngIfElse]="hasPrevout">
@@ -36,7 +51,18 @@
                 </td>
                 <td>
                   <div [ngSwitch]="true">
-                    <ng-container *ngSwitchCase="vin.is_coinbase"><a placement="bottom" [ngbTooltip]="vin.scriptsig | hex2ascii"><span i18n="transactions-list.coinbase">Coinbase</span><ng-template [ngIf]="network !== 'liquid'">&nbsp;<span i18n="transactions-list.newly-generated-coins">(Newly Generated Coins)</span></ng-template></a><br /><span class="badge badge-secondary scriptmessage longer">{{ vin.scriptsig | hex2ascii }}</span></ng-container>
+                    <ng-container *ngSwitchCase="vin.is_coinbase"
+                      ><a placement="bottom" [ngbTooltip]="vin.scriptsig | hex2ascii"
+                        ><span i18n="transactions-list.coinbase">Coinbase</span
+                        ><ng-template [ngIf]="network !== 'liquid'"
+                          >&nbsp;<span i18n="transactions-list.newly-generated-coins"
+                            >(Newly Generated Coins)</span
+                          ></ng-template
+                        ></a
+                      ><br /><span class="badge badge-secondary scriptmessage longer">{{
+                        vin.scriptsig | hex2ascii
+                      }}</span></ng-container
+                    >
                     <ng-container *ngSwitchCase="vin.is_pegin">
                       <span i18n="transactions-list.peg-in">Peg-in</span>
                     </ng-container>
@@ -44,9 +70,16 @@
                       <span>P2PK</span>
                     </ng-container>
                     <ng-container *ngSwitchDefault>
-                      <a [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">
-                        <span class="d-block d-lg-none">{{ vin.prevout.scriptpubkey_address | shortenString : 16 }}</span>
-                        <span class="d-none d-lg-block">{{ vin.prevout.scriptpubkey_address | shortenString : 35 }}</span>
+                      <a
+                        [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey_address]"
+                        title="{{ vin.prevout.scriptpubkey_address }}"
+                      >
+                        <span class="d-block d-lg-none">{{
+                          vin.prevout.scriptpubkey_address | shortenString: 16
+                        }}</span>
+                        <span class="d-none d-lg-block">{{
+                          vin.prevout.scriptpubkey_address | shortenString: 35
+                        }}</span>
                       </a>
                       <div>
                         <app-address-labels [vin]="vin"></app-address-labels>
@@ -55,9 +88,12 @@
                   </div>
                 </td>
                 <td class="text-right nowrap">
-                  <ng-template [ngIf]="vin.prevout && vin.prevout.asset && vin.prevout.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
+                  <ng-template
+                    [ngIf]="vin.prevout && vin.prevout.asset && vin.prevout.asset !== nativeAssetId"
+                    [ngIfElse]="defaultOutput"
+                  >
                     <div *ngIf="assetsMinimal && assetsMinimal[vin.prevout.asset]">
-                      <ng-container *ngTemplateOutlet="assetBox; context:{ $implicit: vin.prevout }"></ng-container>
+                      <ng-container *ngTemplateOutlet="assetBox; context: { $implicit: vin.prevout }"></ng-container>
                     </div>
                   </ng-template>
                   <ng-template #defaultOutput>
@@ -72,32 +108,34 @@
                       <ng-template [ngIf]="vin.scriptsig">
                         <tr>
                           <td i18n="transactions-list.scriptsig.asm|ScriptSig (ASM)">ScriptSig (ASM)</td>
-                          <td style="text-align: left;" [innerHTML]="vin.scriptsig_asm | asmStyler"></td>
+                          <td style="text-align: left" [innerHTML]="vin.scriptsig_asm | asmStyler"></td>
                         </tr>
                         <tr>
                           <td i18n="transactions-list.scriptsig.hex|ScriptSig (HEX)">ScriptSig (HEX)</td>
-                          <td style="text-align: left;">{{ vin.scriptsig }}</td>
+                          <td style="text-align: left">{{ vin.scriptsig }}</td>
                         </tr>
                       </ng-template>
                       <tr *ngIf="vin.witness">
                         <td i18n="transactions-list.witness">Witness</td>
-                        <td style="text-align: left;">{{ vin.witness.join(' ') }}</td>
+                        <td style="text-align: left">{{ vin.witness.join(' ') }}</td>
                       </tr>
                       <tr *ngIf="vin.inner_redeemscript_asm">
                         <td i18n="transactions-list.p2sh-redeem-script">P2SH redeem script</td>
-                        <td style="text-align: left;" [innerHTML]="vin.inner_redeemscript_asm | asmStyler"></td>
+                        <td style="text-align: left" [innerHTML]="vin.inner_redeemscript_asm | asmStyler"></td>
                       </tr>
                       <tr *ngIf="vin.inner_witnessscript_asm">
                         <td i18n="transactions-list.p2wsh-witness-script">P2WSH witness script</td>
-                        <td style="text-align: left;" [innerHTML]="vin.inner_witnessscript_asm | asmStyler"></td>
+                        <td style="text-align: left" [innerHTML]="vin.inner_witnessscript_asm | asmStyler"></td>
                       </tr>
                       <tr>
                         <td i18n="transactions-list.nsequence">nSequence</td>
-                        <td style="text-align: left;">{{ formatHex(vin.sequence) }}</td>
+                        <td style="text-align: left">{{ formatHex(vin.sequence) }}</td>
                       </tr>
                       <tr *ngIf="vin.prevout">
                         <td i18n="transactions-list.previous-output-script">Previous output script</td>
-                        <td style="text-align: left;" [innerHTML]="vin.prevout.scriptpubkey_asm | asmStyler">{{ vin.prevout.scriptpubkey_type ? ('(' + vin.prevout.scriptpubkey_type + ')') : '' }}"</td>
+                        <td style="text-align: left" [innerHTML]="vin.prevout.scriptpubkey_asm | asmStyler">
+                          {{ vin.prevout.scriptpubkey_type ? '(' + vin.prevout.scriptpubkey_type + ')' : '' }}"
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -106,7 +144,9 @@
             </ng-template>
             <tr *ngIf="tx.vin.length > 10 && tx['@vinLimit']">
               <td colspan="3" class="text-center">
-                <button class="btn btn-sm btn-primary mt-2" (click)="tx['@vinLimit'] = false;"><span i18n="transactions-list.load-all">Load all</span> ({{ tx.vin.length - 10 }})</button>
+                <button class="btn btn-sm btn-primary mt-2" (click)="tx['@vinLimit'] = false">
+                  <span i18n="transactions-list.load-all">Load all</span> ({{ tx.vin.length - 10 }})
+                </button>
               </td>
             </tr>
           </tbody>
@@ -114,28 +154,51 @@
       </div>
       <div class="w-100 d-block d-md-none"></div>
       <div class="col mobile-bottomcol">
-        <table class="table table-borderless smaller-text table-xs"  style="margin: 0;">
+        <table class="table table-borderless smaller-text table-xs" style="margin: 0">
           <tbody>
-            <ng-template ngFor let-vout let-vindex="index"  [ngForOf]="tx['@voutLimit'] ? tx.vout.slice(0, 10) : tx.vout" [ngForTrackBy]="trackByIndexFn">
+            <ng-template
+              ngFor
+              let-vout
+              let-vindex="index"
+              [ngForOf]="tx['@voutLimit'] ? tx.vout.slice(0, 10) : tx.vout"
+              [ngForTrackBy]="trackByIndexFn"
+            >
               <tr>
                 <td>
-                  <a *ngIf="vout.scriptpubkey_address; else scriptpubkey_type" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">
-                    <span class="d-block d-lg-none">{{ vout.scriptpubkey_address | shortenString : 16 }}</span>
-                    <span class="d-none d-lg-block">{{ vout.scriptpubkey_address | shortenString : 35 }}</span>
+                  <a
+                    *ngIf="vout.scriptpubkey_address; else scriptpubkey_type"
+                    [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey_address]"
+                    title="{{ vout.scriptpubkey_address }}"
+                  >
+                    <span class="d-block d-lg-none">{{ vout.scriptpubkey_address | shortenString: 16 }}</span>
+                    <span class="d-none d-lg-block">{{ vout.scriptpubkey_address | shortenString: 35 }}</span>
                   </a>
                   <ng-template #scriptpubkey_type>
                     <ng-template [ngIf]="vout.pegout" [ngIfElse]="defaultscriptpubkey_type">
-                      <ng-container i18n="transactions-list.peg-out-to">Peg-out to <ng-container *ngTemplateOutlet="pegOutLink"></ng-container></ng-container>
+                      <ng-container i18n="transactions-list.peg-out-to"
+                        >Peg-out to <ng-container *ngTemplateOutlet="pegOutLink"></ng-container
+                      ></ng-container>
                       <ng-template #pegOutLink>
-                        <a [routerLink]="['/address/', vout.pegout.scriptpubkey_address]" title="{{ vout.pegout.scriptpubkey_address }}">
-                          <span class="d-block d-lg-none">{{ vout.pegout.scriptpubkey_address | shortenString : 16 }}</span>
-                          <span class="d-none d-lg-block">{{ vout.pegout.scriptpubkey_address | shortenString : 35 }}</span>
+                        <a
+                          [routerLink]="['/address/', vout.pegout.scriptpubkey_address]"
+                          title="{{ vout.pegout.scriptpubkey_address }}"
+                        >
+                          <span class="d-block d-lg-none">{{
+                            vout.pegout.scriptpubkey_address | shortenString: 16
+                          }}</span>
+                          <span class="d-none d-lg-block">{{
+                            vout.pegout.scriptpubkey_address | shortenString: 35
+                          }}</span>
                         </a>
                       </ng-template>
                     </ng-template>
                     <ng-template #defaultscriptpubkey_type>
                       <ng-template [ngIf]="vout.scriptpubkey_type === 'op_return'" [ngIfElse]="otherPubkeyType">
-                        <a placement="bottom" [ngbTooltip]="vout.scriptpubkey_asm | hex2ascii">OP_RETURN</a>&nbsp;<span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" class="badge badge-secondary scriptmessage">{{ vout.scriptpubkey_asm | hex2ascii }}</span>
+                        <a placement="bottom" [ngbTooltip]="vout.scriptpubkey_asm | hex2ascii">OP_RETURN</a>&nbsp;<span
+                          *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'"
+                          class="badge badge-secondary scriptmessage"
+                          >{{ vout.scriptpubkey_asm | hex2ascii }}</span
+                        >
                       </ng-template>
                       <ng-template #otherPubkeyType>{{ vout.scriptpubkey_type | scriptpubkeyType }}</ng-template>
                     </ng-template>
@@ -144,15 +207,21 @@
                 <td class="text-right nowrap">
                   <ng-template [ngIf]="vout.asset && vout.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
                     <div *ngIf="assetsMinimal && assetsMinimal[vout.asset]">
-                      <ng-container *ngTemplateOutlet="assetBox; context:{ $implicit: vout }"></ng-container>
-                  </div>
+                      <ng-container *ngTemplateOutlet="assetBox; context: { $implicit: vout }"></ng-container>
+                    </div>
                   </ng-template>
                   <ng-template #defaultOutput>
                     <app-amount [satoshis]="vout.value"></app-amount>
                   </ng-template>
                 </td>
                 <td class="pl-1 arrow-td">
-                  <i *ngIf="!outspends[i] || vout.scriptpubkey_type === 'op_return' || vout.scriptpubkey_type === 'fee' ; else outspend" class="arrow grey"></i>
+                  <i
+                    *ngIf="
+                      !outspends[i] || vout.scriptpubkey_type === 'op_return' || vout.scriptpubkey_type === 'fee';
+                      else outspend
+                    "
+                    class="arrow grey"
+                  ></i>
                   <ng-template #outspend>
                     <i *ngIf="!outspends[i][vindex] || !outspends[i][vindex].spent; else spent" class="arrow green"></i>
                     <ng-template #spent>
@@ -167,19 +236,19 @@
                     <tbody>
                       <tr *ngIf="vout.scriptpubkey_type">
                         <td i18n="transactions-list.vout.scriptpubkey-type">Type</td>
-                        <td style="text-align: left;">{{ vout.scriptpubkey_type.toUpperCase() }}</td>
+                        <td style="text-align: left">{{ vout.scriptpubkey_type.toUpperCase() }}</td>
                       </tr>
                       <tr>
                         <td i18n="transactions-list.scriptpubkey.asm|ScriptPubKey (ASM)">ScriptPubKey (ASM)</td>
-                        <td style="text-align: left;" [innerHTML]="vout.scriptpubkey_asm | asmStyler"></td>
+                        <td style="text-align: left" [innerHTML]="vout.scriptpubkey_asm | asmStyler"></td>
                       </tr>
                       <tr>
                         <td i18n="transactions-list.scriptpubkey.hex|ScriptPubKey (HEX)">ScriptPubKey (HEX)</td>
-                        <td style="text-align: left;">{{ vout.scriptpubkey }}</td>
+                        <td style="text-align: left">{{ vout.scriptpubkey }}</td>
                       </tr>
                       <tr *ngIf="vout.scriptpubkey_type == 'op_return'">
                         <td>OP_RETURN <span i18n="transactions-list.vout.scriptpubkey-type.data">data</span></td>
-                        <td style="text-align: left;">{{ vout.scriptpubkey_asm | hex2ascii }}</td>
+                        <td style="text-align: left">{{ vout.scriptpubkey_asm | hex2ascii }}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -188,7 +257,9 @@
             </ng-template>
             <tr *ngIf="tx.vout.length > 10 && tx['@voutLimit']">
               <td colspan="3" class="text-center">
-                <button class="btn btn-sm btn-primary mt-2" (click)="tx['@voutLimit'] = false;"><span i18n="transactions-list.load-all">Load all</span> ({{ tx.vout.length - 10 }})</button>
+                <button class="btn btn-sm btn-primary mt-2" (click)="tx['@voutLimit'] = false">
+                  <span i18n="transactions-list.load-all">Load all</span> ({{ tx.vout.length - 10 }})
+                </button>
               </td>
             </tr>
           </tbody>
@@ -198,23 +269,51 @@
 
     <div>
       <div class="float-left mt-2-5" *ngIf="!transactionPage && tx.fee">
-        {{ tx.fee / (tx.weight / 4) | number : '1.1-1' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span> <span class="d-none d-sm-inline-block">&nbsp;&ndash; {{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [value]="tx.fee"></app-fiat></span></span>
+        {{ tx.fee / (tx.weight / 4) | number: '1.1-1' }}
+        <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+        <span class="d-none d-sm-inline-block"
+          >&nbsp;&ndash; {{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span>
+          <span class="fiat"><app-fiat [value]="tx.fee"></app-fiat></span
+        ></span>
       </div>
 
       <div class="float-right">
         <span *ngIf="showConfirmations && latestBlock$ | async as latestBlock">
           <button *ngIf="tx.status.confirmed; else unconfirmedButton" type="button" class="btn btn-sm btn-success mt-2">
-            <ng-container *ngTemplateOutlet="latestBlock.height - tx.status.block_height + 1 == 1 ? confirmationSingular : confirmationPlural; context: {$implicit: latestBlock.height - tx.status.block_height + 1}"></ng-container>
-            <ng-template #confirmationSingular let-i i18n="shared.confirmation-count.singular|Transaction singular confirmation count">{{ i }} confirmation</ng-template>
-            <ng-template #confirmationPlural let-i i18n="shared.confirmation-count.plural|Transaction plural confirmation count">{{ i }} confirmations</ng-template>
+            <ng-container
+              *ngTemplateOutlet="
+                latestBlock.height - tx.status.block_height + 1 == 1 ? confirmationSingular : confirmationPlural;
+                context: { $implicit: latestBlock.height - tx.status.block_height + 1 }
+              "
+            ></ng-container>
+            <ng-template
+              #confirmationSingular
+              let-i
+              i18n="shared.confirmation-count.singular|Transaction singular confirmation count"
+              >{{ i }} confirmation</ng-template
+            >
+            <ng-template
+              #confirmationPlural
+              let-i
+              i18n="shared.confirmation-count.plural|Transaction plural confirmation count"
+              >{{ i }} confirmations</ng-template
+            >
           </button>
           <ng-template #unconfirmedButton>
-            <button type="button" class="btn btn-sm btn-danger mt-2" i18n="transaction.unconfirmed|Transaction unconfirmed state">Unconfirmed</button>
+            <button
+              type="button"
+              class="btn btn-sm btn-danger mt-2"
+              i18n="transaction.unconfirmed|Transaction unconfirmed state"
+            >
+              Unconfirmed
+            </button>
           </ng-template>
           &nbsp;
         </span>
         <button type="button" class="btn btn-sm btn-primary mt-2" (click)="switchCurrency()">
-          <ng-template [ngIf]="network === 'liquid'" [ngIfElse]="defaultAmount" i18n="shared.confidential">Confidential</ng-template>
+          <ng-template [ngIf]="network === 'liquid'" [ngIfElse]="defaultAmount" i18n="shared.confidential"
+            >Confidential</ng-template
+          >
           <ng-template #defaultAmount>
             <app-amount [satoshis]="getTotalTxOutput(tx)"></app-amount>
           </ng-template>
@@ -222,11 +321,9 @@
       </div>
       <div class="clearfix"></div>
     </div>
-
   </div>
 
   <br />
-
 </ng-container>
 
 <ng-template #assetBox let-item>
@@ -234,6 +331,6 @@
   <br />
   {{ assetsMinimal[item.asset][0] }}
   <br />
-  <a [routerLink]="['/asset/' | relativeUrl, item.asset]">{{ item.asset | shortenString : 13 }}</a>
+  <a [routerLink]="['/asset/' | relativeUrl, item.asset]">{{ item.asset | shortenString: 13 }}</a>
   <br /><br />
 </ng-template>
