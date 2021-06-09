@@ -743,11 +743,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">198,202</context>
+          <context context-type="linenumber">282,288</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">835,839</context>
+          <context context-type="linenumber">833,837</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -1259,7 +1259,7 @@
         <source>The Mempool Open Source Project</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">11,12</context>
+          <context context-type="linenumber">13,16</context>
         </context-group>
         <note priority="1" from="description">about.about-the-project</note>
       </trans-unit>
@@ -1267,14 +1267,14 @@
         <source>An explorer and API developed and operated for the Bitcoin community, focusing on the emerging transaction fee market to help our transition into a multi-layer ecosystem, without ads, altcoins, or third-party trackers.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">12,16</context>
+          <context context-type="linenumber">16,20</context>
         </context-group>
       </trans-unit>
       <trans-unit id="a24b1c6a9c4334ba204e4cec2dd9f32ea33d043f" datatype="html">
         <source>Enterprise Sponsors 🚀</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">31,33</context>
+          <context context-type="linenumber">47,50</context>
         </context-group>
         <note priority="1" from="description">about.sponsors.enterprise.withRocket</note>
       </trans-unit>
@@ -1282,7 +1282,7 @@
         <source>Community Sponsors ❤️</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">49,52</context>
+          <context context-type="linenumber">73,76</context>
         </context-group>
         <note priority="1" from="description">about.sponsors.withHeart</note>
       </trans-unit>
@@ -1290,7 +1290,7 @@
         <source>Become a sponsor ❤️</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">61,62</context>
+          <context context-type="linenumber">86,87</context>
         </context-group>
         <note priority="1" from="description">about.become-a-sponsor</note>
       </trans-unit>
@@ -1298,7 +1298,7 @@
         <source>Navigate to <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/sponsor&quot; target=&quot;_blank&quot;&gt;"/>https://mempool.space/sponsor<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> to sponsor</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">62</context>
+          <context context-type="linenumber">87</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/sponsor/sponsor.component.html</context>
@@ -1310,7 +1310,7 @@
         <source>Community Integrations</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">66,69</context>
+          <context context-type="linenumber">92,95</context>
         </context-group>
         <note priority="1" from="description">about.integrations</note>
       </trans-unit>
@@ -1318,7 +1318,7 @@
         <source>Community Alliances</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">133,135</context>
+          <context context-type="linenumber">202,205</context>
         </context-group>
         <note priority="1" from="description">about.alliances</note>
       </trans-unit>
@@ -1326,7 +1326,7 @@
         <source>Project Contributors</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">148,150</context>
+          <context context-type="linenumber">220,222</context>
         </context-group>
         <note priority="1" from="description">about.contributors</note>
       </trans-unit>
@@ -1334,7 +1334,7 @@
         <source>Project Maintainers</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">162,164</context>
+          <context context-type="linenumber">236,239</context>
         </context-group>
         <note priority="1" from="description">about.maintainers</note>
       </trans-unit>
@@ -1673,11 +1673,11 @@
         <note priority="1" from="description">API Docs for /api/v1/fees/recommended</note>
         <note priority="1" from="meaning">api-docs.fees.recommended</note>
       </trans-unit>
-      <trans-unit id="4571f1ae029709f85795bc0a7fce042b2da093df" datatype="html">
-        <source> Returns current mempool as projected blocks. </source>
+      <trans-unit id="b95b496df2b0f016831d0984f3798a2e22b74103" datatype="html">
+        <source>Returns current mempool as projected blocks.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">548,551</context>
+          <context context-type="linenumber">547,549</context>
         </context-group>
         <note priority="1" from="description">API Docs for /api/v1/fees/mempool-blocks</note>
         <note priority="1" from="meaning">api-docs.fees.mempool-blocks</note>
@@ -1686,7 +1686,7 @@
         <source>Returns the ancestors and the best descendant fees for a transaction.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">565,567</context>
+          <context context-type="linenumber">563,565</context>
         </context-group>
         <note priority="1" from="description">API Docs for /api/v1/fees/cpfp</note>
         <note priority="1" from="meaning">api-docs.fees.cpfp</note>
@@ -1695,7 +1695,7 @@
         <source>Mempool</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">575,577</context>
+          <context context-type="linenumber">573,575</context>
         </context-group>
         <note priority="1" from="description">API Docs tab for Mempool</note>
         <note priority="1" from="meaning">api-docs.tab.mempool</note>
@@ -1704,7 +1704,7 @@
         <source>Returns current mempool backlog statistics.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">590,592</context>
+          <context context-type="linenumber">588,590</context>
         </context-group>
         <note priority="1" from="description">API Docs for /api/mempool</note>
         <note priority="1" from="meaning">api-docs.mempool.mempool</note>
@@ -1713,7 +1713,7 @@
         <source>Get the full list of txids in the mempool as an array. The order of the txids is arbitrary and does not match bitcoind.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">606,609</context>
+          <context context-type="linenumber">604,607</context>
         </context-group>
         <note priority="1" from="description">API Docs for /api/mempool/txids</note>
         <note priority="1" from="meaning">api-docs.mempool.txids</note>
@@ -1722,7 +1722,7 @@
         <source>Get a list of the last 10 transactions to enter the mempool. Each transaction object contains simplified overview data, with the following fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>fee<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>vsize<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>value<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">624,625</context>
+          <context context-type="linenumber">622,623</context>
         </context-group>
         <note priority="1" from="description">API Docs for /api/mempool/recent</note>
         <note priority="1" from="meaning">api-docs.mempool.recent</note>
@@ -1731,7 +1731,7 @@
         <source>Transactions</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">635,638</context>
+          <context context-type="linenumber">633,636</context>
         </context-group>
         <note priority="1" from="description">API Docs tab for Transactions</note>
         <note priority="1" from="meaning">api-docs.tab.transactions</note>
@@ -1740,70 +1740,70 @@
         <source>Returns details about a transaction. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>version<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>locktime<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>size<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>weight<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>fee<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>vin<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>vout<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>status<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">649,650</context>
+          <context context-type="linenumber">647,648</context>
         </context-group>
       </trans-unit>
       <trans-unit id="34c21c242665d87bf22645c90f571bd5078eac93" datatype="html">
         <source>Returns a transaction serialized as hex.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">668,671</context>
+          <context context-type="linenumber">666,669</context>
         </context-group>
       </trans-unit>
       <trans-unit id="d51106cc898981e9862d35a4db40796f0cf464f8" datatype="html">
         <source>Returns a merkle inclusion proof for the transaction using <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://bitcoin.org/en/glossary/merkle-block&quot;&gt;"/>bitcoind&apos;s merkleblock<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> format.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">686,687</context>
+          <context context-type="linenumber">684,685</context>
         </context-group>
       </trans-unit>
       <trans-unit id="a57953199686e9980df838cb25edb51691941ac5" datatype="html">
         <source>Returns a merkle inclusion proof for the transaction using <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle&quot;&gt;"/>Electrum&apos;s blockchain.transaction.get_merkle format.<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">706,707</context>
+          <context context-type="linenumber">704,705</context>
         </context-group>
       </trans-unit>
       <trans-unit id="fe9a40b2ff9674b4ab7d82624ffed340c9ee5b89" datatype="html">
         <source>Returns the spending status of a transaction output. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>spent<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (boolean), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (optional), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>vin<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (optional), and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>status<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (optional, the status of the spending tx).</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">725,726</context>
+          <context context-type="linenumber">723,724</context>
         </context-group>
       </trans-unit>
       <trans-unit id="0358265aa88614843e1f5e887b94c673808c84f1" datatype="html">
         <source>Returns the spending status of all transaction outputs.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">744,747</context>
+          <context context-type="linenumber">742,745</context>
         </context-group>
       </trans-unit>
       <trans-unit id="fd42ee72bb64b93578d7d2142ae50796d0056d7a" datatype="html">
         <source>Returns a transaction as binary data.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">763,766</context>
+          <context context-type="linenumber">761,764</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7e784cfa5833e7b54d4dfc723fabde94f66ebde3" datatype="html">
         <source>Returns the confirmation status of a transaction. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>confirmed<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (boolean), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block_height<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (optional), and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block_hash<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (optional).</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">782,783</context>
+          <context context-type="linenumber">780,781</context>
         </context-group>
       </trans-unit>
       <trans-unit id="01723473ecc53cab60ef1b37dc39d8941994d56f" datatype="html">
         <source>Broadcast a raw transaction to the network. The transaction should be provided as hex in the request body. The <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> will be returned on success.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">802,803</context>
+          <context context-type="linenumber">800,801</context>
         </context-group>
       </trans-unit>
       <trans-unit id="aacc1242420c527c8b9d4948a7ae7d94cde956e4" datatype="html">
         <source>Websocket</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">812,816</context>
+          <context context-type="linenumber">810,814</context>
         </context-group>
         <note priority="1" from="description">API Docs tab for Websocket</note>
         <note priority="1" from="meaning">api-docs.tab.websocket</note>
@@ -1812,7 +1812,7 @@
         <source>Default push: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="{{ &apos;{&apos; }}"/> action: &apos;want&apos;, data: [&apos;blocks&apos;, ...] <x id="INTERPOLATION_1" equiv-text="{{ &apos;}&apos; }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> to express what you want pushed. Available: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool-blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>live-2h-chart<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/><x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>Push transactions related to address: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="{{ &apos;{&apos; }}"/> &apos;track-address&apos;: &apos;3PbJ...bF9B&apos; <x id="INTERPOLATION_1" equiv-text="{{ &apos;}&apos; }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>address-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> for new mempool transactions, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> for new block confirmed transactions.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">821,822</context>
+          <context context-type="linenumber">819,820</context>
         </context-group>
         <note priority="1" from="description">api-docs.websocket.websocket</note>
       </trans-unit>
