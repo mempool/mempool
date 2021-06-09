@@ -36,17 +36,7 @@ export interface ChartEvent {
 
 @Component({
   selector: 'app-chartist',
-  template: '<ng-content></ng-content>
-
-
-
-
-
-
-
-
-
-',
+  template: '<ng-content></ng-content>',
   styleUrls: ['./chartist.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })

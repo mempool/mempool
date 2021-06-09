@@ -31,6 +31,7 @@ describe('Liquid', () => {
     cy.get('li:nth-of-type(3) > a')
       .click()
       .then(() => {
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(1000);
       });
   });
@@ -41,6 +42,7 @@ describe('Liquid', () => {
       .click()
       .then(() => {
         cy.viewport('iphone-6');
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(1000);
         // TODO: Should we really support TV Mode in Mobile for Bisq?
         // cy.get('.tv-only').should('be.visible')

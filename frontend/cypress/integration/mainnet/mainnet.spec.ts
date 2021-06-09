@@ -1,3 +1,4 @@
+/* eslint-disable cypress/no-unnecessary-waiting */
 describe('Mainnet', () => {
   beforeEach(() => {
     cy.intercept('/api/block-height/*').as('block-height');
