@@ -77,7 +77,7 @@
     "rxjs": "^6.6.7",
     "tinyify": "^3.0.0",
     "tlite": "^0.1.9",
-    "tslib": "^2.2.0",
+    "tslib": "^2.0.0",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
@@ -91,7 +91,7 @@
     "@types/jasmine": "~3.6.0",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.11.1",
-    "codelyzer": "^6.0.1",
+    "codelyzer": "^6.0.0",
     "concurrently": "^6.2.0",
     "cypress": "7.4.0",
     "cypress-wait-until": "^1.7.1",
