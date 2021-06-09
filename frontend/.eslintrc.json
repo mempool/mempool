@@ -18,7 +18,7 @@
       "extends": [
         "plugin:@angular-eslint/recommended",
         "plugin:@angular-eslint/template/process-inline-templates",
-	"prettier"
+        "prettier"
       ],
       "plugins": ["prettier"],
       "rules": {
@@ -46,12 +46,11 @@
         "*.html"
       ],
       "extends": [
-        "plugin:@angular-eslint/template/recommended",
-	"prettier"
+        "plugin:@angular-eslint/template/recommended"
       ],
       "plugins": ["prettier"],
       "rules": {
-	"prettier/prettier": "error"
+
       }
     }
   ]
