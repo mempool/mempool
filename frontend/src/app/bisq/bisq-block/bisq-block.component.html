@@ -1,15 +1,13 @@
 <div class="container-xl">
+
   <div class="title-block">
-    <h1>
-      <ng-template [ngIf]="blockHeight" i18n="block.block"
-        >Block <a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a></ng-template
-      >
-    </h1>
+    <h1><ng-template [ngIf]="blockHeight" i18n="block.block">Block <a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a></ng-template></h1>
   </div>
 
   <div class="clearfix"></div>
 
   <ng-template [ngIf]="!isLoading && !error">
+
     <div class="box block-container">
       <div class="row">
         <div class="col">
@@ -17,25 +15,17 @@
             <tbody>
               <tr>
                 <td class="td-width" i18n="block.hash">Hash</td>
-                <td>
-                  <a [routerLink]="['/block/' | relativeUrl, block.hash]" title="{{ block.hash }}">{{
-                    block.hash | shortenString: 13
-                  }}</a>
-                  <app-clipboard class="d-none d-sm-inline-block" [text]="block.hash"></app-clipboard>
-                </td>
+                <td><a [routerLink]="['/block/' | relativeUrl, block.hash]" title="{{ block.hash }}">{{ block.hash | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="block.hash"></app-clipboard></td>
               </tr>
               <tr>
                 <td i18n="transaction.timestamp|Transaction Timestamp">Timestamp</td>
                 <td>
-                  {{ block.time | date: 'yyyy-MM-dd HH:mm' }}
+                  {{ block.time | date:'yyyy-MM-dd HH:mm' }}
                   <div class="lg-inline">
-                    <i class="symbol"
-                      >(<app-time-since [time]="block.time / 1000" [fastRender]="true"></app-time-since>)</i
-                    >
+                    <i class="symbol">(<app-time-since [time]="block.time / 1000" [fastRender]="true"></app-time-since>)</i>
                   </div>
                 </td>
               </tr>
-            </tbody>
           </table>
         </div>
         <div class="col">
@@ -43,14 +33,8 @@
             <tbody>
               <tr>
                 <td class="td-width" i18n="block.previous_hash|Transaction Previous Hash">Previous hash</td>
-                <td>
-                  <a [routerLink]="['/block/' | relativeUrl, block.previousBlockHash]" title="{{ block.hash }}">{{
-                    block.previousBlockHash | shortenString: 13
-                  }}</a>
-                  <app-clipboard class="d-none d-sm-inline-block" [text]="block.previousBlockHash"></app-clipboard>
-                </td>
+                <td><a [routerLink]="['/block/' | relativeUrl, block.previousBlockHash]" title="{{ block.hash }}">{{ block.previousBlockHash | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="block.previousBlockHash"></app-clipboard></td>
               </tr>
-            </tbody>
           </table>
         </div>
       </div>
@@ -58,37 +42,32 @@
 
     <div class="clearfix"></div>
 
-    <br />
+    <br>
 
     <h2>
-      <ng-container
-        *ngTemplateOutlet="
-          block.txs.length === 1 ? transactionsSingular : transactionsPlural;
-          context: { $implicit: block.txs.length | number }
-        "
-      ></ng-container>
-      <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular"
-        >{{ i }} transaction</ng-template
-      >
+      <ng-container *ngTemplateOutlet="block.txs.length === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: block.txs.length| number}"></ng-container>
+      <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
       <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
     </h2>
 
     <ng-template ngFor let-tx [ngForOf]="block.txs">
-      <div class="header-bg box" style="padding: 10px; margin-bottom: 10px">
+
+      <div class="header-bg box" style="padding: 10px; margin-bottom: 10px;">
         <a [routerLink]="['/tx/' | relativeUrl, tx.id]" [state]="{ data: tx }">
-          <span style="float: left" class="d-block d-md-none">{{ tx.id | shortenString: 16 }}</span>
-          <span style="float: left" class="d-none d-md-block">{{ tx.id }}</span>
+          <span style="float: left;" class="d-block d-md-none">{{ tx.id | shortenString : 16 }}</span>
+          <span style="float: left;" class="d-none d-md-block">{{ tx.id }}</span>
         </a>
         <div class="float-right">
-          {{ tx.time | date: 'yyyy-MM-dd HH:mm' }}
+          {{ tx.time | date:'yyyy-MM-dd HH:mm' }}
         </div>
         <div class="clearfix"></div>
       </div>
-
+  
       <app-bisq-transfers [tx]="tx" [showConfirmations]="true"></app-bisq-transfers>
-
-      <br />
+  
+      <br>
     </ng-template>
+
   </ng-template>
 
   <ng-template [ngIf]="isLoading && !error">
@@ -105,7 +84,6 @@
                 <td i18n="transaction.timestamp|Transaction Timestamp">Timestamp</td>
                 <td><span class="skeleton-loader"></span></td>
               </tr>
-            </tbody>
           </table>
         </div>
         <div class="col">
@@ -115,7 +93,6 @@
                 <td class="td-width" i18n="block.previous_hash|Transaction Previous Hash">Previous hash</td>
                 <td><span class="skeleton-loader"></span></td>
               </tr>
-            </tbody>
           </table>
         </div>
       </div>
@@ -127,8 +104,9 @@
 
     <div class="text-center">
       Error loading block
-      <br />
+      <br>
       <i>{{ error.status }}: {{ error.statusText }}</i>
     </div>
   </ng-template>
+
 </div>

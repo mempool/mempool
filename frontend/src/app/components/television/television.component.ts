@@ -8,7 +8,7 @@ import { SeoService } from 'src/app/services/seo.service';
 @Component({
   selector: 'app-television',
   templateUrl: './television.component.html',
-  styleUrls: ['./television.component.scss'],
+  styleUrls: ['./television.component.scss']
 })
 export class TelevisionComponent implements OnInit {
   loading = true;
@@ -20,21 +20,24 @@ export class TelevisionComponent implements OnInit {
     private websocketService: WebsocketService,
     private apiService: ApiService,
     private stateService: StateService,
-    private seoService: SeoService
-  ) {}
+    private seoService: SeoService,
+  ) { }
 
   ngOnInit() {
     this.seoService.setTitle($localize`:@@46ce8155c9ab953edeec97e8950b5a21e67d7c4e:TV view`);
     this.websocketService.want(['blocks', 'live-2h-chart', 'mempool-blocks']);
 
-    this.apiService.list2HStatistics$().subscribe((mempoolStats) => {
-      this.mempoolStats = mempoolStats;
-      this.loading = false;
-    });
+    this.apiService.list2HStatistics$()
+      .subscribe((mempoolStats) => {
+        this.mempoolStats = mempoolStats;
+        this.loading = false;
+      });
 
-    this.stateService.live2Chart$.subscribe((mempoolStats) => {
-      this.mempoolStats.unshift(mempoolStats);
-      this.mempoolStats = this.mempoolStats.slice(0, this.mempoolStats.length - 1);
-    });
+    this.stateService.live2Chart$
+      .subscribe((mempoolStats) => {
+        this.mempoolStats.unshift(mempoolStats);
+        this.mempoolStats = this.mempoolStats.slice(0, this.mempoolStats.length - 1);
+      });
   }
+
 }

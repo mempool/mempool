@@ -1,47 +1,26 @@
 <div class="blocks-container" *ngIf="blocks.length">
-  <div *ngFor="let block of blocks; let i = index; trackBy: trackByBlocksFn">
+  <div *ngFor="let block of blocks; let i = index; trackBy: trackByBlocksFn" >
     <div class="text-center bitcoin-block mined-block" id="bitcoin-block-{{ block.height }}" [ngStyle]="blockStyles[i]">
-      <a [routerLink]="['/block/' | relativeUrl, block.id]" [state]="{ data: { block: block } }" class="blockLink"
-        >&nbsp;</a
-      >
+      <a [routerLink]="['/block/' | relativeUrl, block.id]" [state]="{ data: { block: block } }" class="blockLink">&nbsp;</a>
       <div class="block-height">
-        <a [routerLink]="['/block/' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{
-          block.height
-        }}</a>
+        <a [routerLink]="['/block/' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a>
       </div>
       <div class="block-body">
         <div class="fees">
-          ~{{ block.medianFee | number: '1.0-0' }} <ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
+          ~{{ block.medianFee | number:'1.0-0' }} <ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
         </div>
         <div class="fee-span">
-          {{ block.feeRange[1] | number: '1.0-0' }} - {{ block.feeRange[block.feeRange.length - 1] | number: '1.0-0' }}
-          <ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
+          {{ block.feeRange[1] | number:'1.0-0' }} - {{ block.feeRange[block.feeRange.length - 1] | number:'1.0-0' }} <ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
         </div>
         <div class="block-size" [innerHTML]="block.size | bytes: 2">&lrm;</div>
         <div class="transaction-count">
-          <ng-container
-            *ngTemplateOutlet="
-              block.tx_count === 1 ? transactionsSingular : transactionsPlural;
-              context: { $implicit: block.tx_count | number }
-            "
-          ></ng-container>
-          <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular"
-            >{{ i }} transaction</ng-template
-          >
-          <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural"
-            >{{ i }} transactions</ng-template
-          >
+          <ng-container *ngTemplateOutlet="block.tx_count === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: block.tx_count | number}"></ng-container>
+          <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
+          <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
         </div>
-        <div class="time-difference">
-          <app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since>
-        </div>
+        <div class="time-difference"><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since></div>
       </div>
     </div>
   </div>
-  <div
-    [hidden]="!arrowVisible"
-    id="arrow-up"
-    [style.transition]="transition"
-    [ngStyle]="{ left: arrowLeftPx + 'px' }"
-  ></div>
+  <div [hidden]="!arrowVisible" id="arrow-up" [style.transition]="transition" [ngStyle]="{'left': arrowLeftPx + 'px' }"></div>
 </div>

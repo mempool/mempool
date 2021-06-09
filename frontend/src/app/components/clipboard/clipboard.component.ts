@@ -16,7 +16,7 @@ export class ClipboardComponent implements AfterViewInit {
 
   clipboard: any;
 
-  constructor() {}
+  constructor() { }
 
   ngAfterViewInit() {
     this.clipboard = new ClipboardJS(this.btn.nativeElement);
@@ -31,4 +31,5 @@ export class ClipboardComponent implements AfterViewInit {
   onDestroy() {
     this.clipboard.destroy();
   }
+
 }

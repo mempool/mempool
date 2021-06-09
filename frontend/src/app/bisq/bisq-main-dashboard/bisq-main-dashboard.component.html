@@ -1,5 +1,6 @@
 <div class="container-xl">
-  <br />
+
+  <br>
 
   <div class="row row-cols-1 row-cols-md-2">
     <div class="col mb-4">
@@ -8,7 +9,7 @@
           <h5 class="card-title" i18n="bisq-dashboard.price-index-title">Bisq Price Index</h5>
           <div class="big-fiat">
             <span *ngIf="usdPrice$ | async as usdPrice; else loading">
-              <span [appColoredPrice]="usdPrice">{{ usdPrice | currency: 'USD':'symbol':'1.2-2' }}</span>
+              <span [appColoredPrice]="usdPrice">{{ usdPrice | currency:'USD':'symbol':'1.2-2' }}</span>
             </span>
           </div>
         </div>
@@ -20,7 +21,7 @@
           <h5 class="card-title" i18n="bisq-dashboard.market-price-title">Bisq Market Price</h5>
           <div class="big-fiat">
             <span class="green-color" *ngIf="bisqMarketPrice; else loading">
-              <span [appColoredPrice]="bisqMarketPrice">{{ bisqMarketPrice | currency: 'USD':'symbol':'1.2-2' }}</span>
+              <span [appColoredPrice]="bisqMarketPrice">{{ bisqMarketPrice | currency:'USD':'symbol':'1.2-2' }}</span>
             </span>
           </div>
         </div>
@@ -35,12 +36,7 @@
           <h5 class="card-title">US Dollar - BTC/USD</h5>
           <div class="chart-container">
             <ng-container *ngIf="hlocData$ | async as hlocData; else loadingSpinner">
-              <app-lightweight-charts
-                [height]="300"
-                [data]="hlocData.hloc"
-                [volumeData]="hlocData.volume"
-                [precision]="2"
-              ></app-lightweight-charts>
+              <app-lightweight-charts [height]="300" [data]="hlocData.hloc" [volumeData]="hlocData.volume" [precision]="2"></app-lightweight-charts>      
             </ng-container>
           </div>
         </div>
@@ -52,11 +48,7 @@
           <h5 class="card-title" i18n="Bisq markets title">Bisq Trading Volume</h5>
           <div class="chart-container">
             <ng-container *ngIf="volumes$ | async as volumes; else loadingSpinner">
-              <app-lightweight-charts-area
-                [height]="300"
-                [data]="volumes.data"
-                [lineData]="volumes.linesData"
-              ></app-lightweight-charts-area>
+              <app-lightweight-charts-area [height]="300" [data]="volumes.data" [lineData]="volumes.linesData"></app-lightweight-charts-area>
             </ng-container>
           </div>
         </div>
@@ -66,78 +58,51 @@
 
   <div class="row row-cols-1 row-cols-md-2">
     <ng-container *ngIf="{ value: (tickers$ | async) } as tickers">
-      <div class="col mb-4">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title text-center">
-              <ng-template
-                [ngIf]="stateService.env.OFFICIAL_BISQ_MARKETS"
-                [ngIfElse]="nonOfficialMarkets"
-                i18n="Bisq All Markets"
-                >Markets</ng-template
-              >
-              <ng-template #nonOfficialMarkets i18n="Bisq Bitcoin Markets">Bitcoin Markets</ng-template>
-            </h5>
 
-            <div class="table-container">
-              <table class="table table-borderless table-striped">
-                <thead>
-                  <th>
-                    <ng-container i18n>Currency</ng-container>
-                    <button [disabled]="(sort$ | async) === 'name'" class="btn btn-link btn-sm" (click)="sort('name')">
-                      <fa-icon [icon]="['fas', 'chevron-down']" [fixedWidth]="true"></fa-icon>
-                    </button>
-                  </th>
-                  <th i18n>Price</th>
-                  <th>
-                    <ng-container i18n="Trades amount 7D">Trades (7d)</ng-container>
-                    <button
-                      [disabled]="(sort$ | async) === 'trades'"
-                      class="btn btn-link btn-sm"
-                      (click)="sort('trades')"
-                    >
-                      <fa-icon [icon]="['fas', 'chevron-down']" [fixedWidth]="true"></fa-icon>
-                    </button>
-                  </th>
-                </thead>
-                <tbody *ngIf="tickers.value; else loadingTmpl">
-                  <tr *ngFor="let ticker of tickers.value; trackBy: trackByFn">
-                    <td>
-                      <a [routerLink]="['/market' | relativeUrl, ticker.pair_url]">{{ ticker.name }})</a>
-                    </td>
-                    <td>
-                      <app-fiat
-                        *ngIf="ticker.market.rtype === 'crypto'; else fiat"
-                        [value]="ticker.last * 100000000"
-                      ></app-fiat>
-                      <ng-template #fiat>
-                        <span class="green-color">{{ ticker.last | currency: ticker.market.rsymbol }}</span>
-                      </ng-template>
-                    </td>
-                    <td>{{ ticker.volume?.num_trades ? ticker.volume?.num_trades : 0 }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+    <div class="col mb-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title text-center">
+            <ng-template [ngIf]="stateService.env.OFFICIAL_BISQ_MARKETS" [ngIfElse]="nonOfficialMarkets" i18n="Bisq All Markets">Markets</ng-template>
+            <ng-template #nonOfficialMarkets i18n="Bisq Bitcoin Markets">Bitcoin Markets</ng-template>
+          </h5>
 
-            <div class="text-center">
-              <a href="" [routerLink]="['/markets' | relativeUrl]" i18n="dashboard.view-all">View all &raquo;</a>
-            </div>
+          <div class="table-container">
+            <table class="table table-borderless table-striped">
+              <thead>
+                <th><ng-container i18n>Currency</ng-container> <button [disabled]="(sort$ | async) === 'name'" class="btn btn-link btn-sm" (click)="sort('name')"><fa-icon [icon]="['fas', 'chevron-down']" [fixedWidth]="true"></fa-icon></button></th>
+                <th i18n>Price</th>
+                <th><ng-container i18n="Trades amount 7D">Trades (7d)</ng-container> <button [disabled]="(sort$ | async) === 'trades'" class="btn btn-link btn-sm" (click)="sort('trades')"><fa-icon [icon]="['fas', 'chevron-down']" [fixedWidth]="true"></fa-icon></button></th>
+              </thead>
+              <tbody *ngIf="tickers.value; else loadingTmpl">
+                <tr *ngFor="let ticker of tickers.value; trackBy: trackByFn;">
+                  <td><a [routerLink]="['/market' | relativeUrl, ticker.pair_url]">{{ ticker.name }})</a></td>
+                  <td>
+                    <app-fiat *ngIf="ticker.market.rtype === 'crypto'; else fiat" [value]="ticker.last * 100000000"></app-fiat>
+                    <ng-template #fiat>
+                      <span class="green-color">{{ ticker.last | currency: ticker.market.rsymbol }}</span>
+                    </ng-template>
+                  </td>
+                  <td>{{ ticker.volume?.num_trades ? ticker.volume?.num_trades : 0 }}</td>
+                </tr> 
+              </tbody>
+            </table>
           </div>
+
+          <div class="text-center"><a href="" [routerLink]="['/markets' | relativeUrl]" i18n="dashboard.view-all">View all &raquo;</a></div>
         </div>
       </div>
-      <div class="col mb-4">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title text-center" i18n="Latest Trades header">Latest Trades</h5>
-            <app-bisq-trades [trades$]="trades$" view="small"></app-bisq-trades>
-            <div class="text-center">
-              <a href="" [routerLink]="['/markets' | relativeUrl]" i18n="dashboard.view-all">View all &raquo;</a>
-            </div>
-          </div>
+    </div>
+    <div class="col mb-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title text-center" i18n="Latest Trades header">Latest Trades</h5>
+          <app-bisq-trades [trades$]="trades$" view="small"></app-bisq-trades>
+          <div class="text-center"><a href="" [routerLink]="['/markets' | relativeUrl]" i18n="dashboard.view-all">View all &raquo;</a></div>
         </div>
       </div>
-    </ng-container>
+    </div>
+  </ng-container>
   </div>
 
   <app-language-selector *ngIf="!stateService.env.OFFICIAL_BISQ_MARKETS"></app-language-selector>
@@ -145,10 +110,11 @@
   <div class="text-small text-center mt-3">
     <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a>
   </div>
+
 </div>
 
 <ng-template #loadingTmpl>
-  <tr *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]">
+  <tr *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]">
     <td *ngFor="let j of [1, 2, 3]"><span class="skeleton-loader"></span></td>
   </tr>
 </ng-template>
