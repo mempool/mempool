@@ -539,7 +539,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">49</context>
+          <context context-type="linenumber">51</context>
         </context-group>
         <note from="description" priority="1">Transaction Timestamp</note>
         <note from="meaning" priority="1">transaction.timestamp</note>
@@ -663,7 +663,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
-          <context context-type="linenumber">46,48</context>
+          <context context-type="linenumber">48,50</context>
         </context-group>
         <note from="description" priority="1">Bisq markets title</note>
       </trans-unit>
@@ -780,21 +780,13 @@
         <source>Bisq Market Price</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
-          <context context-type="linenumber">19,21</context>
+          <context context-type="linenumber">21,23</context>
         </context-group>
         <note from="description" priority="1">bisq-dashboard.market-price-title</note>
       </trans-unit>
       <trans-unit datatype="html" id="1915fb658404dd3fa2a05f7d5fdd774ad72ef422">
         <source>View all »</source>
         <target>Mind megtekintése »</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
-          <context context-type="linenumber">37,41</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
-          <context context-type="linenumber">51,55</context>
-        </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
           <context context-type="linenumber">92,97</context>
@@ -808,6 +800,28 @@
           <context context-type="linenumber">97,101</context>
         </context-group>
         <note from="description" priority="1">dashboard.view-all</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="94731fb77c18c6d537337dddc3699f67a0587985">
+        <source>Terms of Service</source>
+        <target>Általános Szolgáltatási Feltételek</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
+          <context context-type="linenumber">111,118</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
+          <context context-type="linenumber">282,288</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">833,837</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">139,148</context>
+        </context-group>
+        <note from="description" priority="1">Terms of Service</note>
+        <note from="meaning" priority="1">shared.terms-of-service</note>
       </trans-unit>
       <trans-unit datatype="html" id="f4ebbeea643a58f45e665e960b494b2ea30b87da">
         <source>Buy Offers</source>
@@ -1017,7 +1031,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">151</context>
+          <context context-type="linenumber">153</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -1050,7 +1064,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">26</context>
+          <context context-type="linenumber">27</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -1072,7 +1086,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">27</context>
+          <context context-type="linenumber">28</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -1090,7 +1104,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">12</context>
+          <context context-type="linenumber">13</context>
         </context-group>
         <note from="description" priority="1">shared.transaction</note>
       </trans-unit>
@@ -1103,7 +1117,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">58</context>
+          <context context-type="linenumber">60</context>
         </context-group>
         <note from="description" priority="1">Transaction included in block</note>
         <note from="meaning" priority="1">transaction.included-in-block</note>
@@ -1117,11 +1131,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">70</context>
+          <context context-type="linenumber">72</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">128</context>
+          <context context-type="linenumber">130</context>
         </context-group>
         <note from="description" priority="1">Transaction features</note>
         <note from="meaning" priority="1">transaction.features</note>
@@ -1149,11 +1163,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">201</context>
+          <context context-type="linenumber">203</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">277</context>
+          <context context-type="linenumber">279</context>
         </context-group>
         <note from="description" priority="1">transaction.details</note>
       </trans-unit>
@@ -1170,7 +1184,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">193</context>
+          <context context-type="linenumber">195</context>
         </context-group>
         <note from="description" priority="1">Transaction inputs and outputs</note>
         <note from="meaning" priority="1">transaction.inputs-and-outputs</note>
@@ -1184,7 +1198,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.ts</context>
-          <context context-type="linenumber">53</context>
+          <context context-type="linenumber">79</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="4d6066e445db90780e4b30ca93398be0b6567eda">
@@ -1204,7 +1218,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">152</context>
+          <context context-type="linenumber">154</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -1386,7 +1400,7 @@
         <target>Közösségi Szponzorok ❤️</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">73,77</context>
+          <context context-type="linenumber">73,76</context>
         </context-group>
         <note from="description" priority="1">about.sponsors.withHeart</note>
       </trans-unit>
@@ -1395,88 +1409,28 @@
         <target>Legyél te is támogatónk! ❤️ </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">89,91</context>
+          <context context-type="linenumber">86,87</context>
         </context-group>
         <note from="description" priority="1">about.become-a-sponsor</note>
       </trans-unit>
-      <trans-unit datatype="html" id="90a59434bf67130fb2531e0610f10d28af0fcc87">
-        <source>Navigate to <x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/about&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/>https://mempool.space/about<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/> to sponsor</source>
-        <target>Navigáljon a <x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/about&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/>https://mempool.space/about<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/>-ra hogy szponzoráljon</target>
+      <trans-unit datatype="html" id="1abb54fd13f529707c73db97625cd18c7c8cbb09">
+        <source>Navigate to <x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/sponsor&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/>https://mempool.space/sponsor<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/> to sponsor</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">91</context>
+          <context context-type="linenumber">87</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/sponsor/sponsor.component.html</context>
+          <context context-type="linenumber">9</context>
         </context-group>
         <note from="description" priority="1">about.navigate-to-sponsor</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="39120551bb7b48cc1a7b94a6cb58aef166eee801">
-        <source>Amount required</source>
-        <target>Összeg szükséges</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">108,109</context>
-        </context-group>
-        <note from="description" priority="1">about.sponsor.amount-required</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="c525ee366d56496a39853d54f8f08fcaed0eaf40">
-        <source>Minimum amount is 0.001 BTC</source>
-        <target>A minimum mennyiség 0.001 BTC</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">109,111</context>
-        </context-group>
-        <note from="description" priority="1">about.sponsor.minimum-amount</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="8a24d1f821c3fde832ff742b6aaba455accadc74">
-        <source>Request invoice</source>
-        <target>Számla kérése</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">111,117</context>
-        </context-group>
-        <note from="description" priority="1">about.sponsor.request-invoice</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="9b8d8dedba1ce2bf7b44f324993f8df5d7a75410">
-        <source>If you donate 0.01 BTC or more, your profile photo will be added to the list of sponsors above :)</source>
-        <target>Ha 0.01 BTC-t vagy többet adományozol, akkor a profilkéedet a támogatól listáján feltüntetjük :)</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">118,122</context>
-        </context-group>
-        <note from="description" priority="1">about.sponsor.description</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="64a98449e66031949cbf82767dd17c30d4e6da7f">
-        <source>Waiting for transaction... </source>
-        <target>Tranzakcióra vár...</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">196,200</context>
-        </context-group>
-        <note from="description" priority="1">about.sponsor.waiting-for-transaction</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="023f8e4927b3e3baa217a2577c78c5194b885a21">
-        <source>Donation confirmed!</source>
-        <target>Adomány megerősítve!</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">201,205</context>
-        </context-group>
-        <note from="description" priority="1">about.sponsor.donation-confirmed</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="768fa94396eb6bb2834ec52fc1b5fad92273027d">
-        <source>Thank you!</source>
-        <target>Köszönjük! ❤️ </target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">201,207</context>
-        </context-group>
-        <note from="description" priority="1">about.sponsor.thank-you</note>
       </trans-unit>
       <trans-unit datatype="html" id="1405c5f1a9834338ff13442c550927ab7144fdc8">
         <source>Community Integrations</source>
         <target>Közösségi Integrációk</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">207,210</context>
+          <context context-type="linenumber">92,95</context>
         </context-group>
         <note from="description" priority="1">about.integrations</note>
       </trans-unit>
@@ -1485,7 +1439,7 @@
         <target>Közösségi Szövetségesek</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">317,320</context>
+          <context context-type="linenumber">202,205</context>
         </context-group>
         <note from="description" priority="1">about.alliances</note>
       </trans-unit>
@@ -1494,7 +1448,7 @@
         <target>Projekt Kontribútorok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">335,339</context>
+          <context context-type="linenumber">220,222</context>
         </context-group>
         <note from="description" priority="1">about.contributors</note>
       </trans-unit>
@@ -1503,34 +1457,16 @@
         <target>Projekt Fenntartók</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">354,357</context>
+          <context context-type="linenumber">236,239</context>
         </context-group>
         <note from="description" priority="1">about.maintainers</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="94731fb77c18c6d537337dddc3699f67a0587985">
-        <source>Terms of Service</source>
-        <target>Általános Szolgáltatási Feltételek</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">400,406</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">288,293</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">143,152</context>
-        </context-group>
-        <note from="description" priority="1">Terms of Service</note>
-        <note from="meaning" priority="1">shared.terms-of-service</note>
       </trans-unit>
       <trans-unit datatype="html" id="004b222ff9ef9dd4771b777950ca1d0e4cd4348a">
         <source>About</source>
         <target>Részletek</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.ts</context>
-          <context context-type="linenumber">44</context>
+          <context context-type="linenumber">35</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
@@ -1587,7 +1523,7 @@
         <target>Hiba történt a cím információ lekérdezésekor.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">117,120</context>
+          <context context-type="linenumber">122,125</context>
         </context-group>
         <note from="description" priority="1">address.error.loading-address-data</note>
       </trans-unit>
@@ -1596,7 +1532,7 @@
         <target><x ctype="x-i" equiv-text="&lt;i&gt;" id="START_ITALIC_TEXT"/>Ezen a címen található tranzakciók meghaladják az Electrum server maximum mennyiségét. <x ctype="x-i" equiv-text="&lt;/i&gt;" id="CLOSE_ITALIC_TEXT"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/> Ezen trazakció megtekinthető a Mempool website-ján is ha itt nem működik:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">122,125</context>
+          <context context-type="linenumber">127,130</context>
         </context-group>
         <note from="description" priority="1">Electrum server limit exceeded error</note>
       </trans-unit>
@@ -1605,7 +1541,7 @@
         <target>Bizalmas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">139,141</context>
+          <context context-type="linenumber">144,146</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/amount/amount.component.html</context>
@@ -1626,7 +1562,7 @@
         <target>Cím: <x equiv-text="this.addressString" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.ts</context>
-          <context context-type="linenumber">71</context>
+          <context context-type="linenumber">72</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="f11bc15f83d9174bd27454d32977b5025a66537d">
@@ -1638,187 +1574,95 @@
         </context-group>
         <note from="description" priority="1">api-docs.title</note>
       </trans-unit>
-      <trans-unit datatype="html" id="aacc1242420c527c8b9d4948a7ae7d94cde956e4">
-        <source>Websocket</source>
-        <target>Websocket</target>
+      <trans-unit datatype="html" id="9885457131a86be85a59c5366767e82c12d0a288">
+        <source>Addresses</source>
+        <target>Címek</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">9,14</context>
+          <context context-type="linenumber">10,12</context>
         </context-group>
-        <note from="description" priority="1">API Docs tab for Websocket</note>
-        <note from="meaning" priority="1">api-docs.tab.websocket</note>
+        <note from="description" priority="1">API Docs tab for Addresses</note>
+        <note from="meaning" priority="1">api-docs.tab.addresses</note>
       </trans-unit>
-      <trans-unit datatype="html" id="d9baa5e9ea1cde02012703c3a43f190947dadd04">
-        <source>Endpoint</source>
-        <target>Végpont</target>
+      <trans-unit datatype="html" id="e12cd52eaa77b446ba97436c145b59741151adf3">
+        <source>Returns details about an address. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>chain_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>. <x equiv-text="{{ '{' }}" id="INTERPOLATION"/>chain,mempool<x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/>_stats each contain an object with <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
+        <target>Visszaadja a cím részleteit. Elérhető mezők: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>chain_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, és <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>. <x equiv-text="{{ '{' }}" id="INTERPOLATION"/>chain,mempool<x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/>_stats mindegyik tartalmaz egy objektumot <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, és <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">14,15</context>
+          <context context-type="linenumber">26,27</context>
         </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">32,33</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">58,59</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">84,85</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">138,139</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">188,189</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">222,223</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">247,248</context>
-        </context-group>
-        <note from="description" priority="1">API Docs Endpoint</note>
-        <note from="meaning" priority="1">api-docs.shared.endpoint</note>
       </trans-unit>
-      <trans-unit datatype="html" id="80449b1198ade0f86ec83b676f3a436026136efe">
-        <source>Description</source>
-        <target>Leírás</target>
+      <trans-unit datatype="html" id="c9f5914dbba46a8dc4ab4e81b40b1582eea7c5e2">
+        <source>Get transaction history for the specified address/scripthash, sorted with newest first. Returns up to 50 mempool transactions plus the first 25 confirmed transactions. You can request more confirmed transactions using <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:last_seen_txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (see below).</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">15,18</context>
+          <context context-type="linenumber">44,45</context>
         </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">33,36</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">59,62</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">85,88</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">139,142</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">189,192</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">223,226</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">248,251</context>
-        </context-group>
-        <note from="description" priority="1">API Docs Description</note>
-        <note from="meaning" priority="1">api-docs.shared.description</note>
       </trans-unit>
-      <trans-unit datatype="html" id="a706b1ded7506620b153dbcdea8108e6691bbbd9">
-        <source>Default push: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> action: 'want', data: ['blocks', ...] <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> to express what you want pushed. Available: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>blocks<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool-blocks<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>live-2h-chart<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/>Push transactions related to address: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> 'track-address': '3PbJ...bF9B' <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> for new mempool transactions, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> for new block confirmed transactions.</source>
-        <target>Default push: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> action: 'want', data: ['blocks', ...] <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> to express what you want pushed. Available: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>blocks<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool-blocks<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>live-2h-chart<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/>Push transactions related to address: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> 'track-address': '3PbJ...bF9B' <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> for new mempool transactions, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> for new block confirmed transactions.</target>
+      <trans-unit datatype="html" id="5676910aa3ffb568079a7499b366744fe3fd87ea">
+        <source>Get confirmed transaction history for the specified address/scripthash, sorted with newest first. Returns 25 transactions per page. More can be requested by specifying the last txid seen by the previous query.</source>
+        <target>Ellenőrizze a megadott cím/szkripthash tranzakciós előzményeit, először a legújabbak szerint rendezve. 25 tranzakciót ad vissza oldalanként. Többet kérhet az előző lekérdezés által látott utolsó txid megadásával.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">19,20</context>
+          <context context-type="linenumber">61,63</context>
         </context-group>
-        <note from="description" priority="1">api-docs.websocket.websocket</note>
       </trans-unit>
-      <trans-unit datatype="html" id="e15117360d2a70d6959e8aedf59e9f0241fdfc4f">
-        <source>Fees</source>
-        <target>Díjjak</target>
+      <trans-unit datatype="html" id="f10009779c64e19e20414fae506f27118420aa33">
+        <source>Get unconfirmed transaction history for the specified address/scripthash. Returns up to 50 transactions (no paging).</source>
+        <target>Megerősítetlen tranzakciós előzmények lekérése a megadott címhez/scripthashhoz. Legfeljebb 50 tranzakciót ad vissza (lapozás nélkül).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">27,32</context>
+          <context context-type="linenumber">80,83</context>
         </context-group>
-        <note from="description" priority="1">API Docs tab for Fees</note>
-        <note from="meaning" priority="1">api-docs.tab.fees</note>
       </trans-unit>
-      <trans-unit datatype="html" id="39f61f2d1434d921a1f80a2a2f0903f06e9fd4df">
-        <source>Returns our currently suggested fees for new transactions.</source>
-        <target>Visszaadja az új tranzakciókért jelenleg javasolt díjainkat.</target>
+      <trans-unit datatype="html" id="4eb50557085c85bfca995b6ee0de56ec3f5e97eb">
+        <source>Get the list of unspent transaction outputs associated with the address/scripthash. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vout<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (with the status of the funding tx).<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/>There is also a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>valuecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> field that may appear in place of <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, plus the following additional fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>asset<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>assetcommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>noncecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>surjection_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>range_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></source>
+        <target>Ezzel megkaphatodn a nem elköltött tranzakciók kimeneteivel összeassociált címeket/szkripthashokat. Elérhető mezők: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vout<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, és <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (a tx finanszírozási státusszal). <x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/>Még ezek is mint a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>valuecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> mező amely a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> helyén található értékkel <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, hozzá táruslva a következő mezőkkel: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>asset<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>assetcommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>noncecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>subjection_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, és <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>range_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">37,40</context>
+          <context context-type="linenumber">100,101</context>
         </context-group>
-        <note from="description" priority="1">API Docs for /api/v1/fees/recommended</note>
-        <note from="meaning" priority="1">api-docs.fees.recommended</note>
       </trans-unit>
-      <trans-unit datatype="html" id="b95b496df2b0f016831d0984f3798a2e22b74103">
-        <source>Returns current mempool as projected blocks.</source>
-        <target>Visszaadja a mostani mempool-t előremutatott blokkoként.</target>
+      <trans-unit datatype="html" id="b861fd11d5aa8772acc40c5412621b6dd52378e8">
+        <source>Assets</source>
+        <target>Assetok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">41,44</context>
+          <context context-type="linenumber">111,113</context>
         </context-group>
-        <note from="description" priority="1">API Docs for /api/v1/fees/mempool-blocks</note>
-        <note from="meaning" priority="1">api-docs.fees.mempool-blocks</note>
+        <note from="description" priority="1">API Docs tab for Assets</note>
+        <note from="meaning" priority="1">api-docs.tab.assets</note>
       </trans-unit>
-      <trans-unit datatype="html" id="4ebf8d4a2433cca5a8a933ef8ccef1b01e45acef">
-        <source>Returns the ancestors and the best descendant fees for a transaction.</source>
-        <target>Visszaadja az előd és a legjobb utód díjjakat egy tranzakcióhoz. </target>
+      <trans-unit datatype="html" id="b885a96aa1a96bff3f603dab79746f90eef5cbdf">
+        <source>Returns information about a Liquid asset.</source>
+        <target>Visszadja a Liquid eszköz adatait.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">45,52</context>
+          <context context-type="linenumber">125,128</context>
         </context-group>
-        <note from="description" priority="1">API Docs for /api/v1/fees/cpfp</note>
-        <note from="meaning" priority="1">api-docs.fees.cpfp</note>
       </trans-unit>
-      <trans-unit datatype="html" id="19a8d63607ead7ba08364fe9f64aa3c503dff6c4">
-        <source>Mempool</source>
-        <target>Mempool</target>
+      <trans-unit datatype="html" id="4a0bf20cf26a4f4a387bed5c3d47c23294cb606e">
+        <source>Returns transactions associated with the specified Liquid asset. For the network's native asset, returns a list of peg in, peg out, and burn transactions. For user-issued assets, returns a list of issuance, reissuance, and burn transactions. Does not include regular transactions transferring this asset.</source>
+        <target>A megadott Liquid assetokhoz kapcsolódó tranzakciókat adja eredményül. A hálózat natív assetokhoz visszaküldi a beillesztési, a rögzítési és a kiégetési tranzakciók listáját. A felhasználó által kibocsátott assetok esetében a kibocsátási, újbóli kibocsájtási és égési tranzakciók listáját adja vissza. Nem tartalmazza a rendszeres tranzakciókat, amelyek ezt az assetot átruházzák.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">53,58</context>
+          <context context-type="linenumber">143,146</context>
         </context-group>
-        <note from="description" priority="1">API Docs tab for Mempool</note>
-        <note from="meaning" priority="1">api-docs.tab.mempool</note>
       </trans-unit>
-      <trans-unit datatype="html" id="7d43b13f97ee52aae72d728a52af2e31f6edbf38">
-        <source>Returns current mempool backlog statistics.</source>
-        <target>Visszaadja a mostani hátramaradt mempool statisztikáit.</target>
+      <trans-unit datatype="html" id="44a238eb28145f904f3a5bbfd4050987668f78d0">
+        <source>Get the current total supply of the specified asset. For the native asset (L-BTC), this is calculated as [chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount. For issued assets, this is calculated as [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount. Not available for assets with blinded issuances. If /decimal is specified, returns the supply as a decimal according to the asset's divisibility. Otherwise, returned in base units.</source>
+        <target>Szerezze be a megadott eszköz aktuális teljes assetjét. A natív asset (L-BTC) esetében ez a következő módon kerül kiszámításra: [lánc, mempool] _stats.peg_in_amount - [chain, mempool] _stats.peg_out_amount - [chain, mempool] _stats.burned_amount. A kibocsátott asset esetében ez a következő módon kerül kiszámításra: [lánc, mempool] _stats.issued_amount - [lánc, mempool] _stats.burned_amount. Nem elérhető a vakkibocsátású asset esetében. Ha a / decimális érték meg van adva, akkor az asset oszthatóságának megfelelően tizedesértékként adja vissza a kínálatot. Ellenkező esetben alapegységekben tér vissza.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">63,66</context>
+          <context context-type="linenumber">162,165</context>
         </context-group>
-        <note from="description" priority="1">API Docs for /api/mempool</note>
-        <note from="meaning" priority="1">api-docs.mempool.mempool</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="23c346e87b137b1807bac13c27d19dc18f745f8f">
-        <source>Get the full list of txids in the mempool as an array. The order of the txids is arbitrary and does not match bitcoind.</source>
-        <target>Ezzel tömbként kapja meg a mxpool txidek teljes listáját. A txidek sorrendje tetszőleges, és nem egyezik meg a bitcoind-ben szereplővel.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">67,70</context>
-        </context-group>
-        <note from="description" priority="1">API Docs for /api/mempool/txids</note>
-        <note from="meaning" priority="1">api-docs.mempool.txids</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="af1a465e50097fabbe55bf5dbcf5d0702bdbc98b">
-        <source>Get a list of the last 10 transactions to enter the mempool. Each transaction object contains simplified overview data, with the following fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>fee<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vsize<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
-        <target>Szerezze be egy listát az utolsó 10 tranzakcióról, amellyel beléphet a mempoolba. Minden tranzakciós objektum egyszerűsített áttekintő adatokat tartalmaz, a következő mezőkkel: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>fee<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vsize<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, és <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">71,72</context>
-        </context-group>
-        <note from="description" priority="1">API Docs for /api/mempool/recent</note>
-        <note from="meaning" priority="1">api-docs.mempool.recent</note>
       </trans-unit>
       <trans-unit datatype="html" id="f4cba7faeb126346f09cc6af30124f9a343f7a28">
         <source>Blocks</source>
         <target>Blokkok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">79,84</context>
+          <context context-type="linenumber">173,175</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.ts</context>
@@ -1832,47 +1676,7 @@
         <target>Adatokat ad vissza egy blokkról. Elérhető mezők: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>id<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>version<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>timestamp<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>bits<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>merkle_root<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>size<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>weight<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/><x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/> és <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>previousblockhash<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">89,90</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="a2c00fbdcce9d6291c3b04c67979f9694be23f28">
-        <source>Returns the confirmation status of a block. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>in_best_chain<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean, false for orphaned blocks), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>next_best<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (the hash of the next block, only available for blocks in the best chain).</source>
-        <target>Egy blokk megerősítési állapotát adja vissza. Elérhető mezők: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>in_best_chain<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (logikai érték, hamis az árva blokkokhoz), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>next_best<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (a következő blokk hashja, csak a legjobb lánc blokkjaihoz érhető el).</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">93,94</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="1126cb2e03d0371d03b57047052d4ff1b6556753">
-        <source>Returns a list of transactions in the block (up to 25 transactions beginning at <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>start_index<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>). Transactions returned here do not have the <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> field, since all the transactions share the same block and confirmation status.</source>
-        <target>Visszaadja a blokkban szereplő tranzakciók listáját (legfeljebb 25 tranzakció kezdődik a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>start_index<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> kezdőponttól). Az ide visszaküldött tranzakcióknak nincs <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>állapotmezőjük<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, mivel az összes tranzakciónak ugyanaz a blokk- és megerősítési állapota.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">97,98</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="3846f2527c3c9a50bb84b2c941a876f66797449b">
-        <source>Returns a list of all txids in the block.</source>
-        <target>Visszaadja a blokk összes txidjét.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">101,104</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="3e08815110b2e5ce8aa7256ed05a2faf6dbb7077">
-        <source>Returns the transaction at index <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:index<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> within the specified block.</source>
-        <target>Visszaadja a tranzakciót az indexnél <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:index<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> a megadott blokkon belül.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">105,106</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="6d5aacdd7e6c375570a88c25bfd0be82beba4c7b">
-        <source>Returns the raw block representation in binary.</source>
-        <target>Visszaadja a nyers blokk bináris adatát reprezentatív módon.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">109,112</context>
+          <context context-type="linenumber">187,188</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="36df9865e9099d98537ea69c9cfdc035d1b64116">
@@ -1880,15 +1684,23 @@
         <target>Visszaadja a mostani blokk jelenlegi magasságát <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">113,114</context>
+          <context context-type="linenumber">204,205</context>
         </context-group>
       </trans-unit>
-      <trans-unit datatype="html" id="f8380186899495340cbfe7fb836ba664fb4b52af">
-        <source>Returns the 10 newest blocks starting at the tip or at <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:start_height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> if specified.</source>
-        <target>Visszaadja a 10 legújabb blokkot a csúcstól kezdve, vagy ha meg van adva a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:start_height.<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/></target>
+      <trans-unit datatype="html" id="6d5aacdd7e6c375570a88c25bfd0be82beba4c7b">
+        <source>Returns the raw block representation in binary.</source>
+        <target>Visszaadja a nyers blokk bináris adatát reprezentatív módon.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">117,118</context>
+          <context context-type="linenumber">220,223</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="a2c00fbdcce9d6291c3b04c67979f9694be23f28">
+        <source>Returns the confirmation status of a block. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>in_best_chain<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean, false for orphaned blocks), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>next_best<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (the hash of the next block, only available for blocks in the best chain).</source>
+        <target>Egy blokk megerősítési állapotát adja vissza. Elérhető mezők: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>in_best_chain<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (logikai érték, hamis az árva blokkokhoz), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>next_best<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (a következő blokk hashja, csak a legjobb lánc blokkjaihoz érhető el).</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">239,240</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="4767bdd2059533d5eed7f3fe7cf0be5c260cdb00">
@@ -1896,7 +1708,7 @@
         <target>Visszaadja az utolsó blokk magasságát.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">121,124</context>
+          <context context-type="linenumber">259,262</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="940153d58769f1a8f50dba2458693142675a5dcb">
@@ -1904,15 +1716,189 @@
         <target>Visszaadja az utolsó blokk heshjét.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">125,130</context>
+          <context context-type="linenumber">278,281</context>
         </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="3e08815110b2e5ce8aa7256ed05a2faf6dbb7077">
+        <source>Returns the transaction at index <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:index<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> within the specified block.</source>
+        <target>Visszaadja a tranzakciót az indexnél <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:index<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> a megadott blokkon belül.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">298,299</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="3846f2527c3c9a50bb84b2c941a876f66797449b">
+        <source>Returns a list of all txids in the block.</source>
+        <target>Visszaadja a blokk összes txidjét.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">318,321</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="1126cb2e03d0371d03b57047052d4ff1b6556753">
+        <source>Returns a list of transactions in the block (up to 25 transactions beginning at <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>start_index<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>). Transactions returned here do not have the <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> field, since all the transactions share the same block and confirmation status.</source>
+        <target>Visszaadja a blokkban szereplő tranzakciók listáját (legfeljebb 25 tranzakció kezdődik a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>start_index<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> kezdőponttól). Az ide visszaküldött tranzakcióknak nincs <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>állapotmezőjük<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, mivel az összes tranzakciónak ugyanaz a blokk- és megerősítési állapota.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">337,338</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="f8380186899495340cbfe7fb836ba664fb4b52af">
+        <source>Returns the 10 newest blocks starting at the tip or at <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:start_height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> if specified.</source>
+        <target>Visszaadja a 10 legújabb blokkot a csúcstól kezdve, vagy ha meg van adva a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:start_height.<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">357,358</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="a29245620333b4788dee4c478c327d99846513c6">
+        <source>BSQ</source>
+        <target>BSQ</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">368,370</context>
+        </context-group>
+        <note from="description" priority="1">API Docs tab for BSQ</note>
+        <note from="meaning" priority="1">api-docs.tab.bsq</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="9604b870a64e6635062828425fcb801371e716ad">
+        <source>Returns all Bisq transactions belonging to a Bitcoin address, with 'B' prefixed in front of the address.</source>
+        <target>Visszaadja az összes Bisq tranzakciót amelyek Bitcoin címhez tartoznak, ezeket „B” előtaggal látja el a cím előtt.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">385,388</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="e7e7c97535181ba299bc0ad02904f851088a0dd5">
+        <source>Returns all Bisq transactions that exist in a Bitcoin block.</source>
+        <target>Visszaad minden Bisq tranzakciót amelyek léteznek Bitcoin blokkokban.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">405,408</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="ac234ff46c8f499399a20fb5d74005094de7cdcd">
+        <source>Returns the most recently processed Bitcoin block height processed by Bisq.</source>
+        <target>Visszaadja a legutoljára feldolgozott Bitcoin blokknak a magasságát amelyet a Bisq feldolgozott.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">424,427</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="6fdafaace68cb298c6281e89eedc704f3d8f3f6a">
+        <source>Returns :length Bitcoin blocks that contain Bisq transactions, starting from :index.</source>
+        <target>Visszaadja a :length hosszát a Bitcoin blokknak amely tartalmaz Bisq tranzakciókat, mindezt kezdve itt: :index</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">444,447</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="088d201b8d0589637d7aa64457a6cdd97a5d0f11">
+        <source>Returns statistics about all Bisq transactions.</source>
+        <target>Visszaad statisztikákat minden Bisq tranzakcióról.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">465,468</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="5d67fbdf2986058351024c16d526c444475ead37">
+        <source>Returns details about a Bisq transaction.</source>
+        <target>Vissza ad részleteket egy Bisq tranzakciórol.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">485,488</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="e9a58657c410cf65dba4c3cdfb1af7099dedb241">
+        <source>Returns :length of latest Bisq transactions, starting from :index.</source>
+        <target>Visszaadja a :length hosszát az utolsó Bisq tranzakciónak az :index -től kiindulva.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">506,509</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="e15117360d2a70d6959e8aedf59e9f0241fdfc4f">
+        <source>Fees</source>
+        <target>Díjjak</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">517,519</context>
+        </context-group>
+        <note from="description" priority="1">API Docs tab for Fees</note>
+        <note from="meaning" priority="1">api-docs.tab.fees</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="39f61f2d1434d921a1f80a2a2f0903f06e9fd4df">
+        <source>Returns our currently suggested fees for new transactions.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">531,533</context>
+        </context-group>
+        <note from="description" priority="1">API Docs for /api/v1/fees/recommended</note>
+        <note from="meaning" priority="1">api-docs.fees.recommended</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="b95b496df2b0f016831d0984f3798a2e22b74103">
+        <source>Returns current mempool as projected blocks.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">547,549</context>
+        </context-group>
+        <note from="description" priority="1">API Docs for /api/v1/fees/mempool-blocks</note>
+        <note from="meaning" priority="1">api-docs.fees.mempool-blocks</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="4ebf8d4a2433cca5a8a933ef8ccef1b01e45acef">
+        <source>Returns the ancestors and the best descendant fees for a transaction.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">563,565</context>
+        </context-group>
+        <note from="description" priority="1">API Docs for /api/v1/fees/cpfp</note>
+        <note from="meaning" priority="1">api-docs.fees.cpfp</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="19a8d63607ead7ba08364fe9f64aa3c503dff6c4">
+        <source>Mempool</source>
+        <target>Mempool</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">573,575</context>
+        </context-group>
+        <note from="description" priority="1">API Docs tab for Mempool</note>
+        <note from="meaning" priority="1">api-docs.tab.mempool</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="7d43b13f97ee52aae72d728a52af2e31f6edbf38">
+        <source>Returns current mempool backlog statistics.</source>
+        <target>Visszaadja a mostani hátramaradt mempool statisztikáit.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">588,590</context>
+        </context-group>
+        <note from="description" priority="1">API Docs for /api/mempool</note>
+        <note from="meaning" priority="1">api-docs.mempool.mempool</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="23c346e87b137b1807bac13c27d19dc18f745f8f">
+        <source>Get the full list of txids in the mempool as an array. The order of the txids is arbitrary and does not match bitcoind.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">604,607</context>
+        </context-group>
+        <note from="description" priority="1">API Docs for /api/mempool/txids</note>
+        <note from="meaning" priority="1">api-docs.mempool.txids</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="af1a465e50097fabbe55bf5dbcf5d0702bdbc98b">
+        <source>Get a list of the last 10 transactions to enter the mempool. Each transaction object contains simplified overview data, with the following fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>fee<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vsize<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
+        <target>Szerezze be egy listát az utolsó 10 tranzakcióról, amellyel beléphet a mempoolba. Minden tranzakciós objektum egyszerűsített áttekintő adatokat tartalmaz, a következő mezőkkel: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>fee<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vsize<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, és <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">622,623</context>
+        </context-group>
+        <note from="description" priority="1">API Docs for /api/mempool/recent</note>
+        <note from="meaning" priority="1">api-docs.mempool.recent</note>
       </trans-unit>
       <trans-unit datatype="html" id="8a4a4b8f308aaaeae782f7c9847013348d969c2d">
         <source>Transactions</source>
         <target>Tranzakciók</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">133,138</context>
+          <context context-type="linenumber">633,636</context>
         </context-group>
         <note from="description" priority="1">API Docs tab for Transactions</note>
         <note from="meaning" priority="1">api-docs.tab.transactions</note>
@@ -1922,15 +1908,7 @@
         <target>Visszaadja a tranzakció részleteit. Elérhető mezők: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>version<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>locktime<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>size<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>weight<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>fee<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vin<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vout<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, és <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">143,144</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="7e784cfa5833e7b54d4dfc723fabde94f66ebde3">
-        <source>Returns the confirmation status of a transaction. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>confirmed<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional), and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_hash<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional).</source>
-        <target>Visszaadja a tranzakció megerősítési állapotát. Elérhető mezők: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>confirmed<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (logikai érték), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (opcionális), és <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_hash<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (opcionális).</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">147,148</context>
+          <context context-type="linenumber">647,648</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="34c21c242665d87bf22645c90f571bd5078eac93">
@@ -1938,15 +1916,7 @@
         <target>Hexként szériázott tranzakciót ad vissza.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">151,154</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="fd42ee72bb64b93578d7d2142ae50796d0056d7a">
-        <source>Returns a transaction as binary data.</source>
-        <target>Tranzakciót ad vissza bináris adatként.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">155,157</context>
+          <context context-type="linenumber">666,669</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="d51106cc898981e9862d35a4db40796f0cf464f8">
@@ -1954,7 +1924,7 @@
         <target>A <x ctype="x-a" equiv-text="&lt;a href=&quot;https://bitcoin.org/en/glossary/merkle-block&quot;&gt;" id="START_LINK"/>bitcoind merkleblock <x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/> formátumát használva a tranzakcióhoz egy merkle felvételi igazolást ad vissza.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">159,160</context>
+          <context context-type="linenumber">684,685</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="a57953199686e9980df838cb25edb51691941ac5">
@@ -1962,7 +1932,7 @@
         <target>A tranzakcióhoz egy merkle felvételi igazolást ad vissza az <x ctype="x-a" equiv-text="&lt;a href=&quot;https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle&quot;&gt;" id="START_LINK"/>Electrum blockchain.transaction.get_merkle formátumával.<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">163,164</context>
+          <context context-type="linenumber">704,705</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="fe9a40b2ff9674b4ab7d82624ffed340c9ee5b89">
@@ -1970,7 +1940,7 @@
         <target>Visszaadja egy tranzakció kimeneteinek költési állapotát. Elérhető mezők: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (logikai érték), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (opcionális), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vin<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (opcionális) és <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (opcionális, a költés tx állapota).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">167,168</context>
+          <context context-type="linenumber">723,724</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="0358265aa88614843e1f5e887b94c673808c84f1">
@@ -1978,7 +1948,23 @@
         <target>Visszaadja a elköltési státuszát minden kimeneti tranzakciónak.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">171,174</context>
+          <context context-type="linenumber">742,745</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="fd42ee72bb64b93578d7d2142ae50796d0056d7a">
+        <source>Returns a transaction as binary data.</source>
+        <target>Tranzakciót ad vissza bináris adatként.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">761,764</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="7e784cfa5833e7b54d4dfc723fabde94f66ebde3">
+        <source>Returns the confirmation status of a transaction. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>confirmed<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional), and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_hash<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional).</source>
+        <target>Visszaadja a tranzakció megerősítési állapotát. Elérhető mezők: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>confirmed<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (logikai érték), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (opcionális), és <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_hash<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (opcionális).</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">780,781</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="01723473ecc53cab60ef1b37dc39d8941994d56f">
@@ -1986,165 +1972,34 @@
         <target>Nyers tranzakció közvetítése a hálózatra. A tranzakciót hexként kell megadni a kérelem törzsében. A <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> a siker küldés után visszajelez.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">175,176</context>
+          <context context-type="linenumber">800,801</context>
         </context-group>
       </trans-unit>
-      <trans-unit datatype="html" id="9885457131a86be85a59c5366767e82c12d0a288">
-        <source>Addresses</source>
-        <target>Címek</target>
+      <trans-unit datatype="html" id="aacc1242420c527c8b9d4948a7ae7d94cde956e4">
+        <source>Websocket</source>
+        <target>Websocket</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">183,188</context>
+          <context context-type="linenumber">810,814</context>
         </context-group>
-        <note from="description" priority="1">API Docs tab for Addresses</note>
-        <note from="meaning" priority="1">api-docs.tab.addresses</note>
+        <note from="description" priority="1">API Docs tab for Websocket</note>
+        <note from="meaning" priority="1">api-docs.tab.websocket</note>
       </trans-unit>
-      <trans-unit datatype="html" id="e12cd52eaa77b446ba97436c145b59741151adf3">
-        <source>Returns details about an address. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>chain_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>. <x equiv-text="{{ '{' }}" id="INTERPOLATION"/>chain,mempool<x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/>_stats each contain an object with <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
-        <target>Visszaadja a cím részleteit. Elérhető mezők: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>chain_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, és <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>. <x equiv-text="{{ '{' }}" id="INTERPOLATION"/>chain,mempool<x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/>_stats mindegyik tartalmaz egy objektumot <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, és <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
+      <trans-unit datatype="html" id="a706b1ded7506620b153dbcdea8108e6691bbbd9">
+        <source>Default push: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> action: 'want', data: ['blocks', ...] <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> to express what you want pushed. Available: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>blocks<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool-blocks<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>live-2h-chart<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/>Push transactions related to address: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> 'track-address': '3PbJ...bF9B' <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> for new mempool transactions, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> for new block confirmed transactions.</source>
+        <target>Default push: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> action: 'want', data: ['blocks', ...] <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> to express what you want pushed. Available: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>blocks<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool-blocks<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>live-2h-chart<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/>Push transactions related to address: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> 'track-address': '3PbJ...bF9B' <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> for new mempool transactions, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> for new block confirmed transactions.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">193,194</context>
+          <context context-type="linenumber">819,820</context>
         </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="bdc501d28e02e07f692859977fdaee8c52eea401">
-        <source>Get transaction history for the specified address/scripthash, sorted with newest first. Returns up to 50 mempool transactions plus the first 25 confirmed transactions. You can request more confirmed transactions using <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:last_seen_txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (see below). </source>
-        <target>Töltse le a megadott cím/szkripthash tranzakcióelőzményeit, először a legújabbakkal rendezve. Legfeljebb 50 mempool tranzakciót ad vissza, az első 25 megerősített tranzakcióval együtt. További megerősített tranzakciókat igényelhet a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:last_seen_txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> használatával (lázsd lentebb).</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">197,199</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="5676910aa3ffb568079a7499b366744fe3fd87ea">
-        <source>Get confirmed transaction history for the specified address/scripthash, sorted with newest first. Returns 25 transactions per page. More can be requested by specifying the last txid seen by the previous query.</source>
-        <target>Ellenőrizze a megadott cím/szkripthash tranzakciós előzményeit, először a legújabbak szerint rendezve. 25 tranzakciót ad vissza oldalanként. Többet kérhet az előző lekérdezés által látott utolsó txid megadásával.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">201,204</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="f10009779c64e19e20414fae506f27118420aa33">
-        <source>Get unconfirmed transaction history for the specified address/scripthash. Returns up to 50 transactions (no paging).</source>
-        <target>Megerősítetlen tranzakciós előzmények lekérése a megadott címhez/scripthashhoz. Legfeljebb 50 tranzakciót ad vissza (lapozás nélkül).</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">205,208</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="4eb50557085c85bfca995b6ee0de56ec3f5e97eb">
-        <source>Get the list of unspent transaction outputs associated with the address/scripthash. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vout<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (with the status of the funding tx).<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/>There is also a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>valuecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> field that may appear in place of <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, plus the following additional fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>asset<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>assetcommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>noncecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>surjection_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>range_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></source>
-        <target>Ezzel megkaphatodn a nem elköltött tranzakciók kimeneteivel összeassociált címeket/szkripthashokat. Elérhető mezők: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vout<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, és <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (a tx finanszírozási státusszal). <x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/>Még ezek is mint a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>valuecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> mező amely a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> helyén található értékkel <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, hozzá táruslva a következő mezőkkel: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>asset<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>assetcommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>noncecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>subjection_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, és <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>range_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">209,211</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="b861fd11d5aa8772acc40c5412621b6dd52378e8">
-        <source>Assets</source>
-        <target>Assetok</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">217,222</context>
-        </context-group>
-        <note from="description" priority="1">API Docs tab for Assets</note>
-        <note from="meaning" priority="1">api-docs.tab.assets</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="b885a96aa1a96bff3f603dab79746f90eef5cbdf">
-        <source>Returns information about a Liquid asset.</source>
-        <target>Visszadja a Liquid eszköz adatait.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">227,230</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="4a0bf20cf26a4f4a387bed5c3d47c23294cb606e">
-        <source>Returns transactions associated with the specified Liquid asset. For the network's native asset, returns a list of peg in, peg out, and burn transactions. For user-issued assets, returns a list of issuance, reissuance, and burn transactions. Does not include regular transactions transferring this asset.</source>
-        <target>A megadott Liquid assetokhoz kapcsolódó tranzakciókat adja eredményül. A hálózat natív assetokhoz visszaküldi a beillesztési, a rögzítési és a kiégetési tranzakciók listáját. A felhasználó által kibocsátott assetok esetében a kibocsátási, újbóli kibocsájtási és égési tranzakciók listáját adja vissza. Nem tartalmazza a rendszeres tranzakciókat, amelyek ezt az assetot átruházzák.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">231,234</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="44a238eb28145f904f3a5bbfd4050987668f78d0">
-        <source>Get the current total supply of the specified asset. For the native asset (L-BTC), this is calculated as [chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount. For issued assets, this is calculated as [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount. Not available for assets with blinded issuances. If /decimal is specified, returns the supply as a decimal according to the asset's divisibility. Otherwise, returned in base units.</source>
-        <target>Szerezze be a megadott eszköz aktuális teljes assetjét. A natív asset (L-BTC) esetében ez a következő módon kerül kiszámításra: [lánc, mempool] _stats.peg_in_amount - [chain, mempool] _stats.peg_out_amount - [chain, mempool] _stats.burned_amount. A kibocsátott asset esetében ez a következő módon kerül kiszámításra: [lánc, mempool] _stats.issued_amount - [lánc, mempool] _stats.burned_amount. Nem elérhető a vakkibocsátású asset esetében. Ha a / decimális érték meg van adva, akkor az asset oszthatóságának megfelelően tizedesértékként adja vissza a kínálatot. Ellenkező esetben alapegységekben tér vissza.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">235,239</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="a29245620333b4788dee4c478c327d99846513c6">
-        <source>BSQ</source>
-        <target>BSQ</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">242,247</context>
-        </context-group>
-        <note from="description" priority="1">API Docs tab for BSQ</note>
-        <note from="meaning" priority="1">api-docs.tab.bsq</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="088d201b8d0589637d7aa64457a6cdd97a5d0f11">
-        <source>Returns statistics about all Bisq transactions.</source>
-        <target>Visszaad statisztikákat minden Bisq tranzakcióról.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">252,255</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="5d67fbdf2986058351024c16d526c444475ead37">
-        <source>Returns details about a Bisq transaction.</source>
-        <target>Vissza ad részleteket egy Bisq tranzakciórol.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">256,259</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="e9a58657c410cf65dba4c3cdfb1af7099dedb241">
-        <source>Returns :length of latest Bisq transactions, starting from :index.</source>
-        <target>Visszaadja a :length hosszát az utolsó Bisq tranzakciónak az :index -től kiindulva.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">260,263</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="e7e7c97535181ba299bc0ad02904f851088a0dd5">
-        <source>Returns all Bisq transactions that exist in a Bitcoin block.</source>
-        <target>Visszaad minden Bisq tranzakciót amelyek léteznek Bitcoin blokkokban.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">264,267</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="6fdafaace68cb298c6281e89eedc704f3d8f3f6a">
-        <source>Returns :length Bitcoin blocks that contain Bisq transactions, starting from :index.</source>
-        <target>Visszaadja a :length hosszát a Bitcoin blokknak amely tartalmaz Bisq tranzakciókat, mindezt kezdve itt: :index</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">268,271</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="ac234ff46c8f499399a20fb5d74005094de7cdcd">
-        <source>Returns the most recently processed Bitcoin block height processed by Bisq.</source>
-        <target>Visszaadja a legutoljára feldolgozott Bitcoin blokknak a magasságát amelyet a Bisq feldolgozott.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">272,275</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="9604b870a64e6635062828425fcb801371e716ad">
-        <source>Returns all Bisq transactions belonging to a Bitcoin address, with 'B' prefixed in front of the address.</source>
-        <target>Visszaadja az összes Bisq tranzakciót amelyek Bitcoin címhez tartoznak, ezeket „B” előtaggal látja el a cím előtt.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">276,280</context>
-        </context-group>
+        <note from="description" priority="1">api-docs.websocket.websocket</note>
       </trans-unit>
       <trans-unit datatype="html" id="e351b40b3869a5c7d19c3d4918cb1ac7aaab95c4">
         <source>API</source>
         <target>API</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.ts</context>
-          <context context-type="linenumber">24</context>
+          <context context-type="linenumber">1138</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/bisq-master-page/bisq-master-page.component.html</context>
@@ -2442,19 +2297,19 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">169</context>
+          <context context-type="linenumber">171</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">182</context>
+          <context context-type="linenumber">184</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">335</context>
+          <context context-type="linenumber">337</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">345</context>
+          <context context-type="linenumber">348</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -2466,7 +2321,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">168,172</context>
+          <context context-type="linenumber">164,168</context>
         </context-group>
         <note from="description" priority="1">sat/vB</note>
         <note from="meaning" priority="1">shared.sat-vbyte</note>
@@ -2578,7 +2433,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">195</context>
+          <context context-type="linenumber">197</context>
         </context-group>
         <note from="description" priority="1">Transaction Details</note>
         <note from="meaning" priority="1">transaction.details</note>
@@ -2675,7 +2530,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">193,195</context>
+          <context context-type="linenumber">189,191</context>
         </context-group>
         <note from="description" priority="1">footer.backend-is-synchronizing</note>
       </trans-unit>
@@ -2688,7 +2543,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">198,204</context>
+          <context context-type="linenumber">194,200</context>
         </context-group>
         <note from="description" priority="1">vB/s</note>
         <note from="meaning" priority="1">shared.vbytes-per-second</note>
@@ -2702,7 +2557,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">172,174</context>
+          <context context-type="linenumber">168,170</context>
         </context-group>
         <note from="description" priority="1">Unconfirmed count</note>
         <note from="meaning" priority="1">dashboard.unconfirmed</note>
@@ -2726,7 +2581,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">322</context>
+          <context context-type="linenumber">324</context>
         </context-group>
         <note from="description" priority="1">shared.block</note>
       </trans-unit>
@@ -2743,7 +2598,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">323</context>
+          <context context-type="linenumber">325</context>
         </context-group>
         <note from="description" priority="1">shared.blocks</note>
       </trans-unit>
@@ -2855,7 +2710,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">318</context>
+          <context context-type="linenumber">320</context>
         </context-group>
         <note from="description" priority="1">Block Frequency (plural)</note>
         <note from="meaning" priority="1">mempool-blocks.eta-of-next-block-plural</note>
@@ -2869,7 +2724,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">320</context>
+          <context context-type="linenumber">322</context>
         </context-group>
         <note from="description" priority="1">Block Frequency</note>
         <note from="meaning" priority="1">mempool-blocks.eta-of-next-block</note>
@@ -2917,6 +2772,54 @@
         </context-group>
         <note from="description" priority="1">search-form.search-title</note>
       </trans-unit>
+      <trans-unit datatype="html" id="dfd99c62b5b308fc5b1ad7adbbf9d526d2b31516">
+        <source>Sponsor</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/sponsor/sponsor.component.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/sponsor/sponsor.component.ts</context>
+          <context context-type="linenumber">34</context>
+        </context-group>
+        <note from="description" priority="1">sponsor.title</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="8a24d1f821c3fde832ff742b6aaba455accadc74">
+        <source>Request invoice</source>
+        <target>Számla kérése</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/sponsor/sponsor.component.html</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+        <note from="description" priority="1">about.sponsor.request-invoice</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="64a98449e66031949cbf82767dd17c30d4e6da7f">
+        <source>Waiting for transaction... </source>
+        <target>Tranzakcióra vár...</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/sponsor/sponsor.component.html</context>
+          <context context-type="linenumber">137</context>
+        </context-group>
+        <note from="description" priority="1">about.sponsor.waiting-for-transaction</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="023f8e4927b3e3baa217a2577c78c5194b885a21">
+        <source>Donation confirmed!</source>
+        <target>Adomány megerősítve!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/sponsor/sponsor.component.html</context>
+          <context context-type="linenumber">142</context>
+        </context-group>
+        <note from="description" priority="1">about.sponsor.donation-confirmed</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="768fa94396eb6bb2834ec52fc1b5fad92273027d">
+        <source>Thank you!</source>
+        <target>Köszönjük! ❤️ </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/sponsor/sponsor.component.html</context>
+          <context context-type="linenumber">142</context>
+        </context-group>
+        <note from="description" priority="1">about.sponsor.thank-you</note>
+      </trans-unit>
       <trans-unit datatype="html" id="ff4b7f4070be9e876c7610d99b9dbd53ff19dceb">
         <source>Loading graphs...</source>
         <target>Grafikon betöltése...</target>
@@ -2952,6 +2855,14 @@
           <context context-type="linenumber">53</context>
         </context-group>
         <note from="description" priority="1">statistics.transaction-vbytes-per-second</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="d10f6e967f3f654240a4f4ad5098d8e6e52a4896">
+        <source>TV only</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/television/television.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+        <note from="description" priority="1">television.tv-only</note>
       </trans-unit>
       <trans-unit datatype="html" id="time-since.just-now">
         <source>Just now</source>
@@ -3120,7 +3031,7 @@
         <target>Nem megerősített</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">31</context>
+          <context context-type="linenumber">32</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -3134,7 +3045,7 @@
         <target>Megerősítve</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">65</context>
+          <context context-type="linenumber">67</context>
         </context-group>
         <note from="description" priority="1">Transaction Confirmed state</note>
         <note from="meaning" priority="1">transaction.confirmed</note>
@@ -3144,7 +3055,7 @@
         <target><x ctype="x-app_timespan" equiv-text="&lt;app-timespan [time]=&quot;tx.status.block_time - transactionTime&quot;&gt;" id="START_TAG_APP_TIMESPAN"/><x ctype="x-app_timespan" equiv-text="&lt;/app-timespan&gt;" id="CLOSE_TAG_APP_TIMESPAN"/> után</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">66</context>
+          <context context-type="linenumber">68</context>
         </context-group>
         <note from="description" priority="1">Transaction confirmed after</note>
         <note from="meaning" priority="1">transaction.confirmed.after</note>
@@ -3154,7 +3065,7 @@
         <target>Először látva</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">101</context>
+          <context context-type="linenumber">103</context>
         </context-group>
         <note from="description" priority="1">Transaction first seen</note>
         <note from="meaning" priority="1">transaction.first-seen</note>
@@ -3164,7 +3075,7 @@
         <target>Hátralévő idő</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">107</context>
+          <context context-type="linenumber">109</context>
         </context-group>
         <note from="description" priority="1">Transaction ETA</note>
         <note from="meaning" priority="1">transaction.eta</note>
@@ -3174,7 +3085,7 @@
         <target>Több órán belül (vagy később)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">114</context>
+          <context context-type="linenumber">116</context>
         </context-group>
         <note from="description" priority="1">Transaction ETA in several hours or more</note>
         <note from="meaning" priority="1">transaction.eta.in-several-hours</note>
@@ -3184,11 +3095,11 @@
         <target>Virtuális méret</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">153</context>
+          <context context-type="linenumber">155</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">210</context>
+          <context context-type="linenumber">212</context>
         </context-group>
         <note from="description" priority="1">Transaction Virtual Size</note>
         <note from="meaning" priority="1">transaction.vsize</note>
@@ -3198,11 +3109,11 @@
         <target>Díj ráta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">154</context>
+          <context context-type="linenumber">156</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">333</context>
+          <context context-type="linenumber">335</context>
         </context-group>
         <note from="description" priority="1">Transaction fee rate</note>
         <note from="meaning" priority="1">transaction.fee-rate</note>
@@ -3212,7 +3123,7 @@
         <target>Utód</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">161</context>
+          <context context-type="linenumber">163</context>
         </context-group>
         <note from="description" priority="1">Descendant</note>
         <note from="meaning" priority="1">transaction.descendant</note>
@@ -3222,7 +3133,7 @@
         <target>Felmenő</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">175</context>
+          <context context-type="linenumber">177</context>
         </context-group>
         <note from="description" priority="1">Transaction Ancestor</note>
         <note from="meaning" priority="1">transaction.ancestor</note>
@@ -3232,7 +3143,7 @@
         <target>Méret</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">206</context>
+          <context context-type="linenumber">208</context>
         </context-group>
         <note from="description" priority="1">Transaction Size</note>
         <note from="meaning" priority="1">transaction.size</note>
@@ -3242,7 +3153,7 @@
         <target>Súly</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">214</context>
+          <context context-type="linenumber">216</context>
         </context-group>
         <note from="description" priority="1">Transaction Weight</note>
         <note from="meaning" priority="1">transaction.weight</note>
@@ -3252,7 +3163,7 @@
         <target>Nem található tranzakció.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">302</context>
+          <context context-type="linenumber">304</context>
         </context-group>
         <note from="description" priority="1">transaction.error.transaction-not-found</note>
       </trans-unit>
@@ -3261,7 +3172,7 @@
         <target>Várakozás arra hogy a mempoolban feltünjön...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">303</context>
+          <context context-type="linenumber">305</context>
         </context-group>
         <note from="description" priority="1">transaction.error.waiting-for-it-to-appear</note>
       </trans-unit>
@@ -3270,7 +3181,7 @@
         <target>Díj</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">329</context>
+          <context context-type="linenumber">331</context>
         </context-group>
         <note from="description" priority="1">Transaction fee</note>
         <note from="meaning" priority="1">transaction.fee</note>
@@ -3280,7 +3191,7 @@
         <target>sat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">330</context>
+          <context context-type="linenumber">332</context>
         </context-group>
         <note from="description" priority="1">Transaction Fee sat</note>
         <note from="meaning" priority="1">transaction.fee.sat</note>
@@ -3290,7 +3201,7 @@
         <target>Effektív díj ráta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">343</context>
+          <context context-type="linenumber">345</context>
         </context-group>
         <note from="description" priority="1">Effective transaction fee rate</note>
         <note from="meaning" priority="1">transaction.effective-fee-rate</note>
@@ -3580,7 +3491,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">174,178</context>
+          <context context-type="linenumber">170,174</context>
         </context-group>
         <note from="description" priority="1">dashboard.latest-blocks.transaction-count</note>
       </trans-unit>
@@ -3634,7 +3545,7 @@
         <target>Minimum Díj</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">165,166</context>
+          <context context-type="linenumber">161,162</context>
         </context-group>
         <note from="description" priority="1">Minimum mempool fee</note>
         <note from="meaning" priority="1">dashboard.minimum-fee</note>
@@ -3644,7 +3555,7 @@
         <target>Törlés</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">166,168</context>
+          <context context-type="linenumber">162,164</context>
         </context-group>
         <note from="description" priority="1">Purgin below fee</note>
         <note from="meaning" priority="1">dashboard.purging</note>
@@ -3654,7 +3565,7 @@
         <target>Memória használat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">178,180</context>
+          <context context-type="linenumber">174,176</context>
         </context-group>
         <note from="description" priority="1">Memory usage</note>
         <note from="meaning" priority="1">dashboard.memory-usage</note>
@@ -3664,7 +3575,7 @@
         <target>Beérkező tranzakciók</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">190,192</context>
+          <context context-type="linenumber">186,188</context>
         </context-group>
         <note from="description" priority="1">dashboard.incoming-transactions</note>
       </trans-unit>
@@ -3673,7 +3584,7 @@
         <target>Bányászási nehézségifok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">207,208</context>
+          <context context-type="linenumber">203,204</context>
         </context-group>
         <note from="description" priority="1">dashboard.difficulty-adjustment</note>
       </trans-unit>
