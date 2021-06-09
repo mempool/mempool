@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AudioService {
   audio: HTMLAudioElement;
@@ -24,6 +24,6 @@ export class AudioService {
     this.audio.play().catch((e) => {
       console.log('Play sound failed' + e);
     });
-    setTimeout(() => this.isPlaying = false, 100);
+    setTimeout(() => (this.isPlaying = false), 100);
   }
 }

@@ -38,20 +38,12 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
   blockIndex = 1;
 
-  constructor(
-    private router: Router,
-    private stateService: StateService,
-    private cd: ChangeDetectorRef,
-  ) { }
+  constructor(private router: Router, private stateService: StateService, private cd: ChangeDetectorRef) {}
 
   ngOnInit() {
-    this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
+    this.stateService.isTabHidden$.subscribe((tabHidden) => (this.tabHidden = tabHidden));
 
-    this.mempoolBlocks$ = merge(
-      of(true),
-      fromEvent(window, 'resize')
-    )
-    .pipe(
+    this.mempoolBlocks$ = merge(of(true), fromEvent(window, 'resize')).pipe(
       switchMap(() => this.stateService.mempoolBlocks$),
       map((blocks) => {
         if (!blocks.length) {
@@ -72,29 +64,26 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.markBlocksSubscription = this.stateService.markBlock$
-      .subscribe((state) => {
-        this.markIndex = undefined;
-        this.txFeePerVSize = undefined;
-        if (state.mempoolBlockIndex !== undefined) {
-          this.markIndex = state.mempoolBlockIndex;
-        }
-        if (state.txFeePerVSize) {
-          this.txFeePerVSize = state.txFeePerVSize;
-        }
-        this.calculateTransactionPosition();
-        this.cd.markForCheck();
-      });
+    this.markBlocksSubscription = this.stateService.markBlock$.subscribe((state) => {
+      this.markIndex = undefined;
+      this.txFeePerVSize = undefined;
+      if (state.mempoolBlockIndex !== undefined) {
+        this.markIndex = state.mempoolBlockIndex;
+      }
+      if (state.txFeePerVSize) {
+        this.txFeePerVSize = state.txFeePerVSize;
+      }
+      this.calculateTransactionPosition();
+      this.cd.markForCheck();
+    });
 
-    this.blockSubscription = this.stateService.blocks$
-      .subscribe(([block]) => {
-        if (block.matchRate >= 66 && !this.tabHidden) {
-          this.blockIndex++;
-        }
-      });
+    this.blockSubscription = this.stateService.blocks$.subscribe(([block]) => {
+      if (block.matchRate >= 66 && !this.tabHidden) {
+        this.blockIndex++;
+      }
+    });
 
-    this.networkSubscription = this.stateService.networkChanged$
-      .subscribe((network) => this.network = network);
+    this.networkSubscription = this.stateService.networkChanged$.subscribe((network) => (this.network = network));
 
     this.stateService.keyNavigation$.subscribe((event) => {
       if (this.markIndex === undefined) {
@@ -105,13 +94,13 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
         if (this.mempoolBlocks[this.markIndex - 1]) {
           this.router.navigate([(this.network ? '/' + this.network : '') + '/mempool-block/', this.markIndex - 1]);
         } else {
-          this.stateService.blocks$
-            .pipe(take(8))
-            .subscribe(([block]) => {
-              if (this.stateService.latestBlockHeight === block.height) {
-                this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', block.id], { state: { data: { block } }});
-              }
-            });
+          this.stateService.blocks$.pipe(take(8)).subscribe(([block]) => {
+            if (this.stateService.latestBlockHeight === block.height) {
+              this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', block.id], {
+                state: { data: { block } },
+              });
+            }
+          });
         }
       } else if (event.key === 'ArrowLeft') {
         if (this.mempoolBlocks[this.markIndex + 1]) {
@@ -151,9 +140,9 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     let medianNr = 0;
     const numsLen = numbers.length;
     if (numsLen % 2 === 0) {
-        medianNr = (numbers[numsLen / 2 - 1] + numbers[numsLen / 2]) / 2;
+      medianNr = (numbers[numsLen / 2 - 1] + numbers[numsLen / 2]) / 2;
     } else {
-        medianNr = numbers[(numsLen - 1) / 2];
+      medianNr = numbers[(numsLen - 1) / 2];
     }
     return medianNr;
   }
@@ -164,30 +153,40 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   }
 
   getStyleForMempoolBlock(mempoolBlock: MempoolBlock, index: number) {
-    const emptyBackgroundSpacePercentage = Math.max(100 - mempoolBlock.blockVSize / 1000000 * 100, 0);
+    const emptyBackgroundSpacePercentage = Math.max(100 - (mempoolBlock.blockVSize / 1000000) * 100, 0);
     const usedBlockSpace = 100 - emptyBackgroundSpacePercentage;
-    const backgroundGradients = [`repeating-linear-gradient(to right,  #554b45, #554b45 ${emptyBackgroundSpacePercentage}%`];
+    const backgroundGradients = [
+      `repeating-linear-gradient(to right,  #554b45, #554b45 ${emptyBackgroundSpacePercentage}%`,
+    ];
     const gradientColors = [];
 
     const trimmedFeeRange = index === 0 ? mempoolBlock.feeRange.slice(0, -1) : mempoolBlock.feeRange;
 
     trimmedFeeRange.forEach((fee: number) => {
-      let feeLevelIndex = feeLevels.slice().reverse().findIndex((feeLvl) => fee >= feeLvl);
+      let feeLevelIndex = feeLevels
+        .slice()
+        .reverse()
+        .findIndex((feeLvl) => fee >= feeLvl);
       feeLevelIndex = feeLevelIndex >= 0 ? feeLevels.length - feeLevelIndex : feeLevelIndex;
       gradientColors.push(mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
     });
 
-
     gradientColors.forEach((color, i, gc) => {
       backgroundGradients.push(`
-        #${i === 0 ? color : gc[i - 1]} ${ i === 0 ? emptyBackgroundSpacePercentage : ((i / gradientColors.length) * 100) * usedBlockSpace / 100 + emptyBackgroundSpacePercentage }%,
-        #${color} ${Math.round(((i + 1) / gradientColors.length) * 100) * usedBlockSpace / 100 + emptyBackgroundSpacePercentage}%
+        #${i === 0 ? color : gc[i - 1]} ${
+        i === 0
+          ? emptyBackgroundSpacePercentage
+          : ((i / gradientColors.length) * 100 * usedBlockSpace) / 100 + emptyBackgroundSpacePercentage
+      }%,
+        #${color} ${
+        (Math.round(((i + 1) / gradientColors.length) * 100) * usedBlockSpace) / 100 + emptyBackgroundSpacePercentage
+      }%
       `);
     });
 
     return {
-      'right': 40 + index * 155 + 'px',
-      'background': backgroundGradients.join(',') + ')'
+      right: 40 + index * 155 + 'px',
+      background: backgroundGradients.join(',') + ')',
     };
   }
 
@@ -214,7 +213,9 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
       for (let i = 0; i < block.feeRange.length - 1; i++) {
         if (this.txFeePerVSize < block.feeRange[i + 1] && this.txFeePerVSize >= block.feeRange[i]) {
           const txInBlockIndex = this.mempoolBlocks.indexOf(block);
-          const feeRangeIndex = block.feeRange.findIndex((val, index) => this.txFeePerVSize < block.feeRange[index + 1]);
+          const feeRangeIndex = block.feeRange.findIndex(
+            (val, index) => this.txFeePerVSize < block.feeRange[index + 1]
+          );
           const feeRangeChunkSize = 1 / (block.feeRange.length - 1);
 
           const txFee = this.txFeePerVSize - block.feeRange[i];
@@ -225,8 +226,9 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
           const feePosition = feeRangeChunkSize * feeRangeIndex + chunkPositionOffset;
 
           const blockedFilledPercentage = (block.blockVSize > 1000000 ? 1000000 : block.blockVSize) / 1000000;
-          const arrowRightPosition = txInBlockIndex * (this.blockWidth + this.blockPadding)
-            + ((1 - feePosition) * blockedFilledPercentage * this.blockWidth);
+          const arrowRightPosition =
+            txInBlockIndex * (this.blockWidth + this.blockPadding) +
+            (1 - feePosition) * blockedFilledPercentage * this.blockWidth;
 
           this.rightPosition = arrowRightPosition;
           break;
@@ -234,5 +236,4 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
       }
     }
   }
-
 }

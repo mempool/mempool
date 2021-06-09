@@ -35,64 +35,58 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
     signet: ['#6f1d5d', '#471850'],
   };
 
-  constructor(
-    private stateService: StateService,
-    private router: Router,
-    private cd: ChangeDetectorRef,
-  ) { }
+  constructor(private stateService: StateService, private router: Router, private cd: ChangeDetectorRef) {}
 
   ngOnInit() {
-    this.networkSubscriotion = this.stateService.networkChanged$.subscribe((network) => this.network = network);
-    this.tabHiddenSubscription = this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
+    this.networkSubscriotion = this.stateService.networkChanged$.subscribe((network) => (this.network = network));
+    this.tabHiddenSubscription = this.stateService.isTabHidden$.subscribe((tabHidden) => (this.tabHidden = tabHidden));
 
-    this.blocksSubscription = this.stateService.blocks$
-      .subscribe(([block, txConfirmed]) => {
-        if (this.blocks.some((b) => b.height === block.height)) {
-          return;
-        }
+    this.blocksSubscription = this.stateService.blocks$.subscribe(([block, txConfirmed]) => {
+      if (this.blocks.some((b) => b.height === block.height)) {
+        return;
+      }
 
-        if (this.blocks.length && block.height !== this.blocks[0].height + 1) {
-          this.blocks = [];
-          this.blocksFilled = false;
-        }
+      if (this.blocks.length && block.height !== this.blocks[0].height + 1) {
+        this.blocks = [];
+        this.blocksFilled = false;
+      }
 
-        this.blocks.unshift(block);
-        this.blocks = this.blocks.slice(0, 8);
+      this.blocks.unshift(block);
+      this.blocks = this.blocks.slice(0, 8);
 
-        if (this.blocksFilled && !this.tabHidden) {
-          block.stage = block.matchRate >= 66 ? 1 : 2;
-        }
+      if (this.blocksFilled && !this.tabHidden) {
+        block.stage = block.matchRate >= 66 ? 1 : 2;
+      }
 
-        if (txConfirmed) {
-          this.markHeight = block.height;
-          this.moveArrowToPosition(true, true);
-        } else {
-          this.moveArrowToPosition(true, false);
-        }
+      if (txConfirmed) {
+        this.markHeight = block.height;
+        this.moveArrowToPosition(true, true);
+      } else {
+        this.moveArrowToPosition(true, false);
+      }
 
+      this.blockStyles = [];
+      this.blocks.forEach((b) => this.blockStyles.push(this.getStyleForBlock(b)));
+      setTimeout(() => {
         this.blockStyles = [];
         this.blocks.forEach((b) => this.blockStyles.push(this.getStyleForBlock(b)));
-        setTimeout(() => {
-          this.blockStyles = [];
-          this.blocks.forEach((b) => this.blockStyles.push(this.getStyleForBlock(b)));
-          this.cd.markForCheck();
-        }, 50);
-
-        if (this.blocks.length === this.stateService.env.KEEP_BLOCKS_AMOUNT) {
-          this.blocksFilled = true;
-        }
         this.cd.markForCheck();
-      });
+      }, 50);
 
-    this.markBlockSubscription = this.stateService.markBlock$
-      .subscribe((state) => {
-        this.markHeight = undefined;
-        if (state.blockHeight) {
-          this.markHeight = state.blockHeight;
-        }
-        this.moveArrowToPosition(false);
-        this.cd.markForCheck();
-      });
+      if (this.blocks.length === this.stateService.env.KEEP_BLOCKS_AMOUNT) {
+        this.blocksFilled = true;
+      }
+      this.cd.markForCheck();
+    });
+
+    this.markBlockSubscription = this.stateService.markBlock$.subscribe((state) => {
+      this.markHeight = undefined;
+      if (state.blockHeight) {
+        this.markHeight = state.blockHeight;
+      }
+      this.moveArrowToPosition(false);
+      this.cd.markForCheck();
+    });
 
     this.stateService.keyNavigation$.subscribe((event) => {
       if (!this.markHeight) {
@@ -102,16 +96,18 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
       if (event.key === 'ArrowRight') {
         const blockindex = this.blocks.findIndex((b) => b.height === this.markHeight);
         if (this.blocks[blockindex + 1]) {
-          this.router.navigate([(this.network ? '/' + this.network : '') + '/block/',
-            this.blocks[blockindex + 1].id], { state: { data: { block: this.blocks[blockindex + 1] } } });
+          this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', this.blocks[blockindex + 1].id], {
+            state: { data: { block: this.blocks[blockindex + 1] } },
+          });
         }
       } else if (event.key === 'ArrowLeft') {
         const blockindex = this.blocks.findIndex((b) => b.height === this.markHeight);
         if (blockindex === 0) {
           this.router.navigate([(this.network ? '/' + this.network : '') + '/mempool-block/', '0']);
         } else {
-          this.router.navigate([(this.network ? '/' + this.network : '') + '/block/',
-            this.blocks[blockindex - 1].id], { state: { data: { block: this.blocks[blockindex - 1] }}});
+          this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', this.blocks[blockindex - 1].id], {
+            state: { data: { block: this.blocks[blockindex - 1] } },
+          });
         }
       }
     });
@@ -178,5 +174,4 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
       )`,
     };
   }
-
 }

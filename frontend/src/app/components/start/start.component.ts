@@ -6,5 +6,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./start.component.scss'],
 })
 export class StartComponent {
-  constructor() { }
+  constructor() {}
 }
