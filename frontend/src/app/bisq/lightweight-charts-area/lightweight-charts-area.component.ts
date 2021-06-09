@@ -12,7 +12,17 @@ import {
 
 @Component({
   selector: 'app-lightweight-charts-area',
-  template: '<ng-component></ng-component>',
+  template: '<ng-component></ng-component>
+
+
+
+
+
+
+
+
+
+',
   styleUrls: ['./lightweight-charts-area.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

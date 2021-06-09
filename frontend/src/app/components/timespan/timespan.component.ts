@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, Input, OnChanges } from '@angular/c
 
 @Component({
   selector: 'app-timespan',
-  template: `{{ text }}`,
+  template: `{{ text }} `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimespanComponent implements OnChanges {

@@ -13,7 +13,7 @@ import { StateService } from 'src/app/services/state.service';
 
 @Component({
   selector: 'app-time-since',
-  template: `{{ text }}`,
+  template: `{{ text }} `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
