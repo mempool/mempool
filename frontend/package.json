@@ -102,6 +102,7 @@
     "cypress": "7.4.0",
     "cypress-wait-until": "^1.7.1",
     "eslint": "^7.6.0",
+    "eslint-plugin-cypress": "^2.11.3",
     "http-proxy-middleware": "^1.0.5",
     "jasmine-core": "~3.6.0",
     "jasmine-spec-reporter": "~5.0.0",
