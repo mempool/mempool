@@ -175,7 +175,7 @@
               "browserTarget": "mempool:build:production"
             },
             "local": {
-              "proxyConfig": "proxy.prod.conf.json",
+              "proxyConfig": "proxy.conf.json",
               "verbose": true
             },
             "staging": {
