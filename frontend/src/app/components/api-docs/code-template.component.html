@@ -3,7 +3,7 @@
     <li ngbNavItem>
       <a ngbNavLink>ES Module</a>
       <ng-template ngbNavContent>
-        <div class="subtitle">Install Package <app-clipboard [text]="esModuleInstall"></app-clipboard></div>
+        <div class="subtitle"><ng-container i18n="API Docs install lib">Install Package</ng-container> <app-clipboard [text]="esModuleInstall"></app-clipboard></div>
         <div class="links">
           <a href="https://github.com/mempool/mempool.js">github repository</a>
           <a href="https://www.npmjs.org/package/@mempool/mempool.js">npm package</a>
@@ -14,7 +14,7 @@
       </ng-template>
     </li>
     <li ngbNavItem>
-      <a ngbNavLink>Common JS</a>
+      <a ngbNavLink>CommonJS</a>
       <ng-template ngbNavContent>
         <div class="subtitle">Code Example <app-clipboard [text]="wrapCommonJS(code.codeSample.commonJS)"></app-clipboard></div>
         <div class="links">
@@ -24,9 +24,9 @@
       </ng-template>
     </li>
     <li ngbNavItem *ngIf="code.codeSample.curl">
-      <a ngbNavLink>CURL</a>
+      <a ngbNavLink>cURL</a>
       <ng-template ngbNavContent>
-        <div class="subtitle">Code Example <app-clipboard [text]="wrapCurl(code.codeSample.curl)"></app-clipboard></div>
+        <div class="subtitle"><ng-container i18n="API Docs code example"></ng-container>Code Example <app-clipboard [text]="wrapCurl(code.codeSample.curl)"></app-clipboard></div>
         <pre><code [innerText]="wrapCurl(code.codeSample.curl)"></code></pre>
       </ng-template>
     </li>

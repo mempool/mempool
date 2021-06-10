@@ -160,8 +160,9 @@ export class BisqTransactionsComponent implements OnInit {
     return outputs.reduce((acc: number, output: BisqOutput) => acc + output.bsqAmount, 0);
   }
 
-  getStringByTxType(id: string) {
-    return this.txTypeOptions.find((type) => type.id).name;
+  getStringByTxType(type: string) {
+    const id = this.txTypes.indexOf(type) + 1;
+    return this.txTypeOptions.find((type) => id === type.id).name;
   }
 
   trackByFn(index: number) {
