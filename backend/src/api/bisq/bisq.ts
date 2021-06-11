@@ -248,8 +248,8 @@ class Bisq {
       const data: BisqBlocks = await this.jsonParsePool.exec(cacheData);
       if (data.blocks && data.blocks.length !== this.allBlocks.length) {
         this.allBlocks = data.blocks;
+        this.allBlocks.reverse();
         this.blocks = this.allBlocks.filter((block) => block.txs.length > 0);
-        this.blocks.reverse();
         this.latestBlockHeight = data.chainHeight;
         const time = new Date().getTime() - start;
         logger.debug('Bisq dump processed in ' + time + ' ms (worker thread)');
