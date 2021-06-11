@@ -9,14 +9,14 @@
           <a href="https://www.npmjs.org/package/@mempool/mempool.js">npm package</a>
         </div>
         <pre><code [innerText]="esModuleInstall"></code></pre>
-        <div class="subtitle">Code Example <app-clipboard [text]="wrapESmodule(code.codeSample.esModule)"></app-clipboard></div>
+        <div class="subtitle"><ng-container i18n="API Docs code example">Code Example</ng-container> <app-clipboard [text]="wrapESmodule(code.codeSample.esModule)"></app-clipboard></div>
         <pre><code [innerText]="wrapESmodule(code.codeSample.esModule)"></code></pre>
       </ng-template>
     </li>
     <li ngbNavItem>
       <a ngbNavLink>CommonJS</a>
       <ng-template ngbNavContent>
-        <div class="subtitle">Code Example <app-clipboard [text]="wrapCommonJS(code.codeSample.commonJS)"></app-clipboard></div>
+        <div class="subtitle"><ng-container i18n="API Docs code example">Code Example</ng-container> <app-clipboard [text]="wrapCommonJS(code.codeSample.commonJS)"></app-clipboard></div>
         <div class="links">
           <a href="https://github.com/mempool/mempool.js">github repository</a>
         </div>
@@ -26,14 +26,14 @@
     <li ngbNavItem *ngIf="code.codeSample.curl">
       <a ngbNavLink>cURL</a>
       <ng-template ngbNavContent>
-        <div class="subtitle"><ng-container i18n="API Docs code example"></ng-container>Code Example <app-clipboard [text]="wrapCurl(code.codeSample.curl)"></app-clipboard></div>
+        <div class="subtitle"><ng-container i18n="API Docs code example">Code Example</ng-container> <app-clipboard [text]="wrapCurl(code.codeSample.curl)"></app-clipboard></div>
         <pre><code [innerText]="wrapCurl(code.codeSample.curl)"></code></pre>
       </ng-template>
     </li>
   </ul>
   <div [ngbNavOutlet]="navCodeTemplate"></div>
   <div *ngIf="code.responseSample" class="response">
-    <div class="subtitle">Response <app-clipboard [text]="code.responseSample"></app-clipboard></div>
+    <div class="subtitle"><ng-container i18n="API Docs API response">Response</ng-container> <app-clipboard [text]="code.responseSample"></app-clipboard></div>
     <pre><code [innerText]="code.responseSample"></code></pre>
   </div>
 </div>
