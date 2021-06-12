@@ -9,8 +9,10 @@
       </a>
     </div>
   
-  <div class="flex">
-    <h1 i18n="shared.transaction">Transaction</h1>
+  <div>
+    <div class="title">
+      <h1 i18n="shared.transaction">Transaction</h1>
+    </div>
 
     <div class="tx-link">
       <a [routerLink]="['/tx/' | relativeUrl, txId]">
@@ -20,7 +22,7 @@
       <app-clipboard [text]="txId"></app-clipboard>
     </div>
 
-    <div class="container-buttons" >
+    <div class="container-buttons">
       <ng-template [ngIf]="tx?.status?.confirmed">
         <button *ngIf="latestBlock" type="button" class="btn btn-sm btn-success">
           <ng-container *ngTemplateOutlet="latestBlock.height - tx.status.block_height + 1 == 1 ? confirmationSingular : confirmationPlural; context: {$implicit: latestBlock.height - tx.status.block_height + 1}"></ng-container>
@@ -33,9 +35,7 @@
       </ng-template>
     </div>
   </div>
-
-    <div class="clearfix"></div>
-  </div>
+</div>
   <div class="clearfix"></div>
 
   <ng-template [ngIf]="!isLoadingTx && !error">
