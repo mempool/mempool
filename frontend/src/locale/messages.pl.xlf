@@ -2349,6 +2349,30 @@
         </context-group>
         <note from="description" priority="1">API Docs install lib</note>
       </trans-unit>
+      <trans-unit datatype="html" id="0a668c1c2a17e557a18fc06619998e002f50df1e">
+        <source>Code Example</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/code-template.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/code-template.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/code-template.component.html</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+        <note from="description" priority="1">API Docs code example</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="4edb71f23e3ff228dbabd05e8ffc364fae8ae467">
+        <source>Response</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/code-template.component.html</context>
+          <context context-type="linenumber">36,37</context>
+        </context-group>
+        <note from="description" priority="1">API Docs API response</note>
+      </trans-unit>
       <trans-unit datatype="html" id="f8c91b77ad53ccd0f6adb4a6ea3a0f5c3329688b">
         <source>Asset</source>
         <target>Aktywo</target>
