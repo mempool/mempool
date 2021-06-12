@@ -1,16 +1,10 @@
 <div class="code">
   <ul ngbNav #navCodeTemplate="ngbNav" class="nav-tabs code-tab">
-    <li ngbNavItem>
-      <a ngbNavLink>ES Module</a>
+    <li ngbNavItem *ngIf="code.codeSample.curl">
+      <a ngbNavLink>cURL</a>
       <ng-template ngbNavContent>
-        <div class="subtitle"><ng-container i18n="API Docs install lib">Install Package</ng-container> <app-clipboard [text]="esModuleInstall"></app-clipboard></div>
-        <div class="links">
-          <a href="https://github.com/mempool/mempool.js">github repository</a>
-          <a href="https://www.npmjs.org/package/@mempool/mempool.js">npm package</a>
-        </div>
-        <pre><code [innerText]="esModuleInstall"></code></pre>
-        <div class="subtitle"><ng-container i18n="API Docs code example">Code Example</ng-container> <app-clipboard [text]="wrapESmodule(code.codeSample.esModule)"></app-clipboard></div>
-        <pre><code [innerText]="wrapESmodule(code.codeSample.esModule)"></code></pre>
+        <div class="subtitle"><ng-container i18n="API Docs code example">Code Example</ng-container> <app-clipboard [text]="wrapCurl(code.codeSample.curl)"></app-clipboard></div>
+        <pre><code [innerText]="wrapCurl(code.codeSample.curl)"></code></pre>
       </ng-template>
     </li>
     <li ngbNavItem>
@@ -23,11 +17,17 @@
         <pre><code [innerText]="wrapCommonJS(code.codeSample.commonJS)"></code></pre>
       </ng-template>
     </li>
-    <li ngbNavItem *ngIf="code.codeSample.curl">
-      <a ngbNavLink>cURL</a>
+    <li ngbNavItem>
+      <a ngbNavLink>ES Module</a>
       <ng-template ngbNavContent>
-        <div class="subtitle"><ng-container i18n="API Docs code example">Code Example</ng-container> <app-clipboard [text]="wrapCurl(code.codeSample.curl)"></app-clipboard></div>
-        <pre><code [innerText]="wrapCurl(code.codeSample.curl)"></code></pre>
+        <div class="subtitle"><ng-container i18n="API Docs install lib">Install Package</ng-container> <app-clipboard [text]="esModuleInstall"></app-clipboard></div>
+        <div class="links">
+          <a href="https://github.com/mempool/mempool.js">github repository</a>
+          <a href="https://www.npmjs.org/package/@mempool/mempool.js">npm package</a>
+        </div>
+        <pre><code [innerText]="esModuleInstall"></code></pre>
+        <div class="subtitle"><ng-container i18n="API Docs code example">Code Example</ng-container> <app-clipboard [text]="wrapESmodule(code.codeSample.esModule)"></app-clipboard></div>
+        <pre><code [innerText]="wrapESmodule(code.codeSample.esModule)"></code></pre>
       </ng-template>
     </li>
   </ul>
