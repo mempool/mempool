@@ -31,3 +31,4 @@ https://www.transifex.com/mempool/mempool/dashboard/
 * Ukrainian @volbil
 * Vietnamese @bitcoin_vietnam
 * Chinese @wdljt
+* Russian @TonyCrusoe @Bitconan

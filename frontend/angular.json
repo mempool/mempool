@@ -110,6 +110,10 @@
           "zh": {
             "translation": "src/locale/messages.zh.xlf",
             "baseHref": "/zh/"
+          },
+          "ru": {
+            "translation": "src/locale/messages.ru.xlf",
+            "baseHref": "/ru/"
           }
         }
       },
