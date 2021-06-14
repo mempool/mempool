@@ -1,7 +1,14 @@
 import logger from '../logger';
 import * as WebSocket from 'ws';
-import { BlockExtended, TransactionExtended, WebsocketResponse, MempoolBlock,
-  OptimizedStatistic, ILoadingIndicators, IConversionRates } from '../mempool.interfaces';
+import {
+  BlockExtended,
+  TransactionExtended,
+  WebsocketResponse,
+  MempoolBlock,
+  OptimizedStatistic,
+  ILoadingIndicators,
+  IConversionRates,
+} from '../mempool.interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
 import backendInfo from './backend-info';
@@ -17,7 +24,7 @@ class WebsocketHandler {
   private nativeAssetId = '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
   private extraInitProperties = {};
 
-  constructor() { }
+  constructor() {}
 
   setWebsocketServer(wss: WebSocket.Server) {
     this.wss = wss;
@@ -73,8 +80,11 @@ class WebsocketHandler {
           }
 
           if (parsedMessage && parsedMessage['track-address']) {
-            if (/^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,87})$/
-              .test(parsedMessage['track-address'])) {
+            if (
+              /^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,87})$/.test(
+                parsedMessage['track-address']
+              )
+            ) {
               client['track-address'] = parsedMessage['track-address'];
             } else {
               client['track-address'] = null;
@@ -169,16 +179,16 @@ class WebsocketHandler {
       _blocks = blocks.getBlocks().slice(-8);
     }
     return {
-      'mempoolInfo': memPool.getMempoolInfo(),
-      'vBytesPerSecond': memPool.getVBytesPerSecond(),
-      'lastDifficultyAdjustment': blocks.getLastDifficultyAdjustmentTime(),
-      'blocks': _blocks,
-      'conversions': fiatConversion.getConversionRates(),
+      mempoolInfo: memPool.getMempoolInfo(),
+      vBytesPerSecond: memPool.getVBytesPerSecond(),
+      lastDifficultyAdjustment: blocks.getLastDifficultyAdjustmentTime(),
+      blocks: _blocks,
+      conversions: fiatConversion.getConversionRates(),
       'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
-      'transactions': memPool.getLatestTransactions(),
-      'backendInfo': backendInfo.getBackendInfo(),
-      'loadingIndicators': loadingIndicators.getLoadingIndicators(),
-      ...this.extraInitProperties
+      transactions: memPool.getLatestTransactions(),
+      backendInfo: backendInfo.getBackendInfo(),
+      loadingIndicators: loadingIndicators.getLoadingIndicators(),
+      ...this.extraInitProperties,
     };
   }
 
@@ -196,14 +206,19 @@ class WebsocketHandler {
         return;
       }
 
-      client.send(JSON.stringify({
-        'live-2h-chart': stats
-      }));
+      client.send(
+        JSON.stringify({
+          'live-2h-chart': stats,
+        })
+      );
     });
   }
 
-  handleMempoolChange(newMempool: { [txid: string]: TransactionExtended },
-    newTransactions: TransactionExtended[], deletedTransactions: TransactionExtended[]) {
+  handleMempoolChange(
+    newMempool: { [txid: string]: TransactionExtended },
+    newTransactions: TransactionExtended[],
+    deletedTransactions: TransactionExtended[]
+  ) {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
     }
@@ -229,7 +244,7 @@ class WebsocketHandler {
       if (client['want-stats']) {
         response['mempoolInfo'] = mempoolInfo;
         response['vBytesPerSecond'] = vBytesPerSecond;
-        response['transactions'] = newTransactions.slice(0, 6).map((tx) => Common.stripTransaction(tx));
+        response['transactions'] = newTransactions.slice(0, 6).map(tx => Common.stripTransaction(tx));
       }
 
       if (client['want-mempool-blocks']) {
@@ -237,7 +252,7 @@ class WebsocketHandler {
       }
 
       if (client['track-mempool-tx']) {
-        const tx = newTransactions.find((t) => t.txid === client['track-mempool-tx']);
+        const tx = newTransactions.find(t => t.txid === client['track-mempool-tx']);
         if (tx) {
           if (config.MEMPOOL.BACKEND !== 'esplora') {
             try {
@@ -257,7 +272,9 @@ class WebsocketHandler {
         const foundTransactions: TransactionExtended[] = [];
 
         for (const tx of newTransactions) {
-          const someVin = tx.vin.some((vin) => !!vin.prevout && vin.prevout.scriptpubkey_address === client['track-address']);
+          const someVin = tx.vin.some(
+            vin => !!vin.prevout && vin.prevout.scriptpubkey_address === client['track-address']
+          );
           if (someVin) {
             if (config.MEMPOOL.BACKEND !== 'esplora') {
               try {
@@ -271,7 +288,7 @@ class WebsocketHandler {
             }
             return;
           }
-          const someVout = tx.vout.some((vout) => vout.scriptpubkey_address === client['track-address']);
+          const someVout = tx.vout.some(vout => vout.scriptpubkey_address === client['track-address']);
           if (someVout) {
             if (config.MEMPOOL.BACKEND !== 'esplora') {
               try {
@@ -294,22 +311,21 @@ class WebsocketHandler {
       if (client['track-asset']) {
         const foundTransactions: TransactionExtended[] = [];
 
-        newTransactions.forEach((tx) => {
-
+        newTransactions.forEach(tx => {
           if (client['track-asset'] === this.nativeAssetId) {
-            if (tx.vin.some((vin) => !!vin.is_pegin)) {
+            if (tx.vin.some(vin => !!vin.is_pegin)) {
               foundTransactions.push(tx);
               return;
             }
-            if (tx.vout.some((vout) => !!vout.pegout)) {
+            if (tx.vout.some(vout => !!vout.pegout)) {
               foundTransactions.push(tx);
             }
           } else {
-            if (tx.vin.some((vin) => !!vin.issuance && vin.issuance.asset_id === client['track-asset'])) {
+            if (tx.vin.some(vin => !!vin.issuance && vin.issuance.asset_id === client['track-asset'])) {
               foundTransactions.push(tx);
               return;
             }
-            if (tx.vout.some((vout) => !!vout.asset && vout.asset === client['track-asset'])) {
+            if (tx.vout.some(vout => !!vout.asset && vout.asset === client['track-asset'])) {
               foundTransactions.push(tx);
             }
           }
@@ -371,7 +387,7 @@ class WebsocketHandler {
 
     block.matchRate = matchRate;
 
-    this.wss.clients.forEach((client) => {
+    this.wss.clients.forEach(client => {
       if (client.readyState !== WebSocket.OPEN) {
         return;
       }
@@ -381,9 +397,9 @@ class WebsocketHandler {
       }
 
       const response = {
-        'block': block,
-        'mempoolInfo': memPool.getMempoolInfo(),
-        'lastDifficultyAdjustment': blocks.getLastDifficultyAdjustmentTime(),
+        block: block,
+        mempoolInfo: memPool.getMempoolInfo(),
+        lastDifficultyAdjustment: blocks.getLastDifficultyAdjustmentTime(),
       };
 
       if (mBlocks && client['want-mempool-blocks']) {
@@ -398,18 +414,21 @@ class WebsocketHandler {
       if (client['track-address']) {
         const foundTransactions: TransactionExtended[] = [];
 
-        transactions.forEach((tx) => {
-          if (tx.vin && tx.vin.some((vin) => !!vin.prevout && vin.prevout.scriptpubkey_address === client['track-address'])) {
+        transactions.forEach(tx => {
+          if (
+            tx.vin &&
+            tx.vin.some(vin => !!vin.prevout && vin.prevout.scriptpubkey_address === client['track-address'])
+          ) {
             foundTransactions.push(tx);
             return;
           }
-          if (tx.vout && tx.vout.some((vout) => vout.scriptpubkey_address === client['track-address'])) {
+          if (tx.vout && tx.vout.some(vout => vout.scriptpubkey_address === client['track-address'])) {
             foundTransactions.push(tx);
           }
         });
 
         if (foundTransactions.length) {
-          foundTransactions.forEach((tx) => {
+          foundTransactions.forEach(tx => {
             tx.status = {
               confirmed: true,
               block_height: block.height,
@@ -425,28 +444,28 @@ class WebsocketHandler {
       if (client['track-asset']) {
         const foundTransactions: TransactionExtended[] = [];
 
-        transactions.forEach((tx) => {
+        transactions.forEach(tx => {
           if (client['track-asset'] === this.nativeAssetId) {
-            if (tx.vin && tx.vin.some((vin) => !!vin.is_pegin)) {
+            if (tx.vin && tx.vin.some(vin => !!vin.is_pegin)) {
               foundTransactions.push(tx);
               return;
             }
-            if (tx.vout && tx.vout.some((vout) => !!vout.pegout)) {
+            if (tx.vout && tx.vout.some(vout => !!vout.pegout)) {
               foundTransactions.push(tx);
             }
           } else {
-            if (tx.vin && tx.vin.some((vin) => !!vin.issuance && vin.issuance.asset_id === client['track-asset'])) {
+            if (tx.vin && tx.vin.some(vin => !!vin.issuance && vin.issuance.asset_id === client['track-asset'])) {
               foundTransactions.push(tx);
               return;
             }
-            if (tx.vout && tx.vout.some((vout) => !!vout.asset && vout.asset === client['track-asset'])) {
+            if (tx.vout && tx.vout.some(vout => !!vout.asset && vout.asset === client['track-asset'])) {
               foundTransactions.push(tx);
             }
           }
         });
 
         if (foundTransactions.length) {
-          foundTransactions.forEach((tx) => {
+          foundTransactions.forEach(tx => {
             tx.status = {
               confirmed: true,
               block_height: block.height,

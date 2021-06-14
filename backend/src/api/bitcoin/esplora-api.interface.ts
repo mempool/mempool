@@ -165,5 +165,4 @@ export namespace IEsploraApi {
     peg_out_amount: number;
     burn_count: number;
   }
-
 }

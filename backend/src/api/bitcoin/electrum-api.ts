@@ -22,10 +22,22 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     const electrumPersistencePolicy = { retryPeriod: 10000, maxRetry: 1000, callback: null };
 
     const electrumCallbacks = {
-      onConnect: (client, versionInfo) => { logger.info(`Connected to Electrum Server at ${config.ELECTRUM.HOST}:${config.ELECTRUM.PORT} (${JSON.stringify(versionInfo)})`); },
-      onClose: (client) => { logger.info(`Disconnected from Electrum Server at ${config.ELECTRUM.HOST}:${config.ELECTRUM.PORT}`); },
-      onError: (err) => { logger.err(`Electrum error: ${JSON.stringify(err)}`); },
-      onLog: (str) => { logger.debug(str); },
+      onConnect: (client, versionInfo) => {
+        logger.info(
+          `Connected to Electrum Server at ${config.ELECTRUM.HOST}:${config.ELECTRUM.PORT} (${JSON.stringify(
+            versionInfo
+          )})`
+        );
+      },
+      onClose: client => {
+        logger.info(`Disconnected from Electrum Server at ${config.ELECTRUM.HOST}:${config.ELECTRUM.PORT}`);
+      },
+      onError: err => {
+        logger.err(`Electrum error: ${JSON.stringify(err)}`);
+      },
+      onLog: str => {
+        logger.debug(str);
+      },
     };
 
     this.electrumClient = new ElectrumClient(
@@ -36,9 +48,10 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
       electrumCallbacks
     );
 
-    this.electrumClient.initElectrum(electrumConfig, electrumPersistencePolicy)
+    this.electrumClient
+      .initElectrum(electrumConfig, electrumPersistencePolicy)
       .then(() => {})
-      .catch((err) => {
+      .catch(err => {
         logger.err(`Error connecting to Electrum Server at ${config.ELECTRUM.HOST}:${config.ELECTRUM.PORT}`);
       });
   }
@@ -46,48 +59,48 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
   async $getAddress(address: string): Promise<IEsploraApi.Address> {
     const addressInfo = await this.$validateAddress(address);
     if (!addressInfo || !addressInfo.isvalid) {
-      return ({
-        'address': address,
-        'chain_stats': {
-          'funded_txo_count': 0,
-          'funded_txo_sum': 0,
-          'spent_txo_count': 0,
-          'spent_txo_sum': 0,
-          'tx_count': 0
+      return {
+        address: address,
+        chain_stats: {
+          funded_txo_count: 0,
+          funded_txo_sum: 0,
+          spent_txo_count: 0,
+          spent_txo_sum: 0,
+          tx_count: 0,
         },
-        'mempool_stats': {
-          'funded_txo_count': 0,
-          'funded_txo_sum': 0,
-          'spent_txo_count': 0,
-          'spent_txo_sum': 0,
-          'tx_count': 0
-        }
-      });
+        mempool_stats: {
+          funded_txo_count: 0,
+          funded_txo_sum: 0,
+          spent_txo_count: 0,
+          spent_txo_sum: 0,
+          tx_count: 0,
+        },
+      };
     }
 
     try {
       const balance = await this.$getScriptHashBalance(addressInfo.scriptPubKey);
       const history = await this.$getScriptHashHistory(addressInfo.scriptPubKey);
 
-      const unconfirmed = history.filter((h) => h.fee).length;
+      const unconfirmed = history.filter(h => h.fee).length;
 
       return {
-        'address': addressInfo.address,
-        'chain_stats': {
-          'funded_txo_count': 0,
-          'funded_txo_sum': balance.confirmed ? balance.confirmed : 0,
-          'spent_txo_count': 0,
-          'spent_txo_sum': balance.confirmed < 0 ? balance.confirmed : 0,
-          'tx_count': history.length - unconfirmed,
+        address: addressInfo.address,
+        chain_stats: {
+          funded_txo_count: 0,
+          funded_txo_sum: balance.confirmed ? balance.confirmed : 0,
+          spent_txo_count: 0,
+          spent_txo_sum: balance.confirmed < 0 ? balance.confirmed : 0,
+          tx_count: history.length - unconfirmed,
         },
-        'mempool_stats': {
-          'funded_txo_count': 0,
-          'funded_txo_sum': balance.unconfirmed > 0 ? balance.unconfirmed : 0,
-          'spent_txo_count': 0,
-          'spent_txo_sum': balance.unconfirmed < 0 ? -balance.unconfirmed : 0,
-          'tx_count': unconfirmed,
+        mempool_stats: {
+          funded_txo_count: 0,
+          funded_txo_sum: balance.unconfirmed > 0 ? balance.unconfirmed : 0,
+          spent_txo_count: 0,
+          spent_txo_sum: balance.unconfirmed < 0 ? -balance.unconfirmed : 0,
+          tx_count: unconfirmed,
         },
-        'electrum': true,
+        electrum: true,
       };
     } catch (e) {
       if (e === 'failed to get confirmed status') {
@@ -100,7 +113,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
   async $getAddressTransactions(address: string, lastSeenTxId: string): Promise<IEsploraApi.Transaction[]> {
     const addressInfo = await this.$validateAddress(address);
     if (!addressInfo || !addressInfo.isvalid) {
-     return [];
+      return [];
     }
 
     try {
@@ -112,7 +125,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
 
       let startingIndex = 0;
       if (lastSeenTxId) {
-        const pos = history.findIndex((historicalTx) => historicalTx.tx_hash === lastSeenTxId);
+        const pos = history.findIndex(historicalTx => historicalTx.tx_hash === lastSeenTxId);
         if (pos) {
           startingIndex = pos + 1;
         }
@@ -122,7 +135,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
       for (let i = startingIndex; i < endIndex; i++) {
         const tx = await this.$getRawTransaction(history[i].tx_hash, false, true);
         transactions.push(tx);
-        loadingIndicators.setProgress('address-' + address, (i + 1) / endIndex * 100);
+        loadingIndicators.setProgress('address-' + address, ((i + 1) / endIndex) * 100);
       }
 
       return transactions;
@@ -144,18 +157,16 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     if (fromCache) {
       return Promise.resolve(fromCache);
     }
-    return this.electrumClient.blockchainScripthash_getHistory(this.encodeScriptHash(scriptHash))
-      .then((history) => {
-        memoryCache.set('Scripthash_getHistory', scriptHash, history, 2);
-        return history;
-      });
+    return this.electrumClient.blockchainScripthash_getHistory(this.encodeScriptHash(scriptHash)).then(history => {
+      memoryCache.set('Scripthash_getHistory', scriptHash, history, 2);
+      return history;
+    });
   }
 
   private encodeScriptHash(scriptPubKey: string): string {
     const addrScripthash = hexEnc.stringify(sha256(hexEnc.parse(scriptPubKey)));
     return addrScripthash.match(/.{2}/g).reverse().join('');
   }
-
 }
 
 export default BitcoindElectrsApi;

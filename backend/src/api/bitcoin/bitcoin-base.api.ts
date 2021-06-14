@@ -28,15 +28,14 @@ class BitcoinBaseApi {
 
   $getMempoolInfo(): Promise<IBitcoinApi.MempoolInfo> {
     if (config.CORE_RPC_MINFEE.ENABLED) {
-      return Promise.all([
-        this.bitcoindClient.getMempoolInfo(),
-        this.bitcoindClientMempoolInfo.getMempoolInfo()
-      ]).then(([mempoolInfo, secondMempoolInfo]) => {
-        mempoolInfo.maxmempool = secondMempoolInfo.maxmempool;
-        mempoolInfo.mempoolminfee = secondMempoolInfo.mempoolminfee;
-        mempoolInfo.minrelaytxfee = secondMempoolInfo.minrelaytxfee;
-        return mempoolInfo;
-      });
+      return Promise.all([this.bitcoindClient.getMempoolInfo(), this.bitcoindClientMempoolInfo.getMempoolInfo()]).then(
+        ([mempoolInfo, secondMempoolInfo]) => {
+          mempoolInfo.maxmempool = secondMempoolInfo.maxmempool;
+          mempoolInfo.mempoolminfee = secondMempoolInfo.mempoolminfee;
+          mempoolInfo.minrelaytxfee = secondMempoolInfo.minrelaytxfee;
+          return mempoolInfo;
+        }
+      );
     }
     return this.bitcoindClient.getMempoolInfo();
   }

@@ -10,7 +10,7 @@ class Logger {
     warn: 4,
     notice: 5,
     info: 6,
-    debug: 7
+    debug: 7,
   };
   static facilities = {
     kern: 0,
@@ -29,25 +29,25 @@ class Logger {
     local4: 20,
     local5: 21,
     local6: 22,
-    local7: 23
+    local7: 23,
   };
 
   // @ts-ignore
-  public emerg: ((msg: string) => void);
+  public emerg: (msg: string) => void;
   // @ts-ignore
-  public alert: ((msg: string) => void);
+  public alert: (msg: string) => void;
   // @ts-ignore
-  public crit: ((msg: string) => void);
+  public crit: (msg: string) => void;
   // @ts-ignore
-  public err: ((msg: string) => void);
+  public err: (msg: string) => void;
   // @ts-ignore
-  public warn: ((msg: string) => void);
+  public warn: (msg: string) => void;
   // @ts-ignore
-  public notice: ((msg: string) => void);
+  public notice: (msg: string) => void;
   // @ts-ignore
-  public info: ((msg: string) => void);
+  public info: (msg: string) => void;
   // @ts-ignore
-  public debug: ((msg: string) => void);
+  public debug: (msg: string) => void;
 
   private name = 'mempool';
   private client: dgram.Socket;
@@ -65,8 +65,8 @@ class Logger {
   }
 
   private addprio(prio): void {
-    this[prio] = (function(_this) {
-      return function(msg) {
+    this[prio] = (function (_this) {
+      return function (msg) {
         return _this.msg(prio, msg);
       };
     })(this);
@@ -94,7 +94,9 @@ class Logger {
     consolemsg = `${this.ts()} [${process.pid}] ${priority.toUpperCase()}:${network} ${msg}`;
 
     if (config.SYSLOG.ENABLED && Logger.priorities[priority] <= Logger.priorities[config.SYSLOG.MIN_PRIORITY]) {
-      syslogmsg = `<${(Logger.facilities[config.SYSLOG.FACILITY] * 8 + prionum)}> ${this.name}[${process.pid}]: ${priority.toUpperCase()}${network} ${msg}`;
+      syslogmsg = `<${Logger.facilities[config.SYSLOG.FACILITY] * 8 + prionum}> ${this.name}[${
+        process.pid
+      }]: ${priority.toUpperCase()}${network} ${msg}`;
       this.syslog(syslogmsg);
     }
     if (priority === 'warning') {
@@ -112,7 +114,7 @@ class Logger {
   private syslog(msg) {
     let msgbuf;
     msgbuf = Buffer.from(msg);
-    this.client.send(msgbuf, 0, msgbuf.length, config.SYSLOG.PORT, config.SYSLOG.HOST, function(err, bytes) {
+    this.client.send(msgbuf, 0, msgbuf.length, config.SYSLOG.PORT, config.SYSLOG.HOST, function (err, bytes) {
       if (err) {
         console.log(err);
       }

@@ -45,7 +45,9 @@ class Bisq {
 
   handleNewBitcoinBlock(block: BlockExtended): void {
     if (block.height - 10 > this.latestBlockHeight && this.latestBlockHeight !== 0) {
-      logger.warn(`Bitcoin block height (#${block.height}) has diverged from the latest Bisq block height (#${this.latestBlockHeight}). Restarting watchers...`);
+      logger.warn(
+        `Bitcoin block height (#${block.height}) has diverged from the latest Bisq block height (#${this.latestBlockHeight}). Restarting watchers...`
+      );
       this.startTopDirectoryWatcher();
       this.startSubDirectoryWatcher();
     }
@@ -58,7 +60,7 @@ class Bisq {
   getTransactions(start: number, length: number, types: string[]): [BisqTransaction[], number] {
     let transactions = this.transactions;
     if (types.length) {
-      transactions = transactions.filter((tx) => types.indexOf(tx.txType) > -1);
+      transactions = transactions.filter(tx => types.indexOf(tx.txType) > -1);
     }
     return [transactions.slice(start, length + start), transactions.length];
   }
@@ -89,7 +91,10 @@ class Bisq {
 
   private checkForBisqDataFolder() {
     if (!fs.existsSync(Bisq.BLOCKS_JSON_FILE_PATH)) {
-      logger.warn(Bisq.BLOCKS_JSON_FILE_PATH + ` doesn't exist. Make sure Bisq is running and the config is correct before starting the server.`);
+      logger.warn(
+        Bisq.BLOCKS_JSON_FILE_PATH +
+          ` doesn't exist. Make sure Bisq is running and the config is correct before starting the server.`
+      );
       return process.exit(1);
     }
   }
@@ -122,7 +127,9 @@ class Bisq {
       this.subdirectoryWatcher.close();
     }
     if (!fs.existsSync(Bisq.BLOCKS_JSON_FILE_PATH)) {
-      logger.warn(Bisq.BLOCKS_JSON_FILE_PATH + ` doesn't exist. Trying to restart sub directory watcher again in 3 minutes.`);
+      logger.warn(
+        Bisq.BLOCKS_JSON_FILE_PATH + ` doesn't exist. Trying to restart sub directory watcher again in 3 minutes.`
+      );
       setTimeout(() => this.startSubDirectoryWatcher(), 180000);
       return;
     }
@@ -139,10 +146,11 @@ class Bisq {
   }
 
   private updatePrice() {
-    axios.get<BisqTrade[]>('https://bisq.markets/api/trades/?market=bsq_btc', { timeout: 10000 })
-      .then((response) => {
+    axios
+      .get<BisqTrade[]>('https://bisq.markets/api/trades/?market=bsq_btc', { timeout: 10000 })
+      .then(response => {
         const prices: number[] = [];
-        response.data.forEach((trade) => {
+        response.data.forEach(trade => {
           prices.push(parseFloat(trade.price) * 100000000);
         });
         prices.sort((a, b) => a - b);
@@ -150,9 +158,10 @@ class Bisq {
         if (this.priceUpdateCallbackFunction) {
           this.priceUpdateCallbackFunction(this.price);
         }
-    }).catch((err) => {
-      logger.err('Error updating Bisq market price: ' + err);
-    });
+      })
+      .catch(err => {
+        logger.err('Error updating Bisq market price: ' + err);
+      });
   }
 
   private async loadBisqDumpFile(): Promise<void> {
@@ -172,22 +181,22 @@ class Bisq {
     this.transactionIndex = {};
     this.addressIndex = {};
 
-    this.allBlocks.forEach((block) => {
+    this.allBlocks.forEach(block => {
       /* Build block index */
       if (!this.blockIndex[block.hash]) {
         this.blockIndex[block.hash] = block;
       }
 
       /* Build transactions index */
-      block.txs.forEach((tx) => {
+      block.txs.forEach(tx => {
         this.transactions.push(tx);
         this.transactionIndex[tx.id] = tx;
       });
     });
 
     /* Build address index */
-    this.transactions.forEach((tx) => {
-      tx.inputs.forEach((input) => {
+    this.transactions.forEach(tx => {
+      tx.inputs.forEach(input => {
         if (!this.addressIndex[input.address]) {
           this.addressIndex[input.address] = [];
         }
@@ -195,7 +204,7 @@ class Bisq {
           this.addressIndex[input.address].push(tx);
         }
       });
-      tx.outputs.forEach((output) => {
+      tx.outputs.forEach(output => {
         if (!this.addressIndex[output.address]) {
           this.addressIndex[output.address] = [];
         }
@@ -215,12 +224,15 @@ class Bisq {
     let unspent = 0;
     let spent = 0;
 
-    this.transactions.forEach((tx) => {
-      tx.outputs.forEach((output) => {
+    this.transactions.forEach(tx => {
+      tx.outputs.forEach(output => {
         if (output.opReturn) {
           return;
         }
-        if (output.txOutputType === 'GENESIS_OUTPUT' || output.txOutputType === 'ISSUANCE_CANDIDATE_OUTPUT' && output.isVerified) {
+        if (
+          output.txOutputType === 'GENESIS_OUTPUT' ||
+          (output.txOutputType === 'ISSUANCE_CANDIDATE_OUTPUT' && output.isVerified)
+        ) {
           minted += output.bsqAmount;
         }
         if (output.isUnspent) {
@@ -249,7 +261,7 @@ class Bisq {
       if (data.blocks && data.blocks.length !== this.allBlocks.length) {
         this.allBlocks = data.blocks;
         this.allBlocks.reverse();
-        this.blocks = this.allBlocks.filter((block) => block.txs.length > 0);
+        this.blocks = this.allBlocks.filter(block => block.txs.length > 0);
         this.latestBlockHeight = data.chainHeight;
         const time = new Date().getTime() - start;
         logger.debug('Bisq dump processed in ' + time + ' ms (worker thread)');

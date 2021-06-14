@@ -14,14 +14,14 @@ class DiskCache {
   private static CHUNK_FILES = 25;
   private isWritingCache = false;
 
-  constructor() { }
+  constructor() {}
 
   async $saveCacheToDisk(): Promise<void> {
     if (!cluster.isMaster) {
       return;
     }
     if (this.isWritingCache) {
-      logger.debug('Saving cache already in progress. Skipping.')
+      logger.debug('Saving cache already in progress. Skipping.');
       return;
     }
     try {
@@ -38,16 +38,24 @@ class DiskCache {
 
       const chunkSize = Math.floor(mempoolArray.length / DiskCache.CHUNK_FILES);
 
-      await fsPromises.writeFile(DiskCache.FILE_NAME, JSON.stringify({
-        blocks: blocks.getBlocks(),
-        mempool: {},
-        mempoolArray: mempoolArray.splice(0, chunkSize),
-      }), {flag: 'w'});
-      for (let i = 1; i < DiskCache.CHUNK_FILES; i++) {
-        await fsPromises.writeFile(DiskCache.FILE_NAMES.replace('{number}', i.toString()), JSON.stringify({
+      await fsPromises.writeFile(
+        DiskCache.FILE_NAME,
+        JSON.stringify({
+          blocks: blocks.getBlocks(),
           mempool: {},
           mempoolArray: mempoolArray.splice(0, chunkSize),
-        }), {flag: 'w'});
+        }),
+        { flag: 'w' }
+      );
+      for (let i = 1; i < DiskCache.CHUNK_FILES; i++) {
+        await fsPromises.writeFile(
+          DiskCache.FILE_NAMES.replace('{number}', i.toString()),
+          JSON.stringify({
+            mempool: {},
+            mempoolArray: mempoolArray.splice(0, chunkSize),
+          }),
+          { flag: 'w' }
+        );
       }
       logger.debug('Mempool and blocks data saved to disk cache');
       this.isWritingCache = false;

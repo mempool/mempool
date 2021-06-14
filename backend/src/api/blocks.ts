@@ -12,9 +12,10 @@ class Blocks {
   private blocks: BlockExtended[] = [];
   private currentBlockHeight = 0;
   private lastDifficultyAdjustmentTime = 0;
-  private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
+  private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] =
+    [];
 
-  constructor() { }
+  constructor() {}
 
   public getBlocks(): BlockExtended[] {
     return this.blocks;
@@ -38,7 +39,11 @@ class Blocks {
     }
 
     if (blockHeightTip - this.currentBlockHeight > Blocks.INITIAL_BLOCK_AMOUNT * 2) {
-      logger.info(`${blockHeightTip - this.currentBlockHeight} blocks since tip. Fast forwarding to the ${Blocks.INITIAL_BLOCK_AMOUNT} recent blocks`);
+      logger.info(
+        `${blockHeightTip - this.currentBlockHeight} blocks since tip. Fast forwarding to the ${
+          Blocks.INITIAL_BLOCK_AMOUNT
+        } recent blocks`
+      );
       this.currentBlockHeight = blockHeightTip - Blocks.INITIAL_BLOCK_AMOUNT;
     }
 
@@ -84,20 +89,23 @@ class Blocks {
         }
       }
 
-      transactions.forEach((tx) => {
+      transactions.forEach(tx => {
         if (!tx.cpfpChecked) {
           Common.setRelativesAndGetCpfpInfo(tx, mempool);
         }
       });
 
-      logger.debug(`${transactionsFound} of ${txIds.length} found in mempool. ${txIds.length - transactionsFound} not found.`);
+      logger.debug(
+        `${transactionsFound} of ${txIds.length} found in mempool. ${txIds.length - transactionsFound} not found.`
+      );
 
       const blockExtended: BlockExtended = Object.assign({}, block);
       blockExtended.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
       blockExtended.coinbaseTx = transactionUtils.stripCoinbaseTransaction(transactions[0]);
       transactions.shift();
       transactions.sort((a, b) => b.effectiveFeePerVsize - a.effectiveFeePerVsize);
-      blockExtended.medianFee = transactions.length > 1 ? Common.median(transactions.map((tx) => tx.effectiveFeePerVsize)) : 0;
+      blockExtended.medianFee =
+        transactions.length > 1 ? Common.median(transactions.map(tx => tx.effectiveFeePerVsize)) : 0;
       blockExtended.feeRange = transactions.length > 1 ? Common.getFeesInRange(transactions, 8) : [0, 0];
 
       if (block.height % 2016 === 0) {
@@ -110,7 +118,7 @@ class Blocks {
       }
 
       if (this.newBlockCallbacks.length) {
-        this.newBlockCallbacks.forEach((cb) => cb(blockExtended, txIds, transactions));
+        this.newBlockCallbacks.forEach(cb => cb(blockExtended, txIds, transactions));
       }
       if (memPool.isInSync()) {
         diskCache.$saveCacheToDisk();
