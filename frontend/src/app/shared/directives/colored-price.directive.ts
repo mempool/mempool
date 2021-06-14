@@ -7,7 +7,9 @@ export class ColoredPriceDirective implements OnChanges {
   @Input() appColoredPrice: number;
   previousValue = null;
 
-  constructor(private element: ElementRef) {}
+  constructor(
+    private element: ElementRef
+  ) { }
 
   ngOnChanges() {
     if (this.previousValue && this.appColoredPrice < this.previousValue) {

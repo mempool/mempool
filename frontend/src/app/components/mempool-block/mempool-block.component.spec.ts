@@ -8,8 +8,9 @@ describe('MempoolBlockComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [MempoolBlockComponent],
-    }).compileComponents();
+      declarations: [ MempoolBlockComponent ]
+    })
+    .compileComponents();
   }));
 
   beforeEach(() => {

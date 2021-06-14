@@ -8,8 +8,9 @@ describe('ClipboardComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ClipboardComponent],
-    }).compileComponents();
+      declarations: [ ClipboardComponent ]
+    })
+    .compileComponents();
   }));
 
   beforeEach(() => {

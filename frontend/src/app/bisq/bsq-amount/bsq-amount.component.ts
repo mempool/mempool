@@ -18,7 +18,9 @@ export class BsqAmountComponent implements OnInit {
   @Input() forceFiat = false;
   @Input() green = false;
 
-  constructor(private stateService: StateService) {}
+  constructor(
+    private stateService: StateService,
+  ) { }
 
   ngOnInit() {
     this.viewFiat$ = this.stateService.viewFiat$.asObservable();
