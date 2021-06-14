@@ -75,7 +75,7 @@ export const languages: Language[] = [
    { code: 'pt', name: 'Português' },       // Portuguese
 // { code: 'pt-BR', name: 'Português (Brazil)' }, // Portuguese (Brazil)
 // { code: 'ro', name: 'Română' },          // Romanian
-// { code: 'ru', name: 'Русский' },         // Russian
+   { code: 'ru', name: 'Русский' },         // Russian
 // { code: 'sk', name: 'Slovenčina' },      // Slovak
    { code: 'sl', name: 'Slovenščina' },     // Slovenian
 // { code: 'sr', name: 'Српски / srpski' }, // Serbian
