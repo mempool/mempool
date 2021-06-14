@@ -8,7 +8,7 @@ import { WebsocketService } from 'src/app/services/websocket.service';
 @Component({
   selector: 'app-bisq-stats',
   templateUrl: './bisq-stats.component.html',
-  styleUrls: ['./bisq-stats.component.scss']
+  styleUrls: ['./bisq-stats.component.scss'],
 })
 export class BisqStatsComponent implements OnInit {
   isLoading = true;
@@ -19,23 +19,20 @@ export class BisqStatsComponent implements OnInit {
     private websocketService: WebsocketService,
     private bisqApiService: BisqApiService,
     private seoService: SeoService,
-    private stateService: StateService,
-  ) { }
+    private stateService: StateService
+  ) {}
 
   ngOnInit() {
     this.websocketService.want(['blocks']);
 
     this.seoService.setTitle($localize`:@@2a30a4cdb123a03facc5ab8c5b3e6d8b8dbbc3d4:BSQ statistics`);
-    this.stateService.bsqPrice$
-      .subscribe((bsqPrice) => {
-        this.price = bsqPrice;
-      });
+    this.stateService.bsqPrice$.subscribe(bsqPrice => {
+      this.price = bsqPrice;
+    });
 
-    this.bisqApiService.getStats$()
-      .subscribe((stats) => {
-        this.isLoading = false;
-        this.stats = stats;
-      });
+    this.bisqApiService.getStats$().subscribe(stats => {
+      this.isLoading = false;
+      this.stats = stats;
+    });
   }
-
 }

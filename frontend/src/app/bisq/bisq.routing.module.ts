@@ -14,63 +14,63 @@ import { BisqMainDashboardComponent } from './bisq-main-dashboard/bisq-main-dash
 import { TermsOfServiceComponent } from '../components/terms-of-service/terms-of-service.component';
 
 const routes: Routes = [
-    {
-      path: '',
-      component: BisqMainDashboardComponent,
-    },
-    {
-      path: 'markets',
-      component: BisqDashboardComponent,
-    },
-    {
-      path: 'transactions',
-      component: BisqTransactionsComponent
-    },
-    {
-      path: 'market/:pair',
-      component: BisqMarketComponent,
-    },
-    {
-      path: 'tx/:id',
-      component: BisqTransactionComponent
-    },
-    {
-      path: 'blocks',
-      children: [],
-      component: BisqBlocksComponent
-    },
-    {
-      path: 'block/:id',
-      component: BisqBlockComponent,
-    },
-    {
-      path: 'address/:id',
-      component: BisqAddressComponent,
-    },
-    {
-      path: 'stats',
-      component: BisqStatsComponent,
-    },
-    {
-      path: 'about',
-      component: AboutComponent,
-    },
-    {
-      path: 'api',
-      component: ApiDocsComponent,
-    },
-    {
-      path: 'terms-of-service',
-      component: TermsOfServiceComponent
-    },
-    {
-      path: '**',
-      redirectTo: ''
-    }
+  {
+    path: '',
+    component: BisqMainDashboardComponent,
+  },
+  {
+    path: 'markets',
+    component: BisqDashboardComponent,
+  },
+  {
+    path: 'transactions',
+    component: BisqTransactionsComponent,
+  },
+  {
+    path: 'market/:pair',
+    component: BisqMarketComponent,
+  },
+  {
+    path: 'tx/:id',
+    component: BisqTransactionComponent,
+  },
+  {
+    path: 'blocks',
+    children: [],
+    component: BisqBlocksComponent,
+  },
+  {
+    path: 'block/:id',
+    component: BisqBlockComponent,
+  },
+  {
+    path: 'address/:id',
+    component: BisqAddressComponent,
+  },
+  {
+    path: 'stats',
+    component: BisqStatsComponent,
+  },
+  {
+    path: 'about',
+    component: AboutComponent,
+  },
+  {
+    path: 'api',
+    component: ApiDocsComponent,
+  },
+  {
+    path: 'terms-of-service',
+    component: TermsOfServiceComponent,
+  },
+  {
+    path: '**',
+    redirectTo: '',
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class BisqRoutingModule { }
+export class BisqRoutingModule {}

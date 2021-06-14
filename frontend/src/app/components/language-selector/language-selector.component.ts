@@ -8,7 +8,7 @@ import { StateService } from 'src/app/services/state.service';
   selector: 'app-language-selector',
   templateUrl: './language-selector.component.html',
   styleUrls: ['./language-selector.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LanguageSelectorComponent implements OnInit {
   languageForm: FormGroup;
@@ -18,20 +18,20 @@ export class LanguageSelectorComponent implements OnInit {
     private formBuilder: FormBuilder,
     private stateService: StateService,
     @Inject(DOCUMENT) private document: Document
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.languages = languages;
 
     this.languageForm = this.formBuilder.group({
-      language: ['']
+      language: [''],
     });
     this.setLanguageFromUrl();
   }
 
   setLanguageFromUrl() {
     const urlLanguage = this.document.location.pathname.split('/')[1];
-    if (this.languages.map((lang) => lang.code).indexOf(urlLanguage) > -1) {
+    if (this.languages.map(lang => lang.code).indexOf(urlLanguage) > -1) {
       this.languageForm.get('language').setValue(urlLanguage);
     } else {
       this.languageForm.get('language').setValue('en');
@@ -42,7 +42,7 @@ export class LanguageSelectorComponent implements OnInit {
     const language = this.languageForm.get('language').value;
     try {
       document.cookie = `lang=${language}; expires=Thu, 18 Dec 2050 12:00:00 UTC; path=/`;
-    } catch (e) { }
+    } catch (e) {}
     this.document.location.href = `/${language}/${this.stateService.network}`;
   }
 }

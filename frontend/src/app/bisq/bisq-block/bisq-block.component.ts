@@ -13,7 +13,7 @@ import { WebsocketService } from 'src/app/services/websocket.service';
 @Component({
   selector: 'app-bisq-block',
   templateUrl: './bisq-block.component.html',
-  styleUrls: ['./bisq-block.component.scss']
+  styleUrls: ['./bisq-block.component.scss'],
 })
 export class BisqBlockComponent implements OnInit, OnDestroy {
   block: BisqBlock;
@@ -30,8 +30,8 @@ export class BisqBlockComponent implements OnInit, OnDestroy {
     private seoService: SeoService,
     private electrsApiService: ElectrsApiService,
     private router: Router,
-    private location: Location,
-  ) { }
+    private location: Location
+  ) {}
 
   ngOnInit(): void {
     this.websocketService.want(['blocks']);
@@ -59,25 +59,20 @@ export class BisqBlockComponent implements OnInit, OnDestroy {
           }
 
           if (isBlockHeight) {
-            return this.electrsApiService.getBlockHashFromHeight$(parseInt(blockHash, 10))
-              .pipe(
-                switchMap((hash) => {
-                  if (!hash) {
-                    return;
-                  }
-                  this.blockHash = hash;
-                  this.location.replaceState(
-                    this.router.createUrlTree(['/bisq/block/', hash]).toString()
-                  );
-                  return this.bisqApiService.getBlock$(this.blockHash)
-                    .pipe(catchError(this.caughtHttpError.bind(this)));
-                }),
-                catchError(this.caughtHttpError.bind(this))
-              );
+            return this.electrsApiService.getBlockHashFromHeight$(parseInt(blockHash, 10)).pipe(
+              switchMap(hash => {
+                if (!hash) {
+                  return;
+                }
+                this.blockHash = hash;
+                this.location.replaceState(this.router.createUrlTree(['/bisq/block/', hash]).toString());
+                return this.bisqApiService.getBlock$(this.blockHash).pipe(catchError(this.caughtHttpError.bind(this)));
+              }),
+              catchError(this.caughtHttpError.bind(this))
+            );
           }
 
-          return this.bisqApiService.getBlock$(this.blockHash)
-            .pipe(catchError(this.caughtHttpError.bind(this)));
+          return this.bisqApiService.getBlock$(this.blockHash).pipe(catchError(this.caughtHttpError.bind(this)));
         })
       )
       .subscribe((block: BisqBlock) => {
@@ -86,7 +81,9 @@ export class BisqBlockComponent implements OnInit, OnDestroy {
         }
         this.isLoading = false;
         this.blockHeight = block.height;
-        this.seoService.setTitle($localize`:@@bisq-block.component.browser-title:Block ${block.height}:BLOCK_HEIGHT:: ${block.hash}:BLOCK_HASH:`);
+        this.seoService.setTitle(
+          $localize`:@@bisq-block.component.browser-title:Block ${block.height}:BLOCK_HEIGHT:: ${block.hash}:BLOCK_HASH:`
+        );
         this.block = block;
       });
   }
@@ -95,7 +92,7 @@ export class BisqBlockComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  caughtHttpError(err: HttpErrorResponse){
+  caughtHttpError(err: HttpErrorResponse) {
     this.error = err;
     return of(null);
   }

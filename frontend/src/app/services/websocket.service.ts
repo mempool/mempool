@@ -15,11 +15,12 @@ const EXPECT_PING_RESPONSE_AFTER_MS = 4000;
 const initData = makeStateKey('/api/v1/init-data');
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class WebsocketService {
-  private webSocketProtocol = (document.location.protocol === 'https:') ? 'wss:' : 'ws:';
-  private webSocketUrl = this.webSocketProtocol + '//' + document.location.hostname + ':' + document.location.port + '{network}/api/v1/ws';
+  private webSocketProtocol = document.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  private webSocketUrl =
+    this.webSocketProtocol + '//' + document.location.hostname + ':' + document.location.port + '{network}/api/v1/ws';
 
   private websocketSubject: WebSocketSubject<WebsocketResponse>;
   private goneOffline = false;
@@ -34,18 +35,24 @@ export class WebsocketService {
   constructor(
     private stateService: StateService,
     private apiService: ApiService,
-    private transferState: TransferState,
+    private transferState: TransferState
   ) {
     if (!this.stateService.isBrowser) {
       // @ts-ignore
-      this.websocketSubject = { next: () => {}};
+      this.websocketSubject = { next: () => {} };
       this.stateService.isLoadingWebSocket$.next(false);
-      this.apiService.getInitData$()
+      this.apiService
+        .getInitData$()
         .pipe(take(1))
-        .subscribe((response) => this.handleResponse(response));
+        .subscribe(response => this.handleResponse(response));
     } else {
-      this.network = this.stateService.network === 'bisq' && !this.stateService.env.BISQ_SEPARATE_BACKEND ? '' : this.stateService.network;
-      this.websocketSubject = webSocket<WebsocketResponse>(this.webSocketUrl.replace('{network}', this.network ? '/' + this.network : ''));
+      this.network =
+        this.stateService.network === 'bisq' && !this.stateService.env.BISQ_SEPARATE_BACKEND
+          ? ''
+          : this.stateService.network;
+      this.websocketSubject = webSocket<WebsocketResponse>(
+        this.webSocketUrl.replace('{network}', this.network ? '/' + this.network : '')
+      );
 
       const theInitData = this.transferState.get(initData, null);
       if (theInitData) {
@@ -55,7 +62,7 @@ export class WebsocketService {
         this.startSubscription();
       }
 
-      this.stateService.networkChanged$.subscribe((network) => {
+      this.stateService.networkChanged$.subscribe(network => {
         if (network === 'bisq' && !this.stateService.env.BISQ_SEPARATE_BACKEND) {
           network = '';
         }
@@ -82,13 +89,13 @@ export class WebsocketService {
   startSubscription(retrying = false, hasInitData = false) {
     if (!hasInitData) {
       this.stateService.isLoadingWebSocket$.next(true);
-      this.websocketSubject.next({'action': 'init'});
+      this.websocketSubject.next({ action: 'init' });
     }
     if (retrying) {
       this.stateService.connectionState$.next(1);
     }
-    this.subscription = this.websocketSubject
-      .subscribe((response: WebsocketResponse) => {
+    this.subscription = this.websocketSubject.subscribe(
+      (response: WebsocketResponse) => {
         this.stateService.isLoadingWebSocket$.next(false);
         this.handleResponse(response);
 
@@ -110,7 +117,8 @@ export class WebsocketService {
         console.log(err);
         console.log(`WebSocket error, trying to reconnect in ${OFFLINE_RETRY_AFTER_MS} seconds`);
         this.goOffline();
-      });
+      }
+    );
   }
 
   startTrackTransaction(txId: string) {
@@ -169,7 +177,7 @@ export class WebsocketService {
     if (JSON.stringify(data) === this.lastWant && !force) {
       return;
     }
-    this.websocketSubject.next({action: 'want', data: data});
+    this.websocketSubject.next({ action: 'want', data: data });
     this.lastWant = JSON.stringify(data);
   }
 
@@ -186,7 +194,7 @@ export class WebsocketService {
     clearTimeout(this.onlineCheckTimeoutTwo);
 
     this.onlineCheckTimeout = window.setTimeout(() => {
-      this.websocketSubject.next({action: 'ping'});
+      this.websocketSubject.next({ action: 'ping' });
       this.onlineCheckTimeoutTwo = window.setTimeout(() => {
         if (!this.goneOffline) {
           console.log('WebSocket response timeout, force closing, trying to reconnect in 10 seconds');
@@ -237,7 +245,7 @@ export class WebsocketService {
     }
 
     if (response.transactions) {
-      response.transactions.forEach((tx) => this.stateService.transactions$.next(tx));
+      response.transactions.forEach(tx => this.stateService.transactions$.next(tx));
     }
 
     if (response['bsq-price']) {

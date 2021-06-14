@@ -15,10 +15,7 @@ export class MinerComponent implements OnChanges {
   url = '';
   loading = true;
 
-  constructor(
-    private assetsService: AssetsService,
-    private cd: ChangeDetectorRef,
-  ) { }
+  constructor(private assetsService: AssetsService, private cd: ChangeDetectorRef) {}
 
   ngOnChanges() {
     this.miner = '';
@@ -27,21 +24,25 @@ export class MinerComponent implements OnChanges {
   }
 
   findMinerFromCoinbase() {
-    if (this.coinbaseTransaction == null || this.coinbaseTransaction.vin == null || this.coinbaseTransaction.vin.length === 0) {
+    if (
+      this.coinbaseTransaction == null ||
+      this.coinbaseTransaction.vin == null ||
+      this.coinbaseTransaction.vin.length === 0
+    ) {
       return null;
     }
 
-    this.assetsService.getMiningPools$.subscribe((pools) => {
+    this.assetsService.getMiningPools$.subscribe(pools => {
       for (const vout of this.coinbaseTransaction.vout) {
         if (!vout.scriptpubkey_address) {
           continue;
         }
 
         if (pools.payout_addresses[vout.scriptpubkey_address]) {
-            this.miner = pools.payout_addresses[vout.scriptpubkey_address].name;
-            this.title = $localize`:@@miner-identified-by-payout:Identified by payout address: '${vout.scriptpubkey_address}:PAYOUT_ADDRESS:'`;
-            this.url = pools.payout_addresses[vout.scriptpubkey_address].link;
-            break;
+          this.miner = pools.payout_addresses[vout.scriptpubkey_address].name;
+          this.title = $localize`:@@miner-identified-by-payout:Identified by payout address: '${vout.scriptpubkey_address}:PAYOUT_ADDRESS:'`;
+          this.url = pools.payout_addresses[vout.scriptpubkey_address].link;
+          break;
         }
 
         for (const tag in pools.coinbase_tags) {

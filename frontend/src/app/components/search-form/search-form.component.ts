@@ -12,13 +12,13 @@ import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
   selector: 'app-search-form',
   templateUrl: './search-form.component.html',
   styleUrls: ['./search-form.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchFormComponent implements OnInit {
   network = '';
   assets: object = {};
   isSearching = false;
-  typeaheadSearchFn: ((text: Observable<string>) => Observable<readonly any[]>);
+  typeaheadSearchFn: (text: Observable<string>) => Observable<readonly any[]>;
 
   searchForm: FormGroup;
   @Output() searchTriggered = new EventEmitter();
@@ -28,7 +28,7 @@ export class SearchFormComponent implements OnInit {
   regexTransaction = /^[a-fA-F0-9]{64}$/;
   regexBlockheight = /^[0-9]+$/;
 
-  @ViewChild('instance', {static: true}) instance: NgbTypeahead;
+  @ViewChild('instance', { static: true }) instance: NgbTypeahead;
   focus$ = new Subject<string>();
   click$ = new Subject<string>();
 
@@ -37,28 +37,27 @@ export class SearchFormComponent implements OnInit {
     private router: Router,
     private assetsService: AssetsService,
     private stateService: StateService,
-    private electrsApiService: ElectrsApiService,
-  ) { }
+    private electrsApiService: ElectrsApiService
+  ) {}
 
   ngOnInit() {
     this.typeaheadSearchFn = this.typeaheadSearch;
-    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.stateService.networkChanged$.subscribe(network => (this.network = network));
 
     this.searchForm = this.formBuilder.group({
       searchText: ['', Validators.required],
     });
 
     if (this.network === 'liquid') {
-      this.assetsService.getAssetsMinimalJson$
-        .subscribe((assets) => {
-          this.assets = assets;
-        });
+      this.assetsService.getAssetsMinimalJson$.subscribe(assets => {
+        this.assets = assets;
+      });
     }
   }
 
   typeaheadSearch = (text$: Observable<string>) => {
     const debouncedText$ = text$.pipe(
-      map((text) => {
+      map(text => {
         if (this.network === 'bisq' && text.match(/^(b)[^c]/i)) {
           return text.substr(1);
         }
@@ -70,22 +69,21 @@ export class SearchFormComponent implements OnInit {
     const clicksWithClosedPopup$ = this.click$.pipe(filter(() => !this.instance.isPopupOpen()));
     const inputFocus$ = this.focus$;
 
-    return merge(debouncedText$, inputFocus$, clicksWithClosedPopup$)
-      .pipe(
-        switchMap((text) => {
-          if (!text.length) {
-            return of([]);
-          }
-          return this.electrsApiService.getAddressesByPrefix$(text).pipe(catchError(() => of([])));
-        }),
-        map((result: string[]) => {
-          if (this.network === 'bisq') {
-            return result.map((address: string) => 'B' + address);
-          }
-          return result;
-        })
-      );
-    }
+    return merge(debouncedText$, inputFocus$, clicksWithClosedPopup$).pipe(
+      switchMap(text => {
+        if (!text.length) {
+          return of([]);
+        }
+        return this.electrsApiService.getAddressesByPrefix$(text).pipe(catchError(() => of([])));
+      }),
+      map((result: string[]) => {
+        if (this.network === 'bisq') {
+          return result.map((address: string) => 'B' + address);
+        }
+        return result;
+      })
+    );
+  };
 
   itemSelected() {
     setTimeout(() => this.search());
@@ -104,11 +102,14 @@ export class SearchFormComponent implements OnInit {
           if (this.assets[searchText]) {
             this.navigate('/asset/', searchText);
           }
-          this.electrsApiService.getAsset$(searchText)
-            .subscribe(
-              () => { this.navigate('/asset/', searchText); },
-              () => { this.navigate('/tx/', searchText); }
-            );
+          this.electrsApiService.getAsset$(searchText).subscribe(
+            () => {
+              this.navigate('/asset/', searchText);
+            },
+            () => {
+              this.navigate('/tx/', searchText);
+            }
+          );
         } else {
           this.navigate('/tx/', searchText);
         }

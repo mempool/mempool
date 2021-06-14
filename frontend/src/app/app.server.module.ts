@@ -7,14 +7,8 @@ import { AppComponent } from './components/app/app.component';
 import { HttpCacheInterceptor } from './services/http-cache.interceptor';
 
 @NgModule({
-  imports: [
-    AppModule,
-    ServerModule,
-    ServerTransferStateModule,
-  ],
-  providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: HttpCacheInterceptor, multi: true }
-  ],
+  imports: [AppModule, ServerModule, ServerTransferStateModule],
+  providers: [{ provide: HTTP_INTERCEPTORS, useClass: HttpCacheInterceptor, multi: true }],
   bootstrap: [AppComponent],
 })
 export class AppServerModule {}
