@@ -27,18 +27,14 @@ export class FooterComponent implements OnInit {
   mempoolInfoData$: Observable<MempoolInfoData>;
   vBytesPerSecondLimit = 1667;
 
-  constructor(
-    private stateService: StateService,
-  ) { }
+  constructor(private stateService: StateService) {}
 
   ngOnInit() {
-    this.mempoolInfoData$ = combineLatest([
-      this.stateService.mempoolInfo$,
-      this.stateService.vbytesPerSecond$
-    ])
-    .pipe(
+    this.mempoolInfoData$ = combineLatest([this.stateService.mempoolInfo$, this.stateService.vbytesPerSecond$]).pipe(
       map(([mempoolInfo, vbytesPerSecond]) => {
-        const percent = Math.round((Math.min(vbytesPerSecond, this.vBytesPerSecondLimit) / this.vBytesPerSecondLimit) * 100);
+        const percent = Math.round(
+          (Math.min(vbytesPerSecond, this.vBytesPerSecondLimit) / this.vBytesPerSecondLimit) * 100
+        );
 
         let progressClass = 'bg-danger';
         if (percent <= 75) {
@@ -56,17 +52,16 @@ export class FooterComponent implements OnInit {
       })
     );
 
-    this.mempoolBlocksData$ = this.stateService.mempoolBlocks$
-      .pipe(
-        map((mempoolBlocks) => {
-          const size = mempoolBlocks.map((m) => m.blockSize).reduce((a, b) => a + b, 0);
-          const vsize = mempoolBlocks.map((m) => m.blockVSize).reduce((a, b) => a + b, 0);
+    this.mempoolBlocksData$ = this.stateService.mempoolBlocks$.pipe(
+      map(mempoolBlocks => {
+        const size = mempoolBlocks.map(m => m.blockSize).reduce((a, b) => a + b, 0);
+        const vsize = mempoolBlocks.map(m => m.blockVSize).reduce((a, b) => a + b, 0);
 
-          return {
-            size: size,
-            blocks: Math.ceil(vsize / 1000000)
-          };
-        })
-      );
+        return {
+          size: size,
+          blocks: Math.ceil(vsize / 1000000),
+        };
+      })
+    );
   }
 }

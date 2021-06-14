@@ -7,7 +7,7 @@ import { StateService } from 'src/app/services/state.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
   link: HTMLElement = document.getElementById('canonical');
@@ -17,7 +17,7 @@ export class AppComponent implements OnInit {
     private websocketService: WebsocketService,
     private stateService: StateService,
     private location: Location,
-    @Inject(LOCALE_ID) private locale: string,
+    @Inject(LOCALE_ID) private locale: string
   ) {
     if (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he')) {
       this.dir = 'rtl';
@@ -37,9 +37,12 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.router.events.subscribe((val) => {
+    this.router.events.subscribe(val => {
       if (val instanceof NavigationEnd) {
-        this.link.setAttribute('href', 'https://mempool.space' + (this.location.path() === '/' ? '' : this.location.path()));
+        this.link.setAttribute(
+          'href',
+          'https://mempool.space' + (this.location.path() === '/' ? '' : this.location.path())
+        );
       }
     });
   }

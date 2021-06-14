@@ -5,22 +5,25 @@ import { Block, Transaction, Address, Outspend, Recent, Asset } from '../interfa
 import { StateService } from './state.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ElectrsApiService {
   private apiBaseUrl: string; // base URL is protocol, hostname, and port
   private apiBasePath: string; // network path is /testnet, etc. or '' for mainnet
 
-  constructor(
-    private httpClient: HttpClient,
-    private stateService: StateService,
-  ) {
+  constructor(private httpClient: HttpClient, private stateService: StateService) {
     this.apiBaseUrl = ''; // use relative URL by default
-    if (!stateService.isBrowser) { // except when inside AU SSR process
-      this.apiBaseUrl = this.stateService.env.NGINX_PROTOCOL + '://' + this.stateService.env.NGINX_HOSTNAME + ':' + this.stateService.env.NGINX_PORT;
+    if (!stateService.isBrowser) {
+      // except when inside AU SSR process
+      this.apiBaseUrl =
+        this.stateService.env.NGINX_PROTOCOL +
+        '://' +
+        this.stateService.env.NGINX_HOSTNAME +
+        ':' +
+        this.stateService.env.NGINX_PORT;
     }
     this.apiBasePath = ''; // assume mainnet by default
-    this.stateService.networkChanged$.subscribe((network) => {
+    this.stateService.networkChanged$.subscribe(network => {
       if (network === 'bisq') {
         network = '';
       }
@@ -53,11 +56,15 @@ export class ElectrsApiService {
   }
 
   getBlockTransactions$(hash: string, index: number = 0): Observable<Transaction[]> {
-    return this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/block/' + hash + '/txs/' + index);
+    return this.httpClient.get<Transaction[]>(
+      this.apiBaseUrl + this.apiBasePath + '/api/block/' + hash + '/txs/' + index
+    );
   }
 
   getBlockHashFromHeight$(height: number): Observable<string> {
-    return this.httpClient.get(this.apiBaseUrl + this.apiBasePath + '/api/block-height/' + height, {responseType: 'text'});
+    return this.httpClient.get(this.apiBaseUrl + this.apiBasePath + '/api/block-height/' + height, {
+      responseType: 'text',
+    });
   }
 
   getAddress$(address: string): Observable<Address> {
@@ -69,7 +76,9 @@ export class ElectrsApiService {
   }
 
   getAddressTransactionsFromHash$(address: string, txid: string): Observable<Transaction[]> {
-    return this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/address/' + address + '/txs/chain/' + txid);
+    return this.httpClient.get<Transaction[]>(
+      this.apiBaseUrl + this.apiBasePath + '/api/address/' + address + '/txs/chain/' + txid
+    );
   }
 
   getAsset$(assetId: string): Observable<Asset> {
@@ -81,7 +90,9 @@ export class ElectrsApiService {
   }
 
   getAssetTransactionsFromHash$(assetId: string, txid: string): Observable<Transaction[]> {
-    return this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/asset/' + assetId + '/txs/chain/' + txid);
+    return this.httpClient.get<Transaction[]>(
+      this.apiBaseUrl + this.apiBasePath + '/api/asset/' + assetId + '/txs/chain/' + txid
+    );
   }
 
   getAddressesByPrefix$(prefix: string): Observable<string[]> {

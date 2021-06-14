@@ -34,15 +34,15 @@ let routes: Routes = [
           },
           {
             path: 'tx/:id',
-            component: TransactionComponent
+            component: TransactionComponent,
           },
           {
             path: 'block/:id',
-            component: BlockComponent
+            component: BlockComponent,
           },
           {
             path: 'mempool-block/:id',
-            component: MempoolBlockComponent
+            component: MempoolBlockComponent,
           },
         ],
       },
@@ -64,12 +64,12 @@ let routes: Routes = [
       },
       {
         path: 'terms-of-service',
-        component: TermsOfServiceComponent
+        component: TermsOfServiceComponent,
       },
       {
         path: 'address/:id',
         children: [],
-        component: AddressComponent
+        component: AddressComponent,
       },
       {
         path: 'sponsor',
@@ -90,19 +90,19 @@ let routes: Routes = [
             children: [
               {
                 path: '',
-                component: DashboardComponent
+                component: DashboardComponent,
               },
               {
                 path: 'tx/:id',
-                component: TransactionComponent
+                component: TransactionComponent,
               },
               {
                 path: 'block/:id',
-                component: BlockComponent
+                component: BlockComponent,
               },
               {
                 path: 'mempool-block/:id',
-                component: MempoolBlockComponent
+                component: MempoolBlockComponent,
               },
             ],
           },
@@ -116,11 +116,11 @@ let routes: Routes = [
           },
           {
             path: 'address/:id',
-            component: AddressComponent
+            component: AddressComponent,
           },
           {
             path: 'asset/:id',
-            component: AssetComponent
+            component: AssetComponent,
           },
           {
             path: 'assets',
@@ -134,17 +134,17 @@ let routes: Routes = [
       },
       {
         path: 'tv',
-        component: TelevisionComponent
+        component: TelevisionComponent,
       },
       {
         path: 'status',
-        component: StatusViewComponent
+        component: StatusViewComponent,
       },
       {
         path: '**',
-        redirectTo: ''
+        redirectTo: '',
       },
-    ]
+    ],
   },
   {
     path: 'testnet',
@@ -159,19 +159,19 @@ let routes: Routes = [
             children: [
               {
                 path: '',
-                component: DashboardComponent
+                component: DashboardComponent,
               },
               {
                 path: 'tx/:id',
-                component: TransactionComponent
+                component: TransactionComponent,
               },
               {
                 path: 'block/:id',
-                component: BlockComponent
+                component: BlockComponent,
               },
               {
                 path: 'mempool-block/:id',
-                component: MempoolBlockComponent
+                component: MempoolBlockComponent,
               },
             ],
           },
@@ -186,7 +186,7 @@ let routes: Routes = [
           {
             path: 'address/:id',
             children: [],
-            component: AddressComponent
+            component: AddressComponent,
           },
           {
             path: 'api',
@@ -196,17 +196,17 @@ let routes: Routes = [
       },
       {
         path: 'tv',
-        component: TelevisionComponent
+        component: TelevisionComponent,
       },
       {
         path: 'status',
-        component: StatusViewComponent
+        component: StatusViewComponent,
       },
       {
         path: '**',
-        redirectTo: ''
+        redirectTo: '',
       },
-    ]
+    ],
   },
   {
     path: 'signet',
@@ -221,19 +221,19 @@ let routes: Routes = [
             children: [
               {
                 path: '',
-                component: DashboardComponent
+                component: DashboardComponent,
               },
               {
                 path: 'tx/:id',
-                component: TransactionComponent
+                component: TransactionComponent,
               },
               {
                 path: 'block/:id',
-                component: BlockComponent
+                component: BlockComponent,
               },
               {
                 path: 'mempool-block/:id',
-                component: MempoolBlockComponent
+                component: MempoolBlockComponent,
               },
             ],
           },
@@ -248,7 +248,7 @@ let routes: Routes = [
           {
             path: 'address/:id',
             children: [],
-            component: AddressComponent
+            component: AddressComponent,
           },
           {
             path: 'api',
@@ -258,22 +258,22 @@ let routes: Routes = [
       },
       {
         path: 'tv',
-        component: TelevisionComponent
+        component: TelevisionComponent,
       },
       {
         path: 'status',
-        component: StatusViewComponent
+        component: StatusViewComponent,
       },
       {
         path: '**',
-        redirectTo: ''
+        redirectTo: '',
       },
-    ]
+    ],
   },
   {
     path: 'bisq',
     component: MasterPageComponent,
-    loadChildren: () => import('./bisq/bisq.module').then(m => m.BisqModule)
+    loadChildren: () => import('./bisq/bisq.module').then(m => m.BisqModule),
   },
   {
     path: 'tv',
@@ -281,11 +281,11 @@ let routes: Routes = [
   },
   {
     path: 'status',
-    component: StatusViewComponent
+    component: StatusViewComponent,
   },
   {
     path: '**',
-    redirectTo: ''
+    redirectTo: '',
   },
 ];
 
@@ -294,19 +294,23 @@ const browserWindow = window || {};
 const browserWindowEnv = browserWindow.__env || {};
 
 if (browserWindowEnv && browserWindowEnv.OFFICIAL_BISQ_MARKETS) {
-  routes = [{
-    path: '',
-    component: BisqMasterPageComponent,
-    loadChildren: () => import('./bisq/bisq.module').then(m => m.BisqModule)
-  }];
+  routes = [
+    {
+      path: '',
+      component: BisqMasterPageComponent,
+      loadChildren: () => import('./bisq/bisq.module').then(m => m.BisqModule),
+    },
+  ];
 }
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {
-    initialNavigation: 'enabled',
-    scrollPositionRestoration: 'enabled',
-    anchorScrolling: 'enabled'
-})],
-  exports: [RouterModule]
+  imports: [
+    RouterModule.forRoot(routes, {
+      initialNavigation: 'enabled',
+      scrollPositionRestoration: 'enabled',
+      anchorScrolling: 'enabled',
+    }),
+  ],
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

@@ -12,7 +12,7 @@ import { SeoService } from '../services/seo.service';
   selector: 'app-assets',
   templateUrl: './assets.component.html',
   styleUrls: ['./assets.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssetsComponent implements OnInit {
   nativeAssetId = environment.nativeAssetId;
@@ -33,22 +33,18 @@ export class AssetsComponent implements OnInit {
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private seoService: SeoService,
-  ) { }
+    private seoService: SeoService
+  ) {}
 
   ngOnInit() {
     this.seoService.setTitle($localize`:@@ee8f8008bae6ce3a49840c4e1d39b4af23d4c263:Assets`);
     this.itemsPerPage = Math.max(Math.round(this.contentSpace / this.fiveItemsPxSize) * 5, 10);
 
     this.searchForm = this.formBuilder.group({
-      searchText: [{ value: '', disabled: true }, Validators.required]
+      searchText: [{ value: '', disabled: true }, Validators.required],
     });
 
-    this.assets$ = combineLatest([
-      this.assetsService.getAssetsJson$,
-      this.route.queryParams
-    ])
-    .pipe(
+    this.assets$ = combineLatest([this.assetsService.getAssetsJson$, this.route.queryParams]).pipe(
       take(1),
       mergeMap(([assets, qp]) => {
         this.assets = Object.values(assets);
@@ -67,47 +63,48 @@ export class AssetsComponent implements OnInit {
         }
 
         return merge(
-          this.searchForm.get('searchText').valueChanges
-            .pipe(
-              distinctUntilChanged(),
-              tap((text) => {
-                this.page = 1;
-                this.searchTextChanged(text);
-              })
-            ),
-          this.route.queryParams
-            .pipe(
-              filter((queryParams) => {
+          this.searchForm.get('searchText').valueChanges.pipe(
+            distinctUntilChanged(),
+            tap(text => {
+              this.page = 1;
+              this.searchTextChanged(text);
+            })
+          ),
+          this.route.queryParams.pipe(
+            filter(queryParams => {
+              const newPage = parseInt(queryParams.page, 10);
+              if (newPage !== this.page || queryParams.search !== this.searchForm.get('searchText').value) {
+                return true;
+              }
+              return false;
+            }),
+            map(queryParams => {
+              if (queryParams.page) {
                 const newPage = parseInt(queryParams.page, 10);
-                if (newPage !== this.page || queryParams.search !== this.searchForm.get('searchText').value) {
-                  return true;
-                }
-                return false;
-              }),
-              map((queryParams) => {
-                if (queryParams.page) {
-                  const newPage = parseInt(queryParams.page, 10);
-                  this.page = newPage;
-                } else {
-                  this.page = 1;
-                }
-                if (this.searchForm.get('searchText').value !== (queryParams.search || '')) {
-                  this.searchTextChanged(queryParams.search);
-                }
-                if (queryParams.search) {
-                  this.searchForm.get('searchText').setValue(queryParams.search, { emitEvent: false });
-                  return queryParams.search;
-                }
-                return '';
-              })
-            ),
+                this.page = newPage;
+              } else {
+                this.page = 1;
+              }
+              if (this.searchForm.get('searchText').value !== (queryParams.search || '')) {
+                this.searchTextChanged(queryParams.search);
+              }
+              if (queryParams.search) {
+                this.searchForm.get('searchText').setValue(queryParams.search, { emitEvent: false });
+                return queryParams.search;
+              }
+              return '';
+            })
+          )
         );
       }),
-      map((searchText) => {
+      map(searchText => {
         const start = (this.page - 1) * this.itemsPerPage;
-        if (searchText.length ) {
-          const filteredAssets = this.assetsCache.filter((asset) => asset.name.toLowerCase().indexOf(searchText.toLowerCase()) > -1
-            || asset.ticker.toLowerCase().indexOf(searchText.toLowerCase()) > -1);
+        if (searchText.length) {
+          const filteredAssets = this.assetsCache.filter(
+            asset =>
+              asset.name.toLowerCase().indexOf(searchText.toLowerCase()) > -1 ||
+              asset.ticker.toLowerCase().indexOf(searchText.toLowerCase()) > -1
+          );
           this.assets = filteredAssets;
           return filteredAssets.slice(start, this.itemsPerPage + start);
         } else {

@@ -13,7 +13,9 @@ interface MarkBlockState {
   txFeePerVSize?: number;
 }
 
-export interface ILoadingIndicators { [name: string]: number; }
+export interface ILoadingIndicators {
+  [name: string]: number;
+}
 
 export interface Env {
   TESTNET_ENABLED: boolean;
@@ -33,24 +35,24 @@ export interface Env {
 }
 
 const defaultEnv: Env = {
-  'TESTNET_ENABLED': false,
-  'SIGNET_ENABLED': false,
-  'LIQUID_ENABLED': false,
-  'OFFICIAL_BISQ_MARKETS': false,
-  'BISQ_ENABLED': false,
-  'BISQ_SEPARATE_BACKEND': false,
-  'ITEMS_PER_PAGE': 10,
-  'KEEP_BLOCKS_AMOUNT': 8,
-  'OFFICIAL_MEMPOOL_SPACE': false,
-  'NGINX_PROTOCOL': 'http',
-  'NGINX_HOSTNAME': '127.0.0.1',
-  'NGINX_PORT': '80',
-  'GIT_COMMIT_HASH': '',
-  'PACKAGE_JSON_VERSION': '',
+  TESTNET_ENABLED: false,
+  SIGNET_ENABLED: false,
+  LIQUID_ENABLED: false,
+  OFFICIAL_BISQ_MARKETS: false,
+  BISQ_ENABLED: false,
+  BISQ_SEPARATE_BACKEND: false,
+  ITEMS_PER_PAGE: 10,
+  KEEP_BLOCKS_AMOUNT: 8,
+  OFFICIAL_MEMPOOL_SPACE: false,
+  NGINX_PROTOCOL: 'http',
+  NGINX_HOSTNAME: '127.0.0.1',
+  NGINX_PORT: '80',
+  GIT_COMMIT_HASH: '',
+  PACKAGE_JSON_VERSION: '',
 };
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StateService {
   isBrowser: boolean = isPlatformBrowser(this.platformId);
@@ -83,11 +85,8 @@ export class StateService {
   markBlock$ = new ReplaySubject<MarkBlockState>();
   keyNavigation$ = new Subject<KeyboardEvent>();
 
-  constructor(
-    @Inject(PLATFORM_ID) private platformId: any,
-    private router: Router,
-  ) {
-    this.router.events.subscribe((event) => {
+  constructor(@Inject(PLATFORM_ID) private platformId: any, private router: Router) {
+    this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
         this.setNetworkBasedonUrl(event.url);
       }
@@ -95,7 +94,10 @@ export class StateService {
 
     if (this.isBrowser) {
       this.setNetworkBasedonUrl(window.location.pathname);
-      this.isTabHidden$ = fromEvent(document, 'visibilitychange').pipe(map(() => this.isHidden()), shareReplay());
+      this.isTabHidden$ = fromEvent(document, 'visibilitychange').pipe(
+        map(() => this.isHidden()),
+        shareReplay()
+      );
     } else {
       this.setNetworkBasedonUrl('/');
       this.isTabHidden$ = new BehaviorSubject(false);
@@ -144,11 +146,13 @@ export class StateService {
     }
   }
 
-  getHiddenProp(){
+  getHiddenProp() {
     const prefixes = ['webkit', 'moz', 'ms', 'o'];
-    if ('hidden' in document) { return 'hidden'; }
+    if ('hidden' in document) {
+      return 'hidden';
+    }
     for (const prefix of prefixes) {
-      if ((prefix + 'Hidden') in document) {
+      if (prefix + 'Hidden' in document) {
         return prefix + 'Hidden';
       }
     }
@@ -157,7 +161,9 @@ export class StateService {
 
   isHidden() {
     const prop = this.getHiddenProp();
-    if (!prop) { return false; }
+    if (!prop) {
+      return false;
+    }
     return document[prop];
   }
 }

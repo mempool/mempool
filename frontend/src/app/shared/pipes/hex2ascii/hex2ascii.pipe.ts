@@ -1,10 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'hex2ascii'
+  name: 'hex2ascii',
 })
 export class Hex2asciiPipe implements PipeTransform {
-
   transform(hex: string): string {
     const opPush = hex.split(' ').filter((_, i, a) => i > 0 && /^OP_PUSH/.test(a[i - 1]));
 
@@ -21,5 +20,4 @@ export class Hex2asciiPipe implements PipeTransform {
     }
     return new TextDecoder('utf8').decode(Uint8Array.from(bytes));
   }
-
 }

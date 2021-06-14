@@ -3,27 +3,23 @@ import { Title, Meta } from '@angular/platform-browser';
 import { StateService } from './state.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SeoService {
   network = '';
 
-  constructor(
-    private titleService: Title,
-    private metaService: Meta,
-    private stateService: StateService,
-  ) {
-    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+  constructor(private titleService: Title, private metaService: Meta, private stateService: StateService) {
+    this.stateService.networkChanged$.subscribe(network => (this.network = network));
   }
 
   setTitle(newTitle: string): void {
     this.titleService.setTitle(newTitle + ' - ' + this.getTitle());
-    this.metaService.updateTag({ property: 'og:title', content: newTitle});
+    this.metaService.updateTag({ property: 'og:title', content: newTitle });
   }
 
   resetTitle(): void {
     this.titleService.setTitle(this.getTitle());
-    this.metaService.updateTag({ property: 'og:title', content: this.getTitle()});
+    this.metaService.updateTag({ property: 'og:title', content: this.getTitle() });
   }
 
   getTitle(): string {

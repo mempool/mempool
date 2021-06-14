@@ -16,7 +16,7 @@ import { moveDec } from 'src/app/bitcoin.utils';
 @Component({
   selector: 'app-asset',
   templateUrl: './asset.component.html',
-  styleUrls: ['./asset.component.scss']
+  styleUrls: ['./asset.component.scss'],
 })
 export class AssetComponent implements OnInit, OnDestroy {
   network = '';
@@ -51,12 +51,12 @@ export class AssetComponent implements OnInit, OnDestroy {
     private audioService: AudioService,
     private apiService: ApiService,
     private seoService: SeoService,
-    private assetsService: AssetsService,
-  ) { }
+    private assetsService: AssetsService
+  ) {}
 
   ngOnInit() {
     this.websocketService.want(['blocks', 'mempool-blocks']);
-    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.stateService.networkChanged$.subscribe(network => (this.network = network));
 
     this.mainSubscription = this.route.paramMap
       .pipe(
@@ -70,27 +70,28 @@ export class AssetComponent implements OnInit, OnDestroy {
           this.transactions = null;
           document.body.scrollTo(0, 0);
           this.assetString = params.get('id') || '';
-          this.seoService.setTitle($localize`:@@asset.component.asset-browser-title:Asset: ${this.assetString}:INTERPOLATION:`);
+          this.seoService.setTitle(
+            $localize`:@@asset.component.asset-browser-title:Asset: ${this.assetString}:INTERPOLATION:`
+          );
 
           return merge(
             of(true),
-            this.stateService.connectionState$
-              .pipe(filter((state) => state === 2 && this.transactions && this.transactions.length > 0))
-          )
-          .pipe(
+            this.stateService.connectionState$.pipe(
+              filter(state => state === 2 && this.transactions && this.transactions.length > 0)
+            )
+          ).pipe(
             switchMap(() => {
-              return combineLatest([this.electrsApiService.getAsset$(this.assetString)
-                .pipe(
-                  catchError((err) => {
+              return combineLatest([
+                this.electrsApiService.getAsset$(this.assetString).pipe(
+                  catchError(err => {
                     this.isLoadingAsset = false;
                     this.error = err;
                     console.log(err);
                     return of(null);
                   })
-                ), this.assetsService.getAssetsMinimalJson$])
-              .pipe(
-                take(1)
-              );
+                ),
+                this.assetsService.getAssetsMinimalJson$,
+              ]).pipe(take(1));
             })
           );
         })
@@ -102,7 +103,8 @@ export class AssetComponent implements OnInit, OnDestroy {
           if (!this.assetContract) {
             this.assetContract = [null, '?', 'Unknown', 0];
           }
-          this.blindedIssuance = this.asset.chain_stats.has_blinded_issuances || this.asset.mempool_stats.has_blinded_issuances;
+          this.blindedIssuance =
+            this.asset.chain_stats.has_blinded_issuances || this.asset.mempool_stats.has_blinded_issuances;
           this.isNativeAsset = asset.asset_id === this.nativeAssetId;
           this.updateChainStats();
           this.websocketService.startTrackAsset(asset.asset_id);
@@ -110,11 +112,11 @@ export class AssetComponent implements OnInit, OnDestroy {
           this.isLoadingTransactions = true;
           return this.electrsApiService.getAssetTransactions$(asset.asset_id);
         }),
-        switchMap((transactions) => {
+        switchMap(transactions => {
           this.tempTransactions = transactions;
           if (transactions.length) {
             this.lastTransactionTxId = transactions[transactions.length - 1].txid;
-            this.loadedConfirmedTxCount += transactions.filter((tx) => tx.status.confirmed).length;
+            this.loadedConfirmedTxCount += transactions.filter(tx => tx.status.confirmed).length;
           }
 
           const fetchTxs: string[] = [];
@@ -131,55 +133,60 @@ export class AssetComponent implements OnInit, OnDestroy {
           return this.apiService.getTransactionTimes$(fetchTxs);
         })
       )
-      .subscribe((times: number[]) => {
-        times.forEach((time, index) => {
-          this.tempTransactions[this.timeTxIndexes[index]].firstSeen = time;
-        });
-        this.tempTransactions.sort((a, b) => {
-          return b.status.block_time - a.status.block_time || b.firstSeen - a.firstSeen;
-        });
+      .subscribe(
+        (times: number[]) => {
+          times.forEach((time, index) => {
+            this.tempTransactions[this.timeTxIndexes[index]].firstSeen = time;
+          });
+          this.tempTransactions.sort((a, b) => {
+            return b.status.block_time - a.status.block_time || b.firstSeen - a.firstSeen;
+          });
 
-        this.transactions = this.tempTransactions;
-        this.isLoadingTransactions = false;
-      },
-      (error) => {
-        console.log(error);
-        this.error = error;
-        this.isLoadingAsset = false;
-      });
-
-    this.stateService.mempoolTransactions$
-      .subscribe((transaction) => {
-        if (this.transactions.some((t) => t.txid === transaction.txid)) {
-          return;
+          this.transactions = this.tempTransactions;
+          this.isLoadingTransactions = false;
+        },
+        error => {
+          console.log(error);
+          this.error = error;
+          this.isLoadingAsset = false;
         }
+      );
 
-        this.transactions.unshift(transaction);
+    this.stateService.mempoolTransactions$.subscribe(transaction => {
+      if (this.transactions.some(t => t.txid === transaction.txid)) {
+        return;
+      }
+
+      this.transactions.unshift(transaction);
+      this.transactions = this.transactions.slice();
+      this.txCount++;
+
+      this.audioService.playSound('chime');
+    });
+
+    this.stateService.blockTransactions$.subscribe(transaction => {
+      const tx = this.transactions.find(t => t.txid === transaction.txid);
+      if (tx) {
+        tx.status = transaction.status;
         this.transactions = this.transactions.slice();
-        this.txCount++;
-
-        this.audioService.playSound('chime');
-      });
-
-    this.stateService.blockTransactions$
-      .subscribe((transaction) => {
-        const tx = this.transactions.find((t) => t.txid === transaction.txid);
-        if (tx) {
-          tx.status = transaction.status;
-          this.transactions = this.transactions.slice();
-          this.audioService.playSound('magic');
-        }
-        this.totalConfirmedTxCount++;
-        this.loadedConfirmedTxCount++;
-      });
+        this.audioService.playSound('magic');
+      }
+      this.totalConfirmedTxCount++;
+      this.loadedConfirmedTxCount++;
+    });
   }
 
   loadMore() {
-    if (this.isLoadingTransactions || !this.totalConfirmedTxCount || this.loadedConfirmedTxCount >= this.totalConfirmedTxCount) {
+    if (
+      this.isLoadingTransactions ||
+      !this.totalConfirmedTxCount ||
+      this.loadedConfirmedTxCount >= this.totalConfirmedTxCount
+    ) {
       return;
     }
     this.isLoadingTransactions = true;
-    this.electrsApiService.getAssetTransactionsFromHash$(this.asset.asset_id, this.lastTransactionTxId)
+    this.electrsApiService
+      .getAssetTransactionsFromHash$(this.asset.asset_id, this.lastTransactionTxId)
       .subscribe((transactions: Transaction[]) => {
         this.lastTransactionTxId = transactions[transactions.length - 1].txid;
         this.loadedConfirmedTxCount += transactions.length;

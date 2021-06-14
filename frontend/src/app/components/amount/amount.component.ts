@@ -17,14 +17,11 @@ export class AmountComponent implements OnInit {
   @Input() digitsInfo = '1.8-8';
   @Input() noFiat = false;
 
-  constructor(
-    private stateService: StateService,
-  ) { }
+  constructor(private stateService: StateService) {}
 
   ngOnInit() {
     this.viewFiat$ = this.stateService.viewFiat$.asObservable();
     this.conversions$ = this.stateService.conversions$.asObservable();
-    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.stateService.networkChanged$.subscribe(network => (this.network = network));
   }
-
 }

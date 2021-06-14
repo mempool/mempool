@@ -13,7 +13,7 @@ export class BisqIconComponent implements OnChanges {
   iconProp: [IconPrefix, IconName] = ['fas', 'leaf'];
   color: string;
 
-  constructor() { }
+  constructor() {}
 
   ngOnChanges() {
     switch (this.txType) {

@@ -3,7 +3,6 @@
 export type CollectionPredicate = (item?: any, index?: number, collection?: any[]) => boolean;
 
 export function isUndefined(value: any): value is undefined {
-
   return typeof value === 'undefined';
 }
 
@@ -24,14 +23,13 @@ export function isPositive(value: number): boolean {
   return value >= 0;
 }
 
-
 export function isInteger(value: number): boolean {
   // No rest, is an integer
-  return (value % 1) === 0;
+  return value % 1 === 0;
 }
 
-export function isNil(value: any): value is (null | undefined) {
-  return value === null || typeof (value) === 'undefined';
+export function isNil(value: any): value is null | undefined {
+  return value === null || typeof value === 'undefined';
 }
 
 export function isString(value: any): value is string {
@@ -83,7 +81,7 @@ export function leftPad(str: string, len: number = 0, ch: any = ' ') {
   ch = toString(ch);
   let i = -1;
   const length = len - str.length;
-  while (++i < length && (str.length + ch.length) <= len) {
+  while (++i < length && str.length + ch.length <= len) {
     str = ch + str;
   }
   return str;
@@ -94,7 +92,7 @@ export function rightPad(str: string, len: number = 0, ch: any = ' ') {
   ch = toString(ch);
   let i = -1;
   const length = len - str.length;
-  while (++i < length && (str.length + ch.length) <= len) {
+  while (++i < length && str.length + ch.length <= len) {
     str += ch;
   }
   return str;
@@ -112,7 +110,7 @@ export function pad(str: string, len: number = 0, ch: any = ' '): string {
 
   let left = true;
   while (++i < length) {
-    const l = (str.length + ch.length <= len) ? (str.length + ch.length) : (str.length + 1);
+    const l = str.length + ch.length <= len ? str.length + ch.length : str.length + 1;
     if (left) {
       str = leftPad(str, l, ch);
     } else {
@@ -124,25 +122,18 @@ export function pad(str: string, len: number = 0, ch: any = ' '): string {
 }
 
 export function flatten(input: any[], index: number = 0): any[] {
-
   if (index >= input.length) {
     return input;
   }
 
   if (isArray(input[index])) {
-    return flatten(
-      input.slice(0, index).concat(input[index], input.slice(index + 1)),
-      index
-    );
+    return flatten(input.slice(0, index).concat(input[index], input.slice(index + 1)), index);
   }
 
   return flatten(input, index + 1);
-
 }
 
-
 export function getProperty(value: { [key: string]: any }, key: string): any {
-
   if (isNil(value) || !isObject(value)) {
     return undefined;
   }
@@ -162,13 +153,11 @@ export function getProperty(value: { [key: string]: any }, key: string): any {
 }
 
 export function sum(input: Array<number>, initial = 0): number {
-
   return input.reduce((previous: number, current: number) => previous + current, initial);
 }
 
 // http://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array-in-javascript
 export function shuffle(input: any): any {
-
   if (!isArray(input)) {
     return input;
   }
@@ -186,7 +175,6 @@ export function shuffle(input: any): any {
 }
 
 export function deepIndexOf(collection: any[], value: any) {
-
   let index = -1;
   const length = collection.length;
 
@@ -199,9 +187,7 @@ export function deepIndexOf(collection: any[], value: any) {
   return -1;
 }
 
-
 export function deepEqual(a: any, b: any) {
-
   if (a === b) {
     return true;
   }
@@ -230,17 +216,14 @@ export function deepEqual(a: any, b: any) {
 }
 
 export function isDeepObject(object: any) {
-
   return object.__isDeepObject__;
 }
 
 export function wrapDeep(object: any) {
-
   return new DeepWrapper(object);
 }
 
 export function unwrapDeep(object: any) {
-
   if (isDeepObject(object)) {
     return object.data;
   }
@@ -249,27 +232,24 @@ export function unwrapDeep(object: any) {
 }
 
 export class DeepWrapper {
-
   public __isDeepObject__ = true;
 
-  constructor(public data: any) { }
+  constructor(public data: any) {}
 }
 
 export function count(input: any): any {
-
   if (!isArray(input) && !isObject(input) && !isString(input)) {
     return input;
   }
 
   if (isObject(input)) {
-    return Object.keys(input).map((value) => input[value]).length;
+    return Object.keys(input).map(value => input[value]).length;
   }
 
   return input.length;
 }
 
 export function empty(input: any): any {
-
   if (!isArray(input)) {
     return input;
   }
@@ -278,7 +258,6 @@ export function empty(input: any): any {
 }
 
 export function every(input: any, predicate: CollectionPredicate) {
-
   if (!isArray(input) || !predicate) {
     return input;
   }
@@ -290,12 +269,10 @@ export function every(input: any, predicate: CollectionPredicate) {
     result = predicate(input[i], i, input);
   }
 
-
   return result;
 }
 
 export function takeUntil(input: any[], predicate: CollectionPredicate) {
-
   let i = -1;
   const result: any = [];
   while (++i < input.length && !predicate(input[i], i, input)) {
@@ -306,6 +283,8 @@ export function takeUntil(input: any[], predicate: CollectionPredicate) {
 }
 
 export function takeWhile(input: any[], predicate: CollectionPredicate) {
-  return takeUntil(input, (item: any, index: number | undefined, collection: any[] | undefined) =>
-    !predicate(item, index, collection));
+  return takeUntil(
+    input,
+    (item: any, index: number | undefined, collection: any[] | undefined) => !predicate(item, index, collection)
+  );
 }

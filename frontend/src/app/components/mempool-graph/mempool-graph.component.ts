@@ -28,8 +28,8 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     private vbytesPipe: VbytesPipe,
     private stateService: StateService,
     @Inject(LOCALE_ID) private locale: string,
-    private storageService: StorageService,
-  ) { }
+    private storageService: StorageService
+  ) {}
 
   ngOnInit(): void {
     let labelHops = !this.showLegend ? 48 : 24;
@@ -74,27 +74,26 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         labelInterpolationFnc: (value: number): any => this.vbytesPipe.transform(value, 2, 'vB', 'MvB', true),
         offset: this.showLegend ? 160 : 60,
       },
-      plugins: this.inverted ? [Chartist.plugins.ctTargetLine({ value: 1000000 })] : []
+      plugins: this.inverted ? [Chartist.plugins.ctTargetLine({ value: 1000000 })] : [],
     };
 
     if (this.showLegend) {
-      const legendNames: string[] = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
-            250, 300, 350, 400].map((sat, i, arr) => {
-              if (sat === 400) {
-                return '350+';
-              }
-              if (i === 0) {
-                return '0 - 1';
-              }
-              return arr[i - 1] + ' - ' + sat;
-            });
+      const legendNames: string[] = [
+        1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250, 300, 350, 400,
+      ].map((sat, i, arr) => {
+        if (sat === 400) {
+          return '350+';
+        }
+        if (i === 0) {
+          return '0 - 1';
+        }
+        return arr[i - 1] + ' - ' + sat;
+      });
       // Only Liquid has lower than 1 sat/vb transactions
       if (this.stateService.network !== 'liquid') {
         legendNames.shift();
       }
-      this.mempoolVsizeFeesOptions.plugins.push(
-        Chartist.plugins.legend({ legendNames: legendNames })
-      );
+      this.mempoolVsizeFeesOptions.plugins.push(Chartist.plugins.legend({ legendNames: legendNames }));
     }
   }
 
@@ -116,7 +115,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
     return {
       labels: labels,
-      series: finalArrayVbyte
+      series: finalArrayVbyte,
     };
   }
 
@@ -126,7 +125,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
     for (let index = 37; index > -1; index--) {
       feesArray = [];
-      mempoolStats.forEach((stats) => {
+      mempoolStats.forEach(stats => {
         const theFee = stats.vsizes[index].toString();
         if (theFee) {
           feesArray.push(parseInt(theFee, 10));
