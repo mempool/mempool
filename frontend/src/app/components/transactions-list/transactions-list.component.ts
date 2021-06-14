@@ -19,6 +19,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   displayDetails = false;
 
   @Input() transactions: Transaction[];
+  @Input() outputIndex: number;
   @Input() showConfirmations = false;
   @Input() transactionPage = false;
 
