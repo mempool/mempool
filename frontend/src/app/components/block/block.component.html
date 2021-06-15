@@ -96,14 +96,14 @@
                   <td i18n="block.merkle-root">Merkle root</td>
                   <td><p class="break-all">{{ block.merkle_root }}</p></td>
                 </tr>
-                <tr>
+                <tr *ngIf="network !== 'liquid'">
                   <td i18n="block.bits">Bits</td>
                   <td>{{ block.bits | decimal2hex }}</td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <div class="col-sm">
+          <div class="col-sm" *ngIf="network !== 'liquid'">
             <table class="table table-borderless table-striped">
               <tbody>
                 <tr>
