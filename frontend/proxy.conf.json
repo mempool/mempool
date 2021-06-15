@@ -88,5 +88,20 @@
     "pathRewrite": {
       "^/bisq/api": "/api/v1/ws"
     }
+  },
+  "/resources/assets.minimal.json": {
+    "target": "https://mempool.space",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/resources/assets.json": {
+    "target": "https://mempool.space",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/resources/pools.json": {
+    "target": "https://mempool.space",
+    "secure": false,
+    "changeOrigin": true
   }
 }

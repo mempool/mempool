@@ -83,5 +83,20 @@
       "^/liquid/api/": "/liquid/api/"
     },
     "timeout": 3600000
+  },
+  "/resources/assets.minimal.json": {
+    "target": "https://mempool.space",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/resources/assets.json": {
+    "target": "https://mempool.space",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/resources/pools.json": {
+    "target": "https://mempool.space",
+    "secure": false,
+    "changeOrigin": true
   }
 }
