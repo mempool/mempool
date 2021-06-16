@@ -1,4 +1,5 @@
 var fs = require('fs');
+const { execSync } = require('child_process');
 
 const CONFIG_FILE_NAME = 'mempool-frontend-config.json';
 const GENERATED_CONFIG_FILE_NAME = 'generated-config.js';
@@ -32,7 +33,8 @@ for (setting in configContent) {
 }
 
 try {
-  gitCommitHash = fs.readFileSync('../.git/refs/heads/master').toString().trim();
+  const command = 'git rev-parse --short HEAD';
+  gitCommitHash = execSync(command).toString('utf8').replace(/[\n\r\s]+$/, '');
 } catch (e) {
   console.log('Could not load git commit info: ' + e.message || e);
 }
