@@ -1,4 +1,5 @@
 var fs = require('fs');
+const { execSync } = require('child_process');
 
 const CONFIG_FILE_NAME = 'mempool-frontend-config.json';
 const GENERATED_CONFIG_FILE_NAME = 'generated-config.js';
@@ -32,12 +33,13 @@ for (setting in configContent) {
 }
 
 try {
-  gitCommitHash = fs.readFileSync('../.git/refs/heads/master').toString().trim();
+  const command = 'git rev-parse --short HEAD';
+  gitCommitHash = execSync(command).toString('utf8').replace(/[\n\r\s]+$/, '');
 } catch (e) {
   console.log('Could not load git commit info: ' + e.message || e);
 }
 
-const code = `(function (window) {
+const newConfig = `(function (window) {
   window.__env = window.__env || {};${settings.reduce((str, obj) => `${str}
     window.__env.${obj.key} = ${ typeof obj.value === 'string' ? `'${obj.value}'` : obj.value };`, '')}
     window.__env.GIT_COMMIT_HASH = '${gitCommitHash}';
@@ -45,9 +47,17 @@ const code = `(function (window) {
   }(global || this));`;
 
 try {
-  fs.writeFileSync(GENERATED_CONFIG_FILE_NAME, code, 'utf8');
+  const currentConfig = fs.readFileSync(GENERATED_CONFIG_FILE_NAME).toString().trim();
+  if (currentConfig === newConfig) {
+    console.log("Configuration not changed, skipping generation");
+  } else {
+    try {
+      fs.writeFileSync(GENERATED_CONFIG_FILE_NAME, newConfig, 'utf8');
+      console.log('Config file generated');
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
 } catch (e) {
   throw new Error(e);
 }
-
-console.log('Config file generated');
