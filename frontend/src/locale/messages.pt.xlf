@@ -816,7 +816,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">198,202</context>
+          <context context-type="linenumber">202,206</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
@@ -1070,7 +1070,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">27</context>
+          <context context-type="linenumber">29</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -1092,7 +1092,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">28</context>
+          <context context-type="linenumber">30</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -1110,7 +1110,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">13</context>
+          <context context-type="linenumber">14</context>
         </context-group>
         <note from="description" priority="1">shared.transaction</note>
       </trans-unit>
@@ -1375,21 +1375,19 @@
           <context context-type="linenumber">91</context>
         </context-group>
       </trans-unit>
-      <trans-unit datatype="html" id="4b137ec8bf73a47063740b75c0c40d5fd3c48015">
-        <source>The Mempool Open Source Project</source>
-        <target>O projeto de código aberto Mempool</target>
+      <trans-unit datatype="html" id="61f524ff70dd68d5ca9e6722bde6020ed5b12bcf">
+        <source>The Mempool Open Source Project ™</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">11,12</context>
+          <context context-type="linenumber">12,13</context>
         </context-group>
         <note from="description" priority="1">about.about-the-project</note>
       </trans-unit>
-      <trans-unit datatype="html" id="35183d36272d152e9b838a42bafbe6526a55f7ee">
-        <source>An explorer and API developed and operated for the Bitcoin community, focusing on the emerging transaction fee market to help our transition into a multi-layer ecosystem, without ads, altcoins, or third-party trackers.</source>
-        <target>Um explorador e API desenvolvido e operado para a comunidade Bitcoin, com foco no mercado emergente de taxas de transação para ajudar em nossa transição para um ecossistema multicamadas, sem anúncios, altcoins ou rastreadores de terceiros.</target>
+      <trans-unit datatype="html" id="f447b21299afc5bc9dadade96dbc90114bea837a">
+        <source>Building a mempool and blockchain explorer for the Bitcoin community, focusing on the transaction fee market and multi-layer ecosystem, without any advertising, altcoins, or third-party trackers.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">12,16</context>
+          <context context-type="linenumber">13,17</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="a24b1c6a9c4334ba204e4cec2dd9f32ea33d043f">
@@ -1397,7 +1395,7 @@
         <target>Empresas Patrocinadoras 🚀</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">31,33</context>
+          <context context-type="linenumber">32,34</context>
         </context-group>
         <note from="description" priority="1">about.sponsors.enterprise.withRocket</note>
       </trans-unit>
@@ -1406,7 +1404,7 @@
         <target>Patrocinadores da comunidade ❤️</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">49,52</context>
+          <context context-type="linenumber">50,53</context>
         </context-group>
         <note from="description" priority="1">about.sponsors.withHeart</note>
       </trans-unit>
@@ -1415,15 +1413,16 @@
         <target>Seja um patrocinador ❤️</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">61,62</context>
+          <context context-type="linenumber">62,63</context>
         </context-group>
         <note from="description" priority="1">about.become-a-sponsor</note>
       </trans-unit>
       <trans-unit datatype="html" id="1abb54fd13f529707c73db97625cd18c7c8cbb09">
         <source>Navigate to <x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/sponsor&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/>https://mempool.space/sponsor<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/> to sponsor</source>
+        <target>Navegue para <x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/sponsor&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/>https://mempool.space/sponsor<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/> para patrocinar</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">62</context>
+          <context context-type="linenumber">63</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/sponsor/sponsor.component.html</context>
@@ -1436,7 +1435,7 @@
         <target>Integrações da comunidade </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">66,69</context>
+          <context context-type="linenumber">67,70</context>
         </context-group>
         <note from="description" priority="1">about.integrations</note>
       </trans-unit>
@@ -1445,7 +1444,7 @@
         <target>Alianças da comunidade</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">133,135</context>
+          <context context-type="linenumber">134,136</context>
         </context-group>
         <note from="description" priority="1">about.alliances</note>
       </trans-unit>
@@ -1454,7 +1453,7 @@
         <target>Contribuidores do projeto</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">148,150</context>
+          <context context-type="linenumber">149,151</context>
         </context-group>
         <note from="description" priority="1">about.contributors</note>
       </trans-unit>
@@ -1463,7 +1462,7 @@
         <target>Mantenedores do projeto</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">162,164</context>
+          <context context-type="linenumber">163,165</context>
         </context-group>
         <note from="description" priority="1">about.maintainers</note>
       </trans-unit>
@@ -1592,6 +1591,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b151944861534c4a9e9623537dba0a95f60e4455">
         <source>Endpoint</source>
+        <target>Terminal</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">20,21</context>
@@ -1748,6 +1748,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="eec715de352a6b114713b30b640d319fa78207a0">
         <source>Description</source>
+        <target>Descrição</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">25,26</context>
@@ -1923,6 +1924,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="c9f5914dbba46a8dc4ab4e81b40b1582eea7c5e2">
         <source>Get transaction history for the specified address/scripthash, sorted with newest first. Returns up to 50 mempool transactions plus the first 25 confirmed transactions. You can request more confirmed transactions using <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:last_seen_txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (see below).</source>
+        <target>Obtenha o histórico de transações para o endereço / scripthash especificado, classificado com o mais recente primeiro. Retorna até 50 transações mempool mais as primeiras 25 transações confirmadas. Você pode solicitar mais transações confirmadas usando <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:last_seen_txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (veja abaixo).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">44,45</context>
@@ -2158,6 +2160,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="39f61f2d1434d921a1f80a2a2f0903f06e9fd4df">
         <source>Returns our currently suggested fees for new transactions.</source>
+        <target>Devolve as nossas taxas atuais sugeridas para novas transações.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">531,533</context>
@@ -2167,6 +2170,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b95b496df2b0f016831d0984f3798a2e22b74103">
         <source>Returns current mempool as projected blocks.</source>
+        <target>Devolve o mempool atual como blocos projetados.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">547,549</context>
@@ -2176,6 +2180,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4ebf8d4a2433cca5a8a933ef8ccef1b01e45acef">
         <source>Returns the ancestors and the best descendant fees for a transaction.</source>
+        <target>Devolve os ancestrais e as melhores taxas descendentes para uma transação.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">563,565</context>
@@ -2205,6 +2210,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="23c346e87b137b1807bac13c27d19dc18f745f8f">
         <source>Get the full list of txids in the mempool as an array. The order of the txids is arbitrary and does not match bitcoind.</source>
+        <target>Obtenha a lista completa de IDs de transação no mempool como um array. A ordem dos IDs de transação é arbitrária e não corresponde ao bitcoind.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">604,607</context>
@@ -2339,23 +2345,16 @@
           <context context-type="linenumber">59,61</context>
         </context-group>
       </trans-unit>
-      <trans-unit datatype="html" id="d6b673097fb7e79231afc43857e376f69ab9f3e3">
-        <source>Install Package</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/api-docs/code-template.component.html</context>
-          <context context-type="linenumber">6,7</context>
-        </context-group>
-        <note from="description" priority="1">API Docs install lib</note>
-      </trans-unit>
       <trans-unit datatype="html" id="0a668c1c2a17e557a18fc06619998e002f50df1e">
         <source>Code Example</source>
+        <target>Exemplo de código</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/code-template.component.html</context>
-          <context context-type="linenumber">12</context>
+          <context context-type="linenumber">6</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/code-template.component.html</context>
-          <context context-type="linenumber">19</context>
+          <context context-type="linenumber">13</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/code-template.component.html</context>
@@ -2363,8 +2362,18 @@
         </context-group>
         <note from="description" priority="1">API Docs code example</note>
       </trans-unit>
+      <trans-unit datatype="html" id="d6b673097fb7e79231afc43857e376f69ab9f3e3">
+        <source>Install Package</source>
+        <target>Instalar Pacote</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/api-docs/code-template.component.html</context>
+          <context context-type="linenumber">23,24</context>
+        </context-group>
+        <note from="description" priority="1">API Docs install lib</note>
+      </trans-unit>
       <trans-unit datatype="html" id="4edb71f23e3ff228dbabd05e8ffc364fae8ae467">
         <source>Response</source>
+        <target>Resposta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/code-template.component.html</context>
           <context context-type="linenumber">36,37</context>
@@ -2465,9 +2474,8 @@
         <note from="description" priority="1">Liquid Asset circulating amount</note>
         <note from="meaning" priority="1">asset.circulating-amount</note>
       </trans-unit>
-      <trans-unit datatype="html" id="f8c95f48130898dbd3b09638813b5f61c77ef7ee">
-        <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/></source>
-        <target><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> de <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/></target>
+      <trans-unit datatype="html" id="c3360a933cb312b395d276a2b865214cf832df58">
+        <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">76</context>
@@ -3135,6 +3143,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="dfd99c62b5b308fc5b1ad7adbbf9d526d2b31516">
         <source>Sponsor</source>
+        <target>Patrocinador</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/sponsor/sponsor.component.html</context>
           <context context-type="linenumber">3</context>
@@ -3219,6 +3228,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d10f6e967f3f654240a4f4ad5098d8e6e52a4896">
         <source>TV only</source>
+        <target>Apenas TV</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/television/television.component.html</context>
           <context context-type="linenumber">7</context>
@@ -3392,7 +3402,7 @@
         <target>Sem confirmar</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">32</context>
+          <context context-type="linenumber">34</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
