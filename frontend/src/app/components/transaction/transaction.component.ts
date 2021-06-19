@@ -185,7 +185,9 @@ export class TransactionComponent implements OnInit, OnDestroy {
             }
           }
 
+    if (this.network === 'liquid') {
           this.tryUnblindTx(this.tx);
+    }
         },
         (error) => {
           this.error = error;
