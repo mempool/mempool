@@ -1241,6 +1241,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4096113720451832029">
         <source>Blind vote</source>
+        <target>التصويت المخفي</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">31</context>
@@ -1248,6 +1249,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8029165479004970466">
         <source>Compensation request</source>
+        <target>طلب تعويض</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">32</context>
@@ -1303,6 +1305,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3275831985256202873">
         <source>Reimbursement request</source>
+        <target>طلب سداد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">39</context>
@@ -1372,8 +1375,9 @@
           <context context-type="linenumber">91</context>
         </context-group>
       </trans-unit>
-      <trans-unit datatype="html" id="61f524ff70dd68d5ca9e6722bde6020ed5b12bcf">
-        <source>The Mempool Open Source Project ™</source>
+      <trans-unit datatype="html" id="4b137ec8bf73a47063740b75c0c40d5fd3c48015">
+        <source>The Mempool Open Source Project</source>
+        <target>مشروع Mempool مفتوح المصدر</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">12,13</context>
@@ -1382,6 +1386,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f447b21299afc5bc9dadade96dbc90114bea837a">
         <source>Building a mempool and blockchain explorer for the Bitcoin community, focusing on the transaction fee market and multi-layer ecosystem, without any advertising, altcoins, or third-party trackers.</source>
+        <target>بناء مستكشف mempool و سلسلة الكتل لمجتمع البتكوين ، مع التركيز على  رسوم المعاملات والنظام البيئي متعدد الطبقات ، من دون أي إعلانات ، أو عملات رقمية بديلة ، أو متتبعات تابعة لجهات خارجية.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">13,17</context>
@@ -1913,6 +1918,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e12cd52eaa77b446ba97436c145b59741151adf3">
         <source>Returns details about an address. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>chain_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>. <x equiv-text="{{ '{' }}" id="INTERPOLATION"/>chain,mempool<x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/>_stats each contain an object with <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
+        <target>إعادة تفاصيل حول العنوان. الحقول المتاحة: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>العنوان <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>، <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> احصائيات السلسله <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>، و <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>احصائيات mempool <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>. <x equiv-text="{{ '{' }}" id="INTERPOLATION"/>سلسلة، mempool <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/> كل إحصائيات تحتوي على <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> عدد الحوالات <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>، <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>عدد مخرجات الحواله المحصوره <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> ، <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> مجموع مخرجات الحواله<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>، <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> مخرجات الحواله المصروفه المسجله <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>، و <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> مخرجات الحواله المصروفه<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.  </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">26,27</context>
@@ -1920,6 +1926,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="c9f5914dbba46a8dc4ab4e81b40b1582eea7c5e2">
         <source>Get transaction history for the specified address/scripthash, sorted with newest first. Returns up to 50 mempool transactions plus the first 25 confirmed transactions. You can request more confirmed transactions using <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:last_seen_txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (see below).</source>
+        <target>احصل على سجل المعاملات للعنوان المحدد / scripthash ، مرتبة بالأحدث أولاً. إرجاع ما يصل إلى 50 معاملة من معاملات mempool بالإضافة إلى أول 25 معاملة مؤكدة. يمكنك طلب المزيد من المعاملات المؤكدة باستخدام <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> اخر ظهور للحواله عن طريق عنوان الحواله <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>( شاهد بالاسفل )</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">44,45</context>
@@ -1927,6 +1934,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5676910aa3ffb568079a7499b366744fe3fd87ea">
         <source>Get confirmed transaction history for the specified address/scripthash, sorted with newest first. Returns 25 transactions per page. More can be requested by specifying the last txid seen by the previous query.</source>
+        <target>احصل على محفوظات المعاملات المؤكدة للعنوان المحدد / scripthash ، مرتبة بالأحدث أولاً. إرجاع 25 معاملة لكل صفحة. يمكن طلب المزيد من خلال تحديد ملف رقم هوية التحويله الأخير الذي تمت رؤيته بواسطة الاستعلام السابق.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">61,63</context>
