@@ -2847,7 +2847,8 @@
       </trans-unit>
       <trans-unit datatype="html" id="f2385584215e9b925b6347de866110d5e07d3a35">
         <source>Low priority</source>
-        <target>Низкий приоритет</target>
+        <target>Низкий 
+приоритет</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">4,6</context>
@@ -2860,7 +2861,8 @@
       </trans-unit>
       <trans-unit datatype="html" id="0ba9d74c1d31a9d98829892f40334a22624564b8">
         <source>Medium priority</source>
-        <target>Средний приоритет</target>
+        <target>Средний 
+приоритет</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">10,12</context>
@@ -2873,7 +2875,8 @@
       </trans-unit>
       <trans-unit datatype="html" id="f80dd1511a91af4e592a538f95fa29d24907176f">
         <source>High priority</source>
-        <target>Высокий приоритет</target>
+        <target>Высокий 
+приоритет</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">16,18</context>
@@ -2959,7 +2962,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="588930712875bfa0834655249093d99eaa3d162e">
         <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> blocks</source>
-        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> блоки (ов)</target>
+        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> блоков</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">23,24</context>
@@ -3075,7 +3078,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="02c35681bc187cde4d0d3a98a3a1f2035dfe7398">
         <source>In ~<x equiv-text="{{ i }}" id="INTERPOLATION"/> minutes</source>
-        <target>В течение ~<x equiv-text="{{ i }}" id="INTERPOLATION"/> минут</target>
+        <target>Через ~<x equiv-text="{{ i }}" id="INTERPOLATION"/> минут</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
           <context context-type="linenumber">41,43</context>
@@ -3089,7 +3092,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e8b52d333f9395e1ae9c541d45dfb8c1cd017424">
         <source>In ~<x equiv-text="{{ i }}" id="INTERPOLATION"/> minute</source>
-        <target>Через ~ <x equiv-text="{{ i }}" id="INTERPOLATION"/> минут</target>
+        <target>Через ~ <x equiv-text="{{ i }}" id="INTERPOLATION"/> минуту</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
           <context context-type="linenumber">43,44</context>
