@@ -16,7 +16,6 @@ import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { CpfpInfo } from 'src/app/interfaces/node-api.interface';
-import * as libwally from './libwally';
 
 @Component({
   selector: 'app-transaction',
@@ -97,22 +96,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
         switchMap(async (params: ParamMap) => {
           this.txId = params.get('id') || '';
 
-          try {
-            if (this.network === 'liquid') {
-              const windowLocationHash = window.location.hash.substring('#blinded='.length);
-              if (windowLocationHash) {
-                await libwally.load();
-
-                const blinders = this.parseBlinders(windowLocationHash);
-                if (blinders) {
-                  this.commitments = this.makeCommitmentMap(blinders);
-                  this.tryUnblindTx(this.tx);
-                }
-              }
-            }
-          } catch (error) {
-            this.errorUnblinded = error;
-          }
+          await this.checkUnblindedTx();
           this.seoService.setTitle(
             $localize`:@@bisq.transaction.browser-title:Transaction: ${this.txId}:INTERPOLATION:`
           );
@@ -185,23 +169,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
               this.fetchCpfp$.next(this.tx.txid);
             }
           }
-
-          try {
-            if (this.network === 'liquid') {
-              const windowLocationHash = window.location.hash.substring('#blinded='.length);
-              if (windowLocationHash) {
-                await libwally.load();
-
-                const blinders = this.parseBlinders(windowLocationHash);
-                if (blinders) {
-                  this.commitments = this.makeCommitmentMap(blinders);
-                  this.tryUnblindTx(this.tx);
-                }
-              }
-            }
-          } catch (error) {
-            this.errorUnblinded = error;
-          }
+          await this.checkUnblindedTx();
         },
         (error) => {
           this.error = error;
@@ -328,7 +296,9 @@ export class TransactionComponent implements OnInit, OnDestroy {
     return str;
   }
 
-  makeCommitmentMap(blinders: any) {
+  async makeCommitmentMap(blinders: any) {
+    const libwally = await import('./libwally.js');
+    await libwally.load();
     const commitments = new Map();
     blinders.forEach(b => {
       const { asset_commitment, value_commitment } =
@@ -339,7 +309,6 @@ export class TransactionComponent implements OnInit, OnDestroy {
         value: b.value,
       });
     });
-
     return commitments;
   }
 
@@ -416,6 +385,24 @@ export class TransactionComponent implements OnInit, OnDestroy {
         unknownIns[0].prevout.asset = blindedAsset;
         unknownIns[0].prevout.value = blindedValue * -1;
       }
+    }
+  }
+
+  async checkUnblindedTx() {
+    try {
+      if (this.network === 'liquid') {
+        const windowLocationHash = window.location.hash.substring('#blinded='.length);
+        if (windowLocationHash.length > 0) {
+
+          const blinders = this.parseBlinders(windowLocationHash);
+          if (blinders) {
+            this.commitments = await this.makeCommitmentMap(blinders);
+            this.tryUnblindTx(this.tx);
+          }
+        }
+      }
+    } catch (error) {
+      this.errorUnblinded = error;
     }
   }
 }
