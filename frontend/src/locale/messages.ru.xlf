@@ -147,7 +147,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.HH">
         <source>HH</source>
-        <target>ЧЧ</target>
+        <target>ч.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -163,7 +163,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.MM">
         <source>MM</source>
-        <target>ММ</target>
+        <target>м.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -211,7 +211,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.SS">
         <source>SS</source>
-        <target>СС</target>
+        <target>с.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -227,7 +227,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.increment-seconds">
         <source>Increment seconds</source>
-        <target>Увеличить секунды</target>
+        <target>Добавить секунды</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -235,7 +235,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.decrement-seconds">
         <source>Decrement seconds</source>
-        <target>Уменьшить секунды</target>
+        <target>Убавить секунды</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -294,7 +294,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="cff1428d10d59d14e45edec3c735a27b5482db59">
         <source>Name</source>
-        <target>Имя</target>
+        <target>Название</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">19,21</context>
@@ -598,7 +598,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a1daf43d26259bffdd5eb2d405c61583540b113b">
         <source>Confirmed</source>
-        <target>Подтвержден (о) (ы) (ые)</target>
+        <target>Подтверждено</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
           <context context-type="linenumber">13,14</context>
@@ -875,7 +875,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1cde02174ca8cc2cc0b18172cd2ec598aa82dcc7">
         <source>Existing amount</source>
-        <target>Сумма существующих</target>
+        <target>Имеется</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">12</context>
@@ -888,7 +888,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3218e6768d0d5fbc69d4931819e21451c89ba8ed">
         <source>Minted amount</source>
-        <target>Сумма выпущенных</target>
+        <target>Выпущено</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">16</context>
@@ -901,7 +901,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="32377aae07f946d943f9361c8e518f714988c619">
         <source>Burnt amount</source>
-        <target>Сумма сожженных</target>
+        <target>Сожжено</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">20</context>
@@ -1265,7 +1265,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1805880753357861573">
         <source>Irregular</source>
-        <target>Нерегулярный</target>
+        <target>Нестрандартная</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">34</context>
@@ -1281,7 +1281,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="450749685636583691">
         <source>Pay trade fee</source>
-        <target>Оплатить комиссию за сделку</target>
+        <target>Оплата комиссии за сделку</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">36</context>
@@ -1313,7 +1313,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1226904538495857889">
         <source>Transfer BSQ</source>
-        <target>Передача BSQ</target>
+        <target>Перевод BSQ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">40</context>
@@ -1329,7 +1329,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8694527859973232423">
         <source>Vote reveal</source>
-        <target>Раскрыть результаты голосования</target>
+        <target>Раскрытие результатов голосования</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">42</context>
@@ -1345,7 +1345,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq-transactions.selectall">
         <source>Select all</source>
-        <target>Выбрать всё</target>
+        <target>Выбрать все</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">57,55</context>
@@ -1353,7 +1353,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq-transactions.unselectall">
         <source>Unselect all</source>
-        <target>Отменить всё</target>
+        <target>Отменить все</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">58</context>
@@ -1375,8 +1375,9 @@
           <context context-type="linenumber">91</context>
         </context-group>
       </trans-unit>
-      <trans-unit datatype="html" id="61f524ff70dd68d5ca9e6722bde6020ed5b12bcf">
-        <source>The Mempool Open Source Project ™</source>
+      <trans-unit datatype="html" id="4b137ec8bf73a47063740b75c0c40d5fd3c48015">
+        <source>The Mempool Open Source Project</source>
+        <target>Проект Mempool с открытым исходным кодом</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">12,13</context>
@@ -1385,6 +1386,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f447b21299afc5bc9dadade96dbc90114bea837a">
         <source>Building a mempool and blockchain explorer for the Bitcoin community, focusing on the transaction fee market and multi-layer ecosystem, without any advertising, altcoins, or third-party trackers.</source>
+        <target>Работаем над обозревателем мемпула и блокчейна для Биткоин-сообщества с упором на рынок комиссий за транзакции и многоуровневую экосистему без какой-либо рекламы, альткоинов или сторонних трекеров.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">13,17</context>
@@ -1543,7 +1545,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="30751732ff4b8f6ddb2a906e0173072ac29d412a">
         <source>Confidential</source>
-        <target>Конфиденциальная (о) </target>
+        <target>Конфиденциально</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">144,146</context>
@@ -1572,7 +1574,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f11bc15f83d9174bd27454d32977b5025a66537d">
         <source>API Service</source>
-        <target>API Служба</target>
+        <target>API-возможности</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">4,7</context>
@@ -1916,7 +1918,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e12cd52eaa77b446ba97436c145b59741151adf3">
         <source>Returns details about an address. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>chain_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>. <x equiv-text="{{ '{' }}" id="INTERPOLATION"/>chain,mempool<x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/>_stats each contain an object with <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
-        <target>Предоставляет подробности об адресе. Доступные поля: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>chain_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>и <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>. <x equiv-text="{{ '{' }}" id="INTERPOLATION"/>chain,mempool<x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/>_stats содержат объект с <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>. </target>
+        <target>Предоставляет подробности об адресе. Доступные поля: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>chain_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>и <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>. <x equiv-text="{{ '{' }}" id="INTERPOLATION"/>chain,mempool<x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/>_stats содержат объект с <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> и <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">26,27</context>
@@ -2920,7 +2922,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="60cd6fa18f925b42065d8cfb1a791efdc228b4c3">
         <source>Unconfirmed</source>
-        <target>Неподтвержденная (ый)</target>
+        <target>Неподтвержденные</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">16,17</context>
@@ -3175,7 +3177,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="023f8e4927b3e3baa217a2577c78c5194b885a21">
         <source>Donation confirmed!</source>
-        <target>Донат подтвержден!</target>
+        <target>Пожертвование подтверждено!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/sponsor/sponsor.component.html</context>
           <context context-type="linenumber">144</context>
@@ -3400,7 +3402,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ef772ce5cf98a47b29175e3d46b8a9816c7990a2">
         <source>Unconfirmed</source>
-        <target>Неподтвержденный (но-ная)</target>
+        <target>Неподтвержденные</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">34</context>
@@ -3414,7 +3416,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bfa87f9724434e4245b30f2bdd11d97477048cd1">
         <source>Confirmed</source>
-        <target>Подтвержденный (но-ная)</target>
+        <target>Подтверждено</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">67</context>
@@ -3914,7 +3916,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1f9a922cb4010ee20eb9a241a22307b670f7628c">
         <source>Minimum fee</source>
-        <target>Минимальная комиссия</target>
+        <target>Мин. комиссия</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">161,162</context>
@@ -3953,7 +3955,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="125c154b4a63daa7e993e1f4a8bea4c98a645142">
         <source>Difficulty adjustment</source>
-        <target>Подстройка сложности</target>
+        <target>Корректировка сложности</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">203,204</context>

@@ -1375,8 +1375,9 @@
           <context context-type="linenumber">91</context>
         </context-group>
       </trans-unit>
-      <trans-unit datatype="html" id="61f524ff70dd68d5ca9e6722bde6020ed5b12bcf">
-        <source>The Mempool Open Source Project ™</source>
+      <trans-unit datatype="html" id="4b137ec8bf73a47063740b75c0c40d5fd3c48015">
+        <source>The Mempool Open Source Project</source>
+        <target>Open Source-projektet Mempool</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">12,13</context>
@@ -1385,6 +1386,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f447b21299afc5bc9dadade96dbc90114bea837a">
         <source>Building a mempool and blockchain explorer for the Bitcoin community, focusing on the transaction fee market and multi-layer ecosystem, without any advertising, altcoins, or third-party trackers.</source>
+        <target>En mempool och blockchain-utforskare för Bitcoin-communityt med fokus på marknaden f;r transaktionsavgifter och multi-lager ekosystem utan reklam, altcoins eller tredjepartsspårare.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">13,17</context>
@@ -2476,6 +2478,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="c3360a933cb312b395d276a2b865214cf832df58">
         <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> </source>
+        <target> <x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> av <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">76</context>
