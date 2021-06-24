@@ -9,7 +9,10 @@ label {
 }
 
 .pagination {
-  overflow: hidden;
+  float: none;
+  @media(min-width: 400px){
+    float: right;
+  }
 }
 
 h1{
