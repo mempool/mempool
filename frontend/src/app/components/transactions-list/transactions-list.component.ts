@@ -78,7 +78,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     const scrollTop = document.documentElement.scrollTop;
     if (scrollHeight > 0){
       const percentageScrolled = scrollTop * 100 / scrollHeight;
-      if (percentageScrolled > 80){
+      if (percentageScrolled > 70){
         this.loadMore.emit();
       }
     }
