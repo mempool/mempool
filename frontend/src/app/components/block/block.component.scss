@@ -74,9 +74,12 @@ h1 {
 }
 
 .block-tx-title {
-  margin-top: 1rem;
+  margin-top: -1.5rem;
   display: block;
   text-align: right;
+  @media (min-width: 550px) {
+    margin-top: 1rem;
+  }
   h2 {
     width: auto;
     display: inline-block;
@@ -84,7 +87,11 @@ h1 {
     margin: 0;
     line-height: 1.6;
     padding-right: 10px;
-
+    top: -10px;
+    position: relative;
+    @media (min-width: 550px) {
+      top: 0px;
+    }
     @media (min-width: 768px) {
       line-height: 1;
     }

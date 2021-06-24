@@ -139,7 +139,7 @@
     <app-transactions-list [transactions]="transactions"></app-transactions-list>
 
     <ng-template [ngIf]="isLoadingTransactions">
-      <div class="text-center mb-4">
+      <div class="text-center mb-4 mt-3">
 
         <div class="header-bg box" style="padding: 10px; margin-bottom: 10px;">
           <span class="skeleton-loader"></span>
@@ -167,7 +167,6 @@
       </div>
     </ng-template>
     <ngb-pagination class="pagination-container float-right" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
-    <!-- <ngb-pagination class="float-right" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true"></ngb-pagination> -->
 
   </ng-template>
 
