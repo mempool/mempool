@@ -18,7 +18,7 @@
     <div *ngIf="errorUnblinded" class="error-unblinded">{{ errorUnblinded }}</div>
     <div class="row">
       <div class="col">
-        <table class="table table-borderless smaller-text" style="margin: 0;" id="table-tx-vin">
+        <table class="table table-borderless smaller-text table-sm" style="margin: 0;" id="table-tx-vin">
           <tbody>
             <ng-template ngFor let-vin [ngForOf]="tx['@vinLimit'] ? tx.vin.slice(0, 10) : tx.vin" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="assetsMinimal && assetsMinimal[vin.prevout.asset] && vin.prevout.scriptpubkey_address ? 'assetBox' : ''">
@@ -117,7 +117,7 @@
       </div>
       <div class="w-100 d-block d-md-none"></div>
       <div class="col mobile-bottomcol">
-        <table class="table table-borderless smaller-text"  style="margin: 0;" id="table-tx-vout">
+        <table class="table table-borderless smaller-text table-sm"  style="margin: 0;" id="table-tx-vout">
           <tbody>
             <ng-template ngFor let-vout let-vindex="index"  [ngForOf]="tx['@voutLimit'] ? tx.vout.slice(0, 10) : tx.vout" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="assetsMinimal && assetsMinimal[vout.asset] && vout.scriptpubkey_address ? 'assetBox' : ''">
