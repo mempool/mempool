@@ -18,8 +18,7 @@ jobs:
         service:
           - frontend
           - backend
-    runs-on: ubuntu-latest
-    container: ubuntu:20.04
+    runs-on: ubuntu-18.04
     name: Build and push to DockerHub
     steps:
       - name: Set env variables
@@ -32,7 +31,7 @@ jobs:
       - name: Login to Docker for building
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      - name: Obtain Latest Git ONLY within container for checkout
+      - name: Obtain Latest Git
         run: |
           apt-get update
           apt-get install -y git
