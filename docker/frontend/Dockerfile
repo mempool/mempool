@@ -1,5 +1,8 @@
 FROM node:12-buster-slim AS builder
 
+ARG commitHash
+ENV DOCKER_COMMIT_HASH=${commitHash}
+
 WORKDIR /build
 COPY . .
 RUN apt-get update
