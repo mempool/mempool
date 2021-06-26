@@ -37,7 +37,7 @@ for (setting in configContent) {
 }
 
 if (process.env.DOCKER_COMMIT_HASH) {
-  gitCommitHash = process.env.DOCKER_COMMIT_HASH
+  gitCommitHash = process.env.DOCKER_COMMIT_HASH;
 } else {
   try {
     const gitRevParse = spawnSync('git', ['rev-parse', '--short', 'HEAD']);
