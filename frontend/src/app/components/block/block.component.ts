@@ -33,6 +33,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   itemsPerPage: number;
   txsLoadingStatus$: Observable<number>;
   showDetails = false;
+  showDetailsSymbol = "+";
 
   constructor(
     private route: ActivatedRoute,
@@ -149,8 +150,10 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.route.queryParams.subscribe((params) => {
       if (params.showDetails === 'true') {
         this.showDetails = true;
+        this.showDetailsSymbol = "-";
       } else {
         this.showDetails = false;
+        this.showDetailsSymbol = "+"
       }
     });
   }
@@ -188,6 +191,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   toggleShowDetails() {
     if (this.showDetails) {
       this.showDetails = false;
+      this.showDetailsSymbol = "+";
       this.router.navigate([], {
         relativeTo: this.route,
         queryParams: { showDetails: false },
@@ -196,6 +200,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       });
     } else {
       this.showDetails = true;
+      this.showDetailsSymbol = "-";
       this.router.navigate([], {
         relativeTo: this.route,
         queryParams: { showDetails: true },
