@@ -35,8 +35,9 @@ describe('Mainnet', () => {
             cy.viewport('macbook-16');
             cy.visit('/');
             cy.get('li:nth-of-type(4) > a').click().then(() => {
+                cy.viewport('macbook-16');
                 cy.wait(1000);
-                cy.get('.tv-only').should('not.be.visible');
+                cy.get('.blockchain-wrapper').should('be.visible');
             });
         });
 
@@ -45,7 +46,7 @@ describe('Mainnet', () => {
             cy.get('li:nth-of-type(4) > a').click().then(() => {
                 cy.viewport('iphone-6');
                 cy.wait(1000);
-                cy.get('.tv-only').should('be.visible');
+                cy.get('.blockchain-wrapper').should('not.be.visible');
             });
         });
     });
