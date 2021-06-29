@@ -31,6 +31,10 @@
 
 .blockchain-wrapper {
 
+  display: flex;
+  height: 100%;
+  min-height: 240px;
+
   .position-container {
     position: absolute;
     left: 50%;
@@ -79,6 +83,7 @@
 .tv-container {
   display: flex;
   margin-top: 0px;
+  flex-direction: column;
   @media(max-height: 720px) {
     .blockchain-wrapper{
       display: none !important;
