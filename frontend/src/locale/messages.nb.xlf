@@ -3214,14 +3214,6 @@
         </context-group>
         <note from="description" priority="1">statistics.transaction-vbytes-per-second</note>
       </trans-unit>
-      <trans-unit datatype="html" id="d10f6e967f3f654240a4f4ad5098d8e6e52a4896">
-        <source>TV only</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/television/television.component.html</context>
-          <context context-type="linenumber">7</context>
-        </context-group>
-        <note from="description" priority="1">television.tv-only</note>
-      </trans-unit>
       <trans-unit datatype="html" id="time-since.just-now">
         <source>Just now</source>
         <target>Akkurat nå</target>
