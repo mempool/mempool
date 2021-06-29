@@ -31,6 +31,15 @@
 
 .blockchain-wrapper {
 
+  display: flex;
+  height: 100%;
+  min-height: 240px;
+  position: relative;
+  top: -20px;
+  @media(min-height: 800px) {
+    top: 10px;
+  }
+  
   .position-container {
     position: absolute;
     left: 50%;
@@ -76,29 +85,13 @@
   }
 }
 
-.tv-only {
-  display: block;    
-  height: 100vh;
-  width: 100%;
-  position: relative;
-  display: flex;
-  text-align: center;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  @media(min-width: 768px) {
-    display: none;
-  }
-  @media(max-height: 720px) {
-    display: flex;
-  }
-}
 .tv-container {
-  display: none;
-  @media(min-width: 768px) {
-    display: flex;
-  }
-  @media(max-height: 720px) {
-    display: none;
+  display: flex;
+  margin-top: 0px;
+  flex-direction: column;
+  @media(max-height: 700px) {
+    .blockchain-wrapper{
+      display: none !important;
+    }
   }
 }
