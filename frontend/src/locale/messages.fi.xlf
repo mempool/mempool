@@ -1377,6 +1377,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4b137ec8bf73a47063740b75c0c40d5fd3c48015">
         <source>The Mempool Open Source Project</source>
+        <target>Mempool avoimen lähdekoodin projekti</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">12,13</context>
@@ -1385,6 +1386,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f447b21299afc5bc9dadade96dbc90114bea837a">
         <source>Building a mempool and blockchain explorer for the Bitcoin community, focusing on the transaction fee market and multi-layer ecosystem, without any advertising, altcoins, or third-party trackers.</source>
+        <target>Rakennetaan mempool- ja lohkoketjuselain Bitcoin-yhteisölle, jossa keskitytään transaktiokulumarkkinoihin ja monikerroksiseen ekosysteemiin ilman mainontaa, altcoineja tai kolmannen osapuolen seurantalaitteita.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">13,17</context>
@@ -2180,6 +2182,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4ebf8d4a2433cca5a8a933ef8ccef1b01e45acef">
         <source>Returns the ancestors and the best descendant fees for a transaction.</source>
+        <target>Palauttaa esisiirtokulun ja jälkisiirtokulun siirtotapahtumalle.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">563,565</context>
@@ -2475,6 +2478,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="c3360a933cb312b395d276a2b865214cf832df58">
         <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> </source>
+        <target><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/>/<x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">76</context>
@@ -3224,15 +3228,6 @@
           <context context-type="linenumber">53</context>
         </context-group>
         <note from="description" priority="1">statistics.transaction-vbytes-per-second</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="d10f6e967f3f654240a4f4ad5098d8e6e52a4896">
-        <source>TV only</source>
-        <target>Vain TV</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/television/television.component.html</context>
-          <context context-type="linenumber">7</context>
-        </context-group>
-        <note from="description" priority="1">television.tv-only</note>
       </trans-unit>
       <trans-unit datatype="html" id="time-since.just-now">
         <source>Just now</source>
