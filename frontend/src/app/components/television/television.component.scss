@@ -76,29 +76,12 @@
   }
 }
 
-.tv-only {
-  display: block;    
-  height: 100vh;
-  width: 100%;
-  position: relative;
-  display: flex;
-  text-align: center;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  @media(min-width: 768px) {
-    display: none;
-  }
-  @media(max-height: 720px) {
-    display: flex;
-  }
-}
 .tv-container {
-  display: none;
-  @media(min-width: 768px) {
-    display: flex;
-  }
+  display: flex;
+  margin-top: 0px;
   @media(max-height: 720px) {
-    display: none;
+    .blockchain-wrapper{
+      display: none !important;
+    }
   }
 }
