@@ -34,7 +34,12 @@
   display: flex;
   height: 100%;
   min-height: 240px;
-
+  position: relative;
+  top: -20px;
+  @media(min-height: 800px) {
+    top: 10px;
+  }
+  
   .position-container {
     position: absolute;
     left: 50%;
@@ -84,7 +89,7 @@
   display: flex;
   margin-top: 0px;
   flex-direction: column;
-  @media(max-height: 720px) {
+  @media(max-height: 700px) {
     .blockchain-wrapper{
       display: none !important;
     }
