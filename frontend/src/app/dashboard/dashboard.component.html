@@ -200,12 +200,52 @@
 <ng-template #difficultyEpoch>
   <div class="card">
     <div class="card-body more-padding">
-      <h5 class="card-title" i18n="dashboard.difficulty-adjustment">Difficulty adjustment</h5>
-      <div class="progress" *ngIf="(difficultyEpoch$ | async) as epochData; else loading">
-        <div class="progress-bar" role="progressbar" style="width: 15%; background-color: #105fb0" [ngStyle]="{'width': epochData.base}">&nbsp;</div>
-        <div class="progress-bar bg-success" role="progressbar" style="width: 0%" [ngStyle]="{'width': epochData.green}"></div>
-        <div class="progress-bar bg-danger" role="progressbar" style="width: 1%; background-color: #f14d80;" [ngStyle]="{'width': epochData.red}"></div>
-        <div class="progress-text"><ng-template [ngIf]="epochData.change > 0">+</ng-template>{{ epochData.change | number: '1.0-2' }}%</div>
+      <div class="difficulty-adjustment-container" *ngIf="(difficultyEpoch$ | async) as epochData; else loadingDifficulty">
+        <div class="item">
+          <h5 class="card-title" i18n="difficulty-box.next-difficulty">Next Difficulty</h5>
+          <div class="card-text">{{ epochData.remainingBlocks }} <span *ngIf="epochData.remainingBlocks > 1" class="symbol" i18n="difficulty-box.blocks">blocks</span><span *ngIf="epochData.remainingBlocks < 1" class="symbol" i18n="difficulty-box.block">block</span></div>
+          <div class="symbol">~{{ epochData.remaingTime | date:'yyyy-MM-dd HH:mm' }}</div>
+        </div>
+        <div class="item">
+          <h5 class="card-title" i18n="difficulty-box.ajustments">Ajustment</h5>
+          <div class="card-text" [ngStyle]="{'color': epochData.colorAjustments}">{{ epochData.change | number: '1.0-2' }} <span class="symbol">%</span></div>
+          <div class="symbol">~{{ epochData.timeAvg }} <span i18n="difficulty-box.mins-per-block">mins per block</span></div>
+        </div>
+        <div class="item">
+          <h5 class="card-title" i18n="difficulty-box.total-progress">Total Progress</h5>
+          <div class="card-text">{{ epochData.progress }} <span class="symbol">%</span></div>
+          <div class="progress small-bar">
+            <div class="progress-bar" role="progressbar" style="width: 15%; background-color: #105fb0" [ngStyle]="{'width': epochData.base}">&nbsp;</div>
+            <div class="progress-bar bg-success" role="progressbar" style="width: 0%" [ngStyle]="{'width': epochData.green}"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+
+<ng-template #loadingDifficulty>
+  <div class="difficulty-skeleton loading-container">
+    <div class="item">
+      <h5 class="card-title" i18n="difficulty-box.next-difficulty">Next Difficulty</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="difficulty-box.ajustments">Ajustment</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="difficulty-box.total-progress">Total Progress</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
       </div>
     </div>
   </div>

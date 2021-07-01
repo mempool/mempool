@@ -22,6 +22,12 @@ interface EpochProgress {
   green: string;
   red: string;
   change: number;
+  progress: string;
+  remainingBlocks: number;
+  newDifficultyHeight: number;
+  colorAjustments: string;
+  timeAvg: string;
+  remaingTime: number;
 }
 
 interface MempoolInfoData {
@@ -118,7 +124,10 @@ export class DashboardComponent implements OnInit {
         const diff = now - DATime;
         const blocksInEpoch = block.height % 2016;
         const estimatedBlocks = Math.round(diff / 60 / 10);
-        const difficultyChange = (600 / (diff / blocksInEpoch ) - 1) * 100;
+        let difficultyChange = 0;
+        if (blocksInEpoch > 0) {
+          difficultyChange = (600 / (diff / blocksInEpoch ) - 1) * 100;
+        }
 
         let base = 0;
         let green = 0;
@@ -132,11 +141,37 @@ export class DashboardComponent implements OnInit {
           red = Math.min((estimatedBlocks - blocksInEpoch) / 2016 * 100, 100 - base);
         }
 
+        let colorAjustments = '#dc3545';
+        if (difficultyChange >= 0) {
+          colorAjustments = '#299435';
+        }
+
+        const timeAvgDiff = difficultyChange * 0.1;
+
+        let timeAvgMins = 10;
+        if (timeAvgDiff > 0 ){
+          timeAvgMins -= Math.abs(timeAvgDiff);
+        }else{
+          timeAvgMins += Math.abs(timeAvgDiff);
+        }
+
+        const remainingBlocks = 2016 - blocksInEpoch;
+        const nowMilliseconds = now * 1000;
+        const timeAvgMilliseconds = timeAvgMins * 60 * 1000;
+        const remainingBlocsMilliseconds = remainingBlocks * timeAvgMilliseconds;
+
         return {
           base: base + '%',
           green: green + '%',
           red: red + '%',
           change: difficultyChange,
+          progress: base.toFixed(2),
+          remainingBlocks,
+          timeAvg: timeAvgMins.toFixed(0),
+          colorAjustments,
+          blocksInEpoch,
+          newDifficultyHeight: block.height + remainingBlocks,
+          remaingTime: remainingBlocsMilliseconds + nowMilliseconds
         };
       })
     );
