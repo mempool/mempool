@@ -114,12 +114,12 @@ export class DashboardComponent implements OnInit {
       })
     );
 
-    this.difficultyEpoch$ = timer(0, 5000).pipe(
-      switchMap(() => combineLatest([
-        this.stateService.blocks$.pipe(map(([block]) => block)),
-        this.stateService.lastDifficultyAdjustment$
-      ])
+    this.difficultyEpoch$ = timer(0, 5000)
       .pipe(
+        switchMap(() => combineLatest([
+          this.stateService.blocks$.pipe(map(([block]) => block)),
+          this.stateService.lastDifficultyAdjustment$
+        ])),
         map(([block, DATime]) => {
           const now = new Date().getTime() / 1000;
           const diff = now - DATime;
@@ -152,7 +152,7 @@ export class DashboardComponent implements OnInit {
           let timeAvgMins = 10;
           if (timeAvgDiff > 0 ){
             timeAvgMins -= Math.abs(timeAvgDiff);
-          }else{
+          } else {
             timeAvgMins += Math.abs(timeAvgDiff);
           }
           const remainingBlocks = 2016 - blocksInEpoch;
@@ -174,8 +174,7 @@ export class DashboardComponent implements OnInit {
             remaingTime: remainingBlocsMilliseconds + nowMilliseconds
           };
         })
-      ))
-    );
+      );
 
     this.mempoolBlocksData$ = this.stateService.mempoolBlocks$
       .pipe(
