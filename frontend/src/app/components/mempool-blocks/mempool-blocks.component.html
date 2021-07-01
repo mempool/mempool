@@ -27,7 +27,7 @@
           <ng-template #mergedBlock>
             <div class="time-difference">
               <b>(<ng-container *ngTemplateOutlet="blocksPlural; context: {$implicit: projectedBlock.blockVSize / 1000000 | ceil }"></ng-container>)</b>
-              <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} blocks</ng-template>
+              <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
             </div>
           </ng-template>
         </div>

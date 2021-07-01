@@ -223,6 +223,10 @@
   display: flex;
   flex-direction: row;
   justify-content: space-around;
+  .shared-block {
+    color: #ffffff66;
+    font-size: 12px;
+  }
   .item {    
     max-width: 130px;
     padding: 0 5px;
