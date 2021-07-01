@@ -203,7 +203,11 @@
       <div class="difficulty-adjustment-container" *ngIf="(difficultyEpoch$ | async) as epochData; else loadingDifficulty">
         <div class="item">
           <h5 class="card-title" i18n="difficulty-box.next-difficulty">Next Difficulty</h5>
-          <div class="card-text">{{ epochData.remainingBlocks }} <span *ngIf="epochData.remainingBlocks > 1" class="symbol" i18n="difficulty-box.blocks">blocks</span><span *ngIf="epochData.remainingBlocks < 1" class="symbol" i18n="difficulty-box.block">block</span></div>
+          <div class="card-text">
+            <ng-container *ngTemplateOutlet="epochData.remainingBlocks === 1 ? blocksSingular : blocksPlural; context: {$implicit: epochData.remainingBlocks }"></ng-container>
+            <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
+            <ng-template #blocksSingular let-i i18n="shared.block">{{ i }} <span class="shared-block">block</span></ng-template>
+          </div>
           <div class="symbol">~{{ epochData.remaingTime | date:'yyyy-MM-dd HH:mm' }}</div>
         </div>
         <div class="item">
