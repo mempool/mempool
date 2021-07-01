@@ -25,7 +25,7 @@ interface EpochProgress {
   progress: string;
   remainingBlocks: number;
   newDifficultyHeight: number;
-  colorAjustments: string;
+  colorAdjustments: string;
   timeAvg: string;
   remaingTime: number;
 }
@@ -141,9 +141,9 @@ export class DashboardComponent implements OnInit {
           red = Math.min((estimatedBlocks - blocksInEpoch) / 2016 * 100, 100 - base);
         }
 
-        let colorAjustments = '#dc3545';
+        let colorAdjustments = '#dc3545';
         if (difficultyChange >= 0) {
-          colorAjustments = '#299435';
+          colorAdjustments = '#299435';
         }
 
         const timeAvgDiff = difficultyChange * 0.1;
@@ -168,7 +168,7 @@ export class DashboardComponent implements OnInit {
           progress: base.toFixed(2),
           remainingBlocks,
           timeAvg: timeAvgMins.toFixed(0),
-          colorAjustments,
+          colorAdjustments,
           blocksInEpoch,
           newDifficultyHeight: block.height + remainingBlocks,
           remaingTime: remainingBlocsMilliseconds + nowMilliseconds
