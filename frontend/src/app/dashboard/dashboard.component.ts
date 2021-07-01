@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
-import { combineLatest, merge, Observable, of } from 'rxjs';
+import { combineLatest, merge, Observable, of, timer } from 'rxjs';
 import { filter, map, scan, share, switchMap, tap } from 'rxjs/operators';
 import { Block } from '../interfaces/electrs.interface';
 import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
@@ -114,10 +114,68 @@ export class DashboardComponent implements OnInit {
       })
     );
 
-    this.calculateDifficultyAdjustment();
-    setInterval(() => {
-      this.calculateDifficultyAdjustment();
-    }, 5000);
+    this.difficultyEpoch$ = timer(0, 5000).pipe(
+      switchMap(() => combineLatest([
+        this.stateService.blocks$.pipe(map(([block]) => block)),
+        this.stateService.lastDifficultyAdjustment$
+      ])
+      .pipe(
+        map(([block, DATime]) => {
+          const now = new Date().getTime() / 1000;
+          const diff = now - DATime;
+          const blocksInEpoch = block.height % 2016;
+          const estimatedBlocks = Math.round(diff / 60 / 10);
+          let difficultyChange = 0;
+          if (blocksInEpoch > 0) {
+            difficultyChange = (600 / (diff / blocksInEpoch ) - 1) * 100;
+          }
+
+          let base = 0;
+          let green = 0;
+          let red = 0;
+
+          if (blocksInEpoch >= estimatedBlocks) {
+            base = estimatedBlocks / 2016 * 100;
+            green = (blocksInEpoch - estimatedBlocks) / 2016 * 100;
+          } else {
+            base = blocksInEpoch / 2016 * 100;
+            red = Math.min((estimatedBlocks - blocksInEpoch) / 2016 * 100, 100 - base);
+          }
+
+          let colorAdjustments = '#dc3545';
+          if (difficultyChange >= 0) {
+            colorAdjustments = '#299435';
+          }
+
+          const timeAvgDiff = difficultyChange * 0.1;
+
+          let timeAvgMins = 10;
+          if (timeAvgDiff > 0 ){
+            timeAvgMins -= Math.abs(timeAvgDiff);
+          }else{
+            timeAvgMins += Math.abs(timeAvgDiff);
+          }
+          const remainingBlocks = 2016 - blocksInEpoch;
+          const nowMilliseconds = now * 1000;
+          const timeAvgMilliseconds = timeAvgMins * 60 * 1000;
+          const remainingBlocsMilliseconds = remainingBlocks * timeAvgMilliseconds;
+
+          return {
+            base: base + '%',
+            green: green + '%',
+            red: red + '%',
+            change: difficultyChange,
+            progress: base.toFixed(2),
+            remainingBlocks,
+            timeAvg: timeAvgMins.toFixed(0),
+            colorAdjustments,
+            blocksInEpoch,
+            newDifficultyHeight: block.height + remainingBlocks,
+            remaingTime: remainingBlocsMilliseconds + nowMilliseconds
+          };
+        })
+      ))
+    );
 
     this.mempoolBlocksData$ = this.stateService.mempoolBlocks$
       .pipe(
@@ -222,68 +280,5 @@ export class DashboardComponent implements OnInit {
       this.collapseLevel = 'one';
     }
     this.storageService.setValue('dashboard-collapsed', this.collapseLevel);
-  }
-
-  calculateDifficultyAdjustment() {
-    this.difficultyEpoch$ = combineLatest([
-      this.stateService.blocks$.pipe(map(([block]) => block)),
-      this.stateService.lastDifficultyAdjustment$
-    ])
-    .pipe(
-      map(([block, DATime]) => {
-        const now = new Date().getTime() / 1000;
-        const diff = now - DATime;
-        const blocksInEpoch = block.height % 2016;
-        const estimatedBlocks = Math.round(diff / 60 / 10);
-        let difficultyChange = 0;
-        if (blocksInEpoch > 0) {
-          difficultyChange = (600 / (diff / blocksInEpoch ) - 1) * 100;
-        }
-
-        let base = 0;
-        let green = 0;
-        let red = 0;
-
-        if (blocksInEpoch >= estimatedBlocks) {
-          base = estimatedBlocks / 2016 * 100;
-          green = (blocksInEpoch - estimatedBlocks) / 2016 * 100;
-        } else {
-          base = blocksInEpoch / 2016 * 100;
-          red = Math.min((estimatedBlocks - blocksInEpoch) / 2016 * 100, 100 - base);
-        }
-
-        let colorAdjustments = '#dc3545';
-        if (difficultyChange >= 0) {
-          colorAdjustments = '#299435';
-        }
-
-        const timeAvgDiff = difficultyChange * 0.1;
-
-        let timeAvgMins = 10;
-        if (timeAvgDiff > 0 ){
-          timeAvgMins -= Math.abs(timeAvgDiff);
-        }else{
-          timeAvgMins += Math.abs(timeAvgDiff);
-        }
-
-        const remainingBlocks = 2016 - blocksInEpoch;
-        const nowMilliseconds = now * 1000;
-        const timeAvgMilliseconds = timeAvgMins * 60 * 1000;
-        const remainingBlocsMilliseconds = remainingBlocks * timeAvgMilliseconds;
-        return {
-          base: base + '%',
-          green: green + '%',
-          red: red + '%',
-          change: difficultyChange,
-          progress: base.toFixed(2),
-          remainingBlocks,
-          timeAvg: timeAvgMins.toFixed(0),
-          colorAdjustments,
-          blocksInEpoch,
-          newDifficultyHeight: block.height + remainingBlocks,
-          remaingTime: remainingBlocsMilliseconds + nowMilliseconds
-        };
-      })
-    );
   }
 }
