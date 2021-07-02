@@ -11,6 +11,7 @@ import { ScriptpubkeyTypePipe } from './pipes/scriptpubkey-type-pipe/scriptpubke
 import { BytesPipe } from './pipes/bytes-pipe/bytes.pipe';
 import { WuBytesPipe } from './pipes/bytes-pipe/wubytes.pipe';
 import { TimeSinceComponent } from '../components/time-since/time-since.component';
+import { TimeUntilComponent } from '../components/time-until/time-until.component';
 import { ClipboardComponent } from '../components/clipboard/clipboard.component';
 import { QrcodeComponent } from '../components/qrcode/qrcode.component';
 import { FiatComponent } from '../fiat/fiat.component';
@@ -25,6 +26,7 @@ import { ColoredPriceDirective } from './directives/colored-price.directive';
   declarations: [
     ClipboardComponent,
     TimeSinceComponent,
+    TimeUntilComponent,
     QrcodeComponent,
     FiatComponent,
     TxFeaturesComponent,
@@ -65,6 +67,7 @@ import { ColoredPriceDirective } from './directives/colored-price.directive';
     NgbPaginationModule,
     NgbDropdownModule,
     TimeSinceComponent,
+    TimeUntilComponent,
     ClipboardComponent,
     QrcodeComponent,
     FiatComponent,
