@@ -27,7 +27,7 @@ interface EpochProgress {
   newDifficultyHeight: number;
   colorAdjustments: string;
   timeAvg: string;
-  remaingTime: number;
+  remainingTime: number;
 }
 
 interface MempoolInfoData {
@@ -171,7 +171,7 @@ export class DashboardComponent implements OnInit {
             colorAdjustments,
             blocksInEpoch,
             newDifficultyHeight: block.height + remainingBlocks,
-            remaingTime: remainingBlocsMilliseconds + nowMilliseconds
+            remainingTime: remainingBlocsMilliseconds + nowMilliseconds
           };
         })
       );
