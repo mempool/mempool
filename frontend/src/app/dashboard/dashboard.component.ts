@@ -114,7 +114,7 @@ export class DashboardComponent implements OnInit {
       })
     );
 
-    this.difficultyEpoch$ = timer(0, 5000)
+    this.difficultyEpoch$ = timer(0, 1000)
       .pipe(
         switchMap(() => combineLatest([
           this.stateService.blocks$.pipe(map(([block]) => block)),
