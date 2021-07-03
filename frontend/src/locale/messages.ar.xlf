@@ -39,7 +39,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.datepicker.next-month">
         <source>Next month</source>
-        <target>الشهر القادم</target>
+        <target>الشهر التالي</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/datepicker/datepicker-month.ts</context>
           <context context-type="linenumber">72</context>
@@ -123,7 +123,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.pagination.next-aria">
         <source>Next</source>
-        <target>القادم</target>
+        <target>التالي</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/pagination/pagination.ts</context>
           <context context-type="linenumber">404</context>
