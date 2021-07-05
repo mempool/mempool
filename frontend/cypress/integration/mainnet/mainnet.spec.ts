@@ -76,23 +76,37 @@ describe('Mainnet', () => {
                 cy.get('#details').should('not.be.visible');
             });
         });
-
         it('shows blocks with no pagination', () => {
+            cy.viewport('iphone-6');
             cy.visit('/block/00000000000000000001ba40caf1ad4cec0ceb77692662315c151953bfd7c4c4');
-            cy.get('h2').invoke('text').should('equal', '19 transactions');
-            cy.get('ul.pagination').first().children().should('have.length', 5);
+            cy.get('.block-tx-title h2').invoke('text').should('equal', '19 transactions');
+            cy.get('.pagination-container ul.pagination').first().children().should('have.length', 6);
         });
 
         it('supports pagination on the block screen', () => {
             // 41 txs
             cy.visit('/block/00000000000000000009f9b7b0f63ad50053ad12ec3b7f5ca951332f134f83d8');
-            cy.get('.header-bg.box > a').invoke('text').then((text1) => {
+            cy.get('.pagination-container a').invoke('text').then((text1) => {
                 cy.get('.active + li').first().click().then(() => {
                     cy.get('.header-bg.box > a').invoke('text').then((text2) => {
                         expect(text1).not.to.eq(text2);
                     });
                 });
             });
+        });
+
+        it('shows blocks pagination with 5 pages (desktop)', () => {
+            cy.viewport(760, 800);
+            cy.visit('/block/000000000000000000049281946d26fcba7d99fdabc1feac524bc3a7003d69b3');
+            // 5 pages + 4 buttons = 9 buttons
+            cy.get('.pagination-container ul.pagination').first().children().should('have.length', 9);
+        });
+
+        it('shows blocks pagination with 3 pages (mobile)', () => {
+            cy.viewport(669, 800);
+            cy.visit('/block/000000000000000000049281946d26fcba7d99fdabc1feac524bc3a7003d69b3');
+            // 3 pages + 4 buttons = 7 buttons
+            cy.get('.pagination-container ul.pagination').first().children().should('have.length', 7);
         });
     });
 });
