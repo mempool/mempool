@@ -60,7 +60,7 @@ export class BisqTransactionsComponent implements OnInit {
 
   // @ts-ignore
   paginationSize: 'sm' | 'lg' = 'md';
-  paginationMaxSize = 4;
+  paginationMaxSize = 5;
 
   txTypes = ['ASSET_LISTING_FEE', 'BLIND_VOTE', 'COMPENSATION_REQUEST', 'GENESIS', 'LOCKUP', 'PAY_TRADE_FEE',
     'PROOF_OF_BURN', 'PROPOSAL', 'REIMBURSEMENT_REQUEST', 'TRANSFER_BSQ', 'UNLOCK', 'VOTE_REVEAL', 'IRREGULAR'];
@@ -85,7 +85,7 @@ export class BisqTransactionsComponent implements OnInit {
 
     this.loadingItems = Array(this.itemsPerPage);
 
-    if (document.body.clientWidth < 768) {
+    if (document.body.clientWidth < 670) {
       this.paginationSize = 'sm';
       this.paginationMaxSize = 3;
     }
@@ -167,5 +167,9 @@ export class BisqTransactionsComponent implements OnInit {
 
   trackByFn(index: number) {
     return index;
+  }
+
+  onResize(event: any) {
+    this.paginationMaxSize = event.target.innerWidth < 670 ? 3 : 5;
   }
 }

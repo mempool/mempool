@@ -46,7 +46,7 @@ export class BlockComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.websocketService.want(['blocks', 'mempool-blocks']);
-    this.paginationMaxSize = window.matchMedia('(max-width: 700px)').matches ? 3 : 5;
+    this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
     this.network = this.stateService.network;
     this.itemsPerPage = this.stateService.env.ITEMS_PER_PAGE;
 
@@ -215,5 +215,9 @@ export class BlockComponent implements OnInit, OnDestroy {
       return false;
     }
     return this.block && this.block.height > 681393 && (new Date().getTime() / 1000) < 1628640000;
+  }
+
+  onResize(event: any) {
+    this.paginationMaxSize = event.target.innerWidth < 670 ? 3 : 5;
   }
 }
