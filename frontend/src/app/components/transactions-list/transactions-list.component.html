@@ -117,7 +117,7 @@
         <table class="table table-borderless smaller-text table-xs"  style="margin: 0;">
           <tbody>
             <ng-template ngFor let-vout let-vindex="index"  [ngForOf]="tx['@voutLimit'] ? tx.vout.slice(0, 10) : tx.vout" [ngForTrackBy]="trackByIndexFn">
-              <tr [ngClass]="{'highlightIndex': outputIndex === vindex}">
+              <tr>
                 <td>
                   <a *ngIf="vout.scriptpubkey_address; else scriptpubkey_type" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">
                     <span class="d-block d-lg-none">{{ vout.scriptpubkey_address | shortenString : 16 }}</span>
