@@ -20,6 +20,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
   network = '';
   tx: Transaction;
   txId: string;
+  outputIndex: number;
   txInBlockIndex: number;
   isLoadingTx = true;
   error: any = undefined;
@@ -75,9 +76,11 @@ export class TransactionComponent implements OnInit, OnDestroy {
 
     this.subscription = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
-        this.txId = params.get('id') || '';
-        this.seoService.setTitle($localize`:@@bisq.transaction.browser-title:Transaction: ${this.txId}:INTERPOLATION:`);
         this.resetTransaction();
+        const urlMatch = (params.get('id') || '').split(':');
+        this.txId = urlMatch[0];
+        this.outputIndex = urlMatch[1] === undefined ? null : parseInt(urlMatch[1], 10);
+        this.seoService.setTitle($localize`:@@bisq.transaction.browser-title:Transaction: ${this.txId}:INTERPOLATION:`);
         return merge(
           of(true),
           this.stateService.connectionState$.pipe(
@@ -202,6 +205,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
   resetTransaction() {
     this.error = undefined;
     this.tx = null;
+    this.outputIndex = null;
     this.waitingForTransaction = false;
     this.isLoadingTx = true;
     this.rbfTransaction = undefined;
