@@ -23,9 +23,9 @@ export class SearchFormComponent implements OnInit {
   searchForm: FormGroup;
   @Output() searchTriggered = new EventEmitter();
 
-  regexAddress = /^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[bB]?[a-z]{2,5}1[ac-hj-np-z02-9]{8,87})$/;
-  regexBlockhash = /^[0]{8}[a-fA-F0-9]{56}$/;
-  regexTransaction = /^[a-fA-F0-9]{64}$/;
+  regexAddress = /([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[bB]?[a-z]{2,5}1[ac-hj-np-z02-9]{8,87})/;
+  regexBlockhash = /[0]{8}[a-fA-F0-9]{56}/;
+  regexTransaction = /([a-fA-F0-9]{64}):?(\d+)?/;
   regexBlockheight = /^[0-9]+$/;
 
   @ViewChild('instance', {static: true}) instance: NgbTypeahead;
@@ -96,21 +96,26 @@ export class SearchFormComponent implements OnInit {
     if (searchText) {
       this.isSearching = true;
       if (this.regexAddress.test(searchText)) {
-        this.navigate('/address/', searchText);
-      } else if (this.regexBlockhash.test(searchText) || this.regexBlockheight.test(searchText)) {
+        const matches = this.regexAddress.exec(searchText);
+        this.navigate('/address/', matches[0]);
+      } else if (this.regexBlockhash.test(searchText)) {
+        const matches = this.regexBlockhash.exec(searchText);
+        this.navigate('/block/', matches[0]);
+      } else if (this.regexBlockheight.test(searchText)) {
         this.navigate('/block/', searchText);
       } else if (this.regexTransaction.test(searchText)) {
+        const matches = this.regexTransaction.exec(searchText);
         if (this.network === 'liquid') {
-          if (this.assets[searchText]) {
-            this.navigate('/asset/', searchText);
+          if (this.assets[matches[0]]) {
+            this.navigate('/asset/', matches[0]);
           }
-          this.electrsApiService.getAsset$(searchText)
+          this.electrsApiService.getAsset$(matches[0])
             .subscribe(
-              () => { this.navigate('/asset/', searchText); },
-              () => { this.navigate('/tx/', searchText); }
+              () => { this.navigate('/asset/', matches[0]); },
+              () => { this.navigate('/tx/', matches[0]); }
             );
         } else {
-          this.navigate('/tx/', searchText);
+          this.navigate('/tx/', matches[0]);
         }
       } else {
         this.isSearching = false;
