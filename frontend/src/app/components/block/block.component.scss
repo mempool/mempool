@@ -72,3 +72,28 @@ h1 {
 		white-space: pre-wrap;
 	}
 }
+
+.block-tx-title {
+  margin-top: -1.5rem;
+  display: block;
+  text-align: right;
+  @media (min-width: 550px) {
+    margin-top: 1rem;
+  }
+  h2 {
+    width: auto;
+    display: inline-block;
+    float: left;
+    margin: 0;
+    line-height: 1.6;
+    padding-right: 10px;
+    top: -10px;
+    position: relative;
+    @media (min-width: 550px) {
+      top: 0px;
+    }
+    @media (min-width: 768px) {
+      line-height: 1;
+    }
+  }
+}

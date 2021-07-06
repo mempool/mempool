@@ -23,7 +23,7 @@ export class BisqBlocksComponent implements OnInit {
   isLoading = true;
   // @ts-ignore
   paginationSize: 'sm' | 'lg' = 'md';
-  paginationMaxSize = 4;
+  paginationMaxSize = 5;
 
   constructor(
     private websocketService: WebsocketService,
@@ -38,7 +38,7 @@ export class BisqBlocksComponent implements OnInit {
     this.seoService.setTitle($localize`:@@8a7b4bd44c0ac71b2e72de0398b303257f7d2f54:Blocks`);
     this.itemsPerPage = Math.max(Math.round(this.contentSpace / this.fiveItemsPxSize) * 5, 10);
     this.loadingItems = Array(this.itemsPerPage);
-    if (document.body.clientWidth < 768) {
+    if (document.body.clientWidth < 670) {
       this.paginationSize = 'sm';
       this.paginationMaxSize = 3;
     }
@@ -82,5 +82,9 @@ export class BisqBlocksComponent implements OnInit {
       queryParams: { page: page },
       queryParamsHandling: 'merge',
     });
+  }
+
+  onResize(event: any) {
+    this.paginationMaxSize = event.target.innerWidth < 670 ? 3 : 5;
   }
 }

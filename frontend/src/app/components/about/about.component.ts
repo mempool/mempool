@@ -17,7 +17,7 @@ export class AboutComponent implements OnInit {
   backendInfo$: Observable<IBackendInfo>;
   sponsors$: Observable<any>;
   contributors$: Observable<any>;
-  frontendGitCommitHash = this.stateService.env.GIT_COMMIT_HASH.substr(0, 8);
+  frontendGitCommitHash = this.stateService.env.GIT_COMMIT_HASH;
   packetJsonVersion = this.stateService.env.PACKAGE_JSON_VERSION;
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
   showNavigateToSponsor = false;
