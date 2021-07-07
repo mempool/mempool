@@ -120,16 +120,17 @@
 .latest-transactions {
   width: 100%;
   text-align: left;
+  table-layout:fixed; 
   tr, td, th {
     border: 0px;
   }
-  .table-cell-txid {
-    width: 20%;
+  td {
+    overflow:hidden;
+    width: 25%;
   }
   .table-cell-satoshis {
     display: none;
     text-align: right;
-    width: 30%;
     @media (min-width: 576px) {
       display: table-cell;
     }
@@ -143,7 +144,6 @@
   .table-cell-fiat {
     display: none;
     text-align: right;
-    width: 30%;
     @media (min-width: 485px) {
       display: table-cell;
     }
@@ -155,7 +155,6 @@
     }
   }
   .table-cell-fees {
-    width: 25%;
     text-align: right;
   }
 }
