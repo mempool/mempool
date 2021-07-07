@@ -42,7 +42,7 @@
 }
 
 .more-padding {
-  padding: 1.25rem 2rem 1.25rem 2rem;
+  padding: 15px 2rem 1.25rem 2rem;
 }
 
 .graph-card {
@@ -299,4 +299,14 @@
       max-width: 110px;
     }
   }
+}
+
+.title {
+  position: relative;
+  color: #ffffff91;
+  padding-right: 10px;
+  margin-top: 15px;
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 500;
 }

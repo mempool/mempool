@@ -82,3 +82,19 @@
     }
   }
 }
+
+.title {
+  position: relative;
+  color: #ffffff91;
+  margin-top: -5px;
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 500;
+  padding-bottom: 16px;
+}
+
+.fee-estimation-wrapper {
+  .card-body {
+    padding-top: 0 !important;
+  }
+}
