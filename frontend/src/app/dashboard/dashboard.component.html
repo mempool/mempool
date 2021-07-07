@@ -199,10 +199,11 @@
 
 <ng-template #difficultyEpoch>
   <div class="card">
+    <div class="title" i18n="difficulty-box.difficulty-adjustment">Difficulty Adjustment</div>
     <div class="card-body more-padding">
       <div class="difficulty-adjustment-container" *ngIf="(difficultyEpoch$ | async) as epochData; else loadingDifficulty">
         <div class="item">
-          <h5 class="card-title" i18n="difficulty-box.next-difficulty">Next Difficulty</h5>
+          <h5 class="card-title" i18n="difficulty-box.remaining">Remaining</h5>
           <div class="card-text">
             <ng-container *ngTemplateOutlet="epochData.remainingBlocks === 1 ? blocksSingular : blocksPlural; context: {$implicit: epochData.remainingBlocks }"></ng-container>
             <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
@@ -211,12 +212,12 @@
           <div class="symbol"><app-time-until [time]="epochData.remainingTime" [fastRender]="true"></app-time-until></div>
         </div>
         <div class="item">
-          <h5 class="card-title" i18n="difficulty-box.adjustments">Adjustment</h5>
+          <h5 class="card-title" i18n="difficulty-box.estimate">Estimate</h5>
           <div class="card-text" [ngStyle]="{'color': epochData.colorAdjustments}">{{ epochData.change | number: '1.2-2' }} <span class="symbol">%</span></div>
           <div class="symbol">~{{ epochData.timeAvg }} <span i18n="difficulty-box.mins-per-block">mins per block</span></div>
         </div>
         <div class="item">
-          <h5 class="card-title" i18n="difficulty-box.total-progress">Total Progress</h5>
+          <h5 class="card-title" i18n="difficulty-box.current-period">Current Period</h5>
           <div class="card-text">{{ epochData.progress | number: '1.2-2' }} <span class="symbol">%</span></div>
           <div class="progress small-bar">
             <div class="progress-bar" role="progressbar" style="width: 15%; background-color: #105fb0" [ngStyle]="{'width': epochData.base}">&nbsp;</div>
@@ -232,21 +233,21 @@
 <ng-template #loadingDifficulty>
   <div class="difficulty-skeleton loading-container">
     <div class="item">
-      <h5 class="card-title" i18n="difficulty-box.next-difficulty">Next Difficulty</h5>
+      <h5 class="card-title" i18n="difficulty-box.remaining">Remaining</h5>
       <div class="card-text">
         <div class="skeleton-loader"></div>
         <div class="skeleton-loader"></div>
       </div>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="difficulty-box.adjustments">Adjustment</h5>
+      <h5 class="card-title" i18n="difficulty-box.estimate">Estimate</h5>
       <div class="card-text">
         <div class="skeleton-loader"></div>
         <div class="skeleton-loader"></div>
       </div>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="difficulty-box.total-progress">Total Progress</h5>
+      <h5 class="card-title" i18n="difficulty-box.current-period">Current Period</h5>
       <div class="card-text">
         <div class="skeleton-loader"></div>
         <div class="skeleton-loader"></div>
