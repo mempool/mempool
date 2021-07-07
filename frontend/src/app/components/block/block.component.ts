@@ -172,11 +172,12 @@ export class BlockComponent implements OnInit, OnDestroy {
       halvenings--;
     }
   }
-
   pageChange(page: number) {
     const start = (page - 1) * this.itemsPerPage;
     this.isLoadingTransactions = true;
     this.transactions = null;
+
+    document.querySelector('#block-tx-title').scrollIntoView();
 
     this.electrsApiService.getBlockTransactions$(this.block.id, start)
      .subscribe((transactions) => {

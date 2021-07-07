@@ -125,7 +125,7 @@
       <button type="button" class="btn btn-outline-info btn-sm" (click)="toggleShowDetails()" i18n="transaction.details|Transaction Details">Details</button>
     </div>
 
-    <div class="block-tx-title">
+    <div id="block-tx-title" class="block-tx-title">
       <h2>
         <ng-container *ngTemplateOutlet="block.tx_count === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: block.tx_count | number}"></ng-container>
         <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
