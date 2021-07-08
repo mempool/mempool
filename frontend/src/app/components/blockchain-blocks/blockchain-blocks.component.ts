@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, Input } from '@angular/core';
+import { Subscription, Observable } from 'rxjs';
 import { Block } from 'src/app/interfaces/electrs.interface';
 import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
@@ -11,8 +11,10 @@ import { Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlockchainBlocksComponent implements OnInit, OnDestroy {
+  @Input() isLoading: Observable<boolean>;
+
   network = '';
-  blocks: Block[] = [];
+  blocks: Block[] = this.mountEmptyBlocks();
   markHeight: number;
   blocksSubscription: Subscription;
   networkSubscriotion: Subscription;
@@ -42,6 +44,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.blocks.forEach((b) => this.blockStyles.push(this.getStyleForBlock(b)));
     this.networkSubscriotion = this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.tabHiddenSubscription = this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
 
@@ -178,5 +181,26 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
       )`,
     };
   }
-
+  mountEmptyBlocks() {
+    const emptyBlocks = [];
+    for (let i = 0; i < 9; i++) {
+      emptyBlocks.push({
+        id: '',
+        height: 0,
+        version: 0,
+        timestamp: 0,
+        bits: 0,
+        nonce: 0,
+        difficulty: 0,
+        merkle_root: '',
+        tx_count: 0,
+        size: 0,
+        weight: 0,
+        previousblockhash: '',
+        matchRate: 0,
+        stage: 0,
+      });
+    }
+    return emptyBlocks;
+  }
 }

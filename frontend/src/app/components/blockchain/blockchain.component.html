@@ -1,15 +1,9 @@
 <div class="text-center" class="blockchain-wrapper">
-  <div class="position-container" [hidden]="(isLoading$ | async) === true">
+  <div class="position-container">
     <span>
-      <app-mempool-blocks></app-mempool-blocks>
-      <app-blockchain-blocks></app-blockchain-blocks>
+      <app-mempool-blocks [isLoading]="isLoading$"></app-mempool-blocks>
+      <app-blockchain-blocks [isLoading]="isLoading$"></app-blockchain-blocks>
       <div id="divider"></div>
     </span>
-  </div>
-  <div *ngIf="(isLoading$ | async) === true" class="position-container loading">
-    <div class="loading-block">
-      <h3 i18n="blockchain.waiting-for-blocks|Loading text">Waiting for blocks...</h3>
-      <div class="spinner-border text-light mt-2"></div>
-    </div>
   </div>
 </div>
