@@ -42,7 +42,7 @@
 }
 
 .more-padding {
-  padding: 15px 2rem 1.25rem 2rem;
+  padding: 1.25rem 2rem 1.25rem 2rem;
 }
 
 .graph-card {
@@ -301,12 +301,14 @@
   }
 }
 
-.title {
+.main-title {
   position: relative;
   color: #ffffff91;
   padding-right: 10px;
-  margin-top: 15px;
-  font-size: 10px;
+  margin-top: -13px;
+  font-size: 9px;
   text-transform: uppercase;
   font-weight: 500;
+  text-align: left;
+  margin-left: 1px;
 }
