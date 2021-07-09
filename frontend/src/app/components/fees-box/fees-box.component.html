@@ -1,6 +1,4 @@
 <div class="fee-estimation-wrapper">
-
-  <div class="title" i18n="fees-box.fee-estimates">Fee Estimates</div>
   <div class="fee-estimation-container" *ngIf="(isLoadingWebSocket$ | async) === false && (feeEstimations$ | async) as feeEstimations; else loadingFees">
     <div class="item">
       <h5 class="card-title" i18n="fees-box.low-priority">Low priority</h5>
