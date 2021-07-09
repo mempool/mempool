@@ -198,8 +198,8 @@
 </ng-template>
 
 <ng-template #difficultyEpoch>
+  <div class="main-title" i18n="difficulty-box.difficulty-adjustment">Difficulty Adjustment</div>
   <div class="card">
-    <div class="title" i18n="difficulty-box.difficulty-adjustment">Difficulty Adjustment</div>
     <div class="card-body more-padding">
       <div class="difficulty-adjustment-container" *ngIf="(difficultyEpoch$ | async) as epochData; else loadingDifficulty">
         <div class="item">
