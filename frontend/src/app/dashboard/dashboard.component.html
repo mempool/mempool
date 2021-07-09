@@ -41,6 +41,7 @@
         <ng-container *ngTemplateOutlet="difficultyEpoch"></ng-container>
       </div>
       <div class="col">
+        <div class="main-title" i18n="mempool-stats.activity">Mempool Activity</div>
         <div class="card graph-card">
           <div class="card-body pl-0">
             <div style="padding-left: 1.25rem;">
@@ -54,6 +55,7 @@
         </div>
       </div>
       <div class="col">
+        <div class="main-title" i18n="network-stats.activity">Network Activity</div>
         <div class="card graph-card">
           <div class="card-body">
             <ng-container *ngTemplateOutlet="txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
