@@ -42,7 +42,7 @@
 }
 
 .more-padding {
-  padding: 1.25rem 2rem 1.25rem 2rem;
+  padding: 18px;
 }
 
 .graph-card {
@@ -223,6 +223,7 @@
   display: flex;
   flex-direction: row;
   justify-content: space-around;
+  height: 76px;
   .shared-block {
     color: #ffffff66;
     font-size: 12px;
@@ -291,7 +292,7 @@
   .skeleton-loader {
     width: 100%;
     display: block;
-    margin: 11px auto;
+    margin: 7px auto;
     &:first-child {
       max-width: 80px;
     }
@@ -304,11 +305,23 @@
 .main-title {
   position: relative;
   color: #ffffff91;
-  padding-right: 10px;
   margin-top: -13px;
-  font-size: 9px;
+  font-size: 10px;
   text-transform: uppercase;
   font-weight: 500;
-  text-align: left;
-  margin-left: 1px;
+  text-align: center;
+  padding-bottom: 3px;
+}
+.card-wrapper {
+  .card {
+    height: auto !important;
+  }
+  .card-body {
+    display: flex;
+    flex: inherit;
+    text-align: center;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 22px 20px;
+  }
 }

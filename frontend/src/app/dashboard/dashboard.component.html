@@ -1,9 +1,9 @@
 
 <div class="container-xl dashboard-container">
-
   <div class="row row-cols-1 row-cols-md-2" *ngIf="{ value: (mempoolInfoData$ | async) } as mempoolInfoData">
     <ng-template [ngIf]="collapseLevel === 'three'" [ngIfElse]="expanded">
-      <div class="col">
+      <div class="col card-wrapper">
+        <div class="main-title" i18n="fees-box.fee-estimates">Fee Estimates</div>
         <div class="card">
           <div class="card-body">
             <app-fees-box class="d-block"></app-fees-box>
@@ -29,7 +29,8 @@
       </div>
     </ng-template>
     <ng-template #expanded>
-      <div class="col">
+      <div class="col card-wrapper">
+        <div class="main-title" i18n="fees-box.fee-estimates">Fee Estimates</div>
         <div class="card">
           <div class="card-body">
             <app-fees-box class="d-block"></app-fees-box>
@@ -199,29 +200,31 @@
 
 <ng-template #difficultyEpoch>
   <div class="main-title" i18n="difficulty-box.difficulty-adjustment">Difficulty Adjustment</div>
-  <div class="card">
-    <div class="card-body more-padding">
-      <div class="difficulty-adjustment-container" *ngIf="(difficultyEpoch$ | async) as epochData; else loadingDifficulty">
-        <div class="item">
-          <h5 class="card-title" i18n="difficulty-box.remaining">Remaining</h5>
-          <div class="card-text">
-            <ng-container *ngTemplateOutlet="epochData.remainingBlocks === 1 ? blocksSingular : blocksPlural; context: {$implicit: epochData.remainingBlocks }"></ng-container>
-            <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
-            <ng-template #blocksSingular let-i i18n="shared.block">{{ i }} <span class="shared-block">block</span></ng-template>
+  <div class="card-wrapper">
+    <div class="card">
+      <div class="card-body more-padding">
+        <div class="difficulty-adjustment-container" *ngIf="(difficultyEpoch$ | async) as epochData; else loadingDifficulty">
+          <div class="item">
+            <h5 class="card-title" i18n="difficulty-box.remaining">Remaining</h5>
+            <div class="card-text">
+              <ng-container *ngTemplateOutlet="epochData.remainingBlocks === 1 ? blocksSingular : blocksPlural; context: {$implicit: epochData.remainingBlocks }"></ng-container>
+              <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
+              <ng-template #blocksSingular let-i i18n="shared.block">{{ i }} <span class="shared-block">block</span></ng-template>
+            </div>
+            <div class="symbol"><app-time-until [time]="epochData.remainingTime" [fastRender]="true"></app-time-until></div>
           </div>
-          <div class="symbol"><app-time-until [time]="epochData.remainingTime" [fastRender]="true"></app-time-until></div>
-        </div>
-        <div class="item">
-          <h5 class="card-title" i18n="difficulty-box.estimate">Estimate</h5>
-          <div class="card-text" [ngStyle]="{'color': epochData.colorAdjustments}">{{ epochData.change | number: '1.2-2' }} <span class="symbol">%</span></div>
-          <div class="symbol">~{{ epochData.timeAvg }} <span i18n="difficulty-box.mins-per-block">mins per block</span></div>
-        </div>
-        <div class="item">
-          <h5 class="card-title" i18n="difficulty-box.current-period">Current Period</h5>
-          <div class="card-text">{{ epochData.progress | number: '1.2-2' }} <span class="symbol">%</span></div>
-          <div class="progress small-bar">
-            <div class="progress-bar" role="progressbar" style="width: 15%; background-color: #105fb0" [ngStyle]="{'width': epochData.base}">&nbsp;</div>
-            <div class="progress-bar bg-success" role="progressbar" style="width: 0%" [ngStyle]="{'width': epochData.green}"></div>
+          <div class="item">
+            <h5 class="card-title" i18n="difficulty-box.estimate">Estimate</h5>
+            <div class="card-text" [ngStyle]="{'color': epochData.colorAdjustments}">{{ epochData.change | number: '1.2-2' }} <span class="symbol">%</span></div>
+            <div class="symbol">~{{ epochData.timeAvg }} <span i18n="difficulty-box.mins-per-block">mins per block</span></div>
+          </div>
+          <div class="item">
+            <h5 class="card-title" i18n="difficulty-box.current-period">Current Period</h5>
+            <div class="card-text">{{ epochData.progress | number: '1.2-2' }} <span class="symbol">%</span></div>
+            <div class="progress small-bar">
+              <div class="progress-bar" role="progressbar" style="width: 15%; background-color: #105fb0" [ngStyle]="{'width': epochData.base}">&nbsp;</div>
+              <div class="progress-bar bg-success" role="progressbar" style="width: 0%" [ngStyle]="{'width': epochData.green}"></div>
+            </div>
           </div>
         </div>
       </div>
