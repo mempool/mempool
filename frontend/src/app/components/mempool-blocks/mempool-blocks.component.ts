@@ -51,6 +51,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
       this.updateMempoolBlockStyles();
       this.calculateTransactionPosition();
     });
+    this.reduceMempoolBlocksToFitScreen(this.mempoolBlocks);
     this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
 
     this.mempoolBlocks$ = merge(
