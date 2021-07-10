@@ -1,4 +1,4 @@
-<div class="blocks-container" *ngIf="blocks.length">
+<div class="blocks-container" *ngIf="(isLoading$ | async)  === false">
   <div *ngFor="let block of blocks; let i = index; trackBy: trackByBlocksFn" >
     <div class="text-center bitcoin-block mined-block" id="bitcoin-block-{{ block.height }}" [ngStyle]="blockStyles[i]">
       <a [routerLink]="['/block/' | relativeUrl, block.id]" [state]="{ data: { block: block } }" class="blockLink">&nbsp;</a>
@@ -24,3 +24,12 @@
   </div>
   <div [hidden]="!arrowVisible" id="arrow-up" [style.transition]="transition" [ngStyle]="{'left': arrowLeftPx + 'px' }"></div>
 </div>
+
+<div class="blocks-container" *ngIf="(isLoading$ | async) === true">
+  <div class="flashing">
+    <div *ngFor="let block of blocks; let i = index; trackBy: trackByBlocksFn" >
+      <div class="text-center bitcoin-block mined-block" id="bitcoin-block-{{ block.height }}" [ngStyle]="blockStyles[i]"></div>
+    </div>
+  </div>
+</div>
+
