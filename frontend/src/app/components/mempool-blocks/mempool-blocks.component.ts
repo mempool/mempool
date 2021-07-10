@@ -13,7 +13,7 @@ import { feeLevels, mempoolFeeColors } from 'src/app/app.constants';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MempoolBlocksComponent implements OnInit, OnDestroy {
-  @Input() isLoading: Observable<boolean>;
+  @Input() isLoading$: Observable<boolean>;
 
   mempoolBlocks: MempoolBlock[] = this.mountEmptyBlocks();
   mempoolBlocks$: Observable<MempoolBlock[]>;

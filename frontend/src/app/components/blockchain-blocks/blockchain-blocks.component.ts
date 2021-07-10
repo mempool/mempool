@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlockchainBlocksComponent implements OnInit, OnDestroy {
-  @Input() isLoading: Observable<boolean>;
+  @Input() isLoading$: Observable<boolean>;
 
   network = '';
   blocks: Block[] = this.mountEmptyBlocks();
