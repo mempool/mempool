@@ -1,36 +1,36 @@
-{
-    "env": {
-        "node": true
+module.exports = {
+    env: {
+        node: true
     },
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-        "project": "tsconfig.json",
-        "sourceType": "module"
+    parser: "@typescript-eslint/parser",
+    parserOptions: {
+        project: "tsconfig.json",
+        sourceType: "module"
     },
-    "plugins": [
+    plugins: [
         "@typescript-eslint",
         "prettier"
     ],
-    "extends": [
+    extends: [
         "prettier"
     ],
-    "rules": {
+    rules: {
         "prettier/prettier": [
             "error",
             {
-                "parser": "typescript",
-                "singleQuote": true,
-                "tabWidth": 2,
-                "endOfLine": "lf",
-                "trailingComma": "es5",
-                "arrowParens": "avoid",
-                "printWidth": 120
+                parser: "typescript",
+                singleQuote: true,
+                tabWidth: 2,
+                endOfLine: "lf",
+                trailingComma: "es5",
+                arrowParens: "avoid",
+                printWidth: 120
             }
         ],
         "@typescript-eslint/no-unused-vars": [
             "warn",
             {
-                "args": "none"
+                args: "none"
             }
         ],
         "@typescript-eslint/prefer-namespace-keyword": "error",
@@ -38,7 +38,7 @@
             "error"
         ],
         "@typescript-eslint/type-annotation-spacing": "error",
-        "eqeqeq": [
+        eqeqeq: [
             "warn",
             "smart"
         ],
@@ -47,4 +47,4 @@
         "no-redeclare": "error",
         "no-var": "error"
     }
-  }
+};
