@@ -8,8 +8,9 @@ describe('FiatComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [FiatComponent],
-    }).compileComponents();
+      declarations: [ FiatComponent ]
+    })
+    .compileComponents();
   }));
 
   beforeEach(() => {

@@ -1,14 +1,5 @@
 import { createChart, CrosshairMode } from 'lightweight-charts';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  SimpleChanges,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-lightweight-charts',
@@ -26,7 +17,9 @@ export class LightweightChartsComponent implements OnInit, OnChanges, OnDestroy 
   volumeSeries: any;
   chart: any;
 
-  constructor(private element: ElementRef) {}
+  constructor(
+    private element: ElementRef,
+  ) { }
 
   ngOnInit() {
     this.chart = createChart(this.element.nativeElement, {
@@ -67,7 +60,7 @@ export class LightweightChartsComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (!changes.data || changes.data.isFirstChange()) {
+    if (!changes.data || changes.data.isFirstChange()){
       return;
     }
     this.updateData();
@@ -83,10 +76,11 @@ export class LightweightChartsComponent implements OnInit, OnChanges, OnDestroy 
 
     this.lineSeries.applyOptions({
       priceFormat: {
-        type: 'price',
-        precision: this.precision,
-        minMove: 0.0000001,
+          type: 'price',
+          precision: this.precision,
+          minMove: 0.0000001,
       },
     });
   }
+
 }
