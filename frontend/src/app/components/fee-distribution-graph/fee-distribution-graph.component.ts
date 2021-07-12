@@ -13,11 +13,11 @@ export class FeeDistributionGraphComponent implements OnChanges {
   mempoolVsizeFeesData: any;
   mempoolVsizeFeesOptions: any;
 
-  feeLevels = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
-  250, 300, 350, 400, 500];
+  feeLevels = [
+    1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250, 300, 350, 400, 500,
+  ];
 
-  constructor(
-  ) { }
+  constructor() {}
 
   ngOnChanges() {
     this.mempoolVsizeFeesOptions = {
@@ -28,19 +28,19 @@ export class FeeDistributionGraphComponent implements OnChanges {
       low: 0,
       axisY: {
         showLabel: false,
-        offset: 0
+        offset: 0,
       },
       axisX: {
         showGrid: true,
         showLabel: false,
-        offset: 0
+        offset: 0,
       },
       plugins: [
         Chartist.plugins.ctPointLabels({
           textAnchor: 'middle',
-          labelInterpolationFnc: (value) => Math.round(value)
-        })
-      ]
+          labelInterpolationFnc: value => Math.round(value),
+        }),
+      ],
     };
 
     const fees = this.feeRange;
@@ -54,7 +54,7 @@ export class FeeDistributionGraphComponent implements OnChanges {
           if (fee >= this.feeLevels[i]) {
             total += 1;
           }
-        } else  if (fee >= this.feeLevels[i] && fee < this.feeLevels[i + 1]) {
+        } else if (fee >= this.feeLevels[i] && fee < this.feeLevels[i + 1]) {
           total += 1;
         }
       }
@@ -63,8 +63,7 @@ export class FeeDistributionGraphComponent implements OnChanges {
 
     this.mempoolVsizeFeesData = {
       series: [fees],
-      labels: fees.map((d, i) => i)
+      labels: fees.map((d, i) => i),
     };
   }
-
 }

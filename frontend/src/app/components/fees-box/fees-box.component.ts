@@ -21,36 +21,37 @@ export class FeesBoxComponent implements OnInit {
   isLoadingWebSocket$: Observable<boolean>;
   defaultFee: number;
 
-  constructor(
-    private stateService: StateService,
-  ) { }
+  constructor(private stateService: StateService) {}
 
   ngOnInit(): void {
     this.defaultFee = this.stateService.network === 'liquid' ? 0.1 : 1;
 
     this.isLoadingWebSocket$ = this.stateService.isLoadingWebSocket$;
-    this.feeEstimations$ = this.stateService.mempoolBlocks$
-      .pipe(
-        map((pBlocks) => {
-          if (!pBlocks.length) {
-            return {
-              'fastestFee': this.defaultFee,
-              'halfHourFee': this.defaultFee,
-              'hourFee': this.defaultFee,
-            };
-          }
-
-          const firstMedianFee = this.optimizeMedianFee(pBlocks[0], pBlocks[1]);
-          const secondMedianFee = pBlocks[1] ? this.optimizeMedianFee(pBlocks[1], pBlocks[2], firstMedianFee) : this.defaultFee;
-          const thirdMedianFee = pBlocks[2] ? this.optimizeMedianFee(pBlocks[2], pBlocks[3], secondMedianFee) : this.defaultFee;
-
+    this.feeEstimations$ = this.stateService.mempoolBlocks$.pipe(
+      map(pBlocks => {
+        if (!pBlocks.length) {
           return {
-            'fastestFee': firstMedianFee,
-            'halfHourFee': secondMedianFee,
-            'hourFee': thirdMedianFee,
+            fastestFee: this.defaultFee,
+            halfHourFee: this.defaultFee,
+            hourFee: this.defaultFee,
           };
-        })
-      );
+        }
+
+        const firstMedianFee = this.optimizeMedianFee(pBlocks[0], pBlocks[1]);
+        const secondMedianFee = pBlocks[1]
+          ? this.optimizeMedianFee(pBlocks[1], pBlocks[2], firstMedianFee)
+          : this.defaultFee;
+        const thirdMedianFee = pBlocks[2]
+          ? this.optimizeMedianFee(pBlocks[2], pBlocks[3], secondMedianFee)
+          : this.defaultFee;
+
+        return {
+          fastestFee: firstMedianFee,
+          halfHourFee: secondMedianFee,
+          hourFee: thirdMedianFee,
+        };
+      })
+    );
   }
 
   private optimizeMedianFee(pBlock: MempoolBlock, nextBlock: MempoolBlock | undefined, previousFee?: number): number {
@@ -64,5 +65,4 @@ export class FeesBoxComponent implements OnInit {
     }
     return Math.ceil(useFee);
   }
-
 }

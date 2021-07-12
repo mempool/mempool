@@ -1,4 +1,13 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  ChangeDetectionStrategy,
+  OnChanges,
+  ChangeDetectorRef,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { StateService } from '../../services/state.service';
 import { Observable, forkJoin } from 'rxjs';
 import { Block, Outspend, Transaction } from '../../interfaces/electrs.interface';
@@ -11,7 +20,7 @@ import { map } from 'rxjs/operators';
   selector: 'app-transactions-list',
   templateUrl: './transactions-list.component.html',
   styleUrls: ['./transactions-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TransactionsListComponent implements OnInit, OnChanges {
   network = '';
@@ -33,15 +42,15 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     private stateService: StateService,
     private electrsApiService: ElectrsApiService,
     private assetsService: AssetsService,
-    private ref: ChangeDetectorRef,
-  ) { }
+    private ref: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.latestBlock$ = this.stateService.blocks$.pipe(map(([block]) => block));
-    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.stateService.networkChanged$.subscribe(network => (this.network = network));
 
     if (this.network === 'liquid') {
-      this.assetsService.getAssetsMinimalJson$.subscribe((assets) => {
+      this.assetsService.getAssetsMinimalJson$.subscribe(assets => {
         this.assetsMinimal = assets;
       });
     }
@@ -61,25 +70,24 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       observableObject[i] = this.electrsApiService.getOutspends$(tx.txid);
     });
 
-    forkJoin(observableObject)
-      .subscribe((outspends: any) => {
-        const newOutspends = [];
-        for (const i in outspends) {
-          if (outspends.hasOwnProperty(i)) {
-            newOutspends.push(outspends[i]);
-          }
+    forkJoin(observableObject).subscribe((outspends: any) => {
+      const newOutspends = [];
+      for (const i in outspends) {
+        if (outspends.hasOwnProperty(i)) {
+          newOutspends.push(outspends[i]);
         }
-        this.outspends = this.outspends.concat(newOutspends);
-        this.ref.markForCheck();
-      });
+      }
+      this.outspends = this.outspends.concat(newOutspends);
+      this.ref.markForCheck();
+    });
   }
 
   onScroll() {
     const scrollHeight = document.body.scrollHeight;
     const scrollTop = document.documentElement.scrollTop;
-    if (scrollHeight > 0){
-      const percentageScrolled = scrollTop * 100 / scrollHeight;
-      if (percentageScrolled > 70){
+    if (scrollHeight > 0) {
+      const percentageScrolled = (scrollTop * 100) / scrollHeight;
+      if (percentageScrolled > 70) {
         this.loadMore.emit();
       }
     }

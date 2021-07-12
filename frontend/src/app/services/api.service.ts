@@ -6,22 +6,25 @@ import { StateService } from './state.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiService {
   private apiBaseUrl: string; // base URL is protocol, hostname, and port
   private apiBasePath: string; // network path is /testnet, etc. or '' for mainnet
 
-  constructor(
-    private httpClient: HttpClient,
-    private stateService: StateService,
-  ) {
+  constructor(private httpClient: HttpClient, private stateService: StateService) {
     this.apiBaseUrl = ''; // use relative URL by default
-    if (!stateService.isBrowser) { // except when inside AU SSR process
-      this.apiBaseUrl = this.stateService.env.NGINX_PROTOCOL + '://' + this.stateService.env.NGINX_HOSTNAME + ':' + this.stateService.env.NGINX_PORT;
+    if (!stateService.isBrowser) {
+      // except when inside AU SSR process
+      this.apiBaseUrl =
+        this.stateService.env.NGINX_PROTOCOL +
+        '://' +
+        this.stateService.env.NGINX_HOSTNAME +
+        ':' +
+        this.stateService.env.NGINX_PORT;
     }
     this.apiBasePath = ''; // assume mainnet by default
-    this.stateService.networkChanged$.subscribe((network) => {
+    this.stateService.networkChanged$.subscribe(network => {
       if (network === 'bisq' && !this.stateService.env.BISQ_SEPARATE_BACKEND) {
         network = '';
       }
@@ -82,7 +85,9 @@ export class ApiService {
   }
 
   checkDonation$(orderId: string): Observable<any[]> {
-    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/donations/check?order_id=' + orderId);
+    return this.httpClient.get<any[]>(
+      this.apiBaseUrl + this.apiBasePath + '/api/v1/donations/check?order_id=' + orderId
+    );
   }
 
   getInitData$(): Observable<WebsocketResponse> {

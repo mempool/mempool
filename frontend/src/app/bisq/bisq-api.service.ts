@@ -1,19 +1,29 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { BisqTransaction, BisqBlock, BisqStats, MarketVolume, Trade, Markets, Tickers, Offers, Currencies, HighLowOpenClose, SummarizedInterval } from './bisq.interfaces';
+import {
+  BisqTransaction,
+  BisqBlock,
+  BisqStats,
+  MarketVolume,
+  Trade,
+  Markets,
+  Tickers,
+  Offers,
+  Currencies,
+  HighLowOpenClose,
+  SummarizedInterval,
+} from './bisq.interfaces';
 
 const API_BASE_URL = '/bisq/api';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class BisqApiService {
   apiBaseUrl: string;
 
-  constructor(
-    private httpClient: HttpClient,
-  ) { }
+  constructor(private httpClient: HttpClient) {}
 
   getStats$(): Observable<BisqStats> {
     return this.httpClient.get<BisqStats>(API_BASE_URL + '/stats');
@@ -28,7 +38,10 @@ export class BisqApiService {
     types.forEach((t: string) => {
       params = params.append('types[]', t);
     });
-    return this.httpClient.get<BisqTransaction[]>(API_BASE_URL + `/txs/${start}/${length}`, { params, observe: 'response' });
+    return this.httpClient.get<BisqTransaction[]>(API_BASE_URL + `/txs/${start}/${length}`, {
+      params,
+      observe: 'response',
+    });
   }
 
   getBlock$(hash: string): Observable<BisqBlock> {
@@ -55,9 +68,13 @@ export class BisqApiService {
     return this.httpClient.get<Currencies>(API_BASE_URL + '/markets/currencies');
   }
 
-  getMarketsHloc$(market: string, interval: 'minute' | 'half_hour' | 'hour' | 'half_day' | 'day'
-  | 'week' | 'month' | 'year' | 'auto'): Observable<SummarizedInterval[]> {
-    return this.httpClient.get<SummarizedInterval[]>(API_BASE_URL + '/markets/hloc?market=' + market + '&interval=' + interval);
+  getMarketsHloc$(
+    market: string,
+    interval: 'minute' | 'half_hour' | 'hour' | 'half_day' | 'day' | 'week' | 'month' | 'year' | 'auto'
+  ): Observable<SummarizedInterval[]> {
+    return this.httpClient.get<SummarizedInterval[]>(
+      API_BASE_URL + '/markets/hloc?market=' + market + '&interval=' + interval
+    );
   }
 
   getMarketOffers$(market: string): Observable<Offers> {

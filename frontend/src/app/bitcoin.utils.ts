@@ -1,7 +1,7 @@
 import { Transaction, Vin } from './interfaces/electrs.interface';
 
 const P2SH_P2WPKH_COST = 21 * 4; // the WU cost for the non-witness part of P2SH-P2WPKH
-const P2SH_P2WSH_COST  = 35 * 4; // the WU cost for the non-witness part of P2SH-P2WSH
+const P2SH_P2WSH_COST = 35 * 4; // the WU cost for the non-witness part of P2SH-P2WSH
 
 export function calcSegwitFeeGains(tx: Transaction) {
   // calculated in weight units
@@ -10,10 +10,12 @@ export function calcSegwitFeeGains(tx: Transaction) {
   let potentialP2shGains = 0;
 
   for (const vin of tx.vin) {
-    if (!vin.prevout) { continue; }
+    if (!vin.prevout) {
+      continue;
+    }
 
     const isP2pkh = vin.prevout.scriptpubkey_type === 'p2pkh';
-    const isP2sh  = vin.prevout.scriptpubkey_type === 'p2sh';
+    const isP2sh = vin.prevout.scriptpubkey_type === 'p2sh';
     const isP2wsh = vin.prevout.scriptpubkey_type === 'v0_p2wsh';
     const isP2wpkh = vin.prevout.scriptpubkey_type === 'v0_p2wpkh';
 
@@ -52,15 +54,16 @@ export function calcSegwitFeeGains(tx: Transaction) {
         potentialP2shGains += fullGains - (isP2pkh ? P2SH_P2WPKH_COST : P2SH_P2WSH_COST);
         break;
 
-    // TODO: should we also consider P2PK and pay-to-bare-script (non-p2sh-wrapped) as upgradable to P2WPKH and P2WSH?
+      // TODO: should we also consider P2PK and pay-to-bare-script (non-p2sh-wrapped) as upgradable to P2WPKH and P2WSH?
     }
   }
 
   // returned as percentage of the total tx weight
-  return { realizedGains: realizedGains / (tx.weight + realizedGains) // percent of the pre-segwit tx size
-         , potentialBech32Gains: potentialBech32Gains / tx.weight
-         , potentialP2shGains: potentialP2shGains / tx.weight
-         };
+  return {
+    realizedGains: realizedGains / (tx.weight + realizedGains), // percent of the pre-segwit tx size
+    potentialBech32Gains: potentialBech32Gains / tx.weight,
+    potentialP2shGains: potentialP2shGains / tx.weight,
+  };
 }
 
 // https://github.com/shesek/move-decimal-point
@@ -69,10 +72,10 @@ export function moveDec(num: number, n: number) {
   if (n === 0) {
     return num;
   }
-  ref = ('' + num).split('.'), int = ref[0], frac = ref[1];
+  (ref = ('' + num).split('.')), (int = ref[0]), (frac = ref[1]);
   int || (int = '0');
   frac || (frac = '0');
-  neg = (int[0] === '-' ? '-' : '');
+  neg = int[0] === '-' ? '-' : '';
   if (neg) {
     int = int.slice(1);
   }
@@ -85,7 +88,7 @@ export function moveDec(num: number, n: number) {
   } else {
     n = n * -1;
     if (n > int.length) {
-      int = (zeros(n - int.length)) + int;
+      int = zeros(n - int.length) + int;
     }
     frac = int.slice(n * -1) + frac;
     int = int.slice(0, n * -1);
@@ -105,7 +108,7 @@ function zeros(n) {
 
 // Formats a number for display. Treats the number as a string to avoid rounding errors.
 export const formatNumber = (s, precision = null) => {
-  let [ whole, dec ] = s.toString().split('.');
+  let [whole, dec] = s.toString().split('.');
 
   // divide numbers into groups of three separated with a thin space (U+202F, "NARROW NO-BREAK SPACE"),
   // but only when there are more than a total of 5 non-decimal digits.
@@ -116,8 +119,7 @@ export const formatNumber = (s, precision = null) => {
   if (precision != null && precision > 0) {
     if (dec == null) {
       dec = '0'.repeat(precision);
-    }
-    else if (dec.length < precision) {
+    } else if (dec.length < precision) {
       dec += '0'.repeat(precision - dec.length);
     }
   }
@@ -126,5 +128,5 @@ export const formatNumber = (s, precision = null) => {
 };
 
 // Utilities for segwitFeeGains
-const witnessSize = (vin: Vin) => vin.witness.reduce((S, w) => S + (w.length / 2), 0);
-const scriptSigSize = (vin: Vin) => vin.scriptsig ? vin.scriptsig.length / 2 : 0;
+const witnessSize = (vin: Vin) => vin.witness.reduce((S, w) => S + w.length / 2, 0);
+const scriptSigSize = (vin: Vin) => (vin.scriptsig ? vin.scriptsig.length / 2 : 0);

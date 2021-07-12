@@ -14,12 +14,9 @@ export class FiatComponent implements OnInit {
   @Input() value: number;
   @Input() digitsInfo = '1.2-2';
 
-  constructor(
-    private stateService: StateService,
-  ) { }
+  constructor(private stateService: StateService) {}
 
   ngOnInit(): void {
     this.conversions$ = this.stateService.conversions$.asObservable();
   }
-
 }

@@ -23,40 +23,38 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private stateService: StateService,
     private seoService: SeoService,
-    private websocketService: WebsocketService,
-  ) { }
+    private websocketService: WebsocketService
+  ) {}
 
   ngOnInit(): void {
     this.websocketService.want(['blocks', 'mempool-blocks']);
 
-    this.mempoolBlock$ = this.route.paramMap
-      .pipe(
-        switchMap((params: ParamMap) => {
-          this.mempoolBlockIndex = parseInt(params.get('id'), 10) || 0;
-          return this.stateService.mempoolBlocks$
-            .pipe(
-              map((blocks) => {
-                if (!blocks.length) {
-                  return [{ index: 0, blockSize: 0, blockVSize: 0, feeRange: [0, 0], medianFee: 0, nTx: 0, totalFees: 0 }];
-                }
-                return blocks;
-              }),
-              filter((mempoolBlocks) => mempoolBlocks.length > 0),
-              map((mempoolBlocks) => {
-                while (!mempoolBlocks[this.mempoolBlockIndex]) {
-                  this.mempoolBlockIndex--;
-                }
-                const ordinal = this.getOrdinal(mempoolBlocks[this.mempoolBlockIndex]);
-                this.ordinal$.next(ordinal);
-                this.seoService.setTitle(ordinal);
-                return mempoolBlocks[this.mempoolBlockIndex];
-              })
-            );
-        }),
-        tap(() => {
-          this.stateService.markBlock$.next({ mempoolBlockIndex: this.mempoolBlockIndex });
-        })
-      );
+    this.mempoolBlock$ = this.route.paramMap.pipe(
+      switchMap((params: ParamMap) => {
+        this.mempoolBlockIndex = parseInt(params.get('id'), 10) || 0;
+        return this.stateService.mempoolBlocks$.pipe(
+          map(blocks => {
+            if (!blocks.length) {
+              return [{ index: 0, blockSize: 0, blockVSize: 0, feeRange: [0, 0], medianFee: 0, nTx: 0, totalFees: 0 }];
+            }
+            return blocks;
+          }),
+          filter(mempoolBlocks => mempoolBlocks.length > 0),
+          map(mempoolBlocks => {
+            while (!mempoolBlocks[this.mempoolBlockIndex]) {
+              this.mempoolBlockIndex--;
+            }
+            const ordinal = this.getOrdinal(mempoolBlocks[this.mempoolBlockIndex]);
+            this.ordinal$.next(ordinal);
+            this.seoService.setTitle(ordinal);
+            return mempoolBlocks[this.mempoolBlockIndex];
+          })
+        );
+      }),
+      tap(() => {
+        this.stateService.markBlock$.next({ mempoolBlockIndex: this.mempoolBlockIndex });
+      })
+    );
 
     this.network$ = this.stateService.networkChanged$;
   }
@@ -74,5 +72,5 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
     } else {
       return $localize`:@@mempool-block.block.no:Mempool block ${this.mempoolBlockIndex + 1}:INTERPOLATION:`;
     }
- }
+  }
 }

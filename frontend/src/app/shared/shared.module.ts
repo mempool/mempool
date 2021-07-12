@@ -14,7 +14,14 @@ import { TimeSinceComponent } from '../components/time-since/time-since.componen
 import { ClipboardComponent } from '../components/clipboard/clipboard.component';
 import { QrcodeComponent } from '../components/qrcode/qrcode.component';
 import { FiatComponent } from '../fiat/fiat.component';
-import { NgbNavModule, NgbTooltipModule, NgbButtonsModule, NgbPaginationModule, NgbDropdownModule, NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbNavModule,
+  NgbTooltipModule,
+  NgbButtonsModule,
+  NgbPaginationModule,
+  NgbDropdownModule,
+  NgbAccordionModule,
+} from '@ng-bootstrap/ng-bootstrap';
 import { TxFeaturesComponent } from '../components/tx-features/tx-features.component';
 import { TxFeeRatingComponent } from '../components/tx-fee-rating/tx-fee-rating.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -52,9 +59,7 @@ import { ColoredPriceDirective } from './directives/colored-price.directive';
     NgbDropdownModule,
     NgbAccordionModule,
   ],
-  providers: [
-    VbytesPipe,
-  ],
+  providers: [VbytesPipe],
   exports: [
     NgbAccordionModule,
     NgbNavModule,
@@ -82,6 +87,6 @@ import { ColoredPriceDirective } from './directives/colored-price.directive';
     ShortenStringPipe,
     Decimal2HexPipe,
     ColoredPriceDirective,
-  ]
+  ],
 })
 export class SharedModule {}
