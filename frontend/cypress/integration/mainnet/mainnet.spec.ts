@@ -49,6 +49,9 @@ describe('Mainnet', () => {
                 cy.viewport('macbook-16');
                 cy.wait(1000);
                 cy.get('.blockchain-wrapper').should('be.visible');
+                cy.get('#mempool-block-0').should('be.visible');
+                cy.get('#mempool-block-1').should('be.visible');
+                cy.get('#mempool-block-2').should('be.visible');
             });
         });
 
