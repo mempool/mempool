@@ -152,21 +152,15 @@ export interface VbytesPerSecond {
   vSize: number;
 }
 
-export interface RequiredSpec {
-  [name: string]: RequiredParams;
-}
+export interface RequiredSpec { [name: string]: RequiredParams; }
 
 interface RequiredParams {
   required: boolean;
   types: ('@string' | '@number' | '@boolean' | string)[];
 }
 
-export interface ILoadingIndicators {
-  [name: string]: number;
-}
-export interface IConversionRates {
-  [currency: string]: number;
-}
+export interface ILoadingIndicators { [name: string]: number; }
+export interface IConversionRates { [currency: string]: number; }
 
 export interface IBackendInfo {
   hostname: string;

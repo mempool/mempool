@@ -13,22 +13,10 @@ class Mempool {
   private static LAZY_DELETE_AFTER_SECONDS = 30;
   private inSync: boolean = false;
   private mempoolCache: { [txId: string]: TransactionExtended } = {};
-  private mempoolInfo: IBitcoinApi.MempoolInfo = {
-    loaded: false,
-    size: 0,
-    bytes: 0,
-    usage: 0,
-    maxmempool: 300000000,
-    mempoolminfee: 0.00001,
-    minrelaytxfee: 0.00001,
-  };
-  private mempoolChangedCallback:
-    | ((
-        newMempool: { [txId: string]: TransactionExtended },
-        newTransactions: TransactionExtended[],
-        deletedTransactions: TransactionExtended[]
-      ) => void)
-    | undefined;
+  private mempoolInfo: IBitcoinApi.MempoolInfo = { loaded: false, size: 0, bytes: 0, usage: 0,
+                                                    maxmempool: 300000000, mempoolminfee: 0.00001000, minrelaytxfee: 0.00001000 };
+  private mempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
+    deletedTransactions: TransactionExtended[]) => void) | undefined;
 
   private txPerSecondArray: number[] = [];
   private txPerSecond: number = 0;
@@ -56,13 +44,8 @@ class Mempool {
     return this.latestTransactions;
   }
 
-  public setMempoolChangedCallback(
-    fn: (
-      newMempool: { [txId: string]: TransactionExtended },
-      newTransactions: TransactionExtended[],
-      deletedTransactions: TransactionExtended[]
-    ) => void
-  ) {
+  public setMempoolChangedCallback(fn: (newMempool: { [txId: string]: TransactionExtended; },
+    newTransactions: TransactionExtended[], deletedTransactions: TransactionExtended[]) => void) {
     this.mempoolChangedCallback = fn;
   }
 
@@ -117,7 +100,7 @@ class Mempool {
     const newTransactions: TransactionExtended[] = [];
 
     if (!this.inSync) {
-      loadingIndicators.setProgress('mempool', (Object.keys(this.mempoolCache).length / transactions.length) * 100);
+      loadingIndicators.setProgress('mempool', Object.keys(this.mempoolCache).length / transactions.length * 100);
     }
 
     for (const txid of transactions) {
@@ -145,18 +128,19 @@ class Mempool {
         }
       }
 
-      if (new Date().getTime() - start > Mempool.WEBSOCKET_REFRESH_RATE_MS) {
+      if ((new Date().getTime()) - start > Mempool.WEBSOCKET_REFRESH_RATE_MS) {
         break;
       }
     }
 
     // Prevent mempool from clear on bitcoind restart by delaying the deletion
-    if (this.mempoolProtection === 0 && currentMempoolSize > 20000 && transactions.length / currentMempoolSize <= 0.8) {
+    if (this.mempoolProtection === 0
+      && currentMempoolSize > 20000
+      && transactions.length / currentMempoolSize <= 0.80
+    ) {
       this.mempoolProtection = 1;
       this.inSync = false;
-      logger.warn(
-        `Mempool clear protection triggered because transactions.length: ${transactions.length} and currentMempoolSize: ${currentMempoolSize}.`
-      );
+      logger.warn(`Mempool clear protection triggered because transactions.length: ${transactions.length} and currentMempoolSize: ${currentMempoolSize}.`);
       setTimeout(() => {
         this.mempoolProtection = 2;
         logger.warn('Mempool clear protection resumed.');
@@ -169,7 +153,7 @@ class Mempool {
       this.mempoolProtection = 0;
       // Index object for faster search
       const transactionsObject = {};
-      transactions.forEach(txId => (transactionsObject[txId] = true));
+      transactions.forEach((txId) => transactionsObject[txId] = true);
 
       // Flag transactions for lazy deletion
       for (const tx in this.mempoolCache) {
@@ -180,7 +164,7 @@ class Mempool {
       }
     }
 
-    const newTransactionsStripped = newTransactions.map(tx => Common.stripTransaction(tx));
+    const newTransactionsStripped = newTransactions.map((tx) => Common.stripTransaction(tx));
     this.latestTransactions = newTransactionsStripped.concat(this.latestTransactions).slice(0, 6);
 
     if (!this.inSync && transactions.length === Object.keys(this.mempoolCache).length) {
@@ -200,15 +184,14 @@ class Mempool {
   }
 
   private updateTxPerSecond() {
-    const nowMinusTimeSpan = new Date().getTime() - 1000 * config.STATISTICS.TX_PER_SECOND_SAMPLE_PERIOD;
-    this.txPerSecondArray = this.txPerSecondArray.filter(unixTime => unixTime > nowMinusTimeSpan);
+    const nowMinusTimeSpan = new Date().getTime() - (1000 * config.STATISTICS.TX_PER_SECOND_SAMPLE_PERIOD);
+    this.txPerSecondArray = this.txPerSecondArray.filter((unixTime) => unixTime > nowMinusTimeSpan);
     this.txPerSecond = this.txPerSecondArray.length / config.STATISTICS.TX_PER_SECOND_SAMPLE_PERIOD || 0;
 
-    this.vBytesPerSecondArray = this.vBytesPerSecondArray.filter(data => data.unixTime > nowMinusTimeSpan);
+    this.vBytesPerSecondArray = this.vBytesPerSecondArray.filter((data) => data.unixTime > nowMinusTimeSpan);
     if (this.vBytesPerSecondArray.length) {
       this.vBytesPerSecond = Math.round(
-        this.vBytesPerSecondArray.map(data => data.vSize).reduce((a, b) => a + b) /
-          config.STATISTICS.TX_PER_SECOND_SAMPLE_PERIOD
+        this.vBytesPerSecondArray.map((data) => data.vSize).reduce((a, b) => a + b) / config.STATISTICS.TX_PER_SECOND_SAMPLE_PERIOD
       );
     }
   }
