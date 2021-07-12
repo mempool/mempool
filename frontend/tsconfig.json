@@ -6,7 +6,11 @@
 */
 {
   "compilerOptions": {
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "composite": true,
+    "paths": {
+      "*": ["*"],
+    }
   },
   "include": [ "src/**/*", "*.js", "*.ts", "cypress/**/*" ],
   "files": [],
