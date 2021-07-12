@@ -34,26 +34,23 @@ class BitcoinApi implements AbstractBitcoinApi {
       return this.$returnCoinbaseTransaction();
     }
 
-    return this.bitcoindClient.getRawTransaction(txId, true)
-      .then((transaction: IBitcoinApi.Transaction) => {
-        if (skipConversion) {
-          transaction.vout.forEach((vout) => {
-            vout.value = vout.value * 100000000;
-          });
-          return transaction;
-        }
-        return this.$convertTransaction(transaction, addPrevout);
-      });
+    return this.bitcoindClient.getRawTransaction(txId, true).then((transaction: IBitcoinApi.Transaction) => {
+      if (skipConversion) {
+        transaction.vout.forEach(vout => {
+          vout.value = vout.value * 100000000;
+        });
+        return transaction;
+      }
+      return this.$convertTransaction(transaction, addPrevout);
+    });
   }
 
   $getBlockHeightTip(): Promise<number> {
-    return this.bitcoindClient.getChainTips()
-      .then((result: IBitcoinApi.ChainTips[]) => result[0].height);
+    return this.bitcoindClient.getChainTips().then((result: IBitcoinApi.ChainTips[]) => result[0].height);
   }
 
   $getTxIdsForBlock(hash: string): Promise<string[]> {
-    return this.bitcoindClient.getBlock(hash, 1)
-      .then((rpcBlock: IBitcoinApi.Block) => rpcBlock.tx);
+    return this.bitcoindClient.getBlock(hash, 1).then((rpcBlock: IBitcoinApi.Block) => rpcBlock.tx);
   }
 
   $getBlockHash(height: number): Promise<string> {
@@ -61,13 +58,12 @@ class BitcoinApi implements AbstractBitcoinApi {
   }
 
   async $getBlock(hash: string): Promise<IEsploraApi.Block> {
-    const foundBlock = blocks.getBlocks().find((block) => block.id === hash);
+    const foundBlock = blocks.getBlocks().find(block => block.id === hash);
     if (foundBlock) {
       return foundBlock;
     }
 
-    return this.bitcoindClient.getBlock(hash)
-      .then((block: IBitcoinApi.Block) => this.convertBlock(block));
+    return this.bitcoindClient.getBlock(hash).then((block: IBitcoinApi.Block) => this.convertBlock(block));
   }
 
   $getAddress(address: string): Promise<IEsploraApi.Address> {
@@ -98,7 +94,10 @@ class BitcoinApi implements AbstractBitcoinApi {
     return found;
   }
 
-  protected async $convertTransaction(transaction: IBitcoinApi.Transaction, addPrevout: boolean): Promise<IEsploraApi.Transaction> {
+  protected async $convertTransaction(
+    transaction: IBitcoinApi.Transaction,
+    addPrevout: boolean
+  ): Promise<IEsploraApi.Transaction> {
     let esploraTransaction: IEsploraApi.Transaction = {
       txid: transaction.txid,
       version: transaction.version,
@@ -111,7 +110,7 @@ class BitcoinApi implements AbstractBitcoinApi {
       status: { confirmed: false },
     };
 
-    esploraTransaction.vout = transaction.vout.map((vout) => {
+    esploraTransaction.vout = transaction.vout.map(vout => {
       return {
         value: vout.value * 100000000,
         scriptpubkey: vout.scriptPubKey.hex,
@@ -121,12 +120,12 @@ class BitcoinApi implements AbstractBitcoinApi {
       };
     });
 
-    esploraTransaction.vin = transaction.vin.map((vin) => {
+    esploraTransaction.vin = transaction.vin.map(vin => {
       return {
         is_coinbase: !!vin.coinbase,
         prevout: null,
-        scriptsig: vin.scriptSig && vin.scriptSig.hex || vin.coinbase || '',
-        scriptsig_asm: vin.scriptSig && this.convertScriptSigAsm(vin.scriptSig.asm) || '',
+        scriptsig: (vin.scriptSig && vin.scriptSig.hex) || vin.coinbase || '',
+        scriptsig_asm: (vin.scriptSig && this.convertScriptSigAsm(vin.scriptSig.asm)) || '',
         sequence: vin.sequence,
         txid: vin.txid || '',
         vout: vin.vout || 0,
@@ -174,14 +173,14 @@ class BitcoinApi implements AbstractBitcoinApi {
 
   private translateScriptPubKeyType(outputType: string): string {
     const map = {
-      'pubkey': 'p2pk',
-      'pubkeyhash': 'p2pkh',
-      'scripthash': 'p2sh',
-      'witness_v0_keyhash': 'v0_p2wpkh',
-      'witness_v0_scripthash': 'v0_p2wsh',
-      'witness_v1_taproot': 'v1_p2tr',
-      'nonstandard': 'nonstandard',
-      'nulldata': 'op_return'
+      pubkey: 'p2pk',
+      pubkeyhash: 'p2pkh',
+      scripthash: 'p2sh',
+      witness_v0_keyhash: 'v0_p2wpkh',
+      witness_v0_scripthash: 'v0_p2wsh',
+      witness_v1_taproot: 'v1_p2tr',
+      nonstandard: 'nonstandard',
+      nulldata: 'op_return',
     };
 
     if (map[outputType]) {
@@ -221,11 +220,16 @@ class BitcoinApi implements AbstractBitcoinApi {
   }
 
   protected $returnCoinbaseTransaction(): Promise<IEsploraApi.Transaction> {
-    return this.bitcoindClient.getBlock('000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f', 2)
+    return this.bitcoindClient
+      .getBlock('000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f', 2)
       .then((block: IBitcoinApi.Block) => {
-        return this.$convertTransaction(Object.assign(block.tx[0], {
-          confirmations: blocks.getCurrentBlockHeight() + 1,
-          blocktime: 1231006505 }), false);
+        return this.$convertTransaction(
+          Object.assign(block.tx[0], {
+            confirmations: blocks.getCurrentBlockHeight() + 1,
+            blocktime: 1231006505,
+          }),
+          false
+        );
       });
   }
 
@@ -241,7 +245,10 @@ class BitcoinApi implements AbstractBitcoinApi {
     return this.bitcoindClient.getRawMemPool(true);
   }
 
-  private async $calculateFeeFromInputs(transaction: IEsploraApi.Transaction, addPrevout: boolean): Promise<IEsploraApi.Transaction> {
+  private async $calculateFeeFromInputs(
+    transaction: IEsploraApi.Transaction,
+    addPrevout: boolean
+  ): Promise<IEsploraApi.Transaction> {
     if (transaction.vin[0].is_coinbase) {
       transaction.fee = 0;
       return transaction;
@@ -263,7 +270,7 @@ class BitcoinApi implements AbstractBitcoinApi {
   private convertScriptSigAsm(str: string): string {
     const a = str.split(' ');
     const b: string[] = [];
-    a.forEach((chunk) => {
+    a.forEach(chunk => {
       if (chunk.substr(0, 3) === 'OP_') {
         chunk = chunk.replace(/^OP_(\d+)/, 'OP_PUSHNUM_$1');
         chunk = chunk.replace('OP_CHECKSEQUENCEVERIFY', 'OP_CSV');
@@ -290,7 +297,9 @@ class BitcoinApi implements AbstractBitcoinApi {
       vin.inner_redeemscript_asm = this.convertScriptSigAsm(bitcoinjs.script.toASM(Buffer.from(redeemScript, 'hex')));
       if (vin.witness && vin.witness.length > 2) {
         const witnessScript = vin.witness[vin.witness.length - 1];
-        vin.inner_witnessscript_asm = this.convertScriptSigAsm(bitcoinjs.script.toASM(Buffer.from(witnessScript, 'hex')));
+        vin.inner_witnessscript_asm = this.convertScriptSigAsm(
+          bitcoinjs.script.toASM(Buffer.from(witnessScript, 'hex'))
+        );
       }
     }
 
@@ -299,7 +308,6 @@ class BitcoinApi implements AbstractBitcoinApi {
       vin.inner_witnessscript_asm = this.convertScriptSigAsm(bitcoinjs.script.toASM(Buffer.from(witnessScript, 'hex')));
     }
   }
-
 }
 
 export default BitcoinApi;

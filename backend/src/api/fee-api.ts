@@ -4,7 +4,7 @@ import mempool from './mempool';
 import projectedBlocks from './mempool-blocks';
 
 class FeeApi {
-  constructor() { }
+  constructor() {}
 
   defaultFee = config.MEMPOOL.NETWORK === 'liquid' ? 0.1 : 1;
 
@@ -15,22 +15,26 @@ class FeeApi {
 
     if (!pBlocks.length) {
       return {
-        'fastestFee': this.defaultFee,
-        'halfHourFee': this.defaultFee,
-        'hourFee': this.defaultFee,
-        'minimumFee': minimumFee,
+        fastestFee: this.defaultFee,
+        halfHourFee: this.defaultFee,
+        hourFee: this.defaultFee,
+        minimumFee: minimumFee,
       };
     }
 
     const firstMedianFee = this.optimizeMedianFee(pBlocks[0], pBlocks[1]);
-    const secondMedianFee = pBlocks[1] ? this.optimizeMedianFee(pBlocks[1], pBlocks[2], firstMedianFee) : this.defaultFee;
-    const thirdMedianFee = pBlocks[2] ? this.optimizeMedianFee(pBlocks[2], pBlocks[3], secondMedianFee) : this.defaultFee;
+    const secondMedianFee = pBlocks[1]
+      ? this.optimizeMedianFee(pBlocks[1], pBlocks[2], firstMedianFee)
+      : this.defaultFee;
+    const thirdMedianFee = pBlocks[2]
+      ? this.optimizeMedianFee(pBlocks[2], pBlocks[3], secondMedianFee)
+      : this.defaultFee;
 
     return {
-      'fastestFee': firstMedianFee,
-      'halfHourFee': secondMedianFee,
-      'hourFee': thirdMedianFee,
-      'minimumFee': minimumFee,
+      fastestFee: firstMedianFee,
+      halfHourFee: secondMedianFee,
+      hourFee: thirdMedianFee,
+      minimumFee: minimumFee,
     };
   }
 

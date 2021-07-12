@@ -2,11 +2,11 @@ import { ILoadingIndicators } from '../mempool.interfaces';
 
 class LoadingIndicators {
   private loadingIndicators: ILoadingIndicators = {
-    'mempool': 0,
+    mempool: 0,
   };
   private progressChangedCallback: ((loadingIndicators: ILoadingIndicators) => void) | undefined;
 
-  constructor() { }
+  constructor() {}
 
   public setProgressChangedCallback(fn: (loadingIndicators: ILoadingIndicators) => void) {
     this.progressChangedCallback = fn;

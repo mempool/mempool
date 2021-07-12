@@ -5,9 +5,9 @@ export class Common {
     let medianNr = 0;
     const numsLen = numbers.length;
     if (numsLen % 2 === 0) {
-        medianNr = (numbers[numsLen / 2 - 1] + numbers[numsLen / 2]) / 2;
+      medianNr = (numbers[numsLen / 2 - 1] + numbers[numsLen / 2]) / 2;
     } else {
-        medianNr = numbers[(numsLen - 1) / 2];
+      medianNr = numbers[(numsLen - 1) / 2];
     }
     return medianNr;
   }
@@ -37,21 +37,25 @@ export class Common {
     return arr;
   }
 
-  static findRbfTransactions(added: TransactionExtended[], deleted: TransactionExtended[]): { [txid: string]: TransactionExtended } {
+  static findRbfTransactions(
+    added: TransactionExtended[],
+    deleted: TransactionExtended[]
+  ): { [txid: string]: TransactionExtended } {
     const matches: { [txid: string]: TransactionExtended } = {};
     deleted
       // The replaced tx must have at least one input with nSequence < maxint-1 (That’s the opt-in)
-      .filter((tx) => tx.vin.some((vin) => vin.sequence < 0xfffffffe))
-      .forEach((deletedTx) => {
-        const foundMatches = added.find((addedTx) => {
+      .filter(tx => tx.vin.some(vin => vin.sequence < 0xfffffffe))
+      .forEach(deletedTx => {
+        const foundMatches = added.find(addedTx => {
           // The new tx must, absolutely speaking, pay at least as much fee as the replaced tx.
-          return addedTx.fee > deletedTx.fee
+          return (
+            addedTx.fee > deletedTx.fee &&
             // The new transaction must pay more fee per kB than the replaced tx.
-            && addedTx.feePerVsize > deletedTx.feePerVsize
+            addedTx.feePerVsize > deletedTx.feePerVsize &&
             // Spends one or more of the same inputs
-            && deletedTx.vin.some((deletedVin) =>
-              addedTx.vin.some((vin) => vin.txid === deletedVin.txid));
-            });
+            deletedTx.vin.some(deletedVin => addedTx.vin.some(vin => vin.txid === deletedVin.txid))
+          );
+        });
         if (foundMatches) {
           matches[deletedTx.txid] = foundMatches;
         }
@@ -69,35 +73,37 @@ export class Common {
   }
 
   static sleep(ms: number): Promise<void> {
-    return new Promise((resolve) => {
-       setTimeout(() => {
-         resolve();
-       }, ms);
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve();
+      }, ms);
     });
   }
 
   static shuffleArray(array: any[]) {
     for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
     }
   }
 
-  static setRelativesAndGetCpfpInfo(tx: TransactionExtended, memPool: { [txid: string]: TransactionExtended }): CpfpInfo {
+  static setRelativesAndGetCpfpInfo(
+    tx: TransactionExtended,
+    memPool: { [txid: string]: TransactionExtended }
+  ): CpfpInfo {
     const parents = this.findAllParents(tx, memPool);
-    const lowerFeeParents = parents.filter((parent) => parent.feePerVsize < tx.effectiveFeePerVsize);
+    const lowerFeeParents = parents.filter(parent => parent.feePerVsize < tx.effectiveFeePerVsize);
 
     let totalWeight = tx.weight + lowerFeeParents.reduce((prev, val) => prev + val.weight, 0);
     let totalFees = tx.fee + lowerFeeParents.reduce((prev, val) => prev + val.fee, 0);
 
-    tx.ancestors = parents
-      .map((t) => {
-        return {
-          txid: t.txid,
-          weight: t.weight,
-          fee: t.fee,
-        };
-      });
+    tx.ancestors = parents.map(t => {
+      return {
+        txid: t.txid,
+        weight: t.weight,
+        fee: t.fee,
+      };
+    });
 
     // Add high (high fee) decendant weight and fees
     if (tx.bestDescendant) {
@@ -114,11 +120,13 @@ export class Common {
     };
   }
 
-
-  private static findAllParents(tx: TransactionExtended, memPool: { [txid: string]: TransactionExtended }): TransactionExtended[] {
+  private static findAllParents(
+    tx: TransactionExtended,
+    memPool: { [txid: string]: TransactionExtended }
+  ): TransactionExtended[] {
     let parents: TransactionExtended[] = [];
-    tx.vin.forEach((parent) => {
-      if (parents.find((p) => p.txid === parent.txid)) {
+    tx.vin.forEach(parent => {
+      if (parents.find(p => p.txid === parent.txid)) {
         return;
       }
 
@@ -136,7 +144,7 @@ export class Common {
           parentTx.bestDescendant = {
             weight: tx.weight,
             fee: tx.fee,
-            txid: tx.txid
+            txid: tx.txid,
           };
         }
         parents.push(parentTx);

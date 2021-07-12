@@ -10,7 +10,7 @@ class MempoolBlocks {
   constructor() {}
 
   public getMempoolBlocks(): MempoolBlock[] {
-    return this.mempoolBlocks.map((block) => {
+    return this.mempoolBlocks.map(block => {
       return {
         blockSize: block.blockSize,
         blockVSize: block.blockVSize,
@@ -37,7 +37,7 @@ class MempoolBlocks {
     const start = new Date().getTime();
 
     // Clear bestDescendants & ancestors
-    memPoolArray.forEach((tx) => {
+    memPoolArray.forEach(tx => {
       tx.bestDescendant = null;
       tx.ancestors = [];
       tx.cpfpChecked = false;
@@ -75,8 +75,11 @@ class MempoolBlocks {
     let blockVSize = 0;
     let blockSize = 0;
     let transactions: TransactionExtended[] = [];
-    transactionsSorted.forEach((tx) => {
-      if (blockVSize + tx.vsize <= 1000000 || mempoolBlocks.length === MempoolBlocks.DEFAULT_PROJECTED_BLOCKS_AMOUNT - 1) {
+    transactionsSorted.forEach(tx => {
+      if (
+        blockVSize + tx.vsize <= 1000000 ||
+        mempoolBlocks.length === MempoolBlocks.DEFAULT_PROJECTED_BLOCKS_AMOUNT - 1
+      ) {
         blockVSize += tx.vsize;
         blockSize += tx.size;
         transactions.push(tx);
@@ -93,8 +96,12 @@ class MempoolBlocks {
     return mempoolBlocks;
   }
 
-  private dataToMempoolBlocks(transactions: TransactionExtended[],
-    blockSize: number, blockVSize: number, blocksIndex: number): MempoolBlockWithTransactions {
+  private dataToMempoolBlocks(
+    transactions: TransactionExtended[],
+    blockSize: number,
+    blockVSize: number,
+    blocksIndex: number
+  ): MempoolBlockWithTransactions {
     let rangeLength = 4;
     if (blocksIndex === 0) {
       rangeLength = 8;
@@ -109,9 +116,12 @@ class MempoolBlocks {
       blockVSize: blockVSize,
       nTx: transactions.length,
       totalFees: transactions.reduce((acc, cur) => acc + cur.fee, 0),
-      medianFee: Common.percentile(transactions.map((tx) => tx.effectiveFeePerVsize), config.MEMPOOL.RECOMMENDED_FEE_PERCENTILE),
+      medianFee: Common.percentile(
+        transactions.map(tx => tx.effectiveFeePerVsize),
+        config.MEMPOOL.RECOMMENDED_FEE_PERCENTILE
+      ),
       feeRange: Common.getFeesInRange(transactions, rangeLength),
-      transactionIds: transactions.map((tx) => tx.txid),
+      transactionIds: transactions.map(tx => tx.txid),
     };
   }
 }
