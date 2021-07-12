@@ -1,2 +1,3 @@
 frontend/
 .eslintrc*
+src/resources/wallycore/wallycore.js
