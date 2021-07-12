@@ -5,6 +5,7 @@
   To learn more about this file see: https://angular.io/config/solution-tsconfig.
 */
 {
+  "include": [ "src/**/*", "*.js", "*.ts", "cypress/**/*" ],
   "files": [],
   "references": [
     {
@@ -15,6 +16,9 @@
     },
     {
       "path": "./tsconfig.server.json"
+    },
+    {
+      "path": "./cypress/tsconfig.json"
     }
   ]
 }
