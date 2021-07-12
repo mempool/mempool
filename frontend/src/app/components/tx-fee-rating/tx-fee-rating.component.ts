@@ -1,4 +1,12 @@
-import { Component, ChangeDetectionStrategy, OnChanges, Input, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  OnChanges,
+  Input,
+  OnInit,
+  ChangeDetectorRef,
+  OnDestroy,
+} from '@angular/core';
 import { Transaction, Block } from 'src/app/interfaces/electrs.interface';
 import { StateService } from 'src/app/services/state.service';
 import { Subscription } from 'rxjs';
@@ -20,10 +28,7 @@ export class TxFeeRatingComponent implements OnInit, OnChanges, OnDestroy {
 
   blocks: Block[] = [];
 
-  constructor(
-    private stateService: StateService,
-    private cd: ChangeDetectorRef,
-  ) { }
+  constructor(private stateService: StateService, private cd: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.blocksSubscription = this.stateService.blocks$.subscribe(([block]) => {
@@ -41,7 +46,7 @@ export class TxFeeRatingComponent implements OnInit, OnChanges, OnDestroy {
       return;
     }
 
-    const foundBlock = this.blocks.find((b) => b.height === this.tx.status.block_height);
+    const foundBlock = this.blocks.find(b => b.height === this.tx.status.block_height);
     if (foundBlock && foundBlock.medianFee > 0) {
       this.calculateRatings(foundBlock);
     }

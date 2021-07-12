@@ -9,7 +9,7 @@ import { Block } from 'src/app/interfaces/electrs.interface';
   selector: 'app-bisq-transfers',
   templateUrl: './bisq-transfers.component.html',
   styleUrls: ['./bisq-transfers.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BisqTransfersComponent implements OnInit, OnChanges {
   @Input() tx: BisqTransaction;
@@ -18,9 +18,7 @@ export class BisqTransfersComponent implements OnInit, OnChanges {
   totalOutput: number;
   latestBlock$: Observable<Block>;
 
-  constructor(
-    private stateService: StateService,
-  ) { }
+  constructor(private stateService: StateService) {}
 
   trackByIndexFn(index: number) {
     return index;
@@ -31,12 +29,13 @@ export class BisqTransfersComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
-    this.totalOutput = this.tx.outputs.filter((output) => output.isVerified).reduce((acc, output) => acc + output.bsqAmount, 0);;
+    this.totalOutput = this.tx.outputs
+      .filter(output => output.isVerified)
+      .reduce((acc, output) => acc + output.bsqAmount, 0);
   }
 
   switchCurrency() {
     const oldvalue = !this.stateService.viewFiat$.value;
     this.stateService.viewFiat$.next(oldvalue);
   }
-
 }

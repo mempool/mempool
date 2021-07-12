@@ -1,13 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import {
-  switchMap,
-  filter,
-  catchError,
-  retryWhen,
-  delay,
-} from 'rxjs/operators';
+import { switchMap, filter, catchError, retryWhen, delay } from 'rxjs/operators';
 import { Transaction, Block } from '../../interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject } from 'rxjs';
 import { StateService } from '../../services/state.service';
@@ -53,31 +47,19 @@ export class TransactionComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.websocketService.want(['blocks', 'mempool-blocks']);
-    this.stateService.networkChanged$.subscribe(
-      (network) => (this.network = network)
-    );
+    this.stateService.networkChanged$.subscribe(network => (this.network = network));
 
     this.fetchCpfpSubscription = this.fetchCpfp$
-      .pipe(
-        switchMap((txId) =>
-          this.apiService
-            .getCpfpinfo$(txId)
-            .pipe(retryWhen((errors) => errors.pipe(delay(2000))))
-        )
-      )
-      .subscribe((cpfpInfo) => {
+      .pipe(switchMap(txId => this.apiService.getCpfpinfo$(txId).pipe(retryWhen(errors => errors.pipe(delay(2000))))))
+      .subscribe(cpfpInfo => {
         if (!this.tx) {
           return;
         }
         const lowerFeeParents = cpfpInfo.ancestors.filter(
-          (parent) => parent.fee / (parent.weight / 4) < this.tx.feePerVsize
+          parent => parent.fee / (parent.weight / 4) < this.tx.feePerVsize
         );
-        let totalWeight =
-          this.tx.weight +
-          lowerFeeParents.reduce((prev, val) => prev + val.weight, 0);
-        let totalFees =
-          this.tx.fee +
-          lowerFeeParents.reduce((prev, val) => prev + val.fee, 0);
+        let totalWeight = this.tx.weight + lowerFeeParents.reduce((prev, val) => prev + val.weight, 0);
+        let totalFees = this.tx.fee + lowerFeeParents.reduce((prev, val) => prev + val.fee, 0);
 
         if (cpfpInfo.bestDescendant) {
           totalWeight += cpfpInfo.bestDescendant.weight;
@@ -104,9 +86,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
           return merge(
             of(true),
             this.stateService.connectionState$.pipe(
-              filter(
-                (state) => state === 2 && this.tx && !this.tx.status.confirmed
-              )
+              filter(state => state === 2 && this.tx && !this.tx.status.confirmed)
             )
           );
         }),
@@ -117,14 +97,9 @@ export class TransactionComponent implements OnInit, OnDestroy {
           } else {
             transactionObservable$ = this.electrsApiService
               .getTransaction$(this.txId)
-              .pipe(
-                catchError(this.handleLoadElectrsTransactionError.bind(this))
-              );
+              .pipe(catchError(this.handleLoadElectrsTransactionError.bind(this)));
           }
-          return merge(
-            transactionObservable$,
-            this.stateService.mempoolTransactions$
-          );
+          return merge(transactionObservable$, this.stateService.mempoolTransactions$);
         })
       )
       .subscribe(
@@ -171,7 +146,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
           }
           await this.checkUnblindedTx();
         },
-        (error) => {
+        error => {
           this.error = error;
           this.isLoadingTx = false;
         }
@@ -192,9 +167,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.stateService.txReplaced$.subscribe(
-      (rbfTransaction) => (this.rbfTransaction = rbfTransaction)
-    );
+    this.stateService.txReplaced$.subscribe(rbfTransaction => (this.rbfTransaction = rbfTransaction));
   }
 
   handleLoadElectrsTransactionError(error: any): Observable<any> {
@@ -208,20 +181,16 @@ export class TransactionComponent implements OnInit, OnDestroy {
   }
 
   setMempoolBlocksSubscription() {
-    this.stateService.mempoolBlocks$.subscribe((mempoolBlocks) => {
+    this.stateService.mempoolBlocks$.subscribe(mempoolBlocks => {
       if (!this.tx) {
         return;
       }
 
-      const txFeePerVSize =
-        this.tx.effectiveFeePerVsize || this.tx.fee / (this.tx.weight / 4);
+      const txFeePerVSize = this.tx.effectiveFeePerVsize || this.tx.fee / (this.tx.weight / 4);
 
       for (const block of mempoolBlocks) {
         for (let i = 0; i < block.feeRange.length - 1; i++) {
-          if (
-            txFeePerVSize <= block.feeRange[i + 1] &&
-            txFeePerVSize >= block.feeRange[i]
-          ) {
+          if (txFeePerVSize <= block.feeRange[i + 1] && txFeePerVSize >= block.feeRange[i]) {
             this.txInBlockIndex = mempoolBlocks.indexOf(block);
           }
         }
@@ -230,11 +199,9 @@ export class TransactionComponent implements OnInit, OnDestroy {
   }
 
   getTransactionTime() {
-    this.apiService
-      .getTransactionTimes$([this.tx.txid])
-      .subscribe((transactionTimes) => {
-        this.transactionTime = transactionTimes[0];
-      });
+    this.apiService.getTransactionTimes$([this.tx.txid]).subscribe(transactionTimes => {
+      this.transactionTime = transactionTimes[0];
+    });
   }
 
   resetTransaction() {
@@ -301,8 +268,12 @@ export class TransactionComponent implements OnInit, OnDestroy {
     await libwally.load();
     const commitments = new Map();
     blinders.forEach(b => {
-      const { asset_commitment, value_commitment } =
-      libwally.generate_commitments(b.value, b.asset, b.value_blinder, b.asset_blinder);
+      const { asset_commitment, value_commitment } = libwally.generate_commitments(
+        b.value,
+        b.asset,
+        b.value_blinder,
+        b.asset_blinder
+      );
 
       commitments.set(`${asset_commitment}:${value_commitment}`, {
         asset: b.asset,
@@ -314,18 +285,23 @@ export class TransactionComponent implements OnInit, OnDestroy {
 
   // Look for the given output, returning an { value, asset } object
   find(vout: any) {
-    return vout.assetcommitment && vout.valuecommitment &&
-      this.commitments.get(`${vout.assetcommitment}:${vout.valuecommitment}`);
+    return (
+      vout.assetcommitment &&
+      vout.valuecommitment &&
+      this.commitments.get(`${vout.assetcommitment}:${vout.valuecommitment}`)
+    );
   }
 
   // Lookup all transaction inputs/outputs and attach the unblinded data
   tryUnblindTx(tx: any) {
     if (tx) {
-      if (tx._unblinded) { return tx._unblinded; }
+      if (tx._unblinded) {
+        return tx._unblinded;
+      }
       let matched = 0;
       if (tx.vout !== undefined) {
-        tx.vout.forEach(vout => matched += +this.tryUnblindOut(vout));
-        tx.vin.filter(vin => vin.prevout).forEach(vin => matched += +this.tryUnblindOut(vin.prevout));
+        tx.vout.forEach(vout => (matched += +this.tryUnblindOut(vout)));
+        tx.vin.filter(vin => vin.prevout).forEach(vin => (matched += +this.tryUnblindOut(vin.prevout)));
       }
       if (this.commitments !== undefined) {
         tx._unblinded = { matched, total: this.commitments.size };
@@ -342,13 +318,17 @@ export class TransactionComponent implements OnInit, OnDestroy {
   // Look the given output and attach the unblinded data
   tryUnblindOut(vout: any) {
     const unblinded = this.find(vout);
-    if (unblinded) { Object.assign(vout, unblinded); }
+    if (unblinded) {
+      Object.assign(vout, unblinded);
+    }
     return !!unblinded;
   }
 
   // Attempt to deduce the blinded input/output based on the available information
   deduceBlinded(tx: any) {
-    if (tx._deduced) { return; }
+    if (tx._deduced) {
+      return;
+    }
     tx._deduced = true;
 
     // Find ins/outs with unknown amounts (blinded ant not revealed via the `#blinded` hash fragment)
@@ -358,30 +338,35 @@ export class TransactionComponent implements OnInit, OnDestroy {
     // If the transaction has a single unknown input/output, we can deduce its asset/amount
     // based on the other known inputs/outputs.
     if (unknownIns.length + unknownOuts.length === 1) {
-
       // Keep a per-asset tally of all known input amounts, minus all known output amounts
       const totals = new Map();
-      tx.vin.filter(vin => vin.prevout && vin.prevout.value != null)
-        .forEach(({ prevout }) =>
-          totals.set(prevout.asset, (totals.get(prevout.asset) || 0) + prevout.value));
-      tx.vout.filter(vout => vout.value != null)
-        .forEach(vout =>
-          totals.set(vout.asset, (totals.get(vout.asset) || 0) - vout.value));
+      tx.vin
+        .filter(vin => vin.prevout && vin.prevout.value != null)
+        .forEach(({ prevout }) => totals.set(prevout.asset, (totals.get(prevout.asset) || 0) + prevout.value));
+      tx.vout
+        .filter(vout => vout.value != null)
+        .forEach(vout => totals.set(vout.asset, (totals.get(vout.asset) || 0) - vout.value));
 
       // There should only be a single asset where the inputs and outputs amounts mismatch,
       // which is the asset of the blinded input/output
-      const remainder = Array.from(totals.entries()).filter(([ asset, value ]) => value !== 0);
-      if (remainder.length !== 1) { throw new Error('unexpected remainder while deducing blinded tx'); }
-      const [ blindedAsset, blindedValue ] = remainder[0];
+      const remainder = Array.from(totals.entries()).filter(([asset, value]) => value !== 0);
+      if (remainder.length !== 1) {
+        throw new Error('unexpected remainder while deducing blinded tx');
+      }
+      const [blindedAsset, blindedValue] = remainder[0];
 
       // A positive remainder (when known in > known out) is the asset/amount of the unknown blinded output,
       // a negative one is the input.
       if (blindedValue > 0) {
-        if (!unknownOuts.length) { throw new Error('expected unknown output'); }
+        if (!unknownOuts.length) {
+          throw new Error('expected unknown output');
+        }
         unknownOuts[0].asset = blindedAsset;
         unknownOuts[0].value = blindedValue;
       } else {
-        if (!unknownIns.length) { throw new Error('expected unknown input'); }
+        if (!unknownIns.length) {
+          throw new Error('expected unknown input');
+        }
         unknownIns[0].prevout.asset = blindedAsset;
         unknownIns[0].prevout.value = blindedValue * -1;
       }
@@ -393,7 +378,6 @@ export class TransactionComponent implements OnInit, OnDestroy {
       if (this.network === 'liquid') {
         const windowLocationHash = window.location.hash.substring('#blinded='.length);
         if (windowLocationHash.length > 0) {
-
           const blinders = this.parseBlinders(windowLocationHash);
           if (blinders) {
             this.commitments = await this.makeCommitmentMap(blinders);

@@ -30,8 +30,8 @@ export class BisqBlocksComponent implements OnInit {
     private bisqApiService: BisqApiService,
     private seoService: SeoService,
     private route: ActivatedRoute,
-    private router: Router,
-  ) { }
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.websocketService.want(['blocks']);
@@ -43,33 +43,34 @@ export class BisqBlocksComponent implements OnInit {
       this.paginationMaxSize = 3;
     }
 
-    this.blocks$ = this.route.queryParams
-      .pipe(
-        take(1),
-        tap((qp) => {
-          if (qp.page) {
-            this.page = parseInt(qp.page, 10);
-          }
-        }),
-        mergeMap(() => this.route.queryParams),
-        map((queryParams) => {
-          if (queryParams.page) {
-            const newPage = parseInt(queryParams.page, 10);
-            this.page = newPage;
-            return newPage;
-          } else {
-            this.page = 1;
-          }
-          return 1;
-        }),
-        switchMap((page) => this.bisqApiService.listBlocks$((page - 1) * this.itemsPerPage, this.itemsPerPage)),
-        map((response) => [response.body, parseInt(response.headers.get('x-total-count'), 10)]),
-      );
+    this.blocks$ = this.route.queryParams.pipe(
+      take(1),
+      tap(qp => {
+        if (qp.page) {
+          this.page = parseInt(qp.page, 10);
+        }
+      }),
+      mergeMap(() => this.route.queryParams),
+      map(queryParams => {
+        if (queryParams.page) {
+          const newPage = parseInt(queryParams.page, 10);
+          this.page = newPage;
+          return newPage;
+        } else {
+          this.page = 1;
+        }
+        return 1;
+      }),
+      switchMap(page => this.bisqApiService.listBlocks$((page - 1) * this.itemsPerPage, this.itemsPerPage)),
+      map(response => [response.body, parseInt(response.headers.get('x-total-count'), 10)])
+    );
   }
 
   calculateTotalOutput(block: BisqBlock): number {
-    return block.txs.reduce((a: number, tx: BisqTransaction) =>
-      a + tx.outputs.reduce((acc: number, output: BisqOutput) => acc + output.bsqAmount, 0), 0
+    return block.txs.reduce(
+      (a: number, tx: BisqTransaction) =>
+        a + tx.outputs.reduce((acc: number, output: BisqOutput) => acc + output.bsqAmount, 0),
+      0
     );
   }
 

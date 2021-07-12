@@ -5,20 +5,22 @@ import { shareReplay } from 'rxjs/operators';
 import { StateService } from './state.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AssetsService {
   getAssetsJson$: Observable<any>;
   getAssetsMinimalJson$: Observable<any>;
   getMiningPools$: Observable<any>;
 
-  constructor(
-    private httpClient: HttpClient,
-    private stateService: StateService,
-  ) {
+  constructor(private httpClient: HttpClient, private stateService: StateService) {
     let apiBaseUrl = '';
     if (!this.stateService.isBrowser) {
-      apiBaseUrl = this.stateService.env.NGINX_PROTOCOL + '://' + this.stateService.env.NGINX_HOSTNAME + ':' + this.stateService.env.NGINX_PORT;
+      apiBaseUrl =
+        this.stateService.env.NGINX_PROTOCOL +
+        '://' +
+        this.stateService.env.NGINX_HOSTNAME +
+        ':' +
+        this.stateService.env.NGINX_PORT;
     }
 
     this.getAssetsJson$ = this.httpClient.get(apiBaseUrl + '/resources/assets.json').pipe(shareReplay());

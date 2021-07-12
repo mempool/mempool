@@ -7,7 +7,7 @@ import { SeoService } from 'src/app/services/seo.service';
 @Component({
   selector: 'app-api-docs',
   templateUrl: './api-docs.component.html',
-  styleUrls: ['./api-docs.component.scss']
+  styleUrls: ['./api-docs.component.scss'],
 })
 export class ApiDocsComponent implements OnInit {
   hostname = document.location.hostname;
@@ -388,9 +388,9 @@ export class ApiDocsComponent implements OnInit {
 
   const tx = await transactions.getTx({ txid });
   console.log(tx);`,
-  curl: `curl -X GET "https://mempool.space/api/tx/:txid"`,
-},
-responseSample: `{
+        curl: `curl -X GET "https://mempool.space/api/tx/:txid"`,
+      },
+      responseSample: `{
   txid: "15e10745f15593a899cef391191bdd3d7c12412cc4696b7bcb669d0feadc8521",
   version: 1,
   locktime: 0,
@@ -1125,14 +1125,14 @@ responseSample: `{
         curl: ``,
       },
       responseSample: ``,
-    }
+    },
   };
 
   constructor(
     private stateService: StateService,
     private websocketService: WebsocketService,
-    private seoService: SeoService,
-  ) { }
+    private seoService: SeoService
+  ) {}
 
   ngOnInit(): void {
     this.seoService.setTitle($localize`:@@e351b40b3869a5c7d19c3d4918cb1ac7aaab95c4:API`);
@@ -1143,5 +1143,4 @@ responseSample: `{
       this.hostname = this.hostname + ':' + document.location.port;
     }
   }
-
 }

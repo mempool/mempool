@@ -12,7 +12,7 @@ import { OffersMarket, Trade } from '../bisq.interfaces';
   selector: 'app-bisq-market',
   templateUrl: './bisq-market.component.html',
   styleUrls: ['./bisq-market.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BisqMarketComponent implements OnInit, OnDestroy {
   hlocData$: Observable<any>;
@@ -30,65 +30,64 @@ export class BisqMarketComponent implements OnInit, OnDestroy {
     private bisqApiService: BisqApiService,
     private formBuilder: FormBuilder,
     private seoService: SeoService,
-    private router: Router,
-  ) { }
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.radioGroupForm = this.formBuilder.group({
       interval: [this.defaultInterval],
     });
 
-    if (['half_hour', 'hour', 'half_day', 'day', 'week', 'month', 'year', 'auto'].indexOf(this.route.snapshot.fragment) > -1) {
+    if (
+      ['half_hour', 'hour', 'half_day', 'day', 'week', 'month', 'year', 'auto'].indexOf(this.route.snapshot.fragment) >
+      -1
+    ) {
       this.radioGroupForm.controls.interval.setValue(this.route.snapshot.fragment, { emitEvent: false });
     }
 
-    this.currency$ = this.bisqApiService.getMarkets$()
-      .pipe(
-        switchMap((markets) => combineLatest([of(markets), this.route.paramMap])),
-        map(([markets, routeParams]) => {
-          const pair = routeParams.get('pair');
-          const pairUpperCase = pair.replace('_', '/').toUpperCase();
-          this.seoService.setTitle(`Bisq market: ${pairUpperCase}`);
+    this.currency$ = this.bisqApiService.getMarkets$().pipe(
+      switchMap(markets => combineLatest([of(markets), this.route.paramMap])),
+      map(([markets, routeParams]) => {
+        const pair = routeParams.get('pair');
+        const pairUpperCase = pair.replace('_', '/').toUpperCase();
+        this.seoService.setTitle(`Bisq market: ${pairUpperCase}`);
 
-          return {
-            pair: pairUpperCase,
-            market: markets[pair],
-          };
-        })
-      );
+        return {
+          pair: pairUpperCase,
+          market: markets[pair],
+        };
+      })
+    );
 
-    this.trades$ = this.route.paramMap
-      .pipe(
-        map(routeParams => routeParams.get('pair')),
-        switchMap((marketPair) => this.bisqApiService.getMarketTrades$(marketPair)),
-      );
+    this.trades$ = this.route.paramMap.pipe(
+      map(routeParams => routeParams.get('pair')),
+      switchMap(marketPair => this.bisqApiService.getMarketTrades$(marketPair))
+    );
 
-    this.offers$ = this.route.paramMap
-      .pipe(
-        map(routeParams => routeParams.get('pair')),
-        switchMap((marketPair) => this.bisqApiService.getMarketOffers$(marketPair)),
-        map((offers) => offers[Object.keys(offers)[0]])
-      );
+    this.offers$ = this.route.paramMap.pipe(
+      map(routeParams => routeParams.get('pair')),
+      switchMap(marketPair => this.bisqApiService.getMarketOffers$(marketPair)),
+      map(offers => offers[Object.keys(offers)[0]])
+    );
 
     this.hlocData$ = combineLatest([
       this.route.paramMap,
       merge(this.radioGroupForm.get('interval').valueChanges, of(this.radioGroupForm.get('interval').value)),
-    ])
-    .pipe(
+    ]).pipe(
       switchMap(([routeParams, interval]) => {
         this.isLoadingGraph = true;
         const pair = routeParams.get('pair');
         return this.bisqApiService.getMarketsHloc$(pair, interval);
       }),
-      map((hlocData) => {
+      map(hlocData => {
         this.isLoadingGraph = false;
 
-        hlocData = hlocData.map((h) => {
+        hlocData = hlocData.map(h => {
           h.time = h.period_start;
           return h;
         });
 
-        const hlocVolume = hlocData.map((h) => {
+        const hlocVolume = hlocData.map(h => {
           return {
             time: h.time,
             value: h.volume_right,
@@ -126,7 +125,7 @@ export class BisqMarketComponent implements OnInit, OnDestroy {
           hloc: hlocData,
           volume: hlocVolume,
         };
-      }),
+      })
     );
   }
 
@@ -134,7 +133,7 @@ export class BisqMarketComponent implements OnInit, OnDestroy {
     this.router.navigate([], {
       relativeTo: this.route,
       queryParamsHandling: 'merge',
-      fragment: fragment
+      fragment: fragment,
     });
   }
 
@@ -144,15 +143,22 @@ export class BisqMarketComponent implements OnInit, OnDestroy {
 
   getUnixTimestampFromInterval(interval: string): number {
     switch (interval) {
-      case 'minute': return 60;
-      case 'half_hour': return 1800;
-      case 'hour': return 3600;
-      case 'half_day': return 43200;
-      case 'day': return 86400;
-      case 'week': return 604800;
-      case 'month': return 2592000;
-      case 'year': return 31579200;
+      case 'minute':
+        return 60;
+      case 'half_hour':
+        return 1800;
+      case 'hour':
+        return 3600;
+      case 'half_day':
+        return 43200;
+      case 'day':
+        return 86400;
+      case 'week':
+        return 604800;
+      case 'month':
+        return 2592000;
+      case 'year':
+        return 31579200;
     }
   }
-
 }

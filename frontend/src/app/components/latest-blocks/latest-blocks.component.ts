@@ -11,7 +11,7 @@ import { map } from 'rxjs/operators';
   selector: 'app-latest-blocks',
   templateUrl: './latest-blocks.component.html',
   styleUrls: ['./latest-blocks.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LatestBlocksComponent implements OnInit, OnDestroy {
   network$: Observable<string>;
@@ -32,8 +32,8 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
     private stateService: StateService,
     private seoService: SeoService,
     private websocketService: WebsocketService,
-    private cd: ChangeDetectorRef,
-  ) { }
+    private cd: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.seoService.setTitle($localize`:@@f4cba7faeb126346f09cc6af30124f9a343f7a28:Blocks`);
@@ -41,37 +41,35 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
 
     this.network$ = merge(of(''), this.stateService.networkChanged$);
 
-    this.blocksLoadingStatus$ = this.stateService.loadingIndicators$
-      .pipe(
-        map((indicators) => indicators['blocks'] !== undefined ? indicators['blocks'] : 0)
-      );
+    this.blocksLoadingStatus$ = this.stateService.loadingIndicators$.pipe(
+      map(indicators => (indicators['blocks'] !== undefined ? indicators['blocks'] : 0))
+    );
 
-    this.blockSubscription = this.stateService.blocks$
-      .subscribe(([block]) => {
-        if (block === null || !this.blocks.length) {
-          return;
-        }
+    this.blockSubscription = this.stateService.blocks$.subscribe(([block]) => {
+      if (block === null || !this.blocks.length) {
+        return;
+      }
 
-        this.latestBlockHeight = block.height;
+      this.latestBlockHeight = block.height;
 
-        if (block.height === this.blocks[0].height) {
-          return;
-        }
+      if (block.height === this.blocks[0].height) {
+        return;
+      }
 
-        // If we are out of sync, reload the blocks instead
-        if (block.height > this.blocks[0].height + 1) {
-          this.loadInitialBlocks();
-          return;
-        }
+      // If we are out of sync, reload the blocks instead
+      if (block.height > this.blocks[0].height + 1) {
+        this.loadInitialBlocks();
+        return;
+      }
 
-        if (block.height <= this.blocks[0].height) {
-          return;
-        }
+      if (block.height <= this.blocks[0].height) {
+        return;
+      }
 
-        this.blocks.pop();
-        this.blocks.unshift(block);
-        this.cd.markForCheck();
-      });
+      this.blocks.pop();
+      this.blocks.unshift(block);
+      this.cd.markForCheck();
+    });
 
     this.loadInitialBlocks();
   }
@@ -82,8 +80,8 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
   }
 
   loadInitialBlocks() {
-    this.electrsApiService.listBlocks$()
-      .subscribe((blocks) => {
+    this.electrsApiService.listBlocks$().subscribe(
+      blocks => {
         this.blocks = blocks;
         this.isLoading = false;
         this.error = undefined;
@@ -97,12 +95,13 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
         }
         this.cd.markForCheck();
       },
-      (error) => {
+      error => {
         console.log(error);
         this.error = error;
         this.isLoading = false;
         this.cd.markForCheck();
-      });
+      }
+    );
   }
 
   loadMore(chunks = 0) {
@@ -110,8 +109,8 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
       return;
     }
     this.isLoading = true;
-    this.electrsApiService.listBlocks$(this.blocks[this.blocks.length - 1].height - 1)
-      .subscribe((blocks) => {
+    this.electrsApiService.listBlocks$(this.blocks[this.blocks.length - 1].height - 1).subscribe(
+      blocks => {
         this.blocks = this.blocks.concat(blocks);
         this.isLoading = false;
         this.error = undefined;
@@ -122,12 +121,13 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
         }
         this.cd.markForCheck();
       },
-      (error) => {
+      error => {
         console.log(error);
         this.error = error;
         this.isLoading = false;
         this.cd.markForCheck();
-      });
+      }
+    );
   }
 
   trackByBlock(index: number, block: Block) {

@@ -14,7 +14,7 @@ import { WebsocketService } from 'src/app/services/websocket.service';
   selector: 'app-bisq-transactions',
   templateUrl: './bisq-transactions.component.html',
   styleUrls: ['./bisq-transactions.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BisqTransactionsComponent implements OnInit {
   transactions$: Observable<[BisqTransaction[], number]>;
@@ -27,19 +27,19 @@ export class BisqTransactionsComponent implements OnInit {
   types: string[] = [];
 
   txTypeOptions: IMultiSelectOption[] = [
-      { id: 1, name: $localize`Asset listing fee` },
-      { id: 2, name: $localize`Blind vote` },
-      { id: 3, name: $localize`Compensation request` },
-      { id: 4, name: $localize`Genesis` },
-      { id: 13, name: $localize`Irregular` },
-      { id: 5, name: $localize`Lockup` },
-      { id: 6, name: $localize`Pay trade fee` },
-      { id: 7, name: $localize`Proof of burn` },
-      { id: 8, name: $localize`Proposal` },
-      { id: 9, name: $localize`Reimbursement request` },
-      { id: 10, name: $localize`Transfer BSQ` },
-      { id: 11, name: $localize`Unlock` },
-      { id: 12, name: $localize`Vote reveal` },
+    { id: 1, name: $localize`Asset listing fee` },
+    { id: 2, name: $localize`Blind vote` },
+    { id: 3, name: $localize`Compensation request` },
+    { id: 4, name: $localize`Genesis` },
+    { id: 13, name: $localize`Irregular` },
+    { id: 5, name: $localize`Lockup` },
+    { id: 6, name: $localize`Pay trade fee` },
+    { id: 7, name: $localize`Proof of burn` },
+    { id: 8, name: $localize`Proposal` },
+    { id: 9, name: $localize`Reimbursement request` },
+    { id: 10, name: $localize`Transfer BSQ` },
+    { id: 11, name: $localize`Unlock` },
+    { id: 12, name: $localize`Vote reveal` },
   ];
   txTypesDefaultChecked = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 
@@ -62,8 +62,21 @@ export class BisqTransactionsComponent implements OnInit {
   paginationSize: 'sm' | 'lg' = 'md';
   paginationMaxSize = 5;
 
-  txTypes = ['ASSET_LISTING_FEE', 'BLIND_VOTE', 'COMPENSATION_REQUEST', 'GENESIS', 'LOCKUP', 'PAY_TRADE_FEE',
-    'PROOF_OF_BURN', 'PROPOSAL', 'REIMBURSEMENT_REQUEST', 'TRANSFER_BSQ', 'UNLOCK', 'VOTE_REVEAL', 'IRREGULAR'];
+  txTypes = [
+    'ASSET_LISTING_FEE',
+    'BLIND_VOTE',
+    'COMPENSATION_REQUEST',
+    'GENESIS',
+    'LOCKUP',
+    'PAY_TRADE_FEE',
+    'PROOF_OF_BURN',
+    'PROPOSAL',
+    'REIMBURSEMENT_REQUEST',
+    'TRANSFER_BSQ',
+    'UNLOCK',
+    'VOTE_REVEAL',
+    'IRREGULAR',
+  ];
 
   constructor(
     private websocketService: WebsocketService,
@@ -72,8 +85,8 @@ export class BisqTransactionsComponent implements OnInit {
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private cd: ChangeDetectorRef,
-  ) { }
+    private cd: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.websocketService.want(['blocks']);
@@ -91,51 +104,50 @@ export class BisqTransactionsComponent implements OnInit {
     }
 
     this.transactions$ = merge(
-      this.route.queryParams
-        .pipe(
-          filter((queryParams) => {
+      this.route.queryParams.pipe(
+        filter(queryParams => {
+          const newPage = parseInt(queryParams.page, 10);
+          const types = queryParams.types;
+          if (newPage !== this.page || types !== this.types.map(type => this.txTypes.indexOf(type) + 1).join(',')) {
+            return true;
+          }
+          return false;
+        }),
+        tap(queryParams => {
+          if (queryParams.page) {
             const newPage = parseInt(queryParams.page, 10);
-            const types = queryParams.types;
-            if (newPage !== this.page || types !== this.types.map((type) => this.txTypes.indexOf(type) + 1).join(',')) {
-              return true;
-            }
-            return false;
-          }),
-          tap((queryParams) => {
-            if (queryParams.page) {
-              const newPage = parseInt(queryParams.page, 10);
-              this.page = newPage;
-            } else {
-              this.page = 1;
-            }
-            if (queryParams.types) {
-              const types = queryParams.types.split(',').map((str: string) => parseInt(str, 10));
-              this.types = types.map((id: number) => this.txTypes[id - 1]);
-              this.radioGroupForm.get('txTypes').setValue(types, { emitEvent: false });
-            } else {
-              this.types = [];
-              this.radioGroupForm.get('txTypes').setValue(this.txTypesDefaultChecked, { emitEvent: false });
-            }
-            this.cd.markForCheck();
-          })
-        ),
-      this.radioGroupForm.valueChanges
-        .pipe(
-          tap((data) => {
-            this.types = data.txTypes.map((id: number) => this.txTypes[id - 1]);
-            if (this.types.length === this.txTypes.length) {
-              this.types = [];
-            }
+            this.page = newPage;
+          } else {
             this.page = 1;
-            this.typesChanged(data.txTypes);
-            this.cd.markForCheck();
-          })
-        ),
+          }
+          if (queryParams.types) {
+            const types = queryParams.types.split(',').map((str: string) => parseInt(str, 10));
+            this.types = types.map((id: number) => this.txTypes[id - 1]);
+            this.radioGroupForm.get('txTypes').setValue(types, { emitEvent: false });
+          } else {
+            this.types = [];
+            this.radioGroupForm.get('txTypes').setValue(this.txTypesDefaultChecked, { emitEvent: false });
+          }
+          this.cd.markForCheck();
+        })
+      ),
+      this.radioGroupForm.valueChanges.pipe(
+        tap(data => {
+          this.types = data.txTypes.map((id: number) => this.txTypes[id - 1]);
+          if (this.types.length === this.txTypes.length) {
+            this.types = [];
+          }
+          this.page = 1;
+          this.typesChanged(data.txTypes);
+          this.cd.markForCheck();
+        })
       )
-      .pipe(
-        switchMap(() => this.bisqApiService.listTransactions$((this.page - 1) * this.itemsPerPage, this.itemsPerPage, this.types)),
-        map((response) =>  [response.body, parseInt(response.headers.get('x-total-count'), 10)])
-      );
+    ).pipe(
+      switchMap(() =>
+        this.bisqApiService.listTransactions$((this.page - 1) * this.itemsPerPage, this.itemsPerPage, this.types)
+      ),
+      map(response => [response.body, parseInt(response.headers.get('x-total-count'), 10)])
+    );
   }
 
   pageChange(page: number) {
@@ -162,7 +174,7 @@ export class BisqTransactionsComponent implements OnInit {
 
   getStringByTxType(type: string) {
     const id = this.txTypes.indexOf(type) + 1;
-    return this.txTypeOptions.find((type) => id === type.id).name;
+    return this.txTypeOptions.find(type => id === type.id).name;
   }
 
   trackByFn(index: number) {

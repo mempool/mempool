@@ -16,8 +16,20 @@ import { BisqIconComponent } from './bisq-icon/bisq-icon.component';
 import { BisqTransactionDetailsComponent } from './bisq-transaction-details/bisq-transaction-details.component';
 import { BisqTransfersComponent } from './bisq-transfers/bisq-transfers.component';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faLeaf, faQuestion, faExclamationTriangle, faRocket, faRetweet, faFileAlt, faMoneyBill,
-  faEye, faEyeSlash, faLock, faLockOpen, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import {
+  faLeaf,
+  faQuestion,
+  faExclamationTriangle,
+  faRocket,
+  faRetweet,
+  faFileAlt,
+  faMoneyBill,
+  faEye,
+  faEyeSlash,
+  faLock,
+  faLockOpen,
+  faExclamationCircle,
+} from '@fortawesome/free-solid-svg-icons';
 import { BisqBlocksComponent } from './bisq-blocks/bisq-blocks.component';
 import { BisqApiService } from './bisq-api.service';
 import { BisqAddressComponent } from './bisq-address/bisq-address.component';
@@ -45,16 +57,8 @@ import { BisqTradesComponent } from './bisq-trades/bisq-trades.component';
     BisqTradesComponent,
     BisqMainDashboardComponent,
   ],
-  imports: [
-    BisqRoutingModule,
-    SharedModule,
-    NgbPaginationModule,
-    FontAwesomeModule,
-    NgxBootstrapMultiselectModule,
-  ],
-  providers: [
-    BisqApiService,
-  ]
+  imports: [BisqRoutingModule, SharedModule, NgbPaginationModule, FontAwesomeModule, NgxBootstrapMultiselectModule],
+  providers: [BisqApiService],
 })
 export class BisqModule {
   constructor(library: FaIconLibrary) {
