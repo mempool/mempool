@@ -5,6 +5,9 @@
   To learn more about this file see: https://angular.io/config/solution-tsconfig.
 */
 {
+  "compilerOptions": {
+    "experimentalDecorators": true
+  },
   "include": [ "src/**/*", "*.js", "*.ts", "cypress/**/*" ],
   "files": [],
   "references": [
