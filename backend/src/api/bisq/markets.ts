@@ -33,7 +33,11 @@ class Bisq {
 
   private checkForBisqDataFolder() {
     if (!fs.existsSync(Bisq.MARKET_JSON_PATH + Bisq.MARKET_JSON_FILE_PATHS.cryptoCurrency)) {
-      logger.err(Bisq.MARKET_JSON_PATH + Bisq.MARKET_JSON_FILE_PATHS.cryptoCurrency + ` doesn't exist. Make sure Bisq is running and the config is correct before starting the server.`);
+      logger.err(
+        Bisq.MARKET_JSON_PATH +
+          Bisq.MARKET_JSON_FILE_PATHS.cryptoCurrency +
+          ` doesn't exist. Make sure Bisq is running and the config is correct before starting the server.`
+      );
       return process.exit(1);
     }
   }
@@ -43,7 +47,11 @@ class Bisq {
       this.subdirectoryWatcher.close();
     }
     if (!fs.existsSync(Bisq.MARKET_JSON_PATH + Bisq.MARKET_JSON_FILE_PATHS.cryptoCurrency)) {
-      logger.warn(Bisq.MARKET_JSON_PATH + Bisq.MARKET_JSON_FILE_PATHS.cryptoCurrency + ` doesn't exist. Trying to restart sub directory watcher again in 3 minutes.`);
+      logger.warn(
+        Bisq.MARKET_JSON_PATH +
+          Bisq.MARKET_JSON_FILE_PATHS.cryptoCurrency +
+          ` doesn't exist. Trying to restart sub directory watcher again in 3 minutes.`
+      );
       setTimeout(() => this.startBisqDirectoryWatcher(), 180000);
       return;
     }
@@ -68,10 +76,17 @@ class Bisq {
       if (cryptoMtime > this.cryptoCurrencyLastMtime || fiatMtime > this.fiatCurrencyLastMtime) {
         const cryptoCurrencyData = await this.loadData<Currency[]>(Bisq.MARKET_JSON_FILE_PATHS.cryptoCurrency);
         const fiatCurrencyData = await this.loadData<Currency[]>(Bisq.MARKET_JSON_FILE_PATHS.fiatCurrency);
-        const activeCryptoCurrencyData = await this.loadData<Currency[]>(Bisq.MARKET_JSON_FILE_PATHS.activeCryptoCurrency);
+        const activeCryptoCurrencyData = await this.loadData<Currency[]>(
+          Bisq.MARKET_JSON_FILE_PATHS.activeCryptoCurrency
+        );
         const activeFiatCurrencyData = await this.loadData<Currency[]>(Bisq.MARKET_JSON_FILE_PATHS.activeFiatCurrency);
         logger.debug('Updating Bisq Market Currency Data');
-        bisqMarket.setCurrencyData(cryptoCurrencyData, fiatCurrencyData, activeCryptoCurrencyData, activeFiatCurrencyData);
+        bisqMarket.setCurrencyData(
+          cryptoCurrencyData,
+          fiatCurrencyData,
+          activeCryptoCurrencyData,
+          activeFiatCurrencyData
+        );
         if (cryptoMtime > this.cryptoCurrencyLastMtime) {
           this.cryptoCurrencyLastMtime = cryptoMtime;
         }

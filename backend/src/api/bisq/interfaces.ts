@@ -1,4 +1,3 @@
-
 export interface BisqBlocks {
   chainHeight: number;
   blocks: BisqBlock[];
@@ -92,7 +91,9 @@ export interface BisqTrade {
   market?: string;
 }
 
-export interface Currencies { [txid: string]: Currency; }
+export interface Currencies {
+  [txid: string]: Currency;
+}
 
 export interface Currency {
   code: string;
@@ -102,11 +103,13 @@ export interface Currency {
   _type: string;
 }
 
-export interface Depth { [market: string]: Market; }
+export interface Depth {
+  [market: string]: Market;
+}
 
 interface Market {
-  'buys': string[];
-  'sells': string[];
+  buys: string[];
+  sells: string[];
 }
 
 export interface HighLowOpenClose {
@@ -120,7 +123,9 @@ export interface HighLowOpenClose {
   avg: string;
 }
 
-export interface Markets { [txid: string]: Pair; }
+export interface Markets {
+  [txid: string]: Pair;
+}
 
 interface Pair {
   pair: string;
@@ -135,7 +140,9 @@ interface Pair {
   name: string;
 }
 
-export interface Offers { [market: string]: OffersMarket; }
+export interface Offers {
+  [market: string]: OffersMarket;
+}
 
 interface OffersMarket {
   buys: Offer[] | null;
@@ -179,7 +186,9 @@ export interface Offer {
   offer_fee_txid: any;
 }
 
-export interface Tickers { [market: string]: Ticker | null; }
+export interface Tickers {
+  [market: string]: Ticker | null;
+}
 
 export interface Ticker {
   last: string;
@@ -245,14 +254,16 @@ export interface MarketsApiError {
 
 export type Interval = 'minute' | 'half_hour' | 'hour' | 'half_day' | 'day' | 'week' | 'month' | 'year' | 'auto';
 
-export interface SummarizedIntervals { [market: string]: SummarizedInterval; }
+export interface SummarizedIntervals {
+  [market: string]: SummarizedInterval;
+}
 export interface SummarizedInterval {
-  'period_start': number;
-  'open': number;
-  'close': number;
-  'high': number;
-  'low': number;
-  'avg': number;
-  'volume_right': number;
-  'volume_left': number;
+  period_start: number;
+  open: number;
+  close: number;
+  high: number;
+  low: number;
+  avg: number;
+  volume_right: number;
+  volume_left: number;
 }

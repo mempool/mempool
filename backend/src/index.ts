@@ -36,7 +36,9 @@ class Server {
     }
 
     if (cluster.isMaster) {
-      logger.notice(`Mempool Server (Master) is running on port ${config.MEMPOOL.HTTP_PORT} (${backendInfo.getShortCommitHash()})`);
+      logger.notice(
+        `Mempool Server (Master) is running on port ${config.MEMPOOL.HTTP_PORT} (${backendInfo.getShortCommitHash()})`
+      );
 
       const numCPUs = config.MEMPOOL.SPAWN_CLUSTER_PROCS;
       for (let i = 0; i < numCPUs; i++) {
@@ -47,7 +49,11 @@ class Server {
 
       cluster.on('exit', (worker, code, signal) => {
         const workerId = worker.process['env'].workerId;
-        logger.warn(`Mempool Worker PID #${worker.process.pid} workerId: ${workerId} died. Restarting in 10 seconds... ${signal || code}`);
+        logger.warn(
+          `Mempool Worker PID #${worker.process.pid} workerId: ${workerId} died. Restarting in 10 seconds... ${
+            signal || code
+          }`
+        );
         setTimeout(() => {
           const env = { workerId: workerId };
           const newWorker = cluster.fork(env);
@@ -92,7 +98,7 @@ class Server {
 
     if (config.BISQ.ENABLED) {
       bisq.startBisqService();
-      bisq.setPriceCallbackFunction((price) => websocketHandler.setExtraInitProperties('bsq-price', price));
+      bisq.setPriceCallbackFunction(price => websocketHandler.setExtraInitProperties('bsq-price', price));
       blocks.setNewBlockCallback(bisq.handleNewBitcoinBlock.bind(bisq));
       bisqMarkets.startBisqService();
     }
@@ -111,7 +117,7 @@ class Server {
       try {
         await memPool.$updateMemPoolInfo();
       } catch (e) {
-        const msg = `updateMempoolInfo: ${(e.message || e)}`;
+        const msg = `updateMempoolInfo: ${e.message || e}`;
         if (config.CORE_RPC_MINFEE.ENABLED) {
           logger.warn(msg);
         } else {
@@ -123,7 +129,7 @@ class Server {
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;
     } catch (e) {
-      const loggerMsg = `runMainLoop error: ${(e.message || e)}. Retrying in ${this.currentBackendRetryInterval} sec.`;
+      const loggerMsg = `runMainLoop error: ${e.message || e}. Retrying in ${this.currentBackendRetryInterval} sec.`;
       if (this.currentBackendRetryInterval > 5) {
         logger.warn(loggerMsg);
         mempool.setOutOfSync();
@@ -159,7 +165,10 @@ class Server {
       .get(config.MEMPOOL.API_URL_PREFIX + 'init-data', routes.getInitData)
       .get(config.MEMPOOL.API_URL_PREFIX + 'donations', async (req, res) => {
         try {
-          const response = await axios.get('https://mempool.space/api/v1/donations', { responseType: 'stream', timeout: 10000 });
+          const response = await axios.get('https://mempool.space/api/v1/donations', {
+            responseType: 'stream',
+            timeout: 10000,
+          });
           response.data.pipe(res);
         } catch (e) {
           res.status(500).end();
@@ -168,7 +177,8 @@ class Server {
       .get(config.MEMPOOL.API_URL_PREFIX + 'donations/images/:id', async (req, res) => {
         try {
           const response = await axios.get('https://mempool.space/api/v1/donations/images/' + req.params.id, {
-            responseType: 'stream', timeout: 10000
+            responseType: 'stream',
+            timeout: 10000,
           });
           response.data.pipe(res);
         } catch (e) {
@@ -177,7 +187,10 @@ class Server {
       })
       .get(config.MEMPOOL.API_URL_PREFIX + 'contributors', async (req, res) => {
         try {
-          const response = await axios.get('https://mempool.space/api/v1/contributors', { responseType: 'stream', timeout: 10000 });
+          const response = await axios.get('https://mempool.space/api/v1/contributors', {
+            responseType: 'stream',
+            timeout: 10000,
+          });
           response.data.pipe(res);
         } catch (e) {
           res.status(500).end();
@@ -186,14 +199,14 @@ class Server {
       .get(config.MEMPOOL.API_URL_PREFIX + 'contributors/images/:id', async (req, res) => {
         try {
           const response = await axios.get('https://mempool.space/api/v1/contributors/images/' + req.params.id, {
-            responseType: 'stream', timeout: 10000
+            responseType: 'stream',
+            timeout: 10000,
           });
           response.data.pipe(res);
         } catch (e) {
           res.status(500).end();
         }
-      })
-    ;
+      });
 
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
       this.app
@@ -203,8 +216,7 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/1m', routes.get1MStatistics.bind(routes))
         .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/3m', routes.get3MStatistics.bind(routes))
         .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/6m', routes.get6MStatistics.bind(routes))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/1y', routes.get1YStatistics.bind(routes))
-        ;
+        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/1y', routes.get1YStatistics.bind(routes));
     }
 
     if (config.BISQ.ENABLED) {
@@ -224,8 +236,7 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/ticker', routes.getBisqMarketTicker.bind(routes))
         .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/trades', routes.getBisqMarketTrades.bind(routes))
         .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/volumes', routes.getBisqMarketVolumes.bind(routes))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/volumes/7d', routes.getBisqMarketVolumes7d.bind(routes))
-        ;
+        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/volumes/7d', routes.getBisqMarketVolumes7d.bind(routes));
     }
 
     if (config.MEMPOOL.BACKEND !== 'esplora') {
@@ -247,8 +258,7 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address', routes.getAddress)
         .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs', routes.getAddressTransactions)
         .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs/chain/:txId', routes.getAddressTransactions)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'address-prefix/:prefix', routes.getAddressPrefix)
-      ;
+        .get(config.MEMPOOL.API_URL_PREFIX + 'address-prefix/:prefix', routes.getAddressPrefix);
     }
   }
 }

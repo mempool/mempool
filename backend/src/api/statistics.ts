@@ -9,21 +9,33 @@ class Statistics {
   protected newStatisticsEntryCallback: ((stats: OptimizedStatistic) => void) | undefined;
   protected queryTimeout = 120000;
   protected cache: { [date: string]: OptimizedStatistic[] } = {
-    '24h': [], '1w': [], '1m': [], '3m': [], '6m': [], '1y': [],
+    '24h': [],
+    '1w': [],
+    '1m': [],
+    '3m': [],
+    '6m': [],
+    '1y': [],
   };
 
   public setNewStatisticsEntryCallback(fn: (stats: OptimizedStatistic) => void) {
     this.newStatisticsEntryCallback = fn;
   }
 
-  constructor() { }
+  constructor() {}
 
   public startStatistics(): void {
     logger.info('Starting statistics service');
 
     const now = new Date();
-    const nextInterval = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(),
-      Math.floor(now.getMinutes() / 1) * 1 + 1, 0, 0);
+    const nextInterval = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      now.getHours(),
+      Math.floor(now.getMinutes() / 1) * 1 + 1,
+      0,
+      0
+    );
     const difference = nextInterval.getTime() - now.getTime();
 
     setTimeout(() => {
@@ -68,24 +80,29 @@ class Statistics {
       }
     }
     // Remove 0 and undefined
-    memPoolArray = memPoolArray.filter((tx) => tx.effectiveFeePerVsize);
+    memPoolArray = memPoolArray.filter(tx => tx.effectiveFeePerVsize);
 
     if (!memPoolArray.length) {
       return;
     }
 
     memPoolArray.sort((a, b) => a.effectiveFeePerVsize - b.effectiveFeePerVsize);
-    const totalWeight = memPoolArray.map((tx) => tx.vsize).reduce((acc, curr) => acc + curr) * 4;
-    const totalFee = memPoolArray.map((tx) => tx.fee).reduce((acc, curr) => acc + curr);
+    const totalWeight = memPoolArray.map(tx => tx.vsize).reduce((acc, curr) => acc + curr) * 4;
+    const totalFee = memPoolArray.map(tx => tx.fee).reduce((acc, curr) => acc + curr);
 
-    const logFees = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
-      250, 300, 350, 400, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000];
+    const logFees = [
+      1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250, 300, 350, 400, 500,
+      600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000,
+    ];
 
     const weightVsizeFees: { [feePerWU: number]: number } = {};
 
-    memPoolArray.forEach((transaction) => {
+    memPoolArray.forEach(transaction => {
       for (let i = 0; i < logFees.length; i++) {
-        if ((logFees[i] === 2000 && transaction.effectiveFeePerVsize >= 2000) || transaction.effectiveFeePerVsize <= logFees[i]) {
+        if (
+          (logFees[i] === 2000 && transaction.effectiveFeePerVsize >= 2000) ||
+          transaction.effectiveFeePerVsize <= logFees[i]
+        ) {
           if (weightVsizeFees[logFees[i]]) {
             weightVsizeFees[logFees[i]] += transaction.vsize;
           } else {
@@ -408,7 +425,7 @@ class Statistics {
     }
   }
   private mapStatisticToOptimizedStatistic(statistic: Statistic[]): OptimizedStatistic[] {
-    return statistic.map((s) => {
+    return statistic.map(s => {
       return {
         id: s.id || 0,
         added: s.added,
@@ -456,11 +473,10 @@ class Statistics {
           s.vsize_1600,
           s.vsize_1800,
           s.vsize_2000,
-        ]
+        ],
       };
     });
   }
-
 }
 
 export default new Statistics();
