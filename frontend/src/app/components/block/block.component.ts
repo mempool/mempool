@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
@@ -33,6 +33,8 @@ export class BlockComponent implements OnInit, OnDestroy {
   itemsPerPage: number;
   txsLoadingStatus$: Observable<number>;
   showDetails = false;
+
+  @ViewChild('blockTxTitle') el: ElementRef;
 
   constructor(
     private route: ActivatedRoute,
@@ -177,6 +179,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     const start = (page - 1) * this.itemsPerPage;
     this.isLoadingTransactions = true;
     this.transactions = null;
+    this.el.nativeElement.scrollIntoView();
 
     this.electrsApiService.getBlockTransactions$(this.block.id, start)
      .subscribe((transactions) => {
