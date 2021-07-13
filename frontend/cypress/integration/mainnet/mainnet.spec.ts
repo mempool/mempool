@@ -16,6 +16,17 @@ describe('Mainnet', () => {
       cy.wait(1000);
     });
 
+    it('loads the dashboard with the skeleton blocks', () => {
+      cy.visit('/');
+      cy.get('#mempool-block-0').should('be.visible');
+      cy.get('#mempool-block-1').should('be.visible');
+      cy.get('#mempool-block-2').should('be.visible');
+      cy.get(':nth-child(1) > #bitcoin-block-0').should('be.visible');
+      cy.get(':nth-child(2) > #bitcoin-block-0').should('be.visible');
+      cy.get(':nth-child(3) > #bitcoin-block-0').should('be.visible');
+      cy.wait(1000);
+    });
+
     it('loads the blocks screen', () => {
         cy.visit('/');
         cy.get('li:nth-of-type(2) > a').click().then(() => {
@@ -38,6 +49,9 @@ describe('Mainnet', () => {
                 cy.viewport('macbook-16');
                 cy.wait(1000);
                 cy.get('.blockchain-wrapper').should('be.visible');
+                cy.get('#mempool-block-0').should('be.visible');
+                cy.get('#mempool-block-1').should('be.visible');
+                cy.get('#mempool-block-2').should('be.visible');
             });
         });
 

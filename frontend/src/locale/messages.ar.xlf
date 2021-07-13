@@ -447,11 +447,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">132,133</context>
+          <context context-type="linenumber">131,132</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
-          <context context-type="linenumber">18</context>
+          <context context-type="linenumber">18,19</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
@@ -472,11 +472,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">133,134</context>
+          <context context-type="linenumber">132,133</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
-          <context context-type="linenumber">19</context>
+          <context context-type="linenumber">19,20</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
@@ -539,7 +539,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">51</context>
+          <context context-type="linenumber">51,53</context>
         </context-group>
         <note from="description" priority="1">Transaction Timestamp</note>
         <note from="meaning" priority="1">transaction.timestamp</note>
@@ -1037,11 +1037,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">153</context>
+          <context context-type="linenumber">153,155</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">169,170</context>
+          <context context-type="linenumber">172,173</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="8fe73a4787b8068b2ba61f54ab7e0f9af2ea1fc9">
@@ -1070,11 +1070,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">29</context>
+          <context context-type="linenumber">29,30</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">208,209</context>
+          <context context-type="linenumber">211,212</context>
         </context-group>
         <note from="description" priority="1">Transaction singular confirmation count</note>
         <note from="meaning" priority="1">shared.confirmation-count.singular</note>
@@ -1092,11 +1092,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">30</context>
+          <context context-type="linenumber">30,31</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">209,210</context>
+          <context context-type="linenumber">212,213</context>
         </context-group>
         <note from="description" priority="1">Transaction plural confirmation count</note>
         <note from="meaning" priority="1">shared.confirmation-count.plural</note>
@@ -1110,7 +1110,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">14</context>
+          <context context-type="linenumber">14,18</context>
         </context-group>
         <note from="description" priority="1">shared.transaction</note>
       </trans-unit>
@@ -1123,7 +1123,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">60</context>
+          <context context-type="linenumber">60,62</context>
         </context-group>
         <note from="description" priority="1">Transaction included in block</note>
         <note from="meaning" priority="1">transaction.included-in-block</note>
@@ -1137,11 +1137,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">72</context>
+          <context context-type="linenumber">72,75</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">130</context>
+          <context context-type="linenumber">130,133</context>
         </context-group>
         <note from="description" priority="1">Transaction features</note>
         <note from="meaning" priority="1">transaction.features</note>
@@ -1169,11 +1169,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">203</context>
+          <context context-type="linenumber">203,205</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">279</context>
+          <context context-type="linenumber">279,281</context>
         </context-group>
         <note from="description" priority="1">transaction.details</note>
       </trans-unit>
@@ -1190,7 +1190,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">195</context>
+          <context context-type="linenumber">195,197</context>
         </context-group>
         <note from="description" priority="1">Transaction inputs and outputs</note>
         <note from="meaning" priority="1">transaction.inputs-and-outputs</note>
@@ -1204,7 +1204,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.ts</context>
-          <context context-type="linenumber">79</context>
+          <context context-type="linenumber">101,100</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="4d6066e445db90780e4b30ca93398be0b6567eda">
@@ -1224,7 +1224,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">154</context>
+          <context context-type="linenumber">154,155</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -1560,7 +1560,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">217,219</context>
+          <context context-type="linenumber">220,222</context>
         </context-group>
         <note from="description" priority="1">shared.confidential</note>
       </trans-unit>
@@ -1950,6 +1950,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4eb50557085c85bfca995b6ee0de56ec3f5e97eb">
         <source>Get the list of unspent transaction outputs associated with the address/scripthash. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vout<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (with the status of the funding tx).<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/>There is also a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>valuecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> field that may appear in place of <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, plus the following additional fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>asset<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>assetcommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>noncecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>surjection_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>range_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></source>
+        <target>الحصول على قائمة الحوالات غير المدفوعة مرفقة بالعنوان/ تجزئة البرنامج النصي. الحقول المتوفرة: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>رقم تعريف المعاملة<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>رقم انتاجية المعاملات<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>القيمة<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,و<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>الحالة <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>(مع حالة تمويل الحوالة).<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/>يوجد ايضاً <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>القيمة الالزامية<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>حقل يمكن ان يظهر مكان :<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>القيمة<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,الإضافة الى الحقول التالية:<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>الأصول<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>الأصول الملزمة<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>رمز الإستخدام لمرة واحدة<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>رمز الزامي للإستخدام مرة واحدة<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>دليل شامل<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,و<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>نطاق الإثبات<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/> </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">100,101</context>
@@ -1975,6 +1976,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4a0bf20cf26a4f4a387bed5c3d47c23294cb606e">
         <source>Returns transactions associated with the specified Liquid asset. For the network's native asset, returns a list of peg in, peg out, and burn transactions. For user-issued assets, returns a list of issuance, reissuance, and burn transactions. Does not include regular transactions transferring this asset.</source>
+        <target>ترجع المعاملات مرفقة بسيولة الأصول المالية المحددة .تعاد لائحة ربط المعاملات و إخراجها و المعاملات الملغية لشبكة الأصول الحقيقية. ترجع لائحة الإصدار و إعادة الاصدار و المعاملات الملغية لأصول المستخدم المعلنة.  الحوالات العادية الصادرة لا تتضمن تحويل هذه الاصول .</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">143,146</context>
@@ -1982,6 +1984,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="44a238eb28145f904f3a5bbfd4050987668f78d0">
         <source>Get the current total supply of the specified asset. For the native asset (L-BTC), this is calculated as [chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount. For issued assets, this is calculated as [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount. Not available for assets with blinded issuances. If /decimal is specified, returns the supply as a decimal according to the asset's divisibility. Otherwise, returned in base units.</source>
+        <target>إحصل على الإمدادات الكاملة الحالية لأصول محددة. يتم إحتساب الأصول الأصلية (L-BTC) على الشكل التالي [سلسلة عقود العملات الرقمية لتخزين المعلومات عن العمليات غير المعلنة]_إحصاءات.الكميات_ المربوطة-[سلسلة عقود العملات الرقمية لتخزين المعلومات عن العمليات غير المعلنة]_إحصاءات الكميات_غير_المربوطة-[سلسلة عقود العملات الرقمية لتخزين المعلومات عن العمليات غير المعلنة]_إحصاءات_ الكميات_ الملغاة. يتم إحتساب الأصول المعلنة على الشكل التالي[سلسلة عقود العملات الرقمية لتخزين المعلومات عن العمليات غير المعلنة]_احصاءات الكميات_المعلنة-[سلسلة عقود العملات الرقمية لتخزين المعلومات عن العمليات الغير المعلنة]_إحصاءات الكميات_الملغاة. ليست متوفرة لإصدار الأصول المخفية. اذا كانت الكسور العشرية مُعرفة  تُرجع الإمدادات على شكل كسور عشرية بالنسبة  لقابلية تجزئة الأصول وإلا تُرجع الى الوحدة الأساسية.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">162,165</context>
@@ -2003,6 +2006,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="194d480219559b855b01ea58459066e3c63acdb2">
         <source>Returns details about a block. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>id<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>version<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>timestamp<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>bits<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>merkle_root<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>size<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>weight<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/><x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/> and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>previousblockhash<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
+        <target>تفاصيل عوائد الكتلة. الحقول المتوفرة:<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>سجل التعريف<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> حجم الكتلة و موقعها  بالنسبة للكتل المؤكدة التي سبقتها <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>الاصدار<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>الوقت<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>البروتوكول المعرف للهوية الرقمية<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>رمز إلزامي فردي الاستخدام<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>الحوسبة الجذمورية<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>عدد المعاملات<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>حجم المعاملات<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>قياس حجم كتلة البتكوين بالاضافة الى الشاهد المنفصل<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/><x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>الإثبات<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/>و<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> تجزئة الكتل السابقة<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">187,188</context>
@@ -2010,6 +2014,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="36df9865e9099d98537ea69c9cfdc035d1b64116">
         <source>Returns the hash of the block currently at <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
+        <target>عوائد تجزئة الكتلة الحالية <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>: الإرتفاع<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">204,205</context>
@@ -2017,6 +2022,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="6d5aacdd7e6c375570a88c25bfd0be82beba4c7b">
         <source>Returns the raw block representation in binary.</source>
+        <target>عوائد تقرير الكتلة الأولية في الثنائية. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">220,223</context>
@@ -2024,6 +2030,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a2c00fbdcce9d6291c3b04c67979f9694be23f28">
         <source>Returns the confirmation status of a block. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>in_best_chain<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean, false for orphaned blocks), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>next_best<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (the hash of the next block, only available for blocks in the best chain).</source>
+        <target>عوائد الحالة المؤكدة في الكتلة. الحقول المتوفرة:<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>في السلسلة الأفضل<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>(الجبر المنطقيboolean, خطأ اذا كانت الكتل المهملة),<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>الخيار الأفضل التالي <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>(التجزئة النصية للكتلة التالية ,متوفرة فقط للكتل في السلسة الأفضل).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">239,240</context>
@@ -2039,7 +2046,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="940153d58769f1a8f50dba2458693142675a5dcb">
         <source>Returns the hash of the last block.</source>
-        <target>إرجاع تجزئة في الكتلة الأخيرة.</target>
+        <target> عوائد التجزئة في الكتلة الأخيرة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">278,281</context>
@@ -2047,6 +2054,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3e08815110b2e5ce8aa7256ed05a2faf6dbb7077">
         <source>Returns the transaction at index <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:index<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> within the specified block.</source>
+        <target>عوائد المعاملات عند المؤشر <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>: المؤشر <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>ضمن سلسلة محددة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">298,299</context>
@@ -2054,6 +2062,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3846f2527c3c9a50bb84b2c941a876f66797449b">
         <source>Returns a list of all txids in the block.</source>
+        <target>إرجاع لائحة بكل أرقام المعاملات في الكتلة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">318,321</context>
@@ -2061,6 +2070,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1126cb2e03d0371d03b57047052d4ff1b6556753">
         <source>Returns a list of transactions in the block (up to 25 transactions beginning at <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>start_index<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>). Transactions returned here do not have the <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> field, since all the transactions share the same block and confirmation status.</source>
+        <target>عوائد لائحة المعاملات في الكتلة (ما يقارب 25 تبدأ عند <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>مؤشر البداية<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>).المعاملات العائدة لا تملك<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>,حالة<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,ميدان, بما ان تتشارك جميع المعاملات الكتلة و حالة التأكيد ذاتها. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">337,338</context>
@@ -2068,6 +2078,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f8380186899495340cbfe7fb836ba664fb4b52af">
         <source>Returns the 10 newest blocks starting at the tip or at <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:start_height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> if specified.</source>
+        <target>عوائد أجدد 10 كتل عند بداية القمة او عند<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:بداية حجم الكتلة و موقعها بالنسبة للكتل المؤكدة التي سبقتها<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>اذا كانت معرفة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">357,358</context>
@@ -2085,6 +2096,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="9604b870a64e6635062828425fcb801371e716ad">
         <source>Returns all Bisq transactions belonging to a Bitcoin address, with 'B' prefixed in front of the address.</source>
+        <target>عوائد كافة معاملات شبكة التداول الندية التي تعود الى عنوان بتكوين مرفقة ب بادئة B امام العنوان.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">385,388</context>
@@ -2092,6 +2104,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e7e7c97535181ba299bc0ad02904f851088a0dd5">
         <source>Returns all Bisq transactions that exist in a Bitcoin block.</source>
+        <target>عوائد كافة  معاملات شبكة التداول الندية الموجودة في كتلة بتكوين.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">405,408</context>
@@ -2099,6 +2112,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ac234ff46c8f499399a20fb5d74005094de7cdcd">
         <source>Returns the most recently processed Bitcoin block height processed by Bisq.</source>
+        <target>عوائد حجم الكتلة بتكوين وموقعها بالنسبة للكتل المؤكدة التي سبقتها المعالجة حديثاً في شبكة التداول الندية.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">424,427</context>
@@ -2106,6 +2120,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="6fdafaace68cb298c6281e89eedc704f3d8f3f6a">
         <source>Returns :length Bitcoin blocks that contain Bisq transactions, starting from :index.</source>
+        <target>عوائد: إمتداد البيانات الواقيعية بأرقام  بيانات كتلة بتكوين التي تحتوي على معاملات شبكة المداولات الندية عند المؤشر.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">444,447</context>
@@ -2113,6 +2128,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="088d201b8d0589637d7aa64457a6cdd97a5d0f11">
         <source>Returns statistics about all Bisq transactions.</source>
+        <target>إحصاءات عوائد جميع معاملات التداول الندية .</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">465,468</context>
@@ -2120,6 +2136,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5d67fbdf2986058351024c16d526c444475ead37">
         <source>Returns details about a Bisq transaction.</source>
+        <target>تفاصيل عوائد معاملات شبكة التداول الندية.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">485,488</context>
@@ -2127,6 +2144,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e9a58657c410cf65dba4c3cdfb1af7099dedb241">
         <source>Returns :length of latest Bisq transactions, starting from :index.</source>
+        <target>عوائد: إمتداد البيانات الواقعية للمعاملات, عند نقطة المؤشر.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">506,509</context>
@@ -2144,6 +2162,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="39f61f2d1434d921a1f80a2a2f0903f06e9fd4df">
         <source>Returns our currently suggested fees for new transactions.</source>
+        <target>عوائد الرسوم المقترحة للمعاملات الجديدة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">531,533</context>
@@ -2153,6 +2172,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b95b496df2b0f016831d0984f3798a2e22b74103">
         <source>Returns current mempool as projected blocks.</source>
+        <target> عوائد عقود العملات الرقمية  الحالية لتخزين المعلومات عن العمليات غير المعلنة ككتل متوقعة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">547,549</context>
@@ -2162,6 +2182,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4ebf8d4a2433cca5a8a933ef8ccef1b01e45acef">
         <source>Returns the ancestors and the best descendant fees for a transaction.</source>
+        <target>عوائد الرسوم السابقة و أفضل الرسوم اللاحقة للمعاملة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">563,565</context>
@@ -2181,6 +2202,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7d43b13f97ee52aae72d728a52af2e31f6edbf38">
         <source>Returns current mempool backlog statistics.</source>
+        <target>عوائد احصاءات التراكمية لعقود العملات الرقمية لتخزين المعلومات عن العمليات غير المعلنة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">588,590</context>
@@ -2190,6 +2212,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="23c346e87b137b1807bac13c27d19dc18f745f8f">
         <source>Get the full list of txids in the mempool as an array. The order of the txids is arbitrary and does not match bitcoind.</source>
+        <target>الحصول على لائحة المعاملات الكاملة في  عقود العملات الرقمية لتخزين المعلومات عن العمليات غير المعلنة.كمصفوفة. ترتيب المعاملات عشوائي  لا يتناسب مع بيتكوين.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">604,607</context>
@@ -2199,6 +2222,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="af1a465e50097fabbe55bf5dbcf5d0702bdbc98b">
         <source>Get a list of the last 10 transactions to enter the mempool. Each transaction object contains simplified overview data, with the following fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>fee<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vsize<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
+        <target>الحصول على لائحة المعاملات ال10 الأخيرة لتدخل  عقود العملات الرقمية لتخزين معلومات العمليات غير المعلنة. كل قاعدة لعملية المعاملات تحتوي على بيانات شاملة وملخصة مع الخانات  التالية: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>تجزئة بيانات المعاملات<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>الرسوم<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>وحدة قياس إفتراضية بديلة<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,و<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>القيمة<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">622,623</context>
@@ -2218,6 +2242,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a8ea1ec66e7bb9f92e87ae5482e50748baafffd2">
         <source>Returns details about a transaction. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>version<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>locktime<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>size<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>weight<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>fee<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vin<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vout<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
+        <target>تفاصيل عوائد المعاملات. الحقول المتوقرة:<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>المعاملات الكاملة في عقود العملات الرقمية لتخزين المعلومات عن العمليات غير المعلنة<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>الإصدار <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>وقت الاغلاق<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>الحجم <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>قياس حجم الكتلة<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>الرسم<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>الأرباح الشاملة<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>ناتج جميع المعاملات<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,و<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>الحالة<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">647,648</context>
@@ -2225,6 +2250,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="34c21c242665d87bf22645c90f571bd5078eac93">
         <source>Returns a transaction serialized as hex.</source>
+        <target>عوائد معاملة كسلسلة أرقام سداسية عشرية.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">666,669</context>
@@ -2232,6 +2258,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d51106cc898981e9862d35a4db40796f0cf464f8">
         <source>Returns a merkle inclusion proof for the transaction using <x ctype="x-a" equiv-text="&lt;a href=&quot;https://bitcoin.org/en/glossary/merkle-block&quot;&gt;" id="START_LINK"/>bitcoind's merkleblock<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/> format.</source>
+        <target>عوائد دليل تضمين إستخدام المعاملة المحوسبة <x ctype="x-a" equiv-text="&lt;a href=&quot;https://bitcoin.org/en/glossary/merkle-block&quot;&gt;" id="START_LINK"/>برنامج بتكوين الخفي الأساسي <x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/>صيغة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">684,685</context>
@@ -2239,6 +2266,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a57953199686e9980df838cb25edb51691941ac5">
         <source>Returns a merkle inclusion proof for the transaction using <x ctype="x-a" equiv-text="&lt;a href=&quot;https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle&quot;&gt;" id="START_LINK"/>Electrum's blockchain.transaction.get_merkle format.<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/></source>
+        <target>عوائد دليل تضمين إستخدام المعاملة المحوسبة<x ctype="x-a" equiv-text="&lt;a href=&quot;https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle&quot;&gt;" id="START_LINK"/>سلسلة كتل الكهرمان المعدني. المعاملة. احصل_صيغة الحوسبة.<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">704,705</context>
@@ -2246,6 +2274,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fe9a40b2ff9674b4ab7d82624ffed340c9ee5b89">
         <source>Returns the spending status of a transaction output. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vin<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional), and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional, the status of the spending tx).</source>
+        <target>عوائد حالة الإنفاق لناتج المعاملة. الحقول المتوفرة:<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>الإنفاق<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>(الجبر المنطقي boolean ),<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>أرقام المعاملات في الكتلة<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>(إختياري),و<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> الأرباح الشاملة <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>(إختياري),و<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>الحالة<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>(إختياري, حالة إنفاق المعاملة).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">723,724</context>
@@ -2253,6 +2282,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0358265aa88614843e1f5e887b94c673808c84f1">
         <source>Returns the spending status of all transaction outputs.</source>
+        <target>عوائد حالة التكاليف كل نتائج  المعاملات.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">742,745</context>
@@ -2268,6 +2298,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7e784cfa5833e7b54d4dfc723fabde94f66ebde3">
         <source>Returns the confirmation status of a transaction. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>confirmed<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional), and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_hash<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional).</source>
+        <target>عوائد الحالات المؤكدة للمعاملة. الحقول المتوفرة:<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>مؤكدة<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>(الجبر المنطقيboolean),<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>موقع و حجم الكتلة<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>(إختياري),و<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>التجزئة النصية للكتلة <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>(إختياري).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">780,781</context>
@@ -2275,6 +2306,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="01723473ecc53cab60ef1b37dc39d8941994d56f">
         <source>Broadcast a raw transaction to the network. The transaction should be provided as hex in the request body. The <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> will be returned on success.</source>
+        <target>بث معاملة أصلية الى الشبكة.المعاملة يجب أن تُقَدم كأرقام سداسية عشرية في نص الطلب.أرقام المعاملات في الكتلة<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>يتم إسترجاعها عند نجاح العملية.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">800,801</context>
@@ -2282,6 +2314,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="aacc1242420c527c8b9d4948a7ae7d94cde956e4">
         <source>Websocket</source>
+        <target>بروتوكول التواصل المحوسب.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">810,814</context>
@@ -2291,6 +2324,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a706b1ded7506620b153dbcdea8108e6691bbbd9">
         <source>Default push: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> action: 'want', data: ['blocks', ...] <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> to express what you want pushed. Available: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>blocks<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool-blocks<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>live-2h-chart<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/>Push transactions related to address: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> 'track-address': '3PbJ...bF9B' <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> for new mempool transactions, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> for new block confirmed transactions.</source>
+        <target>الدفع الإعتيادي:<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/>إجراء:أريد, بيانات:[’الكتل’،...]<x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>لتحدديد ما تريد دفعه.متوفر:<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>كتل<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>،<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>;كتل عقود للعمليات غير المعلنة<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>،<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>جدول-2h-مباشر<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>،و<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>إحصاءات <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/>دفع المعاملات المرتبطة بالعنوان:<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/>’إتبع-عنوان’: ’3PbJ...bF98’<x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>للحصول على معاملة جديدة تحتوي ذلك العنوان كإدخال و إخراج. إرجاع مصفوف المعاملات.<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>عنوان المعاملات<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>لكتل العقود غير المعلنة الجديدة، و <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>معاملات الكتللالمعاملات المؤكدة في الكتل الجديدة<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">819,820</context>
@@ -2444,6 +2478,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="c3360a933cb312b395d276a2b865214cf832df58">
         <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> </source>
+        <target><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/>من<x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">76</context>
@@ -2461,6 +2496,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fcbd3315aa10b59ba6ef383c6f16ace6c9d53b71">
         <source>Issuance and Burn Transactions</source>
+        <target>إلغاء و إصدار المعاملات.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">78</context>
@@ -2597,11 +2633,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
-          <context context-type="linenumber">10</context>
+          <context context-type="linenumber">10,13</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
-          <context context-type="linenumber">13</context>
+          <context context-type="linenumber">13,15</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
@@ -2633,23 +2669,23 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">171</context>
+          <context context-type="linenumber">171,172</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">184</context>
+          <context context-type="linenumber">184,185</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">337</context>
+          <context context-type="linenumber">337,340</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">348</context>
+          <context context-type="linenumber">348,350</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">201</context>
+          <context context-type="linenumber">204</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -2671,15 +2707,15 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">6,10</context>
+          <context context-type="linenumber">5,6</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">12,16</context>
+          <context context-type="linenumber">11,12</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">18,24</context>
+          <context context-type="linenumber">17,18</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
@@ -2735,6 +2771,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fd04710d1a54d46cd1b81a13fc98e3d561b92141">
         <source>Bits</source>
+        <target>وحدات صغيرة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">100,102</context>
@@ -2752,6 +2789,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a6bb63d98a8a67689070a79ccf13960c25b572ef">
         <source>Nonce</source>
+        <target>رمز أحادي فردي الإستخدام.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">114,116</context>
@@ -2763,11 +2801,11 @@
         <target>التفاصيل</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">125,131</context>
+          <context context-type="linenumber">125,130</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">197</context>
+          <context context-type="linenumber">197,201</context>
         </context-group>
         <note from="description" priority="1">Transaction Details</note>
         <note from="meaning" priority="1">transaction.details</note>
@@ -2777,7 +2815,7 @@
         <target>خطأ في تحميل بيانات الكتلة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">221,229</context>
+          <context context-type="linenumber">219,227</context>
         </context-group>
         <note from="description" priority="1">block.error.loading-block-data</note>
       </trans-unit>
@@ -2788,16 +2826,6 @@
           <context context-type="sourcefile">src/app/components/block/block.component.ts</context>
           <context context-type="linenumber">106</context>
         </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="e8104ec47dbdca878cd9d7aba4a3cb59378fcaf7">
-        <source>Waiting for blocks...</source>
-        <target>في انتظار الكتل ...</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/blockchain/blockchain.component.html</context>
-          <context context-type="linenumber">11,16</context>
-        </context-group>
-        <note from="description" priority="1">Loading text</note>
-        <note from="meaning" priority="1">blockchain.waiting-for-blocks</note>
       </trans-unit>
       <trans-unit datatype="html" id="clipboard.copied-message">
         <source>Copied!</source>
@@ -2812,7 +2840,7 @@
         <target>أولوية منخفضة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">4,6</context>
+          <context context-type="linenumber">4,5</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
@@ -2825,7 +2853,7 @@
         <target>أولوية متوسطة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">10,12</context>
+          <context context-type="linenumber">10,11</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
@@ -2838,7 +2866,7 @@
         <target>أولوية عالية</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">16,18</context>
+          <context context-type="linenumber">16,17</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
@@ -2848,6 +2876,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0ae5beecbbfc96bcdf4f9a637aa72687e81ef5e1">
         <source>Tx vBytes per second:</source>
+        <target>معاملات وحدات العناوين الإفتراضية في الثانية:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">5,7</context>
@@ -2869,6 +2898,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="50904e472d4671388a20fbbb1ee9dfc0a4586fa1">
         <source>vB/s</source>
+        <target>الأسس البصرية\النصية</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">11,15</context>
@@ -2913,7 +2943,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">324</context>
+          <context context-type="linenumber">324,325</context>
         </context-group>
         <note from="description" priority="1">shared.block</note>
       </trans-unit>
@@ -2930,7 +2960,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">325</context>
+          <context context-type="linenumber">325,327</context>
         </context-group>
         <note from="description" priority="1">shared.blocks</note>
       </trans-unit>
@@ -3042,7 +3072,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">320</context>
+          <context context-type="linenumber">320,322</context>
         </context-group>
         <note from="description" priority="1">Block Frequency (plural)</note>
         <note from="meaning" priority="1">mempool-blocks.eta-of-next-block-plural</note>
@@ -3052,11 +3082,11 @@
         <target>في ~ <x equiv-text="{{ i }}" id="INTERPOLATION"/> دقيقه </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
-          <context context-type="linenumber">43,44</context>
+          <context context-type="linenumber">43,45</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">322</context>
+          <context context-type="linenumber">322,324</context>
         </context-group>
         <note from="description" priority="1">Block Frequency</note>
         <note from="meaning" priority="1">mempool-blocks.eta-of-next-block</note>
@@ -3164,6 +3194,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="75c20c8a9cd9723d45bee0230dd582d7c2e4ecbc">
         <source>Mempool by vBytes (sat/vByte)</source>
+        <target>عوائد عقود العملات الرقمية الحالية لتخزين المعلومات عن العمليات غير المعلنة في وحدة تخزين العناوين الإفتراضية(رسوم العاملة سات\وحدة العناوين الإفتراضية) </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">13</context>
@@ -3345,7 +3376,7 @@
         <target>هذه الحوالة تم استبدالها بـ:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">5</context>
+          <context context-type="linenumber">5,6</context>
         </context-group>
         <note from="description" priority="1">RBF replacement</note>
         <note from="meaning" priority="1">transaction.rbf.replacement</note>
@@ -3355,11 +3386,11 @@
         <target>غير مؤكده</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">34,41</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">212,216</context>
+          <context context-type="linenumber">215,219</context>
         </context-group>
         <note from="description" priority="1">Transaction unconfirmed state</note>
         <note from="meaning" priority="1">transaction.unconfirmed</note>
@@ -3369,7 +3400,7 @@
         <target>تم تأكيد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">67</context>
+          <context context-type="linenumber">67,68</context>
         </context-group>
         <note from="description" priority="1">Transaction Confirmed state</note>
         <note from="meaning" priority="1">transaction.confirmed</note>
@@ -3379,7 +3410,7 @@
         <target>بعد <x ctype="x-app_timespan" equiv-text="&lt;app-timespan [time]=&quot;tx.status.block_time - transactionTime&quot;&gt;" id="START_TAG_APP_TIMESPAN"/><x ctype="x-app_timespan" equiv-text="&lt;/app-timespan&gt;" id="CLOSE_TAG_APP_TIMESPAN"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">68</context>
+          <context context-type="linenumber">68,69</context>
         </context-group>
         <note from="description" priority="1">Transaction confirmed after</note>
         <note from="meaning" priority="1">transaction.confirmed.after</note>
@@ -3389,7 +3420,7 @@
         <target>اول رؤية</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">103</context>
+          <context context-type="linenumber">103,104</context>
         </context-group>
         <note from="description" priority="1">Transaction first seen</note>
         <note from="meaning" priority="1">transaction.first-seen</note>
@@ -3399,7 +3430,7 @@
         <target>الوقت المقدر للوصول</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">109</context>
+          <context context-type="linenumber">109,111</context>
         </context-group>
         <note from="description" priority="1">Transaction ETA</note>
         <note from="meaning" priority="1">transaction.eta</note>
@@ -3409,7 +3440,7 @@
         <target>بعد عدة ساعات (أو أكثر)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">116</context>
+          <context context-type="linenumber">116,119</context>
         </context-group>
         <note from="description" priority="1">Transaction ETA in several hours or more</note>
         <note from="meaning" priority="1">transaction.eta.in-several-hours</note>
@@ -3419,11 +3450,11 @@
         <target>الحجم الافتراضي</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">155</context>
+          <context context-type="linenumber">155,157</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">212</context>
+          <context context-type="linenumber">212,216</context>
         </context-group>
         <note from="description" priority="1">Transaction Virtual Size</note>
         <note from="meaning" priority="1">transaction.vsize</note>
@@ -3433,11 +3464,11 @@
         <target>معدل الرسوم</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">156</context>
+          <context context-type="linenumber">156,160</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">335</context>
+          <context context-type="linenumber">335,337</context>
         </context-group>
         <note from="description" priority="1">Transaction fee rate</note>
         <note from="meaning" priority="1">transaction.fee-rate</note>
@@ -3447,7 +3478,7 @@
         <target>منحدر</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">163</context>
+          <context context-type="linenumber">163,165</context>
         </context-group>
         <note from="description" priority="1">Descendant</note>
         <note from="meaning" priority="1">transaction.descendant</note>
@@ -3457,7 +3488,7 @@
         <target>الاصل</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">177</context>
+          <context context-type="linenumber">177,179</context>
         </context-group>
         <note from="description" priority="1">Transaction Ancestor</note>
         <note from="meaning" priority="1">transaction.ancestor</note>
@@ -3467,7 +3498,7 @@
         <target>حجم</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">208</context>
+          <context context-type="linenumber">208,212</context>
         </context-group>
         <note from="description" priority="1">Transaction Size</note>
         <note from="meaning" priority="1">transaction.size</note>
@@ -3477,7 +3508,7 @@
         <target>وزن</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">216</context>
+          <context context-type="linenumber">216,220</context>
         </context-group>
         <note from="description" priority="1">Transaction Weight</note>
         <note from="meaning" priority="1">transaction.weight</note>
@@ -3487,7 +3518,7 @@
         <target>الحوالة غير موجودة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">304</context>
+          <context context-type="linenumber">304,305</context>
         </context-group>
         <note from="description" priority="1">transaction.error.transaction-not-found</note>
       </trans-unit>
@@ -3496,7 +3527,7 @@
         <target>في انتظار ظهورها على mempool</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">305</context>
+          <context context-type="linenumber">305,309</context>
         </context-group>
         <note from="description" priority="1">transaction.error.waiting-for-it-to-appear</note>
       </trans-unit>
@@ -3505,7 +3536,7 @@
         <target>الرسوم</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">331</context>
+          <context context-type="linenumber">331,332</context>
         </context-group>
         <note from="description" priority="1">Transaction fee</note>
         <note from="meaning" priority="1">transaction.fee</note>
@@ -3515,7 +3546,7 @@
         <target>سات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">332</context>
+          <context context-type="linenumber">332,335</context>
         </context-group>
         <note from="description" priority="1">Transaction Fee sat</note>
         <note from="meaning" priority="1">transaction.fee.sat</note>
@@ -3525,7 +3556,7 @@
         <target>معدل الرسوم الفعلي</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">345</context>
+          <context context-type="linenumber">345,348</context>
         </context-group>
         <note from="description" priority="1">Effective transaction fee rate</note>
         <note from="meaning" priority="1">transaction.effective-fee-rate</note>
@@ -3535,7 +3566,7 @@
         <target>Coinbase</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">42</context>
         </context-group>
         <note from="description" priority="1">transactions-list.coinbase</note>
       </trans-unit>
@@ -3544,7 +3575,7 @@
         <target>(عملات تم إنشاؤها حديثًا)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">42</context>
         </context-group>
         <note from="description" priority="1">transactions-list.newly-generated-coins</note>
       </trans-unit>
@@ -3553,7 +3584,7 @@
         <target>ربط</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">41,43</context>
+          <context context-type="linenumber">44,46</context>
         </context-group>
         <note from="description" priority="1">transactions-list.peg-in</note>
       </trans-unit>
@@ -3562,7 +3593,7 @@
         <target>البرنامج النصي (ASM)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">74,76</context>
+          <context context-type="linenumber">77,79</context>
         </context-group>
         <note from="description" priority="1">ScriptSig (ASM)</note>
         <note from="meaning" priority="1">transactions-list.scriptsig.asm</note>
@@ -3572,7 +3603,7 @@
         <target>البرنامج النصي. (HEX)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">78,80</context>
+          <context context-type="linenumber">81,83</context>
         </context-group>
         <note from="description" priority="1">ScriptSig (HEX)</note>
         <note from="meaning" priority="1">transactions-list.scriptsig.hex</note>
@@ -3582,7 +3613,7 @@
         <target>شوهد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">83,84</context>
+          <context context-type="linenumber">86,87</context>
         </context-group>
         <note from="description" priority="1">transactions-list.witness</note>
       </trans-unit>
@@ -3591,15 +3622,16 @@
         <target>البرنامج النصي استرداد P2SH</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">87,88</context>
+          <context context-type="linenumber">90,91</context>
         </context-group>
         <note from="description" priority="1">transactions-list.p2sh-redeem-script</note>
       </trans-unit>
       <trans-unit datatype="html" id="e1d63108bdf06fa14ec13f038e23eebd4d391b16">
         <source>P2WSH witness script</source>
+        <target>نتائج التجزئة النصية العالقة 2 للشاهد  النصي المنفصل. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">91,92</context>
+          <context context-type="linenumber">94,95</context>
         </context-group>
         <note from="description" priority="1">transactions-list.p2wsh-witness-script</note>
       </trans-unit>
@@ -3608,15 +3640,16 @@
         <target>ن التسلسل</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">95,96</context>
+          <context context-type="linenumber">98,99</context>
         </context-group>
         <note from="description" priority="1">transactions-list.nsequence</note>
       </trans-unit>
       <trans-unit datatype="html" id="26cdad3f9e94369ff12c5c628d8eb5c724e3acb3">
         <source>Previous output script</source>
+        <target>نص النتائج السابقة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">99,100</context>
+          <context context-type="linenumber">102,103</context>
         </context-group>
         <note from="description" priority="1">transactions-list.previous-output-script</note>
       </trans-unit>
@@ -3625,36 +3658,39 @@
         <target>تحميل الكل</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">109,112</context>
+          <context context-type="linenumber">112,115</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">191,194</context>
+          <context context-type="linenumber">194,197</context>
         </context-group>
         <note from="description" priority="1">transactions-list.load-all</note>
       </trans-unit>
       <trans-unit datatype="html" id="9fb28e77d5963f2275397f2f9cee54f32942aeeb">
         <source>Peg-out to <x ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;" id="START_TAG_NG_CONTAINER"/><x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></source>
+        <target>إخراج المعاملات الى <x ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;" id="START_TAG_NG_CONTAINER"/><x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">128,129</context>
+          <context context-type="linenumber">131,132</context>
         </context-group>
         <note from="description" priority="1">transactions-list.peg-out-to</note>
       </trans-unit>
       <trans-unit datatype="html" id="4bdf69370ca8b0cae3a17d7b84b59c49cd57288d">
         <source>ScriptPubKey (ASM)</source>
+        <target>النتيجة النصية لمعاملات بتكوين(عملية عكسية لإلغاء الرموز النصية)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">173,175</context>
+          <context context-type="linenumber">176,178</context>
         </context-group>
         <note from="description" priority="1">ScriptPubKey (ASM)</note>
         <note from="meaning" priority="1">transactions-list.scriptpubkey.asm</note>
       </trans-unit>
       <trans-unit datatype="html" id="e191b4f47f3ea7532f83fd498f4860db664ab75c">
         <source>ScriptPubKey (HEX)</source>
+        <target> النتيجة النصيةلمعاملات بتكوين (سلسلة ارقام  سداسية عشرية)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">177,179</context>
+          <context context-type="linenumber">180,182</context>
         </context-group>
         <note from="description" priority="1">ScriptPubKey (HEX)</note>
         <note from="meaning" priority="1">transactions-list.scriptpubkey.hex</note>
@@ -3664,7 +3700,7 @@
         <target>البيانات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">181,182</context>
+          <context context-type="linenumber">184,185</context>
         </context-group>
         <note from="description" priority="1">transactions-list.vout.scriptpubkey-type.data</note>
       </trans-unit>
@@ -3673,7 +3709,7 @@
         <target>sat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">201</context>
+          <context context-type="linenumber">204</context>
         </context-group>
         <note from="description" priority="1">sat</note>
         <note from="meaning" priority="1">shared.sat</note>
