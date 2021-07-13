@@ -87,4 +87,5 @@ export const languages: Language[] = [
    { code: 'uk', name: 'Українська' },      // Ukrainian
    { code: 'vi', name: 'Tiếng Việt' },      // Vietnamese
    { code: 'zh', name: '中文' },            // Chinese
+   { code: 'hi', name: 'हिन्दी' },             // Hindi
 ];
