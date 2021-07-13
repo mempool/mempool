@@ -190,6 +190,26 @@
             </ng-template>
           </ngb-panel>
 
+          <ngb-panel id="blockHeader">
+            <ng-template ngbPanelTitle>
+              <span>GET Block Header</span>
+            </ng-template>
+            <ng-template ngbPanelContent>
+              
+              <div class="endpoint">
+                <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
+                <a href="{{ network.val === '' ? '' : '/' + network.val }}/api/block/0000000000000000000065bda8f8a88f2e1e00d9a6887a43d640e52a4c7660f2/header" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/block/:hash/header</a>
+              </div>
+
+              <div class="description">
+                <div class="subtitle" i18n>Description</div>
+                <div i18n>Returns the hex-encoded block header.</div>
+              </div>
+
+              <app-code-template [code]="code.blockHeader" [network]="network.val" ></app-code-template>
+            </ng-template>
+          </ngb-panel>
+
           <ngb-panel id="blockHeight">
             <ng-template ngbPanelTitle>
               <span>GET Block Height</span>
