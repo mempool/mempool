@@ -114,6 +114,10 @@
           "ru": {
             "translation": "src/locale/messages.ru.xlf",
             "baseHref": "/ru/"
+          },
+          "hi": {
+            "translation": "src/locale/messages.hi.xlf",
+            "baseHref": "/hi/"
           }
         }
       },
