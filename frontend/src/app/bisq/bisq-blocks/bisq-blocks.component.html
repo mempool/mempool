@@ -1,4 +1,4 @@
-<div class="container-xl">
+<div class="container-xl" (window:resize)="onResize($event)">
   <h1 style="float: left;" i18n="Bisq blocks header">BSQ Blocks</h1>
   <br>
 
@@ -26,9 +26,7 @@
   </div>
 
   <br>
-  <div class="pagination">
-    <ngb-pagination *ngIf="blocks.value" [size]="paginationSize" [collectionSize]="blocks.value[1]" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true"></ngb-pagination>
-  </div>
+  <ngb-pagination *ngIf="blocks.value" class="pagination-container" [size]="paginationSize" [collectionSize]="blocks.value[1]" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
   </ng-container>
 </div>
 

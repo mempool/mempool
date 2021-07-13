@@ -112,7 +112,7 @@
               <tbody>
                 <tr *ngFor="let transaction of transactions$ | async; let i = index;">
                   <td class="table-cell-txid"><a [routerLink]="['/tx' | relativeUrl, transaction.txid]">{{ transaction.txid | shortenString : 10 }}</a></td>
-                  <td class="table-cell-satoshis"><app-amount [satoshis]="transaction.value" digitsInfo="1.8-8" [noFiat]="true"></app-amount></td>
+                  <td class="table-cell-satoshis"><app-amount [satoshis]="transaction.value" digitsInfo="1.2-4" [noFiat]="true"></app-amount></td>
                   <td class="table-cell-fiat" *ngIf="(network$ | async) === ''" ><app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat></td>
                   <td class="table-cell-fees">{{ transaction.fee / transaction.vsize | number : '1.1-1' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
                 </tr>

@@ -672,3 +672,30 @@ th {
     }
   }
 }
+
+
+.pagination-container {
+  
+  display: inline-block;
+  width: 100%;
+  justify-content: space-between;
+  background: #1d1f31;
+  margin: 0;
+  @media (min-width: 550px) {
+    width: auto;
+  }
+  ul {
+    justify-content: space-evenly !important;
+    margin: 0;
+    @media (min-width: 400px) {
+      width: auto;
+      padding-left: 5px;
+    }
+  }
+}
+
+.fee-estimation-wrapper {
+  .tooltip.show {
+    width: 220px;
+  }
+}
