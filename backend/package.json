@@ -28,7 +28,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@mempool/bitcoin": "^3.0.2",
+    "@mempool/bitcoin": "^3.0.3",
     "@mempool/electrum-client": "^1.1.7",
     "axios": "^0.21.1",
     "bitcoinjs-lib": "^5.2.0",
