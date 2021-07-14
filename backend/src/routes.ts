@@ -506,6 +506,15 @@ class Routes {
     }
   }
 
+  public async getBlockHeader(req: Request, res: Response) {
+    try {
+      const blockHeader = await bitcoinApi.$getBlockHeader(req.params.hash);
+      res.send(blockHeader);
+    } catch (e) {
+      res.status(500).send(e.message || e);
+    }
+  }
+
   public async getBlocks(req: Request, res: Response) {
     try {
       loadingIndicators.setProgress('blocks', 0);

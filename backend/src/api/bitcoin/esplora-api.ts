@@ -35,6 +35,11 @@ class ElectrsApi implements AbstractBitcoinApi {
       .then((response) => response.data);
   }
 
+  $getBlockHeader(hash: string): Promise<string> {
+    return axios.get<string>(config.ESPLORA.REST_API_URL + '/block/' + hash + '/header', this.axiosConfig)
+      .then((response) => response.data);
+  }
+
   $getBlock(hash: string): Promise<IEsploraApi.Block> {
     return axios.get<IEsploraApi.Block>(config.ESPLORA.REST_API_URL + '/block/' + hash, this.axiosConfig)
       .then((response) => response.data);
