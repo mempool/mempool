@@ -592,7 +592,7 @@ class Routes {
       }
       res.status(500).send(e.message || e);
     }
-  }
+  }z
 
   public async getAddressTransactions(req: Request, res: Response) {
     if (config.MEMPOOL.BACKEND === 'none') {
@@ -665,6 +665,55 @@ class Routes {
 
   public getTransactionOutspends(req: Request, res: Response) {
     res.status(501).send('Not implemented');
+  }
+
+  public async getDifficultyChange(req: Request, res: Response) {
+    try {
+      const now = new Date().getTime() / 1000;
+      const DATime=blocks.getLastDifficultyAdjustmentTime();
+      const diff = now - DATime;
+      const blockHeight=await bitcoinApi.$getBlockHeightTip();
+      const blocksInEpoch = blockHeight % 2016;
+      const estimatedBlocks = Math.round(diff / 60 / 10);
+      const difficultyChange = (600 / (diff / blocksInEpoch ) - 1) * 100;
+
+      const timeAvgDiff = difficultyChange * 0.1;
+
+      let timeAvgMins = 10;
+      if (timeAvgDiff > 0 ){
+        timeAvgMins -= Math.abs(timeAvgDiff);
+      } else {
+        timeAvgMins += Math.abs(timeAvgDiff);
+      }
+
+      const remainingBlocks = estimatedBlocks - blocksInEpoch;
+      const timeAvgSeconds = timeAvgMins * 60;
+      const remainingBlockSeconds = remainingBlocks * timeAvgSeconds;
+      const remainingTime=(remainingBlockSeconds + now);
+      const totalTime=remainingTime-DATime;
+      const progressPercent=100-((remainingBlockSeconds*100)/totalTime);
+
+      var date= new Date(0); // The 0 there is the key, which sets the date to the epoch
+      date.setUTCSeconds(remainingTime);
+
+      const result={
+        now,
+        DATime,
+        diff,
+        blockHeight,
+        blocksInEpoch,
+        estimatedBlocks,
+        difficultyChange,
+        remainingBlocks,
+        remainingBlockSeconds,
+        date,
+        progressPercent
+      }
+      res.json(result);
+
+    } catch (e) {
+      res.status(500).send(e.message || e);
+    }
   }
 }
 
