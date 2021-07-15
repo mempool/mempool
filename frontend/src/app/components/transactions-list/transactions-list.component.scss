@@ -3,11 +3,13 @@
 	width: 20px;
 }
 .green, .grey, .red {
-	font-size: 19px;
+	font-size: 16px;
     top: -2px;
 	position: relative;
+	@media( min-width: 576px){
+		font-size: 19px;
+	}
 }
-
 .green {
   	color:#28a745;
 }
