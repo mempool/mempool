@@ -1,60 +1,23 @@
+
 .arrow-td {
-	width: 22px;
-	display: block;
-	padding: 0;
-	padding-left: 0px;
-	margin: 0;
-}
-
-.arrow {
-	display: block;
 	width: 20px;
-	height: 20px;
-	margin-top: 5px;
+}
+.green, .grey, .red {
+	font-size: 19px;
+    top: -2px;
+	position: relative;
 }
 
-.arrow:before {
-	position: absolute;
-	content: '';
-	margin: auto;
-	border-top: 7px solid transparent;
-  	border-bottom: 7px solid transparent;
-	margin-left: 5px;
-	margin-top: 3px;
+.green {
+  	color:#28a745;
 }
 
-.arrow:after {
-	position: absolute;
-	content: '';
-	margin: auto;
-	width: 10px;
-	height: 7px;
-	background: rgba(0, 0, 0, 0);	
-	margin-left: -1px;
-	margin-top: 6px;
+.red {
+  	color:#dc3545;
 }
 
-
-.arrow.green:before {
-  	border-left: 10px solid #28a745;
-}
-.arrow.green:after {
-  	background-color:#28a745;
-}
-
-.arrow.red:before {
-  	border-left: 10px solid #dc3545;
-}
-.arrow.red:after {
-  	background-color:#dc3545;
-}
-
-.arrow.grey:before {
-  	border-left: 10px solid #6c757d;
-}
-
-.arrow.grey:after {
-  	background-color:#6c757d;
+.grey {
+  	color:#6c757d;
 }
 
 .mobile-bottomcol {
