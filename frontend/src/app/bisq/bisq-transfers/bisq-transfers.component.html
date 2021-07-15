@@ -7,11 +7,13 @@
             <tr *ngIf="input.isVerified">
               <td class="arrow-td">
                 <ng-template [ngIf]="input.spendingTxId === null" [ngIfElse]="hasPreoutput">
-                  <i class="arrow grey"></i>
+                  <span class="grey">
+                    <fa-icon [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
+                  </span>
                 </ng-template>
                 <ng-template #hasPreoutput>
-                  <a [routerLink]="['/tx/' | relativeUrl, input.spendingTxId]">
-                    <i class="arrow red"></i>
+                  <a [routerLink]="['/tx/' | relativeUrl, input.spendingTxId]" class="red">
+                    <fa-icon [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
                   </a>
                 </ng-template>
               </td>
@@ -44,10 +46,14 @@
               <td class="text-right nowrap">
                 <app-bsq-amount [bsq]="output.bsqAmount"></app-bsq-amount>
               </td>
-              <td class="pl-1 arrow-td">
-                <i *ngIf="!output.spentInfo; else spent" class="arrow green"></i>
+              <td class="arrow-td">
+                <span *ngIf="!output.spentInfo; else spent" class="green">
+                  <fa-icon [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
+                </span>
                 <ng-template #spent>
-                  <a [routerLink]="['/tx/' | relativeUrl, output.spentInfo.txId]"><i class="arrow red"></i></a>
+                  <a [routerLink]="['/tx/' | relativeUrl, output.spentInfo.txId]" class="red">
+                    <fa-icon [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
+                  </a>
                 </ng-template>
               </td>
             </tr>
