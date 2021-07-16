@@ -1131,7 +1131,7 @@ responseSample: `{
       codeSample: {
         esModule:``,
         commonJS:``,
-        curl: `curl -X GET "https://mempool.space/api/difficulty"`,
+        curl: `curl -X GET "https://mempool.space/api/difficulty-adjustment"`,
       },
       responseSample: `{
           "now":1626096445.982,
