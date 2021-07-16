@@ -1,5 +1,6 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnChanges, PLATFORM_ID, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnChanges } from '@angular/core';
 import { StateService } from 'src/app/services/state.service';
+import { dates } from 'src/app/shared/i18n/dates';
 
 @Component({
   selector: 'app-time-until',
@@ -54,48 +55,49 @@ export class TimeUntilComponent implements OnInit, OnChanges, OnDestroy {
     const seconds = Math.floor((+new Date(this.time) - +new Date()) / 1000);
 
     if (seconds < 60) {
-      return $localize`:@@time-until.any-moment:Any moment`;
+      return $localize`:@@date-base.last-minute:In ~1 min`;
     }
     let counter;
     for (const i in this.intervals) {
       if (this.intervals.hasOwnProperty(i)) {
         counter = Math.floor(seconds / this.intervals[i]);
+        const dateStrings = dates(counter);
         if (counter > 0) {
           if (counter === 1) {
-            switch (i) { // singular (1 day ago)
-              case 'year': return $localize`:@@time-until.year:In ~${counter}:INTERPOLATION: year`; break;
-              case 'month': return $localize`:@@time-until.month:In ~${counter}:INTERPOLATION: month`; break;
-              case 'week': return $localize`:@@time-until.week:In ~${counter}:INTERPOLATION: week`; break;
-              case 'day': return $localize`:@@time-until.day:In ~${counter}:INTERPOLATION: day`; break;
-              case 'hour': return $localize`:@@time-until.hour:In ~${counter}:INTERPOLATION: hour`; break;
+            switch (i) { // singular (In ~1 day)
+              case 'year': return $localize`:@@time-until:In ~${dateStrings.i18nYear}:DATE:`; break;
+              case 'month': return $localize`:@@time-until:In ~${dateStrings.i18nMonth}:DATE:`; break;
+              case 'week': return $localize`:@@time-until:In ~${dateStrings.i18nWeek}:DATE:`; break;
+              case 'day': return $localize`:@@time-until:In ~${dateStrings.i18nDay}:DATE:`; break;
+              case 'hour': return $localize`:@@time-until:In ~${dateStrings.i18nHour}:DATE:`; break;
               case 'minute':
                 if (document.body.clientWidth < 768) {
-                  return $localize`:@@time-until.min:In ~${counter}:INTERPOLATION: min`;
+                  return $localize`:@@time-until:In ~${dateStrings.i18nMin}:DATE:`;
                 }
-                return $localize`:@@time-until.minute:In ~${counter}:INTERPOLATION: minute`;
+                return $localize`:@@time-until:In ~${dateStrings.i18nMinute}:DATE:`;
               case 'second':
                 if (document.body.clientWidth < 768) {
-                  return $localize`:@@time-until.sec:In ~${counter}:INTERPOLATION: sec`;
+                  return $localize`:@@time-until:In ~${dateStrings.i18nSec}:DATE:`;
                 }
-                return $localize`:@@time-until.second:In ~${counter}:INTERPOLATION: second`;
+                return $localize`:@@time-until:In ~${dateStrings.i18nSecond}:DATE:`;
             }
           } else {
-            switch (i) { // plural (2 days ago)
-              case 'year': return $localize`:@@time-until.years:In ~${counter}:INTERPOLATION: years`; break;
-              case 'month': return $localize`:@@time-until.months:In ~${counter}:INTERPOLATION: months`; break;
-              case 'week': return $localize`:@@time-until.weeks:In ~${counter}:INTERPOLATION: weeks`; break;
-              case 'day': return $localize`:@@time-until.days:In ~${counter}:INTERPOLATION: days`; break;
-              case 'hour': return $localize`:@@time-until.hours:In ~${counter}:INTERPOLATION: hours`; break;
+            switch (i) { // plural (In ~2 days)
+              case 'year': return $localize`:@@time-until:In ~${dateStrings.i18nYears}:DATE:`; break;
+              case 'month': return $localize`:@@time-until:In ~${dateStrings.i18nMonths}:DATE:`; break;
+              case 'week': return $localize`:@@time-until:In ~${dateStrings.i18nWeeks}:DATE:`; break;
+              case 'day': return $localize`:@@time-until:In ~${dateStrings.i18nDays}:DATE:`; break;
+              case 'hour': return $localize`:@@time-until:In ~${dateStrings.i18nHours}:DATE:`; break;
               case 'minute':
                 if (document.body.clientWidth < 768) {
-                  return $localize`:@@time-until.mins:In ~${counter}:INTERPOLATION: mins`;
+                  return $localize`:@@time-until:In ~${dateStrings.i18nMins}:DATE:`;
                 }
-                return $localize`:@@time-until.minutes:In ~${counter}:INTERPOLATION: minutes`;
+                return $localize`:@@time-until:In ~${dateStrings.i18nMinutes}:DATE:`;
               case 'second':
                 if (document.body.clientWidth < 768) {
-                  return $localize`:@@time-until.secs:In ~${counter}:INTERPOLATION: secs`;
+                  return $localize`:@@time-until:In ~${dateStrings.i18nSecs}:DATE:`;
                 }
-                return $localize`:@@time-until.seconds:In ~${counter}:INTERPOLATION: seconds`;
+                return $localize`:@@time-until:In ~${dateStrings.i18nSeconds}:DATE:`;
             }
           }
         }

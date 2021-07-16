@@ -65,7 +65,7 @@
                 <ng-template [ngIf]="transactionTime > 0">
                   <tr>
                     <td i18n="transaction.confirmed|Transaction Confirmed state">Confirmed</td>
-                    <td><ng-container i18n="transaction.confirmed.after|Transaction confirmed after">After <app-timespan [time]="tx.status.block_time - transactionTime"></app-timespan></ng-container></td>
+                    <td><app-time-span [time]="tx.status.block_time - transactionTime" [fastRender]="true"></app-time-span></td>
                   </tr>
                 </ng-template>
                 <tr *ngIf="network !== 'liquid'">
