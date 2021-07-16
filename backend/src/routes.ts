@@ -689,19 +689,16 @@ class Routes {
       const remainingBlocks = 2016 - blocksInEpoch;
       const timeAvgSeconds = timeAvgMins * 60;
       const remainingTime = remainingBlocks * timeAvgSeconds;
-      const expectedTime=(remainingTime + now);
-      const totalTime=expectedTime-DATime;
+      const estimatedRetargetDate=(remainingTime + now);
+      const totalTime=estimatedRetargetDate-DATime;
       const progressPercent=100-((remainingTime*100)/totalTime);
 
-      var date= new Date(0); // The 0 there is the key, which sets the date to the epoch
-      date.setUTCSeconds(expectedTime);
-
       const result={
+        progressPercent,
         difficultyChange,
+        estimatedRetargetDate,
         remainingBlocks,
         remainingTime,
-        date,
-        progressPercent
       }
       res.json(result);
 
