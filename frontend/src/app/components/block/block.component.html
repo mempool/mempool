@@ -122,17 +122,17 @@
     </div>
 
     <div class="text-right mt-3">
-      <button type="button" class="btn btn-outline-info btn-sm" (click)="toggleShowDetails()" i18n="transaction.details|Transaction Details">Details</button>
+      <button type="button" class="btn btn-outline-info btn-sm btn-details" (click)="toggleShowDetails()" i18n="transaction.details|Transaction Details">Details</button>
     </div>
 
-    <div class="block-tx-title">
+    <div #blockTxTitle id="block-tx-title" class="block-tx-title">
       <h2>
         <ng-container *ngTemplateOutlet="block.tx_count === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: block.tx_count | number}"></ng-container>
         <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
         <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
       </h2>
 
-      <ngb-pagination class="pagination-container" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
+      <ngb-pagination class="pagination-container" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page, blockTxTitle)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
     </div>
     <div class="clearfix"></div>
 
@@ -166,7 +166,7 @@
         
       </div>
     </ng-template>
-    <ngb-pagination class="pagination-container float-right" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
+    <ngb-pagination class="pagination-container float-right" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page, blockTxTitle)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
 
   </ng-template>
 
