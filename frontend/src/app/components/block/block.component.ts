@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
@@ -173,15 +173,17 @@ export class BlockComponent implements OnInit, OnDestroy {
     }
   }
 
-  pageChange(page: number) {
+  pageChange(page: number, target: HTMLElement) {
     const start = (page - 1) * this.itemsPerPage;
     this.isLoadingTransactions = true;
     this.transactions = null;
+    target.scrollIntoView(); // works for chrome
 
     this.electrsApiService.getBlockTransactions$(this.block.id, start)
      .subscribe((transactions) => {
         this.transactions = transactions;
         this.isLoadingTransactions = false;
+        target.scrollIntoView(); // works for firefox
       });
   }
 
