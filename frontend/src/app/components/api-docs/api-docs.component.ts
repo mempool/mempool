@@ -1134,17 +1134,12 @@ responseSample: `{
         curl: `curl -X GET "https://mempool.space/api/difficulty-adjustment"`,
       },
       responseSample: `{
-          "now":1626096445.982,
-          "DATime":1624928809,
-          "diff":1167636.9820001125,
-          "blockHeight":46241,
-          "blocksInEpoch":1889,
-          "estimatedBlocks":1946,
-          "difficultyChange":-2.932159783211563,
-          "remainingBlocks":57,
-          "remainingBlockSeconds":35202.798645858355,
-          "date":"2021-07-12T23:14:08.000Z",
-          "progressPercent":97.07335929420711
+        progressPercent: 18.55392610846515,
+        difficultyChange: -1.2440503501069622,
+        estimatedRetargetDate: 1627400849.2000492,
+        remainingBlocks: 1642,
+        remainingTime: 997456.3840492539
+          
 }`,
     },
     
