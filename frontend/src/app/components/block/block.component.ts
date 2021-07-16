@@ -34,8 +34,6 @@ export class BlockComponent implements OnInit, OnDestroy {
   txsLoadingStatus$: Observable<number>;
   showDetails = false;
 
-  @ViewChild('blockTxTitle') el: ElementRef;
-
   constructor(
     private route: ActivatedRoute,
     private location: Location,
@@ -175,16 +173,16 @@ export class BlockComponent implements OnInit, OnDestroy {
     }
   }
 
-  pageChange(page: number) {
+  pageChange(page: number, target: HTMLElement) {
     const start = (page - 1) * this.itemsPerPage;
     this.isLoadingTransactions = true;
     this.transactions = null;
-    this.el.nativeElement.scrollIntoView();
 
     this.electrsApiService.getBlockTransactions$(this.block.id, start)
      .subscribe((transactions) => {
         this.transactions = transactions;
         this.isLoadingTransactions = false;
+        target.scrollIntoView();
       });
   }
 

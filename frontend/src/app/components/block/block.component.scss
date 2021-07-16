@@ -87,8 +87,8 @@ h1 {
   text-align: right;
   margin-top: -30px;
   @media (min-width: 550px) {
-    margin-top: -40px;
-    padding-top: 50px;
+    margin-top: 0px;
+    padding-top: 10px;
   }
   h2 {
     display: inline-block;
@@ -106,7 +106,7 @@ h1 {
       top: 0px;
     }
     @media (min-width: 768px) {
-      padding-top: 10px;
+      padding-top: 5px;
       line-height: 1;
     }
   }
