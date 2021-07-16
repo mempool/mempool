@@ -177,12 +177,13 @@ export class BlockComponent implements OnInit, OnDestroy {
     const start = (page - 1) * this.itemsPerPage;
     this.isLoadingTransactions = true;
     this.transactions = null;
+    target.scrollIntoView(); // works for chrome
 
     this.electrsApiService.getBlockTransactions$(this.block.id, start)
      .subscribe((transactions) => {
         this.transactions = transactions;
         this.isLoadingTransactions = false;
-        target.scrollIntoView();
+        target.scrollIntoView(); // works for firefox
       });
   }
 
