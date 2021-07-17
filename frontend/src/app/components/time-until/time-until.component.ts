@@ -70,16 +70,8 @@ export class TimeUntilComponent implements OnInit, OnChanges, OnDestroy {
               case 'week': return $localize`:@@time-until:In ~${dateStrings.i18nWeek}:DATE:`; break;
               case 'day': return $localize`:@@time-until:In ~${dateStrings.i18nDay}:DATE:`; break;
               case 'hour': return $localize`:@@time-until:In ~${dateStrings.i18nHour}:DATE:`; break;
-              case 'minute':
-                if (document.body.clientWidth < 768) {
-                  return $localize`:@@time-until:In ~${dateStrings.i18nMin}:DATE:`;
-                }
-                return $localize`:@@time-until:In ~${dateStrings.i18nMinute}:DATE:`;
-              case 'second':
-                if (document.body.clientWidth < 768) {
-                  return $localize`:@@time-until:In ~${dateStrings.i18nSec}:DATE:`;
-                }
-                return $localize`:@@time-until:In ~${dateStrings.i18nSecond}:DATE:`;
+              case 'minute': return $localize`:@@time-until:In ~${dateStrings.i18nMinute}:DATE:`;
+              case 'second': return $localize`:@@time-until:In ~${dateStrings.i18nSecond}:DATE:`;
             }
           } else {
             switch (i) { // plural (In ~2 days)
@@ -88,16 +80,8 @@ export class TimeUntilComponent implements OnInit, OnChanges, OnDestroy {
               case 'week': return $localize`:@@time-until:In ~${dateStrings.i18nWeeks}:DATE:`; break;
               case 'day': return $localize`:@@time-until:In ~${dateStrings.i18nDays}:DATE:`; break;
               case 'hour': return $localize`:@@time-until:In ~${dateStrings.i18nHours}:DATE:`; break;
-              case 'minute':
-                if (document.body.clientWidth < 768) {
-                  return $localize`:@@time-until:In ~${dateStrings.i18nMins}:DATE:`;
-                }
-                return $localize`:@@time-until:In ~${dateStrings.i18nMinutes}:DATE:`;
-              case 'second':
-                if (document.body.clientWidth < 768) {
-                  return $localize`:@@time-until:In ~${dateStrings.i18nSecs}:DATE:`;
-                }
-                return $localize`:@@time-until:In ~${dateStrings.i18nSeconds}:DATE:`;
+              case 'minute': return $localize`:@@time-until:In ~${dateStrings.i18nMinutes}:DATE:`;
+              case 'second': return $localize`:@@time-until:In ~${dateStrings.i18nSeconds}:DATE:`;
             }
           }
         }
