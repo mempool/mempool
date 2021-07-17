@@ -42,7 +42,7 @@
 }
 
 .more-padding {
-  padding: 1.25rem 2rem 1.25rem 2rem;
+  padding: 18px;
 }
 
 .graph-card {
@@ -212,4 +212,116 @@
 
 .terms-of-service {
   margin-top: 1rem;
+}
+
+.small-bar {
+  height: 8px;
+  top: -4px;
+}
+
+.difficulty-adjustment-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  height: 76px;
+  .shared-block {
+    color: #ffffff66;
+    font-size: 12px;
+  }
+  .item {    
+    max-width: 130px;
+    padding: 0 5px;
+    width: 100%;
+    &:nth-child(1){
+      display: none;
+      @media (min-width: 485px) {
+        display: table-cell;
+      }
+      @media (min-width: 768px) {
+        display: none;
+      }
+      @media (min-width: 992px) {
+        display: table-cell;
+      }
+    }
+  }
+  .card-text {
+    font-size: 22px;
+    margin-top: -9px;
+    position: relative;
+  }
+}
+
+
+.difficulty-skeleton {
+  display: flex;
+  justify-content: space-between;
+  @media (min-width: 376px) {
+    flex-direction: row;
+  }  
+  .item {
+    max-width: 150px;
+    margin: 0;
+    width: -webkit-fill-available;
+    @media (min-width: 376px) {
+      margin: 0 auto 0px;
+    }    
+    &:first-child{
+      display: none;
+      @media (min-width: 485px) {
+        display: block;
+      }    
+      @media (min-width: 768px) {
+        display: none;
+      }    
+      @media (min-width: 992px) {
+        display: block;
+      }    
+    }
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.loading-container{
+  min-height: 76px;
+}
+
+.card-text {
+  .skeleton-loader {
+    width: 100%;
+    display: block;
+    margin: 7px auto;
+    &:first-child {
+      max-width: 80px;
+    }
+    &:last-child {
+      max-width: 110px;
+    }
+  }
+}
+
+.main-title {
+  position: relative;
+  color: #ffffff91;
+  margin-top: -13px;
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 500;
+  text-align: center;
+  padding-bottom: 3px;
+}
+.card-wrapper {
+  .card {
+    height: auto !important;
+  }
+  .card-body {
+    display: flex;
+    flex: inherit;
+    text-align: center;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 22px 20px;
+  }
 }

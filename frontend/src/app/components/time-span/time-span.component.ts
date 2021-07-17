@@ -3,11 +3,11 @@ import { StateService } from 'src/app/services/state.service';
 import { dates } from 'src/app/shared/i18n/dates';
 
 @Component({
-  selector: 'app-time-since',
+  selector: 'app-time-span',
   template: `{{ text }}`,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
+export class TimeSpanComponent implements OnInit, OnChanges, OnDestroy {
   interval: number;
   text: string;
   intervals = {};
@@ -64,39 +64,39 @@ export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
         if (counter > 0) {
           if (counter === 1) {
             switch (i) { // singular (1 day)
-              case 'year': return $localize`:@@time-since:${dateStrings.i18nYear}:DATE: ago`; break;
-              case 'month': return $localize`:@@time-since:${dateStrings.i18nMonth}:DATE: ago`; break;
-              case 'week': return $localize`:@@time-since:${dateStrings.i18nWeek}:DATE: ago`; break;
-              case 'day': return $localize`:@@time-since:${dateStrings.i18nDay}:DATE: ago`; break;
-              case 'hour': return $localize`:@@time-since:${dateStrings.i18nHour}:DATE: ago`; break;
+              case 'year': return $localize`:@@time-span:After ${dateStrings.i18nYear}:DATE:`; break;
+              case 'month': return $localize`:@@time-span:After ${dateStrings.i18nMonth}:DATE:`; break;
+              case 'week': return $localize`:@@time-span:After ${dateStrings.i18nWeek}:DATE:`; break;
+              case 'day': return $localize`:@@time-span:After ${dateStrings.i18nDay}:DATE:`; break;
+              case 'hour': return $localize`:@@time-span:After ${dateStrings.i18nHour}:DATE:`; break;
               case 'minute':
                 if (document.body.clientWidth < 768) {
-                  return $localize`:@@time-since:${dateStrings.i18nMin}:DATE: ago`;
+                  return $localize`:@@time-span:After ${dateStrings.i18nMin}:DATE:`;
                 }
-                return $localize`:@@time-since:${dateStrings.i18nMinute}:DATE: ago`;
+                return $localize`:@@time-span:After ${dateStrings.i18nMinute}:DATE:`;
               case 'second':
                 if (document.body.clientWidth < 768) {
-                  return $localize`:@@time-since:${dateStrings.i18nSec}:DATE: ago`;
+                  return $localize`:@@time-span:After ${dateStrings.i18nSec}:DATE:`;
                 }
-                return $localize`:@@time-since:${dateStrings.i18nSecond}:DATE: ago`;
+                return $localize`:@@time-span:After ${dateStrings.i18nSecond}:DATE:`;
             }
           } else {
             switch (i) { // plural (2 days)
-              case 'year': return $localize`:@@time-since:${dateStrings.i18nYears}:DATE: ago`; break;
-              case 'month': return $localize`:@@time-since:${dateStrings.i18nMonths}:DATE: ago`; break;
-              case 'week': return $localize`:@@time-since:${dateStrings.i18nWeeks}:DATE: ago`; break;
-              case 'day': return $localize`:@@time-since:${dateStrings.i18nDays}:DATE: ago`; break;
-              case 'hour': return $localize`:@@time-since:${dateStrings.i18nHours}:DATE: ago`; break;
+              case 'year': return $localize`:@@time-span:After ${dateStrings.i18nYears}:DATE:`; break;
+              case 'month': return $localize`:@@time-span:After ${dateStrings.i18nMonths}:DATE:`; break;
+              case 'week': return $localize`:@@time-span:After ${dateStrings.i18nWeeks}:DATE:`; break;
+              case 'day': return $localize`:@@time-span:After ${dateStrings.i18nDays}:DATE:`; break;
+              case 'hour': return $localize`:@@time-span:After ${dateStrings.i18nHours}:DATE:`; break;
               case 'minute':
                 if (document.body.clientWidth < 768) {
-                  return $localize`:@@time-since:${dateStrings.i18nMins}:DATE: ago`;
+                  return $localize`:@@time-span:After ${dateStrings.i18nMins}:DATE:`;
                 }
-                return $localize`:@@time-since:${dateStrings.i18nMinutes}:DATE: ago`;
+                return $localize`:@@time-span:After ${dateStrings.i18nMinutes}:DATE:`;
               case 'second':
                 if (document.body.clientWidth < 768) {
-                  return $localize`:@@time-since:${dateStrings.i18nSecs}:DATE: ago`;
+                  return $localize`:@@time-span:After ${dateStrings.i18nSecs}:DATE:`;
                 }
-                return $localize`:@@time-since:${dateStrings.i18nSeconds}:DATE: ago`;
+                return $localize`:@@time-span:After ${dateStrings.i18nSeconds}:DATE:`;
             }
           }
         }

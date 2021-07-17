@@ -65,7 +65,7 @@
                 <ng-template [ngIf]="transactionTime > 0">
                   <tr>
                     <td i18n="transaction.confirmed|Transaction Confirmed state">Confirmed</td>
-                    <td><ng-container i18n="transaction.confirmed.after|Transaction confirmed after">After <app-timespan [time]="tx.status.block_time - transactionTime"></app-timespan></ng-container></td>
+                    <td><app-time-span [time]="tx.status.block_time - transactionTime" [fastRender]="true"></app-time-span></td>
                   </tr>
                 </ng-template>
                 <tr *ngIf="network !== 'liquid'">
@@ -321,8 +321,8 @@
 
 <ng-template let-i #nextBlockEta i18n="mempool-blocks.eta-of-next-block|Block Frequency">In ~{{ i }} minute</ng-template>
 
-<ng-template #blocksSingular let-i i18n="shared.block">{{ i }} block</ng-template>
-<ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} blocks</ng-template>
+<ng-template #blocksSingular let-i i18n="shared.block">{{ i }} <span class="shared-block">block</span></ng-template>
+<ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
 
 <ng-template #feeTable>
   <table class="table table-borderless table-striped">

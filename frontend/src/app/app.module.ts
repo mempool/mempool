@@ -32,7 +32,7 @@ import { FooterComponent } from './components/footer/footer.component';
 import { AudioService } from './services/audio.service';
 import { MempoolBlockComponent } from './components/mempool-block/mempool-block.component';
 import { FeeDistributionGraphComponent } from './components/fee-distribution-graph/fee-distribution-graph.component';
-import { TimespanComponent } from './components/timespan/timespan.component';
+import { TimeSpanComponent } from './components/time-span/time-span.component';
 import { SeoService } from './services/seo.service';
 import { MempoolGraphComponent } from './components/mempool-graph/mempool-graph.component';
 import { AssetComponent } from './components/asset/asset.component';
@@ -71,7 +71,7 @@ import { SponsorComponent } from './components/sponsor/sponsor.component';
     AmountComponent,
     LatestBlocksComponent,
     SearchFormComponent,
-    TimespanComponent,
+    TimeSpanComponent,
     AddressLabelsComponent,
     MempoolBlocksComponent,
     ChartistComponent,
