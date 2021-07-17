@@ -19,7 +19,7 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           #GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
-  cypress-firefox:
+  cypress-chrome:
     runs-on: ubuntu-latest
     container:
       image: cypress/browsers:node14.17.0-chrome88-ff89
