@@ -3754,11 +3754,11 @@
         </context-group>
         <note priority="1" from="description">difficulty-box.estimate</note>
       </trans-unit>
-      <trans-unit id="8437551cbbeb5195813b5fb124a9e5250d83ca6d" datatype="html">
-        <source>mins per block</source>
+      <trans-unit id="347e93d47e576648310f02f2c30e72794066e994" datatype="html">
+        <source>~<x id="INTERPOLATION" equiv-text="{{ epochData.timeAvg }}"/> mins per block</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">219,222</context>
+          <context context-type="linenumber">219,220</context>
         </context-group>
         <note priority="1" from="description">difficulty-box.mins-per-block</note>
       </trans-unit>
