@@ -55,7 +55,7 @@ export class TimeUntilComponent implements OnInit, OnChanges, OnDestroy {
     const seconds = Math.floor((+new Date(this.time) - +new Date()) / 1000);
 
     if (seconds < 60) {
-      return $localize`:@@date-base.last-minute:In ~1 min`;
+      return $localize`:@@date-base.minute:${1}:DATE: minute`;
     }
     let counter;
     for (const i in this.intervals) {
