@@ -43,7 +43,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Chrome Browser Tests
+      - name: Edge Browser Tests
         uses: cypress-io/github-action@v2
         with:
           working-directory: frontend
