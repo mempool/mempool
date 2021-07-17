@@ -12,11 +12,7 @@ export const dates = (counter: number) => {
         i18nHours: $localize`:@@date-base.hours:${counter}:DATE: hours`,
         i18nMinute: $localize`:@@date-base.minute:${counter}:DATE: minute`,
         i18nMinutes: $localize`:@@date-base.minutes:${counter}:DATE: minutes`,
-        i18nMin: $localize`:@@date-base.min:${counter}:DATE: min`,
-        i18nMins: $localize`:@@date-base.mins:${counter}:DATE: mins`,
         i18nSecond: $localize`:@@date-base.second:${counter}:DATE: second`,
         i18nSeconds: $localize`:@@date-base.seconds:${counter}:DATE: seconds`,
-        i18nSec: $localize`:@@date-base.sec:${counter}:DATE: sec`,
-        i18nSecs: $localize`:@@date-base.secs:${counter}:DATE: secs`,
     }
 }
