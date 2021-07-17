@@ -3,7 +3,7 @@ name: Cypress Tests
 on: [push]
 
 jobs:
-  cypress-firefox:
+  cypress-chrome:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
