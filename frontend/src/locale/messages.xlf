@@ -3125,11 +3125,15 @@
           <context context-type="linenumber">99</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="date-base.last-minute" datatype="html">
-        <source>In ~1 min</source>
+      <trans-unit id="date-base.minute" datatype="html">
+        <source><x id="DATE" equiv-text="1"/> minute</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
           <context context-type="linenumber">58</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
+          <context context-type="linenumber">13</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-until" datatype="html">
@@ -3838,13 +3842,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">12</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="date-base.minute" datatype="html">
-        <source><x id="DATE" equiv-text="counter"/> minute</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
-          <context context-type="linenumber">13</context>
         </context-group>
       </trans-unit>
       <trans-unit id="date-base.minutes" datatype="html">
