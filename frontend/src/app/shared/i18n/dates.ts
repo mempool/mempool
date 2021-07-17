@@ -1,6 +1,6 @@
 export const dates = (counter: number) => {
     return {
-        i18nYear: $localize`:@@date-base.years:${counter}:DATE: year`,
+        i18nYear: $localize`:@@date-base.year:${counter}:DATE: year`,
         i18nYears: $localize`:@@date-base.years:${counter}:DATE: years`,
         i18nMonth: $localize`:@@date-base.month:${counter}:DATE: month`,
         i18nMonths: $localize`:@@date-base.months:${counter}:DATE: months`,
