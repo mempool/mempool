@@ -823,6 +823,23 @@
       </ng-template>
     </li>
 
+    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="8">
+      <a ngbNavLink i18n="api-docs.tab.difficulty|API Docs tab for Difficulty">Difficulty</a>
+      <ng-template ngbNavContent >
+        <div class="difficulty">
+          <div class="endpoint">
+            <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
+            <a href="{{ network.val === '' ? '' : '/' + network.val }}/api/difficulty-adjustment" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/difficulty-adjustment</a>
+          </div>
+          <div class="description">
+            <div class="subtitle" i18n>Description</div>
+              <div i18n>Returns details about difficulty adjustment.</div>
+          </div> 
+          <app-code-template [code]="code.difficulty" [network]="network.val" ></app-code-template>
+        </div>
+      </ng-template>
+    </li>
+
   </ul>
 
   <div [ngbNavOutlet]="nav" class="mt-2"></div>
