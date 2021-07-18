@@ -1139,7 +1139,6 @@ responseSample: `{
         estimatedRetargetDate: 1627400849.2000492,
         remainingBlocks: 1642,
         remainingTime: 997456.3840492539
-          
 }`,
     },
     
