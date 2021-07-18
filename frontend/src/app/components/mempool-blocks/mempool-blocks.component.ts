@@ -6,11 +6,6 @@ import { Router } from '@angular/router';
 import { take, map, switchMap } from 'rxjs/operators';
 import { feeLevels, mempoolFeeColors } from 'src/app/app.constants';
 
-interface EpochProgress {
-  timeAvg: number;
-  timeAvgMins: number;
-}
-
 @Component({
   selector: 'app-mempool-blocks',
   templateUrl: './mempool-blocks.component.html',
@@ -22,7 +17,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
   mempoolBlocks: MempoolBlock[] = this.mountEmptyBlocks();
   mempoolBlocks$: Observable<MempoolBlock[]>;
-  difficultyEpoch$: Observable<EpochProgress>;
+  timeAvg$: Observable<number>;
 
   mempoolBlocksFull: MempoolBlock[] = this.mountEmptyBlocks();
   mempoolBlockStyles = [];
@@ -88,7 +83,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     );
 
 
-    this.difficultyEpoch$ = timer(0, 1000)
+    this.timeAvg$ = timer(0, 1000)
       .pipe(
         switchMap(() => combineLatest([
           this.stateService.blocks$.pipe(map(([block]) => block)),
@@ -110,12 +105,8 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
           } else {
             timeAvgMins += Math.abs(timeAvgDiff);
           }
-          const timeAvgMilliseconds = timeAvgMins * 60 * 1000;
 
-          return {
-            timeAvg: timeAvgMilliseconds,
-            timeAvgMins: timeAvgMins,
-          };
+          return timeAvgMins * 60 * 1000;
         })
       );
 

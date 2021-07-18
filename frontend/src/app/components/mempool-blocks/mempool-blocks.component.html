@@ -1,5 +1,5 @@
 <div class="mempool-blocks-container" *ngIf="(isLoading$ | async)  === false">
-  <div class="flashing" *ngIf="(difficultyEpoch$ | async) as epochData;">
+  <div class="flashing" *ngIf="(timeAvg$ | async) as timeAvg;">
     <ng-template ngFor let-projectedBlock [ngForOf]="mempoolBlocks$ | async" let-i="index" [ngForTrackBy]="trackByFn">
       <div class="bitcoin-block text-center mempool-block" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]">
         <a [routerLink]="['/mempool-block/' | relativeUrl, i]" class="blockLink">&nbsp;</a>
@@ -18,10 +18,10 @@
           </div>
           <div class="time-difference" *ngIf="projectedBlock.blockVSize <= 1000000; else mergedBlock">
             <ng-template [ngIf]="network === 'liquid'" [ngIfElse]="timeDiffMainnet">
-              <app-time-until [time]="(1 * i) + now + 61000" [fastRender]="false" [fixedRender]="false"></app-time-until>
+              <app-time-until [time]="(1 * i) + now + 61000" [fastRender]="false" [fixedRender]="true"></app-time-until>
             </ng-template>
             <ng-template #timeDiffMainnet>
-              <app-time-until [time]="(epochData.timeAvgMins * i) + now + epochData.timeAvg" [fastRender]="false" [fixedRender]="true"></app-time-until>
+              <app-time-until [time]="(timeAvg * i) + now + timeAvg" [fastRender]="false" [fixedRender]="true"></app-time-until>
             </ng-template>
           </div>
           <ng-template #mergedBlock>
