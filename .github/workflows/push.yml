@@ -3,7 +3,7 @@ name: Cypress Tests
 on: [push]
 
 jobs:
-  cypress-firefox:
+  cypress-chrome:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -19,7 +19,7 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           #GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
-  cypress-chrome:
+  cypress-firefox:
     runs-on: ubuntu-latest
     container:
       image: cypress/browsers:node14.17.0-chrome88-ff89
@@ -27,7 +27,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Chrome Browser Tests
+      - name: Firefox Browser Tests
         uses: cypress-io/github-action@v2
         with:
           working-directory: frontend
