@@ -53,6 +53,7 @@
 }
 
 .mempool-info-data {
+  min-height: 56px;
   display: block;
   @media (min-width: 485px) {
     display: flex;
