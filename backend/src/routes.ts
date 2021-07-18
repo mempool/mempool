@@ -666,6 +666,46 @@ class Routes {
   public getTransactionOutspends(req: Request, res: Response) {
     res.status(501).send('Not implemented');
   }
+
+  public getDifficultyChange(req: Request, res: Response) {
+    try {
+      const now = new Date().getTime() / 1000;
+      const DATime=blocks.getLastDifficultyAdjustmentTime();
+      const diff = now - DATime;
+      const blockHeight=blocks.getCurrentBlockHeight();
+      const blocksInEpoch = blockHeight % 2016;
+      const estimatedBlocks = Math.round(diff / 60 / 10);
+      const difficultyChange = (600 / (diff / blocksInEpoch ) - 1) * 100;
+
+      const timeAvgDiff = difficultyChange * 0.1;
+
+      let timeAvgMins = 10;
+      if (timeAvgDiff > 0 ){
+        timeAvgMins -= Math.abs(timeAvgDiff);
+      } else {
+        timeAvgMins += Math.abs(timeAvgDiff);
+      }
+
+      const remainingBlocks = 2016 - blocksInEpoch;
+      const timeAvgSeconds = timeAvgMins * 60;
+      const remainingTime = remainingBlocks * timeAvgSeconds;
+      const estimatedRetargetDate=(remainingTime + now);
+      const totalTime=estimatedRetargetDate-DATime;
+      const progressPercent=100-((remainingTime*100)/totalTime);
+
+      const result={
+        progressPercent,
+        difficultyChange,
+        estimatedRetargetDate,
+        remainingBlocks,
+        remainingTime,
+      }
+      res.json(result);
+
+    } catch (e) {
+      res.status(500).send(e.message || e);
+    }
+  }
 }
 
 export default new Routes();

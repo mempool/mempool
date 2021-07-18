@@ -1125,7 +1125,24 @@ responseSample: `{
         curl: ``,
       },
       responseSample: ``,
-    }
+    },
+
+     difficulty: {
+      codeSample: {
+        esModule:``,
+        commonJS:``,
+        curl: `curl -X GET "https://mempool.space/api/difficulty-adjustment"`,
+      },
+      responseSample: `{
+        progressPercent: 18.55392610846515,
+        difficultyChange: -1.2440503501069622,
+        estimatedRetargetDate: 1627400849.2000492,
+        remainingBlocks: 1642,
+        remainingTime: 997456.3840492539
+          
+}`,
+    },
+    
   };
 
   constructor(
