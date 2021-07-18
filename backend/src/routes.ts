@@ -509,6 +509,7 @@ class Routes {
   public async getBlockHeader(req: Request, res: Response) {
     try {
       const blockHeader = await bitcoinApi.$getBlockHeader(req.params.hash);
+      res.setHeader('content-type', 'text/plain');
       res.send(blockHeader);
     } catch (e) {
       res.status(500).send(e.message || e);
