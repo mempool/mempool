@@ -1,10 +1,15 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, Input } from '@angular/core';
-import { Subscription, Observable, fromEvent, merge, of } from 'rxjs';
+import { Subscription, Observable, fromEvent, merge, of, combineLatest, timer } from 'rxjs';
 import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
 import { take, map, switchMap } from 'rxjs/operators';
 import { feeLevels, mempoolFeeColors } from 'src/app/app.constants';
+
+interface EpochProgress {
+  timeAvg: number;
+  timeAvgMins: number;
+}
 
 @Component({
   selector: 'app-mempool-blocks',
@@ -17,6 +22,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
   mempoolBlocks: MempoolBlock[] = this.mountEmptyBlocks();
   mempoolBlocks$: Observable<MempoolBlock[]>;
+  difficultyEpoch$: Observable<EpochProgress>;
 
   mempoolBlocksFull: MempoolBlock[] = this.mountEmptyBlocks();
   mempoolBlockStyles = [];
@@ -24,6 +30,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   blockSubscription: Subscription;
   networkSubscription: Subscription;
   network = '';
+  now = new Date().getTime();
 
   blockWidth = 125;
   blockPadding = 30;
@@ -75,9 +82,42 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
         this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(stringifiedBlocks));
         this.updateMempoolBlockStyles();
         this.calculateTransactionPosition();
+        this.now = new Date().getTime();
         return this.mempoolBlocks;
       })
     );
+
+
+    this.difficultyEpoch$ = timer(0, 1000)
+      .pipe(
+        switchMap(() => combineLatest([
+          this.stateService.blocks$.pipe(map(([block]) => block)),
+          this.stateService.lastDifficultyAdjustment$
+        ])),
+        map(([block, DATime]) => {
+          const now = new Date().getTime() / 1000;
+          const diff = now - DATime;
+          const blocksInEpoch = block.height % 2016;
+          let difficultyChange = 0;
+          if (blocksInEpoch > 0) {
+            difficultyChange = (600 / (diff / blocksInEpoch ) - 1) * 100;
+          }
+          const timeAvgDiff = difficultyChange * 0.1;
+
+          let timeAvgMins = 10;
+          if (timeAvgDiff > 0 ){
+            timeAvgMins -= Math.abs(timeAvgDiff);
+          } else {
+            timeAvgMins += Math.abs(timeAvgDiff);
+          }
+          const timeAvgMilliseconds = timeAvgMins * 60 * 1000;
+
+          return {
+            timeAvg: timeAvgMilliseconds,
+            timeAvgMins: timeAvgMins,
+          };
+        })
+      );
 
     this.markBlocksSubscription = this.stateService.markBlock$
       .subscribe((state) => {
