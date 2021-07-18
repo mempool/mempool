@@ -175,7 +175,15 @@ export class ApiDocsComponent implements OnInit {
     bits: 404111758,
     difficulty: 49402014931
   }`,
-    },
+      },
+      blockHeader: {
+        codeSample: {
+          esModule: `//to be added`,
+          commonJS: `//to be added`,
+          curl: `curl -X GET "https://mempool.space/api/block/:hash/header"`,
+        },
+        responseSample: `040000202c04d4c450187d1da9b1bc23ba47d67fe028d22486fd0c00000000000000000059a3a33d4642c799af9f54a4dd351fff9130e6a89d4e251130c60064878616e906b5ea60ce9813173a25caf3`,
+        },
     blockHeight: {
       codeSample: {
         esModule: `const { %{1}: { blocks } } = mempoolJS();
