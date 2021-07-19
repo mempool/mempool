@@ -21,7 +21,7 @@
         <table class="table table-borderless smaller-text table-sm" id="table-tx-vin">
           <tbody>
             <ng-template ngFor let-vin [ngForOf]="tx['@vinLimit'] ? tx.vin.slice(0, 10) : tx.vin" [ngForTrackBy]="trackByIndexFn">
-              <tr [ngClass]="assetsMinimal && assetsMinimal[vin.prevout.asset] && vin.prevout.scriptpubkey_address ? 'assetBox' : ''">
+              <tr [ngClass]="assetsMinimal && vin.prevout && assetsMinimal[vin.prevout.asset] && !vin.is_coinbase && vin.prevout.scriptpubkey_address ? 'assetBox' : ''">
                 <td class="arrow-td">
                   <ng-template [ngIf]="vin.prevout === null && !vin.is_pegin" [ngIfElse]="hasPrevout">
                     <span class="grey">
@@ -122,7 +122,7 @@
         <table class="table table-borderless smaller-text table-sm"  id="table-tx-vout">
           <tbody>
             <ng-template ngFor let-vout let-vindex="index"  [ngForOf]="tx['@voutLimit'] ? tx.vout.slice(0, 10) : tx.vout" [ngForTrackBy]="trackByIndexFn">
-              <tr [ngClass]="assetsMinimal && assetsMinimal[vout.asset] && vout.scriptpubkey_address ? 'assetBox' : ''">
+              <tr [ngClass]="assetsMinimal && assetsMinimal[vout.asset] && vout.scriptpubkey_address && tx.vin && !tx.vin[0].is_coinbase ? 'assetBox' : ''">
                 <td>
                   <a *ngIf="vout.scriptpubkey_address; else scriptpubkey_type" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">
                     <span class="d-block d-lg-none">{{ vout.scriptpubkey_address | shortenString : 16 }}</span>
