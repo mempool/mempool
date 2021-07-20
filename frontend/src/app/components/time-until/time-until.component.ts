@@ -14,6 +14,7 @@ export class TimeUntilComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() time: number;
   @Input() fastRender = false;
+  @Input() fixedRender = false;
 
   constructor(
     private ref: ChangeDetectorRef,
@@ -31,6 +32,11 @@ export class TimeUntilComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
+    if(this.fixedRender){
+      this.text = this.calculate();
+      return;
+    }
+    
     if (!this.stateService.isBrowser) {
       this.text = this.calculate();
       this.ref.markForCheck();
@@ -55,12 +61,13 @@ export class TimeUntilComponent implements OnInit, OnChanges, OnDestroy {
     const seconds = Math.floor((+new Date(this.time) - +new Date()) / 1000);
 
     if (seconds < 60) {
-      return $localize`:@@date-base.minute:${1}:DATE: minute`;
+      const dateStrings = dates(1);
+      return $localize`:@@time-until:In ~${dateStrings.i18nMinute}:DATE:`;
     }
     let counter;
     for (const i in this.intervals) {
       if (this.intervals.hasOwnProperty(i)) {
-        counter = Math.floor(seconds / this.intervals[i]);
+        counter = Math.round(seconds / this.intervals[i]);
         const dateStrings = dates(counter);
         if (counter > 0) {
           if (counter === 1) {
@@ -80,8 +87,8 @@ export class TimeUntilComponent implements OnInit, OnChanges, OnDestroy {
               case 'week': return $localize`:@@time-until:In ~${dateStrings.i18nWeeks}:DATE:`; break;
               case 'day': return $localize`:@@time-until:In ~${dateStrings.i18nDays}:DATE:`; break;
               case 'hour': return $localize`:@@time-until:In ~${dateStrings.i18nHours}:DATE:`; break;
-              case 'minute': return $localize`:@@time-until:In ~${dateStrings.i18nMinutes}:DATE:`;
-              case 'second': return $localize`:@@time-until:In ~${dateStrings.i18nSeconds}:DATE:`;
+              case 'minute': return $localize`:@@time-until:In ~${dateStrings.i18nMinutes}:DATE:`; break;
+              case 'second': return $localize`:@@time-until:In ~${dateStrings.i18nSeconds}:DATE:`; break;
             }
           }
         }
