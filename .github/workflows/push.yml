@@ -12,7 +12,7 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           working-directory: frontend
-          build: npm config:defaults
+          build: npm run config:defaults
           start: npm run start:local-prod
           wait-on: 'http://localhost:4200'
           wait-on-timeout: 120
@@ -35,7 +35,7 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           working-directory: frontend
-          build: npm config:defaults
+          build: npm run config:defaults
           start: npm run start:local-prod
           wait-on: 'http://localhost:4200'
           wait-on-timeout: 120
@@ -55,7 +55,7 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           working-directory: frontend
-          build: npm config:defaults
+          build: npm run config:defaults
           start: npm run start:local-prod
           wait-on: 'http://localhost:4200'
           wait-on-timeout: 120
