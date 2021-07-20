@@ -12,7 +12,10 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           working-directory: frontend
-          command: npm run e2e:ci
+          build: npm config:defaults
+          start: npm run start:local-prod
+          wait-on: 'http://localhost:4200'
+          wait-on-timeout: 120
           record: true
           browser: chrome
         env:
@@ -32,7 +35,10 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           working-directory: frontend
-          command: npm run e2e:ci
+          build: npm config:defaults
+          start: npm run start:local-prod
+          wait-on: 'http://localhost:4200'
+          wait-on-timeout: 120
           record: true
           browser: firefox
         env:
@@ -49,7 +55,10 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           working-directory: frontend
-          command: npm run e2e:ci
+          build: npm config:defaults
+          start: npm run start:local-prod
+          wait-on: 'http://localhost:4200'
+          wait-on-timeout: 120
           record: true
           browser: edge
         env:
