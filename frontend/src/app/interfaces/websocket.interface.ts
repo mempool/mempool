@@ -10,6 +10,7 @@ export interface WebsocketResponse {
   mempoolInfo?: MempoolInfo;
   vBytesPerSecond?: number;
   lastDifficultyAdjustment?: number;
+  previousRetarget?: number;
   action?: string;
   data?: string[];
   tx?: Transaction;

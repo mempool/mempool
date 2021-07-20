@@ -680,12 +680,12 @@ class Routes {
   public getDifficultyChange(req: Request, res: Response) {
     try {
       const now = new Date().getTime() / 1000;
-      const DATime=blocks.getLastDifficultyAdjustmentTime();
+      const DATime = blocks.getLastDifficultyAdjustmentTime();
+      const previousRetarget = blocks.getPreviousDifficultyRetarget();
       const diff = now - DATime;
-      const blockHeight=blocks.getCurrentBlockHeight();
+      const blockHeight = blocks.getCurrentBlockHeight();
       const blocksInEpoch = blockHeight % 2016;
-      const estimatedBlocks = Math.round(diff / 60 / 10);
-      const difficultyChange = (600 / (diff / blocksInEpoch ) - 1) * 100;
+      const difficultyChange = (600 / (diff / blocksInEpoch) - 1) * 100;
 
       const timeAvgDiff = difficultyChange * 0.1;
 
@@ -699,9 +699,9 @@ class Routes {
       const remainingBlocks = 2016 - blocksInEpoch;
       const timeAvgSeconds = timeAvgMins * 60;
       const remainingTime = remainingBlocks * timeAvgSeconds;
-      const estimatedRetargetDate=(remainingTime + now);
-      const totalTime=estimatedRetargetDate-DATime;
-      const progressPercent=100-((remainingTime*100)/totalTime);
+      const estimatedRetargetDate = (remainingTime + now);
+      const totalTime = estimatedRetargetDate-DATime;
+      const progressPercent = 100 - ((remainingTime * 100) / totalTime);
 
       const result={
         progressPercent,
@@ -709,6 +709,7 @@ class Routes {
         estimatedRetargetDate,
         remainingBlocks,
         remainingTime,
+        previousRetarget,
       }
       res.json(result);
 
