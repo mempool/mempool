@@ -105,7 +105,7 @@ export class Common {
       totalFees += tx.bestDescendant.fee;
     }
 
-    tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
+    tx.effectiveFeePerVsize = Math.max(1, totalFees / (totalWeight / 4));
     tx.cpfpChecked = true;
 
     return {

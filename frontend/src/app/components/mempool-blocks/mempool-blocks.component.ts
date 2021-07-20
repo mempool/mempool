@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, Input } from '@angular/core';
 import { Subscription, Observable, fromEvent, merge, of } from 'rxjs';
 import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 import { StateService } from 'src/app/services/state.service';
@@ -13,10 +13,12 @@ import { feeLevels, mempoolFeeColors } from 'src/app/app.constants';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MempoolBlocksComponent implements OnInit, OnDestroy {
-  mempoolBlocks: MempoolBlock[];
+  @Input() isLoading$: Observable<boolean>;
+
+  mempoolBlocks: MempoolBlock[] = this.mountEmptyBlocks();
   mempoolBlocks$: Observable<MempoolBlock[]>;
 
-  mempoolBlocksFull: MempoolBlock[];
+  mempoolBlocksFull: MempoolBlock[] = this.mountEmptyBlocks();
   mempoolBlockStyles = [];
   markBlocksSubscription: Subscription;
   blockSubscription: Subscription;
@@ -45,6 +47,11 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.mempoolBlocks.map(() => {
+      this.updateMempoolBlockStyles();
+      this.calculateTransactionPosition();
+    });
+    this.reduceMempoolBlocksToFitScreen(this.mempoolBlocks);
     this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
 
     this.mempoolBlocks$ = merge(
@@ -235,4 +242,20 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     }
   }
 
+  mountEmptyBlocks() {
+    const emptyBlocks = [];
+    const numberOfBlocks = 8;
+    for (let i = 0; i <= numberOfBlocks; i++) {
+      emptyBlocks.push({
+        blockSize: 0,
+        blockVSize: 0,
+        feeRange: [],
+        index: 0,
+        medianFee: 0,
+        nTx: 0,
+        totalFees: 0
+      });
+    }
+    return emptyBlocks;
+  }
 }

@@ -1,4 +1,4 @@
-<div class="container-xl">
+<div class="container-xl" (window:resize)="onResize($event)">
   <h1 style="float: left;" i18n>BSQ Transactions</h1>
 
   <div class="d-block float-right">
@@ -44,9 +44,7 @@
   </table>
 
   <br>
-  <div class="pagination">
-    <ngb-pagination *ngIf="transactions.value" [size]="paginationSize" [collectionSize]="transactions.value[1]" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true"></ngb-pagination>
-  </div>
+  <ngb-pagination class="pagination-container" *ngIf="transactions.value" [collectionSize]="transactions.value[1]" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
 
   </ng-container>
 </div>

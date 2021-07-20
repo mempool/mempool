@@ -437,11 +437,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">132,133</context>
+          <context context-type="linenumber">131,132</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
-          <context context-type="linenumber">18</context>
+          <context context-type="linenumber">18,19</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
@@ -462,11 +462,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">133,134</context>
+          <context context-type="linenumber">132,133</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
-          <context context-type="linenumber">19</context>
+          <context context-type="linenumber">19,20</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
@@ -529,7 +529,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">51</context>
+          <context context-type="linenumber">51,53</context>
         </context-group>
         <note from="description" priority="1">Transaction Timestamp</note>
         <note from="meaning" priority="1">transaction.timestamp</note>
@@ -581,7 +581,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">78,79</context>
+          <context context-type="linenumber">79,80</context>
         </context-group>
         <note from="description" priority="1">Bisq block height header</note>
       </trans-unit>
@@ -789,7 +789,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">97,101</context>
+          <context context-type="linenumber">98,102</context>
         </context-group>
         <note from="description" priority="1">dashboard.view-all</note>
       </trans-unit>
@@ -810,7 +810,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">139,148</context>
+          <context context-type="linenumber">140,149</context>
         </context-group>
         <note from="description" priority="1">Terms of Service</note>
         <note from="meaning" priority="1">shared.terms-of-service</note>
@@ -902,7 +902,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transfers/bisq-transfers.component.html</context>
-          <context context-type="linenumber">62</context>
+          <context context-type="linenumber">68</context>
         </context-group>
         <note from="description" priority="1">BSQ burnt amount</note>
       </trans-unit>
@@ -975,7 +975,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">108,109</context>
+          <context context-type="linenumber">109,110</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="23b4db80cfba2937f6b087d8776cb5cd6725a16b">
@@ -1021,11 +1021,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">153</context>
+          <context context-type="linenumber">153,155</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">169,170</context>
+          <context context-type="linenumber">180,181</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="8fe73a4787b8068b2ba61f54ab7e0f9af2ea1fc9">
@@ -1050,15 +1050,15 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transfers/bisq-transfers.component.html</context>
-          <context context-type="linenumber">69,70</context>
+          <context context-type="linenumber">75,76</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">29</context>
+          <context context-type="linenumber">29,30</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">208,209</context>
+          <context context-type="linenumber">219,220</context>
         </context-group>
         <note from="description" priority="1">Transaction singular confirmation count</note>
         <note from="meaning" priority="1">shared.confirmation-count.singular</note>
@@ -1072,15 +1072,15 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transfers/bisq-transfers.component.html</context>
-          <context context-type="linenumber">70,71</context>
+          <context context-type="linenumber">76,77</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">30</context>
+          <context context-type="linenumber">30,31</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">209,210</context>
+          <context context-type="linenumber">220,221</context>
         </context-group>
         <note from="description" priority="1">Transaction plural confirmation count</note>
         <note from="meaning" priority="1">shared.confirmation-count.plural</note>
@@ -1094,7 +1094,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">14</context>
+          <context context-type="linenumber">14,18</context>
         </context-group>
         <note from="description" priority="1">shared.transaction</note>
       </trans-unit>
@@ -1107,7 +1107,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">60</context>
+          <context context-type="linenumber">60,62</context>
         </context-group>
         <note from="description" priority="1">Transaction included in block</note>
         <note from="meaning" priority="1">transaction.included-in-block</note>
@@ -1121,11 +1121,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">72</context>
+          <context context-type="linenumber">72,75</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">130</context>
+          <context context-type="linenumber">130,133</context>
         </context-group>
         <note from="description" priority="1">Transaction features</note>
         <note from="meaning" priority="1">transaction.features</note>
@@ -1153,11 +1153,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">203</context>
+          <context context-type="linenumber">203,205</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">279</context>
+          <context context-type="linenumber">279,281</context>
         </context-group>
         <note from="description" priority="1">transaction.details</note>
       </trans-unit>
@@ -1174,7 +1174,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">195</context>
+          <context context-type="linenumber">195,197</context>
         </context-group>
         <note from="description" priority="1">Transaction inputs and outputs</note>
         <note from="meaning" priority="1">transaction.inputs-and-outputs</note>
@@ -1188,7 +1188,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.ts</context>
-          <context context-type="linenumber">79</context>
+          <context context-type="linenumber">101,100</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="4d6066e445db90780e4b30ca93398be0b6567eda">
@@ -1208,11 +1208,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">154</context>
+          <context context-type="linenumber">154,155</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">107,108</context>
+          <context context-type="linenumber">108,109</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="8411955056013208681">
@@ -1363,7 +1363,7 @@
         <source>The Mempool Open Source Project</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">12,13</context>
+          <context context-type="linenumber">12</context>
         </context-group>
         <note from="description" priority="1">about.about-the-project</note>
       </trans-unit>
@@ -1454,7 +1454,7 @@
         <target>关于</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.ts</context>
-          <context context-type="linenumber">35</context>
+          <context context-type="linenumber">36</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
@@ -1539,7 +1539,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">217,219</context>
+          <context context-type="linenumber">228,230</context>
         </context-group>
         <note from="description" priority="1">shared.confidential</note>
       </trans-unit>
@@ -2530,7 +2530,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">81,84</context>
+          <context context-type="linenumber">82,85</context>
         </context-group>
         <note from="description" priority="1">block.size</note>
       </trans-unit>
@@ -2565,11 +2565,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
-          <context context-type="linenumber">10</context>
+          <context context-type="linenumber">10,13</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
-          <context context-type="linenumber">13</context>
+          <context context-type="linenumber">13,15</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
@@ -2601,31 +2601,31 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">171</context>
+          <context context-type="linenumber">171,172</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">184</context>
+          <context context-type="linenumber">184,185</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">337</context>
+          <context context-type="linenumber">337,340</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">348</context>
+          <context context-type="linenumber">348,350</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">201</context>
+          <context context-type="linenumber">212</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">117,121</context>
+          <context context-type="linenumber">118,122</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">164,168</context>
+          <context context-type="linenumber">165,169</context>
         </context-group>
         <note from="description" priority="1">sat/vB</note>
         <note from="meaning" priority="1">shared.sat-vbyte</note>
@@ -2639,15 +2639,15 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">6,10</context>
+          <context context-type="linenumber">5,6</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">12,16</context>
+          <context context-type="linenumber">11,12</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">18,24</context>
+          <context context-type="linenumber">17,18</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
@@ -2710,6 +2710,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="25148835d92465353fc5fe8897c27d5369978e5a">
         <source>Difficulty</source>
+        <target>难度</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">110,113</context>
@@ -2729,11 +2730,11 @@
         <target>明细</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">125,131</context>
+          <context context-type="linenumber">125,130</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">197</context>
+          <context context-type="linenumber">197,201</context>
         </context-group>
         <note from="description" priority="1">Transaction Details</note>
         <note from="meaning" priority="1">transaction.details</note>
@@ -2743,7 +2744,7 @@
         <target>在加载区块数据时出错</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">221,229</context>
+          <context context-type="linenumber">219,227</context>
         </context-group>
         <note from="description" priority="1">block.error.loading-block-data</note>
       </trans-unit>
@@ -2754,16 +2755,6 @@
           <context context-type="sourcefile">src/app/components/block/block.component.ts</context>
           <context context-type="linenumber">106</context>
         </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="e8104ec47dbdca878cd9d7aba4a3cb59378fcaf7">
-        <source>Waiting for blocks...</source>
-        <target>区块加载中...</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/blockchain/blockchain.component.html</context>
-          <context context-type="linenumber">11,16</context>
-        </context-group>
-        <note from="description" priority="1">Loading text</note>
-        <note from="meaning" priority="1">blockchain.waiting-for-blocks</note>
       </trans-unit>
       <trans-unit datatype="html" id="clipboard.copied-message">
         <source>Copied!</source>
@@ -2778,7 +2769,7 @@
         <target>低优先级</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">4,6</context>
+          <context context-type="linenumber">4,5</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
@@ -2791,7 +2782,7 @@
         <target>中优先级</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">10,12</context>
+          <context context-type="linenumber">10,11</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
@@ -2804,7 +2795,7 @@
         <target>高优先级</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">16,18</context>
+          <context context-type="linenumber">16,17</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
@@ -2830,7 +2821,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">189,191</context>
+          <context context-type="linenumber">190,192</context>
         </context-group>
         <note from="description" priority="1">footer.backend-is-synchronizing</note>
       </trans-unit>
@@ -2843,7 +2834,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">194,200</context>
+          <context context-type="linenumber">195,201</context>
         </context-group>
         <note from="description" priority="1">vB/s</note>
         <note from="meaning" priority="1">shared.vbytes-per-second</note>
@@ -2857,7 +2848,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">168,170</context>
+          <context context-type="linenumber">169,171</context>
         </context-group>
         <note from="description" priority="1">Unconfirmed count</note>
         <note from="meaning" priority="1">dashboard.unconfirmed</note>
@@ -2872,25 +2863,12 @@
         <note from="description" priority="1">Mempool size</note>
         <note from="meaning" priority="1">dashboard.mempool-size</note>
       </trans-unit>
-      <trans-unit datatype="html" id="3aef75db6f65e1371d54d8bed1767299de9457d8">
-        <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> block</source>
-        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/>个区块</target>
+      <trans-unit datatype="html" id="1bb6965f8e1bbe40c076528ffd841da86f57f119">
+        <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> <x ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;" id="START_TAG_SPAN"/>blocks<x ctype="x-span" equiv-text="&lt;/span&gt;" id="CLOSE_TAG_SPAN"/></source>
+        <target> <x equiv-text="{{ i }}" id="INTERPOLATION"/> <x ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;" id="START_TAG_SPAN"/>个区块<x ctype="x-span" equiv-text="&lt;/span&gt;" id="CLOSE_TAG_SPAN"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">22,23</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">324</context>
-        </context-group>
-        <note from="description" priority="1">shared.block</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="588930712875bfa0834655249093d99eaa3d162e">
-        <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> blocks</source>
-        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/>个区块</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
-          <context context-type="linenumber">23,24</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
@@ -2898,9 +2876,30 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">325</context>
+          <context context-type="linenumber">325,327</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">211,212</context>
         </context-group>
         <note from="description" priority="1">shared.blocks</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="b7ef3894d9b6f157c400ddc937c70c9881ecd896">
+        <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> <x ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;" id="START_TAG_SPAN"/>block<x ctype="x-span" equiv-text="&lt;/span&gt;" id="CLOSE_TAG_SPAN"/></source>
+        <target> <x equiv-text="{{ i }}" id="INTERPOLATION"/> <x ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;" id="START_TAG_SPAN"/>个区块<x ctype="x-span" equiv-text="&lt;/span&gt;" id="CLOSE_TAG_SPAN"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
+          <context context-type="linenumber">23,24</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">324,325</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">212,213</context>
+        </context-group>
+        <note from="description" priority="1">shared.block</note>
       </trans-unit>
       <trans-unit datatype="html" id="65d447765db0bf3390e9b3ecce142bf34bb602a3">
         <source>Mined</source>
@@ -2911,7 +2910,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">79,80</context>
+          <context context-type="linenumber">80,81</context>
         </context-group>
         <note from="description" priority="1">latest-blocks.mined</note>
       </trans-unit>
@@ -2955,7 +2954,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/television/television.component.ts</context>
-          <context context-type="linenumber">27</context>
+          <context context-type="linenumber">28</context>
         </context-group>
         <note from="description" priority="1">master-page.tvview</note>
       </trans-unit>
@@ -3010,7 +3009,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">320</context>
+          <context context-type="linenumber">320,322</context>
         </context-group>
         <note from="description" priority="1">Block Frequency (plural)</note>
         <note from="meaning" priority="1">mempool-blocks.eta-of-next-block-plural</note>
@@ -3020,11 +3019,11 @@
         <target>大约<x equiv-text="{{ i }}" id="INTERPOLATION"/>分钟之后</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
-          <context context-type="linenumber">43,44</context>
+          <context context-type="linenumber">43,45</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">322</context>
+          <context context-type="linenumber">322,324</context>
         </context-group>
         <note from="description" priority="1">Block Frequency</note>
         <note from="meaning" priority="1">mempool-blocks.eta-of-next-block</note>
@@ -3074,6 +3073,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="dfd99c62b5b308fc5b1ad7adbbf9d526d2b31516">
         <source>Sponsor</source>
+        <target>赞助</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/sponsor/sponsor.component.html</context>
           <context context-type="linenumber">3</context>
@@ -3156,164 +3156,252 @@
         </context-group>
         <note from="description" priority="1">statistics.transaction-vbytes-per-second</note>
       </trans-unit>
-      <trans-unit datatype="html" id="d10f6e967f3f654240a4f4ad5098d8e6e52a4896">
-        <source>TV only</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/television/television.component.html</context>
-          <context context-type="linenumber">7</context>
-        </context-group>
-        <note from="description" priority="1">television.tv-only</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="time-since.just-now">
+      <trans-unit datatype="html" id="date-base.just-now">
         <source>Just now</source>
-        <target>刚刚</target>
+        <target>现在</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">56</context>
+          <context context-type="linenumber">57</context>
         </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="time-since.year.ago">
-        <source><x equiv-text="counter" id="INTERPOLATION"/> year ago</source>
-        <target><x equiv-text="counter" id="INTERPOLATION"/>年前</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">65</context>
+          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
+          <context context-type="linenumber">57</context>
         </context-group>
       </trans-unit>
-      <trans-unit datatype="html" id="time-since.month.ago">
-        <source><x equiv-text="counter" id="INTERPOLATION"/> month ago</source>
-        <target><x equiv-text="counter" id="INTERPOLATION"/>个月前</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">66</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="time-since.week.ago">
-        <source><x equiv-text="counter" id="INTERPOLATION"/> week ago</source>
-        <target><x equiv-text="counter" id="INTERPOLATION"/>周前</target>
+      <trans-unit datatype="html" id="time-since">
+        <source><x equiv-text="dateStrings.i18nYear" id="DATE"/> ago</source>
+        <target><x equiv-text="dateStrings.i18nYear" id="DATE"/>之前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">67</context>
         </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="time-since.day.ago">
-        <source><x equiv-text="counter" id="INTERPOLATION"/> day ago</source>
-        <target><x equiv-text="counter" id="INTERPOLATION"/>天前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">68</context>
         </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="time-since.hour.ago">
-        <source><x equiv-text="counter" id="INTERPOLATION"/> hour ago</source>
-        <target><x equiv-text="counter" id="INTERPOLATION"/>小时前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">69</context>
         </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="time-since.min.ago">
-        <source><x equiv-text="counter" id="INTERPOLATION"/> min ago</source>
-        <target><x equiv-text="counter" id="INTERPOLATION"/>分钟前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">72</context>
+          <context context-type="linenumber">70</context>
         </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="time-since.minute.ago">
-        <source><x equiv-text="counter" id="INTERPOLATION"/> minute ago</source>
-        <target><x equiv-text="counter" id="INTERPOLATION"/>分钟前</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
+          <context context-type="linenumber">71</context>
+        </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">74</context>
         </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="time-since.sec.ago">
-        <source><x equiv-text="counter" id="INTERPOLATION"/> sec ago</source>
-        <target><x equiv-text="counter" id="INTERPOLATION"/>秒前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">77</context>
+          <context context-type="linenumber">76</context>
         </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="time-since.second.ago">
-        <source><x equiv-text="counter" id="INTERPOLATION"/> second ago</source>
-        <target><x equiv-text="counter" id="INTERPOLATION"/>秒前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">79</context>
         </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="time-since.years.ago">
-        <source><x equiv-text="counter" id="INTERPOLATION"/> years ago</source>
-        <target><x equiv-text="counter" id="INTERPOLATION"/>年前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">83</context>
+          <context context-type="linenumber">81</context>
         </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="time-since.months.ago">
-        <source><x equiv-text="counter" id="INTERPOLATION"/> months ago</source>
-        <target><x equiv-text="counter" id="INTERPOLATION"/>个月前 </target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">84</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="time-since.weeks.ago">
-        <source><x equiv-text="counter" id="INTERPOLATION"/> weeks ago</source>
-        <target><x equiv-text="counter" id="INTERPOLATION"/>周前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">85</context>
         </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="time-since.days.ago">
-        <source><x equiv-text="counter" id="INTERPOLATION"/> days ago</source>
-        <target><x equiv-text="counter" id="INTERPOLATION"/>天前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">86</context>
         </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="time-since.hours.ago">
-        <source><x equiv-text="counter" id="INTERPOLATION"/> hours ago</source>
-        <target><x equiv-text="counter" id="INTERPOLATION"/>小时前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">87</context>
         </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="time-since.mins.ago">
-        <source><x equiv-text="counter" id="INTERPOLATION"/> mins ago</source>
-        <target><x equiv-text="counter" id="INTERPOLATION"/>分钟前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">90</context>
+          <context context-type="linenumber">88</context>
         </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="time-since.minutes.ago">
-        <source><x equiv-text="counter" id="INTERPOLATION"/> minutes ago</source>
-        <target><x equiv-text="counter" id="INTERPOLATION"/>分钟前</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
+          <context context-type="linenumber">89</context>
+        </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">92</context>
         </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="time-since.secs.ago">
-        <source><x equiv-text="counter" id="INTERPOLATION"/> secs ago</source>
-        <target><x equiv-text="counter" id="INTERPOLATION"/>秒前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">95</context>
+          <context context-type="linenumber">94</context>
         </context-group>
-      </trans-unit>
-      <trans-unit datatype="html" id="time-since.seconds.ago">
-        <source><x equiv-text="counter" id="INTERPOLATION"/> seconds ago</source>
-        <target><x equiv-text="counter" id="INTERPOLATION"/>秒前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">97</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
+          <context context-type="linenumber">99</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="time-span">
+        <source>After <x equiv-text="dateStrings.i18nYear" id="DATE"/></source>
+        <target><x equiv-text="dateStrings.i18nYear" id="DATE"/>后</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
+          <context context-type="linenumber">67</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
+          <context context-type="linenumber">68</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
+          <context context-type="linenumber">69</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
+          <context context-type="linenumber">70</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
+          <context context-type="linenumber">71</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
+          <context context-type="linenumber">74</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
+          <context context-type="linenumber">76</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
+          <context context-type="linenumber">79</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
+          <context context-type="linenumber">81</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
+          <context context-type="linenumber">85</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
+          <context context-type="linenumber">86</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
+          <context context-type="linenumber">87</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
+          <context context-type="linenumber">88</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
+          <context context-type="linenumber">89</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
+          <context context-type="linenumber">92</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
+          <context context-type="linenumber">94</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
+          <context context-type="linenumber">97</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
+          <context context-type="linenumber">99</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="date-base.last-minute">
+        <source>In ~1 min</source>
+        <target>~1分钟之后</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="time-until">
+        <source>In ~<x equiv-text="dateStrings.i18nYear" id="DATE"/></source>
+        <target>~<x equiv-text="dateStrings.i18nYear" id="DATE"/>之后</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
+          <context context-type="linenumber">68</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
+          <context context-type="linenumber">69</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
+          <context context-type="linenumber">70</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
+          <context context-type="linenumber">71</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
+          <context context-type="linenumber">72</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
+          <context context-type="linenumber">75</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
+          <context context-type="linenumber">77</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
+          <context context-type="linenumber">80</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
+          <context context-type="linenumber">82</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
+          <context context-type="linenumber">86</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
+          <context context-type="linenumber">87</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
+          <context context-type="linenumber">88</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
+          <context context-type="linenumber">89</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
+          <context context-type="linenumber">90</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
+          <context context-type="linenumber">93</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
+          <context context-type="linenumber">95</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
+          <context context-type="linenumber">98</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
+          <context context-type="linenumber">100</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="0094b97dd052620710f173e7aedf6807a1eba1f5">
@@ -3321,7 +3409,7 @@
         <target>交易已被代替为：</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">5</context>
+          <context context-type="linenumber">5,6</context>
         </context-group>
         <note from="description" priority="1">RBF replacement</note>
         <note from="meaning" priority="1">transaction.rbf.replacement</note>
@@ -3331,11 +3419,11 @@
         <target>未确认</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">34,41</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">212,216</context>
+          <context context-type="linenumber">223,227</context>
         </context-group>
         <note from="description" priority="1">Transaction unconfirmed state</note>
         <note from="meaning" priority="1">transaction.unconfirmed</note>
@@ -3345,27 +3433,17 @@
         <target>已确认</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">67</context>
+          <context context-type="linenumber">67,68</context>
         </context-group>
         <note from="description" priority="1">Transaction Confirmed state</note>
         <note from="meaning" priority="1">transaction.confirmed</note>
-      </trans-unit>
-      <trans-unit datatype="html" id="7917764f923dd6b723b1cff254c7f5b837d1c48a">
-        <source>After <x ctype="x-app_timespan" equiv-text="&lt;app-timespan [time]=&quot;tx.status.block_time - transactionTime&quot;&gt;" id="START_TAG_APP_TIMESPAN"/><x ctype="x-app_timespan" equiv-text="&lt;/app-timespan&gt;" id="CLOSE_TAG_APP_TIMESPAN"/></source>
-        <target><x ctype="x-app_timespan" equiv-text="&lt;app-timespan [time]=&quot;tx.status.block_time - transactionTime&quot;&gt;" id="START_TAG_APP_TIMESPAN"/><x ctype="x-app_timespan" equiv-text="&lt;/app-timespan&gt;" id="CLOSE_TAG_APP_TIMESPAN"/>之后</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">68</context>
-        </context-group>
-        <note from="description" priority="1">Transaction confirmed after</note>
-        <note from="meaning" priority="1">transaction.confirmed.after</note>
       </trans-unit>
       <trans-unit datatype="html" id="1bc4a5de56ea48a832e32294c124009867b478d0">
         <source>First seen</source>
         <target>初次发现时间</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">103</context>
+          <context context-type="linenumber">103,104</context>
         </context-group>
         <note from="description" priority="1">Transaction first seen</note>
         <note from="meaning" priority="1">transaction.first-seen</note>
@@ -3375,7 +3453,7 @@
         <target>预估时间</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">109</context>
+          <context context-type="linenumber">109,111</context>
         </context-group>
         <note from="description" priority="1">Transaction ETA</note>
         <note from="meaning" priority="1">transaction.eta</note>
@@ -3385,7 +3463,7 @@
         <target>在几个小时内（或更多）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">116</context>
+          <context context-type="linenumber">116,119</context>
         </context-group>
         <note from="description" priority="1">Transaction ETA in several hours or more</note>
         <note from="meaning" priority="1">transaction.eta.in-several-hours</note>
@@ -3395,11 +3473,11 @@
         <target>虚拟大小</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">155</context>
+          <context context-type="linenumber">155,157</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">212</context>
+          <context context-type="linenumber">212,216</context>
         </context-group>
         <note from="description" priority="1">Transaction Virtual Size</note>
         <note from="meaning" priority="1">transaction.vsize</note>
@@ -3409,11 +3487,11 @@
         <target>费率</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">156</context>
+          <context context-type="linenumber">156,160</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">335</context>
+          <context context-type="linenumber">335,337</context>
         </context-group>
         <note from="description" priority="1">Transaction fee rate</note>
         <note from="meaning" priority="1">transaction.fee-rate</note>
@@ -3423,7 +3501,7 @@
         <target>后裔</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">163</context>
+          <context context-type="linenumber">163,165</context>
         </context-group>
         <note from="description" priority="1">Descendant</note>
         <note from="meaning" priority="1">transaction.descendant</note>
@@ -3433,7 +3511,7 @@
         <target>祖先</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">177</context>
+          <context context-type="linenumber">177,179</context>
         </context-group>
         <note from="description" priority="1">Transaction Ancestor</note>
         <note from="meaning" priority="1">transaction.ancestor</note>
@@ -3443,7 +3521,7 @@
         <target>大小</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">208</context>
+          <context context-type="linenumber">208,212</context>
         </context-group>
         <note from="description" priority="1">Transaction Size</note>
         <note from="meaning" priority="1">transaction.size</note>
@@ -3453,7 +3531,7 @@
         <target>权重</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">216</context>
+          <context context-type="linenumber">216,220</context>
         </context-group>
         <note from="description" priority="1">Transaction Weight</note>
         <note from="meaning" priority="1">transaction.weight</note>
@@ -3463,7 +3541,7 @@
         <target>交易未找到</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">304</context>
+          <context context-type="linenumber">304,305</context>
         </context-group>
         <note from="description" priority="1">transaction.error.transaction-not-found</note>
       </trans-unit>
@@ -3472,7 +3550,7 @@
         <target>等待交易出现在内存池</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">305</context>
+          <context context-type="linenumber">305,309</context>
         </context-group>
         <note from="description" priority="1">transaction.error.waiting-for-it-to-appear</note>
       </trans-unit>
@@ -3481,7 +3559,7 @@
         <target>手续费</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">331</context>
+          <context context-type="linenumber">331,332</context>
         </context-group>
         <note from="description" priority="1">Transaction fee</note>
         <note from="meaning" priority="1">transaction.fee</note>
@@ -3491,7 +3569,7 @@
         <target>聪</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">332</context>
+          <context context-type="linenumber">332,335</context>
         </context-group>
         <note from="description" priority="1">Transaction Fee sat</note>
         <note from="meaning" priority="1">transaction.fee.sat</note>
@@ -3501,7 +3579,7 @@
         <target>有效收费率</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">345</context>
+          <context context-type="linenumber">345,348</context>
         </context-group>
         <note from="description" priority="1">Effective transaction fee rate</note>
         <note from="meaning" priority="1">transaction.effective-fee-rate</note>
@@ -3511,7 +3589,7 @@
         <target>Coinbase</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">44</context>
         </context-group>
         <note from="description" priority="1">transactions-list.coinbase</note>
       </trans-unit>
@@ -3520,7 +3598,7 @@
         <target>（新产生的货币）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">44</context>
         </context-group>
         <note from="description" priority="1">transactions-list.newly-generated-coins</note>
       </trans-unit>
@@ -3528,7 +3606,7 @@
         <source>Peg-in</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">41,43</context>
+          <context context-type="linenumber">46,48</context>
         </context-group>
         <note from="description" priority="1">transactions-list.peg-in</note>
       </trans-unit>
@@ -3537,7 +3615,7 @@
         <target>ScriptSig (ASM)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">74,76</context>
+          <context context-type="linenumber">79,81</context>
         </context-group>
         <note from="description" priority="1">ScriptSig (ASM)</note>
         <note from="meaning" priority="1">transactions-list.scriptsig.asm</note>
@@ -3547,7 +3625,7 @@
         <target>ScriptSig (HEX)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">78,80</context>
+          <context context-type="linenumber">83,85</context>
         </context-group>
         <note from="description" priority="1">ScriptSig (HEX)</note>
         <note from="meaning" priority="1">transactions-list.scriptsig.hex</note>
@@ -3557,7 +3635,7 @@
         <target>Witness</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">83,84</context>
+          <context context-type="linenumber">88,89</context>
         </context-group>
         <note from="description" priority="1">transactions-list.witness</note>
       </trans-unit>
@@ -3566,7 +3644,7 @@
         <target>P2SH redeem script</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">87,88</context>
+          <context context-type="linenumber">92,93</context>
         </context-group>
         <note from="description" priority="1">transactions-list.p2sh-redeem-script</note>
       </trans-unit>
@@ -3575,7 +3653,7 @@
         <target>P2WSH witness script</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">91,92</context>
+          <context context-type="linenumber">96,97</context>
         </context-group>
         <note from="description" priority="1">transactions-list.p2wsh-witness-script</note>
       </trans-unit>
@@ -3584,7 +3662,7 @@
         <target>nSequence</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">95,96</context>
+          <context context-type="linenumber">100,101</context>
         </context-group>
         <note from="description" priority="1">transactions-list.nsequence</note>
       </trans-unit>
@@ -3592,7 +3670,7 @@
         <source>Previous output script</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">99,100</context>
+          <context context-type="linenumber">104,105</context>
         </context-group>
         <note from="description" priority="1">transactions-list.previous-output-script</note>
       </trans-unit>
@@ -3601,11 +3679,11 @@
         <target>加载全部</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">109,112</context>
+          <context context-type="linenumber">114,117</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">191,194</context>
+          <context context-type="linenumber">202,205</context>
         </context-group>
         <note from="description" priority="1">transactions-list.load-all</note>
       </trans-unit>
@@ -3613,7 +3691,7 @@
         <source>Peg-out to <x ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;" id="START_TAG_NG_CONTAINER"/><x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">128,129</context>
+          <context context-type="linenumber">133,134</context>
         </context-group>
         <note from="description" priority="1">transactions-list.peg-out-to</note>
       </trans-unit>
@@ -3622,7 +3700,7 @@
         <target>ScriptPubKey (ASM)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">173,175</context>
+          <context context-type="linenumber">184,186</context>
         </context-group>
         <note from="description" priority="1">ScriptPubKey (ASM)</note>
         <note from="meaning" priority="1">transactions-list.scriptpubkey.asm</note>
@@ -3632,7 +3710,7 @@
         <target>ScriptPubKey (HEX)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">177,179</context>
+          <context context-type="linenumber">188,190</context>
         </context-group>
         <note from="description" priority="1">ScriptPubKey (HEX)</note>
         <note from="meaning" priority="1">transactions-list.scriptpubkey.hex</note>
@@ -3642,7 +3720,7 @@
         <target>数据</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">181,182</context>
+          <context context-type="linenumber">192,193</context>
         </context-group>
         <note from="description" priority="1">transactions-list.vout.scriptpubkey-type.data</note>
       </trans-unit>
@@ -3651,7 +3729,7 @@
         <target>聪</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">201</context>
+          <context context-type="linenumber">212</context>
         </context-group>
         <note from="description" priority="1">sat</note>
         <note from="meaning" priority="1">shared.sat</note>
@@ -3765,12 +3843,25 @@
         <note from="description" priority="1">TX Fee Rating is Warning</note>
         <note from="meaning" priority="1">tx-fee-rating.overpaid.warning</note>
       </trans-unit>
+      <trans-unit datatype="html" id="4a2866b06cff4db4aea54b19836652dfd45e30aa">
+        <source>Fee Estimates</source>
+        <target>费用估算</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">6,9</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">33,36</context>
+        </context-group>
+        <note from="description" priority="1">fees-box.fee-estimates</note>
+      </trans-unit>
       <trans-unit datatype="html" id="e1139ea570985b3f114e18876f09fd7223429983">
         <source>Latest blocks</source>
         <target>最新区块</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">75,78</context>
+          <context context-type="linenumber">76,79</context>
         </context-group>
         <note from="description" priority="1">dashboard.latest-blocks</note>
       </trans-unit>
@@ -3779,11 +3870,11 @@
         <target>交易</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">80,82</context>
+          <context context-type="linenumber">81,83</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">170,174</context>
+          <context context-type="linenumber">171,175</context>
         </context-group>
         <note from="description" priority="1">dashboard.latest-blocks.transaction-count</note>
       </trans-unit>
@@ -3792,7 +3883,7 @@
         <target>最新交易</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">104,107</context>
+          <context context-type="linenumber">105,108</context>
         </context-group>
         <note from="description" priority="1">dashboard.latest-transactions</note>
       </trans-unit>
@@ -3801,7 +3892,7 @@
         <target>美元</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">109,110</context>
+          <context context-type="linenumber">110,111</context>
         </context-group>
         <note from="description" priority="1">dashboard.latest-transactions.USD</note>
       </trans-unit>
@@ -3810,7 +3901,7 @@
         <target>费用</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">110,113</context>
+          <context context-type="linenumber">111,114</context>
         </context-group>
         <note from="description" priority="1">dashboard.latest-transactions.fee</note>
       </trans-unit>
@@ -3819,7 +3910,7 @@
         <target>更多</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">131,132</context>
+          <context context-type="linenumber">132,133</context>
         </context-group>
         <note from="description" priority="1">dashboard.expand</note>
       </trans-unit>
@@ -3828,7 +3919,7 @@
         <target>收起</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">132,136</context>
+          <context context-type="linenumber">133,137</context>
         </context-group>
         <note from="description" priority="1">dashboard.collapse</note>
       </trans-unit>
@@ -3837,7 +3928,7 @@
         <target>最低费用</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">161,162</context>
+          <context context-type="linenumber">162,163</context>
         </context-group>
         <note from="description" priority="1">Minimum mempool fee</note>
         <note from="meaning" priority="1">dashboard.minimum-fee</note>
@@ -3847,7 +3938,7 @@
         <target>吹扫中</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">162,164</context>
+          <context context-type="linenumber">163,165</context>
         </context-group>
         <note from="description" priority="1">Purgin below fee</note>
         <note from="meaning" priority="1">dashboard.purging</note>
@@ -3857,7 +3948,7 @@
         <target>内存占用</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">174,176</context>
+          <context context-type="linenumber">175,177</context>
         </context-group>
         <note from="description" priority="1">Memory usage</note>
         <note from="meaning" priority="1">dashboard.memory-usage</note>
@@ -3867,18 +3958,210 @@
         <target>收款交易</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">186,188</context>
+          <context context-type="linenumber">187,189</context>
         </context-group>
         <note from="description" priority="1">dashboard.incoming-transactions</note>
       </trans-unit>
-      <trans-unit datatype="html" id="125c154b4a63daa7e993e1f4a8bea4c98a645142">
-        <source>Difficulty adjustment</source>
+      <trans-unit datatype="html" id="63da83692b85cf17e0606153029a83fd4038d6dd">
+        <source>Difficulty Adjustment</source>
         <target>难度调整</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">203,204</context>
+          <context context-type="linenumber">202,205</context>
         </context-group>
         <note from="description" priority="1">dashboard.difficulty-adjustment</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="0912816d94f2f05a7eee8f7622670e0c6bbbce16">
+        <source>Remaining</source>
+        <target>其余的</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">208,210</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">239,242</context>
+        </context-group>
+        <note from="description" priority="1">difficulty-box.remaining</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="5e65ce907fc0e1a1a09d4130eb8c59d00a9457ef">
+        <source>Estimate</source>
+        <target>估计</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">217,218</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">246,249</context>
+        </context-group>
+        <note from="description" priority="1">difficulty-box.estimate</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="8437551cbbeb5195813b5fb124a9e5250d83ca6d">
+        <source>mins per block</source>
+        <target>每块分钟</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">219,222</context>
+        </context-group>
+        <note from="description" priority="1">difficulty-box.mins-per-block</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="5db469cd0357e5f578b85a996f7e99c9e4148ff5">
+        <source>Current Period</source>
+        <target>现时阶段</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">222,223</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">253,256</context>
+        </context-group>
+        <note from="description" priority="1">difficulty-box.current-period</note>
+      </trans-unit>
+      <trans-unit datatype="html" id="date-base.year">
+        <source><x equiv-text="counter" id="DATE"/> year</source>
+        <target> <x equiv-text="counter" id="DATE"/>年</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="date-base.years">
+        <source><x equiv-text="counter" id="DATE"/> years</source>
+        <target> <x equiv-text="counter" id="DATE"/>年</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="date-base.month">
+        <source><x equiv-text="counter" id="DATE"/> month</source>
+        <target> <x equiv-text="counter" id="DATE"/>个月</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="date-base.months">
+        <source><x equiv-text="counter" id="DATE"/> months</source>
+        <target> <x equiv-text="counter" id="DATE"/>个月</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="date-base.week">
+        <source><x equiv-text="counter" id="DATE"/> week</source>
+        <target> <x equiv-text="counter" id="DATE"/>周</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="date-base.weeks">
+        <source><x equiv-text="counter" id="DATE"/> weeks</source>
+        <target> <x equiv-text="counter" id="DATE"/>周</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="date-base.day">
+        <source><x equiv-text="counter" id="DATE"/> day</source>
+        <target> <x equiv-text="counter" id="DATE"/>天</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="date-base.days">
+        <source><x equiv-text="counter" id="DATE"/> days</source>
+        <target> <x equiv-text="counter" id="DATE"/>天</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="date-base.hour">
+        <source><x equiv-text="counter" id="DATE"/> hour</source>
+        <target> <x equiv-text="counter" id="DATE"/>个小时</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="date-base.hours">
+        <source><x equiv-text="counter" id="DATE"/> hours</source>
+        <target> <x equiv-text="counter" id="DATE"/>个小时</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="date-base.minute">
+        <source><x equiv-text="counter" id="DATE"/> minute</source>
+        <target> <x equiv-text="counter" id="DATE"/>分钟</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="date-base.minutes">
+        <source><x equiv-text="counter" id="DATE"/> minutes</source>
+        <target> <x equiv-text="counter" id="DATE"/>分钟</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="date-base.min">
+        <source><x equiv-text="counter" id="DATE"/> min</source>
+        <target> <x equiv-text="counter" id="DATE"/>分钟</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="date-base.mins">
+        <source><x equiv-text="counter" id="DATE"/> mins</source>
+        <target> <x equiv-text="counter" id="DATE"/>分钟</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="date-base.second">
+        <source><x equiv-text="counter" id="DATE"/> second</source>
+        <target> <x equiv-text="counter" id="DATE"/>秒</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="date-base.seconds">
+        <source><x equiv-text="counter" id="DATE"/> seconds</source>
+        <target> <x equiv-text="counter" id="DATE"/>秒</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="date-base.sec">
+        <source><x equiv-text="counter" id="DATE"/> sec</source>
+        <target> <x equiv-text="counter" id="DATE"/>秒</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit datatype="html" id="date-base.secs">
+        <source><x equiv-text="counter" id="DATE"/> secs</source>
+        <target> <x equiv-text="counter" id="DATE"/>秒</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="2799825781368047816">
         <source>Transaction fee</source>

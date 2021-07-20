@@ -32,7 +32,7 @@ import { FooterComponent } from './components/footer/footer.component';
 import { AudioService } from './services/audio.service';
 import { MempoolBlockComponent } from './components/mempool-block/mempool-block.component';
 import { FeeDistributionGraphComponent } from './components/fee-distribution-graph/fee-distribution-graph.component';
-import { TimespanComponent } from './components/timespan/timespan.component';
+import { TimeSpanComponent } from './components/time-span/time-span.component';
 import { SeoService } from './services/seo.service';
 import { MempoolGraphComponent } from './components/mempool-graph/mempool-graph.component';
 import { AssetComponent } from './components/asset/asset.component';
@@ -45,7 +45,7 @@ import { FeesBoxComponent } from './components/fees-box/fees-box.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faAngleDown, faAngleUp, faBolt, faChartArea, faCogs, faCubes, faDatabase, faExchangeAlt, faInfoCircle,
-  faLink, faList, faSearch, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faAngleDoubleUp, faChevronDown, faFileAlt, faRedoAlt } from '@fortawesome/free-solid-svg-icons';
+  faLink, faList, faSearch, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faAngleDoubleUp, faChevronDown, faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import { ApiDocsComponent } from './components/api-docs/api-docs.component';
 import { CodeTemplateComponent } from './components/api-docs/code-template.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
@@ -71,7 +71,7 @@ import { SponsorComponent } from './components/sponsor/sponsor.component';
     AmountComponent,
     LatestBlocksComponent,
     SearchFormComponent,
-    TimespanComponent,
+    TimeSpanComponent,
     AddressLabelsComponent,
     MempoolBlocksComponent,
     ChartistComponent,
@@ -136,5 +136,7 @@ export class AppModule {
     library.addIcons(faChevronDown);
     library.addIcons(faFileAlt);
     library.addIcons(faRedoAlt);
+    library.addIcons(faArrowAltCircleRight);
+    library.addIcons(faExternalLinkAlt);
   }
 }

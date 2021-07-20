@@ -9,33 +9,33 @@
       </a>
     </div>
   
-  <div>
-    <div class="title">
-      <h1 i18n="shared.transaction">Transaction</h1>
-    </div>
+    <div>
+      <div class="title">
+        <h1 i18n="shared.transaction">Transaction</h1>
+      </div>
 
-    <div class="tx-link">
-      <a [routerLink]="['/tx/' | relativeUrl, txId]">
-        <span class="d-inline d-lg-none">{{ txId | shortenString : 24 }}</span>
-        <span class="d-none d-lg-inline">{{ txId }}</span>
-      </a>
-      <app-clipboard [text]="txId"></app-clipboard>
-    </div>
+      <div class="tx-link">
+        <a [routerLink]="['/tx/' | relativeUrl, txId]">
+          <span class="d-inline d-lg-none">{{ txId | shortenString : 24 }}</span>
+          <span class="d-none d-lg-inline">{{ txId }}</span>
+        </a>
+        <app-clipboard [text]="txId"></app-clipboard>
+      </div>
 
-    <div class="container-buttons">
-      <ng-template [ngIf]="tx?.status?.confirmed">
-        <button *ngIf="latestBlock" type="button" class="btn btn-sm btn-success">
-          <ng-container *ngTemplateOutlet="latestBlock.height - tx.status.block_height + 1 == 1 ? confirmationSingular : confirmationPlural; context: {$implicit: latestBlock.height - tx.status.block_height + 1}"></ng-container>
-          <ng-template #confirmationSingular let-i i18n="shared.confirmation-count.singular|Transaction singular confirmation count">{{ i }} confirmation</ng-template>
-          <ng-template #confirmationPlural let-i i18n="shared.confirmation-count.plural|Transaction plural confirmation count">{{ i }} confirmations</ng-template>
-        </button>
-      </ng-template>
-      <ng-template [ngIf]="tx && !tx?.status.confirmed">
-        <button type="button" class="btn btn-sm btn-danger" i18n="transaction.unconfirmed|Transaction unconfirmed state">Unconfirmed</button>
-      </ng-template>
+      <div class="container-buttons">
+        <ng-template [ngIf]="tx?.status?.confirmed">
+          <button *ngIf="latestBlock" type="button" class="btn btn-sm btn-success">
+            <ng-container *ngTemplateOutlet="latestBlock.height - tx.status.block_height + 1 == 1 ? confirmationSingular : confirmationPlural; context: {$implicit: latestBlock.height - tx.status.block_height + 1}"></ng-container>
+            <ng-template #confirmationSingular let-i i18n="shared.confirmation-count.singular|Transaction singular confirmation count">{{ i }} confirmation</ng-template>
+            <ng-template #confirmationPlural let-i i18n="shared.confirmation-count.plural|Transaction plural confirmation count">{{ i }} confirmations</ng-template>
+          </button>
+        </ng-template>
+        <ng-template [ngIf]="tx && !tx?.status.confirmed">
+          <button type="button" class="btn btn-sm btn-danger" i18n="transaction.unconfirmed|Transaction unconfirmed state">Unconfirmed</button>
+        </ng-template>
+      </div>
     </div>
   </div>
-</div>
   <div class="clearfix"></div>
 
   <ng-template [ngIf]="!isLoadingTx && !error">
@@ -65,7 +65,7 @@
                 <ng-template [ngIf]="transactionTime > 0">
                   <tr>
                     <td i18n="transaction.confirmed|Transaction Confirmed state">Confirmed</td>
-                    <td><ng-container i18n="transaction.confirmed.after|Transaction confirmed after">After <app-timespan [time]="tx.status.block_time - transactionTime"></app-timespan></ng-container></td>
+                    <td><app-time-span [time]="tx.status.block_time - transactionTime" [fastRender]="true"></app-time-span></td>
                   </tr>
                 </ng-template>
                 <tr *ngIf="network !== 'liquid'">
@@ -198,7 +198,7 @@
 
     <div class="clearfix"></div>
 
-    <app-transactions-list #txList [transactions]="[tx]" [transactionPage]="true"></app-transactions-list>
+    <app-transactions-list #txList [transactions]="[tx]" [errorUnblinded]="errorUnblinded" [transactionPage]="true"></app-transactions-list>
 
     <h2 class="text-left" i18n="transaction.details">Details</h2>
     <div class="box">
@@ -321,8 +321,8 @@
 
 <ng-template let-i #nextBlockEta i18n="mempool-blocks.eta-of-next-block|Block Frequency">In ~{{ i }} minute</ng-template>
 
-<ng-template #blocksSingular let-i i18n="shared.block">{{ i }} block</ng-template>
-<ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} blocks</ng-template>
+<ng-template #blocksSingular let-i i18n="shared.block">{{ i }} <span class="shared-block">block</span></ng-template>
+<ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
 
 <ng-template #feeTable>
   <table class="table table-borderless table-striped">

@@ -190,6 +190,26 @@
             </ng-template>
           </ngb-panel>
 
+          <ngb-panel id="blockHeader">
+            <ng-template ngbPanelTitle>
+              <span>GET Block Header</span>
+            </ng-template>
+            <ng-template ngbPanelContent>
+              
+              <div class="endpoint">
+                <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
+                <a href="{{ network.val === '' ? '' : '/' + network.val }}/api/block/0000000000000000000065bda8f8a88f2e1e00d9a6887a43d640e52a4c7660f2/header" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/block/:hash/header</a>
+              </div>
+
+              <div class="description">
+                <div class="subtitle" i18n>Description</div>
+                <div i18n>Returns the hex-encoded block header.</div>
+              </div>
+
+              <app-code-template [code]="code.blockHeader" [network]="network.val" ></app-code-template>
+            </ng-template>
+          </ngb-panel>
+
           <ngb-panel id="blockHeight">
             <ng-template ngbPanelTitle>
               <span>GET Block Height</span>
@@ -819,6 +839,23 @@
             <div i18n="api-docs.websocket.websocket">Default push: <code>{{ '{' }} action: 'want', data: ['blocks', ...] {{ '}' }}</code> to express what you want pushed. Available: <code>blocks</code>, <code>mempool-blocks</code>, <code>live-2h-chart</code>, and <code>stats</code>.<br><br>Push transactions related to address: <code>{{ '{' }} 'track-address': '3PbJ...bF9B' {{ '}' }}</code> to receive all new transactions containing that address as input or output. Returns an array of transactions. <code>address-transactions</code> for new mempool transactions, and <code>block-transactions</code> for new block confirmed transactions.</div>
           </div>
           <app-code-template [code]="code.websocket" [network]="network.val" ></app-code-template>
+        </div>
+      </ng-template>
+    </li>
+
+    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="8">
+      <a ngbNavLink i18n="api-docs.tab.difficulty|API Docs tab for Difficulty">Difficulty</a>
+      <ng-template ngbNavContent >
+        <div class="difficulty">
+          <div class="endpoint">
+            <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
+            <a href="{{ network.val === '' ? '' : '/' + network.val }}/api/difficulty-adjustment" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/difficulty-adjustment</a>
+          </div>
+          <div class="description">
+            <div class="subtitle" i18n>Description</div>
+              <div i18n>Returns details about difficulty adjustment.</div>
+          </div> 
+          <app-code-template [code]="code.difficulty" [network]="network.val" ></app-code-template>
         </div>
       </ng-template>
     </li>

@@ -1,12 +1,10 @@
 <div id="tv-wrapper">
 
-  <div *ngIf="loading" class="loading">
+  <div *ngIf="mempoolStats.length === 0" class="loading">
     <div class="spinner-border text-light"></div>
   </div>
 
-  <div class="tv-only" i18n="television.tv-only">TV only</div>
-
-  <div class="tv-container" *ngIf="!loading">
+  <div class="tv-container">
 
     <div class="chart-holder" *ngIf="mempoolStats.length">
       <app-mempool-graph dir="ltr" [data]="mempoolStats"></app-mempool-graph>
@@ -14,8 +12,8 @@
 
     <div class="blockchain-wrapper">
       <div class="position-container">
-        <app-mempool-blocks></app-mempool-blocks>
-        <app-blockchain-blocks></app-blockchain-blocks>
+        <app-mempool-blocks [isLoading$]="isLoading$"></app-mempool-blocks>
+        <app-blockchain-blocks [isLoading$]="isLoading$"></app-blockchain-blocks>
         <div id="divider"></div>
       </div>
     </div>

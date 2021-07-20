@@ -1,6 +1,6 @@
 {
   "name": "mempool-backend",
-  "version": "2.2.0-dev",
+  "version": "2.2.1-dev",
   "description": "Bitcoin mempool visualizer and blockchain explorer backend",
   "license": "GNU Affero General Public License v3.0",
   "homepage": "https://mempool.space",
@@ -28,7 +28,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@mempool/bitcoin": "^3.0.2",
+    "@mempool/bitcoin": "^3.0.3",
     "@mempool/electrum-client": "^1.1.7",
     "axios": "^0.21.1",
     "bitcoinjs-lib": "^5.2.0",

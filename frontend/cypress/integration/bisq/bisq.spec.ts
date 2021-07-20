@@ -60,4 +60,18 @@ describe('Bisq', () => {
         });
     });
 
+    it('shows blocks pagination with 5 pages (desktop)', () => {
+        cy.viewport(760, 800);
+        cy.visit('/bisq/transactions');
+        // 5 pages + 4 buttons = 9 buttons
+        cy.get('.pagination-container ul.pagination').first().children().should('have.length', 9);
+    });
+
+    it('shows blocks pagination with 3 pages (mobile)', () => {
+        cy.viewport(669, 800);
+        cy.visit('/bisq/blocks');
+        // 3 pages + 4 buttons = 7 buttons
+        cy.get('.pagination-container ul.pagination').first().children().should('have.length', 7);
+    });
+
   });

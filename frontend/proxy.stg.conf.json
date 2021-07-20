@@ -78,7 +78,7 @@
     "secure": false,
     "changeOrigin": true,
     "pathRewrite": {
-      "^/liquid/api/": "/api/v1/liquid/"
+      "^/liquid/api/": "/api/liquid/"
     },
     "timeout": 3600000
   },

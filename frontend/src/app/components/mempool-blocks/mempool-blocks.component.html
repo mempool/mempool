@@ -1,4 +1,4 @@
-<div class="mempool-blocks-container">
+<div class="mempool-blocks-container" *ngIf="(isLoading$ | async)  === false">
   <div class="flashing">
     <ng-template ngFor let-projectedBlock [ngForOf]="mempoolBlocks$ | async" let-i="index" [ngForTrackBy]="trackByFn">
       <div class="bitcoin-block text-center mempool-block" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]">
@@ -27,7 +27,7 @@
           <ng-template #mergedBlock>
             <div class="time-difference">
               <b>(<ng-container *ngTemplateOutlet="blocksPlural; context: {$implicit: projectedBlock.blockVSize / 1000000 | ceil }"></ng-container>)</b>
-              <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} blocks</ng-template>
+              <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
             </div>
           </ng-template>
         </div>
@@ -41,3 +41,11 @@
 <ng-template let-i #nextBlockEtaPlural i18n="mempool-blocks.eta-of-next-block-plural|Block Frequency (plural)">In ~{{ i }} minutes</ng-template>
 
 <ng-template let-i #nextBlockEta i18n="mempool-blocks.eta-of-next-block|Block Frequency">In ~{{ i }} minute</ng-template>
+
+<div class="mempool-blocks-container" *ngIf="(isLoading$ | async)  === true">
+  <div class="flashing">
+    <ng-template ngFor let-projectedBlock [ngForOf]="mempoolBlocks" let-i="index" [ngForTrackBy]="trackByFn">
+      <div class="bitcoin-block text-center mempool-block" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]"></div>
+    </ng-template>
+  </div>
+</div>

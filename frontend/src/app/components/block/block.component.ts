@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
@@ -46,7 +46,7 @@ export class BlockComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.websocketService.want(['blocks', 'mempool-blocks']);
-    this.paginationMaxSize = window.matchMedia('(max-width: 700px)').matches ? 3 : 5;
+    this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
     this.network = this.stateService.network;
     this.itemsPerPage = this.stateService.env.ITEMS_PER_PAGE;
 
@@ -173,15 +173,17 @@ export class BlockComponent implements OnInit, OnDestroy {
     }
   }
 
-  pageChange(page: number) {
+  pageChange(page: number, target: HTMLElement) {
     const start = (page - 1) * this.itemsPerPage;
     this.isLoadingTransactions = true;
     this.transactions = null;
+    target.scrollIntoView(); // works for chrome
 
     this.electrsApiService.getBlockTransactions$(this.block.id, start)
      .subscribe((transactions) => {
         this.transactions = transactions;
         this.isLoadingTransactions = false;
+        target.scrollIntoView(); // works for firefox
       });
   }
 
@@ -215,5 +217,9 @@ export class BlockComponent implements OnInit, OnDestroy {
       return false;
     }
     return this.block && this.block.height > 681393 && (new Date().getTime() / 1000) < 1628640000;
+  }
+
+  onResize(event: any) {
+    this.paginationMaxSize = event.target.innerWidth < 670 ? 3 : 5;
   }
 }

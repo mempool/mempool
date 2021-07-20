@@ -17,6 +17,8 @@ export interface Transaction {
   bestDescendant?: BestDescendant | null;
   cpfpChecked?: boolean;
   deleteAfter?: number;
+  _unblinded?: any;
+  _deduced?: boolean;
 }
 
 interface Ancestor {

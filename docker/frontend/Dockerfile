@@ -2,6 +2,7 @@ FROM node:12-buster-slim AS builder
 
 ARG commitHash
 ENV DOCKER_COMMIT_HASH=${commitHash}
+ENV CYPRESS_INSTALL_BINARY=0
 
 WORKDIR /build
 COPY . .

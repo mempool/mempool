@@ -108,3 +108,15 @@
   border-right: 35px solid transparent;
   border-bottom: 35px solid #FFF;
 }
+
+.flashing {
+  animation: opacityPulse 2s ease-out;
+  animation-iteration-count: infinite; 
+  opacity: 1;
+}
+
+@keyframes opacityPulse {
+  0% {opacity: 0.7;}
+  50% {opacity: 1.0;}
+  100% {opacity: 0.7;}
+}

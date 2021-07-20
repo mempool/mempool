@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
 import { WebsocketService } from '../../services/websocket.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { StateService } from 'src/app/services/state.service';
@@ -28,6 +28,7 @@ export class AboutComponent implements OnInit {
     private stateService: StateService,
     private apiService: ApiService,
     private router: Router,
+    @Inject(LOCALE_ID) public locale: string,
   ) { }
 
   ngOnInit() {
