@@ -116,6 +116,7 @@ describe('Mainnet', () => {
             cy.waitForSkeletonGone();
             cy.get('.pagination-container a').invoke('text').then((text1) => {
                 cy.get('.active + li').first().click().then(() => {
+                    cy.waitForSkeletonGone();
                     cy.get('.header-bg.box > a').invoke('text').then((text2) => {
                         expect(text1).not.to.eq(text2);
                     });
