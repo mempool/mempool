@@ -8,11 +8,12 @@ describe('Testnet', () => {
 
   it('loads the dashboard', () => {
     cy.visit('/testnet');
-    cy.wait(1000);
+    cy.waitForSkeletonGone();
   });
 
   it('loads the blocks screen', () => {
       cy.visit('/testnet');
+      cy.waitForSkeletonGone();
       cy.get('li:nth-of-type(2) > a').click().then(() => {
          cy.wait(1000);
       });
@@ -20,6 +21,7 @@ describe('Testnet', () => {
 
   it('loads the graphs screen', () => {
       cy.visit('/testnet');
+      cy.waitForSkeletonGone();
       cy.get('li:nth-of-type(3) > a').click().then(() => {
           cy.wait(1000);
       });
@@ -29,18 +31,20 @@ describe('Testnet', () => {
       it('loads the tv screen - desktop', () => {
           cy.viewport('macbook-16');
           cy.visit('/testnet');
+          cy.waitForSkeletonGone();
           cy.get('li:nth-of-type(4) > a').click().then(() => {
               cy.wait(1000);
-              cy.get('.tv-only').should('not.be.visible');
+              cy.get('.tv-only').should('not.exist');
           });
       });
 
       it('loads the tv screen - mobile', () => {
           cy.visit('/testnet');
+          cy.waitForSkeletonGone();
           cy.get('li:nth-of-type(4) > a').click().then(() => {
               cy.viewport('iphone-6');
               cy.wait(1000);
-              cy.get('.tv-only').should('be.visible');
+              cy.get('.tv-only').should('not.exist');
           });
       });
   });
@@ -48,6 +52,7 @@ describe('Testnet', () => {
 
   it('loads the api screen', () => {
       cy.visit('/testnet');
+      cy.waitForSkeletonGone();
       cy.get('li:nth-of-type(5) > a').click().then(() => {
           cy.wait(1000);
       });
@@ -56,13 +61,13 @@ describe('Testnet', () => {
   describe('blocks', () => {
       it('shows empty blocks properly', () => {
           cy.visit('/testnet/block/0');
+          cy.waitForSkeletonGone();
           cy.get('h2').invoke('text').should('equal', '1 transaction');
       });
 
       it('expands and collapses the block details', () => {
           cy.visit('/testnet/block/0');
-          //TODO: fix this
-          //cy.wait('@tx-outspends');
+          cy.waitForSkeletonGone();
           cy.get('.btn.btn-outline-info').click().then(() => {
               cy.get('#details').should('be.visible');
           });
@@ -74,6 +79,7 @@ describe('Testnet', () => {
 
       it('shows blocks with no pagination', () => {
           cy.visit('/testnet/block/000000000000002f8ce27716e74ecc7ad9f7b5101fed12d09e28bb721b9460ea');
+          cy.waitForSkeletonGone();
           cy.get('h2').invoke('text').should('equal', '11 transactions');
           cy.get('ul.pagination').first().children().should('have.length', 5);
       });
@@ -81,6 +87,7 @@ describe('Testnet', () => {
       it('supports pagination on the block screen', () => {
           // 48 txs
           cy.visit('/testnet/block/000000000000002ca3878ebd98b313a1c2d531f2e70a6575d232ca7564dea7a9');
+          cy.waitForSkeletonGone();
           cy.get('.header-bg.box > a').invoke('text').then((text1) => {
               cy.get('.active + li').first().click().then(() => {
                   cy.get('.header-bg.box > a').invoke('text').then((text2) => {
