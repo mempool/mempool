@@ -29,8 +29,8 @@ jobs:
       image: cypress/browsers:node14.17.0-chrome88-ff89
       options: --user 1001
     steps:
-      - name: whoami
-        run: whoami
+      #- name: whoami
+      #  run: whoami
       - name: debug node userinfo
         run: node -e "console.log(os.userInfo());"
 
