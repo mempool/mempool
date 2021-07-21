@@ -43,3 +43,9 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 import 'cypress-wait-until';
+
+Cypress.Commands.add('waitForSkeletonGone', () => {
+    cy.waitUntil(() => {
+        return Cypress.$('.skeleton-loader').length === 0;
+    });
+});
