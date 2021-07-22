@@ -26,6 +26,7 @@ Interface to access the Bitcoin `mainet`, `testnet`, `signet` APIs.
     - [Get Block Txids](#get-block-txids)
     - [Get Block Txid](#get-block-txid)
     - [Get Block Raw](#get-block-raw)
+    - [Get Blocks Header](#get-blocks-header)
     - [Get Blocks Height](#get-blocks-height)
     - [Get Blocks](#get-blocks)
     - [Get Blocks Tip Height](#get-blocks-tip-height)
@@ -282,6 +283,25 @@ const hash = '000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce';
 
 const blockRaw = await blocks.getBlockRaw({ hash });
 console.log(blockRaw);
+```
+
+### **Get Blocks Header**
+
+Returns the hex-encoded block header.
+
+**Parameters:**
+
+- {string} hash
+
+[ [NodeJS Example](examples/nodejs/bitcoin/blocks.ts) ] [ [HTML Example](examples/html/bitcoin/blocks.html) ] [ [Top](#features) ]
+
+```js
+const {
+  bitcoin: { blocks },
+} = mempoolJS();
+
+const blockHeader = await blocks.getBlockHeader({ hash: '0000000000000000000065bda8f8a88f2e1e00d9a6887a43d640e52a4c7660f2' });
+console.log(blockHeader);
 ```
 
 ### **Get Blocks Height**

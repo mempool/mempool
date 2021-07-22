@@ -26,6 +26,9 @@ const init = async () => {
   const blockRaw = await blocks.getBlockRaw({ hash });
   console.log(blockRaw);
 
+  const blockHeader = await blocks.getBlockHeader({ hash });
+  console.log(blockHeader);
+
   const blockHeight = await blocks.getBlockHeight({ height: 0 });
   console.log(blockHeight);
 
