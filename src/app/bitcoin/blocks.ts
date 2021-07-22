@@ -44,6 +44,11 @@ export const useBlocks = (api: AxiosInstance): BlockInstance => {
     return data;
   };
 
+  const getBlockHeader = async (params: { hash: string }) => {
+    const { data } = await api.get<string>(`/block/${params.hash}/header`);
+    return data;
+  };
+
   const getBlockHeight = async (params: { height: number }) => {
     const { data } = await api.get<string>(`/block-height/${params.height}`);
     return data;
@@ -72,6 +77,7 @@ export const useBlocks = (api: AxiosInstance): BlockInstance => {
     getBlockTxid,
     getBlockTxids,
     getBlockRaw,
+    getBlockHeader,
     getBlockHeight,
     getBlocksTipHash,
     getBlocksTipHeight,

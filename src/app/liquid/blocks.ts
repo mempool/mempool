@@ -2,11 +2,11 @@ import { AxiosInstance } from 'axios';
 import {
   Block,
   BlockStatus,
-  BlockInstance,
-} from '../../interfaces/bitcoin/blocks';
+  BlockLiquidInstance,
+} from '../../interfaces/liquid/block';
 import { Tx } from '../../interfaces/bitcoin/transactions';
 
-export const useBlocks = (api: AxiosInstance): BlockInstance => {
+export const useBlocks = (api: AxiosInstance): BlockLiquidInstance => {
   const getBlock = async (params: { hash: string }) => {
     const { data } = await api.get<Block>(`/block/${params.hash}`);
     return data;

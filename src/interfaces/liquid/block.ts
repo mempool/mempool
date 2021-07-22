@@ -1,4 +1,4 @@
-import { Tx } from './transactions';
+import { Tx } from '../bitcoin/transactions';
 
 export interface Block {
   id: string;
@@ -22,7 +22,7 @@ export interface BlockStatus {
   next_best: string;
 }
 
-export interface BlockInstance {
+export interface BlockLiquidInstance {
   getBlock: (params: { hash: string }) => Promise<Block>;
   getBlocks: (params: { start_height?: number }) => Promise<Block>;
   getBlockStatus: (params: { hash: string }) => Promise<BlockStatus>;
@@ -30,7 +30,6 @@ export interface BlockInstance {
   getBlockTxids: (params: { hash: string }) => Promise<string[]>;
   getBlockTxid: (params: { hash: string; index: number }) => Promise<string>;
   getBlockRaw: (params: { hash: string }) => Promise<string>;
-  getBlockHeader: (params: { hash: string }) => Promise<string>;
   getBlockHeight: (params: { height: number }) => Promise<string>;
   getBlocksTipHeight: () => Promise<number>;
   getBlocksTipHash: () => Promise<string>;

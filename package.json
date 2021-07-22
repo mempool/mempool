@@ -31,8 +31,9 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "dev": "nodemon src/index.ts",
+    "examples-nodemon": "nodemon --watch 'examples/nodejs/**' --ext 'ts,json' --ignore 'src/**/*.spec.ts' --exec 'ts-node examples/nodejs/index.ts'",
     "build": "tsc",
-    "build-js": "tsc | browserify lib/index.js --standalone mempoolJS > dist/mempool.js | browserify -p tinyify lib/index.js --standalone mempoolJS > dist/mempool.min.js",
+    "export-js": "tsc | browserify lib/index.js --standalone mempoolJS > dist/mempool.js | browserify -p tinyify lib/index.js --standalone mempoolJS > dist/mempool.min.js",
     "prepare": "npm run build",
     "postversion": "git push && git push --tags"
   },

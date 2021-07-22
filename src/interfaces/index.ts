@@ -11,7 +11,7 @@ import { StatsInstance } from './bisq/statistics';
 import { TransactionsInstance } from './bisq/transactions';
 
 import { AssetsInstance } from './liquid/assets';
-
+import { BlockLiquidInstance } from './liquid/block';
 export interface MempoolConfig {
   hostname?: string;
   network?: string;
@@ -35,7 +35,7 @@ export interface MempoolReturn {
   liquid: {
     assets: AssetsInstance;
     addresses: AddressInstance;
-    blocks: BlockInstance;
+    blocks: BlockLiquidInstance;
     fees: FeeInstance;
     mempool: MempoolInstance;
     transactions: TxInstance;
