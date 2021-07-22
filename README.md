@@ -7,7 +7,7 @@
 
 NPM package module for Mempool APIs.
 
-Documentation: [https://mempool.tools/mempoolJS](https://mempool.tools/mempoolJS)
+Documentation: [https://mempool.space/api](https://mempool.space/api)
 
 ---
 
