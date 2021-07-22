@@ -59,6 +59,7 @@ export const languages: Language[] = [
    { code: 'ko', name: '한국어' },          // Korean
 // { code: 'hr', name: 'Hrvatski' },        // Croatian
 // { code: 'id', name: 'Bahasa Indonesia' },// Indonesian
+   { code: 'hi', name: 'हिन्दी' },             // Hindi
    { code: 'it', name: 'Italiano' },        // Italian
    { code: 'he', name: 'עברית' },           // Hebrew
    { code: 'ka', name: 'ქართული' },         // Georgian
@@ -87,5 +88,4 @@ export const languages: Language[] = [
    { code: 'uk', name: 'Українська' },      // Ukrainian
    { code: 'vi', name: 'Tiếng Việt' },      // Vietnamese
    { code: 'zh', name: '中文' },            // Chinese
-   { code: 'hi', name: 'हिन्दी' },             // Hindi
 ];

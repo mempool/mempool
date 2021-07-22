@@ -69,8 +69,8 @@ export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
               case 'week': return $localize`:@@time-since:${dateStrings.i18nWeek}:DATE: ago`; break;
               case 'day': return $localize`:@@time-since:${dateStrings.i18nDay}:DATE: ago`; break;
               case 'hour': return $localize`:@@time-since:${dateStrings.i18nHour}:DATE: ago`; break;
-              case 'minute': return $localize`:@@time-since:${dateStrings.i18nMinute}:DATE: ago`;
-              case 'second': return $localize`:@@time-since:${dateStrings.i18nSecond}:DATE: ago`;
+              case 'minute': return $localize`:@@time-since:${dateStrings.i18nMinute}:DATE: ago`; break;
+              case 'second': return $localize`:@@time-since:${dateStrings.i18nSecond}:DATE: ago`; break;
             }
           } else {
             switch (i) { // plural (2 days)
@@ -79,8 +79,8 @@ export class TimeSinceComponent implements OnInit, OnChanges, OnDestroy {
               case 'week': return $localize`:@@time-since:${dateStrings.i18nWeeks}:DATE: ago`; break;
               case 'day': return $localize`:@@time-since:${dateStrings.i18nDays}:DATE: ago`; break;
               case 'hour': return $localize`:@@time-since:${dateStrings.i18nHours}:DATE: ago`; break;
-              case 'minute': return $localize`:@@time-since:${dateStrings.i18nMinutes}:DATE: ago`;
-              case 'second': return $localize`:@@time-since:${dateStrings.i18nSeconds}:DATE: ago`;
+              case 'minute': return $localize`:@@time-since:${dateStrings.i18nMinutes}:DATE: ago`; break;
+              case 'second': return $localize`:@@time-since:${dateStrings.i18nSeconds}:DATE: ago`; break;
             }
           }
         }
