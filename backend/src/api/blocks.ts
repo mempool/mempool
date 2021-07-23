@@ -11,7 +11,9 @@ class Blocks {
   private static INITIAL_BLOCK_AMOUNT = 8;
   private blocks: BlockExtended[] = [];
   private currentBlockHeight = 0;
+  private currentDifficulty = 0;
   private lastDifficultyAdjustmentTime = 0;
+  private previousDifficultyRetarget = 0;
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
 
   constructor() { }
@@ -47,6 +49,11 @@ class Blocks {
       const blockHash = await bitcoinApi.$getBlockHash(blockHeightTip - heightDiff);
       const block = await bitcoinApi.$getBlock(blockHash);
       this.lastDifficultyAdjustmentTime = block.timestamp;
+      this.currentDifficulty = block.difficulty;
+
+      const previousPeriodBlockHash = await bitcoinApi.$getBlockHash(blockHeightTip - heightDiff - 2016);
+      const previousPeriodBlock = await bitcoinApi.$getBlock(previousPeriodBlockHash);
+      this.previousDifficultyRetarget = (block.difficulty - previousPeriodBlock.difficulty) / previousPeriodBlock.difficulty * 100;
     }
 
     while (this.currentBlockHeight < blockHeightTip) {
@@ -101,7 +108,9 @@ class Blocks {
       blockExtended.feeRange = transactions.length > 1 ? Common.getFeesInRange(transactions, 8) : [0, 0];
 
       if (block.height % 2016 === 0) {
+        this.previousDifficultyRetarget = (block.difficulty - this.currentDifficulty) / this.currentDifficulty * 100;
         this.lastDifficultyAdjustmentTime = block.timestamp;
+        this.currentDifficulty = block.difficulty;
       }
 
       this.blocks.push(blockExtended);
@@ -120,6 +129,10 @@ class Blocks {
 
   public getLastDifficultyAdjustmentTime(): number {
     return this.lastDifficultyAdjustmentTime;
+  }
+
+  public getPreviousDifficultyRetarget(): number {
+    return this.previousDifficultyRetarget;
   }
 
   public getCurrentBlockHeight(): number {
