@@ -172,6 +172,7 @@ class WebsocketHandler {
       'mempoolInfo': memPool.getMempoolInfo(),
       'vBytesPerSecond': memPool.getVBytesPerSecond(),
       'lastDifficultyAdjustment': blocks.getLastDifficultyAdjustmentTime(),
+      'previousRetarget': blocks.getPreviousDifficultyRetarget(),
       'blocks': _blocks,
       'conversions': fiatConversion.getConversionRates(),
       'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
@@ -384,6 +385,7 @@ class WebsocketHandler {
         'block': block,
         'mempoolInfo': memPool.getMempoolInfo(),
         'lastDifficultyAdjustment': blocks.getLastDifficultyAdjustmentTime(),
+        'previousRetarget': blocks.getPreviousDifficultyRetarget(),
       };
 
       if (mBlocks && client['want-mempool-blocks']) {
