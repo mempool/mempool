@@ -179,7 +179,7 @@ Install the supplied nginx.conf and nginx-mempool.conf in /etc/nginx
   apt-get install -y nginx python-certbot-nginx
 
   # install the mempool configuration for nginx
-  cp nginx.conf nginx-mempool.conf /etc/nginx/nginx.conf
+  cp nginx.conf nginx-mempool.conf /etc/nginx/
 
   # replace example.com with your domain name
   certbot --nginx -d example.com
