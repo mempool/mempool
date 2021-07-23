@@ -31,6 +31,8 @@ Interface to access the Bitcoin `mainet`, `testnet`, `signet` APIs.
     - [Get Blocks](#get-blocks)
     - [Get Blocks Tip Height](#get-blocks-tip-height)
     - [Get Blocks Tip Hash](#get-blocks-tip-hash)
+  - Difficulty
+    - [Get Difficulty Adjustment](#get-difficulty-adjustment)
   - Fees
     - [Get Fees Recommended](#get-fees-recommended)
     - [Get Fees Mempool Blocks](#get-fees-mempool-blocks)
@@ -374,6 +376,21 @@ const {
 
 const blocksTipHash = await blocks.getBlocksTipHash();
 console.log(blocksTipHash);
+```
+
+### **Get Difficulty Adjustment**
+
+Returns the hash of the last block.
+
+[ [NodeJS Example](examples/nodejs/bitcoin/difficulty.ts) ] [ [HTML Example](examples/html/bitcoin/difficulty.html) ] [ [Top](#features) ]
+
+```js
+const {
+  bitcoin: { difficulty },
+} = mempoolJS();
+
+const difficultyAdjustment = await difficulty.getDifficultyAdjustment();
+console.log(difficultyAdjustment);
 ```
 
 ### **Get Fees Recommended**
