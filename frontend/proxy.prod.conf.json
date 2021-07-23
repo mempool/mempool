@@ -4,14 +4,11 @@
     "secure": false,
     "ws": true
   },
-  "/api/*": {
+  "/api": {
     "target": "https://mempool.space",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug",
-    "pathRewrite": {
-      "^/api": "https://mempool.space/api"
-    },
     "timeout": 3600000
   },
   "/testnet/api/v1/ws": {
@@ -23,7 +20,7 @@
       "^/testnet/api": "/api/v1/ws"
     }
   },
-  "/testnet/api/*": {
+  "/testnet/api": {
     "target": "https://mempool.space",
     "secure": true,
     "changeOrigin": true,
@@ -42,7 +39,7 @@
       "^/signet/api": "/api/v1/ws"
     }
   },
-  "/signet/api/*": {
+  "/signet/api": {
     "target": "https://mempool.space",
     "secure": true,
     "changeOrigin": true,
@@ -61,7 +58,7 @@
       "^/bisq/api": "/api/v1/ws"
     }
   },
-  "/bisq/api/*": {
+  "/bisq/api": {
     "target": "https://mempool.space/bisq",
     "secure": false,
     "changeOrigin": true,
@@ -75,7 +72,7 @@
     "secure": false,
     "ws": true
   },
-  "/liquid/api/*": {
+  "/liquid/api": {
     "target": "https://mempool.space",
     "secure": false,
     "changeOrigin": true,
