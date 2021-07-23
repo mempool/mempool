@@ -43,9 +43,24 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 import 'cypress-wait-until';
+import { PageIdleDetector } from './PageIdleDetector';
+import { mockWebSocket } from './websocket';
 
 Cypress.Commands.add('waitForSkeletonGone', () => {
     cy.waitUntil(() => {
         return Cypress.$('.skeleton-loader').length === 0;
-    });
+    }, { verbose: true, description: "waitForSkeletonGone", errorMsg: "skeleton loaders never went away", timeout: 7000, interval: 50});
+});
+
+Cypress.Commands.add(
+    "waitForPageIdle",
+    () => {
+        console.warn("Waiting for page idle state");
+        const pageIdleDetector = new PageIdleDetector();
+        pageIdleDetector.WaitForPageToBeIdle();
+    }
+);
+
+Cypress.Commands.add('mockMempoolSocket', () => {
+  mockWebSocket();
 });
