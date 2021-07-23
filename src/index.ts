@@ -7,6 +7,7 @@ import {
 
 import { useAddresses } from './app/bitcoin/addresses';
 import { useBlocks } from './app/bitcoin/blocks';
+import { useDifficulty } from './app/bitcoin/difficulty';
 import { useFees } from './app/bitcoin/fees';
 import { useMempool } from './app/bitcoin/mempool';
 import { useTransactions } from './app/bitcoin/transactions';
@@ -45,6 +46,7 @@ const mempool = (
     bitcoin: {
       addresses: useAddresses(apiBitcoin),
       blocks: useBlocks(apiBitcoin),
+      difficulty: useDifficulty(apiBitcoin),
       fees: useFees(apiBitcoin),
       mempool: useMempool(apiBitcoin),
       transactions: useTransactions(apiBitcoin),

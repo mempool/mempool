@@ -1,5 +1,6 @@
 import { AddressInstance } from './bitcoin/addresses';
 import { BlockInstance } from './bitcoin/blocks';
+import { DifficultyInstance } from './bitcoin/difficulty';
 import { FeeInstance } from './bitcoin/fees';
 import { MempoolInstance } from './bitcoin/mempool';
 import { TxInstance } from './bitcoin/transactions';
@@ -21,6 +22,7 @@ export interface MempoolReturn {
   bitcoin: {
     addresses: AddressInstance;
     blocks: BlockInstance;
+    difficulty: DifficultyInstance;
     fees: FeeInstance;
     mempool: MempoolInstance;
     transactions: TxInstance;

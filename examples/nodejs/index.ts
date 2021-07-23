@@ -2,7 +2,7 @@ import mempoolJS from "@mempool/mempool.js";
 
 const init = async () => {
     const { bitcoin } = mempoolJS({
-        hostname:'mempool.ninja'
+        hostname:'localhost:4200'
     });
     
     const feesRecommended = await bitcoin.fees.getFeesRecommended();
@@ -10,8 +10,10 @@ const init = async () => {
 
     const hash = "0000000000000000000065bda8f8a88f2e1e00d9a6887a43d640e52a4c7660f2";
     const block = await bitcoin.blocks.getBlockHeader({hash});
-
     console.log(block);
+
+    const difficultyAdjustment = await bitcoin.difficulty.getDifficultyAdjustment();
+    console.log(difficultyAdjustment);
 };
 
 init();
