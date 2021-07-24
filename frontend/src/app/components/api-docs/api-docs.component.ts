@@ -178,8 +178,14 @@ export class ApiDocsComponent implements OnInit {
       },
       blockHeader: {
         codeSample: {
-          esModule: `//to be added`,
-          commonJS: `//to be added`,
+          esModule: `const { %{1}: { blocks } } = mempoolJS();
+
+  const blockHeader = await blocks.getBlockHeader({ hash: '0000000000000000000065bda8f8a88f2e1e00d9a6887a43d640e52a4c7660f2' });
+  console.log(blockHeader);`,
+          commonJS: `const { %{1}: { blocks } } = mempoolJS();
+
+        const blockHeight = await blocks.getBlockHeight({ height: 0 });
+        console.log(blockHeight);`,
           curl: `curl -X GET "https://mempool.space/api/block/:hash/header"`,
         },
         responseSample: `040000202c04d4c450187d1da9b1bc23ba47d67fe028d22486fd0c00000000000000000059a3a33d4642c799af9f54a4dd351fff9130e6a89d4e251130c60064878616e906b5ea60ce9813173a25caf3`,
@@ -1137,16 +1143,23 @@ responseSample: `{
 
      difficulty: {
       codeSample: {
-        esModule:``,
-        commonJS:``,
-        curl: `curl -X GET "https://mempool.space/api/difficulty-adjustment"`,
+        esModule:`const { bitcoin: { difficulty } } = mempoolJS();
+
+  const difficultyAdjustment = await difficulty.getDifficultyAdjustment();
+  console.log(difficultyAdjustment);`,
+        commonJS:`const { bitcoin: { difficulty } } = mempoolJS();
+
+        const difficultyAdjustment = await difficulty.getDifficultyAdjustment();
+        console.log(difficultyAdjustment);`,
+        curl: `curl -X GET "https://mempool.space/api/v1/difficulty-adjustment"`,
       },
       responseSample: `{
-        progressPercent: 18.55392610846515,
-        difficultyChange: -1.2440503501069622,
-        estimatedRetargetDate: 1627400849.2000492,
-        remainingBlocks: 1642,
-        remainingTime: 997456.3840492539
+  progressPercent: 44.397234501112074,
+  difficultyChange: 0.9845932018381687,
+  estimatedRetargetDate: 1627762478.9111245,
+  remainingBlocks: 1121,
+  remainingTime: 665977.6261244365,
+  previousRetarget: -4.807005268478962
 }`,
     },
     
