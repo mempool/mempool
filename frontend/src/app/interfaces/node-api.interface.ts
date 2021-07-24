@@ -25,3 +25,12 @@ export interface CpfpInfo {
   ancestors: Ancestor[];
   bestDescendant: BestDescendant | null;
 }
+
+export interface DifficultyAdjustment {
+  difficultyChange: number;
+  estimatedRetargetDate: number;
+  previousRetarget: number;
+  progressPercent: number;
+  remainingBlocks: number;
+  remainingTime: number;
+}

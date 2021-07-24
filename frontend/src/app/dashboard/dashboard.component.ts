@@ -19,15 +19,14 @@ interface MempoolBlocksData {
 
 interface EpochProgress {
   base: string;
-  green: string;
-  red: string;
-  change: number;
+  difficultyChange: number;
   progress: string;
   remainingBlocks: number;
   newDifficultyHeight: number;
   colorAdjustments: string;
   timeAvg: string;
   remainingTime: number;
+  previousRetarget: number;
 }
 
 interface MempoolInfoData {
@@ -118,36 +117,24 @@ export class DashboardComponent implements OnInit {
       .pipe(
         switchMap(() => combineLatest([
           this.stateService.blocks$.pipe(map(([block]) => block)),
-          this.stateService.lastDifficultyAdjustment$
+          this.stateService.lastDifficultyAdjustment$,
+          this.apiService.getDifficultyAdjustment$(),
         ])),
-        map(([block, DATime]) => {
+        map(([block, DATime, DA]) => {
           const now = new Date().getTime() / 1000;
           const diff = now - DATime;
           const blocksInEpoch = block.height % 2016;
           const estimatedBlocks = Math.round(diff / 60 / 10);
-          let difficultyChange = 0;
-          if (blocksInEpoch > 0) {
-            difficultyChange = (600 / (diff / blocksInEpoch ) - 1) * 100;
-          }
 
           let base = 0;
-          let green = 0;
-          let red = 0;
 
           if (blocksInEpoch >= estimatedBlocks) {
             base = estimatedBlocks / 2016 * 100;
-            green = (blocksInEpoch - estimatedBlocks) / 2016 * 100;
           } else {
             base = blocksInEpoch / 2016 * 100;
-            red = Math.min((estimatedBlocks - blocksInEpoch) / 2016 * 100, 100 - base);
           }
 
-          let colorAdjustments = '#dc3545';
-          if (difficultyChange >= 0) {
-            colorAdjustments = '#299435';
-          }
-
-          const timeAvgDiff = difficultyChange * 0.1;
+          const timeAvgDiff = DA.difficultyChange * 0.1;
 
           let timeAvgMins = 10;
           if (timeAvgDiff > 0 ){
@@ -162,16 +149,15 @@ export class DashboardComponent implements OnInit {
 
           return {
             base: base + '%',
-            green: green + '%',
-            red: red + '%',
-            change: difficultyChange,
-            progress: base.toFixed(2),
-            remainingBlocks,
+            difficultyChange: DA.difficultyChange,
+            progress: DA.progressPercent.toFixed(2),
+            remainingBlocks: DA.remainingBlocks,
             timeAvg: timeAvgMins.toFixed(0),
-            colorAdjustments,
+            colorAdjustments: DA.difficultyChange >= 0 ? '#299435' : '#dc3545',
             blocksInEpoch,
             newDifficultyHeight: block.height + remainingBlocks,
-            remainingTime: remainingBlocsMilliseconds + nowMilliseconds
+            remainingTime: remainingBlocsMilliseconds + nowMilliseconds,
+            previousRetarget: parseFloat(DA.previousRetarget.toFixed(2))
           };
         })
       );
