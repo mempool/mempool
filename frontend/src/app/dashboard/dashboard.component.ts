@@ -153,7 +153,7 @@ export class DashboardComponent implements OnInit {
             progress: DA.progressPercent.toFixed(2),
             remainingBlocks: DA.remainingBlocks,
             timeAvg: timeAvgMins.toFixed(0),
-            colorAdjustments: DA.difficultyChange >= 0 ? '#299435' : '#dc3545',
+            colorAdjustments: DA.difficultyChange >= 0 ? '#3bcc49' : '#dc3545',
             blocksInEpoch,
             newDifficultyHeight: block.height + remainingBlocks,
             remainingTime: remainingBlocsMilliseconds + nowMilliseconds,
