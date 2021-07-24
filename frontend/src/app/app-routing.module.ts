@@ -16,6 +16,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { LatestBlocksComponent } from './components/latest-blocks/latest-blocks.component';
 import { ApiDocsComponent } from './components/api-docs/api-docs.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
+import { TrademarkPolicyComponent } from './components/trademark-policy/trademark-policy.component';
 import { BisqMasterPageComponent } from './components/bisq-master-page/bisq-master-page.component';
 import { SponsorComponent } from './components/sponsor/sponsor.component';
 
@@ -65,6 +66,10 @@ let routes: Routes = [
       {
         path: 'terms-of-service',
         component: TermsOfServiceComponent
+      },
+      {
+        path: 'trademark-policy',
+        component: TrademarkPolicyComponent
       },
       {
         path: 'address/:id',
