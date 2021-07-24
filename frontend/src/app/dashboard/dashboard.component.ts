@@ -19,7 +19,7 @@ interface MempoolBlocksData {
 
 interface EpochProgress {
   base: string;
-  difficultyChange: number;
+  change: number;
   progress: string;
   remainingBlocks: number;
   newDifficultyHeight: number;
@@ -118,13 +118,17 @@ export class DashboardComponent implements OnInit {
         switchMap(() => combineLatest([
           this.stateService.blocks$.pipe(map(([block]) => block)),
           this.stateService.lastDifficultyAdjustment$,
-          this.apiService.getDifficultyAdjustment$(),
+          this.stateService.previousRetarget$
         ])),
-        map(([block, DATime, DA]) => {
+        map(([block, DATime, previousRetarget]) => {
           const now = new Date().getTime() / 1000;
           const diff = now - DATime;
           const blocksInEpoch = block.height % 2016;
           const estimatedBlocks = Math.round(diff / 60 / 10);
+          let difficultyChange = 0;
+          if (blocksInEpoch > 0) {
+            difficultyChange = (600 / (diff / blocksInEpoch ) - 1) * 100;
+          }
 
           let base = 0;
 
@@ -134,7 +138,12 @@ export class DashboardComponent implements OnInit {
             base = blocksInEpoch / 2016 * 100;
           }
 
-          const timeAvgDiff = DA.difficultyChange * 0.1;
+          let colorAdjustments = '#dc3545';
+          if (difficultyChange >= 0) {
+            colorAdjustments = '#299435';
+          }
+
+          const timeAvgDiff = difficultyChange * 0.1;
 
           let timeAvgMins = 10;
           if (timeAvgDiff > 0 ){
@@ -149,18 +158,19 @@ export class DashboardComponent implements OnInit {
 
           return {
             base: base + '%',
-            difficultyChange: DA.difficultyChange,
-            progress: DA.progressPercent.toFixed(2),
-            remainingBlocks: DA.remainingBlocks,
+            change: difficultyChange,
+            progress: base.toFixed(2),
+            remainingBlocks,
             timeAvg: timeAvgMins.toFixed(0),
-            colorAdjustments: DA.difficultyChange >= 0 ? '#3bcc49' : '#dc3545',
+            colorAdjustments,
             blocksInEpoch,
             newDifficultyHeight: block.height + remainingBlocks,
             remainingTime: remainingBlocsMilliseconds + nowMilliseconds,
-            previousRetarget: parseFloat(DA.previousRetarget.toFixed(2))
+            previousRetarget
           };
         })
       );
+
 
     this.mempoolBlocksData$ = this.stateService.mempoolBlocks$
       .pipe(
