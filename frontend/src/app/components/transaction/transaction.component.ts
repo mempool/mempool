@@ -67,6 +67,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
           this.stateService.lastDifficultyAdjustment$
         ])),
         map(([block, DATime]) => {
+          this.now = new Date().getTime();
           const now = new Date().getTime() / 1000;
           const diff = now - DATime;
           const blocksInEpoch = block.height % 2016;
