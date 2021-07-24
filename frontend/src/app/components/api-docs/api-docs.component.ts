@@ -1137,16 +1137,23 @@ responseSample: `{
 
      difficulty: {
       codeSample: {
-        esModule:``,
-        commonJS:``,
+        esModule:`const { bitcoin: { difficulty } } = mempoolJS();
+
+  const difficultyAdjustment = await difficulty.getDifficultyAdjustment();
+  console.log(difficultyAdjustment);`,
+        commonJS:`const { bitcoin: { difficulty } } = mempoolJS();
+
+        const difficultyAdjustment = await difficulty.getDifficultyAdjustment();
+        console.log(difficultyAdjustment);`,
         curl: `curl -X GET "https://mempool.space/api/difficulty-adjustment"`,
       },
       responseSample: `{
-        progressPercent: 18.55392610846515,
-        difficultyChange: -1.2440503501069622,
-        estimatedRetargetDate: 1627400849.2000492,
-        remainingBlocks: 1642,
-        remainingTime: 997456.3840492539
+  progressPercent: 44.397234501112074,
+  difficultyChange: 0.9845932018381687,
+  estimatedRetargetDate: 1627762478.9111245,
+  remainingBlocks: 1121,
+  remainingTime: 665977.6261244365,
+  previousRetarget: -4.807005268478962
 }`,
     },
     
