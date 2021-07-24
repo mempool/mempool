@@ -1151,7 +1151,7 @@ responseSample: `{
 
         const difficultyAdjustment = await difficulty.getDifficultyAdjustment();
         console.log(difficultyAdjustment);`,
-        curl: `curl -X GET "https://mempool.space/api/difficulty-adjustment"`,
+        curl: `curl -X GET "https://mempool.space/api/v1/difficulty-adjustment"`,
       },
       responseSample: `{
   progressPercent: 44.397234501112074,

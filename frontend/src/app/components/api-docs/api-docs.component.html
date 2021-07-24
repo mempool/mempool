@@ -6,27 +6,9 @@
 
   <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
     <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="0">
-      <a ngbNavLink i18n="api-docs.tab.fees|API Docs tab for Fees">General</a>
+      <a ngbNavLink i18n="api-docs.tab.general|API Docs tab for General">General</a>
       <ng-template ngbNavContent>
         <ngb-accordion [closeOthers]="true" animated="true" type="dark">
-
-          <ngb-panel id="cpfp">
-            <ng-template ngbPanelTitle>
-              <span>GET Children Pay for Parent</span>
-            </ng-template>
-            <ng-template ngbPanelContent>
-              <div class="endpoint">
-                <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-                <a href="{{ network.val === '' ? '' : '/' + network.val }}/api/v1/cpfp/TXID" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/v1/cpfp/:txid</a>
-              </div>
-              <div class="description">
-                <div class="subtitle" i18n>Description</div>
-                <div i18n="api-docs.fees.cpfp|API Docs for /api/v1/fees/cpfp">Returns the ancestors and the best descendant fees for a transaction.</div>
-              </div>
-              <app-code-template [code]="code.cpfp" [network]="network.val" ></app-code-template>
-            </ng-template>
-          </ngb-panel>
-
           <ngb-panel id="difficultyAdjustment" *ngIf="network.val !== 'liquid'">
             <ng-template ngbPanelTitle>
               <span>GET Difficulty Adjustment</span>
@@ -35,7 +17,7 @@
               <div class="difficulty">
                 <div class="endpoint">
                   <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-                  <a href="{{ network.val === '' ? '' : '/' + network.val }}/api/difficulty-adjustment" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/difficulty-adjustment</a>
+                  <a href="{{ network.val === '' ? '' : '/' + network.val }}/api/v1/difficulty-adjustment" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/v1/difficulty-adjustment</a>
                 </div>
                 <div class="description">
                   <div class="subtitle" i18n>Description</div>
@@ -45,9 +27,16 @@
               </div>
             </ng-template>
           </ngb-panel>
+        </ngb-accordion>
+      </ng-template>
+    </li>
+    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="1">
+      <a ngbNavLink i18n="api-docs.tab.fees|API Docs tab for Fees">Fees</a>
+      <ng-template ngbNavContent>
+        <ngb-accordion [closeOthers]="true" animated="true" type="dark">
           <ngb-panel id="mempoolBlocks">
             <ng-template ngbPanelTitle>
-              <span>GET Mempool Blocks</span>
+              <span>GET FeeMempool Blocks</span>
             </ng-template>
             <ng-template ngbPanelContent>
               <div class="endpoint">
@@ -81,7 +70,7 @@
       </ng-template>
     </li>
 
-    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="1">
+    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="2">
       <a ngbNavLink i18n="api-docs.tab.addresses|API Docs tab for Addresses">Addresses</a>
       <ng-template ngbNavContent>
         <ngb-accordion [closeOthers]="true" animated="true" type="dark" >
@@ -182,7 +171,7 @@
       </ng-template>
     </li>
 
-    <li *ngIf="network.val === 'liquid'" [ngbNavItem]="2">
+    <li *ngIf="network.val === 'liquid'" [ngbNavItem]="3">
       <a ngbNavLink i18n="api-docs.tab.assets|API Docs tab for Assets">Assets</a>
       <ng-template ngbNavContent>
         <ngb-accordion [closeOthers]="true" animated="true" type="dark" >
@@ -244,7 +233,7 @@
       </ng-template>
     </li>
 
-    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="3">
+    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="4">
       <a ngbNavLink i18n="api-docs.tab.blocks|API Docs tab for Blocks">Blocks</a>
       <ng-template ngbNavContent>
         <ngb-accordion [closeOthers]="true" animated="true" type="dark" >
@@ -608,7 +597,7 @@
       </ng-template>
     </li>
 
-    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="4">
+    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="5">
       <a ngbNavLink i18n="api-docs.tab.mempool|API Docs tab for Mempool">Mempool</a>
       <ng-template ngbNavContent>
         <ngb-accordion [closeOthers]="true" animated="true" type="dark" >
@@ -668,10 +657,28 @@
       </ng-template>
     </li>
 
-    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="5">
+    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="6">
       <a ngbNavLink i18n="api-docs.tab.transactions|API Docs tab for Transactions">Transactions</a>
       <ng-template ngbNavContent>
         <ngb-accordion [closeOthers]="true" animated="true" type="dark" >
+
+          <ngb-panel id="cpfp">
+            <ng-template ngbPanelTitle>
+              <span>GET Children Pay for Parent</span>
+            </ng-template>
+            <ng-template ngbPanelContent>
+              <div class="endpoint">
+                <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
+                <a href="{{ network.val === '' ? '' : '/' + network.val }}/api/v1/cpfp/TXID" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/v1/cpfp/:txid</a>
+              </div>
+              <div class="description">
+                <div class="subtitle" i18n>Description</div>
+                <div i18n="api-docs.fees.cpfp|API Docs for /api/v1/fees/cpfp">Returns the ancestors and the best descendant fees for a transaction.</div>
+              </div>
+              <app-code-template [code]="code.cpfp" [network]="network.val" ></app-code-template>
+            </ng-template>
+          </ngb-panel>
+
           <ngb-panel id="transaction">
             <ng-template ngbPanelTitle>
               <span>GET Transaction</span>
@@ -845,7 +852,7 @@
       </ng-template>
     </li>
 
-    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="6">
+    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="7">
       <a ngbNavLink i18n="api-docs.tab.websocket|API Docs tab for Websocket">Websocket</a>
       <ng-template ngbNavContent >
         <div class="websocket">
@@ -861,24 +868,6 @@
         </div>
       </ng-template>
     </li>
-
-    <!-- <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="7">
-      <a ngbNavLink i18n="api-docs.tab.difficulty|API Docs tab for Difficulty">Difficulty</a>
-      <ng-template ngbNavContent >
-        <div class="difficulty">
-          <div class="endpoint">
-            <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-            <a href="{{ network.val === '' ? '' : '/' + network.val }}/api/difficulty-adjustment" target="_blank">GET {{ network.val === '' ? '' : '/' + network.val }}/api/difficulty-adjustment</a>
-          </div>
-          <div class="description">
-            <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns details about difficulty adjustment.</div>
-          </div> 
-          <app-code-template [code]="code.difficulty" [network]="network.val" ></app-code-template>
-        </div>
-      </ng-template>
-    </li> -->
-
   </ul>
 
   <div [ngbNavOutlet]="nav" class="mt-2"></div>
