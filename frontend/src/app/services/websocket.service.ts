@@ -47,7 +47,7 @@ export class WebsocketService {
       this.network = this.stateService.network === 'bisq' && !this.stateService.env.BISQ_SEPARATE_BACKEND ? '' : this.stateService.network;
       this.websocketSubject = webSocket<WebsocketResponse>(this.webSocketUrl.replace('{network}', this.network ? '/' + this.network : ''));
 
-      const theInitData = this.transferState.get(initData, null);
+      const theInitData = this.transferState.get<any>(initData, null);
       if (theInitData) {
         this.handleResponse(theInitData.body);
         this.startSubscription(false, true);
@@ -288,6 +288,10 @@ export class WebsocketService {
 
     if (response.lastDifficultyAdjustment !== undefined) {
       this.stateService.lastDifficultyAdjustment$.next(response.lastDifficultyAdjustment);
+    }
+
+    if (response.previousRetarget !== undefined) {
+      this.stateService.previousRetarget$.next(response.previousRetarget);
     }
 
     if (response['git-commit']) {
