@@ -178,8 +178,14 @@ export class ApiDocsComponent implements OnInit {
       },
       blockHeader: {
         codeSample: {
-          esModule: `//to be added`,
-          commonJS: `//to be added`,
+          esModule: `const { %{1}: { blocks } } = mempoolJS();
+
+  const blockHeader = await blocks.getBlockHeader({ hash: '0000000000000000000065bda8f8a88f2e1e00d9a6887a43d640e52a4c7660f2' });
+  console.log(blockHeader);`,
+          commonJS: `const { %{1}: { blocks } } = mempoolJS();
+
+        const blockHeight = await blocks.getBlockHeight({ height: 0 });
+        console.log(blockHeight);`,
           curl: `curl -X GET "https://mempool.space/api/block/:hash/header"`,
         },
         responseSample: `040000202c04d4c450187d1da9b1bc23ba47d67fe028d22486fd0c00000000000000000059a3a33d4642c799af9f54a4dd351fff9130e6a89d4e251130c60064878616e906b5ea60ce9813173a25caf3`,
