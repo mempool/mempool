@@ -117,10 +117,10 @@
                       </ng-template>
                       <ng-template #belowBlockLimit>
                         <ng-template [ngIf]="network === 'liquid'" [ngIfElse]="timeEstimateDefault">
-                          <ng-container *ngTemplateOutlet="1 * txInBlockIndex + 1 === 1 ? nextBlockEta : nextBlockEtaPlural; context:{ $implicit: 1 * txInBlockIndex + 1 }"></ng-container>&nbsp;<i><span class="symbol">(<ng-container *ngTemplateOutlet="txInBlockIndex === 0 ? blocksSingular : blocksPlural; context: {$implicit: txInBlockIndex + 1 }"></ng-container>)</span></i>
+                          <app-time-until [time]="(60 * 1000 * txInBlockIndex) + now" [fastRender]="false" [fixedRender]="true"></app-time-until>
                         </ng-template>
                         <ng-template #timeEstimateDefault>
-                          <ng-container *ngTemplateOutlet="nextBlockEtaPlural; context:{ $implicit: 10 * txInBlockIndex + 10 }"></ng-container>&nbsp;<i><span class="symbol">(<ng-container *ngTemplateOutlet="txInBlockIndex === 0 ? blocksSingular : blocksPlural; context: {$implicit: txInBlockIndex + 1 }"></ng-container>)</span></i>
+                          <app-time-until *ngIf="(timeAvg$ | async) as timeAvg;" [time]="(timeAvg * txInBlockIndex) + now + timeAvg" [fastRender]="false" [fixedRender]="true"></app-time-until>
                         </ng-template>
                       </ng-template>
                     </ng-template>
