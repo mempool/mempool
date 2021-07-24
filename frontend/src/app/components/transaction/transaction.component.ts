@@ -7,9 +7,10 @@ import {
   catchError,
   retryWhen,
   delay,
+  map
 } from 'rxjs/operators';
 import { Transaction, Block } from '../../interfaces/electrs.interface';
-import { of, merge, Subscription, Observable, Subject } from 'rxjs';
+import { of, merge, Subscription, Observable, Subject, timer, combineLatest,  } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from 'src/app/services/audio.service';
@@ -40,6 +41,8 @@ export class TransactionComponent implements OnInit, OnDestroy {
   showCpfpDetails = false;
   fetchCpfp$ = new Subject<string>();
   commitments: Map<any, any>;
+  now = new Date().getTime();
+  timeAvg$: Observable<number>;
 
   constructor(
     private route: ActivatedRoute,
@@ -56,6 +59,32 @@ export class TransactionComponent implements OnInit, OnDestroy {
     this.stateService.networkChanged$.subscribe(
       (network) => (this.network = network)
     );
+
+    this.timeAvg$ = timer(0, 1000)
+      .pipe(
+        switchMap(() => combineLatest([
+          this.stateService.blocks$.pipe(map(([block]) => block)),
+          this.stateService.lastDifficultyAdjustment$
+        ])),
+        map(([block, DATime]) => {
+          const now = new Date().getTime() / 1000;
+          const diff = now - DATime;
+          const blocksInEpoch = block.height % 2016;
+          let difficultyChange = 0;
+          if (blocksInEpoch > 0) {
+            difficultyChange = (600 / (diff / blocksInEpoch ) - 1) * 100;
+          }
+          const timeAvgDiff = difficultyChange * 0.1;
+
+          let timeAvgMins = 10;
+          if (timeAvgDiff > 0 ){
+            timeAvgMins -= Math.abs(timeAvgDiff);
+          } else {
+            timeAvgMins += Math.abs(timeAvgDiff);
+          }
+          return timeAvgMins * 60 * 1000;
+        })
+      );
 
     this.fetchCpfpSubscription = this.fetchCpfp$
       .pipe(

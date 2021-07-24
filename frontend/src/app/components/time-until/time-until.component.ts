@@ -58,16 +58,20 @@ export class TimeUntilComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   calculate() {
-    const seconds = Math.floor((+new Date(this.time) - +new Date()) / 1000);
+    const seconds = (+new Date(this.time) - +new Date()) / 1000;
 
     if (seconds < 60) {
       const dateStrings = dates(1);
       return $localize`:@@time-until:In ~${dateStrings.i18nMinute}:DATE:`;
     }
-    let counter;
+    let counter: number;
     for (const i in this.intervals) {
       if (this.intervals.hasOwnProperty(i)) {
-        counter = Math.floor(seconds / this.intervals[i]);
+        if (i === 'minute') {
+          counter = Math.round(seconds / this.intervals[i]);
+        } else {
+          counter = Math.floor(seconds / this.intervals[i]);
+        }
         const dateStrings = dates(counter);
         if (counter > 0) {
           if (counter === 1) {
