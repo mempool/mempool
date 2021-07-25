@@ -136,7 +136,7 @@ describe('Liquid', () => {
         it('prevents regressing issue #644', () => {
             cy.visit('/liquid/tx/393b890966f305e7c440fcfb12a13f51a7a9011cc59ff5f14f6f93214261bd82');
             cy.waitForSkeletonGone();
-        })
+        });
     });
 
 });
