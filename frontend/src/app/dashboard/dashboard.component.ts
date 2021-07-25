@@ -19,8 +19,6 @@ interface MempoolBlocksData {
 
 interface EpochProgress {
   base: string;
-  green: string;
-  red: string;
   change: number;
   progress: string;
   remainingBlocks: number;
@@ -28,6 +26,7 @@ interface EpochProgress {
   colorAdjustments: string;
   timeAvg: string;
   remainingTime: number;
+  previousRetarget: number;
 }
 
 interface MempoolInfoData {
@@ -118,9 +117,10 @@ export class DashboardComponent implements OnInit {
       .pipe(
         switchMap(() => combineLatest([
           this.stateService.blocks$.pipe(map(([block]) => block)),
-          this.stateService.lastDifficultyAdjustment$
+          this.stateService.lastDifficultyAdjustment$,
+          this.stateService.previousRetarget$
         ])),
-        map(([block, DATime]) => {
+        map(([block, DATime, previousRetarget]) => {
           const now = new Date().getTime() / 1000;
           const diff = now - DATime;
           const blocksInEpoch = block.height % 2016;
@@ -131,15 +131,11 @@ export class DashboardComponent implements OnInit {
           }
 
           let base = 0;
-          let green = 0;
-          let red = 0;
 
           if (blocksInEpoch >= estimatedBlocks) {
             base = estimatedBlocks / 2016 * 100;
-            green = (blocksInEpoch - estimatedBlocks) / 2016 * 100;
           } else {
             base = blocksInEpoch / 2016 * 100;
-            red = Math.min((estimatedBlocks - blocksInEpoch) / 2016 * 100, 100 - base);
           }
 
           let colorAdjustments = '#dc3545';
@@ -162,8 +158,6 @@ export class DashboardComponent implements OnInit {
 
           return {
             base: base + '%',
-            green: green + '%',
-            red: red + '%',
             change: difficultyChange,
             progress: base.toFixed(2),
             remainingBlocks,
@@ -171,10 +165,12 @@ export class DashboardComponent implements OnInit {
             colorAdjustments,
             blocksInEpoch,
             newDifficultyHeight: block.height + remainingBlocks,
-            remainingTime: remainingBlocsMilliseconds + nowMilliseconds
+            remainingTime: remainingBlocsMilliseconds + nowMilliseconds,
+            previousRetarget
           };
         })
       );
+
 
     this.mempoolBlocksData$ = this.stateService.mempoolBlocks$
       .pipe(

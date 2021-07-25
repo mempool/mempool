@@ -215,8 +215,8 @@
           </div>
           <div class="item">
             <h5 class="card-title" i18n="difficulty-box.estimate">Estimate</h5>
-            <div class="card-text" [ngStyle]="{'color': epochData.colorAdjustments}">{{ epochData.change | number: '1.2-2' }} <span class="symbol">%</span></div>
-            <div class="symbol" i18n="difficulty-box.mins-per-block">~{{ epochData.timeAvg }} mins per block</div>
+            <div class="card-text" [ngStyle]="{'color': epochData.colorAdjustments}">{{epochData.change > 0 ? '+' : ''}}{{ epochData.change | number: '1.2-2' }} <span class="symbol">%</span></div>
+            <div class="symbol" i18n="difficulty-box.previous-retarget">Previous: {{epochData.previousRetarget > 0 ? '+' : ''}}{{ epochData.previousRetarget | number: '1.2-2' }} %</div>
           </div>
           <div class="item">
             <h5 class="card-title" i18n="difficulty-box.current-period">Current Period</h5>

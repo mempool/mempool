@@ -71,6 +71,7 @@ export class StateService {
   isLoadingWebSocket$ = new ReplaySubject<boolean>(1);
   vbytesPerSecond$ = new ReplaySubject<number>(1);
   lastDifficultyAdjustment$ = new ReplaySubject<number>(1);
+  previousRetarget$ = new ReplaySubject<number>(1);
   backendInfo$ = new ReplaySubject<IBackendInfo>(1);
   loadingIndicators$ = new ReplaySubject<ILoadingIndicators>(1);
 
