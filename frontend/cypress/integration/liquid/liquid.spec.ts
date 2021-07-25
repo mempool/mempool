@@ -1,6 +1,5 @@
 describe('Liquid', () => {
     beforeEach(() => {
-        cy.intercept('/sockjs-node/info*').as('socket');
         cy.intercept('/liquid/api/block/**').as('block');
         cy.intercept('/liquid/api/blocks/').as('blocks');
         cy.intercept('/liquid/api/tx/**/outspends').as('outspends');
@@ -48,8 +47,7 @@ describe('Liquid', () => {
         cy.get('li:nth-of-type(3) > a').click().then(() => {
             cy.viewport('iphone-6');
             cy.wait(1000);
-            // TODO: Should we really support TV Mode in Mobile for Bisq?
-            // cy.get('.tv-only').should('be.visible')
+            cy.get('.tv-only').should('not.exist');
         });
     });
 
