@@ -1,10 +1,17 @@
 #!/usr/local/bin/zsh
-cd /electrs
+cd "$HOME/electrs"
 #source $HOME/.cargo/env
 #export PATH=$HOME/.cargo/bin:$PATH
 
 until false
 do
+	# patch code for FreeBSD
+	if grep XBS5 "$HOME/.cargo/registry/src/github.com-1ecc6299db9ec823/sysconf-0.3.4/src/raw.rs" ; then
+		echo patching sysconf
+		grep -v XBS5 /elements/.cargo/registry/src/github.com-1ecc6299db9ec823/sysconf-0.3.4/src/raw.rs > /tmp/foo && \
+		mv /tmp/foo /elements/.cargo/registry/src/github.com-1ecc6299db9ec823/sysconf-0.3.4/src/raw.rs
+	fi
+
 	cargo run \
 		--release \
 		--features liquid \
