@@ -20,9 +20,9 @@ describe('Mainnet', () => {
       cy.get('#mempool-block-0').should('be.visible');
       cy.get('[id^="bitcoin-block-"]').should('have.length', 8);
       cy.get('.footer').should('be.visible');
-      cy.get('.row > :nth-child(1)').invoke('text').then((text) => {
-        expect(text).to.match(/Tx vBytes per second:(\d+) vB/);
-      });
+      //cy.get('.row > :nth-child(1)').invoke('text').then((text) => {
+      //  expect(text).to.match(/Tx vBytes per second:(\d+) vB/);
+      //});
       cy.get('.row > :nth-child(2)').invoke('text').then((text) => {
           expect(text).to.match(/Unconfirmed:(\d+)/);
       });
