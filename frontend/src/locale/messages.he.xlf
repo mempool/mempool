@@ -3212,6 +3212,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.just-now">
         <source>Just now</source>
+        <target>זה עתה</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">57</context>
@@ -3223,6 +3224,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since">
         <source><x equiv-text="dateStrings.i18nYear" id="DATE"/> ago</source>
+        <target>לפני <x equiv-text="dateStrings.i18nYear" id="DATE"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -3282,6 +3284,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-span">
         <source>After <x equiv-text="dateStrings.i18nYear" id="DATE"/></source>
+        <target>אחרי <x equiv-text="dateStrings.i18nYear" id="DATE"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -3341,6 +3344,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-until">
         <source>In ~<x equiv-text="dateStrings.i18nMinute" id="DATE"/></source>
+        <target>תוך <x equiv-text="dateStrings.i18nMinute" id="DATE"/>~</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
           <context context-type="linenumber">65</context>
@@ -3851,6 +3855,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4a2866b06cff4db4aea54b19836652dfd45e30aa">
         <source>Fee Estimates</source>
+        <target>עמלה מוערכת</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">6,9</context>
@@ -3969,6 +3974,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="63da83692b85cf17e0606153029a83fd4038d6dd">
         <source>Difficulty Adjustment</source>
+        <target>התאמת קשי</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">202,205</context>
@@ -3977,6 +3983,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0912816d94f2f05a7eee8f7622670e0c6bbbce16">
         <source>Remaining</source>
+        <target>נותרו</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">208,210</context>
@@ -3989,6 +3996,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5e65ce907fc0e1a1a09d4130eb8c59d00a9457ef">
         <source>Estimate</source>
+        <target>הערכה</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">217,218</context>
@@ -4009,6 +4017,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5db469cd0357e5f578b85a996f7e99c9e4148ff5">
         <source>Current Period</source>
+        <target>מחזור נוכחי</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">222,223</context>
@@ -4021,6 +4030,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.year">
         <source><x equiv-text="counter" id="DATE"/> year</source>
+        <target>שנה <x equiv-text="counter" id="DATE"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">3</context>
@@ -4028,6 +4038,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.years">
         <source><x equiv-text="counter" id="DATE"/> years</source>
+        <target><x equiv-text="counter" id="DATE"/> שנים</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">4</context>
@@ -4035,6 +4046,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.month">
         <source><x equiv-text="counter" id="DATE"/> month</source>
+        <target><x equiv-text="counter" id="DATE"/> חודש</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">5</context>
@@ -4042,6 +4054,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.months">
         <source><x equiv-text="counter" id="DATE"/> months</source>
+        <target><x equiv-text="counter" id="DATE"/> חודשים</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">6</context>
@@ -4049,6 +4062,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.week">
         <source><x equiv-text="counter" id="DATE"/> week</source>
+        <target><x equiv-text="counter" id="DATE"/> שבוע</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">7</context>
@@ -4056,6 +4070,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.weeks">
         <source><x equiv-text="counter" id="DATE"/> weeks</source>
+        <target><x equiv-text="counter" id="DATE"/> שבועות</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">8</context>
@@ -4063,6 +4078,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.day">
         <source><x equiv-text="counter" id="DATE"/> day</source>
+        <target><x equiv-text="counter" id="DATE"/> יום</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">9</context>
@@ -4070,6 +4086,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.days">
         <source><x equiv-text="counter" id="DATE"/> days</source>
+        <target><x equiv-text="counter" id="DATE"/> ימים</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">10</context>
@@ -4077,6 +4094,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.hour">
         <source><x equiv-text="counter" id="DATE"/> hour</source>
+        <target><x equiv-text="counter" id="DATE"/> שעה</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">11</context>
@@ -4084,6 +4102,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.hours">
         <source><x equiv-text="counter" id="DATE"/> hours</source>
+        <target><x equiv-text="counter" id="DATE"/> שעות</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">12</context>
@@ -4091,6 +4110,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.minute">
         <source><x equiv-text="counter" id="DATE"/> minute</source>
+        <target><x equiv-text="counter" id="DATE"/> דקה</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">13</context>
@@ -4098,6 +4118,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.minutes">
         <source><x equiv-text="counter" id="DATE"/> minutes</source>
+        <target><x equiv-text="counter" id="DATE"/> דקות</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">14</context>
@@ -4105,6 +4126,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.second">
         <source><x equiv-text="counter" id="DATE"/> second</source>
+        <target><x equiv-text="counter" id="DATE"/> שניה</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">15</context>
@@ -4112,6 +4134,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.seconds">
         <source><x equiv-text="counter" id="DATE"/> seconds</source>
+        <target><x equiv-text="counter" id="DATE"/> שניות</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">16</context>
