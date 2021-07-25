@@ -17,6 +17,22 @@ describe('Mainnet', () => {
           });
     });
 
+    it('loads the status screen', () => {
+      cy.visit('/status');
+      cy.get('#mempool-block-0').should('be.visible');
+      cy.get('[id^="bitcoin-block-"]').should('have.length', 8);
+      cy.get('.footer').should('be.visible');
+      cy.get('.row > :nth-child(1)').invoke('text').then((text) => {
+        expect(text).to.match(/Tx vBytes per second:(\d+) vB/);
+      });
+      cy.get('.row > :nth-child(2)').invoke('text').then((text) => {
+          expect(text).to.match(/Unconfirmed:(\d+)/);
+      });
+      cy.get('.row > :nth-child(3)').invoke('text').then((text) => {
+        expect(text).to.match(/Mempool size:(\d+) kB \((\d+) block\)/);
+      });
+    });
+
     it('loads the dashboard', () => {
       cy.visit('/');
       cy.waitForSkeletonGone();
