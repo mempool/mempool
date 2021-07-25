@@ -1,6 +1,4 @@
-import { delay } from "cypress/types/bluebird";
 import { emitMempoolInfo } from "../../support/websocket";
-
 
 describe('Mainnet', () => {
     beforeEach(() => {
@@ -84,8 +82,6 @@ describe('Mainnet', () => {
                 cy.get('.chart-holder');
                 cy.get('.blockchain-wrapper').should('be.visible');
                 cy.get('#mempool-block-0').should('be.visible');
-                //cy.get('#mempool-block-1').should('be.visible');
-                //cy.get('#mempool-block-2').should('be.visible');
             });
         });
 
@@ -99,7 +95,6 @@ describe('Mainnet', () => {
             });
         });
     });
-
 
     it('loads the api screen', () => {
         cy.visit('/');
