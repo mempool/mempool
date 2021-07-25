@@ -1,3 +1,5 @@
+import { emitMempoolInfo } from "../../support/websocket";
+
 describe('Signet', () => {
   beforeEach(() => {
     cy.intercept('/api/block-height/*').as('block-height');
@@ -10,6 +12,26 @@ describe('Signet', () => {
     cy.visit('/signet');
     cy.waitForSkeletonGone();
   });
+
+  it('loads the dashboard with the skeleton blocks', () => {
+    cy.mockMempoolSocket();
+    cy.visit("/signet");
+    cy.get(':nth-child(1) > #bitcoin-block-0').should('be.visible');
+    cy.get(':nth-child(2) > #bitcoin-block-0').should('be.visible');
+    cy.get(':nth-child(3) > #bitcoin-block-0').should('be.visible');
+    cy.get('#mempool-block-0').should('be.visible');
+    cy.get('#mempool-block-1').should('be.visible');
+    cy.get('#mempool-block-2').should('be.visible');
+
+    emitMempoolInfo({
+        'params': {
+          "network": "signet"
+        }
+    });
+    cy.get(':nth-child(1) > #bitcoin-block-0').should('not.exist');
+    cy.get(':nth-child(2) > #bitcoin-block-0').should('not.exist');
+    cy.get(':nth-child(3) > #bitcoin-block-0').should('not.exist');
+});
 
   it('loads the blocks screen', () => {
       cy.visit('/signet');
@@ -33,7 +55,9 @@ describe('Signet', () => {
           cy.visit('/signet');
           cy.waitForSkeletonGone();
           cy.get('li:nth-of-type(4) > a').click().then(() => {
-              cy.get('.tv-only').should('not.exist');
+            cy.get('.chart-holder').should('be.visible');
+            cy.get('#mempool-block-0').should('be.visible');
+            cy.get('.tv-only').should('not.exist');
           });
       });
 
@@ -41,8 +65,10 @@ describe('Signet', () => {
           cy.visit('/signet');
           cy.waitForSkeletonGone();
           cy.get('li:nth-of-type(4) > a').click().then(() => {
-              cy.viewport('iphone-6');
-              cy.wait(1000);
+              cy.viewport('iphone-8');
+              cy.get('.chart-holder').should('be.visible');
+              //TODO: Remove comment when the bug is fixed
+              //cy.get('#mempool-block-0').should('be.visible');
               cy.get('.tv-only').should('not.exist');
           });
       });
