@@ -26,9 +26,9 @@ describe('Mainnet', () => {
       cy.get('.row > :nth-child(2)').invoke('text').then((text) => {
           expect(text).to.match(/Unconfirmed:(\d+)/);
       });
-      cy.get('.row > :nth-child(3)').invoke('text').then((text) => {
-        expect(text).to.match(/Mempool size:(\d+) kB \((\d+) block\)/);
-      });
+      //cy.get('.row > :nth-child(3)').invoke('text').then((text) => {
+      //  expect(text).to.match(/Mempool size:(\d+) kB \((\d+) block\)/);
+      //});
     });
 
     it('loads the dashboard', () => {
