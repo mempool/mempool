@@ -6,6 +6,7 @@ import { CeilPipe } from './pipes/math-ceil/math-ceil.pipe';
 import { Hex2asciiPipe } from './pipes/hex2ascii/hex2ascii.pipe';
 import { Decimal2HexPipe } from './pipes/decimal2hex/decimal2hex.pipe';
 import { AsmStylerPipe } from './pipes/asm-styler/asm-styler.pipe';
+import { AbsolutePipe } from './pipes/absolute/absolute.pipe';
 import { RelativeUrlPipe } from './pipes/relative-url/relative-url.pipe';
 import { ScriptpubkeyTypePipe } from './pipes/scriptpubkey-type-pipe/scriptpubkey-type.pipe';
 import { BytesPipe } from './pipes/bytes-pipe/bytes.pipe';
@@ -36,6 +37,7 @@ import { ColoredPriceDirective } from './directives/colored-price.directive';
     RelativeUrlPipe,
     Hex2asciiPipe,
     AsmStylerPipe,
+    AbsolutePipe,
     BytesPipe,
     VbytesPipe,
     WuBytesPipe,
@@ -78,6 +80,7 @@ import { ColoredPriceDirective } from './directives/colored-price.directive';
     RelativeUrlPipe,
     Hex2asciiPipe,
     AsmStylerPipe,
+    AbsolutePipe,
     BytesPipe,
     VbytesPipe,
     WuBytesPipe,
