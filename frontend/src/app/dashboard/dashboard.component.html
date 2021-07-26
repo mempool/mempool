@@ -222,7 +222,8 @@
               <ng-template #arrowDownDifficulty >
                 <fa-icon class="retarget-sign" [icon]="['fas', 'caret-down']" [fixedWidth]="true"></fa-icon>
               </ng-template>
-              {{ epochData.change | absolute | number: '1.2-2' }} <span class="symbol">%</span>
+              {{ epochData.change | absolute | number: '1.2-2' }} 
+              <span class="symbol">%</span>
             </div>
             <div class="symbol">
               <span i18n="difficulty-box.previous">Previous</span>: 
@@ -233,7 +234,8 @@
                 <ng-template #arrowDownPreviousDifficulty >
                   <fa-icon class="previous-retarget-sign" [icon]="['fas', 'caret-down']" [fixedWidth]="true"></fa-icon>
                 </ng-template>
-                {{ epochData.previousRetarget | absolute | number: '1.2-2' }} </span> %</div>
+                {{ epochData.previousRetarget | absolute | number: '1.2-2' }} </span> %
+            </div>
           </div>
           <div class="item">
             <h5 class="card-title" i18n="difficulty-box.current-period">Current Period</h5>

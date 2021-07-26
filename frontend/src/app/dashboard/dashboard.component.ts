@@ -141,13 +141,13 @@ export class DashboardComponent implements OnInit {
 
           let colorAdjustments = '#dc3545';
           if (difficultyChange >= 0) {
-            colorAdjustments = '#299435';
+            colorAdjustments = '#3bcc49';
           }
 
           let colorPreviousAdjustments = '#dc3545';
           if(previousRetarget){
             if (previousRetarget >= 0) {
-              colorPreviousAdjustments = '#299435';
+              colorPreviousAdjustments = '#3bcc49';
             }
             if (previousRetarget === 0) {
               colorPreviousAdjustments = '#ffffff66';
