@@ -62,6 +62,7 @@ export class DashboardComponent implements OnInit {
   mempoolTransactionsWeightPerSecondData: any;
   mempoolStats$: Observable<MempoolStatsData>;
   transactionsWeightPerSecondOptions: any;
+  isLoadingWebSocket$: Observable<boolean>;
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
@@ -73,6 +74,8 @@ export class DashboardComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+
+    this.isLoadingWebSocket$ = this.stateService.isLoadingWebSocket$;
     this.seoService.resetTitle();
     this.websocketService.want(['blocks', 'stats', 'mempool-blocks', 'live-2h-chart']);
     this.network$ = merge(of(''), this.stateService.networkChanged$);
@@ -113,7 +116,7 @@ export class DashboardComponent implements OnInit {
         };
       })
     );
-
+    
     this.difficultyEpoch$ = timer(0, 1000)
       .pipe(
         switchMap(() => combineLatest([
@@ -141,13 +144,13 @@ export class DashboardComponent implements OnInit {
 
           let colorAdjustments = '#dc3545';
           if (difficultyChange >= 0) {
-            colorAdjustments = '#299435';
+            colorAdjustments = '#3bcc49';
           }
 
           let colorPreviousAdjustments = '#dc3545';
           if(previousRetarget){
             if (previousRetarget >= 0) {
-              colorPreviousAdjustments = '#299435';
+              colorPreviousAdjustments = '#3bcc49';
             }
             if (previousRetarget === 0) {
               colorPreviousAdjustments = '#ffffff66';

@@ -73,11 +73,12 @@
   .skeleton-loader {
     width: 100%;
     display: block;
-    margin: 9px auto;
     &:first-child {
       max-width: 90px;
+      margin: 15px auto 3px;
     }
     &:last-child {
+      margin: 10px auto 3px;
       max-width: 55px;
     }
   }
