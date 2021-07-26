@@ -3,12 +3,31 @@ name: Cypress Tests
 on: [push]
 
 jobs:
-  cypress-chrome:
-    runs-on: ubuntu-latest
+  cypress:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        containers: [1, 2, 3, 4, 5]
+        os: ["ubuntu-latest", "windows-latest"]
+        browser: [chrome, firefox, edge]
+        exclude:
+          - os: ubuntu-latest
+            browser: edge
+          - os: windows-latest
+            browser: firefox
+          - os: windows-latest
+            browser: chrome
+        include:
+          - browser: firefox
+            container:
+              image: cypress/browsers:node14.17.0-chrome88-ff89
+              options: --user 1001
+    name: E2E tests on ${{ matrix.browser }} - ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Chrome Browser Tests
+      - name: ${{ matrix.browser }} browser tests
         uses: cypress-io/github-action@v2
         with:
           working-directory: frontend
@@ -17,50 +36,10 @@ jobs:
           wait-on: 'http://localhost:4200'
           wait-on-timeout: 120
           record: true
-          browser: chrome
-        env:
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
-          DEBUG: 'cypress:*'
-  cypress-firefox:
-    runs-on: ubuntu-latest
-    container:
-      image: cypress/browsers:node14.17.0-chrome88-ff89
-      options: --user 1001
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Firefox Browser Tests
-        uses: cypress-io/github-action@v2
-        with:
-          working-directory: frontend
-          build: npm run config:defaults
-          start: npm run start:local-prod
-          wait-on: 'http://localhost:4200'
-          wait-on-timeout: 120
-          record: true
-          browser: firefox
-        env:
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
-          DEBUG: 'cypress:*'
-  cypress-edge:
-    runs-on: windows-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Edge Browser Tests
-        uses: cypress-io/github-action@v2
-        with:
-          working-directory: frontend
-          build: npm run config:defaults
-          start: npm run start:local-prod
-          wait-on: 'http://localhost:4200'
-          wait-on-timeout: 120
-          record: true
-          browser: edge
+          parallel: true
+          group: Tests on ${{ matrix.browser }}
+          browser: ${{ matrix.browser }}
+          ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
