@@ -23,24 +23,24 @@ jobs:
               image: cypress/browsers:node14.17.0-chrome88-ff89
               options: --user 1001
     name: E2E on Node v${{ matrix.node }}
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v2
-        - name: ${{ matrix.browser }} browser tests
-          uses: cypress-io/github-action@v2
-          with:
-            working-directory: frontend
-            build: npm run config:defaults
-            start: npm run start:local-prod
-            wait-on: 'http://localhost:4200'
-            wait-on-timeout: 120
-            record: true
-            parallel: true
-            group: Tests on ${{ matrix.browser }}
-            browser: ${{ matrix.browser }}
-            ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
-          env:
-            CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
-            DEBUG: 'cypress:*'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: ${{ matrix.browser }} browser tests
+        uses: cypress-io/github-action@v2
+        with:
+          working-directory: frontend
+          build: npm run config:defaults
+          start: npm run start:local-prod
+          wait-on: 'http://localhost:4200'
+          wait-on-timeout: 120
+          record: true
+          parallel: true
+          group: Tests on ${{ matrix.browser }}
+          browser: ${{ matrix.browser }}
+          ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+          DEBUG: 'cypress:*'
