@@ -9,15 +9,8 @@ jobs:
       fail-fast: false
       matrix:
         containers: [1, 2, 3, 4, 5]
-        os: ["ubuntu-latest", "windows-latest"]
-        browser: [chrome, firefox, edge]
-        exclude:
-          - os: ubuntu-latest
-            browser: edge
-          - os: windows-latest
-            browser: firefox
-          - os: windows-latest
-            browser: chrome
+        os: ["ubuntu-latest"]
+        browser: [chrome, firefox]
         include:
           - browser: firefox
             container:
