@@ -190,3 +190,5 @@ If everything went okay you should see the beautiful mempool :grin:
 
 If you get stuck on "loading blocks", this means the websocket can't connect.
 Check your nginx proxy setup, firewalls, etc. and open an issue if you need help.
+
+.
