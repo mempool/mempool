@@ -24,6 +24,7 @@ interface EpochProgress {
   remainingBlocks: number;
   newDifficultyHeight: number;
   colorAdjustments: string;
+  colorPreviousAdjustments: string;
   timeAvg: string;
   remainingTime: number;
   previousRetarget: number;
@@ -143,18 +144,40 @@ export class DashboardComponent implements OnInit {
             colorAdjustments = '#299435';
           }
 
+          let colorPreviousAdjustments = '#dc3545';
+          if(previousRetarget){
+            if (previousRetarget >= 0) {
+              colorPreviousAdjustments = '#299435';
+            }
+            if (previousRetarget === 0) {
+              colorPreviousAdjustments = '#ffffff66';
+            }
+          }else{
+            colorPreviousAdjustments = '#ffffff66';
+          }
+
+
           const timeAvgDiff = difficultyChange * 0.1;
 
           let timeAvgMins = 10;
-          if (timeAvgDiff > 0 ){
-            timeAvgMins -= Math.abs(timeAvgDiff);
-          } else {
-            timeAvgMins += Math.abs(timeAvgDiff);
+          if(timeAvgDiff > timeAvgDiff){
+            if (timeAvgDiff > 0){
+              timeAvgMins -= Math.abs(timeAvgDiff);
+            } else {
+              timeAvgMins += Math.abs(timeAvgDiff);
+            }
           }
           const remainingBlocks = 2016 - blocksInEpoch;
           const nowMilliseconds = now * 1000;
           const timeAvgMilliseconds = timeAvgMins * 60 * 1000;
           const remainingBlocsMilliseconds = remainingBlocks * timeAvgMilliseconds;
+
+          if(difficultyChange > 300) {
+            difficultyChange = 300;
+          }
+          if(difficultyChange < -75){
+            difficultyChange = -75;
+          }
 
           return {
             base: base + '%',
@@ -163,10 +186,11 @@ export class DashboardComponent implements OnInit {
             remainingBlocks,
             timeAvg: timeAvgMins.toFixed(0),
             colorAdjustments,
+            colorPreviousAdjustments,
             blocksInEpoch,
             newDifficultyHeight: block.height + remainingBlocks,
             remainingTime: remainingBlocsMilliseconds + nowMilliseconds,
-            previousRetarget
+            previousRetarget: previousRetarget ? previousRetarget : 0
           };
         })
       );
