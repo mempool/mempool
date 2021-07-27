@@ -69,7 +69,7 @@ export class BisqDashboardComponent implements OnInit {
         const newTickers = [];
         for (const t in tickers) {
 
-          if (!this.stateService.env.OFFICIAL_BISQ_MARKETS) {
+          if (this.stateService.env.BASE_MODULE !== 'bisq') {
             const pair = t.split('_');
             if (pair[1] === 'btc' && this.allowCryptoCoins.indexOf(pair[0]) === -1) {
               continue;
@@ -106,7 +106,7 @@ export class BisqDashboardComponent implements OnInit {
     ])
     .pipe(
       map(([trades, markets]) => {
-        if (!this.stateService.env.OFFICIAL_BISQ_MARKETS) {
+        if (this.stateService.env.BASE_MODULE !== 'bisq') {
           trades = trades.filter((trade) => {
             const pair = trade.market.split('_');
             return !(pair[1] === 'btc' && this.allowCryptoCoins.indexOf(pair[0]) === -1);

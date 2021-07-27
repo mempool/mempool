@@ -21,6 +21,16 @@ try {
   }
 }
 
+const indexFilePath = configContent.BASE_MODULE ? 'src/index.' + configContent.BASE_MODULE + '.html' : 'src/index.mempool.html';
+
+try {
+  fs.copyFileSync(indexFilePath, 'src/index.html');
+  console.log('Copied ' + indexFilePath + ' to src/index.html');
+} catch (e) {
+  console.log('Error copying the index file');
+  throw new Error(e);
+}
+
 try {
   const packageJson = fs.readFileSync('package.json');
   packetJsonVersion = JSON.parse(packageJson).version;

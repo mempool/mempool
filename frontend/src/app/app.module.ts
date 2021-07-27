@@ -22,6 +22,7 @@ import { AddressLabelsComponent } from './components/address-labels/address-labe
 import { MempoolBlocksComponent } from './components/mempool-blocks/mempool-blocks.component';
 import { MasterPageComponent } from './components/master-page/master-page.component';
 import { BisqMasterPageComponent } from './components/bisq-master-page/bisq-master-page.component';
+import { LiquidMasterPageComponent } from './components/liquid-master-page/liquid-master-page.component';
 import { AboutComponent } from './components/about/about.component';
 import { TelevisionComponent } from './components/television/television.component';
 import { StatisticsComponent } from './components/statistics/statistics.component';
@@ -60,6 +61,7 @@ import { SponsorComponent } from './components/sponsor/sponsor.component';
     AboutComponent,
     MasterPageComponent,
     BisqMasterPageComponent,
+    LiquidMasterPageComponent,
     TelevisionComponent,
     BlockchainComponent,
     StartComponent,
