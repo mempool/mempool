@@ -3885,9 +3885,8 @@
         <note from="description" priority="1">TX Fee Rating is Warning</note>
         <note from="meaning" priority="1">tx-fee-rating.overpaid.warning</note>
       </trans-unit>
-      <trans-unit datatype="html" id="4a2866b06cff4db4aea54b19836652dfd45e30aa">
-        <source>Fee Estimates</source>
-        <target>Siirtokulu arviot</target>
+      <trans-unit datatype="html" id="86d26b45470e43b409e589517922276109138e87">
+        <source>Transaction Fees</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">6,9</context>
@@ -3896,7 +3895,7 @@
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">33,36</context>
         </context-group>
-        <note from="description" priority="1">fees-box.fee-estimates</note>
+        <note from="description" priority="1">fees-box.transaction-fees</note>
       </trans-unit>
       <trans-unit datatype="html" id="e1139ea570985b3f114e18876f09fd7223429983">
         <source>Latest blocks</source>
@@ -4022,7 +4021,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">238,241</context>
+          <context context-type="linenumber">255,258</context>
         </context-group>
         <note from="description" priority="1">difficulty-box.remaining</note>
       </trans-unit>
@@ -4035,29 +4034,28 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">245,248</context>
+          <context context-type="linenumber">262,265</context>
         </context-group>
         <note from="description" priority="1">difficulty-box.estimate</note>
       </trans-unit>
-      <trans-unit datatype="html" id="983c4c0b344f9233566599573cb1200a8b6073a7">
-        <source>Previous: <x equiv-text="{{epochData.previousRetarget &gt; 0 ? '+' : ''}}" id="INTERPOLATION"/><x equiv-text="{{ epochData.previousRetarget | number: '1.2-2' }}" id="INTERPOLATION_1"/> %</source>
-        <target>Edellinen:<x equiv-text="{{epochData.previousRetarget &gt; 0 ? '+' : ''}}" id="INTERPOLATION"/><x equiv-text="{{ epochData.previousRetarget | number: '1.2-2' }}" id="INTERPOLATION_1"/>%</target>
+      <trans-unit datatype="html" id="680d5c75b7fd8d37961083608b9fcdc4167b4c43">
+        <source>Previous</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">219,220</context>
+          <context context-type="linenumber">228,229</context>
         </context-group>
-        <note from="description" priority="1">difficulty-box.previous-retarget</note>
+        <note from="description" priority="1">difficulty-box.previous</note>
       </trans-unit>
       <trans-unit datatype="html" id="5db469cd0357e5f578b85a996f7e99c9e4148ff5">
         <source>Current Period</source>
         <target>Nykyinen jakso</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">222,223</context>
+          <context context-type="linenumber">239,240</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">252,255</context>
+          <context context-type="linenumber">269,272</context>
         </context-group>
         <note from="description" priority="1">difficulty-box.current-period</note>
       </trans-unit>
