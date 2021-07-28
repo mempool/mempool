@@ -1,4 +1,3 @@
-<ng-container *ngIf="{ val: network$ | async } as network">
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
   <a class="navbar-brand" [routerLink]="['/' | relativeUrl]" style="position: relative;">
@@ -11,8 +10,22 @@
     </ng-container>
   </a>
 
+  <div ngbDropdown display="dynamic" class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED">
+    <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split" aria-haspopup="true">
+      <img src="./resources/liquid-logo.png" style="width: 25px; height: 25px;" class="mr-1">
+    </button>
+    <div ngbDropdownMenu>
+      <a href="https://mempool.space" ngbDropdownItem class="mainnet"><img src="./resources/bitcoin-logo.png" style="width: 30px;" class="mr-1"> Mainnet</a>
+      <a href="https://mempool.space/signet" ngbDropdownItem *ngIf="env.SIGNET_ENABLED" class="signet"><img src="./resources/signet-logo.png" style="width: 30px;" class="mr-1"> Signet</a>
+      <a href="https://mempool.space/testnet" ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet"><img src="./resources/testnet-logo.png" style="width: 30px;" class="mr-1"> Testnet</a>
+      <h6 class="dropdown-header" i18n="master-page.layer2-networks-header">Layer 2 Networks</h6>
+      <a href="https://bisq.markets" ngbDropdownItem class="mainnet"><img src="./resources/bisq-logo.png" style="width: 30px;" class="mr-1"> Bisq</a>
+      <button ngbDropdownItem class="liquid active" routerLink="/"><img src="./resources/liquid-logo.png" style="width: 30px;" class="mr-1"> Liquid</button>
+    </div>
+  </div>
+
   <div class="navbar-collapse" id="navbarCollapse">
-    <ul class="navbar-nav {{ network.val }}">
+    <ul class="navbar-nav liquid">
       <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
         <a class="nav-link" [routerLink]="['/' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'tachometer-alt']" [fixedWidth]="true" i18n-title="master-page.dashboard" title="Dashboard"></fa-icon></a>
       </li>
@@ -45,5 +58,3 @@
 <router-outlet></router-outlet>
 
 <br>
-
-</ng-container>

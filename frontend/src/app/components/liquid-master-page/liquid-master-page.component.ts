@@ -9,7 +9,6 @@ import { Observable} from 'rxjs';
 })
 export class LiquidMasterPageComponent implements OnInit {
   env: Env;
-  network$: Observable<string>;
   connectionState$: Observable<number>;
   navCollapsed = false;
   isMobile = window.innerWidth <= 767.98;
