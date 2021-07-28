@@ -133,6 +133,13 @@ describe('Liquid', () => {
             cy.get('.error-unblinded' ).contains('Error: Invalid blinding data.');
         });
 
+        it('shows asset peg in/out and burn transactions', () => {
+            cy.visit('/liquid/asset/6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d');
+            cy.waitForSkeletonGone();
+            cy.get('#table-tx-vout tr').not('.assetBox');
+            cy.get('#table-tx-vin tr').not('.assetBox');
+        });
+
         it('prevents regressing issue #644', () => {
             cy.visit('/liquid/tx/393b890966f305e7c440fcfb12a13f51a7a9011cc59ff5f14f6f93214261bd82');
             cy.waitForSkeletonGone();
