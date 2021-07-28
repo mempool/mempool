@@ -43,6 +43,11 @@ export class LanguageSelectorComponent implements OnInit {
     try {
       document.cookie = `lang=${language}; expires=Thu, 18 Dec 2050 12:00:00 UTC; path=/`;
     } catch (e) { }
-    this.document.location.href = `/${language}/${this.stateService.network}`;
+    
+    if (this.stateService.env.BASE_MODULE === 'mempool') {
+      this.document.location.href = `/${language}/${this.stateService.network}`;
+    } else {
+      this.document.location.href = `/${language}}`;
+    }
   }
 }

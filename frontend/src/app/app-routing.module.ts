@@ -358,6 +358,22 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
         path: 'api',
         component: ApiDocsComponent,
       },
+      {
+        path: 'about',
+        component: AboutComponent,
+      },
+      {
+        path: 'terms-of-service',
+        component: TermsOfServiceComponent
+      },
+      {
+        path: 'trademark-policy',
+        component: TrademarkPolicyComponent
+      },
+      {
+        path: 'sponsor',
+        component: SponsorComponent,
+      },
     ],
   },
   {

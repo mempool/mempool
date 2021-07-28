@@ -10,6 +10,20 @@
     </ng-container>
   </a>
 
+  <div ngbDropdown display="dynamic" class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED">
+    <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split" aria-haspopup="true">
+      <img src="./resources/bisq-logo.png" style="width: 25px; height: 25px;" class="mr-1">
+    </button>
+    <div ngbDropdownMenu>
+      <a href="https://mempool.space" ngbDropdownItem class="mainnet"><img src="./resources/bitcoin-logo.png" style="width: 30px;" class="mr-1"> Mainnet</a>
+      <a href="https://mempool.space/signet" ngbDropdownItem *ngIf="env.SIGNET_ENABLED" class="signet"><img src="./resources/signet-logo.png" style="width: 30px;" class="mr-1"> Signet</a>
+      <a href="https://mempool.space/testnet" ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet"><img src="./resources/testnet-logo.png" style="width: 30px;" class="mr-1"> Testnet</a>
+      <h6 class="dropdown-header" i18n="master-page.layer2-networks-header">Layer 2 Networks</h6>
+      <button ngbDropdownItem class="mainnet active" routerLink="/"><img src="./resources/bisq-logo.png" style="width: 30px;" class="mr-1"> Bisq</button>
+      <a href="https://liquid.network" ngbDropdownItem *ngIf="env.LIQUID_ENABLED" class="liquid"><img src="./resources/liquid-logo.png" style="width: 30px;" class="mr-1"> Liquid</a>
+    </div>
+  </div>
+
   <div class="navbar-collapse" id="navbarCollapse">
     <ul class="navbar-nav">
       <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
