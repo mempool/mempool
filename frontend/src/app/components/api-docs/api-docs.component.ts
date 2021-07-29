@@ -1181,7 +1181,7 @@ responseSample: `{
     }
 
     this.network$.subscribe((network) => {
-      this.active = (network === 'bisq' || network === 'liquid') ? 1 : 0;
+      this.active = (network === 'liquid') ? 1 : 0;
     });
   }
 
