@@ -72,28 +72,24 @@ describe('Mainnet', () => {
         });
     });
 
-    describe('tv mode', () => {
-        it('loads the tv screen - desktop', () => {
+    it('loads the tv screen - desktop', () => {
+        cy.viewport('macbook-16');
+        cy.visit('/');
+        cy.waitForSkeletonGone();
+        cy.get('li:nth-of-type(4) > a').click().then(() => {
             cy.viewport('macbook-16');
-            cy.visit('/');
-            cy.waitForSkeletonGone();
-            cy.get('li:nth-of-type(4) > a').click().then(() => {
-                cy.viewport('macbook-16');
-                cy.get('.chart-holder');
-                cy.get('.blockchain-wrapper').should('be.visible');
-                cy.get('#mempool-block-0').should('be.visible');
-            });
+            cy.get('.chart-holder');
+            cy.get('.blockchain-wrapper').should('be.visible');
+            cy.get('#mempool-block-0').should('be.visible');
         });
+    });
 
-        it('loads the tv screen - mobile', () => {
-            cy.visit('/');
-            cy.waitForSkeletonGone();
-            cy.get('li:nth-of-type(4) > a').click().then(() => {
-                cy.viewport('iphone-6');
-                cy.get('.chart-holder');
-                cy.get('.blockchain-wrapper').should('not.be.visible');
-            });
-        });
+    it('loads the tv screen - mobile', () => {
+        cy.viewport('iphone-6');
+        cy.visit('/tv');
+        cy.waitForSkeletonGone();
+        cy.get('.chart-holder');
+        cy.get('.blockchain-wrapper').should('be.visible');
     });
 
     it('loads the api screen', () => {
