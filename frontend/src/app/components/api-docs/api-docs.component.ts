@@ -1179,6 +1179,10 @@ responseSample: `{
     if (document.location.port !== '') {
       this.hostname = this.hostname + ':' + document.location.port;
     }
+
+    this.network$.subscribe((network) => {
+      this.active = (network === 'bisq' || network === 'liquid') ? 1 : 0;
+    });
   }
 
 }
