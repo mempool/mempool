@@ -107,7 +107,7 @@ export class AssetsComponent implements OnInit {
         const start = (this.page - 1) * this.itemsPerPage;
         if (searchText.length ) {
           const filteredAssets = this.assetsCache.filter((asset) => asset.name.toLowerCase().indexOf(searchText.toLowerCase()) > -1
-            || asset.ticker.toLowerCase().indexOf(searchText.toLowerCase()) > -1);
+            || (asset.ticker || '').toLowerCase().indexOf(searchText.toLowerCase()) > -1);
           this.assets = filteredAssets;
           return filteredAssets.slice(start, this.itemsPerPage + start);
         } else {
