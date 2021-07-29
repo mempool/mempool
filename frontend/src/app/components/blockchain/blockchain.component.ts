@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { StateService } from 'src/app/services/state.service';
-import { Subscription, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-blockchain',
@@ -10,6 +10,7 @@ import { Subscription, Observable } from 'rxjs';
 })
 export class BlockchainComponent implements OnInit {
   isLoading$: Observable<boolean>;
+  network: string;
 
   constructor(
     private stateService: StateService,
@@ -17,5 +18,6 @@ export class BlockchainComponent implements OnInit {
 
   ngOnInit() {
     this.isLoading$ = this.stateService.isLoadingWebSocket$;
+    this.network = this.stateService.network;
   }
 }

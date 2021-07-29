@@ -26,9 +26,16 @@
   top: 75px;
 }
 
+.position-container.liquid {
+  left: 15%;
+}
+
 @media (max-width: 767.98px) {
   .position-container {
     left: 95%;
+  }
+  .position-container.liquid {
+    left: 50%;
   }
   .position-container.loading {
     left: 50%;

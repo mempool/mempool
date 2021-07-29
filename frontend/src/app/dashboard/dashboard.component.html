@@ -2,7 +2,7 @@
 <div class="container-xl dashboard-container">
   <div class="row row-cols-1 row-cols-md-2" *ngIf="{ value: (mempoolInfoData$ | async) } as mempoolInfoData">
     <ng-template [ngIf]="collapseLevel === 'three'" [ngIfElse]="expanded">
-      <div class="col card-wrapper">
+      <div class="col card-wrapper" *ngIf="(network$ | async) !== 'liquid'">
         <div class="main-title" i18n="fees-box.transaction-fees">Transaction Fees</div>
         <div class="card">
           <div class="card-body">
@@ -24,12 +24,12 @@
           </div>
         </div>
       </div>
-      <div class="col" *ngIf="(network$ | async) !== 'liquid'; else emptyBlock">
+      <div class="col" *ngIf="(network$ | async) !== 'liquid'">
         <ng-container *ngTemplateOutlet="difficultyEpoch"></ng-container>
       </div>
     </ng-template>
     <ng-template #expanded>
-      <div class="col card-wrapper">
+      <div class="col card-wrapper" *ngIf="(network$ | async) !== 'liquid'">
         <div class="main-title" i18n="fees-box.transaction-fees">Transaction Fees</div>
         <div class="card">
           <div class="card-body">
@@ -37,7 +37,7 @@
           </div>
         </div>
       </div>
-      <div class="col" *ngIf="(network$ | async) !== 'liquid'; else emptyBlock">
+      <div class="col" *ngIf="(network$ | async) !== 'liquid'">
         <ng-container *ngTemplateOutlet="difficultyEpoch"></ng-container>
       </div>
       <div class="col">
