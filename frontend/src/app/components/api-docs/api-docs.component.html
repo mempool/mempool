@@ -5,7 +5,7 @@
   </div>
 
   <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
-    <li *ngIf="network.val !== 'bisq'" [ngbNavItem]="0">
+    <li *ngIf="network.val !== 'bisq' && network.val !== 'liquid'" [ngbNavItem]="0">
       <a ngbNavLink i18n="api-docs.tab.general|API Docs tab for General">General</a>
       <ng-template ngbNavContent>
         <ngb-accordion [closeOthers]="true" animated="true" type="dark">
