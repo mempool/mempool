@@ -60,7 +60,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
         }
 
         this.blocks.unshift(block);
-        this.blocks = this.blocks.slice(0, 8);
+        this.blocks = this.blocks.slice(0, this.stateService.env.KEEP_BLOCKS_AMOUNT);
 
         if (this.blocksFilled && !this.tabHidden) {
           block.stage = block.matchRate >= 66 ? 1 : 2;
