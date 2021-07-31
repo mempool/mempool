@@ -76,7 +76,7 @@ class MempoolBlocks {
     let blockSize = 0;
     let transactions: TransactionExtended[] = [];
     transactionsSorted.forEach((tx) => {
-      if (blockVSize + tx.vsize <= 1000000 || mempoolBlocks.length === MempoolBlocks.DEFAULT_PROJECTED_BLOCKS_AMOUNT - 1) {
+      if (blockVSize + tx.weight <= config.MEMPOOL.BLOCK_WEIGHT_UNITS || mempoolBlocks.length === MempoolBlocks.DEFAULT_PROJECTED_BLOCKS_AMOUNT - 1) {
         blockVSize += tx.vsize;
         blockSize += tx.size;
         transactions.push(tx);

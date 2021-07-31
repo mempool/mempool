@@ -11,6 +11,7 @@ interface IConfig {
     CACHE_DIR: string;
     CLEAR_PROTECTION_MINUTES: number;
     RECOMMENDED_FEE_PERCENTILE: number;
+    BLOCK_WEIGHT_UNITS: number;
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -69,6 +70,7 @@ const defaults: IConfig = {
     'CACHE_DIR': './cache',
     'CLEAR_PROTECTION_MINUTES': 20,
     'RECOMMENDED_FEE_PERCENTILE': 50,
+    'BLOCK_WEIGHT_UNITS': 4000000,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',

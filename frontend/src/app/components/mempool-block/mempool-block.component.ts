@@ -21,7 +21,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private stateService: StateService,
+    public stateService: StateService,
     private seoService: SeoService,
     private websocketService: WebsocketService,
   ) { }
@@ -66,7 +66,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
   }
 
   getOrdinal(mempoolBlock: MempoolBlock): string {
-    const blocksInBlock = Math.ceil(mempoolBlock.blockVSize / 1000000);
+    const blocksInBlock = Math.ceil(mempoolBlock.blockVSize / this.stateService.blockVSize);
     if (this.mempoolBlockIndex === 0) {
       return $localize`:@@mempool-block.next.block:Next block`;
     } else if (this.mempoolBlockIndex === this.stateService.env.KEEP_BLOCKS_AMOUNT - 1 && blocksInBlock > 1) {
