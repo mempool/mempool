@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, Input } from '@angular/core';
-import { Subscription, Observable } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Block } from 'src/app/interfaces/electrs.interface';
 import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
@@ -11,8 +11,7 @@ import { Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlockchainBlocksComponent implements OnInit, OnDestroy {
-  @Input() isLoading$: Observable<boolean>;
-
+  
   network = '';
   blocks: Block[] = this.mountEmptyBlocks();
   markHeight: number;

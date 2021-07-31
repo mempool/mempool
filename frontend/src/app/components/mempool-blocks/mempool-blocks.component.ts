@@ -13,7 +13,6 @@ import { feeLevels, mempoolFeeColors } from 'src/app/app.constants';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MempoolBlocksComponent implements OnInit, OnDestroy {
-  @Input() isLoading$: Observable<boolean>;
 
   mempoolBlocks: MempoolBlock[] = this.mountEmptyBlocks();
   mempoolBlocks$: Observable<MempoolBlock[]>;
@@ -31,6 +30,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   blockPadding = 30;
   arrowVisible = false;
   tabHidden = false;
+  loadingMempoolBlocks = true;
 
   rightPosition = 0;
   transition = '2s';
@@ -106,6 +106,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
             timeAvgMins += Math.abs(timeAvgDiff);
           }
 
+          this.loadingMempoolBlocks = false;
           return timeAvgMins * 60 * 1000;
         })
       );
