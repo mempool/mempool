@@ -16,7 +16,7 @@
             <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
             <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
           </div>
-          <div class="time-difference" *ngIf="projectedBlock.blockVSize <= 1000000; else mergedBlock">
+          <div class="time-difference" *ngIf="projectedBlock.blockVSize <= stateService.blockVSize; else mergedBlock">
             <ng-template [ngIf]="network === 'liquid'" [ngIfElse]="timeDiffMainnet">
               <app-time-until [time]="(1 * i) + now + 61000" [fastRender]="false" [fixedRender]="true"></app-time-until>
             </ng-template>
@@ -26,7 +26,7 @@
           </div>
           <ng-template #mergedBlock>
             <div class="time-difference">
-              <b>(<ng-container *ngTemplateOutlet="blocksPlural; context: {$implicit: projectedBlock.blockVSize / 1000000 | ceil }"></ng-container>)</b>
+              <b>(<ng-container *ngTemplateOutlet="blocksPlural; context: {$implicit: projectedBlock.blockVSize / stateService.blockVSize | ceil }"></ng-container>)</b>
               <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
             </div>
           </ng-template>

@@ -28,6 +28,7 @@ export interface Env {
   NGINX_PROTOCOL?: string;
   NGINX_HOSTNAME?: string;
   NGINX_PORT?: string;
+  BLOCK_WEIGHT_UNITS: number;
   GIT_COMMIT_HASH: string;
   PACKAGE_JSON_VERSION: string;
 }
@@ -45,6 +46,7 @@ const defaultEnv: Env = {
   'NGINX_PROTOCOL': 'http',
   'NGINX_HOSTNAME': '127.0.0.1',
   'NGINX_PORT': '80',
+  'BLOCK_WEIGHT_UNITS': 4000000,
   'GIT_COMMIT_HASH': '',
   'PACKAGE_JSON_VERSION': '',
 };
@@ -55,6 +57,7 @@ const defaultEnv: Env = {
 export class StateService {
   isBrowser: boolean = isPlatformBrowser(this.platformId);
   network = '';
+  blockVSize: number;
   env: Env;
   latestBlockHeight = 0;
 
@@ -113,6 +116,8 @@ export class StateService {
       this.network = this.env.BASE_MODULE;
       this.networkChanged$.next(this.env.BASE_MODULE);
     }
+
+    this.blockVSize = this.env.BLOCK_WEIGHT_UNITS / 4;
   }
 
   setNetworkBasedonUrl(url: string) {

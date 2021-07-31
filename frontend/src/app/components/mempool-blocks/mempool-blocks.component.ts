@@ -44,7 +44,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private stateService: StateService,
+    public stateService: StateService,
     private cd: ChangeDetectorRef,
   ) { }
 
@@ -202,7 +202,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   }
 
   getStyleForMempoolBlock(mempoolBlock: MempoolBlock, index: number) {
-    const emptyBackgroundSpacePercentage = Math.max(100 - mempoolBlock.blockVSize / 1000000 * 100, 0);
+    const emptyBackgroundSpacePercentage = Math.max(100 - mempoolBlock.blockVSize / this.stateService.blockVSize * 100, 0);
     const usedBlockSpace = 100 - emptyBackgroundSpacePercentage;
     const backgroundGradients = [`repeating-linear-gradient(to right,  #554b45, #554b45 ${emptyBackgroundSpacePercentage}%`];
     const gradientColors = [];
@@ -262,7 +262,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
           const chunkPositionOffset = blockLocation * feeRangeChunkSize;
           const feePosition = feeRangeChunkSize * feeRangeIndex + chunkPositionOffset;
 
-          const blockedFilledPercentage = (block.blockVSize > 1000000 ? 1000000 : block.blockVSize) / 1000000;
+          const blockedFilledPercentage = (block.blockVSize > this.stateService.blockVSize ? this.stateService.blockVSize : block.blockVSize) / this.stateService.blockVSize;
           const arrowRightPosition = txInBlockIndex * (this.blockWidth + this.blockPadding)
             + ((1 - feePosition) * blockedFilledPercentage * this.blockWidth);
 
