@@ -57,9 +57,9 @@ class Blocks {
         const previousPeriodBlockHash = await bitcoinApi.$getBlockHash(blockHeightTip - heightDiff - 2016);
         const previousPeriodBlock = await bitcoinApi.$getBlock(previousPeriodBlockHash);
         this.previousDifficultyRetarget = (block.difficulty - previousPeriodBlock.difficulty) / previousPeriodBlock.difficulty * 100;
-        logger.debug(`Updating difficulty adjustment data.`);
+        logger.debug(`Initial difficulty adjustment data set.`);
       } else {
-        logger.debug(`Blockchain headers (${blockchainInfo.headers}) and blocks (${blockchainInfo.blocks}) not sin sync.`);
+        logger.debug(`Blockchain headers (${blockchainInfo.headers}) and blocks (${blockchainInfo.blocks}) not in sync. Waiting...`);
       }
     }
 
