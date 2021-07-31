@@ -8,7 +8,6 @@ import diskCache from './disk-cache';
 import transactionUtils from './transaction-utils';
 
 class Blocks {
-  private static INITIAL_BLOCK_AMOUNT = 8;
   private blocks: BlockExtended[] = [];
   private currentBlockHeight = 0;
   private currentDifficulty = 0;
@@ -34,14 +33,14 @@ class Blocks {
     const blockHeightTip = await bitcoinApi.$getBlockHeightTip();
 
     if (this.blocks.length === 0) {
-      this.currentBlockHeight = blockHeightTip - Blocks.INITIAL_BLOCK_AMOUNT;
+      this.currentBlockHeight = blockHeightTip - config.MEMPOOL.INITIAL_BLOCKS_AMOUNT;
     } else {
       this.currentBlockHeight = this.blocks[this.blocks.length - 1].height;
     }
 
-    if (blockHeightTip - this.currentBlockHeight > Blocks.INITIAL_BLOCK_AMOUNT * 2) {
-      logger.info(`${blockHeightTip - this.currentBlockHeight} blocks since tip. Fast forwarding to the ${Blocks.INITIAL_BLOCK_AMOUNT} recent blocks`);
-      this.currentBlockHeight = blockHeightTip - Blocks.INITIAL_BLOCK_AMOUNT;
+    if (blockHeightTip - this.currentBlockHeight > config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 2) {
+      logger.info(`${blockHeightTip - this.currentBlockHeight} blocks since tip. Fast forwarding to the ${config.MEMPOOL.INITIAL_BLOCKS_AMOUNT} recent blocks`);
+      this.currentBlockHeight = blockHeightTip - config.MEMPOOL.INITIAL_BLOCKS_AMOUNT;
     }
 
     if (!this.lastDifficultyAdjustmentTime) {
@@ -114,8 +113,8 @@ class Blocks {
       }
 
       this.blocks.push(blockExtended);
-      if (this.blocks.length > Blocks.INITIAL_BLOCK_AMOUNT * 4) {
-        this.blocks = this.blocks.slice(-Blocks.INITIAL_BLOCK_AMOUNT * 4);
+      if (this.blocks.length > config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4) {
+        this.blocks = this.blocks.slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4);
       }
 
       if (this.newBlockCallbacks.length) {

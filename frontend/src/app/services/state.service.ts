@@ -29,6 +29,7 @@ export interface Env {
   NGINX_HOSTNAME?: string;
   NGINX_PORT?: string;
   BLOCK_WEIGHT_UNITS: number;
+  MEMPOOL_BLOCKS_AMOUNT: number;
   GIT_COMMIT_HASH: string;
   PACKAGE_JSON_VERSION: string;
 }
@@ -47,6 +48,7 @@ const defaultEnv: Env = {
   'NGINX_HOSTNAME': '127.0.0.1',
   'NGINX_PORT': '80',
   'BLOCK_WEIGHT_UNITS': 4000000,
+  'MEMPOOL_BLOCKS_AMOUNT': 8,
   'GIT_COMMIT_HASH': '',
   'PACKAGE_JSON_VERSION': '',
 };

@@ -12,6 +12,8 @@ interface IConfig {
     CLEAR_PROTECTION_MINUTES: number;
     RECOMMENDED_FEE_PERCENTILE: number;
     BLOCK_WEIGHT_UNITS: number;
+    INITIAL_BLOCKS_AMOUNT: number;
+    MEMPOOL_BLOCKS_AMOUNT: number;
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -71,6 +73,8 @@ const defaults: IConfig = {
     'CLEAR_PROTECTION_MINUTES': 20,
     'RECOMMENDED_FEE_PERCENTILE': 50,
     'BLOCK_WEIGHT_UNITS': 4000000,
+    'INITIAL_BLOCKS_AMOUNT': 8,
+    'MEMPOOL_BLOCKS_AMOUNT': 8,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',

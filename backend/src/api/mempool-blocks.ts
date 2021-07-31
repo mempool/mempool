@@ -4,7 +4,6 @@ import { Common } from './common';
 import config from '../config';
 
 class MempoolBlocks {
-  private static DEFAULT_PROJECTED_BLOCKS_AMOUNT = 8;
   private mempoolBlocks: MempoolBlockWithTransactions[] = [];
 
   constructor() {}
@@ -76,7 +75,7 @@ class MempoolBlocks {
     let blockSize = 0;
     let transactions: TransactionExtended[] = [];
     transactionsSorted.forEach((tx) => {
-      if (blockVSize + tx.weight <= config.MEMPOOL.BLOCK_WEIGHT_UNITS || mempoolBlocks.length === MempoolBlocks.DEFAULT_PROJECTED_BLOCKS_AMOUNT - 1) {
+      if (blockVSize + tx.weight <= config.MEMPOOL.BLOCK_WEIGHT_UNITS || mempoolBlocks.length === config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT - 1) {
         blockVSize += tx.vsize;
         blockSize += tx.size;
         transactions.push(tx);

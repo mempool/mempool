@@ -144,7 +144,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
           this.router.navigate([(this.network ? '/' + this.network : '') + '/mempool-block/', this.markIndex - 1]);
         } else {
           this.stateService.blocks$
-            .pipe(take(8))
+            .pipe(take(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT))
             .subscribe(([block]) => {
               if (this.stateService.latestBlockHeight === block.height) {
                 this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', block.id], { state: { data: { block } }});
@@ -275,8 +275,8 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
   mountEmptyBlocks() {
     const emptyBlocks = [];
-    const numberOfBlocks = 8;
-    for (let i = 0; i <= numberOfBlocks; i++) {
+    const numberOfBlocks = this.stateService.env.MEMPOOL_BLOCKS_AMOUNT;
+    for (let i = 0; i < numberOfBlocks; i++) {
       emptyBlocks.push({
         blockSize: 0,
         blockVSize: 0,
