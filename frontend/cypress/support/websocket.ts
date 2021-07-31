@@ -70,11 +70,11 @@ export const emitMempoolInfo = ({
 			default:
 				win.mockSocket.send('{"action":"init"}');
 				win.mockSocket.send('{"action":"want","data":["blocks","stats","mempool-blocks","live-2h-chart"]}');
-				cy.readFile('cypress/fixtures/mainnet_mempoolInfo.json', 'ascii').then((fixture) => {
-					win.mockSocket.send(JSON.stringify(fixture));
-				});
 				win.mockSocket.send('{"conversions":{"USD":32365.338815782445}}');
 				cy.readFile('cypress/fixtures/mainnet_live2hchart.json', 'ascii').then((fixture) => {
+					win.mockSocket.send(JSON.stringify(fixture));
+				});
+				cy.readFile('cypress/fixtures/mainnet_mempoolInfo.json', 'ascii').then((fixture) => {
 					win.mockSocket.send(JSON.stringify(fixture));
 				});
 		}
