@@ -183,7 +183,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   }
   mountEmptyBlocks() {
     const emptyBlocks = [];
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < this.stateService.env.KEEP_BLOCKS_AMOUNT; i++) {
       emptyBlocks.push({
         id: '',
         height: 0,
