@@ -1,4 +1,4 @@
-import { emitMempoolInfo } from "../../support/websocket";
+import { emitMempoolInfo, emitWithoutMempoolInfo } from "../../support/websocket";
 
 describe('Mainnet', () => {
     beforeEach(() => {
@@ -51,6 +51,7 @@ describe('Mainnet', () => {
               loaded: true
             }
         });
+
         cy.get(':nth-child(1) > #bitcoin-block-0').should('not.exist');
         cy.get(':nth-child(2) > #bitcoin-block-0').should('not.exist');
         cy.get(':nth-child(3) > #bitcoin-block-0').should('not.exist');
