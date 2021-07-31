@@ -23,6 +23,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   blockStyles = [];
   interval: any;
   tabHidden = false;
+  loadingBlocks = false;
 
   arrowVisible = false;
   arrowLeftPx = 30;
@@ -53,6 +54,8 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
         if (this.blocks.some((b) => b.height === block.height)) {
           return;
         }
+
+        this.loadingBlocks = true;
 
         if (this.blocks.length && block.height !== this.blocks[0].height + 1) {
           this.blocks = [];
