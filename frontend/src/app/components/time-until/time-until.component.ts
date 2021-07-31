@@ -15,6 +15,7 @@ export class TimeUntilComponent implements OnInit, OnChanges, OnDestroy {
   @Input() time: number;
   @Input() fastRender = false;
   @Input() fixedRender = false;
+  @Input() forceFloorOnTimeIntervals: string[];
 
   constructor(
     private ref: ChangeDetectorRef,
@@ -67,10 +68,10 @@ export class TimeUntilComponent implements OnInit, OnChanges, OnDestroy {
     let counter: number;
     for (const i in this.intervals) {
       if (this.intervals.hasOwnProperty(i)) {
-        if (i === 'minute' || i === 'week') {
-          counter = Math.round(seconds / this.intervals[i]);
-        } else {
+        if (this.forceFloorOnTimeIntervals && this.forceFloorOnTimeIntervals.indexOf(i) > -1) {
           counter = Math.floor(seconds / this.intervals[i]);
+        } else {
+          counter = Math.round(seconds / this.intervals[i]);
         }
         const dateStrings = dates(counter);
         if (counter > 0) {

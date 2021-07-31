@@ -120,7 +120,7 @@
                           <app-time-until [time]="(60 * 1000 * txInBlockIndex) + now" [fastRender]="false" [fixedRender]="true"></app-time-until>
                         </ng-template>
                         <ng-template #timeEstimateDefault>
-                          <app-time-until *ngIf="(timeAvg$ | async) as timeAvg;" [time]="(timeAvg * txInBlockIndex) + now + timeAvg" [fastRender]="false" [fixedRender]="true"></app-time-until>
+                          <app-time-until *ngIf="(timeAvg$ | async) as timeAvg;" [time]="(timeAvg * txInBlockIndex) + now + timeAvg" [fastRender]="false" [fixedRender]="true" [forceFloorOnTimeIntervals]="['hour']"></app-time-until>
                         </ng-template>
                       </ng-template>
                     </ng-template>
