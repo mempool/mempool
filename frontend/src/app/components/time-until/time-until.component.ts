@@ -67,7 +67,7 @@ export class TimeUntilComponent implements OnInit, OnChanges, OnDestroy {
     let counter: number;
     for (const i in this.intervals) {
       if (this.intervals.hasOwnProperty(i)) {
-        if (i === 'minute') {
+        if (i === 'minute' || i === 'week') {
           counter = Math.round(seconds / this.intervals[i]);
         } else {
           counter = Math.floor(seconds / this.intervals[i]);
