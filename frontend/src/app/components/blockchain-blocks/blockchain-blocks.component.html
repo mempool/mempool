@@ -9,7 +9,7 @@
         <div class="fees">
           ~{{ block.medianFee | number:'1.0-0' }} <ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
         </div>
-        <div class="fee-span" *ngIf="block.feeRange !== undefined">
+        <div class="fee-span">
           {{ block.feeRange[1] | number:'1.0-0' }} - {{ block.feeRange[block.feeRange.length - 1] | number:'1.0-0' }} <ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
         </div>
         <div class="block-size" [innerHTML]="block.size | bytes: 2">&lrm;</div>
