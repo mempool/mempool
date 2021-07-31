@@ -82,25 +82,3 @@ export const emitMempoolInfo = ({
     cy.waitForSkeletonGone();
     return cy.get('#mempool-block-0');
 };
-
-
-export const emitWithoutMempoolInfo = ({
-	params
-}: { params?: any } = {}) => {
-	cy.window().then((win) => {
-		//TODO: Refactor to take into account different parameterized mocking scenarios
-		switch (params.network) {
-			//TODO: Use network specific mocks
-			case "signet":
-			case "testnet":
-			default:
-				win.mockSocket.send('{"action":"init"}');
-				win.mockSocket.send('{"action":"want","data":["blocks","stats","mempool-blocks","live-2h-chart"]}');
-				win.mockSocket.send('{"conversions":{"USD":32365.338815782445}}');
-				cy.readFile('cypress/fixtures/mainnet_live2hchart.json', 'ascii').then((fixture) => {
-					win.mockSocket.send(JSON.stringify(fixture));
-				});
-		}
-	});
-    return cy.get('#mempool-block-0');
-};

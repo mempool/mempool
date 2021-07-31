@@ -57,28 +57,6 @@ describe('Mainnet', () => {
         cy.get(':nth-child(3) > #bitcoin-block-0').should('not.exist');
     });
 
-    it('loads the dashboard without mempool info websocket', () => {
-        cy.mockMempoolSocket();
-        cy.visit("/");
-        cy.get(':nth-child(1) > #bitcoin-block-0').should('be.visible');
-        cy.get(':nth-child(2) > #bitcoin-block-0').should('be.visible');
-        cy.get(':nth-child(3) > #bitcoin-block-0').should('be.visible');
-        cy.get('#mempool-block-0').should('be.visible');
-        cy.get('#mempool-block-1').should('be.visible');
-        cy.get('#mempool-block-2').should('be.visible');
-
-        emitWithoutMempoolInfo({
-            'params': {
-              loaded: true
-            }
-        });
-
-        cy.get(':nth-child(1) > #bitcoin-block-0').should('be.visible');
-        cy.get(':nth-child(2) > #bitcoin-block-0').should('be.visible');
-        cy.get(':nth-child(3) > #bitcoin-block-0').should('be.visible');
-    });
-
-
     it('loads the blocks screen', () => {
         cy.visit('/');
         cy.waitForSkeletonGone();
