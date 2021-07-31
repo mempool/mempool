@@ -113,4 +113,46 @@ export namespace IBitcoinApi {
     status: 'invalid' | 'headers-only' | 'valid-headers' | 'valid-fork' | 'active';
   }
 
+  export interface BlockchainInfo {
+    chain: number;                   // (string) current network name as defined in BIP70 (main, test, regtest)
+    blocks: number;                  // (numeric) the current number of blocks processed in the server
+    headers: number;                 // (numeric) the current number of headers we have validated
+    bestblockhash: string,           // (string) the hash of the currently best block
+    difficulty: number;              // (numeric) the current difficulty
+    mediantime: number;              // (numeric) median time for the current best block
+    verificationprogress: number;    // (numeric) estimate of verification progress [0..1]
+    initialblockdownload: boolean;   // (bool) (debug information) estimate of whether this node is in Initial Block Download mode.
+    chainwork: string                // (string) total amount of work in active chain, in hexadecimal
+    size_on_disk: number;            // (numeric) the estimated size of the block and undo files on disk
+    pruned: number;                  // (boolean) if the blocks are subject to pruning
+    pruneheight: number;             // (numeric) lowest-height complete block stored (only present if pruning is enabled)
+    automatic_pruning: number;       // (boolean) whether automatic pruning is enabled (only present if pruning is enabled)
+    prune_target_size: number;       // (numeric) the target size used by pruning (only present if automatic pruning is enabled)
+    softforks: SoftFork[];           // (array) status of softforks in progress
+    bip9_softforks: { [name: string]: Bip9SoftForks[] } // (object) status of BIP9 softforks in progress
+    warnings: string;                // (string) any network and blockchain warnings.
+  }
+
+  interface SoftFork {
+    id: string;                      // (string) name of softfork
+    version: number;                 // (numeric) block version
+    reject: {                        // (object) progress toward rejecting pre-softfork blocks
+      status: boolean;               // (boolean) true if threshold reached
+    },
+  }
+  interface Bip9SoftForks {
+    status: number;                  // (string) one of defined, started, locked_in, active, failed
+    bit: number;                     // (numeric) the bit (0-28) in the block version field used to signal this softfork (only for started status)
+    startTime: number;               // (numeric) the minimum median time past of a block at which the bit gains its meaning
+    timeout: number;                 // (numeric) the median time past of a block at which the deployment is considered failed if not yet locked in
+    since: number;                   // (numeric) height of the first block to which the status applies
+    statistics: {                    // (object) numeric statistics about BIP9 signalling for a softfork (only for started status)
+      period: number;                // (numeric) the length in blocks of the BIP9 signalling period 
+      threshold: number;             // (numeric) the number of blocks with the version bit set required to activate the feature 
+      elapsed: number;               // (numeric) the number of blocks elapsed since the beginning of the current period 
+      count: number;                 // (numeric) the number of blocks with the version bit set in the current period 
+      possible: boolean;             // (boolean) returns false if there are not enough blocks left in this period to pass activation threshold 
+    }
+  }
+
 }
