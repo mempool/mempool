@@ -18,6 +18,7 @@ do
 		--bin electrs \
 		-- \
 		-vvv \
+		--asset-db-path "$HOME/asset_registry_db" \
 		--address-search \
 		--cors '*' \
 		--network liquid \

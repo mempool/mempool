@@ -6,6 +6,7 @@ import { BlockExtended, TransactionExtended } from '../mempool.interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
 import transactionUtils from './transaction-utils';
+import bitcoinBaseApi from './bitcoin/bitcoin-base.api';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -44,15 +45,21 @@ class Blocks {
     }
 
     if (!this.lastDifficultyAdjustmentTime) {
-      const heightDiff = blockHeightTip % 2016;
-      const blockHash = await bitcoinApi.$getBlockHash(blockHeightTip - heightDiff);
-      const block = await bitcoinApi.$getBlock(blockHash);
-      this.lastDifficultyAdjustmentTime = block.timestamp;
-      this.currentDifficulty = block.difficulty;
+      const blockchainInfo = await bitcoinBaseApi.$getBlockchainInfo();
+      if (blockchainInfo.blocks === blockchainInfo.headers) {
+        const heightDiff = blockHeightTip % 2016;
+        const blockHash = await bitcoinApi.$getBlockHash(blockHeightTip - heightDiff);
+        const block = await bitcoinApi.$getBlock(blockHash);
+        this.lastDifficultyAdjustmentTime = block.timestamp;
+        this.currentDifficulty = block.difficulty;
 
-      const previousPeriodBlockHash = await bitcoinApi.$getBlockHash(blockHeightTip - heightDiff - 2016);
-      const previousPeriodBlock = await bitcoinApi.$getBlock(previousPeriodBlockHash);
-      this.previousDifficultyRetarget = (block.difficulty - previousPeriodBlock.difficulty) / previousPeriodBlock.difficulty * 100;
+        const previousPeriodBlockHash = await bitcoinApi.$getBlockHash(blockHeightTip - heightDiff - 2016);
+        const previousPeriodBlock = await bitcoinApi.$getBlock(previousPeriodBlockHash);
+        this.previousDifficultyRetarget = (block.difficulty - previousPeriodBlock.difficulty) / previousPeriodBlock.difficulty * 100;
+        logger.debug(`Initial difficulty adjustment data set.`);
+      } else {
+        logger.debug(`Blockchain headers (${blockchainInfo.headers}) and blocks (${blockchainInfo.blocks}) not in sync. Waiting...`);
+      }
     }
 
     while (this.currentBlockHeight < blockHeightTip) {
