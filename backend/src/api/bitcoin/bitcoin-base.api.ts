@@ -40,6 +40,10 @@ class BitcoinBaseApi {
     }
     return this.bitcoindClient.getMempoolInfo();
   }
+
+  $getBlockchainInfo(): Promise<IBitcoinApi.BlockchainInfo> {
+    return this.bitcoindClient.getBlockchainInfo();
+  }
 }
 
 export default new BitcoinBaseApi();
