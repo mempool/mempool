@@ -12,7 +12,6 @@ import { Observable } from 'rxjs';
   styleUrls: ['./television.component.scss']
 })
 export class TelevisionComponent implements OnInit {
-  isLoading$: Observable<boolean>;
 
   mempoolStats: OptimizedMempoolStats[] = [];
   mempoolVsizeFeesData: any;
@@ -27,7 +26,6 @@ export class TelevisionComponent implements OnInit {
   ngOnInit() {
     this.seoService.setTitle($localize`:@@46ce8155c9ab953edeec97e8950b5a21e67d7c4e:TV view`);
     this.websocketService.want(['blocks', 'live-2h-chart', 'mempool-blocks']);
-    this.isLoading$ = this.stateService.isLoadingWebSocket$;
 
     this.apiService.list2HStatistics$()
       .subscribe((mempoolStats) => {

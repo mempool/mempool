@@ -89,9 +89,4 @@
   display: flex;
   margin-top: 0px;
   flex-direction: column;
-  @media(max-height: 700px) {
-    .blockchain-wrapper{
-      display: none !important;
-    }
-  }
 }
