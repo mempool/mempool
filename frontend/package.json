@@ -22,7 +22,7 @@
   "scripts": {
     "ng": "./node_modules/@angular/cli/bin/ng",
     "tsc": "./node_modules/typescript/bin/tsc",
-    "i18n-extract-from-source": "./node_modules/@angular/cli/bin/ng xi18n --ivy --out-file ./src/locale/messages.xlf",
+    "i18n-extract-from-source": "./node_modules/@angular/cli/bin/ng extract-i18n --ivy --out-file ./src/locale/messages.xlf",
     "i18n-pull-from-transifex": "tx pull -a --parallel --minimum-perc 1 --force",
     "serve": "npm run generate-config && ng serve -c local",
     "serve:stg": "npm run generate-config && ng serve -c staging",
