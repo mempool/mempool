@@ -27,6 +27,8 @@ export class SeoService {
   }
 
   getTitle(): string {
+    if (this.network === 'liquid')
+      return 'Liquid Explorer by mempool';
     return 'mempool - ' + (this.network ? this.ucfirst(this.network) : 'Bitcoin') + ' Explorer';
   }
 
