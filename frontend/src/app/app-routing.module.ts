@@ -372,6 +372,10 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
         component: TermsOfServiceComponent
       },
       {
+        path: 'privacy-policy',
+        component: PrivacyPolicyComponent
+      },
+      {
         path: 'trademark-policy',
         component: TrademarkPolicyComponent
       },
