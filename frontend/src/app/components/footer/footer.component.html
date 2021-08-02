@@ -4,7 +4,7 @@
       <div class="col d-none d-sm-block">
         <span class="txPerSecond" i18n="footer.tx-vbytes-per-second">Tx vBytes per second:</span>
         <span *ngIf="mempoolInfoData.vBytesPerSecond === 0; else inSync">
-          &nbsp;<span class="badge badge-pill badge-warning" i18n="footer.backend-is-synchronizing">Backend is synchronizing</span>
+          &nbsp;<span class="badge badge-pill badge-warning" i18n="dashboard.backend-is-synchronizing">Backend is synchronizing</span>
         </span>
         <ng-template #inSync>
           <div class="progress sub-text">
