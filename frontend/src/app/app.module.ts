@@ -50,6 +50,7 @@ import { faAngleDown, faAngleUp, faBolt, faChartArea, faCogs, faCubes, faDatabas
 import { ApiDocsComponent } from './components/api-docs/api-docs.component';
 import { CodeTemplateComponent } from './components/api-docs/code-template.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
+import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
 import { TrademarkPolicyComponent } from './components/trademark-policy/trademark-policy.component';
 import { StorageService } from './services/storage.service';
 import { HttpCacheInterceptor } from './services/http-cache.interceptor';
@@ -91,6 +92,7 @@ import { SponsorComponent } from './components/sponsor/sponsor.component';
     ApiDocsComponent,
     CodeTemplateComponent,
     TermsOfServiceComponent,
+    PrivacyPolicyComponent,
     TrademarkPolicyComponent,
     SponsorComponent,
   ],
