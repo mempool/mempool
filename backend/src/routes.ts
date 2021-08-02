@@ -516,6 +516,16 @@ class Routes {
     }
   }
 
+  public async getRawBlock(req: Request, res: Response) {
+    try {
+      const blockHeader = await bitcoinApi.$getRawBlock(req.params.hash);
+      res.setHeader('content-type', 'text/plain');
+      res.send(blockHeader);
+    } catch (e) {
+      res.status(500).send(e.message || e);
+    }
+  }
+
   public async getBlocks(req: Request, res: Response) {
     try {
       loadingIndicators.setProgress('blocks', 0);

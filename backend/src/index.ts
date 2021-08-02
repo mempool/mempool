@@ -239,6 +239,7 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/outspends', routes.getTransactionOutspends)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash', routes.getBlock)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/header', routes.getBlockHeader)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/raw', routes.getRawBlock)
         .get(config.MEMPOOL.API_URL_PREFIX + 'blocks', routes.getBlocks)
         .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/:height', routes.getBlocks)
         .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/height', routes.getBlockTipHeight)
