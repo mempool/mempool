@@ -25,6 +25,11 @@ class TransactionUtils {
     return this.extendTransaction(transaction);
   }
 
+  public async $getRawTransactionExtended(txId: string, addPrevouts = false): Promise<TransactionExtended> {
+    const transaction: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(txId, true, addPrevouts);
+    return this.extendTransaction(transaction);
+  }
+
   private extendTransaction(transaction: IEsploraApi.Transaction): TransactionExtended {
     // @ts-ignore
     if (transaction.vsize) {
