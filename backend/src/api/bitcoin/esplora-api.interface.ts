@@ -9,6 +9,7 @@ export namespace IEsploraApi {
     vin: Vin[];
     vout: Vout[];
     status: Status;
+    hex?: string;
   }
 
   export interface Recent {

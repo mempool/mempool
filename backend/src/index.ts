@@ -235,6 +235,7 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'mempool/txids', routes.getMempoolTxIds)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mempool/recent', routes.getRecentMempoolTransactions)
         .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId', routes.getTransaction)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/hex', routes.getRawTransaction)
         .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/status', routes.getTransactionStatus)
         .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/outspends', routes.getTransactionOutspends)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash', routes.getBlock)

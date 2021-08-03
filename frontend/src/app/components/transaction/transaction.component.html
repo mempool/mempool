@@ -216,6 +216,10 @@
             <td i18n="transaction.weight|Transaction Weight">Weight</td>
             <td [innerHTML]="tx.weight | wuBytes: 2"></td>
           </tr>
+          <tr>
+            <td i18n="transaction.hex">Transaction Hex</td>
+            <td><a target="_blank" href="/api/tx/{{ txId }}/hex"><fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true"></fa-icon></a></td>
+          </tr>
         </tbody>
       </table>
     </div>
