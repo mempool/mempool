@@ -56,6 +56,11 @@ class BitcoinApi implements AbstractBitcoinApi {
       .then((rpcBlock: IBitcoinApi.Block) => rpcBlock.tx);
   }
 
+  $getRawBlock(hash: string): Promise<string> {
+    return this.bitcoindClient.getBlock(hash, 0);
+  }
+
+
   $getBlockHash(height: number): Promise<string> {
     return this.bitcoindClient.getBlockHash(height);
   }
