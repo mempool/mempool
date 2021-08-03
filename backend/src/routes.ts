@@ -486,7 +486,7 @@ class Routes {
 
   public async getRawTransaction(req: Request, res: Response) {
     try {
-      const transaction = await transactionUtils.$getRawTransactionExtended(req.params.txId, true);
+      const transaction: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(req.params.txId, true);
       res.setHeader('content-type', 'text/plain');
       res.send(transaction.hex);
     } catch (e) {
@@ -523,16 +523,6 @@ class Routes {
   public async getBlockHeader(req: Request, res: Response) {
     try {
       const blockHeader = await bitcoinApi.$getBlockHeader(req.params.hash);
-      res.setHeader('content-type', 'text/plain');
-      res.send(blockHeader);
-    } catch (e) {
-      res.status(500).send(e.message || e);
-    }
-  }
-
-  public async getRawBlock(req: Request, res: Response) {
-    try {
-      const blockHeader = await bitcoinApi.$getRawBlock(req.params.hash);
       res.setHeader('content-type', 'text/plain');
       res.send(blockHeader);
     } catch (e) {
