@@ -484,6 +484,20 @@ class Routes {
     }
   }
 
+  public async getRawTransaction(req: Request, res: Response) {
+    try {
+      const transaction = await transactionUtils.$getRawTransactionExtended(req.params.txId, true);
+      res.setHeader('content-type', 'text/plain');
+      res.send(transaction.hex);
+    } catch (e) {
+      let statusCode = 500;
+      if (e.message && e.message.indexOf('No such mempool or blockchain transaction') > -1) {
+        statusCode = 404;
+      }
+      res.status(statusCode).send(e.message || e);
+    }
+  }
+
   public async getTransactionStatus(req: Request, res: Response) {
     try {
       const transaction = await transactionUtils.$getTransactionExtended(req.params.txId, true);
@@ -509,6 +523,16 @@ class Routes {
   public async getBlockHeader(req: Request, res: Response) {
     try {
       const blockHeader = await bitcoinApi.$getBlockHeader(req.params.hash);
+      res.setHeader('content-type', 'text/plain');
+      res.send(blockHeader);
+    } catch (e) {
+      res.status(500).send(e.message || e);
+    }
+  }
+
+  public async getRawBlock(req: Request, res: Response) {
+    try {
+      const blockHeader = await bitcoinApi.$getRawBlock(req.params.hash);
       res.setHeader('content-type', 'text/plain');
       res.send(blockHeader);
     } catch (e) {
