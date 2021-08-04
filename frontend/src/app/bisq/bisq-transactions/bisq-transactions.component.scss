@@ -15,12 +15,6 @@ label {
   }
 }
 
-h1{
-  font-size: 1.5rem;
-  @media(min-width: 375px){
-    font-size: 2rem;
-  }
-}
 .container-xl {
   padding-bottom: 60px;
   @media(min-width: 400px){
