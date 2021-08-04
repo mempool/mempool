@@ -6,7 +6,7 @@ import {
 
 export const useDifficulty = (api: AxiosInstance): DifficultyInstance => {
   const getDifficultyAdjustment = async () => {
-    const { data } = await api.get<Adjustment>(`/difficulty-adjustment`);
+    const { data } = await api.get<Adjustment>(`/v1/difficulty-adjustment`);
     return data;
   };
 
