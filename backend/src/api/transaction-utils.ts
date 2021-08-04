@@ -1,7 +1,7 @@
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
-import logger from '../logger';
 import { TransactionExtended, TransactionMinerInfo } from '../mempool.interfaces';
 import { IEsploraApi } from './bitcoin/esplora-api.interface';
+import config from '../config';
 
 class TransactionUtils {
   constructor() { }
@@ -31,7 +31,7 @@ class TransactionUtils {
       // @ts-ignore
       return transaction;
     }
-    const feePerVbytes = Math.max(1, (transaction.fee || 0) / (transaction.weight / 4));
+    const feePerVbytes = Math.max(config.MEMPOOL.NETWORK === 'liquid' ? 0.1 : 1, (transaction.fee || 0) / (transaction.weight / 4));
     const transactionExtended: TransactionExtended = Object.assign({
       vsize: Math.round(transaction.weight / 4),
       feePerVsize: feePerVbytes,
