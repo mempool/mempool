@@ -16,15 +16,13 @@
   }
 }
 
-
 h1{
-	font-size: 1.75rem;
     margin-top: 2px;
 	margin-bottom: 0;
 	float: left;
-	@media (min-width: 375px){
-		margin-top: 0px;
-		font-size: 2rem;
+    margin-top: 2px;
+	@media (min-width: 768px){
+		margin-top: -8px;
 	}
 }
 
