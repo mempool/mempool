@@ -66,7 +66,7 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
-    private stateService: StateService,
+    public stateService: StateService,
     private apiService: ApiService,
     private websocketService: WebsocketService,
     private seoService: SeoService,

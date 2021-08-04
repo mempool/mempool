@@ -1,5 +1,5 @@
 import { CpfpInfo, TransactionExtended, TransactionStripped } from '../mempool.interfaces';
-
+import config from '../config';
 export class Common {
   static median(numbers: number[]) {
     let medianNr = 0;
@@ -105,7 +105,7 @@ export class Common {
       totalFees += tx.bestDescendant.fee;
     }
 
-    tx.effectiveFeePerVsize = Math.max(1, totalFees / (totalWeight / 4));
+    tx.effectiveFeePerVsize = Math.max(config.MEMPOOL.NETWORK === 'liquid' ? 0.1 : 1, totalFees / (totalWeight / 4));
     tx.cpfpChecked = true;
 
     return {

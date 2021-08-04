@@ -165,7 +165,7 @@
 <ng-template #mempoolTable let-mempoolInfoData>
   <div class="mempool-info-data">
     <div class="item">
-      <h5 *ngIf="!mempoolInfoData.value || mempoolInfoData.value.memPoolInfo.mempoolminfee === 0.00001 else purgingText" class="card-title" i18n="dashboard.minimum-fee|Minimum mempool fee">Minimum fee</h5>
+      <h5 *ngIf="!mempoolInfoData.value || mempoolInfoData.value.memPoolInfo.mempoolminfee === 0.00001 || (stateService.env.BASE_MODULE === 'liquid' && mempoolInfoData.value.memPoolInfo.mempoolminfee === 0.000001) else purgingText" class="card-title" i18n="dashboard.minimum-fee|Minimum mempool fee">Minimum fee</h5>
       <ng-template #purgingText><h5 class="card-title" i18n="dashboard.purging|Purgin below fee">Purging</h5></ng-template>
       <p class="card-text" *ngIf="(isLoadingWebSocket$ | async) === false && mempoolInfoData.value; else loading">
         <ng-template [ngIf]="mempoolInfoData.value.memPoolInfo.mempoolminfee > 0.00001">&lt; </ng-template>{{ mempoolInfoData.value.memPoolInfo.mempoolminfee * 100000 | number : '1.1-1' }} <span><ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container></span>
