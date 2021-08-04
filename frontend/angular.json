@@ -199,7 +199,7 @@
               "proxyConfig": "proxy.prod.conf.json",
               "disableHostCheck": true,
               "host": "0.0.0.0",
-              "verbose": true
+              "verbose": false
             }
           }
         },
