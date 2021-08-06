@@ -28,8 +28,8 @@
 <ng-template #loadingBlocksTemplate >
   <div class="blocks-container">
     <div class="flashing">
-      <div *ngFor="let block of blocks; let i = index; trackBy: trackByBlocksFn" >
-        <div class="text-center bitcoin-block mined-block" id="bitcoin-block-{{ block.height }}" [ngStyle]="blockStyles[i]"></div>
+      <div *ngFor="let block of emptyBlocks; let i = index; trackBy: trackByBlocksFn" >
+        <div class="text-center bitcoin-block mined-block" id="bitcoin-block-{{ block.height }}" [ngStyle]="emptyBlockStyles[i]"></div>
       </div>
     </div>
   </div>
