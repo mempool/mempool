@@ -3,6 +3,7 @@
     <body>
       <trans-unit datatype="html" id="ngb.alert.close">
         <source>Close</source>
+        <target>დახურვა</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/alert/alert.ts</context>
           <context context-type="linenumber">74</context>
@@ -10,6 +11,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.carousel.previous">
         <source>Previous</source>
+        <target>წინა</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/carousel/carousel.ts</context>
           <context context-type="linenumber">349</context>
@@ -17,6 +19,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.carousel.next">
         <source>Next</source>
+        <target>შემდეგი</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/carousel/carousel.ts</context>
           <context context-type="linenumber">349</context>
@@ -24,6 +27,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.datepicker.previous-month">
         <source>Previous month</source>
+        <target>წინა თვე</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/datepicker/datepicker-month.ts</context>
           <context context-type="linenumber">62,64</context>
@@ -35,6 +39,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.datepicker.next-month">
         <source>Next month</source>
+        <target>შემდეგი თვე</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/datepicker/datepicker-month.ts</context>
           <context context-type="linenumber">72</context>
@@ -46,6 +51,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.datepicker.select-month">
         <source>Select month</source>
+        <target>აირჩიეთ თვე</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/datepicker/datepicker-navigation-select.ts</context>
           <context context-type="linenumber">74</context>
@@ -57,6 +63,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.datepicker.select-year">
         <source>Select year</source>
+        <target>აირჩიეთ წელი</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/datepicker/datepicker-navigation-select.ts</context>
           <context context-type="linenumber">74</context>
@@ -96,6 +103,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.pagination.first-aria">
         <source>First</source>
+        <target>პირველი</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/pagination/pagination.ts</context>
           <context context-type="linenumber">404</context>
@@ -103,6 +111,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.pagination.previous-aria">
         <source>Previous</source>
+        <target>წინა</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/pagination/pagination.ts</context>
           <context context-type="linenumber">404</context>
@@ -110,6 +119,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.pagination.next-aria">
         <source>Next</source>
+        <target>შემდეგი</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/pagination/pagination.ts</context>
           <context context-type="linenumber">404</context>
@@ -117,6 +127,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.pagination.last-aria">
         <source>Last</source>
+        <target>წინა</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/pagination/pagination.ts</context>
           <context context-type="linenumber">404</context>
@@ -138,6 +149,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.hours">
         <source>Hours</source>
+        <target>საათი</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -152,6 +164,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.minutes">
         <source>Minutes</source>
+        <target>წუთის</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -159,6 +172,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.increment-hours">
         <source>Increment hours</source>
+        <target>ზრდადი საათები</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -166,6 +180,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.decrement-hours">
         <source>Decrement hours</source>
+        <target>კლებადი საათები</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -173,6 +188,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.increment-minutes">
         <source>Increment minutes</source>
+        <target>ზრდადი წუთები</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -180,6 +196,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.decrement-minutes">
         <source>Decrement minutes</source>
+        <target>კლებადი წუთები</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -194,6 +211,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.seconds">
         <source>Seconds</source>
+        <target>წამები</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -201,6 +219,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.increment-seconds">
         <source>Increment seconds</source>
+        <target>ზრდადი წამები</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -208,6 +227,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.decrement-seconds">
         <source>Decrement seconds</source>
+        <target>კლებადი წამები</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -229,6 +249,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.toast.close-aria">
         <source>Close</source>
+        <target>დახურვა</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/toast/toast.ts</context>
           <context context-type="linenumber">137</context>
@@ -515,6 +536,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="6d0db947a91dc4884aefa858a27fc848530e6404">
         <source>Previous hash</source>
+        <target>წინა ჰაში</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
           <context context-type="linenumber">35</context>
@@ -623,6 +645,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="6b2fdbdddef74630e1076d58786ca339a8c030f0">
         <source>Bisq Trading Volume</source>
+        <target>Bisq ის ბრუნვა</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">3,7</context>
@@ -635,6 +658,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d3ad0babadabfa3e3b7f51637651822f3e56a7b1">
         <source>Markets</source>
+        <target>ბაზარი</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">20,21</context>
@@ -647,6 +671,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ece163b62f5e9b0b68a8d6a2d93e216318f557ba">
         <source>Bitcoin Markets</source>
+        <target>ბიტკოინის ბაზარი</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">21,23</context>
@@ -659,6 +684,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="32072c7fb0469aaf82d256a59b3e0d6ecce973b9">
         <source>Currency</source>
+        <target>ვალუტა</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">27</context>
@@ -698,6 +724,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b666c0101ab9ef128a75fdf05a43184a57de0cff">
         <source>Volume (7d)</source>
+        <target>ბრუნვა 7d</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">29</context>
@@ -706,6 +733,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="faf7b6da436cb9342858ec551aecdab8052dbde6">
         <source>Trades (7d)</source>
+        <target>ვაჭრობა 7d</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">30</context>
@@ -718,6 +746,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8d54d714a00023ea23b58d8642980ef41cea0cb3">
         <source>Latest Trades</source>
+        <target>ბოლო ტრეიდები</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">52,55</context>
@@ -734,6 +763,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3f42ea126dba9186d89dffe43937f2b9c17858d6">
         <source>Bisq Price Index</source>
+        <target>Bisq ფასის ინდექსი</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -742,6 +772,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e32fd95e667cfcee9948135918a151a614d5d349">
         <source>Bisq Market Price</source>
+        <target>Bisq Market price</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
           <context context-type="linenumber">21,23</context>
@@ -789,6 +820,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f4ebbeea643a58f45e665e960b494b2ea30b87da">
         <source>Buy Offers</source>
+        <target>ყიდვის შემოთავაზება</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
           <context context-type="linenumber">73,74</context>
@@ -797,6 +829,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="abf29235edbf341b6f626c315ff509f38fbf728a">
         <source>Sell Offers</source>
+        <target>გაყიდვის შემოთავაზება</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
           <context context-type="linenumber">74,77</context>
@@ -805,6 +838,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="74d80a5b284beb81e8aeb3b8efca0f78cd4b7560">
         <source>Amount (<x equiv-text="{{ i }}" id="INTERPOLATION"/>)</source>
+        <target>რაოდენობა</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
           <context context-type="linenumber">112,113</context>
@@ -925,6 +959,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2f933b826a570836cab04f683970a2d22068458c">
         <source>Date</source>
+        <target>რიცხვი</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-trades/bisq-trades.component.html</context>
           <context context-type="linenumber">4,6</context>
@@ -1000,6 +1035,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8fe73a4787b8068b2ba61f54ab7e0f9af2ea1fc9">
         <source>Version</source>
+        <target>ვერსია</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction-details/bisq-transaction-details.component.html</context>
           <context context-type="linenumber">29</context>
@@ -1185,6 +1221,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8411955056013208681">
         <source>Asset listing fee</source>
+        <target>ლისტინგის ფასი</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">30</context>
@@ -1192,6 +1229,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4096113720451832029">
         <source>Blind vote</source>
+        <target>ბრმად ხმის მიცემა</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">31</context>
@@ -1199,6 +1237,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8029165479004970466">
         <source>Compensation request</source>
+        <target>კომპენსაციის მოთხოვნა</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">32</context>
@@ -1206,6 +1245,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2303359202781425764">
         <source>Genesis</source>
+        <target>საწყისი ბლოკი</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">33</context>
@@ -1213,6 +1253,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1805880753357861573">
         <source>Irregular</source>
+        <target>არარეგულარული</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">34</context>
@@ -1220,6 +1261,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1899519213652410949">
         <source>Lockup</source>
+        <target>ჩაკეტვა</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">35</context>
@@ -1227,6 +1269,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="450749685636583691">
         <source>Pay trade fee</source>
+        <target>ტრეიდის საკომისიო</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">36</context>
@@ -1234,6 +1277,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4844032232639560116">
         <source>Proof of burn</source>
+        <target>განადგურების საბუთი</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">37</context>
@@ -1241,6 +1285,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2011097393756618787">
         <source>Proposal</source>
+        <target>შემოთავაზება</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">38</context>
@@ -1248,6 +1293,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3275831985256202873">
         <source>Reimbursement request</source>
+        <target>ანაზღაურების მოთხოვნა</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">39</context>
@@ -1262,6 +1308,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4545041448523656285">
         <source>Unlock</source>
+        <target>გახსნა</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">41</context>
@@ -1269,6 +1316,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8694527859973232423">
         <source>Vote reveal</source>
+        <target>ხმის გამჟღავნება</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">42</context>
@@ -1300,6 +1348,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq-graph-trades">
         <source>Trades</source>
+        <target>ტრეიდები</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/lightweight-charts-area/lightweight-charts-area.component.ts</context>
           <context context-type="linenumber">90</context>
@@ -1307,6 +1356,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq-graph-volume">
         <source>Volume</source>
+        <target>ბრუნვა</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/lightweight-charts-area/lightweight-charts-area.component.ts</context>
           <context context-type="linenumber">91</context>
@@ -1314,6 +1364,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4b137ec8bf73a47063740b75c0c40d5fd3c48015">
         <source>The Mempool Open Source Project</source>
+        <target>The Mempool Open Source პროექტი</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">12</context>
@@ -1322,6 +1373,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f447b21299afc5bc9dadade96dbc90114bea837a">
         <source>Building a mempool and blockchain explorer for the Bitcoin community, focusing on the transaction fee market and multi-layer ecosystem, without any advertising, altcoins, or third-party trackers.</source>
+        <target>ვაწყობთ mempool ის და ბლოქჩეინის ექსპლორერს ბიტკოინის ეკოსისტემისთვის, რომელიც ფოკუსირებულია ტრანსაქციების საკომისიოზე და მრავალშრიან ეკოსისტემაზე, რეკლამის, ალტკოინების და დამატებითი სათვალთვალო ტრეკერების გარეშე.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">13,17</context>
@@ -1329,6 +1381,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a24b1c6a9c4334ba204e4cec2dd9f32ea33d043f">
         <source>Enterprise Sponsors 🚀</source>
+        <target>კორპორატიული სპონსორები</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">32,34</context>
@@ -1337,6 +1390,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a46e9bc519dc1c320d48635e924d444364845ca8">
         <source>Community Sponsors ❤️</source>
+        <target>კერძო სპონსორები ❤️</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">54,57</context>
@@ -1366,6 +1420,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1405c5f1a9834338ff13442c550927ab7144fdc8">
         <source>Community Integrations</source>
+        <target>ინტეგრაციები</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">71,74</context>
@@ -1374,6 +1429,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="020cce975a5d7e0cc0f4578903358459d693e4bb">
         <source>Community Alliances</source>
+        <target>ალიანსი</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">142,144</context>
@@ -1382,6 +1438,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2dd9b8a8997a6b57413ca3cd32dd38cef9fa39c2">
         <source>Project Contributors</source>
+        <target>მოხალისეები</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">157,159</context>
@@ -1390,6 +1447,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d177262e3a43b2a7221183812daf0ada97659436">
         <source>Project Maintainers</source>
+        <target>პროექტის შემქმნელები</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">171,173</context>
@@ -1517,6 +1575,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b151944861534c4a9e9623537dba0a95f60e4455">
         <source>Endpoint</source>
+        <target>დასასრული</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">19,20</context>
@@ -1681,6 +1740,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="eec715de352a6b114713b30b640d319fa78207a0">
         <source>Description</source>
+        <target>აღწერა</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">23,24</context>
@@ -1856,6 +1916,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2761d0de651f1c4395e6e7fbc7fded09918f8dcb">
         <source>Returns details about difficulty adjustment.</source>
+        <target>იძლევა ინფორმაციას სირთულის რეგულირებაზე</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">24,26</context>
@@ -2706,6 +2767,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="25148835d92465353fc5fe8897c27d5369978e5a">
         <source>Difficulty</source>
+        <target>სირთულე</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">110,113</context>
@@ -3038,6 +3100,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="dfd99c62b5b308fc5b1ad7adbbf9d526d2b31516">
         <source>Sponsor</source>
+        <target>სპონსორები</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/sponsor/sponsor.component.html</context>
           <context context-type="linenumber">3</context>
@@ -3086,7 +3149,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ff4b7f4070be9e876c7610d99b9dbd53ff19dceb">
         <source>Loading graphs...</source>
-        <target>დაელოდეთ გრაფიკებს...</target>
+        <target>დაელოდეთ გრაფიკს...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">5</context>
@@ -3122,6 +3185,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.just-now">
         <source>Just now</source>
+        <target>ახლა</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">57</context>
@@ -3133,6 +3197,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since">
         <source><x equiv-text="dateStrings.i18nYear" id="DATE"/> ago</source>
+        <target> <x equiv-text="dateStrings.i18nYear" id="DATE"/> წინ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -3192,6 +3257,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-span">
         <source>After <x equiv-text="dateStrings.i18nYear" id="DATE"/></source>
+        <target><x equiv-text="dateStrings.i18nYear" id="DATE"/>- ის შემდეგ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -3251,6 +3317,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-until">
         <source>In ~<x equiv-text="dateStrings.i18nMinute" id="DATE"/></source>
+        <target>~ <x equiv-text="dateStrings.i18nMinute" id="DATE"/>- ში</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
           <context context-type="linenumber">66</context>
@@ -3392,6 +3459,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3e322ffba6477484e0dd2e65650fdd70322ea6d0">
         <source>Fee rate</source>
+        <target>საკომისიო</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">156,160</context>
@@ -3405,6 +3473,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="dd230222e3ae689913445ce93b6ae3f7cce7458b">
         <source>Descendant</source>
+        <target>კლებადი</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">163,165</context>
@@ -3414,6 +3483,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8c16167a5d7c96d14ff280b09de312d18d5e2511">
         <source>Ancestor</source>
+        <target>შთამომავალი</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">177,179</context>
@@ -3489,6 +3559,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="eb1737af67381ce6f0b347038bb4c65b3deb84be">
         <source>Effective fee rate</source>
+        <target>ეფექტური საკომისიო</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">342,345</context>
@@ -3750,6 +3821,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="86d26b45470e43b409e589517922276109138e87">
         <source>Transaction Fees</source>
+        <target>საკომისიო</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">6,9</context>
@@ -3868,6 +3940,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="63da83692b85cf17e0606153029a83fd4038d6dd">
         <source>Difficulty Adjustment</source>
+        <target>სირთულე</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">208,211</context>
@@ -3876,6 +3949,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0912816d94f2f05a7eee8f7622670e0c6bbbce16">
         <source>Remaining</source>
+        <target>დარჩა</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">214,216</context>
@@ -3888,6 +3962,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5e65ce907fc0e1a1a09d4130eb8c59d00a9457ef">
         <source>Estimate</source>
+        <target>დაახლოებით</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">223,224</context>
@@ -3900,6 +3975,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="680d5c75b7fd8d37961083608b9fcdc4167b4c43">
         <source>Previous</source>
+        <target>წინა</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">235,236</context>
@@ -3908,6 +3984,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5db469cd0357e5f578b85a996f7e99c9e4148ff5">
         <source>Current Period</source>
+        <target>ეს პერიოდი</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">247,248</context>
@@ -3997,6 +4074,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.minutes">
         <source><x equiv-text="counter" id="DATE"/> minutes</source>
+        <target>წუთი</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">14</context>
@@ -4018,6 +4096,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2799825781368047816">
         <source>Transaction fee</source>
+        <target>საკომისიო</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/pipes/scriptpubkey-type-pipe/scriptpubkey-type.pipe.ts</context>
           <context context-type="linenumber">11</context>
