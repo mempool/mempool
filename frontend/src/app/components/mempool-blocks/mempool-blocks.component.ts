@@ -21,6 +21,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   mempoolBlocksFull: MempoolBlock[] = this.mountEmptyBlocks();
   mempoolBlockStyles = [];
   markBlocksSubscription: Subscription;
+  isLoadingWebsocketSubscription: Subscription;
   blockSubscription: Subscription;
   networkSubscription: Subscription;
   network = '';
@@ -55,6 +56,11 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     });
     this.reduceMempoolBlocksToFitScreen(this.mempoolBlocks);
     this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
+    
+    this.isLoadingWebsocketSubscription = this.stateService.isLoadingWebSocket$.subscribe((loading) => {
+      this.loadingMempoolBlocks = loading;
+      this.cd.markForCheck();
+    });
 
     this.mempoolBlocks$ = merge(
       of(true),
@@ -164,6 +170,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     this.markBlocksSubscription.unsubscribe();
     this.blockSubscription.unsubscribe();
     this.networkSubscription.unsubscribe();
+    this.isLoadingWebsocketSubscription.unsubscribe();
     clearTimeout(this.resetTransitionTimeout);
   }
 
