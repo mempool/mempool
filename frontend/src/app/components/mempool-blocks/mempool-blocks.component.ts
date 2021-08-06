@@ -3,7 +3,7 @@ import { Subscription, Observable, fromEvent, merge, of, combineLatest, timer } 
 import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
-import { take, map, switchMap } from 'rxjs/operators';
+import { take, map, switchMap, share } from 'rxjs/operators';
 import { feeLevels, mempoolFeeColors } from 'src/app/app.constants';
 
 @Component({
@@ -56,9 +56,10 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     });
     this.reduceMempoolBlocksToFitScreen(this.mempoolBlocks);
     this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
-    
+
     this.isLoadingWebsocketSubscription = this.stateService.isLoadingWebSocket$.subscribe((loading) => {
       this.loadingMempoolBlocks = loading;
+      this.updateMempoolBlockStyles();
       this.cd.markForCheck();
     });
 
@@ -111,8 +112,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
           } else {
             timeAvgMins += Math.abs(timeAvgDiff);
           }
-
-          this.loadingMempoolBlocks = false;
+          
           return timeAvgMins * 60 * 1000;
         })
       );
@@ -230,11 +230,17 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
         #${color} ${Math.round(((i + 1) / gradientColors.length) * 100) * usedBlockSpace / 100 + emptyBackgroundSpacePercentage}%
       `);
     });
-
-    return {
-      'right': 40 + index * 155 + 'px',
-      'background': backgroundGradients.join(',') + ')'
-    };
+    if(this.loadingMempoolBlocks) {
+      return {
+        'right': 40 + index * 155 + 'px',
+        'background': '#554b45',
+      };
+    }else{
+      return {
+        'right': 40 + index * 155 + 'px',
+        'background': backgroundGradients.join(',') + ')'
+      };
+    }
   }
 
   calculateTransactionPosition() {

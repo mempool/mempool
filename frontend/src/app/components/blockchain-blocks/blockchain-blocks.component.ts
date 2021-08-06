@@ -48,10 +48,12 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.emptyBlocks.forEach((b) => this.emptyBlockStyles.push(this.getStyleForEmptyBlock(b)));
-    this.isLoadingWebsocketSubscription = this.stateService.isLoadingWebSocket$.subscribe((loading) => this.loadingBlocks = loading);
+    this.isLoadingWebsocketSubscription = this.stateService.isLoadingWebSocket$.subscribe((loading) => {
+      this.loadingBlocks = loading;
+      this.cd.markForCheck();
+    });
     this.networkSubscription = this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.tabHiddenSubscription = this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
-
     this.blocksSubscription = this.stateService.blocks$
       .subscribe(([block, txConfirmed]) => {
         if (this.blocks.some((b) => b.height === block.height)) {
