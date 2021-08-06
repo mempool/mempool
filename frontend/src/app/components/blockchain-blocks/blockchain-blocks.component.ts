@@ -197,6 +197,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
 
     return {
       left: addLeft + 155 * this.emptyBlocks.indexOf(block) + 'px',
+      background: "#2d3348",
     };
   }
 
