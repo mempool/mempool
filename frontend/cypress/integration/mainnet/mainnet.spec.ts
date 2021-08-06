@@ -41,20 +41,12 @@ describe('Mainnet', () => {
         cy.visit('/');
         cy.waitForSkeletonGone();
 
-        changeNetwork("testnet");
-        changeNetwork("signet");
-        changeNetwork("liquid");
+        cy.changeNetwork("testnet");
+        cy.changeNetwork("signet");
+        cy.changeNetwork("liquid");
+        cy.changeNetwork("mainnet");
+        cy.changeNetwork("bisq");
     });
-
-    function changeNetwork (network: "testnet"|"signet"|"liquid" ){
-        cy.get('.dropdown-toggle').click().then(() => {
-            cy.get(`.${network}`).click().then(() => {
-                cy.waitForPageIdle();
-                cy.waitForSkeletonGone();
-            });
-        });
-    }
-
 
     it('loads the dashboard with the skeleton blocks', () => {
         cy.mockMempoolSocket();
