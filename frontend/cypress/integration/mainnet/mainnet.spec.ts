@@ -12,28 +12,40 @@ describe('Mainnet', () => {
         Cypress.Commands.add('waitForBlockData', () => {
             cy.wait('@tx-outspends');
             cy.wait('@pools');
-          });
+        });
     });
 
     it('loads the status screen', () => {
-      cy.visit('/status');
-      cy.get('#mempool-block-0').should('be.visible');
-      cy.get('[id^="bitcoin-block-"]').should('have.length', 8);
-      cy.get('.footer').should('be.visible');
-      cy.get('.row > :nth-child(1)').invoke('text').then((text) => {
-        expect(text).to.match(/Tx vBytes per second:.* vB\/s/);
-      });
-      cy.get('.row > :nth-child(2)').invoke('text').then((text) => {
-          expect(text).to.match(/Unconfirmed:(.*)/);
-      });
-      cy.get('.row > :nth-child(3)').invoke('text').then((text) => {
-        expect(text).to.match(/Mempool size:(.*) (kB|MB) \((\d+) (block|blocks)\)/);
-      });
+        cy.visit('/status');
+        cy.get('#mempool-block-0').should('be.visible');
+        cy.get('[id^="bitcoin-block-"]').should('have.length', 8);
+        cy.get('.footer').should('be.visible');
+        cy.get('.row > :nth-child(1)').invoke('text').then((text) => {
+            expect(text).to.match(/Tx vBytes per second:.* vB\/s/);
+        });
+        cy.get('.row > :nth-child(2)').invoke('text').then((text) => {
+            expect(text).to.match(/Unconfirmed:(.*)/);
+        });
+        cy.get('.row > :nth-child(3)').invoke('text').then((text) => {
+            expect(text).to.match(/Mempool size:(.*) (kB|MB) \((\d+) (block|blocks)\)/);
+        });
     });
 
+
     it('loads the dashboard', () => {
-      cy.visit('/');
-      cy.waitForSkeletonGone();
+        cy.visit('/');
+        cy.waitForSkeletonGone();
+    });
+
+    it('loads skeleton when changes between networks', () => {
+        cy.visit('/');
+        cy.waitForSkeletonGone();
+
+        cy.changeNetwork("testnet");
+        cy.changeNetwork("signet");
+        cy.changeNetwork("liquid");
+        cy.changeNetwork("mainnet");
+        cy.changeNetwork("bisq");
     });
 
     it('loads the dashboard with the skeleton blocks', () => {

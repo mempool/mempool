@@ -1,5 +1,5 @@
 <div class="mempool-blocks-container">
-  <div class="flashing" *ngIf="(timeAvg$ | async) as timeAvg;">
+  <div class="flashing" *ngIf="!loadingMempoolBlocks && (timeAvg$ | async) as timeAvg;">      
     <ng-template ngFor let-projectedBlock [ngForOf]="mempoolBlocks$ | async" let-i="index" [ngForTrackBy]="trackByFn">
       <div class="bitcoin-block text-center mempool-block" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]">
         <a [routerLink]="['/mempool-block/' | relativeUrl, i]" class="blockLink">&nbsp;</a>

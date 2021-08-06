@@ -16,9 +16,10 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   blocks: Block[] = this.mountEmptyBlocks();
   markHeight: number;
   blocksSubscription: Subscription;
-  networkSubscriotion: Subscription;
+  networkSubscription: Subscription;
   tabHiddenSubscription: Subscription;
   markBlockSubscription: Subscription;
+  isLoadingWebsocketSubscription: Subscription;
   blockStyles = [];
   interval: any;
   tabHidden = false;
@@ -45,7 +46,8 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.blocks.forEach((b) => this.blockStyles.push(this.getStyleForBlock(b)));
-    this.networkSubscriotion = this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.isLoadingWebsocketSubscription = this.stateService.isLoadingWebSocket$.subscribe((loading) => this.loadingBlocks = loading);
+    this.networkSubscription = this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.tabHiddenSubscription = this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
 
     this.blocksSubscription = this.stateService.blocks$
@@ -53,8 +55,6 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
         if (this.blocks.some((b) => b.height === block.height)) {
           return;
         }
-
-        this.loadingBlocks = true;
 
         if (this.blocks.length && block.height !== this.blocks[0].height + 1) {
           this.blocks = [];
@@ -75,13 +75,15 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
           this.moveArrowToPosition(true, false);
         }
 
-        this.blockStyles = [];
-        this.blocks.forEach((b) => this.blockStyles.push(this.getStyleForBlock(b)));
-        setTimeout(() => {
+        if (!this.loadingBlocks) {
           this.blockStyles = [];
           this.blocks.forEach((b) => this.blockStyles.push(this.getStyleForBlock(b)));
-          this.cd.markForCheck();
-        }, 50);
+          setTimeout(() => {
+            this.blockStyles = [];
+            this.blocks.forEach((b) => this.blockStyles.push(this.getStyleForBlock(b)));
+            this.cd.markForCheck();
+          }, 50);
+        }
 
         if (this.blocks.length === this.stateService.env.KEEP_BLOCKS_AMOUNT) {
           this.blocksFilled = true;
@@ -124,9 +126,10 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.blocksSubscription.unsubscribe();
-    this.networkSubscriotion.unsubscribe();
+    this.networkSubscription.unsubscribe();
     this.tabHiddenSubscription.unsubscribe();
     this.markBlockSubscription.unsubscribe();
+    this.isLoadingWebsocketSubscription.unsubscribe();
     clearInterval(this.interval);
   }
 
