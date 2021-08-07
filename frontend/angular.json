@@ -26,6 +26,10 @@
             "translation": "src/locale/messages.ar.xlf",
             "baseHref": "/ar/"
           },
+          "ca": {
+            "translation": "src/locale/messages.ca.xlf",
+            "baseHref": "/ca/"
+          },
           "cs": {
             "translation": "src/locale/messages.cs.xlf",
             "baseHref": "/cs/"
