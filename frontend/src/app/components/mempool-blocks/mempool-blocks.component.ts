@@ -31,6 +31,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   arrowVisible = false;
   tabHidden = false;
   loadingMempoolBlocks = true;
+  feeRounding = '1.0-0';
 
   rightPosition = 0;
   transition = '2s';
@@ -49,6 +50,9 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    if (this.stateService.network === 'liquid') {
+      this.feeRounding = '1.0-1';
+    }
     this.mempoolBlocks.map(() => {
       this.updateMempoolBlockStyles();
       this.calculateTransactionPosition();

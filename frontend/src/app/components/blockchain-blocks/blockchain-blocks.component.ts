@@ -23,6 +23,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   interval: any;
   tabHidden = false;
   loadingBlocks = false;
+  feeRounding = '1.0-0';
 
   arrowVisible = false;
   arrowLeftPx = 30;
@@ -44,6 +45,9 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    if (this.stateService.network === 'liquid') {
+      this.feeRounding = '1.0-1';
+    }
     this.blocks.forEach((b) => this.blockStyles.push(this.getStyleForBlock(b)));
     this.networkSubscriotion = this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.tabHiddenSubscription = this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
