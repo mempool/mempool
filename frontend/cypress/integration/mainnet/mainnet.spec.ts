@@ -36,6 +36,13 @@ describe('Mainnet', () => {
         cy.mockMempoolSocket();
         cy.visit('/');
 
+        cy.get(':nth-child(1) > #bitcoin-block-0').should('be.visible');
+        cy.get(':nth-child(2) > #bitcoin-block-0').should('be.visible');
+        cy.get(':nth-child(3) > #bitcoin-block-0').should('be.visible');
+        cy.get('#mempool-block-0').should('be.visible');
+        cy.get('#mempool-block-1').should('be.visible');
+        // cy.get('#mempool-block-2').should('be.visible');
+
         emitMempoolInfo({
             'params': {
               loaded: true
@@ -52,7 +59,7 @@ describe('Mainnet', () => {
         cy.get(':nth-child(3) > #bitcoin-block-0').should('be.visible');
         cy.get('#mempool-block-0').should('be.visible');
         cy.get('#mempool-block-1').should('be.visible');
-        cy.get('#mempool-block-2').should('be.visible');
+        // cy.get('#mempool-block-2').should('be.visible');
 
         // TODO
         // reconnectWebSocket();

@@ -65,11 +65,8 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
         this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(this.mountEmptyBlocks());
         this.updateMempoolBlockStyles();
         this.calculateTransactionPosition();
+        this.cd.markForCheck();
       }
-      return this.mempoolBlocks;
-
-      this.updateMempoolBlockStyles();
-      this.cd.markForCheck();
     });
 
     this.mempoolBlocks$ = merge(
