@@ -47,7 +47,7 @@ export class LanguageSelectorComponent implements OnInit {
     if (this.stateService.env.BASE_MODULE === 'mempool') {
       this.document.location.href = `/${language}/${this.stateService.network}`;
     } else {
-      this.document.location.href = `/${language}}`;
+      this.document.location.href = `/${language}`;
     }
   }
 }
