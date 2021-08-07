@@ -82,3 +82,9 @@ export const emitMempoolInfo = ({
     cy.waitForSkeletonGone();
     return cy.get('#mempool-block-0');
 };
+
+export const dropWebSocket = (() => {
+    cy.window().then((win) => {
+		win.mockServer.simulate("error");
+    });
+});

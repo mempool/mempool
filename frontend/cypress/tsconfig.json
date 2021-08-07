@@ -2,7 +2,9 @@
   "extends": "../tsconfig.json",
   "include": ["**/*.ts"],
   "compilerOptions": {
-    "sourceMap": false,
-    "types": ["cypress"]
+    "types": ["cypress"],
+    "lib": ["es2015", "dom"],
+    "allowJs": true,
+    "noEmit": true,
   }
 }

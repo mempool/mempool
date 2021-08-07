@@ -59,6 +59,15 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
     this.isLoadingWebsocketSubscription = this.stateService.isLoadingWebSocket$.subscribe((loading) => {
       this.loadingMempoolBlocks = loading;
+
+      if(!loading) {
+        this.mempoolBlocksFull = this.mountEmptyBlocks();
+        this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(this.mountEmptyBlocks());
+        this.updateMempoolBlockStyles();
+        this.calculateTransactionPosition();
+      }
+      return this.mempoolBlocks;
+
       this.updateMempoolBlockStyles();
       this.cd.markForCheck();
     });
