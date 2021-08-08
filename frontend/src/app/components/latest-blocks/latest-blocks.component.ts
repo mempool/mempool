@@ -29,7 +29,7 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
 
   constructor(
     private electrsApiService: ElectrsApiService,
-    private stateService: StateService,
+    public stateService: StateService,
     private seoService: SeoService,
     private websocketService: WebsocketService,
     private cd: ChangeDetectorRef,
