@@ -31,7 +31,7 @@ describe('Mainnet', () => {
         });
     });
 
-    it.only ('loads dashboard, drop websocket and reconnect', () => {
+    it('loads dashboard, drop websocket and reconnect', () => {
         cy.viewport('macbook-16');
         cy.mockMempoolSocket();
         cy.visit('/');
