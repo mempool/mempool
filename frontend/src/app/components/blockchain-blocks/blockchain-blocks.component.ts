@@ -57,8 +57,10 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
       const offlineStates = [0, 2];
       if (offlineStates.includes(state)) {
         this.loadingBlocks = true;
-        this.cd.markForCheck();
+      }else{
+        this.loadingBlocks = false;
       }
+      this.cd.markForCheck();
     });
     this.networkSubscription = this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.tabHiddenSubscription = this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
