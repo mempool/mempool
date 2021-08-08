@@ -110,8 +110,8 @@ class Blocks {
       blockExtended.coinbaseTx = transactionUtils.stripCoinbaseTransaction(transactions[0]);
       transactions.shift();
       transactions.sort((a, b) => b.effectiveFeePerVsize - a.effectiveFeePerVsize);
-      blockExtended.medianFee = transactions.length > 1 ? Common.median(transactions.map((tx) => tx.effectiveFeePerVsize)) : 0;
-      blockExtended.feeRange = transactions.length > 1 ? Common.getFeesInRange(transactions, 8) : [0, 0];
+      blockExtended.medianFee = transactions.length > 0 ? Common.median(transactions.map((tx) => tx.effectiveFeePerVsize)) : 0;
+      blockExtended.feeRange = transactions.length > 0 ? Common.getFeesInRange(transactions, 8) : [0, 0];
 
       if (block.height % 2016 === 0) {
         this.previousDifficultyRetarget = (block.difficulty - this.currentDifficulty) / this.currentDifficulty * 100;
