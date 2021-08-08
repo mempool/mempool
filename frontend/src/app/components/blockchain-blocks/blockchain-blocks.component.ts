@@ -21,6 +21,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   tabHiddenSubscription: Subscription;
   markBlockSubscription: Subscription;
   isLoadingWebsocketSubscription: Subscription;
+  connectionStateSubscription: Subscription;
   blockStyles = [];
   emptyBlockStyles = [];
   interval: any;
@@ -51,6 +52,13 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
     this.isLoadingWebsocketSubscription = this.stateService.isLoadingWebSocket$.subscribe((loading) => {
       this.loadingBlocks = loading;
       this.cd.markForCheck();
+    });
+    this.connectionStateSubscription = this.stateService.connectionState$.subscribe((state) => {
+      const offlineStates = [0, 2];
+      if (offlineStates.includes(state)) {
+        this.loadingBlocks = true;
+        this.cd.markForCheck();
+      }
     });
     this.networkSubscription = this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.tabHiddenSubscription = this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
@@ -132,6 +140,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
     this.tabHiddenSubscription.unsubscribe();
     this.markBlockSubscription.unsubscribe();
     this.isLoadingWebsocketSubscription.unsubscribe();
+    this.connectionStateSubscription.unsubscribe();
     clearInterval(this.interval);
   }
 
