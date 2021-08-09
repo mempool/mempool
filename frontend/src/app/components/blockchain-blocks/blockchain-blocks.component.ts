@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, Input } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Block } from 'src/app/interfaces/electrs.interface';
 import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
@@ -13,20 +13,18 @@ import { Router } from '@angular/router';
 export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   
   network = '';
-  blocks: Block[] = this.mountEmptyBlocks();
+  blocks: Block[] = [];
   emptyBlocks: Block[] = this.mountEmptyBlocks();
   markHeight: number;
   blocksSubscription: Subscription;
   networkSubscription: Subscription;
   tabHiddenSubscription: Subscription;
   markBlockSubscription: Subscription;
-  isLoadingWebsocketSubscription: Subscription;
-  connectionStateSubscription: Subscription;
+  loadingBlocks$: Observable<boolean>;
   blockStyles = [];
   emptyBlockStyles = [];
   interval: any;
   tabHidden = false;
-  loadingBlocks = false;
 
   arrowVisible = false;
   arrowLeftPx = 30;
@@ -49,19 +47,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.emptyBlocks.forEach((b) => this.emptyBlockStyles.push(this.getStyleForEmptyBlock(b)));
-    this.isLoadingWebsocketSubscription = this.stateService.isLoadingWebSocket$.subscribe((loading) => {
-      this.loadingBlocks = loading;
-      this.cd.markForCheck();
-    });
-    this.connectionStateSubscription = this.stateService.connectionState$.subscribe((state) => {
-      const offlineStates = [0, 1];
-      if (offlineStates.includes(state)) {
-        this.loadingBlocks = true;
-      }else{
-        this.loadingBlocks = false;
-      }
-      this.cd.markForCheck();
-    });
+    this.loadingBlocks$ = this.stateService.isLoadingWebSocket$;
     this.networkSubscription = this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.tabHiddenSubscription = this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
     this.blocksSubscription = this.stateService.blocks$
@@ -141,8 +127,6 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
     this.networkSubscription.unsubscribe();
     this.tabHiddenSubscription.unsubscribe();
     this.markBlockSubscription.unsubscribe();
-    this.isLoadingWebsocketSubscription.unsubscribe();
-    this.connectionStateSubscription.unsubscribe();
     clearInterval(this.interval);
   }
 

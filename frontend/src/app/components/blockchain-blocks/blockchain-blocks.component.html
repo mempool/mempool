@@ -1,4 +1,4 @@
-<div class="blocks-container" *ngIf="!loadingBlocks && blocks[0].feeRange; else loadingBlocksTemplate">
+<div class="blocks-container" *ngIf="(loadingBlocks$ | async) === false; else loadingBlocksTemplate">
   <div *ngFor="let block of blocks; let i = index; trackBy: trackByBlocksFn" >
     <div class="text-center bitcoin-block mined-block" id="bitcoin-block-{{ block.height }}" [ngStyle]="blockStyles[i]">
       <a [routerLink]="['/block/' | relativeUrl, block.id]" [state]="{ data: { block: block } }" class="blockLink">&nbsp;</a>
