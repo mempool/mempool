@@ -53,18 +53,25 @@ class WebsocketHandler {
               if (parsedMessage['watch-mempool']) {
                 const tx = memPool.getMempool()[client['track-tx']];
                 if (tx) {
-                  if (config.MEMPOOL.BACKEND !== 'esplora') {
+                  if (config.MEMPOOL.BACKEND === 'esplora') {
+                    response['tx'] = tx;
+                  } else {
+                    // tx.prevouts is missing from transactions when in bitcoind mode
                     try {
                       const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, true);
                       response['tx'] = fullTx;
                     } catch (e) {
-                      logger.debug('Error finding transaction in mempool: ' + e.message || e);
+                      logger.debug('Error finding transaction: ' + e.message || e);
                     }
-                  } else {
-                    response['tx'] = tx;
                   }
                 } else {
-                  client['track-mempool-tx'] = parsedMessage['track-tx'];
+                  try {
+                    const fullTx = await transactionUtils.$getTransactionExtended(client['track-tx'], true);
+                    response['tx'] = fullTx;
+                  } catch (e) {
+                    logger.debug('Error finding transaction. ' + e.message || e);
+                    client['track-mempool-tx'] = parsedMessage['track-tx'];
+                  }
                 }
               }
             } else {
