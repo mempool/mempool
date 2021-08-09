@@ -1377,6 +1377,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4b137ec8bf73a47063740b75c0c40d5fd3c48015">
         <source>The Mempool Open Source Project</source>
+        <target>פרויקט הקוד פתוח של  ממפול.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">12</context>
@@ -1385,6 +1386,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f447b21299afc5bc9dadade96dbc90114bea837a">
         <source>Building a mempool and blockchain explorer for the Bitcoin community, focusing on the transaction fee market and multi-layer ecosystem, without any advertising, altcoins, or third-party trackers.</source>
+        <target>בונים מנוע מחקר ממפול ובלוקציין לקהילת הביטקוין, ממוקד על שוק העמלות העברות והאקוסיסטם ורב-שיכבתי, ללא פרסום, אלטקויינים, או מעקבים גוף שלישי.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">13,17</context>
@@ -1419,6 +1421,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1abb54fd13f529707c73db97625cd18c7c8cbb09">
         <source>Navigate to <x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/sponsor&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/>https://mempool.space/sponsor<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/> to sponsor</source>
+        <target>נווט ל-<x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/sponsor&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/>https://mempool.space/sponsor<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/> לתת חסות.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">67</context>
@@ -1533,6 +1536,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="cedcc9d48ffb2714e7b2f012ab67bd21f8e96a18">
         <source><x ctype="x-i" equiv-text="&lt;i&gt;" id="START_ITALIC_TEXT"/>The number of transactions on this address exceeds the Electrum server limit<x ctype="x-i" equiv-text="&lt;/i&gt;" id="CLOSE_ITALIC_TEXT"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/> Consider viewing this address on the official Mempool website instead: </source>
+        <target><x ctype="x-i" equiv-text="&lt;i&gt;" id="START_ITALIC_TEXT"/>מספר ההעברות בכתובת זו חורג הגבלת שרת אלקטרום<x ctype="x-i" equiv-text="&lt;/i&gt;" id="CLOSE_ITALIC_TEXT"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/> שקול צפיית הכתובת באתר הרשמי של Mempool במקום.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">127,130</context>
@@ -1930,6 +1934,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2761d0de651f1c4395e6e7fbc7fded09918f8dcb">
         <source>Returns details about difficulty adjustment.</source>
+        <target>מחזיר פרטים לגבי התאמת הקושי. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">24,26</context>
@@ -1955,6 +1960,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="c9f5914dbba46a8dc4ab4e81b40b1582eea7c5e2">
         <source>Get transaction history for the specified address/scripthash, sorted with newest first. Returns up to 50 mempool transactions plus the first 25 confirmed transactions. You can request more confirmed transactions using <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:last_seen_txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (see below).</source>
+        <target>קבל את היסטורית הטרנזקציות לכתובת/סקריפטהש, ממוין עם הכי חדש קודם. מחזיר עד 50 טנזקציות בממפול פלוס ה-25 טרנזקציות הלא מאושרות הראשונות. ניתן לבקש עוד טרנזקציות מאושרות עם <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>last_seen_txid:<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (ראה למטה)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">68,69</context>
@@ -2034,6 +2040,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="194d480219559b855b01ea58459066e3c63acdb2">
         <source>Returns details about a block. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>id<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>version<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>timestamp<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>bits<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>merkle_root<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>size<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>weight<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/><x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/> and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>previousblockhash<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
+        <target>מחזירה פרטים על בלוק. שדות זמינים: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>id<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>  , <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> גובה <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>גרסה <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>חותמת זמן <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> ביטים <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> נונס tx_count ,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>merkle_root<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> גודל <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> משקל<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> , <x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/> <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> הוכחה<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/>  ו-<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>בלוקהש הקודם <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">211,212</context>
@@ -2041,6 +2048,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2ca235ae8c14854eb6ea6d42fd2521204d3db01f">
         <source>Returns the hex-encoded block header.</source>
+        <target>מחזיר את כותרת הבלוק בקידוד הקס.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">230,233</context>
@@ -2064,6 +2072,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a2c00fbdcce9d6291c3b04c67979f9694be23f28">
         <source>Returns the confirmation status of a block. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>in_best_chain<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean, false for orphaned blocks), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>next_best<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (the hash of the next block, only available for blocks in the best chain).</source>
+        <target>מחזירה את סטטוס האישור של בלוק. שדות זמינים: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> in_best_chain <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (בוליאני, לא נכון עבור בלוקים מיותמים), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> next_best <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (ההש של הבלוק הבא, זמין רק עבור בלוקים בשרשרת הטובה ביותר).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">283,284</context>
@@ -2087,6 +2096,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3e08815110b2e5ce8aa7256ed05a2faf6dbb7077">
         <source>Returns the transaction at index <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:index<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> within the specified block.</source>
+        <target>מחזירה את הטרנזקציה באינדקס <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>index: <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> בתוך הבלוק שצוין.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">342,343</context>
@@ -2102,6 +2112,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1126cb2e03d0371d03b57047052d4ff1b6556753">
         <source>Returns a list of transactions in the block (up to 25 transactions beginning at <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>start_index<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>). Transactions returned here do not have the <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> field, since all the transactions share the same block and confirmation status.</source>
+        <target>מחזירה רשימת טרנזקציות בבלוק (עד 25 טרנזקציות המתחילות ב- <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>start_index<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>). טרנזקציות המוחזרות כאן אינן בעלות השדה <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, מכיוון שלכל טרנזקציות יש אותו בלוק ואותו סטטוס אישור.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">381,382</context>
@@ -2109,6 +2120,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f8380186899495340cbfe7fb836ba664fb4b52af">
         <source>Returns the 10 newest blocks starting at the tip or at <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:start_height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> if specified.</source>
+        <target>מחזירה את 10 הבלוקים החדשים ביותר המתחילים בקצה או ב- <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>start_height:<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> אם צוין.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">401,402</context>
@@ -2126,6 +2138,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b95b496df2b0f016831d0984f3798a2e22b74103">
         <source>Returns current mempool as projected blocks.</source>
+        <target>מחזירה את הממפול הנוכחי כבלוקים צפויים.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">426,428</context>
@@ -2135,6 +2148,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="39f61f2d1434d921a1f80a2a2f0903f06e9fd4df">
         <source>Returns our currently suggested fees for new transactions.</source>
+        <target>מחזירה את העמלות המומלצות כרגע לטרנזקציות חדשות.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">442,444</context>
@@ -2230,6 +2244,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="23c346e87b137b1807bac13c27d19dc18f745f8f">
         <source>Get the full list of txids in the mempool as an array. The order of the txids is arbitrary and does not match bitcoind.</source>
+        <target>קבל את הרשימה המלאה של txids ב- mempool כמערך. סדר ה-txids הוא שרירותי ואינו תואם bitcoind.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">632,635</context>
@@ -2259,6 +2274,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4ebf8d4a2433cca5a8a933ef8ccef1b01e45acef">
         <source>Returns the ancestors and the best descendant fees for a transaction.</source>
+        <target>מחזירה את האבות ואת העמלות הטובים ביותר לטרנזקציה.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">676,678</context>
@@ -2284,6 +2300,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d51106cc898981e9862d35a4db40796f0cf464f8">
         <source>Returns a merkle inclusion proof for the transaction using <x ctype="x-a" equiv-text="&lt;a href=&quot;https://bitcoin.org/en/glossary/merkle-block&quot;&gt;" id="START_LINK"/>bitcoind's merkleblock<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/> format.</source>
+        <target>מחזירה הוכחת הכללה של Merkle לטרנזקציה באמצעות פורמט <x ctype="x-a" equiv-text="&lt;a href=&quot;https://bitcoin.org/en/glossary/merkle-block&quot;&gt;" id="START_LINK"/>merkleblock של bitcoind<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">730,731</context>
@@ -2299,6 +2316,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fe9a40b2ff9674b4ab7d82624ffed340c9ee5b89">
         <source>Returns the spending status of a transaction output. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vin<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional), and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional, the status of the spending tx).</source>
+        <target>מחזירה את מצב ההוצאה של תפוקת טרנזקציה. שדות זמינים: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> שולם <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (בוליאני), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> txid <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (אופציונלי), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> vin <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (אופציונלי), ו-<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (אופציונלי, הסטטוס שלי הטרנזקציה המשלם).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">769,770</context>
@@ -2322,6 +2340,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7e784cfa5833e7b54d4dfc723fabde94f66ebde3">
         <source>Returns the confirmation status of a transaction. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>confirmed<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional), and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_hash<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional).</source>
+        <target>מחזירה את סטטוס האישור של הטרנזקציה. שדות זמינים: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>confirmed<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (בוליאני), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> block_height <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (אופציונלי) ו- <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> block_hash<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (אופציונלי).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">826,827</context>
@@ -2329,6 +2348,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="01723473ecc53cab60ef1b37dc39d8941994d56f">
         <source>Broadcast a raw transaction to the network. The transaction should be provided as hex in the request body. The <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> will be returned on success.</source>
+        <target>שדר טרנזקציה גולמית לרשת. יש לספק את הטרנזקציה כ-hex בגוף הבקשה. ה-<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> txid <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> יוחזר לאחר הצלחת הפעולה.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">846,847</context>
@@ -2346,6 +2366,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a706b1ded7506620b153dbcdea8108e6691bbbd9">
         <source>Default push: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> action: 'want', data: ['blocks', ...] <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> to express what you want pushed. Available: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>blocks<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool-blocks<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>live-2h-chart<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/>Push transactions related to address: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> 'track-address': '3PbJ...bF9B' <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> for new mempool transactions, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> for new block confirmed transactions.</source>
+        <target>פעולת ברירת מחדל: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> <x equiv-text="{{ '{' }}" id="INTERPOLATION"/>[... ,'action: 'want', data: ['blocks <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/> <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> להביע את מה שאתה רוצה לדחוף. זמין:       <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>live-2h-chart<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,mempool-blocks,<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>,<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>blocks<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, ו- <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/> <x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/>דחוף טרנזקציות קשורות לכתובת:<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> 'track-address': '3PbJ...bF9B' <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> לקבל כל הטרנזקציות החדשות שכוללות הכתובת כקלט או כתפוקה. מחזיר מערך טרנזקציות.<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> address-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> לטרנזקציות חדשות לממפול, ו- <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> לטרנזקציות מאושרות חדשות לבלוק.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">865,866</context>

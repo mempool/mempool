@@ -209,6 +209,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.SS">
         <source>SS</source>
+        <target>एसएस</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -632,7 +633,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8a7b4bd44c0ac71b2e72de0398b303257f7d2f54">
         <source>Blocks</source>
-        <target>ब्लाकों</target>
+        <target>ब्लॉक</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.ts</context>
           <context context-type="linenumber">38</context>
@@ -1523,6 +1524,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f094f67fbe759cdbeb2ea14455634bbe5cc6375d">
         <source>Error loading address data.</source>
+        <target>डेटा लोड करने में त्रुटि.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">122,125</context>
@@ -1578,6 +1580,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="42b59f1f3dfde09c4c04f711307847438e057efb">
         <source>General</source>
+        <target>आम</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -1928,6 +1931,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2761d0de651f1c4395e6e7fbc7fded09918f8dcb">
         <source>Returns details about difficulty adjustment.</source>
+        <target>कठिनाई समायोजन के बारे में विवरण देता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">24,26</context>
@@ -2016,6 +2020,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f4cba7faeb126346f09cc6af30124f9a343f7a28">
         <source>Blocks</source>
+        <target>ब्लॉक</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">197,199</context>
@@ -2036,6 +2041,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2ca235ae8c14854eb6ea6d42fd2521204d3db01f">
         <source>Returns the hex-encoded block header.</source>
+        <target>हेक्स-एन्कोडेड ब्लॉक हेडर देता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">230,233</context>
@@ -2043,6 +2049,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="36df9865e9099d98537ea69c9cfdc035d1b64116">
         <source>Returns the hash of the block currently at <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
+        <target>वर्तमान में <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> :height <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> पर ब्लॉक का हैश लौटाता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">248,249</context>
@@ -2050,6 +2057,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="6d5aacdd7e6c375570a88c25bfd0be82beba4c7b">
         <source>Returns the raw block representation in binary.</source>
+        <target>बाइनरी में रॉ ब्लॉक का प्रतिनिधित्व देता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">264,267</context>
@@ -2057,6 +2065,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a2c00fbdcce9d6291c3b04c67979f9694be23f28">
         <source>Returns the confirmation status of a block. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>in_best_chain<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean, false for orphaned blocks), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>next_best<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (the hash of the next block, only available for blocks in the best chain).</source>
+        <target>किसी ब्लॉक की पुष्टि स्थिति लौटाता है। उपलब्ध फ़ील्ड: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> in_best_chain <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (बूलियन, अनाथ ब्लॉक के लिए झूठा), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> next_best <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (अगले ब्लॉक का हैश, केवल सर्वश्रेष्ठ श्रृंखला में ब्लॉक के लिए उपलब्ध)।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">283,284</context>
@@ -2064,6 +2073,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4767bdd2059533d5eed7f3fe7cf0be5c260cdb00">
         <source>Returns the height of the last block.</source>
+        <target>अंतिम ब्लॉक की ऊंचाई लौटाता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">303,306</context>
@@ -2071,6 +2081,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="940153d58769f1a8f50dba2458693142675a5dcb">
         <source>Returns the hash of the last block.</source>
+        <target>अंतिम ब्लॉक का हैश लौटाता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">322,325</context>
@@ -2085,6 +2096,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3846f2527c3c9a50bb84b2c941a876f66797449b">
         <source>Returns a list of all txids in the block.</source>
+        <target>ब्लॉक में सभी txid की सूची देता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">362,365</context>
@@ -2268,6 +2280,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="34c21c242665d87bf22645c90f571bd5078eac93">
         <source>Returns a transaction serialized as hex.</source>
+        <target>हेक्स के रूप में क्रमबद्ध एक लेनदेन देता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">712,715</context>
@@ -2303,6 +2316,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fd42ee72bb64b93578d7d2142ae50796d0056d7a">
         <source>Returns a transaction as binary data.</source>
+        <target>लेन-देन को बाइनरी डेटा के रूप में लौटाता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">807,810</context>
@@ -2798,6 +2812,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="cbfb79ff517493268a49acffa81ecc02336d8372">
         <source>Block Header Hex</source>
+        <target>ब्लॉक हैडर हेक्स</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">118,119</context>
@@ -2819,6 +2834,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="56ad2f3895f350abdd3cee2d95498deb8819afac">
         <source>Error loading block data.</source>
+        <target>ब्लॉक डेटा लोड करने में गड़बड़ी.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">223,231</context>
@@ -2827,6 +2843,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="block.component.browser-title">
         <source>Block <x equiv-text="block.height" id="BLOCK_HEIGHT"/>: <x equiv-text="block.id" id="BLOCK_ID"/></source>
+        <target>ब्लॉक <x equiv-text="block.height" id="BLOCK_HEIGHT"/> : <x equiv-text="block.id" id="BLOCK_ID"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.ts</context>
           <context context-type="linenumber">106</context>
@@ -2932,6 +2949,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1bb6965f8e1bbe40c076528ffd841da86f57f119">
         <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> <x ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;" id="START_TAG_SPAN"/>blocks<x ctype="x-span" equiv-text="&lt;/span&gt;" id="CLOSE_TAG_SPAN"/></source>
+        <target> <x equiv-text="{{ i }}" id="INTERPOLATION"/> <x ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;" id="START_TAG_SPAN"/> ब्लॉक <x ctype="x-span" equiv-text="&lt;/span&gt;" id="CLOSE_TAG_SPAN"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">22,23</context>
@@ -2948,6 +2966,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b7ef3894d9b6f157c400ddc937c70c9881ecd896">
         <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> <x ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;" id="START_TAG_SPAN"/>block<x ctype="x-span" equiv-text="&lt;/span&gt;" id="CLOSE_TAG_SPAN"/></source>
+        <target> <x equiv-text="{{ i }}" id="INTERPOLATION"/> <x ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;" id="START_TAG_SPAN"/> ब्लॉक <x ctype="x-span" equiv-text="&lt;/span&gt;" id="CLOSE_TAG_SPAN"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">23,24</context>
@@ -3028,6 +3047,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="mempool-block.next.block">
         <source>Next block</source>
+        <target>अगला ब्लॉक</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">71</context>
@@ -3035,6 +3055,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="mempool-block.stack.of.blocks">
         <source>Stack of <x equiv-text="blocksInBlock" id="INTERPOLATION"/> mempool blocks</source>
+        <target><x equiv-text="blocksInBlock" id="INTERPOLATION"/> मेमपूल ब्लॉक का ढेर</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">73</context>
@@ -3042,6 +3063,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="mempool-block.block.no">
         <source>Mempool block <x equiv-text="this.mempoolBlockIndex + 1" id="INTERPOLATION"/></source>
+        <target>मेमपूल ब्लॉक <x equiv-text="this.mempoolBlockIndex + 1" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">75</context>
@@ -3071,6 +3093,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="78fe1342aab9e91cb7cbd1becbaacf3b719546b3">
         <source>TXID, block height, hash or address</source>
+        <target>TXID, ब्लॉक ऊंचाई, हैश या पता</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-form.component.html</context>
           <context context-type="linenumber">4</context>
@@ -3742,6 +3765,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="9d92d02835569b64f0dce58e81a0d22dd798f6e5">
         <source>Only ~<x equiv-text="{{ medianFeeNeeded | number : '1.1-1' }}" id="INTERPOLATION"/> sat/vB was needed to get into this block</source>
+        <target>इस ब्लॉक में आने के लिए केवल ~ <x equiv-text="{{ medianFeeNeeded | number : '1.1-1' }}" id="INTERPOLATION"/> सैट/वीबी की जरूरत थी</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
@@ -3779,6 +3803,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e1139ea570985b3f114e18876f09fd7223429983">
         <source>Latest blocks</source>
+        <target>नई ब्लॉक</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">76,79</context>
