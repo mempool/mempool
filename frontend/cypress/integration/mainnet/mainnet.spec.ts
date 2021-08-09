@@ -1,4 +1,4 @@
-import { emitMempoolInfo, emitWithoutMempoolInfo } from "../../support/websocket";
+import { emitMempoolInfo, dropWebSocket } from "../../support/websocket";
 
 describe('Mainnet', () => {
     beforeEach(() => {
@@ -31,6 +31,23 @@ describe('Mainnet', () => {
         });
     });
 
+    it('loads dashboard, drop websocket and reconnect', () => {
+        cy.viewport('macbook-16');
+        cy.mockMempoolSocket();
+        cy.visit('/');
+        cy.get('.badge').should('not.exist');
+        dropWebSocket();
+        cy.get('.badge').should('be.visible');        
+        cy.get('.badge', {timeout: 25000}).should('not.exist');
+        emitMempoolInfo({
+            'params': {
+              loaded: true
+            }
+        });
+        cy.get(':nth-child(1) > #bitcoin-block-0').should('not.exist');
+        cy.get(':nth-child(2) > #bitcoin-block-0').should('not.exist');
+        cy.get(':nth-child(3) > #bitcoin-block-0').should('not.exist');
+    });
 
     it('loads the dashboard', () => {
         cy.visit('/');

@@ -3,7 +3,7 @@ import { Subscription, Observable, fromEvent, merge, of, combineLatest, timer } 
 import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
-import { take, map, switchMap } from 'rxjs/operators';
+import { take, map, switchMap, share } from 'rxjs/operators';
 import { feeLevels, mempoolFeeColors } from 'src/app/app.constants';
 
 @Component({
@@ -14,12 +14,15 @@ import { feeLevels, mempoolFeeColors } from 'src/app/app.constants';
 })
 export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
-  mempoolBlocks: MempoolBlock[] = this.mountEmptyBlocks();
+  mempoolBlocks: MempoolBlock[] = [];
+  mempoolEmptyBlocks: MempoolBlock[] = this.mountEmptyBlocks();
   mempoolBlocks$: Observable<MempoolBlock[]>;
   timeAvg$: Observable<number>;
+  loadingBlocks$: Observable<boolean>;
 
-  mempoolBlocksFull: MempoolBlock[] = this.mountEmptyBlocks();
+  mempoolBlocksFull: MempoolBlock[] = [];
   mempoolBlockStyles = [];
+  mempoolEmptyBlockStyles = [];
   markBlocksSubscription: Subscription;
   isLoadingWebsocketSubscription: Subscription;
   blockSubscription: Subscription;
@@ -31,7 +34,6 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   blockPadding = 30;
   arrowVisible = false;
   tabHidden = false;
-  loadingMempoolBlocks = true;
 
   rightPosition = 0;
   transition = '2s';
@@ -50,17 +52,18 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.mempoolEmptyBlocks.forEach((b) => {
+      this.mempoolEmptyBlockStyles.push(this.getStyleForMempoolEmptyBlock(b.index));
+    });
+    this.reduceMempoolBlocksToFitScreen(this.mempoolEmptyBlocks);
+
     this.mempoolBlocks.map(() => {
       this.updateMempoolBlockStyles();
       this.calculateTransactionPosition();
     });
     this.reduceMempoolBlocksToFitScreen(this.mempoolBlocks);
     this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
-    
-    this.isLoadingWebsocketSubscription = this.stateService.isLoadingWebSocket$.subscribe((loading) => {
-      this.loadingMempoolBlocks = loading;
-      this.cd.markForCheck();
-    });
+    this.loadingBlocks$ = this.stateService.isLoadingWebSocket$;
 
     this.mempoolBlocks$ = merge(
       of(true),
@@ -111,8 +114,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
           } else {
             timeAvgMins += Math.abs(timeAvgDiff);
           }
-
-          this.loadingMempoolBlocks = false;
+          
           return timeAvgMins * 60 * 1000;
         })
       );
@@ -170,7 +172,6 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     this.markBlocksSubscription.unsubscribe();
     this.blockSubscription.unsubscribe();
     this.networkSubscription.unsubscribe();
-    this.isLoadingWebsocketSubscription.unsubscribe();
     clearTimeout(this.resetTransitionTimeout);
   }
 
@@ -237,6 +238,13 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     };
   }
 
+  getStyleForMempoolEmptyBlock(index: number) {
+    return {
+      'right': 40 + index * 155 + 'px',
+      'background': '#554b45',
+    };
+  }
+
   calculateTransactionPosition() {
     if ((!this.txFeePerVSize && (this.markIndex === undefined || this.markIndex === -1)) || !this.mempoolBlocks) {
       this.arrowVisible = false;
@@ -289,7 +297,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
         blockSize: 0,
         blockVSize: 0,
         feeRange: [],
-        index: 0,
+        index: i,
         medianFee: 0,
         nTx: 0,
         totalFees: 0
