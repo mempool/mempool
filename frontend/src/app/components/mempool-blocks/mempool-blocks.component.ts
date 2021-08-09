@@ -55,6 +55,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     this.mempoolEmptyBlocks.forEach((b) => {
       this.mempoolEmptyBlockStyles.push(this.getStyleForMempoolEmptyBlock(b.index));
     });
+    this.reduceMempoolBlocksToFitScreen(this.mempoolEmptyBlocks);
 
     this.mempoolBlocks.map(() => {
       this.updateMempoolBlockStyles();
