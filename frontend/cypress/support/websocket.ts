@@ -38,6 +38,7 @@ export const mockWebSocket = () => {
 				win.mockServer = server;
 				win.mockServer.on('connection', (socket) => {
 					win.mockSocket = socket;
+                    win.mockSocket.send('{"action":"init"}');
 				});
 
                 win.mockServer.on('message', (message) => {
@@ -82,3 +83,10 @@ export const emitMempoolInfo = ({
     cy.waitForSkeletonGone();
     return cy.get('#mempool-block-0');
 };
+
+export const dropWebSocket = (() => {
+    cy.window().then((win) => {
+        win.mockServer.simulate("error");
+    });
+    return cy.wait(500);
+});
