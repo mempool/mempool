@@ -662,7 +662,7 @@ Broadcast a raw transaction to the network. The transaction should be provided a
 
 **Parameters:**
 
-- {string} txid
+- {string} txhex
 
 [ [NodeJS Example](examples/nodejs/bitcoin/transactions.ts) ] [ [HTML Example](examples/html/bitcoin/transactions.html) ] [ [Top](#features) ]
 
@@ -671,9 +671,9 @@ const {
   bitcoin: { transactions },
 } = mempoolJS();
 
-const txid = '15e10745f15593a899cef391191bdd3d7c12412cc4696b7bcb669d0feadc8521';
+const txhex = '15e10745f15593a899cef391191bdd3d7c12412cc4696b7bcb669d0feadc8521';
 
-const postTx = await transactions.postTx({ txid });
+const postTx = await transactions.postTx({ txhex });
 console.log(postTx);
 ```
 
