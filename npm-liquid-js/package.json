@@ -1,6 +1,6 @@
 {
   "name": "@mempool/liquid.js",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "NPM package module for Liquid APIs.",
   "main": "../lib/index-liquid.js",
   "keywords": [

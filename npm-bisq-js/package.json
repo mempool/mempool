@@ -1,6 +1,6 @@
 {
   "name": "@mempool/bisq.js",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "NPM package module for Bisq APIs.",
   "main": "../lib/index-bisq.js",
   "keywords": [
