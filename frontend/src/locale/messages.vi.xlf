@@ -4166,6 +4166,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.minute">
         <source><x equiv-text="counter" id="DATE"/> minute</source>
+        <target> <x equiv-text="counter" id="DATE"/> phút</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">13</context>
@@ -4173,6 +4174,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.minutes">
         <source><x equiv-text="counter" id="DATE"/> minutes</source>
+        <target> <x equiv-text="counter" id="DATE"/> phút</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">14</context>
@@ -4180,6 +4182,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.second">
         <source><x equiv-text="counter" id="DATE"/> second</source>
+        <target> <x equiv-text="counter" id="DATE"/> giây</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">15</context>
@@ -4187,6 +4190,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.seconds">
         <source><x equiv-text="counter" id="DATE"/> seconds</source>
+        <target> <x equiv-text="counter" id="DATE"/> giây</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">16</context>

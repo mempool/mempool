@@ -3,7 +3,7 @@
     <body>
       <trans-unit datatype="html" id="ngb.alert.close">
         <source>Close</source>
-        <target>סגור</target>
+        <target>סגירה</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/alert/alert.ts</context>
           <context context-type="linenumber">74</context>
@@ -51,7 +51,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.datepicker.select-month">
         <source>Select month</source>
-        <target>בחר חודש</target>
+        <target>בחירת חודש</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/datepicker/datepicker-navigation-select.ts</context>
           <context context-type="linenumber">74</context>
@@ -63,7 +63,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.datepicker.select-year">
         <source>Select year</source>
-        <target>בחר שנה</target>
+        <target>בחירת שנה</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/datepicker/datepicker-navigation-select.ts</context>
           <context context-type="linenumber">74</context>
@@ -259,7 +259,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.toast.close-aria">
         <source>Close</source>
-        <target>סגור</target>
+        <target>סגירה</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/toast/toast.ts</context>
           <context context-type="linenumber">137</context>
@@ -276,7 +276,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="aef0d676b15fdae8cb70fc3b089cce7399fde9da">
         <source>Search asset</source>
-        <target>חפש נכס</target>
+        <target>חיפוש נכס</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -285,7 +285,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="99ee4faa69cd2ea8e3678c1f557c0ff1f05aae46">
         <source>Clear</source>
-        <target>נקה</target>
+        <target>ניקוי</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">11,16</context>
@@ -307,7 +307,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4ad173c0e4010b1f25bf58e96a383edc1b59cd80">
         <source>Ticker</source>
-        <target>Ticker</target>
+        <target>פסנוע</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">20,21</context>
@@ -346,7 +346,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="cf1fbcd10d4be4845152f2e10d1db9bc61dd9410">
         <source>Issuance TX</source>
-        <target>הנפקת טרנזקציה</target>
+        <target>פעולת הנפקה</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">23,26</context>
@@ -436,7 +436,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="27387c2af5dcaf343a548feba821515f5dc00faa">
         <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> transaction</source>
-        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> טרנזקציה</target>
+        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> פעולה</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
           <context context-type="linenumber">50</context>
@@ -461,7 +461,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="14779b0ce4cbc4d975a35a8fe074426228a324f3">
         <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> transactions</source>
-        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> טרנזקציות</target>
+        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/> פעולות</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
           <context context-type="linenumber">51</context>
@@ -611,7 +611,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="add4cd82e3e38a3110fe67b3c7df56e9602644ee">
         <source>Transactions</source>
-        <target>טרנזקציות</target>
+        <target>פעולות</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
           <context context-type="linenumber">15,18</context>
@@ -656,7 +656,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="6b2fdbdddef74630e1076d58786ca339a8c030f0">
         <source>Bisq Trading Volume</source>
-        <target>נפח עסקאות ביסק</target>
+        <target>נפח מסחר Bisq</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">3,7</context>
@@ -792,7 +792,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1915fb658404dd3fa2a05f7d5fdd774ad72ef422">
         <source>View all »</source>
-        <target>צפה בהכל »</target>
+        <target>הצג הכל »</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
           <context context-type="linenumber">92,97</context>
@@ -862,7 +862,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2a30a4cdb123a03facc5ab8c5b3e6d8b8dbbc3d4">
         <source>BSQ statistics</source>
-        <target>סטטיסטיקת BSQ</target>
+        <target>סטטיסטיקות BSQ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">2</context>
@@ -888,7 +888,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3218e6768d0d5fbc69d4931819e21451c89ba8ed">
         <source>Minted amount</source>
-        <target>Minted amount</target>
+        <target>כמות שהוטבעה</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">16</context>
@@ -901,7 +901,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="32377aae07f946d943f9361c8e518f714988c619">
         <source>Burnt amount</source>
-        <target>Burnt amount</target>
+        <target>כמות שרופה</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">20</context>
@@ -935,7 +935,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fb5b5aec9a6add4912de64b7bbc55884cc7f8e3a">
         <source>Unspent TXOs</source>
-        <target>פלטי טרנזקציות שלא בוזבזו</target>
+        <target>פלטי פעולה שלא בוזבזו</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">28</context>
@@ -948,7 +948,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0f8a41c901cd606bd3389d8a022cee193264f20b">
         <source>Spent TXOs</source>
-        <target>פלטי טרנזקציות שבוזבזו</target>
+        <target>פלטי פעולה שבוזבזו</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">32</context>
@@ -1103,7 +1103,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b59ea65c89a5ae15b787d8318fdad9edd6fec243">
         <source>Transaction</source>
-        <target>טרנזקציה</target>
+        <target>פעולה</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
           <context context-type="linenumber">12,15</context>
@@ -1197,7 +1197,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq.transaction.browser-title">
         <source>Transaction: <x equiv-text="this.txId" id="INTERPOLATION"/></source>
-        <target>טרנזקציה: <x equiv-text="this.txId" id="INTERPOLATION"/></target>
+        <target>פעולה: <x equiv-text="this.txId" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.ts</context>
           <context context-type="linenumber">50</context>
@@ -1209,7 +1209,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4d6066e445db90780e4b30ca93398be0b6567eda">
         <source>BSQ Transactions</source>
-        <target>טרנזקציות BSQ</target>
+        <target>פעולות BSQ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
           <context context-type="linenumber">2,5</context>
@@ -1217,7 +1217,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="94c248797dd2b6af49068cb49c3b4bc26bec6a16">
         <source>TXID</source>
-        <target>מזהה טרנזקציה</target>
+        <target>מזהה פעולה</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
           <context context-type="linenumber">18,19</context>
@@ -1273,7 +1273,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1899519213652410949">
         <source>Lockup</source>
-        <target>נעל</target>
+        <target>נעילה</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">35</context>
@@ -1281,7 +1281,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="450749685636583691">
         <source>Pay trade fee</source>
-        <target>שלם עמלת עסקה</target>
+        <target>תשלום עמלת עסקה</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">36</context>
@@ -1313,7 +1313,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1226904538495857889">
         <source>Transfer BSQ</source>
-        <target>העבר BSQ</target>
+        <target>העברת BSQ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">40</context>
@@ -1321,7 +1321,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4545041448523656285">
         <source>Unlock</source>
-        <target>בטל נעילה</target>
+        <target>ביטול נעילה</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">41</context>
@@ -1329,7 +1329,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8694527859973232423">
         <source>Vote reveal</source>
-        <target>חשוף הצבעה</target>
+        <target>חשיפת הצבעה</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">42</context>
@@ -1337,7 +1337,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq-transactions.filter">
         <source>Filter</source>
-        <target>סנן</target>
+        <target>סינון</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">56,55</context>
@@ -1377,7 +1377,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4b137ec8bf73a47063740b75c0c40d5fd3c48015">
         <source>The Mempool Open Source Project</source>
-        <target>פרויקט הקוד פתוח של  ממפול.</target>
+        <target>פרויקט הקוד פתוח של Mempool</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">12</context>
@@ -1412,7 +1412,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8d0b91c3b649c0237734a2c27585ed0409451523">
         <source>Become a sponsor ❤️</source>
-        <target>הצטרף כנותן חסות ❤️</target>
+        <target>הצטרפו כנותני חסות ❤️</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">66,67</context>
@@ -1421,7 +1421,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1abb54fd13f529707c73db97625cd18c7c8cbb09">
         <source>Navigate to <x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/sponsor&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/>https://mempool.space/sponsor<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/> to sponsor</source>
-        <target>נווט ל-<x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/sponsor&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/>https://mempool.space/sponsor<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/> לתת חסות.</target>
+        <target>נווטו ל-<x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/sponsor&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/>https://mempool.space/sponsor<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/> לתת חסות.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">67</context>
@@ -1482,7 +1482,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="9f10a0577222a7d6c35a889453fa3a794750d9c4">
         <source>multisig <x equiv-text="{{ multisigM }}" id="INTERPOLATION"/> of <x equiv-text="{{ multisigN }}" id="INTERPOLATION_1"/></source>
-        <target>multisig <x equiv-text="{{ multisigM }}" id="INTERPOLATION"/> of <x equiv-text="{{ multisigN }}" id="INTERPOLATION_1"/></target>
+        <target>רב-חתימות <x equiv-text="{{ multisigM }}" id="INTERPOLATION"/> מתוך <x equiv-text="{{ multisigN }}" id="INTERPOLATION_1"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
           <context context-type="linenumber">5</context>
@@ -1509,7 +1509,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="714e34125b3343df73f19ec800b43be95217d5d4">
         <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> transaction</source>
-        <target> <x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> של עסקת <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/></target>
+        <target>פעולת <x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> מתוך <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">52,53</context>
@@ -1518,7 +1518,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0f6ada0cfb60aefd8f77f8a22349850ce186d666">
         <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> transactions</source>
-        <target> <x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> של <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> עסקאות</target>
+        <target>פעולות  <x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> מתוך <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">53,54</context>
@@ -1574,7 +1574,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f11bc15f83d9174bd27454d32977b5025a66537d">
         <source>API Service</source>
-        <target>API Service</target>
+        <target>שירות API</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">4,7</context>
@@ -1942,7 +1942,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="9885457131a86be85a59c5366767e82c12d0a288">
         <source>Addresses</source>
-        <target>Addresses</target>
+        <target>כתובות</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">34,36</context>
@@ -1992,7 +1992,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b861fd11d5aa8772acc40c5412621b6dd52378e8">
         <source>Assets</source>
-        <target>Assets</target>
+        <target>נכסים</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">135,137</context>
@@ -2264,7 +2264,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8a4a4b8f308aaaeae782f7c9847013348d969c2d">
         <source>Transactions</source>
-        <target>Transactions</target>
+        <target>פעולות</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">661,665</context>
@@ -2422,7 +2422,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d6b673097fb7e79231afc43857e376f69ab9f3e3">
         <source>Install Package</source>
-        <target>התקן חבילה</target>
+        <target>התקנת חבילה</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/code-template.component.html</context>
           <context context-type="linenumber">23,24</context>
