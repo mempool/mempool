@@ -1,6 +1,6 @@
 # mempool**JS** - Bitcoin API
 
-Interface to access the Bitcoin `mainet`, `testnet`, `signet` APIs.
+Interface to access Bitcoin `mainet`, `testnet`, `signet` APIs.
 
 [Back to home](./README.md)
 
@@ -8,53 +8,50 @@ Interface to access the Bitcoin `mainet`, `testnet`, `signet` APIs.
 
 ## **Features**
 
-- Bitcoin
-  - Addresses
-    - [Get Address](#get-address)
-    - [Get Address Txs](#get-address-txs)
-    - [Get Address Txs Chain](#get-address-txs-chain)
-    - [Get Address Txs Mempool](#get-address-txs-mempool)
-    - [Get Address Txs Utxo](#get-address-txs-utxo)
-  - Assets
-    - [Get Asset](#get-asset)
-    - [Get Asset Txs](#get-asset-txs)
-    - [Get Asset Supply](#get-asset-supply)
-  - Blocks
-    - [Get Block](#get-block)
-    - [Get Block Status](#get-block-status)
-    - [Get Block Txs](#get-block-txs)
-    - [Get Block Txids](#get-block-txids)
-    - [Get Block Txid](#get-block-txid)
-    - [Get Block Raw](#get-block-raw)
-    - [Get Blocks Header](#get-blocks-header)
-    - [Get Blocks Height](#get-blocks-height)
-    - [Get Blocks](#get-blocks)
-    - [Get Blocks Tip Height](#get-blocks-tip-height)
-    - [Get Blocks Tip Hash](#get-blocks-tip-hash)
-  - Difficulty
-    - [Get Difficulty Adjustment](#get-difficulty-adjustment)
-  - Fees
-    - [Get Fees Recommended](#get-fees-recommended)
-    - [Get Fees Mempool Blocks](#get-fees-mempool-blocks)
-  - Mempool
-    - [Get Mempool](#get-mempool)
-    - [Get Mempool Recent](#get-mempool-recent)
-    - [Get Mempool Txids](#get-mempool-txids)
-  - Transactions
-    - [Get Tx](#get-tx)
-    - [Get Tx Status](#get-tx-status)
-    - [Get Tx Hex](#get-tx-hex)
-    - [Get Tx Raw](#get-tx-raw)
-    - [Get Tx Merkle Block Proof](#get-tx-merkle-block-proof)
-    - [Get Tx Merkle Proof](#get-tx-merkle-proof)
-    - [Get Tx Outspend](#get-tx-outspend)
-    - [Get Tx Outspends](#get-tx-outspends)
-    - [Post Tx Outspends]($post-tx-outspends)
-  - Websocket
-    - [Websocket Client](#websocket-client)
-    - [Websocket Server](#websocket-server)
-- [Bisq](./README-bisq.md)
-- [Liquid](./README-liquid.md)
+- Addresses
+  - [Get Address](#get-address)
+  - [Get Address Txs](#get-address-txs)
+  - [Get Address Txs Chain](#get-address-txs-chain)
+  - [Get Address Txs Mempool](#get-address-txs-mempool)
+  - [Get Address Txs Utxo](#get-address-txs-utxo)
+- Assets
+  - [Get Asset](#get-asset)
+  - [Get Asset Txs](#get-asset-txs)
+  - [Get Asset Supply](#get-asset-supply)
+- Blocks
+  - [Get Block](#get-block)
+  - [Get Block Status](#get-block-status)
+  - [Get Block Txs](#get-block-txs)
+  - [Get Block Txids](#get-block-txids)
+  - [Get Block Txid](#get-block-txid)
+  - [Get Block Raw](#get-block-raw)
+  - [Get Blocks Header](#get-blocks-header)
+  - [Get Blocks Height](#get-blocks-height)
+  - [Get Blocks](#get-blocks)
+  - [Get Blocks Tip Height](#get-blocks-tip-height)
+  - [Get Blocks Tip Hash](#get-blocks-tip-hash)
+- Difficulty
+  - [Get Difficulty Adjustment](#get-difficulty-adjustment)
+- Fees
+  - [Get Fees Recommended](#get-fees-recommended)
+  - [Get Fees Mempool Blocks](#get-fees-mempool-blocks)
+- Mempool
+  - [Get Mempool](#get-mempool)
+  - [Get Mempool Recent](#get-mempool-recent)
+  - [Get Mempool Txids](#get-mempool-txids)
+- Transactions
+  - [Get Tx](#get-tx)
+  - [Get Tx Status](#get-tx-status)
+  - [Get Tx Hex](#get-tx-hex)
+  - [Get Tx Raw](#get-tx-raw)
+  - [Get Tx Merkle Block Proof](#get-tx-merkle-block-proof)
+  - [Get Tx Merkle Proof](#get-tx-merkle-proof)
+  - [Get Tx Outspend](#get-tx-outspend)
+  - [Get Tx Outspends](#get-tx-outspends)
+  - [Post Tx Outspends]($post-tx-outspends)
+- Websocket
+  - [Websocket Client](#websocket-client)
+  - [Websocket Server](#websocket-server)
 
 ---
 

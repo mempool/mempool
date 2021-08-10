@@ -1,6 +1,6 @@
 # mempool**JS** - Bisq API
 
-Interface to access the Bisq API.
+Interface to access Bisq API.
 
 [Back to home](./README.md)
 
@@ -8,19 +8,16 @@ Interface to access the Bisq API.
 
 ## **Features**
 
-- [Bitcoin](./README-bitcoin.md)
-- Bisq
-  - Addresses
-    - [Get Address](#get-address)
-  - Blocks
-    - [Get Block](#get-block)
-    - [Get Blocks](#get-blocks)
-    - [Get Block Tip Height](#get-block-tip-height)
-  - Statistics
-  - Transactions
-    - [Get Transaction](#get-transaction)
-    - [Get Transactions](#get-transactions)
-- [Liquid](./README-liquid.md)
+- Addresses
+  - [Get Address](#get-address)
+- Blocks
+  - [Get Block](#get-block)
+  - [Get Blocks](#get-blocks)
+  - [Get Block Tip Height](#get-block-tip-height)
+- Statistics
+- Transactions
+  - [Get Transaction](#get-transaction)
+  - [Get Transactions](#get-transactions)
 
 ---
 
