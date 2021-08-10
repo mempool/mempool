@@ -97,6 +97,13 @@ export class BlockComponent implements OnInit, OnDestroy {
                 })
               );
           }
+
+          this.stateService.blocks$.subscribe(([block]) => {
+            if (block.id === blockHash) {
+              this.block = block;
+            }
+          });
+          
           return this.electrsApiService.getBlock$(blockHash);
         }
       }),
