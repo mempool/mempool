@@ -67,7 +67,7 @@ const {
   liquid: { addresses },
 } = mempoolJS();
 
-const address = '1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC';
+const address = 'Go65t19hP2FuhBMYtgbdMDgdmEzNwh1i48';
 
 const myAddress = await addresses.getAddress({ address });
 console.log(myAddress);
@@ -88,7 +88,7 @@ const {
   liquid: { addresses },
 } = mempoolJS();
 
-const address = '1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC';
+const address = 'Go65t19hP2FuhBMYtgbdMDgdmEzNwh1i48';
 
 const addressTxs = await addresses.getAddressTxs({ address });
 console.log(addressTxs);
@@ -109,7 +109,7 @@ const {
   liquid: { addresses },
 } = mempoolJS();
 
-const address = '1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC';
+const address = 'Go65t19hP2FuhBMYtgbdMDgdmEzNwh1i48';
 
 const addressTxsChain = await addresses.getAddressTxsChain({ address });
 console.log(addressTxsChain);
@@ -130,7 +130,7 @@ const {
   liquid: { addresses },
 } = mempoolJS();
 
-const address = '1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC';
+const address = 'Go65t19hP2FuhBMYtgbdMDgdmEzNwh1i48';
 
 const addressTxsMempool = await addresses.getAddressTxsMempool({ address });
 console.log(addressTxsMempool);
