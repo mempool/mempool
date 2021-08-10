@@ -1148,7 +1148,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e5026f6e33b13e7d8185288b9691d006a139d36d">
         <source>Fee per vByte</source>
-        <target>Siirtokulu per vBitti</target>
+        <target>Siirtokulu per vByte</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
           <context context-type="linenumber">64,66</context>
@@ -2756,7 +2756,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="855f852e5642a1279605465df0cbbe78c2622648">
         <source>Based on average native segwit transaction of 140 vBytes</source>
-        <target>Perustuu keskimääräiseen natiiviin 140 vBittiseen segwit-siirtotapahtumaan</target>
+        <target>Perustuu keskimääräiseen natiiviin 140 vByte segwit-siirtotapahtumaan</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">46,48</context>
@@ -2941,7 +2941,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0ae5beecbbfc96bcdf4f9a637aa72687e81ef5e1">
         <source>Tx vBytes per second:</source>
-        <target>Tx vBittiä per sekuntti:</target>
+        <target>Tx vByte:ä per sekuntti:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">5,7</context>
@@ -3231,7 +3231,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="75c20c8a9cd9723d45bee0230dd582d7c2e4ecbc">
         <source>Mempool by vBytes (sat/vByte)</source>
-        <target>Mempool vBitteinä (sat/vBitti)</target>
+        <target>Mempool vByte:inä (sat/vByte)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">13</context>
@@ -3249,7 +3249,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="dc15ec15e6206b40133f2c1b06095ce75aaee1ef">
         <source>Transaction vBytes per second (vB/s)</source>
-        <target>Siirtotapahtuma vBittiä sekunnissa (vB/s)</target>
+        <target>Siirtotapahtuma vByte:ä sekunnissa (vB/s)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">53</context>
