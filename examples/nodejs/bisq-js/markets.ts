@@ -1,0 +1,38 @@
+import bisqJS from "./../../../src/index-bisq";
+
+const init = async () => {
+  try {
+    const { markets } = bisqJS();
+    
+    const market = "BTC_USD";
+    const basecurrency = "BTC";
+
+    const allMarkets = await markets.getMarkets();
+    console.log(allMarkets);
+
+    const currencies = await markets.getCurrencies();
+    console.log(currencies);
+
+    const depth = await markets.getDepth({ market });
+    console.log(depth)
+
+    const hloc = await markets.getHloc({ market });
+    console.log(hloc);
+
+    const offers = await markets.getOffers({ market });
+    console.log(offers);
+
+    const ticker = await markets.getTicker({ market });
+    console.log(ticker);
+
+    const trades = await markets.getTrades({ market });
+    console.log(trades);
+
+    const volumes = await markets.getVolumes({ basecurrency, market });
+    console.log(volumes);
+
+  } catch (error) {
+    console.log(error);
+  }
+};
+init();

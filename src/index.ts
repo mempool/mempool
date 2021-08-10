@@ -3,6 +3,7 @@ import {
   makeBitcoinAPI,
   makeBisqAPI,
   makeLiquidAPI,
+  makeBisqMarketsAPI
 } from './services/api/index';
 
 import { useAddresses } from './app/bitcoin/addresses';
@@ -17,6 +18,7 @@ import { useAddresses as useAddressesBisq } from './app/bisq/addresses';
 import { useBlocks as useBlocksBisq } from './app/bisq/blocks';
 import { useStatistics as useStatisticsBisq } from './app/bisq/statistics';
 import { useTransactions as useTransactionsBisq } from './app/bisq/transactions';
+import { useMarkets as useMarkets } from './app/bisq/markets';
 
 import { useAssets as useAssetsLiquid } from './app/liquid/assets';
 import { useAddresses as useAddressesLiquid } from './app/liquid/addresses';
@@ -40,8 +42,8 @@ const mempool = (
 
   const { api: apiBitcoin } = makeBitcoinAPI({ hostname, network });
   const { api: apiBisq } = makeBisqAPI(hostname);
+  const { api: apiBisqMarkets } = makeBisqMarketsAPI();
   const { api: apiLiquid } = makeLiquidAPI(hostname);
-
   return {
     bitcoin: {
       addresses: useAddresses(apiBitcoin),
@@ -57,6 +59,7 @@ const mempool = (
       addresses: useAddressesBisq(apiBisq),
       blocks: useBlocksBisq(apiBisq),
       transactions: useTransactionsBisq(apiBisq),
+      markets: useMarkets(apiBisqMarkets),
     },
     liquid: {
       addresses: useAddressesLiquid(apiLiquid),

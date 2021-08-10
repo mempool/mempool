@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Page Title</title>
+    <script src="./../../../dist/liquid.js"></script>
+    <script>
+      const init = async () => {
+        try { 
+          const { blocks } = liquidJS();
+          
+          const hash =
+          '54f02bdec5509ea769c8be82aed51f689969b653d92a2812d5a36266cbfbc55e';
+          
+          const block = await blocks.getBlock({ hash });
+          console.log(block);
+          
+          const blockStatus = await blocks.getBlockStatus({ hash });
+          console.log(blockStatus);
+          
+          const blockTxs = await blocks.getBlockTxs({ hash });
+          console.log(blockTxs);
+          
+          const blockTxids = await blocks.getBlockTxids({ hash });
+          console.log(blockTxids);
+          
+          const blockTxid = await blocks.getBlockTxid({ hash, index: 0 });
+          console.log(blockTxid);
+          
+          const blockRaw = await blocks.getBlockRaw({ hash });
+          console.log(blockRaw);
+          
+          const blockHeight = await blocks.getBlockHeight({ height: 0 });
+          console.log(blockHeight);
+          
+          const getBlocks = await blocks.getBlocks({ start_height: 9999 });
+          console.log(getBlocks);
+          
+          const blocksTipHeight = await blocks.getBlocksTipHeight();
+          console.log(blocksTipHeight);
+          
+          const blocksTipHash = await blocks.getBlocksTipHash();
+          console.log(blocksTipHash);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      init();
+    </script>
+  </head>
+  <body></body>
+</html>

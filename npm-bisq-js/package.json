@@ -1,18 +1,15 @@
 {
-  "name": "@mempool/mempool.js",
-  "version": "2.2.4",
-  "description": "NPM package module for Mempool APIs.",
-  "main": "lib/index.js",
+  "name": "@mempool/bisq.js",
+  "version": "2.2.0",
+  "description": "NPM package module for Bisq APIs.",
+  "main": "../lib/index-bisq.js",
   "keywords": [
     "axios",
     "bitcoin",
     "bisq",
-    "liquid",
-    "mainet",
-    "testnet",
-    "signet",
     "blockchain",
     "html",
+    "bisq.js",
     "mempool.space",
     "mempool.js",
     "mempool",
@@ -21,25 +18,23 @@
     "typescript"
   ],
   "author": "Miguel Medeiros <contact@miguelmedeiros.com.br> (miguelmedeiros.com.br)",
-  "url": "https://mempool.space/",
+  "url": "https://bisq.markets/",
   "private": false,
   "repository": {
     "type": "git",
     "url": "git://github.com/mempool/mempool.js.git"
   },
-  "types": "lib/index.d.ts",
+  "types": "../lib/index-bisq.d.ts",
   "scripts": {
-    "start": "ts-node src/index.ts",
-    "dev": "nodemon src/index.ts",
+    "start": "ts-node ../src/index-bisq.ts",
+    "dev": "nodemon ../src/index-bisq.ts",
     "build": "tsc",
-    "export-mempool-js": "tsc | browserify lib/index.js --standalone mempoolJS > dist/mempool.js | browserify -p tinyify lib/index.js --standalone mempoolJS > dist/mempool.min.js",
-    "export-bisq-js": "tsc | browserify lib/index-bisq.js --standalone bisqJS > dist/bisq.js | browserify -p tinyify lib/index-bisq.js --standalone bisqJS > dist/bisq.min.js",
-    "export-liquid-js": "tsc | browserify lib/index-liquid.js --standalone liquidJS > dist/liquid.js | browserify -p tinyify lib/index-liquid.js --standalone liquidJS > dist/liquid.min.js",
+    "export-js": "tsc | browserify ../lib/index-bisq.js --standalone bisqJS > ../dist/bisq.js | browserify -p tinyify ../lib/index-bisq.js --standalone bisqJS > ../dist/bisq.min.js",    
     "prepare": "npm run build",
     "postversion": "git push && git push --tags"
   },
   "files": [
-    "lib/**/*"
+    "../lib/**/*"
   ],
   "dependencies": {
     "axios": "^0.21.1",

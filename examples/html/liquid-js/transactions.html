@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Page Title</title>
+    <script src="./../../../dist/liquid.js"></script>
+    <script>
+      const init = async () => {
+        try {
+          const { transactions } = liquidJS();
+          
+          const txid =
+          'f4e0cae35f8eb239c1eee9177884582aa6e4ce41e919f276617e9c7557168b53';
+          
+          const tx = await transactions.getTx({ txid });
+          console.log(tx);
+          
+          const txStatus = await transactions.getTxStatus({ txid });
+          console.log(txStatus);
+          
+          const txHex = await transactions.getTxHex({ txid });
+          console.log(txHex);
+          
+          const txRaw = await transactions.getTxRaw({ txid });
+          console.log(txRaw);
+          
+          const txMerkleProof = await transactions.getTxMerkleProof({ txid });
+          console.log(txMerkleProof);
+          
+          const txOutspend = await transactions.getTxOutspend({ txid, vout: 3 });
+          console.log(txOutspend);
+          
+          const txOutspends = await transactions.getTxOutspends({ txid });
+          console.log(txOutspends);
+          
+          const txMerkleBlockProof = await transactions.getTxMerkleBlockProof({ txid });
+          console.log(txMerkleBlockProof);
+          
+          // const postTx = await transactions.postTx({ txhex });
+          // console.log(postTx);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      init();
+    </script>
+  </head>
+  <body></body>
+</html>

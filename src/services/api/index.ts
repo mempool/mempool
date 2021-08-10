@@ -47,6 +47,15 @@ export const makeBisqAPI = (hostname?: string): { api: AxiosInstance } => {
   };
 };
 
+export const makeBisqMarketsAPI = (): { api: AxiosInstance } => {
+  const api = axios.create({
+    baseURL: `https://bisq.markets/api/v1/markets/`,
+  });
+  return {
+    api,
+  };
+};
+
 export const makeLiquidAPI = (hostname?: string): { api: AxiosInstance } => {
   
   if(hostname?.includes("localhost")){
@@ -69,5 +78,6 @@ export const makeLiquidAPI = (hostname?: string): { api: AxiosInstance } => {
 export default {
   makeBitcoinAPI,
   makeBisqAPI,
+  makeBisqMarketsAPI,
   makeLiquidAPI,
 };

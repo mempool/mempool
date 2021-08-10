@@ -10,6 +10,7 @@ import { AddressesInstance } from './bisq/addresses';
 import { BlocksInstance } from './bisq/blocks';
 import { StatsInstance } from './bisq/statistics';
 import { TransactionsInstance } from './bisq/transactions';
+import { MarketsInstance } from './bisq/markets';
 
 import { AssetsInstance } from './liquid/assets';
 import { BlockLiquidInstance } from './liquid/block';
@@ -33,6 +34,7 @@ export interface MempoolReturn {
     blocks: BlocksInstance;
     statistics: StatsInstance;
     transactions: TransactionsInstance;
+    markets: MarketsInstance;
   };
   liquid: {
     assets: AssetsInstance;
@@ -43,4 +45,20 @@ export interface MempoolReturn {
     transactions: TxInstance;
     websocket: WsInstance;
   };
+}
+export interface BisqMarketsReturn {
+  addresses: AddressesInstance;
+  blocks: BlocksInstance;
+  statistics: StatsInstance;
+  transactions: TransactionsInstance;
+  markets: MarketsInstance;
+}
+export interface LiquidNetworkReturn {
+  assets: AssetsInstance;
+  addresses: AddressInstance;
+  blocks: BlockLiquidInstance;
+  fees: FeeInstance;
+  mempool: MempoolInstance;
+  transactions: TxInstance;
+  websocket: WsInstance;
 }
