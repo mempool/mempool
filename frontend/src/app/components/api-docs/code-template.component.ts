@@ -7,6 +7,7 @@ import { Component, Input } from '@angular/core';
 })
 export class CodeTemplateComponent {
   @Input() network: string;
+  @Input() layer: string;
   @Input() code: {
     codeSample: {
       esModule: string;
@@ -16,14 +17,31 @@ export class CodeTemplateComponent {
     responseSample: string;
   };
   hostname = document.location.hostname;
-  esModuleInstall = `# npm
-npm install @mempool/mempool.js --save
-
-# yarn
-yarn add @mempool/mempool.js`;
 
   constructor(
   ) { }
+
+  npmGithubLink(){
+    let npmLink = `https://github.com/mempool/mempool.js`;
+    if (this.layer === 'bisq') {
+      npmLink = `https://github.com/mempool/mempool.js/tree/main/npm-bisq-js`;
+    }
+    if (this.layer === 'liquid') {
+      npmLink = `https://github.com/mempool/mempool.js/tree/main/npm-liquid-js`;
+    }
+    return npmLink;
+  }
+
+  npmModuleLink() {
+    let npmLink = `https://www.npmjs.org/package/@mempool/mempool.js`;
+    if (this.layer === 'bisq') {
+      npmLink = `https://www.npmjs.org/package/@mempool/bisq.js`;
+    }
+    if (this.layer === 'liquid') {
+      npmLink = `https://www.npmjs.org/package/@mempool/liquid.js`;
+    }
+    return npmLink;
+  }
 
   normalizeCodeHostname(code: string) {
     let codeText: string;
@@ -44,7 +62,15 @@ yarn add @mempool/mempool.js`;
   });` );
     }
 
-    return `import mempoolJS from "@mempool/mempool.js";
+    let importText = `import mempoolJS from "@mempool/mempool.js";`;
+    if (this.layer === 'bisq') {
+      importText = `import bisqJS from "@mempool/bisq.js";`;
+    }
+    if (this.layer === 'liquid') {
+      importText = `import liquidJS from "@mempool/liquid.js";`;
+    }
+
+    return `${importText}
 
 const init = async () => {
   ${codeText}
@@ -60,10 +86,18 @@ init();`;
           hostname: '${this.hostname}/${this.network}'
         });` );
     }
+
+    let importText = `<script src="https://mempool.space/mempool.js"></script>`;
+    if (this.layer === 'bisq') {
+      importText = `<script src="https://bisq.markets/bisq.js"></script>`;
+    }
+    if (this.layer === 'liquid') {
+      importText = `<script src="https://liquid.network/liquid.js"></script>`;
+    }
     return `<!DOCTYPE html>
 <html>
   <head>
-    <script src="https://mempool.space/mempool.js"></script>
+    ${importText}
     <script>
       const init = async () => {
         ${codeText}
@@ -79,6 +113,33 @@ init();`;
       return code.replace('mempool.space/', `mempool.space/${this.network}/`);
     }
     return code;
+  }
+
+  wrapImportTemplate() {
+
+    let importTemplate = `# npm
+npm install @mempool/mempool.js --save
+
+# yarn
+yarn add @mempool/mempool.js`;
+
+    if (this.layer === 'bisq') {
+      importTemplate = `# npm
+npm install @mempool/bisq.js --save
+
+# yarn
+yarn add @mempool/bisq.js`;
+    }
+
+    if (this.layer === 'liquid') {
+      importTemplate = `# npm
+npm install @mempool/liquid.js --save
+
+# yarn
+yarn add @mempool/liquid.js`;
+    }
+
+    return importTemplate;
   }
 
 }
