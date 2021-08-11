@@ -12,7 +12,7 @@
       <ng-template ngbNavContent>
         <div class="subtitle"><ng-container i18n="API Docs code example">Code Example</ng-container> <app-clipboard [text]="wrapCommonJS(code.codeSample.commonJS)"></app-clipboard></div>
         <div class="links">
-          <a href="https://github.com/mempool/mempool.js" target="_blank">github repository</a>
+          <a [href]="npmGithubLink()" target="_blank">github repository</a>
         </div>
         <pre><code [innerText]="wrapCommonJS(code.codeSample.commonJS)"></code></pre>
       </ng-template>
@@ -20,12 +20,12 @@
     <li ngbNavItem>
       <a ngbNavLink>ES Module</a>
       <ng-template ngbNavContent>
-        <div class="subtitle"><ng-container i18n="API Docs install lib">Install Package</ng-container> <app-clipboard [text]="esModuleInstall"></app-clipboard></div>
+        <div class="subtitle"><ng-container i18n="API Docs install lib">Install Package</ng-container> <app-clipboard [text]="wrapImportTemplate()"></app-clipboard></div>
         <div class="links">
-          <a href="https://github.com/mempool/mempool.js" target="_blank">github repository</a>
-          <a href="https://www.npmjs.org/package/@mempool/mempool.js" target="_blank">npm package</a>
+          <a [href]="npmGithubLink()" target="_blank">github repository</a>
+          <a [href]="npmModuleLink()" target="_blank">npm package</a>
         </div>
-        <pre><code [innerText]="esModuleInstall"></code></pre>
+        <pre><code [innerText]="wrapImportTemplate()"></code></pre>
         <div class="subtitle"><ng-container i18n="API Docs code example">Code Example</ng-container> <app-clipboard [text]="wrapESmodule(code.codeSample.esModule)"></app-clipboard></div>
         <pre><code [innerText]="wrapESmodule(code.codeSample.esModule)"></code></pre>
       </ng-template>
