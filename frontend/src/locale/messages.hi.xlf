@@ -1952,6 +1952,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e12cd52eaa77b446ba97436c145b59741151adf3">
         <source>Returns details about an address. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>chain_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>. <x equiv-text="{{ '{' }}" id="INTERPOLATION"/>chain,mempool<x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/>_stats each contain an object with <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
+        <target>Returns details about an address. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>chain_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>. <x equiv-text="{{ '{' }}" id="INTERPOLATION"/>chain,mempool<x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/>_stats each contain an object with <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">50,51</context>
@@ -1983,6 +1984,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4eb50557085c85bfca995b6ee0de56ec3f5e97eb">
         <source>Get the list of unspent transaction outputs associated with the address/scripthash. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vout<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (with the status of the funding tx).<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/>There is also a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>valuecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> field that may appear in place of <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, plus the following additional fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>asset<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>assetcommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>noncecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>surjection_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>range_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></source>
+        <target>Get the list of unspent transaction outputs associated with the address/scripthash. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vout<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (with the status of the funding tx).<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/>There is also a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>valuecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> field that may appear in place of <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, plus the following additional fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>asset<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>assetcommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>noncecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>surjection_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>range_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">124,125</context>
@@ -2016,6 +2018,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="44a238eb28145f904f3a5bbfd4050987668f78d0">
         <source>Get the current total supply of the specified asset. For the native asset (L-BTC), this is calculated as [chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount. For issued assets, this is calculated as [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount. Not available for assets with blinded issuances. If /decimal is specified, returns the supply as a decimal according to the asset's divisibility. Otherwise, returned in base units.</source>
+        <target>Get the current total supply of the specified asset. For the native asset (L-BTC), this is calculated as [chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount. For issued assets, this is calculated as [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount. Not available for assets with blinded issuances. If /decimal is specified, returns the supply as a decimal according to the asset's divisibility. Otherwise, returned in base units.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">186,189</context>
@@ -2037,6 +2040,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="194d480219559b855b01ea58459066e3c63acdb2">
         <source>Returns details about a block. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>id<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>version<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>timestamp<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>bits<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>merkle_root<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>size<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>weight<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/><x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/> and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>previousblockhash<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
+        <target>Returns details about a block. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>id<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>version<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>timestamp<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>bits<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>merkle_root<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>size<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>weight<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/><x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/> and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>previousblockhash<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">211,212</context>
@@ -3648,6 +3652,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5de25175982d51c72d25bd79933e7b412d51e343">
         <source>Peg-in</source>
+        <target>पेग-इन</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">46,48</context>
@@ -3676,6 +3681,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="c64b73564fd858ee5a4f73040893c9d625ca56ad">
         <source>Witness</source>
+        <target>विटनेस</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">88,89</context>
@@ -3684,6 +3690,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a8bc418b73c6bfcefc1b07c84d7f1126ab2a3237">
         <source>P2SH redeem script</source>
+        <target>P2SH रिडीम स्क्रिप्ट</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">92,93</context>
@@ -3692,6 +3699,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e1d63108bdf06fa14ec13f038e23eebd4d391b16">
         <source>P2WSH witness script</source>
+        <target>P2WSH विटनेस स्क्रिप्ट</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">96,97</context>
@@ -3700,6 +3708,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="cb49c3831dcaed1b6ccaf5efe58730cf29a5d15d">
         <source>nSequence</source>
+        <target>nसीक्वेंस</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">100,101</context>
@@ -3708,6 +3717,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="26cdad3f9e94369ff12c5c628d8eb5c724e3acb3">
         <source>Previous output script</source>
+        <target>पिछली आउटपुट स्क्रिप्ट</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">104,105</context>
@@ -3716,6 +3726,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="288d096739aa2d9aae2911f072f91b3a29245509">
         <source>Load all</source>
+        <target>सभी लोड करें</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">114,117</context>
@@ -3728,6 +3739,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="9fb28e77d5963f2275397f2f9cee54f32942aeeb">
         <source>Peg-out to <x ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;" id="START_TAG_NG_CONTAINER"/><x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></source>
+        <target>पेग-आउट टु  <x ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;" id="START_TAG_NG_CONTAINER"/> <x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">133,134</context>
@@ -3736,6 +3748,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4bdf69370ca8b0cae3a17d7b84b59c49cd57288d">
         <source>ScriptPubKey (ASM)</source>
+        <target>स्क्रिप्टपबकी (एएसएम)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">184,186</context>
@@ -3745,6 +3758,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e191b4f47f3ea7532f83fd498f4860db664ab75c">
         <source>ScriptPubKey (HEX)</source>
+        <target>स्क्रिप्टपबकी (हेक्स)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">188,190</context>
@@ -3754,6 +3768,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3ac775768c0ab6f813c8bab0fe0e68960fc87c4d">
         <source>data</source>
+        <target>डाटा</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">192,193</context>
@@ -3762,6 +3777,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="83b8b9dd1ed416447cf8438460a37b0ddeb2677c">
         <source>sat</source>
+        <target>सैट</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">212</context>
@@ -3779,6 +3795,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0ca27703757bf9a636a0b9b61e6a0cf248781cb4">
         <source>SegWit</source>
+        <target>सेग्विट </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">1</context>
@@ -3820,6 +3837,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f0e7d6d900658ee5ce66d8fef3637caf13891c53">
         <source>RBF</source>
+        <target>आरबीएफ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">8</context>
@@ -3913,6 +3931,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="46ae0bacea22bcf409534f1c314735e4983e398a">
         <source>Latest transactions</source>
+        <target>नवीनतम ट्रांसक्शन्स</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">105,108</context>
@@ -3921,6 +3940,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1cb0c1f40f7ef8d62da2ccdccfdd2b7cdd18d2b9">
         <source>USD</source>
+        <target>USD</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">110,111</context>
@@ -3929,6 +3949,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="160f1ffbd26df073d0fbd02cf8ce0d8cea7603b0">
         <source>Fee</source>
+        <target>शुल्क</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">111,114</context>
@@ -3937,6 +3958,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1f332ec66f3bc8d943c248091be7f92772ba280f">
         <source>Expand</source>
+        <target>विस्तार करें</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">132,133</context>
@@ -3945,6 +3967,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e8bcb762b48cf52fbea66ce9c4f6b970b99a80fd">
         <source>Collapse</source>
+        <target>छोटा करें </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">133,137</context>
@@ -3953,6 +3976,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1f9a922cb4010ee20eb9a241a22307b670f7628c">
         <source>Minimum fee</source>
+        <target>न्यूनतम शुल्क</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">168,169</context>
@@ -3962,6 +3986,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4c3955cfe5955657297481efaf3ada8c55c75b2c">
         <source>Purging</source>
+        <target>पर्जिंग</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">169,170</context>
@@ -3971,6 +3996,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b9565832c4caef9a03f2b30fe37495ff38566fd5">
         <source>Memory usage</source>
+        <target>मेमोरी उपयोग</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">181,182</context>
@@ -3980,6 +4006,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="926c571b25cca7e2a294619f145960c0cd3848b6">
         <source>Incoming transactions</source>
+        <target>आने वाले ट्रांसक्शन्स </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">193,194</context>
@@ -3988,6 +4015,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="63da83692b85cf17e0606153029a83fd4038d6dd">
         <source>Difficulty Adjustment</source>
+        <target>डिफीकल्टी एडजस्टमेंट </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">208,211</context>
@@ -3996,6 +4024,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0912816d94f2f05a7eee8f7622670e0c6bbbce16">
         <source>Remaining</source>
+        <target>बचा हुआ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">214,216</context>
@@ -4008,6 +4037,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5e65ce907fc0e1a1a09d4130eb8c59d00a9457ef">
         <source>Estimate</source>
+        <target>आकलन</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">223,224</context>
@@ -4020,6 +4050,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="680d5c75b7fd8d37961083608b9fcdc4167b4c43">
         <source>Previous</source>
+        <target>पिछला</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">235,236</context>
@@ -4028,6 +4059,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5db469cd0357e5f578b85a996f7e99c9e4148ff5">
         <source>Current Period</source>
+        <target>वर्तमान अवधि</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">247,248</context>
@@ -4040,6 +4072,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.year">
         <source><x equiv-text="counter" id="DATE"/> year</source>
+        <target> <x equiv-text="counter" id="DATE"/> वर्ष</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">3</context>
@@ -4047,6 +4080,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.years">
         <source><x equiv-text="counter" id="DATE"/> years</source>
+        <target> <x equiv-text="counter" id="DATE"/> वर्ष</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">4</context>
@@ -4054,6 +4088,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.month">
         <source><x equiv-text="counter" id="DATE"/> month</source>
+        <target> <x equiv-text="counter" id="DATE"/> माह</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">5</context>
@@ -4061,6 +4096,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.months">
         <source><x equiv-text="counter" id="DATE"/> months</source>
+        <target> <x equiv-text="counter" id="DATE"/> महीने</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">6</context>
@@ -4068,6 +4104,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.week">
         <source><x equiv-text="counter" id="DATE"/> week</source>
+        <target> <x equiv-text="counter" id="DATE"/> सप्ताह</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">7</context>
@@ -4075,6 +4112,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.weeks">
         <source><x equiv-text="counter" id="DATE"/> weeks</source>
+        <target> <x equiv-text="counter" id="DATE"/> सप्ताह</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">8</context>
@@ -4082,6 +4120,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.day">
         <source><x equiv-text="counter" id="DATE"/> day</source>
+        <target> <x equiv-text="counter" id="DATE"/> दिन</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">9</context>
@@ -4089,6 +4128,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.days">
         <source><x equiv-text="counter" id="DATE"/> days</source>
+        <target> <x equiv-text="counter" id="DATE"/> दिन</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">10</context>
@@ -4096,6 +4136,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.hour">
         <source><x equiv-text="counter" id="DATE"/> hour</source>
+        <target> <x equiv-text="counter" id="DATE"/> घंटा</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">11</context>
@@ -4103,6 +4144,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.hours">
         <source><x equiv-text="counter" id="DATE"/> hours</source>
+        <target> <x equiv-text="counter" id="DATE"/> घंटे</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">12</context>
@@ -4110,6 +4152,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.minute">
         <source><x equiv-text="counter" id="DATE"/> minute</source>
+        <target> <x equiv-text="counter" id="DATE"/> मिनट</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">13</context>
@@ -4117,6 +4160,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.minutes">
         <source><x equiv-text="counter" id="DATE"/> minutes</source>
+        <target> <x equiv-text="counter" id="DATE"/> मिनट</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">14</context>
@@ -4124,6 +4168,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.second">
         <source><x equiv-text="counter" id="DATE"/> second</source>
+        <target> <x equiv-text="counter" id="DATE"/> सेकंड</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">15</context>
@@ -4131,6 +4176,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.seconds">
         <source><x equiv-text="counter" id="DATE"/> seconds</source>
+        <target> <x equiv-text="counter" id="DATE"/> सेकंड</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">16</context>
@@ -4138,6 +4184,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2799825781368047816">
         <source>Transaction fee</source>
+        <target>ट्रांसक्शन फी </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/pipes/scriptpubkey-type-pipe/scriptpubkey-type.pipe.ts</context>
           <context context-type="linenumber">11</context>
