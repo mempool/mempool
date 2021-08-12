@@ -18,6 +18,8 @@ export class BlockComponent implements OnInit, OnDestroy {
   network = '';
   block: Block;
   blockHeight: number;
+  previousBlockHeight: number;
+  nextBlockHeight: number;
   blockHash: string;
   isLoadingBlock = true;
   latestBlock: Block;
@@ -33,6 +35,8 @@ export class BlockComponent implements OnInit, OnDestroy {
   itemsPerPage: number;
   txsLoadingStatus$: Observable<number>;
   showDetails = false;
+  showPreviousBlocklink = true;
+  showNextBlocklink = true;
 
   constructor(
     private route: ActivatedRoute,
@@ -69,6 +73,9 @@ export class BlockComponent implements OnInit, OnDestroy {
 
         if (history.state.data && history.state.data.blockHeight) {
           this.blockHeight = history.state.data.blockHeight;
+          this.previousBlockHeight = history.state.data.blockHeight - 1;
+          this.nextBlockHeight = history.state.data.blockHeight + 1;
+          this.setNextAndPreviousBlockLink();
         }
 
         let isBlockHeight = false;
@@ -81,6 +88,9 @@ export class BlockComponent implements OnInit, OnDestroy {
 
         if (history.state.data && history.state.data.block) {
           this.blockHeight = history.state.data.block.height;
+          this.previousBlockHeight = history.state.data.block.height - 1;
+          this.nextBlockHeight = history.state.data.block.height + 1;
+          this.setNextAndPreviousBlockLink();
           return of(history.state.data.block);
         } else {
           this.isLoadingBlock = true;
@@ -103,6 +113,10 @@ export class BlockComponent implements OnInit, OnDestroy {
       tap((block: Block) => {
         this.block = block;
         this.blockHeight = block.height;
+        this.previousBlockHeight = block.height - 1;
+        this.nextBlockHeight = block.height + 1;
+        this.setNextAndPreviousBlockLink();
+
         this.seoService.setTitle($localize`:@@block.component.browser-title:Block ${block.height}:BLOCK_HEIGHT:: ${block.id}:BLOCK_ID:`);
         this.isLoadingBlock = false;
         if (block.coinbaseTx) {
@@ -141,7 +155,10 @@ export class BlockComponent implements OnInit, OnDestroy {
     });
 
     this.stateService.blocks$
-      .subscribe(([block]) => this.latestBlock = block);
+      .subscribe(([block]) => {
+        this.latestBlock = block;
+        this.setNextAndPreviousBlockLink();
+      });
 
     this.stateService.networkChanged$
       .subscribe((network) => this.network = network);
@@ -151,6 +168,23 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.showDetails = true;
       } else {
         this.showDetails = false;
+      }
+    });
+
+    this.stateService.keyNavigation$.subscribe((event) => {
+      if (this.showPreviousBlocklink) {
+        if (event.key === 'ArrowRight') {
+          if (this.previousBlockHeight >= 0) {
+            this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', this.previousBlockHeight]);
+            this.blockHeight = this.previousBlockHeight;
+          }
+        }
+      }
+      if (this.showNextBlocklink) {
+        if (event.key === 'ArrowLeft') {
+          this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', this.nextBlockHeight]);
+          this.blockHeight = this.nextBlockHeight;
+        }
       }
     });
   }
@@ -221,5 +255,19 @@ export class BlockComponent implements OnInit, OnDestroy {
 
   onResize(event: any) {
     this.paginationMaxSize = event.target.innerWidth < 670 ? 3 : 5;
+  }
+  setNextAndPreviousBlockLink(){
+    if (this.latestBlock && this.blockHeight){
+      if (this.blockHeight === 0){
+        this.showPreviousBlocklink = false;
+      } else {
+        this.showPreviousBlocklink = true;
+      }
+      if (this.latestBlock.height && this.latestBlock.height === this.blockHeight) {
+        this.showNextBlocklink = false;
+      }else{
+        this.showNextBlocklink = true;
+      }
+    }
   }
 }

@@ -98,28 +98,6 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
         this.moveArrowToPosition(false);
         this.cd.markForCheck();
       });
-
-    this.stateService.keyNavigation$.subscribe((event) => {
-      if (!this.markHeight) {
-        return;
-      }
-
-      if (event.key === 'ArrowRight') {
-        const blockindex = this.blocks.findIndex((b) => b.height === this.markHeight);
-        if (this.blocks[blockindex + 1]) {
-          this.router.navigate([(this.network ? '/' + this.network : '') + '/block/',
-            this.blocks[blockindex + 1].id], { state: { data: { block: this.blocks[blockindex + 1] } } });
-        }
-      } else if (event.key === 'ArrowLeft') {
-        const blockindex = this.blocks.findIndex((b) => b.height === this.markHeight);
-        if (blockindex === 0) {
-          this.router.navigate([(this.network ? '/' + this.network : '') + '/mempool-block/', '0']);
-        } else {
-          this.router.navigate([(this.network ? '/' + this.network : '') + '/block/',
-            this.blocks[blockindex - 1].id], { state: { data: { block: this.blocks[blockindex - 1] }}});
-        }
-      }
-    });
   }
 
   ngOnDestroy() {
