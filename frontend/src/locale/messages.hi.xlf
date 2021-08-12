@@ -2254,6 +2254,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="af1a465e50097fabbe55bf5dbcf5d0702bdbc98b">
         <source>Get a list of the last 10 transactions to enter the mempool. Each transaction object contains simplified overview data, with the following fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>fee<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vsize<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
+        <target>मेमपूल में प्रवेश करने के लिए पिछले 10 लेनदेन की सूची प्राप्त करें। प्रत्येक लेन-देन वस्तु में निम्नलिखित क्षेत्रों के साथ सरलीकृत अवलोकन डेटा होता है: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> txid <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> , <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> शुल्क <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> , <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> बनाम </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">650,651</context>
@@ -2283,6 +2284,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a8ea1ec66e7bb9f92e87ae5482e50748baafffd2">
         <source>Returns details about a transaction. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>version<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>locktime<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>size<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>weight<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>fee<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vin<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vout<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
+        <target>लेन-देन के बारे में विवरण देता है। उपलब्ध क्षेत्रों: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> टीएक्सआईडी <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> संस्करण <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> लॉकटाइम <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> आकार <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> वजन <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> शुल्क <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> वी इन <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> वी आउट <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, और <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> स्थिति <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">693,694</context>
@@ -2298,6 +2300,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d51106cc898981e9862d35a4db40796f0cf464f8">
         <source>Returns a merkle inclusion proof for the transaction using <x ctype="x-a" equiv-text="&lt;a href=&quot;https://bitcoin.org/en/glossary/merkle-block&quot;&gt;" id="START_LINK"/>bitcoind's merkleblock<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/> format.</source>
+        <target><x ctype="x-a" equiv-text="&lt;a href=&quot;https://bitcoin.org/en/glossary/merkle-block&quot;&gt;" id="START_LINK"/> बिटकॉइन के मर्कलब्लॉक <x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/> प्रारूप का उपयोग करके लेनदेन के लिए एक मर्कल समावेशन प्रमाण देता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">730,731</context>
@@ -2305,6 +2308,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a57953199686e9980df838cb25edb51691941ac5">
         <source>Returns a merkle inclusion proof for the transaction using <x ctype="x-a" equiv-text="&lt;a href=&quot;https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle&quot;&gt;" id="START_LINK"/>Electrum's blockchain.transaction.get_merkle format.<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/></source>
+        <target><x ctype="x-a" equiv-text="&lt;a href=&quot;https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle&quot;&gt;" id="START_LINK"/> एलेक्ट्रम के blockchain.transaction.get_merkle प्रारूप का उपयोग करके लेनदेन के लिए एक मर्कल समावेशन प्रमाण देता है। <x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">750,751</context>
@@ -2312,6 +2316,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fe9a40b2ff9674b4ab7d82624ffed340c9ee5b89">
         <source>Returns the spending status of a transaction output. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vin<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional), and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional, the status of the spending tx).</source>
+        <target>लेन-देन आउटपुट की व्यय स्थिति लौटाता है। उपलब्ध फ़ील्ड: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> खर्च किया गया <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (बूलियन), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> txid <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (वैकल्पिक), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> vin <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (वैकल्पिक) <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (वैकल्पिक) लेन-देन की स्थिति।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">769,770</context>
@@ -2319,6 +2324,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0358265aa88614843e1f5e887b94c673808c84f1">
         <source>Returns the spending status of all transaction outputs.</source>
+        <target>सभी लेन-देन आउटपुट की व्यय स्थिति लौटाता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">788,791</context>
@@ -2334,6 +2340,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7e784cfa5833e7b54d4dfc723fabde94f66ebde3">
         <source>Returns the confirmation status of a transaction. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>confirmed<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional), and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_hash<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional).</source>
+        <target>लेन-देन की पुष्टि की स्थिति लौटाता है। उपलब्ध फ़ील्ड: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> पुष्टि की गई <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (बूलियन), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> block_height <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (वैकल्पिक), और <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> block_hash <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (वैकल्पिक)।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">826,827</context>
@@ -2341,6 +2348,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="01723473ecc53cab60ef1b37dc39d8941994d56f">
         <source>Broadcast a raw transaction to the network. The transaction should be provided as hex in the request body. The <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> will be returned on success.</source>
+        <target>नेटवर्क पर एक कच्चा लेनदेन प्रसारित करें। लेन-देन अनुरोध निकाय में हेक्स के रूप में प्रदान किया जाना चाहिए। सफलता मिलने पर <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> txid <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> लौटा दिया जाएगा।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">846,847</context>
@@ -2358,6 +2366,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a706b1ded7506620b153dbcdea8108e6691bbbd9">
         <source>Default push: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> action: 'want', data: ['blocks', ...] <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> to express what you want pushed. Available: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>blocks<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool-blocks<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>live-2h-chart<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/>Push transactions related to address: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> 'track-address': '3PbJ...bF9B' <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> for new mempool transactions, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> for new block confirmed transactions.</source>
+        <target>डिफ़ॉल्ट पुश: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> <x equiv-text="{{ '{' }}" id="INTERPOLATION"/> क्रिया: 'चाहते हैं', डेटा: ['ब्लॉक', ...] <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/> <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> जिसे आप पुश करना चाहते हैं उसे व्यक्त करने के लिए। उपलब्ध: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> ब्लॉक <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> , <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> मेमपूल-ब्लॉक <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> , <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> लाइव -2h-चार्ट और आँकड़े. <x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/> <x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/> पते से संबंधित लेनदेन को पुश करें: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> <x equiv-text="{{ '{' }}" id="INTERPOLATION"/> 'ट्रैक-एड्रेस': '3PbJ...bF9B' <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/> वाले सभी नए लेनदेन इनपुट या आउटपुट के रूप में प्राप्त करें। लेन-देन की एक सरणी देता है।  <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> पता-लेनदेन <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, और नए ब्लॉक पुष्टि लेनदेन के लिए <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> ब्लॉक-लेनदेन <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">865,866</context>
@@ -3787,6 +3796,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f85c05147b720576e50336cf26f63d3b05601699">
         <source>This transaction saved <x equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}" id="INTERPOLATION"/>% on fees by using native SegWit-Bech32</source>
+        <target>इस लेन-देन ने मूल SegWit-Bech32 का उपयोग करके शुल्क पर <x equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}" id="INTERPOLATION"/>% बचाया</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">1</context>
@@ -3813,6 +3823,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="975f46d122f2ca0a187308399a58b44d61ef08eb">
         <source>This transaction saved <x equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}" id="INTERPOLATION"/>% on fees by using SegWit and could save <x equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}" id="INTERPOLATION_1"/>% more by fully upgrading to native SegWit-Bech32</source>
+        <target>इस लेन-देन ने SegWit का उपयोग करके शुल्क पर <x equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}" id="INTERPOLATION"/>% बचाया और मूल SegWit-Bech32 में पूरी तरह से अपग्रेड करके <x equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}" id="INTERPOLATION_1"/>% अधिक बचा सकता है</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">3</context>
@@ -3821,6 +3832,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1be04d5407059059b596f72696a3d1704ce9c0ef">
         <source>This transaction could save <x equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}" id="INTERPOLATION"/>% on fees by upgrading to native SegWit-Bech32 or <x equiv-text="{{ segwitGains.potentialP2shGains * 100 | number:  '1.0-0' }}" id="INTERPOLATION_1"/>% by upgrading to SegWit-P2SH</source>
+        <target>यह लेन-देन स्थानीय SegWit-Bech32 या <x equiv-text="{{ segwitGains.potentialP2shGains * 100 | number:  '1.0-0' }}" id="INTERPOLATION_1"/>% SegWit-P2SH में अपग्रेड करके शुल्क पर <x equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}" id="INTERPOLATION"/>% बचा सकता है</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">5</context>
@@ -3829,6 +3841,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5531c86f8e09b83930f66566fb85baf3057e2f51">
         <source>This transaction support Replace-By-Fee (RBF) allowing fee bumping</source>
+        <target>यह लेन-देन प्रतिस्थापन-दर-शुल्क (आरबीएफ) का समर्थन करता है, जिससे शुल्क में वृद्धि होती है</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">8</context>
@@ -3851,6 +3864,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="85ce9e4f45873116b746899169cbc3445321d60c">
         <source>This transaction does NOT support Replace-By-Fee (RBF) and cannot be fee bumped using this method</source>
+        <target>यह लेन-देन प्रतिस्थापन-दर-शुल्क (आरबीएफ) का समर्थन नहीं करता है और इस पद्धति का उपयोग करके शुल्क में बाधा नहीं डाली जा सकती है</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">9</context>
