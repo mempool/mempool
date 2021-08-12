@@ -91,5 +91,7 @@ pre {
   padding: 30px;
   code{
     background-color: transparent;
+    white-space: break-spaces;
+    word-break: break-all;
   }
 }
