@@ -75,17 +75,7 @@ describe('Liquid', () => {
             cy.waitForSkeletonGone();
             cy.get('li:nth-of-type(5) > a').click().then(() => {
                 cy.get('.container-xl input').click().type('Liquid CAD').then(() => {
-                    cy.get('table tr td:nth-of-type(4) a').click();
-                });
-            });
-        });
-
-        it('shows a specific asset issuance TX', () => {
-            cy.visit('/liquid');
-            cy.waitForSkeletonGone();
-            cy.get('li:nth-of-type(5) > a').click().then(() => {
-                cy.get('.container-xl input').click().type('Liquid CAD').then(() => {
-                    cy.get('table tr td:nth-of-type(5) a').click();
+                    cy.get('table tr td:nth-of-type(1) a').click();
                 });
             });
         });
