@@ -1,5 +1,11 @@
-<div id="blockchain-container" dir="ltr">
+<div id="blockchain-container" dir="ltr" *ngIf="(mempoolLoadingStatus$ | async) === 100; else fullScreenDashboardLoading">
   <app-blockchain></app-blockchain>
+  <router-outlet></router-outlet>
 </div>
 
-<router-outlet></router-outlet>
+
+<ng-template #fullScreenDashboardLoading>
+  <div class="skeleton-loader-fullDashboard skeleton-loader" i18n="dashboard.backend-is-synchronizing">Backend is synchronizing</div>
+</ng-template>
+
+

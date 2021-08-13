@@ -82,8 +82,7 @@ export class DashboardComponent implements OnInit {
     this.collapseLevel = this.storageService.getValue('dashboard-collapsed') || 'one';
     this.mempoolLoadingStatus$ = this.stateService.loadingIndicators$.pipe(
       map((indicators) => indicators.mempool !== undefined ? indicators.mempool : 100)
-    );
-
+    );  
     this.mempoolInfoData$ = combineLatest([
       this.stateService.mempoolInfo$,
       this.stateService.vbytesPerSecond$
