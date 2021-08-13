@@ -11,7 +11,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.carousel.previous">
         <source>Previous</source>
-        <target>前</target>
+        <target>前一个</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/carousel/carousel.ts</context>
           <context context-type="linenumber">349</context>
@@ -19,7 +19,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.carousel.next">
         <source>Next</source>
-        <target>下一个</target>
+        <target>后一个</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/carousel/carousel.ts</context>
           <context context-type="linenumber">349</context>
@@ -39,7 +39,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.datepicker.next-month">
         <source>Next month</source>
-        <target>下个月</target>
+        <target>后一个月</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/datepicker/datepicker-month.ts</context>
           <context context-type="linenumber">72</context>
@@ -75,6 +75,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.pagination.first">
         <source>««</source>
+        <target>««</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/pagination/pagination.ts</context>
           <context context-type="linenumber">404</context>
@@ -82,6 +83,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.pagination.previous">
         <source>«</source>
+        <target>«</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/pagination/pagination.ts</context>
           <context context-type="linenumber">404</context>
@@ -89,6 +91,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.pagination.next">
         <source>»</source>
+        <target>»</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/pagination/pagination.ts</context>
           <context context-type="linenumber">404</context>
@@ -135,6 +138,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.progressbar.value">
         <source><x id="INTERPOLATION"/></source>
+        <target><x id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/progressbar/progressbar.ts</context>
           <context context-type="linenumber">101</context>
@@ -142,6 +146,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.HH">
         <source>HH</source>
+        <target>HH</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -157,6 +162,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.MM">
         <source>MM</source>
+        <target>MM</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -204,6 +210,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.SS">
         <source>SS</source>
+        <target>SS</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -235,6 +242,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.PM">
         <source><x id="INTERPOLATION"/></source>
+        <target><x id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -242,6 +250,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.AM">
         <source><x id="INTERPOLATION"/></source>
+        <target><x id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -310,7 +319,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="465c39daa2b644679d73a451043622f1610a2084">
         <source>Issuer domain</source>
-        <target>发行人</target>
+        <target>发行方</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">21,23</context>
@@ -323,7 +332,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d5e7c95d7c8920ae0a384e3fffb14776b1e203f4">
         <source>Asset ID</source>
-        <target>资产ID</target>
+        <target>资产 ID</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">22,23</context>
@@ -336,7 +345,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="cf1fbcd10d4be4845152f2e10d1db9bc61dd9410">
         <source>Issuance TX</source>
-        <target>发行交易</target>
+        <target>发行交易 TX</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">23,26</context>
@@ -476,7 +485,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq-address.component.browser-title">
         <source>Address: <x equiv-text="this.addressString" id="INTERPOLATION"/></source>
-        <target>地址: <x equiv-text="this.addressString" id="INTERPOLATION"/></target>
+        <target>地址：<x equiv-text="this.addressString" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.ts</context>
           <context context-type="linenumber">43</context>
@@ -536,7 +545,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="6d0db947a91dc4884aefa858a27fc848530e6404">
         <source>Previous hash</source>
-        <target>上个哈希值</target>
+        <target>前一个哈希值</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
           <context context-type="linenumber">35</context>
@@ -558,6 +567,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="6c2ae4f9da67155a00f8db40ac22315eeaff33e2">
         <source>BSQ Blocks</source>
+        <target>BSQ 区块</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
           <context context-type="linenumber">2,7</context>
@@ -566,7 +576,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="179eb5c4a21ad324f75f723218a621d120e39d30">
         <source>Height</source>
-        <target>高度</target>
+        <target>区块高度</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
           <context context-type="linenumber">12,13</context>
@@ -587,7 +597,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a1daf43d26259bffdd5eb2d405c61583540b113b">
         <source>Confirmed</source>
-        <target>已确认</target>
+        <target>已确认于</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
           <context context-type="linenumber">13,14</context>
@@ -645,6 +655,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="6b2fdbdddef74630e1076d58786ca339a8c030f0">
         <source>Bisq Trading Volume</source>
+        <target>Bisq 交易量</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">3,7</context>
@@ -723,7 +734,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b666c0101ab9ef128a75fdf05a43184a57de0cff">
         <source>Volume (7d)</source>
-        <target>量（7d）</target>
+        <target>交易量（7日内）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">29</context>
@@ -732,7 +743,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="faf7b6da436cb9342858ec551aecdab8052dbde6">
         <source>Trades (7d)</source>
-        <target>交易 (7d)</target>
+        <target>交易（7日内）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">30</context>
@@ -762,6 +773,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3f42ea126dba9186d89dffe43937f2b9c17858d6">
         <source>Bisq Price Index</source>
+        <target>Bisq 价格指数</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -770,6 +782,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e32fd95e667cfcee9948135918a151a614d5d349">
         <source>Bisq Market Price</source>
+        <target>BIsq 市场价格</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
           <context context-type="linenumber">21,23</context>
@@ -817,7 +830,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f4ebbeea643a58f45e665e960b494b2ea30b87da">
         <source>Buy Offers</source>
-        <target>购买优惠</target>
+        <target>购买报价</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
           <context context-type="linenumber">73,74</context>
@@ -826,7 +839,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="abf29235edbf341b6f626c315ff509f38fbf728a">
         <source>Sell Offers</source>
-        <target>出售优惠</target>
+        <target>出售报价</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
           <context context-type="linenumber">74,77</context>
@@ -835,7 +848,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="74d80a5b284beb81e8aeb3b8efca0f78cd4b7560">
         <source>Amount (<x equiv-text="{{ i }}" id="INTERPOLATION"/>)</source>
-        <target>金额 (<x equiv-text="{{ i }}" id="INTERPOLATION"/>)</target>
+        <target>金额 （<x equiv-text="{{ i }}" id="INTERPOLATION"/>）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
           <context context-type="linenumber">112,113</context>
@@ -848,7 +861,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2a30a4cdb123a03facc5ab8c5b3e6d8b8dbbc3d4">
         <source>BSQ statistics</source>
-        <target>BSQ统计</target>
+        <target>BSQ 统计</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">2</context>
@@ -874,7 +887,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3218e6768d0d5fbc69d4931819e21451c89ba8ed">
         <source>Minted amount</source>
-        <target>铸造量</target>
+        <target>发行量</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">16</context>
@@ -887,7 +900,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="32377aae07f946d943f9361c8e518f714988c619">
         <source>Burnt amount</source>
-        <target>燃烧量</target>
+        <target>销毁量</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">20</context>
@@ -908,7 +921,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7882f2edb1d4139800b276b6b0bbf5ae0b2234ef">
         <source>Addresses</source>
-        <target>交易</target>
+        <target>地址</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">24</context>
@@ -921,7 +934,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fb5b5aec9a6add4912de64b7bbc55884cc7f8e3a">
         <source>Unspent TXOs</source>
-        <target>未用UTXO</target>
+        <target>未使用输出额</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">28</context>
@@ -934,7 +947,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0f8a41c901cd606bd3389d8a022cee193264f20b">
         <source>Spent TXOs</source>
-        <target>已用UTXO</target>
+        <target>已使用输出额</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">32</context>
@@ -964,7 +977,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="dfc2fb58e2a04ed944a4bd80f0a2087775134068">
         <source>Amount</source>
-        <target>量</target>
+        <target>数额</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-trades/bisq-trades.component.html</context>
           <context context-type="linenumber">9,12</context>
@@ -980,6 +993,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="23b4db80cfba2937f6b087d8776cb5cd6725a16b">
         <source>Inputs</source>
+        <target>输入</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction-details/bisq-transaction-details.component.html</context>
           <context context-type="linenumber">7</context>
@@ -988,6 +1002,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="93883f08c5e22b14770da46e1a5b724bab7d43fb">
         <source>Outputs</source>
+        <target>输出</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction-details/bisq-transaction-details.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1114,7 +1129,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="885666551418fd59011ceb09d5c481095940193b">
         <source>Features</source>
-        <target>特征</target>
+        <target>交易特征</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
           <context context-type="linenumber">44,46</context>
@@ -1142,7 +1157,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4f8b2bb476981727ab34ed40fde1218361f92c45">
         <source>Details</source>
-        <target>明细</target>
+        <target>交易明细</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
           <context context-type="linenumber">83,86</context>
@@ -1193,7 +1208,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4d6066e445db90780e4b30ca93398be0b6567eda">
         <source>BSQ Transactions</source>
-        <target>BSQ交易</target>
+        <target>BSQ 交易</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
           <context context-type="linenumber">2,5</context>
@@ -1201,7 +1216,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="94c248797dd2b6af49068cb49c3b4bc26bec6a16">
         <source>TXID</source>
-        <target>交易ID</target>
+        <target>TXID</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
           <context context-type="linenumber">18,19</context>
@@ -1225,7 +1240,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4096113720451832029">
         <source>Blind vote</source>
-        <target>盲选</target>
+        <target>匿名投票</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">31</context>
@@ -1233,7 +1248,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8029165479004970466">
         <source>Compensation request</source>
-        <target>赔偿要求</target>
+        <target>报销要求</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">32</context>
@@ -1273,7 +1288,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4844032232639560116">
         <source>Proof of burn</source>
-        <target>燃烧证明</target>
+        <target>销毁证明</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">37</context>
@@ -1281,7 +1296,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2011097393756618787">
         <source>Proposal</source>
-        <target>提议</target>
+        <target>提案</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">38</context>
@@ -1289,7 +1304,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3275831985256202873">
         <source>Reimbursement request</source>
-        <target>报销申请</target>
+        <target>赔偿申请</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">39</context>
@@ -1297,7 +1312,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1226904538495857889">
         <source>Transfer BSQ</source>
-        <target>转BSQ</target>
+        <target>BSQ 转账</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">40</context>
@@ -1313,7 +1328,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8694527859973232423">
         <source>Vote reveal</source>
-        <target>投票公布</target>
+        <target>投票公示</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">42</context>
@@ -1353,7 +1368,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bisq-graph-volume">
         <source>Volume</source>
-        <target>量</target>
+        <target>交易量</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/lightweight-charts-area/lightweight-charts-area.component.ts</context>
           <context context-type="linenumber">91</context>
@@ -1376,7 +1391,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a24b1c6a9c4334ba204e4cec2dd9f32ea33d043f">
         <source>Enterprise Sponsors 🚀</source>
-        <target>企业赞助🚀</target>
+        <target>企业赞助商🚀</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">32,34</context>
@@ -1385,7 +1400,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a46e9bc519dc1c320d48635e924d444364845ca8">
         <source>Community Sponsors ❤️</source>
-        <target>社区赞助❤️</target>
+        <target>社区赞助商❤️</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">54,57</context>
@@ -1403,6 +1418,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1abb54fd13f529707c73db97625cd18c7c8cbb09">
         <source>Navigate to <x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/sponsor&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/>https://mempool.space/sponsor<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/> to sponsor</source>
+        <target>前往<x ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/sponsor&quot; target=&quot;_blank&quot;&gt;" id="START_LINK"/>https://mempool.space/sponsor<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/>以成为赞助者</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">67</context>
@@ -1442,7 +1458,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d177262e3a43b2a7221183812daf0ada97659436">
         <source>Project Maintainers</source>
-        <target>项目维护人员</target>
+        <target>项目维护者</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">171,173</context>
@@ -1481,6 +1497,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="696ade981a05c12e10df38ba6218c76e318813b3">
         <source>Liquid <x equiv-text="{{ liquid }}" id="INTERPOLATION"/></source>
+        <target>Liquid <x equiv-text="{{ liquid }}" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
           <context context-type="linenumber">17</context>
@@ -1489,7 +1506,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="714e34125b3343df73f19ec800b43be95217d5d4">
         <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> transaction</source>
-        <target>前<x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/>个交易 / 共<x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/>个交易</target>
+        <target>第<x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/>个交易 / 共<x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/>个交易</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">52,53</context>
@@ -1498,7 +1515,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0f6ada0cfb60aefd8f77f8a22349850ce186d666">
         <source><x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/> of <x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/> transactions</source>
-        <target>前<x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/>个交易 / 共<x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/>个交易</target>
+        <target>第<x equiv-text="{{ (transactions?.length | number) || '?' }}" id="INTERPOLATION"/>个交易 / 共<x equiv-text="{{ txCount | number }}" id="INTERPOLATION_1"/>个交易</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">53,54</context>
@@ -1516,6 +1533,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="cedcc9d48ffb2714e7b2f012ab67bd21f8e96a18">
         <source><x ctype="x-i" equiv-text="&lt;i&gt;" id="START_ITALIC_TEXT"/>The number of transactions on this address exceeds the Electrum server limit<x ctype="x-i" equiv-text="&lt;/i&gt;" id="CLOSE_ITALIC_TEXT"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/> Consider viewing this address on the official Mempool website instead: </source>
+        <target><x ctype="x-i" equiv-text="&lt;i&gt;" id="START_ITALIC_TEXT"/>此地址上的交易数量操过了以太坊服务器 <x ctype="x-i" equiv-text="&lt;/i&gt;" id="CLOSE_ITALIC_TEXT"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/>请考虑安完官方内存池网站上查看此地址：</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">127,130</context>
@@ -1545,7 +1563,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="address.component.browser-title">
         <source>Address: <x equiv-text="this.addressString" id="INTERPOLATION"/></source>
-        <target>地址: <x equiv-text="this.addressString" id="INTERPOLATION"/></target>
+        <target>地址：<x equiv-text="this.addressString" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.ts</context>
           <context context-type="linenumber">72</context>
@@ -1553,7 +1571,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f11bc15f83d9174bd27454d32977b5025a66537d">
         <source>API Service</source>
-        <target>API服务</target>
+        <target>API 服务</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">4,7</context>
@@ -1562,6 +1580,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="42b59f1f3dfde09c4c04f711307847438e057efb">
         <source>General</source>
+        <target>常规</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -1571,6 +1590,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b151944861534c4a9e9623537dba0a95f60e4455">
         <source>Endpoint</source>
+        <target>Endpoint</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">19,20</context>
@@ -1911,6 +1931,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2761d0de651f1c4395e6e7fbc7fded09918f8dcb">
         <source>Returns details about difficulty adjustment.</source>
+        <target>返回关于难度调整的详细信息</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">24,26</context>
@@ -1928,6 +1949,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e12cd52eaa77b446ba97436c145b59741151adf3">
         <source>Returns details about an address. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>chain_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>. <x equiv-text="{{ '{' }}" id="INTERPOLATION"/>chain,mempool<x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/>_stats each contain an object with <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
+        <target>返回关于地址的详细信息。可用参数：<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>chain_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>. <x equiv-text="{{ '{' }}" id="INTERPOLATION"/>chain,mempool<x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/>_stats each contain an object with <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">50,51</context>
@@ -3935,7 +3957,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="926c571b25cca7e2a294619f145960c0cd3848b6">
         <source>Incoming transactions</source>
-        <target>收款交易</target>
+        <target>即将完成交易</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">193,194</context>
@@ -3979,7 +4001,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="680d5c75b7fd8d37961083608b9fcdc4167b4c43">
         <source>Previous</source>
-        <target>前一段</target>
+        <target>之前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">235,236</context>
@@ -3988,7 +4010,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5db469cd0357e5f578b85a996f7e99c9e4148ff5">
         <source>Current Period</source>
-        <target>本期</target>
+        <target>当前阶段</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">247,248</context>
@@ -4113,7 +4135,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2799825781368047816">
         <source>Transaction fee</source>
-        <target>手续费</target>
+        <target>交易手续费</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/pipes/scriptpubkey-type-pipe/scriptpubkey-type.pipe.ts</context>
           <context context-type="linenumber">11</context>

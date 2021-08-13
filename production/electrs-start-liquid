@@ -21,6 +21,7 @@ do
 		--asset-db-path "$HOME/asset_registry_db" \
 		--address-search \
 		--cors '*' \
+		--db-dir /electrs \
 		--network liquid \
 		--daemon-dir /elements \
 		--http-addr '[::]:3001' \

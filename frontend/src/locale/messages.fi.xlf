@@ -1148,7 +1148,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e5026f6e33b13e7d8185288b9691d006a139d36d">
         <source>Fee per vByte</source>
-        <target>Siirtokulu per vBitti</target>
+        <target>Siirtokulu per vByte</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
           <context context-type="linenumber">64,66</context>
@@ -2375,6 +2375,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8f3ac0544491bf048120928d39e02a6baeb0b278">
         <source>Privacy Policy</source>
+        <target>Tietosuojakäytäntö</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">880,885</context>
@@ -2755,7 +2756,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="855f852e5642a1279605465df0cbbe78c2622648">
         <source>Based on average native segwit transaction of 140 vBytes</source>
-        <target>Perustuu keskimääräiseen natiiviin 140 vBittiseen segwit-siirtotapahtumaan</target>
+        <target>Perustuu keskimääräiseen natiiviin 140 vByte segwit-siirtotapahtumaan</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">46,48</context>
@@ -2940,7 +2941,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0ae5beecbbfc96bcdf4f9a637aa72687e81ef5e1">
         <source>Tx vBytes per second:</source>
-        <target>Tx vBittiä per sekuntti:</target>
+        <target>Tx vByte:ä per sekuntti:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">5,7</context>
@@ -3000,7 +3001,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1bb6965f8e1bbe40c076528ffd841da86f57f119">
         <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> <x ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;" id="START_TAG_SPAN"/>blocks<x ctype="x-span" equiv-text="&lt;/span&gt;" id="CLOSE_TAG_SPAN"/></source>
-        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/><x ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;" id="START_TAG_SPAN"/>lohkoa<x ctype="x-span" equiv-text="&lt;/span&gt;" id="CLOSE_TAG_SPAN"/></target>
+        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/><x ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;" id="START_TAG_SPAN"/> lohkoa<x ctype="x-span" equiv-text="&lt;/span&gt;" id="CLOSE_TAG_SPAN"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">22,23</context>
@@ -3017,7 +3018,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b7ef3894d9b6f157c400ddc937c70c9881ecd896">
         <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> <x ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;" id="START_TAG_SPAN"/>block<x ctype="x-span" equiv-text="&lt;/span&gt;" id="CLOSE_TAG_SPAN"/></source>
-        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/><x ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;" id="START_TAG_SPAN"/>lohkoa<x ctype="x-span" equiv-text="&lt;/span&gt;" id="CLOSE_TAG_SPAN"/></target>
+        <target><x equiv-text="{{ i }}" id="INTERPOLATION"/><x ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;" id="START_TAG_SPAN"/> lohkoa<x ctype="x-span" equiv-text="&lt;/span&gt;" id="CLOSE_TAG_SPAN"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">23,24</context>
@@ -3230,7 +3231,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="75c20c8a9cd9723d45bee0230dd582d7c2e4ecbc">
         <source>Mempool by vBytes (sat/vByte)</source>
-        <target>Mempool vBitteinä (sat/vBitti)</target>
+        <target>Mempool vByte:inä (sat/vByte)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">13</context>
@@ -3248,7 +3249,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="dc15ec15e6206b40133f2c1b06095ce75aaee1ef">
         <source>Transaction vBytes per second (vB/s)</source>
-        <target>Siirtotapahtuma vBittiä sekunnissa (vB/s)</target>
+        <target>Siirtotapahtuma vByte:ä sekunnissa (vB/s)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">53</context>
@@ -3269,7 +3270,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since">
         <source><x equiv-text="dateStrings.i18nYear" id="DATE"/> ago</source>
-        <target><x equiv-text="dateStrings.i18nYear" id="DATE"/>sitten</target>
+        <target><x equiv-text="dateStrings.i18nYear" id="DATE"/> sitten</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -3389,7 +3390,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-until">
         <source>In ~<x equiv-text="dateStrings.i18nMinute" id="DATE"/></source>
-        <target>~<x equiv-text="dateStrings.i18nMinute" id="DATE"/> sisällä</target>
+        <target>~<x equiv-text="dateStrings.i18nMinute" id="DATE"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
           <context context-type="linenumber">66</context>
@@ -3585,6 +3586,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a2fbb7745c7048af923991e08ccd6975364be90d">
         <source>Transaction Hex</source>
+        <target>Transaktio heksa</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">220,221</context>
