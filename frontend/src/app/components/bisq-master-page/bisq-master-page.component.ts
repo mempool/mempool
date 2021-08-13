@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { StateService } from '../../services/state.service';
+import { Env, StateService } from '../../services/state.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -10,12 +10,14 @@ import { Observable } from 'rxjs';
 export class BisqMasterPageComponent implements OnInit {
   connectionState$: Observable<number>;
   navCollapsed = false;
+  env: Env;
 
   constructor(
     private stateService: StateService,
   ) { }
 
   ngOnInit() {
+    this.env = this.stateService.env;
     this.connectionState$ = this.stateService.connectionState$;
   }
 

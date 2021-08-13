@@ -24,10 +24,12 @@ export interface Env {
   ITEMS_PER_PAGE: number;
   KEEP_BLOCKS_AMOUNT: number;
   OFFICIAL_MEMPOOL_SPACE: boolean;
-  OFFICIAL_BISQ_MARKETS: boolean;
+  BASE_MODULE: string;
   NGINX_PROTOCOL?: string;
   NGINX_HOSTNAME?: string;
   NGINX_PORT?: string;
+  BLOCK_WEIGHT_UNITS: number;
+  MEMPOOL_BLOCKS_AMOUNT: number;
   GIT_COMMIT_HASH: string;
   PACKAGE_JSON_VERSION: string;
 }
@@ -36,7 +38,7 @@ const defaultEnv: Env = {
   'TESTNET_ENABLED': false,
   'SIGNET_ENABLED': false,
   'LIQUID_ENABLED': false,
-  'OFFICIAL_BISQ_MARKETS': false,
+  'BASE_MODULE': 'mempool',
   'BISQ_ENABLED': false,
   'BISQ_SEPARATE_BACKEND': false,
   'ITEMS_PER_PAGE': 10,
@@ -45,6 +47,8 @@ const defaultEnv: Env = {
   'NGINX_PROTOCOL': 'http',
   'NGINX_HOSTNAME': '127.0.0.1',
   'NGINX_PORT': '80',
+  'BLOCK_WEIGHT_UNITS': 4000000,
+  'MEMPOOL_BLOCKS_AMOUNT': 8,
   'GIT_COMMIT_HASH': '',
   'PACKAGE_JSON_VERSION': '',
 };
@@ -55,6 +59,7 @@ const defaultEnv: Env = {
 export class StateService {
   isBrowser: boolean = isPlatformBrowser(this.platformId);
   network = '';
+  blockVSize: number;
   env: Env;
   latestBlockHeight = 0;
 
@@ -88,11 +93,10 @@ export class StateService {
     @Inject(PLATFORM_ID) private platformId: any,
     private router: Router,
   ) {
-    this.router.events.subscribe((event) => {
-      if (event instanceof NavigationStart) {
-        this.setNetworkBasedonUrl(event.url);
-      }
-    });
+    const browserWindow = window || {};
+    // @ts-ignore
+    const browserWindowEnv = browserWindow.__env || {};
+    this.env = Object.assign(defaultEnv, browserWindowEnv);
 
     if (this.isBrowser) {
       this.setNetworkBasedonUrl(window.location.pathname);
@@ -102,15 +106,26 @@ export class StateService {
       this.isTabHidden$ = new BehaviorSubject(false);
     }
 
-    const browserWindow = window || {};
-    // @ts-ignore
-    const browserWindowEnv = browserWindow.__env || {};
-    this.env = Object.assign(defaultEnv, browserWindowEnv);
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        this.setNetworkBasedonUrl(event.url);
+      }
+    });
 
     this.blocks$ = new ReplaySubject<[Block, boolean]>(this.env.KEEP_BLOCKS_AMOUNT);
+
+    if (this.env.BASE_MODULE !== 'mempool') {
+      this.network = this.env.BASE_MODULE;
+      this.networkChanged$.next(this.env.BASE_MODULE);
+    }
+
+    this.blockVSize = this.env.BLOCK_WEIGHT_UNITS / 4;
   }
 
   setNetworkBasedonUrl(url: string) {
+    if (this.env.BASE_MODULE !== 'mempool') {
+      return;
+    }
     const networkMatches = url.match(/\/(bisq|testnet|liquid|signet)/);
     switch (networkMatches && networkMatches[1]) {
       case 'liquid':

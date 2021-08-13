@@ -11,6 +11,9 @@ export class RelativeUrlPipe implements PipeTransform {
   ) { }
 
   transform(value: string): string {
+    if (this.stateService.env.BASE_MODULE !== 'mempool') {
+      return '/' + value;
+    }
     return (this.stateService.network ? '/' + this.stateService.network : '') + value;
   }
 

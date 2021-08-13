@@ -20,15 +20,13 @@
         <th i18n="Asset ticker header">Ticker</th>
         <th class="d-none d-md-block" i18n="Asset Issuer Domain header">Issuer domain</th>
         <th i18n="Asset ID header">Asset ID</th>
-        <th class="d-none d-lg-block" i18n="Asset issuance transaction header">Issuance TX</th>
       </thead>
       <tbody>
         <tr *ngFor="let asset of filteredAssets; trackBy: trackByAsset">
-          <td class="td-name">{{ asset.name }}</td>
+          <td class="td-name"><a [routerLink]="['/asset/' | relativeUrl, asset.asset_id]">{{ asset.name }}</a></td>
           <td>{{ asset.ticker }}</td>
-          <td class="d-none d-md-block"><a *ngIf="asset.entity" target="_blank" href="{{ 'http://' + asset.entity.domain }}">{{ asset.entity.domain }}</a></td>
+          <td class="d-none d-md-block">{{ asset.entity && asset.entity.domain }}</td>
           <td><a [routerLink]="['/asset/' | relativeUrl, asset.asset_id]">{{ asset.asset_id | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="asset.asset_id"></app-clipboard></td>
-          <td class="d-none d-lg-block"><ng-template [ngIf]="asset.issuance_txin"><a [routerLink]="['/tx/' | relativeUrl, asset.issuance_txin.txid]">{{ asset.issuance_txin.txid | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="asset.issuance_txin.txid"></app-clipboard></ng-template></td>
         </tr> 
       </tbody>
     </table>
@@ -47,15 +45,13 @@
         <th i18n="Asset ticker header">Ticker</th>
         <th i18n="Asset Issuer Domain header">Issuer domain</th>
         <th i18n="Asset ID header">Asset ID</th>
-        <th i18n="Asset issuance transaction header">Issuance TX</th>
       </thead>
       <tbody>
-        <tr *ngFor="let dummy of [0,0,0]">
+        <tr *ngFor="let dummy of [0,0,0,0,0,0,0,0,0,0]">
           <td><span class="skeleton-loader"></span></td>
           <td><span class="skeleton-loader"></span></td>
           <td class="d-none d-md-block"><span class="skeleton-loader"></span></td>
           <td><span class="skeleton-loader"></span></td>
-          <td class="d-none d-lg-block"><span class="skeleton-loader"></span></td>
         </tr> 
       </tbody>
     </table>

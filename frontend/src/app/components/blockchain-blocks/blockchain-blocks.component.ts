@@ -25,7 +25,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   emptyBlockStyles = [];
   interval: any;
   tabHidden = false;
-
+  feeRounding = '1.0-0';
   arrowVisible = false;
   arrowLeftPx = 30;
   blocksFilled = false;
@@ -46,6 +46,9 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    if (this.stateService.network === 'liquid') {
+      this.feeRounding = '1.0-1';
+    }
     this.emptyBlocks.forEach((b) => this.emptyBlockStyles.push(this.getStyleForEmptyBlock(b)));
     this.loadingBlocks$ = this.stateService.isLoadingWebSocket$;
     this.networkSubscription = this.stateService.networkChanged$.subscribe((network) => this.network = network);
@@ -62,7 +65,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
         }
 
         this.blocks.unshift(block);
-        this.blocks = this.blocks.slice(0, 8);
+        this.blocks = this.blocks.slice(0, this.stateService.env.KEEP_BLOCKS_AMOUNT);
 
         if (this.blocksFilled && !this.tabHidden) {
           block.stage = block.matchRate >= 66 ? 1 : 2;
@@ -165,7 +168,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   }
 
   getStyleForBlock(block: Block) {
-    const greenBackgroundHeight = 100 - (block.weight / 4000000) * 100;
+    const greenBackgroundHeight = 100 - (block.weight / this.stateService.env.BLOCK_WEIGHT_UNITS) * 100;
     let addLeft = 0;
 
     if (block.stage === 1) {
@@ -200,7 +203,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
 
   mountEmptyBlocks() {
     const emptyBlocks = [];
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < this.stateService.env.KEEP_BLOCKS_AMOUNT; i++) {
       emptyBlocks.push({
         id: '',
         height: 0,

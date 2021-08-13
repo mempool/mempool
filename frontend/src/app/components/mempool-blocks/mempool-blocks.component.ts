@@ -34,6 +34,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   blockPadding = 30;
   arrowVisible = false;
   tabHidden = false;
+  feeRounding = '1.0-0';
 
   rightPosition = 0;
   transition = '2s';
@@ -47,11 +48,14 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private stateService: StateService,
+    public stateService: StateService,
     private cd: ChangeDetectorRef,
   ) { }
 
   ngOnInit() {
+    if (this.stateService.network === 'liquid') {
+      this.feeRounding = '1.0-1';
+    }
     this.mempoolEmptyBlocks.forEach((b) => {
       this.mempoolEmptyBlockStyles.push(this.getStyleForMempoolEmptyBlock(b.index));
     });
@@ -153,7 +157,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
           this.router.navigate([(this.network ? '/' + this.network : '') + '/mempool-block/', this.markIndex - 1]);
         } else {
           this.stateService.blocks$
-            .pipe(take(8))
+            .pipe(take(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT))
             .subscribe(([block]) => {
               if (this.stateService.latestBlockHeight === block.height) {
                 this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', block.id], { state: { data: { block } }});
@@ -211,7 +215,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   }
 
   getStyleForMempoolBlock(mempoolBlock: MempoolBlock, index: number) {
-    const emptyBackgroundSpacePercentage = Math.max(100 - mempoolBlock.blockVSize / 1000000 * 100, 0);
+    const emptyBackgroundSpacePercentage = Math.max(100 - mempoolBlock.blockVSize / this.stateService.blockVSize * 100, 0);
     const usedBlockSpace = 100 - emptyBackgroundSpacePercentage;
     const backgroundGradients = [`repeating-linear-gradient(to right,  #554b45, #554b45 ${emptyBackgroundSpacePercentage}%`];
     const gradientColors = [];
@@ -278,7 +282,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
           const chunkPositionOffset = blockLocation * feeRangeChunkSize;
           const feePosition = feeRangeChunkSize * feeRangeIndex + chunkPositionOffset;
 
-          const blockedFilledPercentage = (block.blockVSize > 1000000 ? 1000000 : block.blockVSize) / 1000000;
+          const blockedFilledPercentage = (block.blockVSize > this.stateService.blockVSize ? this.stateService.blockVSize : block.blockVSize) / this.stateService.blockVSize;
           const arrowRightPosition = txInBlockIndex * (this.blockWidth + this.blockPadding)
             + ((1 - feePosition) * blockedFilledPercentage * this.blockWidth);
 
@@ -291,8 +295,8 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
   mountEmptyBlocks() {
     const emptyBlocks = [];
-    const numberOfBlocks = 8;
-    for (let i = 0; i <= numberOfBlocks; i++) {
+    const numberOfBlocks = this.stateService.env.MEMPOOL_BLOCKS_AMOUNT;
+    for (let i = 0; i < numberOfBlocks; i++) {
       emptyBlocks.push({
         blockSize: 0,
         blockVSize: 0,

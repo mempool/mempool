@@ -67,11 +67,18 @@
       "^/liquid/api": "/api/v1/ws"
     }
   },
-  "/liquid/api/": {
-    "target": "http://localhost:50001/",
+  "/liquid/api/v1/": {
+    "target": "http://localhost:8999/",
     "secure": false,
     "pathRewrite": {
-      "^/liquid/api/": ""
+      "^/liquid/api/": "/api/"
+    }
+  },
+  "/liquid/api/": {
+    "target": "http://localhost:8999/",
+    "secure": false,
+    "pathRewrite": {
+      "^/liquid/api/": "/api/v1/"
     }
   },
   "/bisq/api/": {

@@ -25,7 +25,7 @@ export class AboutComponent implements OnInit {
   constructor(
     private websocketService: WebsocketService,
     private seoService: SeoService,
-    private stateService: StateService,
+    public stateService: StateService,
     private apiService: ApiService,
     private router: Router,
     @Inject(LOCALE_ID) public locale: string,

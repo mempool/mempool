@@ -6,10 +6,10 @@
           <a [routerLink]="['/mempool-block/' | relativeUrl, i]" class="blockLink">&nbsp;</a>
           <div class="block-body">
             <div class="fees">
-              ~{{ projectedBlock.medianFee | number:'1.0-0' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+              ~{{ projectedBlock.medianFee | number:feeRounding }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
             </div>
             <div class="fee-span">
-              {{ projectedBlock.feeRange[0] | number:'1.0-0' }} - {{ projectedBlock.feeRange[projectedBlock.feeRange.length - 1] | number:'1.0-0' }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+              {{ projectedBlock.feeRange[0] | number:feeRounding }} - {{ projectedBlock.feeRange[projectedBlock.feeRange.length - 1] | number:feeRounding }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
             </div>
             <div class="block-size" [innerHTML]="projectedBlock.blockSize | bytes: 2">&lrm;</div>
             <div class="transaction-count">
@@ -17,7 +17,7 @@
               <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
               <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
             </div>
-            <div class="time-difference" *ngIf="projectedBlock.blockVSize <= 1000000; else mergedBlock">
+            <div class="time-difference" *ngIf="projectedBlock.blockVSize <= stateService.blockVSize; else mergedBlock">
               <ng-template [ngIf]="network === 'liquid'" [ngIfElse]="timeDiffMainnet">
                 <app-time-until [time]="(1 * i) + now + 61000" [fastRender]="false" [fixedRender]="true"></app-time-until>
               </ng-template>
@@ -27,7 +27,7 @@
             </div>
             <ng-template #mergedBlock>
               <div class="time-difference">
-                <b>(<ng-container *ngTemplateOutlet="blocksPlural; context: {$implicit: projectedBlock.blockVSize / 1000000 | ceil }"></ng-container>)</b>
+                <b>(<ng-container *ngTemplateOutlet="blocksPlural; context: {$implicit: projectedBlock.blockVSize / stateService.blockVSize | ceil }"></ng-container>)</b>
                 <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
               </div>
             </ng-template>
