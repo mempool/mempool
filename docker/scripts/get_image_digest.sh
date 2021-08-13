@@ -13,6 +13,6 @@ for package in frontend backend; do
   IMAGE="$PACKAGE":"$VERSION"
   HASH=`docker pull $IMAGE > /dev/null && docker inspect $IMAGE | sed -n '/RepoDigests/{n;p;}' | grep -o '[0-9a-f]\{64\}'`
   if [ -n "${HASH}" ]; then
-    echo "$IMAGE" "$HASH"
+    echo "$IMAGE"@sha256:"$HASH"
   fi
 done 
