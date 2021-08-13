@@ -8,7 +8,7 @@ if [ -z "${VERSION}" ]; then
     VERSION="latest"
 fi
 
-for package in backend frontend; do
+for package in frontend backend; do
   PACKAGE=mempool/"$package"
   IMAGE="$PACKAGE":"$VERSION"
   HASH=`docker pull $IMAGE > /dev/null && docker inspect $IMAGE | sed -n '/RepoDigests/{n;p;}' | grep -o '[0-9a-f]\{64\}'`
