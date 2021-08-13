@@ -97,7 +97,7 @@ class WebsocketHandler {
           }
 
           if (parsedMessage.action === 'init') {
-            const _blocks = blocks.getBlocks().slice(-8);
+            const _blocks = blocks.getBlocks().slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT);
             if (!_blocks) {
               return;
             }
@@ -173,7 +173,7 @@ class WebsocketHandler {
 
   getInitData(_blocks?: BlockExtended[]) {
     if (!_blocks) {
-      _blocks = blocks.getBlocks().slice(-8);
+      _blocks = blocks.getBlocks().slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT);
     }
     return {
       'mempoolInfo': memPool.getMempoolInfo(),

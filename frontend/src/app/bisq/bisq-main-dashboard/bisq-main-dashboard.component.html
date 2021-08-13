@@ -63,7 +63,7 @@
       <div class="card">
         <div class="card-body">
           <h5 class="card-title text-center">
-            <ng-template [ngIf]="stateService.env.OFFICIAL_BISQ_MARKETS" [ngIfElse]="nonOfficialMarkets" i18n="Bisq All Markets">Markets</ng-template>
+            <ng-template [ngIf]="stateService.env.BASE_MODULE === 'bisq'" [ngIfElse]="nonOfficialMarkets" i18n="Bisq All Markets">Markets</ng-template>
             <ng-template #nonOfficialMarkets i18n="Bisq Bitcoin Markets">Bitcoin Markets</ng-template>
           </h5>
 
@@ -105,7 +105,7 @@
   </ng-container>
   </div>
 
-  <app-language-selector *ngIf="!stateService.env.OFFICIAL_BISQ_MARKETS"></app-language-selector>
+  <app-language-selector *ngIf="stateService.env.BASE_MODULE !== 'bisq'"></app-language-selector>
 
   <div class="text-small text-center mt-3">
     <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a>

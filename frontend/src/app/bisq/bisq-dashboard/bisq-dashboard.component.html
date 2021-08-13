@@ -17,7 +17,7 @@
 
   <div class="container-info">
     <h1>
-      <ng-template [ngIf]="stateService.env.OFFICIAL_BISQ_MARKETS" [ngIfElse]="nonOfficialMarkets" i18n="Bisq All Markets">Markets</ng-template>
+      <ng-template [ngIf]="stateService.env.BASE_MODULE === 'bisq'" [ngIfElse]="nonOfficialMarkets" i18n="Bisq All Markets">Markets</ng-template>
       <ng-template #nonOfficialMarkets i18n="Bisq Bitcoin Markets">Bitcoin Markets</ng-template>
     </h1>
     <ng-container *ngIf="{ value: (tickers$ | async) } as tickers">

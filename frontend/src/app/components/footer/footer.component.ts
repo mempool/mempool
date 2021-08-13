@@ -64,7 +64,7 @@ export class FooterComponent implements OnInit {
 
           return {
             size: size,
-            blocks: Math.ceil(vsize / 1000000)
+            blocks: Math.ceil(vsize / this.stateService.blockVSize)
           };
         })
       );

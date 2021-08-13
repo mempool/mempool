@@ -2,7 +2,7 @@
 <div class="container-xl dashboard-container">
   <div class="row row-cols-1 row-cols-md-2" *ngIf="{ value: (mempoolInfoData$ | async) } as mempoolInfoData">
     <ng-template [ngIf]="collapseLevel === 'three'" [ngIfElse]="expanded">
-      <div class="col card-wrapper">
+      <div class="col card-wrapper" *ngIf="(network$ | async) !== 'liquid'">
         <div class="main-title" i18n="fees-box.transaction-fees">Transaction Fees</div>
         <div class="card">
           <div class="card-body">
@@ -10,7 +10,7 @@
           </div>
         </div>
       </div>
-      <div class="col" *ngIf="(network$ | async) !== 'liquid'; else emptyBlock">
+      <div class="col" *ngIf="(network$ | async) !== 'liquid'">
         <ng-container *ngTemplateOutlet="difficultyEpoch"></ng-container>
       </div>
       <div class="col">
@@ -27,10 +27,9 @@
           </div>
         </div>
       </div>
-      
     </ng-template>
     <ng-template #expanded>
-      <div class="col card-wrapper">
+      <div class="col card-wrapper" *ngIf="(network$ | async) !== 'liquid'">
         <div class="main-title" i18n="fees-box.transaction-fees">Transaction Fees</div>
         <div class="card">
           <div class="card-body">
@@ -38,7 +37,7 @@
           </div>
         </div>
       </div>
-      <div class="col" *ngIf="(network$ | async) !== 'liquid'; else emptyBlock">
+      <div class="col" *ngIf="(network$ | async) !== 'liquid'">
         <ng-container *ngTemplateOutlet="difficultyEpoch"></ng-container>
       </div>
       <div class="col">
@@ -89,7 +88,7 @@
                   <td class="table-cell-transaction-count">{{ block.tx_count | number }}</td>
                   <td class="table-cell-size">
                     <div class="progress">
-                      <div class="progress-bar progress-mempool {{ network$ | async }}" role="progressbar" [ngStyle]="{'width': (block.weight / 4000000)*100 + '%' }">&nbsp;</div>
+                      <div class="progress-bar progress-mempool {{ network$ | async }}" role="progressbar" [ngStyle]="{'width': (block.weight / stateService.env.BLOCK_WEIGHT_UNITS)*100 + '%' }">&nbsp;</div>
                       <div class="progress-text" [innerHTML]="block.size | bytes: 2"></div>
                     </div>
                   </td>
@@ -114,7 +113,7 @@
               <tbody>
                 <tr *ngFor="let transaction of transactions$ | async; let i = index;">
                   <td class="table-cell-txid"><a [routerLink]="['/tx' | relativeUrl, transaction.txid]">{{ transaction.txid | shortenString : 10 }}</a></td>
-                  <td class="table-cell-satoshis"><app-amount [satoshis]="transaction.value" digitsInfo="1.2-4" [noFiat]="true"></app-amount></td>
+                  <td class="table-cell-satoshis"><app-amount *ngIf="(network$ | async) !== 'liquid'; else liquidAmount" [satoshis]="transaction.value" digitsInfo="1.2-4" [noFiat]="true"></app-amount><ng-template #liquidAmount i18n="shared.confidential">Confidential</ng-template></td>
                   <td class="table-cell-fiat" *ngIf="(network$ | async) === ''" ><app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat></td>
                   <td class="table-cell-fees">{{ transaction.fee / transaction.vsize | number : '1.1-1' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
                 </tr>
@@ -166,7 +165,7 @@
 <ng-template #mempoolTable let-mempoolInfoData>
   <div class="mempool-info-data">
     <div class="item">
-      <h5 *ngIf="!mempoolInfoData.value || mempoolInfoData.value.memPoolInfo.mempoolminfee === 0.00001 else purgingText" class="card-title" i18n="dashboard.minimum-fee|Minimum mempool fee">Minimum fee</h5>
+      <h5 *ngIf="!mempoolInfoData.value || mempoolInfoData.value.memPoolInfo.mempoolminfee === 0.00001 || (stateService.env.BASE_MODULE === 'liquid' && mempoolInfoData.value.memPoolInfo.mempoolminfee === 0.000001) else purgingText" class="card-title" i18n="dashboard.minimum-fee|Minimum mempool fee">Minimum fee</h5>
       <ng-template #purgingText><h5 class="card-title" i18n="dashboard.purging|Purgin below fee">Purging</h5></ng-template>
       <p class="card-text" *ngIf="(isLoadingWebSocket$ | async) === false && mempoolInfoData.value; else loading">
         <ng-template [ngIf]="mempoolInfoData.value.memPoolInfo.mempoolminfee > 0.00001">&lt; </ng-template>{{ mempoolInfoData.value.memPoolInfo.mempoolminfee * 100000 | number : '1.1-1' }} <span><ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container></span>

@@ -59,3 +59,6 @@ generated-config.js
 cypress/videos
 cypress/screenshots
 
+# Base index
+src/index.html
+

@@ -20,6 +20,7 @@ import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-poli
 import { TrademarkPolicyComponent } from './components/trademark-policy/trademark-policy.component';
 import { BisqMasterPageComponent } from './components/bisq-master-page/bisq-master-page.component';
 import { SponsorComponent } from './components/sponsor/sponsor.component';
+import { LiquidMasterPageComponent } from './components/liquid-master-page/liquid-master-page.component';
 
 let routes: Routes = [
   {
@@ -303,11 +304,98 @@ const browserWindow = window || {};
 // @ts-ignore
 const browserWindowEnv = browserWindow.__env || {};
 
-if (browserWindowEnv && browserWindowEnv.OFFICIAL_BISQ_MARKETS) {
+if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'bisq') {
   routes = [{
     path: '',
     component: BisqMasterPageComponent,
     loadChildren: () => import('./bisq/bisq.module').then(m => m.BisqModule)
+  }];
+}
+
+if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
+  routes = [{
+    path: '',
+    component: LiquidMasterPageComponent,
+    children: [
+      {
+        path: '',
+        component: StartComponent,
+        children: [
+          {
+            path: '',
+            component: DashboardComponent
+          },
+          {
+            path: 'tx/:id',
+            component: TransactionComponent
+          },
+          {
+            path: 'block/:id',
+            component: BlockComponent
+          },
+          {
+            path: 'mempool-block/:id',
+            component: MempoolBlockComponent
+          },
+        ],
+      },
+      {
+        path: 'blocks',
+        component: LatestBlocksComponent,
+      },
+      {
+        path: 'graphs',
+        component: StatisticsComponent,
+      },
+      {
+        path: 'address/:id',
+        component: AddressComponent
+      },
+      {
+        path: 'asset/:id',
+        component: AssetComponent
+      },
+      {
+        path: 'assets',
+        component: AssetsComponent,
+      },
+      {
+        path: 'api',
+        component: ApiDocsComponent,
+      },
+      {
+        path: 'about',
+        component: AboutComponent,
+      },
+      {
+        path: 'terms-of-service',
+        component: TermsOfServiceComponent
+      },
+      {
+        path: 'privacy-policy',
+        component: PrivacyPolicyComponent
+      },
+      {
+        path: 'trademark-policy',
+        component: TrademarkPolicyComponent
+      },
+      {
+        path: 'sponsor',
+        component: SponsorComponent,
+      },
+    ],
+  },
+  {
+    path: 'tv',
+    component: TelevisionComponent
+  },
+  {
+    path: 'status',
+    component: StatusViewComponent
+  },
+  {
+    path: '**',
+    redirectTo: ''
   }];
 }
 
