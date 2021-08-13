@@ -10,6 +10,9 @@
           </div>
         </div>
       </div>
+      <div class="col" *ngIf="(network$ | async) !== 'liquid'">
+        <ng-container *ngTemplateOutlet="difficultyEpoch"></ng-container>
+      </div>
       <div class="col">
         <div class="card">
           <div class="card-body">
@@ -23,9 +26,6 @@
             <ng-container *ngTemplateOutlet="txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
           </div>
         </div>
-      </div>
-      <div class="col" *ngIf="(network$ | async) !== 'liquid'">
-        <ng-container *ngTemplateOutlet="difficultyEpoch"></ng-container>
       </div>
     </ng-template>
     <ng-template #expanded>

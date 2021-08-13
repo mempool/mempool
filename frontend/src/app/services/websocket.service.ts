@@ -25,6 +25,7 @@ export class WebsocketService {
   private goneOffline = false;
   private lastWant: string | null = null;
   private isTrackingTx = false;
+  private trackingTxId: string;
   private latestGitCommit = '';
   private onlineCheckTimeout: number;
   private onlineCheckTimeoutTwo: number;
@@ -97,6 +98,9 @@ export class WebsocketService {
           if (this.lastWant) {
             this.want(JSON.parse(this.lastWant), true);
           }
+          if (this.isTrackingTx) {
+            this.startMultiTrackTransaction(this.trackingTxId);
+          }
           this.stateService.connectionState$.next(2);
         }
 
@@ -119,11 +123,13 @@ export class WebsocketService {
     }
     this.websocketSubject.next({ 'track-tx': txId });
     this.isTrackingTx = true;
+    this.trackingTxId = txId;
   }
 
   startMultiTrackTransaction(txId: string) {
     this.websocketSubject.next({ 'track-tx': txId, 'watch-mempool': true });
     this.isTrackingTx = true;
+    this.trackingTxId = txId;
   }
 
   stopTrackingTransaction() {

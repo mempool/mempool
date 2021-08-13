@@ -10,12 +10,7 @@ jobs:
       matrix:
         containers: [1, 2, 3, 4, 5]
         os: ["ubuntu-latest"]
-        browser: [chrome, firefox]
-        include:
-          - browser: firefox
-            container:
-              image: cypress/browsers:node14.17.0-chrome88-ff89
-              options: --user 1001
+        browser: [chrome]
     name: E2E tests on ${{ matrix.browser }} - ${{ matrix.os }}
     steps:
       - name: Checkout

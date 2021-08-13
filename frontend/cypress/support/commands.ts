@@ -64,3 +64,14 @@ Cypress.Commands.add(
 Cypress.Commands.add('mockMempoolSocket', () => {
   mockWebSocket();
 });
+
+Cypress.Commands.add('changeNetwork', (network: "testnet"|"signet"|"liquid"|"bisq"|"mainnet" ) => {
+    cy.get('.dropdown-toggle').click().then(() => {
+        cy.get(`.${network}`).click().then(() => {
+            cy.waitForPageIdle();
+            if(network !== 'bisq'){
+                cy.waitForSkeletonGone();
+            }
+        });
+    });
+});

@@ -147,6 +147,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.HH">
         <source>HH</source>
+        <target>एचएच</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -162,6 +163,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.MM">
         <source>MM</source>
+        <target>एम्एम्</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -209,6 +211,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.SS">
         <source>SS</source>
+        <target>एसएस</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/@ng-bootstrap/ng-bootstrap/timepicker/timepicker.ts</context>
           <context context-type="linenumber">296</context>
@@ -304,6 +307,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4ad173c0e4010b1f25bf58e96a383edc1b59cd80">
         <source>Ticker</source>
+        <target>टिकर</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">20,21</context>
@@ -342,7 +346,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="cf1fbcd10d4be4845152f2e10d1db9bc61dd9410">
         <source>Issuance TX</source>
-        <target>निर्गम TX</target>
+        <target>निर्गम टीएक्स</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/assets/assets.component.html</context>
           <context context-type="linenumber">23,26</context>
@@ -632,7 +636,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8a7b4bd44c0ac71b2e72de0398b303257f7d2f54">
         <source>Blocks</source>
-        <target>ब्लाकों</target>
+        <target>ब्लॉक</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.ts</context>
           <context context-type="linenumber">38</context>
@@ -931,7 +935,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fb5b5aec9a6add4912de64b7bbc55884cc7f8e3a">
         <source>Unspent TXOs</source>
-        <target>अव्ययित TXOs</target>
+        <target>अव्ययित टीएक्सओ </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">28</context>
@@ -944,7 +948,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0f8a41c901cd606bd3389d8a022cee193264f20b">
         <source>Spent TXOs</source>
-        <target>खरचे गए TXOs</target>
+        <target>खरचे गए टीएक्सओ </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">32</context>
@@ -1523,6 +1527,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f094f67fbe759cdbeb2ea14455634bbe5cc6375d">
         <source>Error loading address data.</source>
+        <target>डेटा लोड करने में त्रुटि.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">122,125</context>
@@ -1578,6 +1583,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="42b59f1f3dfde09c4c04f711307847438e057efb">
         <source>General</source>
+        <target>आम</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -1928,6 +1934,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2761d0de651f1c4395e6e7fbc7fded09918f8dcb">
         <source>Returns details about difficulty adjustment.</source>
+        <target>कठिनाई समायोजन के बारे में विवरण देता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">24,26</context>
@@ -1945,6 +1952,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e12cd52eaa77b446ba97436c145b59741151adf3">
         <source>Returns details about an address. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>chain_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool_stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>. <x equiv-text="{{ '{' }}" id="INTERPOLATION"/>chain,mempool<x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/>_stats each contain an object with <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>funded_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent_txo_sum<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
+        <target>किसी पते के बारे में विवरण देता है। उपलब्ध फ़ील्ड: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> पता <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> , <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> चैन स्टैट्स <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> , और <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> मेम्पुल मेम्पुल<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> . <x equiv-text="{{ '{' }}" id="INTERPOLATION"/> चेन, मेम्पुल <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/> _मेम्पुल प्रत्येक के साथ <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> टी एक्स_काउंट <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> फंडेड_टी एक्स_काउंट <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> फंडेड_टी एक्स_सम <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> स्पेंट_टी एक्स_काउंट<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, और <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> स्पेंट_टी एक्स_सम <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> एक वस्तु होते हैं।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">50,51</context>
@@ -1976,6 +1984,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4eb50557085c85bfca995b6ee0de56ec3f5e97eb">
         <source>Get the list of unspent transaction outputs associated with the address/scripthash. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vout<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (with the status of the funding tx).<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/>There is also a <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>valuecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> field that may appear in place of <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, plus the following additional fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>asset<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>assetcommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>/<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>noncecommitment<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>surjection_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>range_proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></source>
+        <target>पते / स्क्रिप्टश से जुड़े अव्ययित लेनदेन आउटपुट की सूची प्राप्त करें। उपलब्ध फ़ील्ड: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> टीएक्सआईडी <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> , <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> वी आउट <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> , <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> मान <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> , और  फंडिंग की स्थिति के साथ)। <x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/> वहाँ भी एक <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> वैल्यूकमिटमेंट  <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> क्षेत्र है कि <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> मूल्य <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> के स्थान पर दिखाई दे सकते हैं, के साथ साथ निम्न अतिरिक्त फ़ील्ड: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> संपत्ति <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> / <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> एसेट कमिटमेंट  <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> अस्थायी रूप से <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> / <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> नोन्स कमिटमेंट  <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> सुरजेक्शन_प्रूफ <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, और <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> रेंज_प्रूफ <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>। <x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">124,125</context>
@@ -2009,6 +2018,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="44a238eb28145f904f3a5bbfd4050987668f78d0">
         <source>Get the current total supply of the specified asset. For the native asset (L-BTC), this is calculated as [chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount. For issued assets, this is calculated as [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount. Not available for assets with blinded issuances. If /decimal is specified, returns the supply as a decimal according to the asset's divisibility. Otherwise, returned in base units.</source>
+        <target>निर्दिष्ट संपत्ति की वर्तमान कुल आपूर्ति प्राप्त करें। नेटिव एसेट (L-BTC) के लिए, इसकी गणना [चेन,मेमपूल]_स्टैट्स.पेग_इन_अमाउंट - [चेन,मेमपूल]_स्टैट्स.पेग_आउट_अमाउंट - [चेन,मेमपूल]_स्टैट्स.बर्नड_अमाउंट के रूप में की जाती है। जारी की गई संपत्तियों के लिए, इसकी गणना [श्रृंखला, मेमपूल] _स्टैट्स.एशुद_अमाउंट - [श्रृंखला, मेमपूल] _स्टैट्स.बर्नड_अमाउंट के रूप में की जाती है। ब्लाइंड इश्यू वाली संपत्तियों के लिए उपलब्ध नहीं है। यदि /दशमलव निर्दिष्ट है, तो संपत्ति की विभाज्यता के अनुसार आपूर्ति को दशमलव के रूप में लौटाता है। अन्यथा, आधार इकाइयों में वापस कर दिया।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">186,189</context>
@@ -2016,6 +2026,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f4cba7faeb126346f09cc6af30124f9a343f7a28">
         <source>Blocks</source>
+        <target>ब्लॉक</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">197,199</context>
@@ -2029,6 +2040,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="194d480219559b855b01ea58459066e3c63acdb2">
         <source>Returns details about a block. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>id<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>version<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>timestamp<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>bits<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>nonce<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>merkle_root<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>tx_count<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>size<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>weight<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/><x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>proof<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>,<x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/> and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>previousblockhash<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
+        <target>किसी ब्लॉक के बारे में विवरण देता है। उपलब्ध क्षेत्रों: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> आईडी <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> ऊंचाई <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> संस्करण <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> टाइमस्टैम्प <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> बिट्स <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> नोन्स <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> मर्कल_रुट <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> टीएक्स_काउंट <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> आकार <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> वजन <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> सबूत <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/> <x ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;" id="START_TAG_NG_CONTAINER"/> और <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> पिछलाब्लॉकहैश <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">211,212</context>
@@ -2036,6 +2048,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2ca235ae8c14854eb6ea6d42fd2521204d3db01f">
         <source>Returns the hex-encoded block header.</source>
+        <target>हेक्स-एन्कोडेड ब्लॉक हेडर देता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">230,233</context>
@@ -2043,6 +2056,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="36df9865e9099d98537ea69c9cfdc035d1b64116">
         <source>Returns the hash of the block currently at <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
+        <target>वर्तमान में <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> :height <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> पर ब्लॉक का हैश लौटाता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">248,249</context>
@@ -2050,6 +2064,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="6d5aacdd7e6c375570a88c25bfd0be82beba4c7b">
         <source>Returns the raw block representation in binary.</source>
+        <target>बाइनरी में रॉ ब्लॉक का प्रतिनिधित्व देता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">264,267</context>
@@ -2057,6 +2072,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a2c00fbdcce9d6291c3b04c67979f9694be23f28">
         <source>Returns the confirmation status of a block. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>in_best_chain<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean, false for orphaned blocks), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>next_best<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (the hash of the next block, only available for blocks in the best chain).</source>
+        <target>किसी ब्लॉक की पुष्टि स्थिति लौटाता है। उपलब्ध फ़ील्ड: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> in_best_chain <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (बूलियन, अनाथ ब्लॉक के लिए झूठा), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> next_best <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (अगले ब्लॉक का हैश, केवल सर्वश्रेष्ठ श्रृंखला में ब्लॉक के लिए उपलब्ध)।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">283,284</context>
@@ -2064,6 +2080,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4767bdd2059533d5eed7f3fe7cf0be5c260cdb00">
         <source>Returns the height of the last block.</source>
+        <target>अंतिम ब्लॉक की ऊंचाई लौटाता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">303,306</context>
@@ -2071,6 +2088,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="940153d58769f1a8f50dba2458693142675a5dcb">
         <source>Returns the hash of the last block.</source>
+        <target>अंतिम ब्लॉक का हैश लौटाता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">322,325</context>
@@ -2078,6 +2096,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3e08815110b2e5ce8aa7256ed05a2faf6dbb7077">
         <source>Returns the transaction at index <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:index<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> within the specified block.</source>
+        <target>निर्दिष्ट ब्लॉक के भीतर सूचकांक <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> :index <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> पर लेनदेन लौटाता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">342,343</context>
@@ -2085,6 +2104,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3846f2527c3c9a50bb84b2c941a876f66797449b">
         <source>Returns a list of all txids in the block.</source>
+        <target>ब्लॉक में सभी txid की सूची देता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">362,365</context>
@@ -2092,6 +2112,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1126cb2e03d0371d03b57047052d4ff1b6556753">
         <source>Returns a list of transactions in the block (up to 25 transactions beginning at <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>start_index<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>). Transactions returned here do not have the <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> field, since all the transactions share the same block and confirmation status.</source>
+        <target>ब्लॉक में लेन-देन की सूची देता है (<x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> start_index <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> से शुरू होने वाले 25 लेन-देन तक)। यहां लौटाए गए लेन-देन में <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> स्थिति <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> फ़ील्ड नहीं है, क्योंकि सभी लेन-देन समान ब्लॉक और पुष्टिकरण स्थिति साझा करते हैं।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">381,382</context>
@@ -2099,6 +2120,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f8380186899495340cbfe7fb836ba664fb4b52af">
         <source>Returns the 10 newest blocks starting at the tip or at <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>:start_height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> if specified.</source>
+        <target>टिप पर या <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> :start_height <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> पर निर्दिष्ट होने पर 10 नए ब्लॉक लौटाता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">401,402</context>
@@ -2232,6 +2254,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="af1a465e50097fabbe55bf5dbcf5d0702bdbc98b">
         <source>Get a list of the last 10 transactions to enter the mempool. Each transaction object contains simplified overview data, with the following fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>fee<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vsize<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>value<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
+        <target>मेमपूल में प्रवेश करने के लिए पिछले 10 लेनदेन की सूची प्राप्त करें। प्रत्येक लेन-देन वस्तु में निम्नलिखित क्षेत्रों के साथ सरलीकृत अवलोकन डेटा होता है: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> txid <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> , <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> शुल्क <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> , <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> बनाम </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">650,651</context>
@@ -2261,6 +2284,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a8ea1ec66e7bb9f92e87ae5482e50748baafffd2">
         <source>Returns details about a transaction. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>version<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>locktime<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>size<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>weight<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>fee<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vin<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vout<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.</source>
+        <target>लेन-देन के बारे में विवरण देता है। उपलब्ध क्षेत्रों: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> टीएक्सआईडी <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> संस्करण <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> लॉकटाइम <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> आकार <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> वजन <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> शुल्क <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> वी इन <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> वी आउट <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, और <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> स्थिति <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">693,694</context>
@@ -2268,6 +2292,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="34c21c242665d87bf22645c90f571bd5078eac93">
         <source>Returns a transaction serialized as hex.</source>
+        <target>हेक्स के रूप में क्रमबद्ध एक लेनदेन देता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">712,715</context>
@@ -2275,6 +2300,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d51106cc898981e9862d35a4db40796f0cf464f8">
         <source>Returns a merkle inclusion proof for the transaction using <x ctype="x-a" equiv-text="&lt;a href=&quot;https://bitcoin.org/en/glossary/merkle-block&quot;&gt;" id="START_LINK"/>bitcoind's merkleblock<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/> format.</source>
+        <target><x ctype="x-a" equiv-text="&lt;a href=&quot;https://bitcoin.org/en/glossary/merkle-block&quot;&gt;" id="START_LINK"/> बिटकॉइन के मर्कलब्लॉक <x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/> प्रारूप का उपयोग करके लेनदेन के लिए एक मर्कल समावेशन प्रमाण देता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">730,731</context>
@@ -2282,6 +2308,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a57953199686e9980df838cb25edb51691941ac5">
         <source>Returns a merkle inclusion proof for the transaction using <x ctype="x-a" equiv-text="&lt;a href=&quot;https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle&quot;&gt;" id="START_LINK"/>Electrum's blockchain.transaction.get_merkle format.<x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/></source>
+        <target><x ctype="x-a" equiv-text="&lt;a href=&quot;https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle&quot;&gt;" id="START_LINK"/> एलेक्ट्रम के blockchain.transaction.get_merkle प्रारूप का उपयोग करके लेनदेन के लिए एक मर्कल समावेशन प्रमाण देता है। <x ctype="x-a" equiv-text="&lt;/a&gt;" id="CLOSE_LINK"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">750,751</context>
@@ -2289,6 +2316,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fe9a40b2ff9674b4ab7d82624ffed340c9ee5b89">
         <source>Returns the spending status of a transaction output. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>spent<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>vin<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional), and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>status<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional, the status of the spending tx).</source>
+        <target>लेन-देन आउटपुट की व्यय स्थिति लौटाता है। उपलब्ध फ़ील्ड: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> खर्च किया गया <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (बूलियन), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> txid <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (वैकल्पिक), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> vin <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (वैकल्पिक) <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (वैकल्पिक) लेन-देन की स्थिति।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">769,770</context>
@@ -2296,6 +2324,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0358265aa88614843e1f5e887b94c673808c84f1">
         <source>Returns the spending status of all transaction outputs.</source>
+        <target>सभी लेन-देन आउटपुट की व्यय स्थिति लौटाता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">788,791</context>
@@ -2303,6 +2332,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fd42ee72bb64b93578d7d2142ae50796d0056d7a">
         <source>Returns a transaction as binary data.</source>
+        <target>लेन-देन को बाइनरी डेटा के रूप में लौटाता है।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">807,810</context>
@@ -2310,6 +2340,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7e784cfa5833e7b54d4dfc723fabde94f66ebde3">
         <source>Returns the confirmation status of a transaction. Available fields: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>confirmed<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (boolean), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_height<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional), and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block_hash<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (optional).</source>
+        <target>लेन-देन की पुष्टि की स्थिति लौटाता है। उपलब्ध फ़ील्ड: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> पुष्टि की गई <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (बूलियन), <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> block_height <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (वैकल्पिक), और <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> block_hash <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> (वैकल्पिक)।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">826,827</context>
@@ -2317,6 +2348,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="01723473ecc53cab60ef1b37dc39d8941994d56f">
         <source>Broadcast a raw transaction to the network. The transaction should be provided as hex in the request body. The <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>txid<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> will be returned on success.</source>
+        <target>नेटवर्क पर एक कच्चा लेनदेन प्रसारित करें। लेन-देन अनुरोध निकाय में हेक्स के रूप में प्रदान किया जाना चाहिए। सफलता मिलने पर <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> txid <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> लौटा दिया जाएगा।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">846,847</context>
@@ -2324,6 +2356,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="aacc1242420c527c8b9d4948a7ae7d94cde956e4">
         <source>Websocket</source>
+        <target>वेबसोकेट</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">856,860</context>
@@ -2333,6 +2366,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a706b1ded7506620b153dbcdea8108e6691bbbd9">
         <source>Default push: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> action: 'want', data: ['blocks', ...] <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> to express what you want pushed. Available: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>blocks<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>mempool-blocks<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>live-2h-chart<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>stats<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>.<x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/><x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/>Push transactions related to address: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/><x equiv-text="{{ '{' }}" id="INTERPOLATION"/> 'track-address': '3PbJ...bF9B' <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/><x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>address-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> for new mempool transactions, and <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/>block-transactions<x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> for new block confirmed transactions.</source>
+        <target>डिफ़ॉल्ट पुश: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> <x equiv-text="{{ '{' }}" id="INTERPOLATION"/> क्रिया: 'चाहते हैं', डेटा: ['ब्लॉक', ...] <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/> <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> जिसे आप पुश करना चाहते हैं उसे व्यक्त करने के लिए। उपलब्ध: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> ब्लॉक <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> , <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> मेमपूल-ब्लॉक <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/> , <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> लाइव -2h-चार्ट और आँकड़े. <x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/> <x ctype="lb" equiv-text="&lt;br&gt;" id="LINE_BREAK"/> पते से संबंधित लेनदेन को पुश करें: <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> <x equiv-text="{{ '{' }}" id="INTERPOLATION"/> 'ट्रैक-एड्रेस': '3PbJ...bF9B' <x equiv-text="{{ '}' }}" id="INTERPOLATION_1"/> वाले सभी नए लेनदेन इनपुट या आउटपुट के रूप में प्राप्त करें। लेन-देन की एक सरणी देता है।  <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> पता-लेनदेन <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>, और नए ब्लॉक पुष्टि लेनदेन के लिए <x ctype="x-code" equiv-text="&lt;code&gt;" id="START_TAG_CODE"/> ब्लॉक-लेनदेन <x ctype="x-code" equiv-text="&lt;/code&gt;" id="CLOSE_TAG_CODE"/>।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">865,866</context>
@@ -2341,6 +2375,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8f3ac0544491bf048120928d39e02a6baeb0b278">
         <source>Privacy Policy</source>
+        <target>गोपनीयता नीति</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">880,885</context>
@@ -2508,6 +2543,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d2a84740e76b7220516a9f10644e4b3bdabdb833">
         <source>Peg In/Out and Burn Transactions</source>
+        <target>पेग इन/आउट और बर्न ट्रांजैक्शन</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">77</context>
@@ -2516,6 +2552,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fcbd3315aa10b59ba6ef383c6f16ace6c9d53b71">
         <source>Issuance and Burn Transactions</source>
+        <target>जारी करना और जलाना लेनदेन</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">78</context>
@@ -2524,6 +2561,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ef5ac12104751b93b03c16f64d4c3a4341dce89c">
         <source>Error loading asset data.</source>
+        <target>एसेट डेटा लोड करने में गड़बड़ी.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">136</context>
@@ -2532,6 +2570,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="asset.component.asset-browser-title">
         <source>Asset: <x equiv-text="this.assetString" id="INTERPOLATION"/></source>
+        <target>एसेट : <x equiv-text="this.assetString" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.ts</context>
           <context context-type="linenumber">73</context>
@@ -2539,6 +2578,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2b34680062c4aed90c4d846eab42d6e99501b783">
         <source>Offline</source>
+        <target>ऑफलाइन</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/bisq-master-page/bisq-master-page.component.html</context>
           <context context-type="linenumber">7,8</context>
@@ -2551,6 +2591,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="c5d46228bea3555d65c705bad40be80f8798a113">
         <source>Reconnecting...</source>
+        <target>फिर से कनेक्ट हो रहा है...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/bisq-master-page/bisq-master-page.component.html</context>
           <context context-type="linenumber">8,13</context>
@@ -2563,6 +2604,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f65253954b66e929a8b4d5ecaf61f9129f8cec64">
         <source>Dashboard</source>
+        <target>डैशबोर्ड</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/bisq-master-page/bisq-master-page.component.html</context>
           <context context-type="linenumber">16,18</context>
@@ -2575,6 +2617,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7daa2693df24aec262c6aad735f9bf918575b866">
         <source>Genesis </source>
+        <target>आरंभ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">4</context>
@@ -2583,6 +2626,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="07193288a0312875e18f38c3a2486b927a15520a">
         <source>Timestamp</source>
+        <target>समय-चिह्न</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">22,24</context>
@@ -2595,6 +2639,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7faaaa08f56427999f3be41df1093ce4089bbd75">
         <source>Size</source>
+        <target>साइज</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">31,33</context>
@@ -2615,6 +2660,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="919f2fd60a898850c24b1584362bbf18a4628bcb">
         <source>Weight</source>
+        <target>वेइट</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">35,37</context>
@@ -2623,6 +2669,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0b47a777f024ab4e3cdf0062acb4d86e9ae1f635">
         <source>Median fee</source>
+        <target>औसत शुल्क</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">45,46</context>
@@ -2635,6 +2682,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d2eb45d1cd8cd146b7cb0223ab97a4b03b614060">
         <source>sat/vB</source>
+        <target>सैट/वीबी</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">46</context>
@@ -2708,6 +2756,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="855f852e5642a1279605465df0cbbe78c2622648">
         <source>Based on average native segwit transaction of 140 vBytes</source>
+        <target>140 वीबाइट्स  के औसत नेटिव सेगविट लेनदेन के आधार पर</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">46,48</context>
@@ -2732,6 +2781,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ae9770436d1823a1ddfa0837c5a98f412a0d42c4">
         <source>Total fees</source>
+        <target>कुल शुल्क</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">50,51</context>
@@ -2745,6 +2795,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b784270035273a5744e3c23c0fff31eebca32050">
         <source>Subsidy + fees:</source>
+        <target>सब्सिडी + शुल्क:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">57,59</context>
@@ -2758,6 +2809,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="21f88da2fbe81e4dc893ce1df92bd0fe25bcecee">
         <source>Miner</source>
+        <target>माइनर</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">74,75</context>
@@ -2766,6 +2818,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="fd04710d1a54d46cd1b81a13fc98e3d561b92141">
         <source>Bits</source>
+        <target>बिट्स</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">96,98</context>
@@ -2774,6 +2827,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d71be278785ad5940aacaf2b29a67bdbf6fc6be8">
         <source>Merkle root</source>
+        <target>मर्कल रुट</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">100,102</context>
@@ -2782,6 +2836,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="25148835d92465353fc5fe8897c27d5369978e5a">
         <source>Difficulty</source>
+        <target>कठिनाई</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">110,113</context>
@@ -2790,6 +2845,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a6bb63d98a8a67689070a79ccf13960c25b572ef">
         <source>Nonce</source>
+        <target>नोन्स</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">114,116</context>
@@ -2798,6 +2854,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="cbfb79ff517493268a49acffa81ecc02336d8372">
         <source>Block Header Hex</source>
+        <target>ब्लॉक हैडर हेक्स</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">118,119</context>
@@ -2806,6 +2863,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5f32c623f92bf3ca31202cc6281d4abd5febaf6a">
         <source>Details</source>
+        <target>विवरण</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">129,134</context>
@@ -2819,6 +2877,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="56ad2f3895f350abdd3cee2d95498deb8819afac">
         <source>Error loading block data.</source>
+        <target>ब्लॉक डेटा लोड करने में गड़बड़ी.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">223,231</context>
@@ -2827,6 +2886,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="block.component.browser-title">
         <source>Block <x equiv-text="block.height" id="BLOCK_HEIGHT"/>: <x equiv-text="block.id" id="BLOCK_ID"/></source>
+        <target>ब्लॉक <x equiv-text="block.height" id="BLOCK_HEIGHT"/> : <x equiv-text="block.id" id="BLOCK_ID"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.ts</context>
           <context context-type="linenumber">106</context>
@@ -2834,6 +2894,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="clipboard.copied-message">
         <source>Copied!</source>
+        <target>कोपीड!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/clipboard/clipboard.component.ts</context>
           <context context-type="linenumber">15</context>
@@ -2841,6 +2902,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f2385584215e9b925b6347de866110d5e07d3a35">
         <source>Low priority</source>
+        <target>कम प्राथमिकता</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">4,5</context>
@@ -2853,6 +2915,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0ba9d74c1d31a9d98829892f40334a22624564b8">
         <source>Medium priority</source>
+        <target>मध्यम प्राथमिकता</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">10,11</context>
@@ -2865,6 +2928,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f80dd1511a91af4e592a538f95fa29d24907176f">
         <source>High priority</source>
+        <target>उच्च प्राथमिकता</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">16,17</context>
@@ -2877,6 +2941,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0ae5beecbbfc96bcdf4f9a637aa72687e81ef5e1">
         <source>Tx vBytes per second:</source>
+        <target>प्रति सेकंड टीएक्स वीबाइट्स:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">5,7</context>
@@ -2885,6 +2950,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a5950b2ce4c3ea32de91034de8269781eb333d73">
         <source>Backend is synchronizing</source>
+        <target>बैकएंड सिंक्रोनाइज़ कर रहा है</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">7,11</context>
@@ -2897,6 +2963,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="50904e472d4671388a20fbbb1ee9dfc0a4586fa1">
         <source>vB/s</source>
+        <target>वीबी/एस</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">11,15</context>
@@ -2910,6 +2977,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="60cd6fa18f925b42065d8cfb1a791efdc228b4c3">
         <source>Unconfirmed</source>
+        <target>अपुष्ट</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">16,17</context>
@@ -2923,6 +2991,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3">
         <source>Mempool size</source>
+        <target>मेमपूल साइज</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">20,21</context>
@@ -2932,6 +3001,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1bb6965f8e1bbe40c076528ffd841da86f57f119">
         <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> <x ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;" id="START_TAG_SPAN"/>blocks<x ctype="x-span" equiv-text="&lt;/span&gt;" id="CLOSE_TAG_SPAN"/></source>
+        <target> <x equiv-text="{{ i }}" id="INTERPOLATION"/> <x ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;" id="START_TAG_SPAN"/> ब्लॉक <x ctype="x-span" equiv-text="&lt;/span&gt;" id="CLOSE_TAG_SPAN"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">22,23</context>
@@ -2948,6 +3018,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b7ef3894d9b6f157c400ddc937c70c9881ecd896">
         <source><x equiv-text="{{ i }}" id="INTERPOLATION"/> <x ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;" id="START_TAG_SPAN"/>block<x ctype="x-span" equiv-text="&lt;/span&gt;" id="CLOSE_TAG_SPAN"/></source>
+        <target> <x equiv-text="{{ i }}" id="INTERPOLATION"/> <x ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;" id="START_TAG_SPAN"/> ब्लॉक <x ctype="x-span" equiv-text="&lt;/span&gt;" id="CLOSE_TAG_SPAN"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">23,24</context>
@@ -2960,6 +3031,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="65d447765db0bf3390e9b3ecce142bf34bb602a3">
         <source>Mined</source>
+        <target>माइंड</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
           <context context-type="linenumber">11,12</context>
@@ -2972,6 +3044,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="9daedf013e87630c4e0a9123dc62e5bbf15a59ad">
         <source>Layer 2 Networks</source>
+        <target>लेयर 2 नेटवर्क्स</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">22,23</context>
@@ -2980,6 +3053,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="299f97b8ee9c62d45f2cc01961aa1e5101d6d05a">
         <source>Stats</source>
+        <target>आँकड़े</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">41,45</context>
@@ -2988,6 +3062,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5d4f792f048fcaa6df5948575d7cb325c9393383">
         <source>Graphs</source>
+        <target>ग्राफ्स</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">49,51</context>
@@ -3000,6 +3075,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="46ce8155c9ab953edeec97e8950b5a21e67d7c4e">
         <source>TV view</source>
+        <target>टीवी दृश्य</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">52,55</context>
@@ -3012,6 +3088,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b2cb12c1680a46464cae5aa0d0d1d6914733a75d">
         <source>Fee span</source>
+        <target>फी स्पेन </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
           <context context-type="linenumber">20,21</context>
@@ -3020,6 +3097,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="926dd4c7e830240b502eb44b6c485815f563e595">
         <source>Total fees</source>
+        <target>कुल शुल्क</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
           <context context-type="linenumber">24,25</context>
@@ -3028,6 +3106,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="mempool-block.next.block">
         <source>Next block</source>
+        <target>अगला ब्लॉक</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">71</context>
@@ -3035,6 +3114,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="mempool-block.stack.of.blocks">
         <source>Stack of <x equiv-text="blocksInBlock" id="INTERPOLATION"/> mempool blocks</source>
+        <target><x equiv-text="blocksInBlock" id="INTERPOLATION"/> मेमपूल ब्लॉक का ढेर</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">73</context>
@@ -3042,6 +3122,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="mempool-block.block.no">
         <source>Mempool block <x equiv-text="this.mempoolBlockIndex + 1" id="INTERPOLATION"/></source>
+        <target>मेमपूल ब्लॉक <x equiv-text="this.mempoolBlockIndex + 1" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">75</context>
@@ -3049,6 +3130,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e5d8bb389c702588877f039d72178f219453a72d">
         <source>Unknown</source>
+        <target>अननोन</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/miner/miner.component.html</context>
           <context context-type="linenumber">10</context>
@@ -3057,6 +3139,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="miner-identified-by-payout">
         <source>Identified by payout address: '<x equiv-text="vout.scriptpubkey_address" id="PAYOUT_ADDRESS"/>'</source>
+        <target>पेआउट पते से पहचाना गया: ' <x equiv-text="vout.scriptpubkey_address" id="PAYOUT_ADDRESS"/> '</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
           <context context-type="linenumber">42</context>
@@ -3064,6 +3147,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="miner-identified-by-coinbase">
         <source>Identified by coinbase tag: '<x equiv-text="tag" id="TAG"/>'</source>
+        <target>कॉइनबेस टैग द्वारा पहचाना गया: '<x equiv-text="tag" id="TAG"/>'</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
           <context context-type="linenumber">52</context>
@@ -3071,6 +3155,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="78fe1342aab9e91cb7cbd1becbaacf3b719546b3">
         <source>TXID, block height, hash or address</source>
+        <target>TXID, ब्लॉक ऊंचाई, हैश या पता</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-form.component.html</context>
           <context context-type="linenumber">4</context>
@@ -3079,6 +3164,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7e892ba15f2c6c17e83510e273b3e10fc32ea016">
         <source>Search</source>
+        <target>सर्च</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-form.component.html</context>
           <context context-type="linenumber">7</context>
@@ -3087,6 +3173,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="dfd99c62b5b308fc5b1ad7adbbf9d526d2b31516">
         <source>Sponsor</source>
+        <target>स्पॉंसर</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/sponsor/sponsor.component.html</context>
           <context context-type="linenumber">3</context>
@@ -3099,6 +3186,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8a24d1f821c3fde832ff742b6aaba455accadc74">
         <source>Request invoice</source>
+        <target>रिक्वेस्ट इनवॉइस </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/sponsor/sponsor.component.html</context>
           <context context-type="linenumber">49</context>
@@ -3107,6 +3195,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="64a98449e66031949cbf82767dd17c30d4e6da7f">
         <source>Waiting for transaction... </source>
+        <target>ट्रांसेक्शन की प्रतीक्षा कर रहा है...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/sponsor/sponsor.component.html</context>
           <context context-type="linenumber">138</context>
@@ -3115,6 +3204,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="023f8e4927b3e3baa217a2577c78c5194b885a21">
         <source>Donation confirmed!</source>
+        <target>दान पुष्ट!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/sponsor/sponsor.component.html</context>
           <context context-type="linenumber">144</context>
@@ -3123,6 +3213,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="768fa94396eb6bb2834ec52fc1b5fad92273027d">
         <source>Thank you!</source>
+        <target>शुक्रिया!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/sponsor/sponsor.component.html</context>
           <context context-type="linenumber">145</context>
@@ -3131,6 +3222,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ff4b7f4070be9e876c7610d99b9dbd53ff19dceb">
         <source>Loading graphs...</source>
+        <target>ग्राफ़ लोड हो रहे हैं...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">5</context>
@@ -3139,6 +3231,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="75c20c8a9cd9723d45bee0230dd582d7c2e4ecbc">
         <source>Mempool by vBytes (sat/vByte)</source>
+        <target>vBytes द्वारा मेमपूल (sat/vByte)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">13</context>
@@ -3147,6 +3240,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="add9d52e5bf541c941df44e251a5c1cafcc92e9d">
         <source>Invert</source>
+        <target>उल्टे</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">39</context>
@@ -3155,6 +3249,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="dc15ec15e6206b40133f2c1b06095ce75aaee1ef">
         <source>Transaction vBytes per second (vB/s)</source>
+        <target>लेनदेन vBytes प्रति सेकंड (vB/s)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">53</context>
@@ -3163,6 +3258,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.just-now">
         <source>Just now</source>
+        <target>अभी</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">57</context>
@@ -3174,6 +3270,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since">
         <source><x equiv-text="dateStrings.i18nYear" id="DATE"/> ago</source>
+        <target> <x equiv-text="dateStrings.i18nYear" id="DATE"/> पहले</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -3233,6 +3330,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-span">
         <source>After <x equiv-text="dateStrings.i18nYear" id="DATE"/></source>
+        <target><x equiv-text="dateStrings.i18nYear" id="DATE"/> . के बाद</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -3292,6 +3390,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-until">
         <source>In ~<x equiv-text="dateStrings.i18nMinute" id="DATE"/></source>
+        <target>~ <x equiv-text="dateStrings.i18nMinute" id="DATE"/> . में</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
           <context context-type="linenumber">66</context>
@@ -3355,6 +3454,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0094b97dd052620710f173e7aedf6807a1eba1f5">
         <source>This transaction has been replaced by:</source>
+        <target>इस लेन-देन को इसके द्वारा प्रतिस्थापित किया गया है:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">5,6</context>
@@ -3364,6 +3464,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ef772ce5cf98a47b29175e3d46b8a9816c7990a2">
         <source>Unconfirmed</source>
+        <target>अपुष्ट</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">34,41</context>
@@ -3377,6 +3478,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bfa87f9724434e4245b30f2bdd11d97477048cd1">
         <source>Confirmed</source>
+        <target>पुष्ट</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">67,68</context>
@@ -3386,6 +3488,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1bc4a5de56ea48a832e32294c124009867b478d0">
         <source>First seen</source>
+        <target>प्रथम देखा</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">103,104</context>
@@ -3395,6 +3498,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4e738ef3d2b4878f17f43002204f7b31aabb8e87">
         <source>ETA</source>
+        <target>इटीए </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">109,111</context>
@@ -3404,6 +3508,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f9bad781ea9c5192160516ca55ddc5edc307ef07">
         <source>In several hours (or more)</source>
+        <target>कई घंटों में (या अधिक)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">116,119</context>
@@ -3413,6 +3518,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="54c58b39481f1749fce23fa8a77f616eee84d761">
         <source>Virtual size</source>
+        <target>वर्चुअल साइज </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">155,157</context>
@@ -3426,6 +3532,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3e322ffba6477484e0dd2e65650fdd70322ea6d0">
         <source>Fee rate</source>
+        <target>शुल्क दर</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">156,160</context>
@@ -3439,6 +3546,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="dd230222e3ae689913445ce93b6ae3f7cce7458b">
         <source>Descendant</source>
+        <target>वंशज</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">163,165</context>
@@ -3448,6 +3556,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8c16167a5d7c96d14ff280b09de312d18d5e2511">
         <source>Ancestor</source>
+        <target>पूर्वज</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">177,179</context>
@@ -3457,6 +3566,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="35214e7a6aec1b0317e0fa1eb32e8caf6757b147">
         <source>Size</source>
+        <target>साइज </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">208,212</context>
@@ -3466,6 +3576,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="13f5a75f3e01e5924e45052d2f336eda8bac37e8">
         <source>Weight</source>
+        <target>वेइट</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">216,220</context>
@@ -3475,6 +3586,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a2fbb7745c7048af923991e08ccd6975364be90d">
         <source>Transaction Hex</source>
+        <target>ट्रांसेक्शन हेक्स </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">220,221</context>
@@ -3483,6 +3595,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="c9d9612bcd520103486b5fc84d84c9476a1b7f78">
         <source>Transaction not found.</source>
+        <target>ट्रांसेक्शन नहीं मिला।</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">308,309</context>
@@ -3491,6 +3604,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="66b65556acb90d8764fe166a260af0309671698c">
         <source>Waiting for it to appear in the mempool...</source>
+        <target>मेमपूल में इसके प्रकट होने की प्रतीक्षा की जा रही है...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">309,313</context>
@@ -3499,6 +3613,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="cb1b52c13b95fa29ea4044f2bbe0ac623b890c80">
         <source>Fee</source>
+        <target>शुल्क</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">328,329</context>
@@ -3508,6 +3623,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="071dc2ed21e40ad2199ea5dda884f48c0414a42a">
         <source>sat</source>
+        <target>सैट</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">329,332</context>
@@ -3517,6 +3633,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="eb1737af67381ce6f0b347038bb4c65b3deb84be">
         <source>Effective fee rate</source>
+        <target>प्रभावी शुल्क दर</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">342,345</context>
@@ -3526,6 +3643,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7e06b8dd9f29261827018351cd71efe1c87839de">
         <source>Coinbase</source>
+        <target>कॉइनबेस</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">44</context>
@@ -3534,6 +3652,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="7d745f2569c4ddc2992529f00ed991e36dada39a">
         <source>(Newly Generated Coins)</source>
+        <target>(नए सृजित कोइन्स)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">44</context>
@@ -3542,6 +3661,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5de25175982d51c72d25bd79933e7b412d51e343">
         <source>Peg-in</source>
+        <target>पेग-इन</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">46,48</context>
@@ -3550,6 +3670,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="23f4a0693bc0ad8dbdccfc0b04238edfaf846bc5">
         <source>ScriptSig (ASM)</source>
+        <target>स्क्रिप्टसिग (एएसएम)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">79,81</context>
@@ -3559,6 +3680,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3a5a04628e57fd93cfce206ccbc1432fed0925d3">
         <source>ScriptSig (HEX)</source>
+        <target>स्क्रिप्टसिग (हेक्स)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">83,85</context>
@@ -3568,6 +3690,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="c64b73564fd858ee5a4f73040893c9d625ca56ad">
         <source>Witness</source>
+        <target>विटनेस</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">88,89</context>
@@ -3576,6 +3699,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a8bc418b73c6bfcefc1b07c84d7f1126ab2a3237">
         <source>P2SH redeem script</source>
+        <target>P2SH रिडीम स्क्रिप्ट</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">92,93</context>
@@ -3584,6 +3708,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e1d63108bdf06fa14ec13f038e23eebd4d391b16">
         <source>P2WSH witness script</source>
+        <target>P2WSH विटनेस स्क्रिप्ट</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">96,97</context>
@@ -3592,6 +3717,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="cb49c3831dcaed1b6ccaf5efe58730cf29a5d15d">
         <source>nSequence</source>
+        <target>nसीक्वेंस</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">100,101</context>
@@ -3600,6 +3726,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="26cdad3f9e94369ff12c5c628d8eb5c724e3acb3">
         <source>Previous output script</source>
+        <target>पिछली आउटपुट स्क्रिप्ट</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">104,105</context>
@@ -3608,6 +3735,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="288d096739aa2d9aae2911f072f91b3a29245509">
         <source>Load all</source>
+        <target>सभी लोड करें</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">114,117</context>
@@ -3620,6 +3748,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="9fb28e77d5963f2275397f2f9cee54f32942aeeb">
         <source>Peg-out to <x ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;" id="START_TAG_NG_CONTAINER"/><x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></source>
+        <target>पेग-आउट टु  <x ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;" id="START_TAG_NG_CONTAINER"/> <x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">133,134</context>
@@ -3628,6 +3757,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4bdf69370ca8b0cae3a17d7b84b59c49cd57288d">
         <source>ScriptPubKey (ASM)</source>
+        <target>स्क्रिप्टपबकी (एएसएम)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">184,186</context>
@@ -3637,6 +3767,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e191b4f47f3ea7532f83fd498f4860db664ab75c">
         <source>ScriptPubKey (HEX)</source>
+        <target>स्क्रिप्टपबकी (हेक्स)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">188,190</context>
@@ -3646,6 +3777,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="3ac775768c0ab6f813c8bab0fe0e68960fc87c4d">
         <source>data</source>
+        <target>डाटा</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">192,193</context>
@@ -3654,6 +3786,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="83b8b9dd1ed416447cf8438460a37b0ddeb2677c">
         <source>sat</source>
+        <target>सैट</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">212</context>
@@ -3663,6 +3796,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f85c05147b720576e50336cf26f63d3b05601699">
         <source>This transaction saved <x equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}" id="INTERPOLATION"/>% on fees by using native SegWit-Bech32</source>
+        <target>इस लेन-देन ने मूल SegWit-Bech32 का उपयोग करके शुल्क पर <x equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}" id="INTERPOLATION"/>% बचाया</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">1</context>
@@ -3671,6 +3805,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0ca27703757bf9a636a0b9b61e6a0cf248781cb4">
         <source>SegWit</source>
+        <target>सेग्विट </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">1</context>
@@ -3688,6 +3823,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="975f46d122f2ca0a187308399a58b44d61ef08eb">
         <source>This transaction saved <x equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}" id="INTERPOLATION"/>% on fees by using SegWit and could save <x equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}" id="INTERPOLATION_1"/>% more by fully upgrading to native SegWit-Bech32</source>
+        <target>इस लेन-देन ने SegWit का उपयोग करके शुल्क पर <x equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}" id="INTERPOLATION"/>% बचाया और मूल SegWit-Bech32 में पूरी तरह से अपग्रेड करके <x equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}" id="INTERPOLATION_1"/>% अधिक बचा सकता है</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">3</context>
@@ -3696,6 +3832,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1be04d5407059059b596f72696a3d1704ce9c0ef">
         <source>This transaction could save <x equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}" id="INTERPOLATION"/>% on fees by upgrading to native SegWit-Bech32 or <x equiv-text="{{ segwitGains.potentialP2shGains * 100 | number:  '1.0-0' }}" id="INTERPOLATION_1"/>% by upgrading to SegWit-P2SH</source>
+        <target>यह लेन-देन स्थानीय SegWit-Bech32 या <x equiv-text="{{ segwitGains.potentialP2shGains * 100 | number:  '1.0-0' }}" id="INTERPOLATION_1"/>% SegWit-P2SH में अपग्रेड करके शुल्क पर <x equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}" id="INTERPOLATION"/>% बचा सकता है</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">5</context>
@@ -3704,6 +3841,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5531c86f8e09b83930f66566fb85baf3057e2f51">
         <source>This transaction support Replace-By-Fee (RBF) allowing fee bumping</source>
+        <target>यह लेन-देन प्रतिस्थापन-दर-शुल्क (आरबीएफ) का समर्थन करता है, जिससे शुल्क में वृद्धि होती है</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">8</context>
@@ -3712,6 +3850,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f0e7d6d900658ee5ce66d8fef3637caf13891c53">
         <source>RBF</source>
+        <target>आरबीएफ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">8</context>
@@ -3725,6 +3864,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="85ce9e4f45873116b746899169cbc3445321d60c">
         <source>This transaction does NOT support Replace-By-Fee (RBF) and cannot be fee bumped using this method</source>
+        <target>यह लेन-देन प्रतिस्थापन-दर-शुल्क (आरबीएफ) का समर्थन नहीं करता है और इस पद्धति का उपयोग करके शुल्क में बाधा नहीं डाली जा सकती है</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">9</context>
@@ -3733,6 +3873,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b2035d486e8d59980736a224891d9790c981691a">
         <source>Optimal</source>
+        <target>ऑप्टीमल</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">1</context>
@@ -3742,6 +3883,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="9d92d02835569b64f0dce58e81a0d22dd798f6e5">
         <source>Only ~<x equiv-text="{{ medianFeeNeeded | number : '1.1-1' }}" id="INTERPOLATION"/> sat/vB was needed to get into this block</source>
+        <target>इस ब्लॉक में आने के लिए केवल ~ <x equiv-text="{{ medianFeeNeeded | number : '1.1-1' }}" id="INTERPOLATION"/> सैट/वीबी की जरूरत थी</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
@@ -3754,6 +3896,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0fa66b0c410bef320d3f370d7c98c51754b5f28f">
         <source>Overpaid <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/>x</source>
+        <target>अधिक भुगतान <x equiv-text="{{ overpaidTimes }}" id="INTERPOLATION"/> x</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
@@ -3767,6 +3910,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="86d26b45470e43b409e589517922276109138e87">
         <source>Transaction Fees</source>
+        <target>ट्रांसेक्शन शुल्क</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">6,9</context>
@@ -3779,6 +3923,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e1139ea570985b3f114e18876f09fd7223429983">
         <source>Latest blocks</source>
+        <target>नई ब्लॉक</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">76,79</context>
@@ -3787,6 +3932,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e6213c3f05146287cf121868d9f3d3c3ff5f9714">
         <source>TXs</source>
+        <target>TXs</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">81,83</context>
@@ -3799,6 +3945,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="46ae0bacea22bcf409534f1c314735e4983e398a">
         <source>Latest transactions</source>
+        <target>नवीनतम ट्रांसक्शन्स</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">105,108</context>
@@ -3807,6 +3954,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1cb0c1f40f7ef8d62da2ccdccfdd2b7cdd18d2b9">
         <source>USD</source>
+        <target>USD</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">110,111</context>
@@ -3815,6 +3963,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="160f1ffbd26df073d0fbd02cf8ce0d8cea7603b0">
         <source>Fee</source>
+        <target>शुल्क</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">111,114</context>
@@ -3823,6 +3972,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1f332ec66f3bc8d943c248091be7f92772ba280f">
         <source>Expand</source>
+        <target>विस्तार करें</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">132,133</context>
@@ -3831,6 +3981,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e8bcb762b48cf52fbea66ce9c4f6b970b99a80fd">
         <source>Collapse</source>
+        <target>छोटा करें </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">133,137</context>
@@ -3839,6 +3990,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1f9a922cb4010ee20eb9a241a22307b670f7628c">
         <source>Minimum fee</source>
+        <target>न्यूनतम शुल्क</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">168,169</context>
@@ -3848,6 +4000,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4c3955cfe5955657297481efaf3ada8c55c75b2c">
         <source>Purging</source>
+        <target>पर्जिंग</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">169,170</context>
@@ -3857,6 +4010,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b9565832c4caef9a03f2b30fe37495ff38566fd5">
         <source>Memory usage</source>
+        <target>मेमोरी उपयोग</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">181,182</context>
@@ -3866,6 +4020,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="926c571b25cca7e2a294619f145960c0cd3848b6">
         <source>Incoming transactions</source>
+        <target>आने वाले ट्रांसक्शन्स </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">193,194</context>
@@ -3874,6 +4029,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="63da83692b85cf17e0606153029a83fd4038d6dd">
         <source>Difficulty Adjustment</source>
+        <target>डिफीकल्टी एडजस्टमेंट </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">208,211</context>
@@ -3882,6 +4038,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0912816d94f2f05a7eee8f7622670e0c6bbbce16">
         <source>Remaining</source>
+        <target>बचा हुआ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">214,216</context>
@@ -3894,6 +4051,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5e65ce907fc0e1a1a09d4130eb8c59d00a9457ef">
         <source>Estimate</source>
+        <target>आकलन</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">223,224</context>
@@ -3906,6 +4064,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="680d5c75b7fd8d37961083608b9fcdc4167b4c43">
         <source>Previous</source>
+        <target>पिछला</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">235,236</context>
@@ -3914,6 +4073,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5db469cd0357e5f578b85a996f7e99c9e4148ff5">
         <source>Current Period</source>
+        <target>वर्तमान अवधि</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">247,248</context>
@@ -3926,6 +4086,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.year">
         <source><x equiv-text="counter" id="DATE"/> year</source>
+        <target> <x equiv-text="counter" id="DATE"/> वर्ष</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">3</context>
@@ -3933,6 +4094,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.years">
         <source><x equiv-text="counter" id="DATE"/> years</source>
+        <target> <x equiv-text="counter" id="DATE"/> वर्ष</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">4</context>
@@ -3940,6 +4102,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.month">
         <source><x equiv-text="counter" id="DATE"/> month</source>
+        <target> <x equiv-text="counter" id="DATE"/> माह</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">5</context>
@@ -3947,6 +4110,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.months">
         <source><x equiv-text="counter" id="DATE"/> months</source>
+        <target> <x equiv-text="counter" id="DATE"/> महीने</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">6</context>
@@ -3954,6 +4118,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.week">
         <source><x equiv-text="counter" id="DATE"/> week</source>
+        <target> <x equiv-text="counter" id="DATE"/> सप्ताह</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">7</context>
@@ -3961,6 +4126,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.weeks">
         <source><x equiv-text="counter" id="DATE"/> weeks</source>
+        <target> <x equiv-text="counter" id="DATE"/> सप्ताह</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">8</context>
@@ -3968,6 +4134,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.day">
         <source><x equiv-text="counter" id="DATE"/> day</source>
+        <target> <x equiv-text="counter" id="DATE"/> दिन</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">9</context>
@@ -3975,6 +4142,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.days">
         <source><x equiv-text="counter" id="DATE"/> days</source>
+        <target> <x equiv-text="counter" id="DATE"/> दिन</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">10</context>
@@ -3982,6 +4150,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.hour">
         <source><x equiv-text="counter" id="DATE"/> hour</source>
+        <target> <x equiv-text="counter" id="DATE"/> घंटा</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">11</context>
@@ -3989,6 +4158,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.hours">
         <source><x equiv-text="counter" id="DATE"/> hours</source>
+        <target> <x equiv-text="counter" id="DATE"/> घंटे</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">12</context>
@@ -3996,6 +4166,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.minute">
         <source><x equiv-text="counter" id="DATE"/> minute</source>
+        <target> <x equiv-text="counter" id="DATE"/> मिनट</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">13</context>
@@ -4003,6 +4174,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.minutes">
         <source><x equiv-text="counter" id="DATE"/> minutes</source>
+        <target> <x equiv-text="counter" id="DATE"/> मिनट</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">14</context>
@@ -4010,6 +4182,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.second">
         <source><x equiv-text="counter" id="DATE"/> second</source>
+        <target> <x equiv-text="counter" id="DATE"/> सेकंड</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">15</context>
@@ -4017,6 +4190,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.seconds">
         <source><x equiv-text="counter" id="DATE"/> seconds</source>
+        <target> <x equiv-text="counter" id="DATE"/> सेकंड</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">16</context>
@@ -4024,6 +4198,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2799825781368047816">
         <source>Transaction fee</source>
+        <target>ट्रांसक्शन फी </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/pipes/scriptpubkey-type-pipe/scriptpubkey-type.pipe.ts</context>
           <context context-type="linenumber">11</context>
