@@ -1,50 +1,72 @@
-#!/usr/local/bin/zsh -x
+#!/usr/local/bin/zsh
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:$HOME/bin
+LOCKFILE="${HOME}/lock"
+REPO=origin
+BRANCH=master
+HOSTNAME=$(hostname)
 
-if [ -f $HOME/lock ];then
-    echo "check lockfile"
+if [ -f "${LOCKFILE}" ];then
+    echo "upgrade already running? check lockfile ${LOCKFILE}"
     exit 1
 fi
 
-touch $HOME/lock
-
-export NVM_DIR="$HOME/.nvm"
-source "$NVM_DIR/nvm.sh"
-
-REPO=origin
-BRANCH=master
+trap 'rm -f "${LOCKFILE}"; exit $?' INT TERM EXIT
+touch "${LOCKFILE}"
 
 TAG="${BRANCH}"
 [ ! -z "$1" ] && TAG=$1
 
-echo "upgrading mempool to ${TAG}" | wall
+echo "Upgrading mempool to ${TAG}" | wall
 
-cd "$HOME/mempool"
-git fetch "${REPO}"
-git reset --hard "${REPO}/${TAG}"
-cd "$HOME/"
-
-for site in mainnet liquid testnet bisq signet
-do
-    cd "$HOME/${site}"
-    git fetch "${REPO}"
-    git reset --hard "${REPO}/${TAG}"
-    hash=$(git rev-parse HEAD)
-
-    if [ "${site}" = "mainnet" ]
-    then
-        cd "$HOME/${site}/frontend"
-        npm install
-        npm run build
-        rsync -av ./dist/mempool/browser/* "${HOME}/public_html/${site}/"
+update_repo()
+{
+    local site="$1"
+    echo "[*] Upgrading ${site} to ${TAG}"
+    cd "$HOME/${site}" || exit 1
+    git fetch "${REPO}" || exit 1
+    if [ $(git tag -l "${TAG}") ];then
+        git reset --hard "tags/${TAG}" || exit 1
+    else
+        git reset --hard "${REPO}/${TAG}" || exit 1
     fi
+    export HASH=$(git rev-parse HEAD)
+}
 
-    cd "$HOME/${site}/backend"
-    npm install
-    npm run build
-done
+build_frontend()
+{
+    local site="$1"
+    echo "[*] Building frontend for ${site}"
+    [ -z "${HASH}" ] && exit 1
+    cd "$HOME/${site}/frontend" || exit 1
+    npm install --no-optional || exit 1
+    npm run build || exit 1
+}
 
-hostname=$(hostname)
-echo "${hostname} updated to \`${TAG}\` @ \`${hash}\`" | /usr/local/bin/keybase chat send --nonblock --channel ops mempool.space
+build_backend()
+{
+    local site="$1"
+    echo "[*] Building backend for ${site}"
+    [ -z "${HASH}" ] && exit 1
+    cd "$HOME/${site}/backend" || exit 1
+    npm install --no-optional || exit 1
+    npm run build || exit 1
+}
 
-rm "$HOME/lock"
+ship_frontend()
+{
+    local site="$1"
+    cd "$HOME/${site}/frontend" || exit 1
+    rsync -av ./dist/mempool/browser/* "${HOME}/public_html/${site}/" || exit 1
+}
+
+export NVM_DIR="${HOME}/.nvm"
+source "${NVM_DIR}/nvm.sh"
+
+for target in mainnet liquid bisq testnet signet;do update_repo "${target}";done
+for target in mainnet liquid bisq testnet signet;do build_backend "${target}";done
+for target in mainnet liquid bisq;do build_frontend "${target}";done
+for target in mainnet liquid bisq;do ship_frontend "${target}";done
+
+echo "${HOSTNAME} updated to \`${TAG}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel ops mempool.space
+
+exit 0
