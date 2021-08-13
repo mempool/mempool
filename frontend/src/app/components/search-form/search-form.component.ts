@@ -16,10 +16,10 @@ import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
 })
 export class SearchFormComponent implements OnInit {
   network = '';
+  text='';
   assets: object = {};
   isSearching = false;
   typeaheadSearchFn: ((text: Observable<string>) => Observable<readonly any[]>);
-
   searchForm: FormGroup;
   @Output() searchTriggered = new EventEmitter();
 
@@ -76,13 +76,23 @@ export class SearchFormComponent implements OnInit {
           if (!text.length) {
             return of([]);
           }
+          this.text=text;
           return this.electrsApiService.getAddressesByPrefix$(text).pipe(catchError(() => of([])));
         }),
         map((result: string[]) => {
+          
           if (this.network === 'bisq') {
             return result.map((address: string) => 'B' + address);
           }
+
+          if(result.length)
+          {
+            return this.text.length===result[0].length?null:result;
+          }
+          
           return result;
+          
+         
         })
       );
     }
