@@ -71,29 +71,29 @@ class MempoolBlocks {
 
   private calculateMempoolBlocks(transactionsSorted: TransactionExtended[]): MempoolBlockWithTransactions[] {
     const mempoolBlocks: MempoolBlockWithTransactions[] = [];
-    let blockVSize = 0;
+    let blockWeight = 0;
     let blockSize = 0;
     let transactions: TransactionExtended[] = [];
     transactionsSorted.forEach((tx) => {
-      if (blockVSize + tx.weight <= config.MEMPOOL.BLOCK_WEIGHT_UNITS || mempoolBlocks.length === config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT) {
-        blockVSize += tx.vsize;
+      if (blockWeight + tx.weight <= config.MEMPOOL.BLOCK_WEIGHT_UNITS || mempoolBlocks.length === config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT) {
+        blockWeight += tx.weight;
         blockSize += tx.size;
         transactions.push(tx);
       } else {
-        mempoolBlocks.push(this.dataToMempoolBlocks(transactions, blockSize, blockVSize, mempoolBlocks.length));
-        blockVSize = tx.vsize;
+        mempoolBlocks.push(this.dataToMempoolBlocks(transactions, blockSize, blockWeight, mempoolBlocks.length));
+        blockWeight = tx.weight;
         blockSize = tx.size;
         transactions = [tx];
       }
     });
     if (transactions.length) {
-      mempoolBlocks.push(this.dataToMempoolBlocks(transactions, blockSize, blockVSize, mempoolBlocks.length));
+      mempoolBlocks.push(this.dataToMempoolBlocks(transactions, blockSize, blockWeight, mempoolBlocks.length));
     }
     return mempoolBlocks;
   }
 
   private dataToMempoolBlocks(transactions: TransactionExtended[],
-    blockSize: number, blockVSize: number, blocksIndex: number): MempoolBlockWithTransactions {
+    blockSize: number, blockWeight: number, blocksIndex: number): MempoolBlockWithTransactions {
     let rangeLength = 4;
     if (blocksIndex === 0) {
       rangeLength = 8;
@@ -105,7 +105,7 @@ class MempoolBlocks {
     }
     return {
       blockSize: blockSize,
-      blockVSize: blockVSize,
+      blockVSize: blockWeight / 4,
       nTx: transactions.length,
       totalFees: transactions.reduce((acc, cur) => acc + cur.fee, 0),
       medianFee: Common.percentile(transactions.map((tx) => tx.effectiveFeePerVsize), config.MEMPOOL.RECOMMENDED_FEE_PERCENTILE),
