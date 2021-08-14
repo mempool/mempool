@@ -29,6 +29,15 @@
       <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
         <a class="nav-link" [routerLink]="['/' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'tachometer-alt']" [fixedWidth]="true" i18n-title="master-page.dashboard" title="Dashboard"></fa-icon></a>
       </li>
+      <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        <a class="nav-link" [routerLink]="['/transactions']" (click)="collapse()"><fa-icon [icon]="['fas', 'list']" [fixedWidth]="true" i18n-title="master-page.transactions" title="Transactions"></fa-icon></a>
+      </li>
+      <li class="nav-item" routerLinkActive="active">
+        <a class="nav-link" [routerLink]="['/blocks']" (click)="collapse()"><fa-icon [icon]="['fas', 'cubes']" [fixedWidth]="true" i18n-title="master-page.blocks" title="Blocks"></fa-icon></a>
+      </li>
+      <li class="nav-item" routerLinkActive="active">
+        <a class="nav-link" [routerLink]="['/stats']" (click)="collapse()"><fa-icon [icon]="['fas', 'file-alt']" [fixedWidth]="true"  i18n-title="master-page.stats" title="Stats"></fa-icon></a>
+      </li>
       <li class="nav-item mr-2" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/api' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'cogs']" [fixedWidth]="true" i18n-title="master-page.api" title="API"></fa-icon></a>
       </li>
