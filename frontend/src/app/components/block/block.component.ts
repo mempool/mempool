@@ -98,12 +98,6 @@ export class BlockComponent implements OnInit, OnDestroy {
               );
           }
 
-          this.stateService.blocks$.subscribe(([block]) => {
-            if (block.id === blockHash) {
-              this.block = block;
-            }
-          });
-          
           return this.electrsApiService.getBlock$(blockHash);
         }
       }),
@@ -133,6 +127,13 @@ export class BlockComponent implements OnInit, OnDestroy {
       ),
     )
     .subscribe((transactions: Transaction[]) => {
+
+      this.stateService.blocks$.subscribe(([block]) => {
+        if (block.id === this.blockHash) {
+          this.block = block;
+        }
+      });
+
       if (this.fees === undefined && transactions[0]) {
         this.fees = transactions[0].vout.reduce((acc: number, curr: Vout) => acc + curr.value, 0) / 100000000 - this.blockSubsidy;
       }
