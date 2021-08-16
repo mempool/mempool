@@ -5,6 +5,7 @@ import { ShortenStringPipe } from './pipes/shorten-string-pipe/shorten-string.pi
 import { CeilPipe } from './pipes/math-ceil/math-ceil.pipe';
 import { Hex2asciiPipe } from './pipes/hex2ascii/hex2ascii.pipe';
 import { Decimal2HexPipe } from './pipes/decimal2hex/decimal2hex.pipe';
+import { FeeRoundingPipe } from './pipes/fee-rounding/fee-rounding.pipe';
 import { AsmStylerPipe } from './pipes/asm-styler/asm-styler.pipe';
 import { AbsolutePipe } from './pipes/absolute/absolute.pipe';
 import { RelativeUrlPipe } from './pipes/relative-url/relative-url.pipe';
@@ -44,6 +45,7 @@ import { ColoredPriceDirective } from './directives/colored-price.directive';
     CeilPipe,
     ShortenStringPipe,
     Decimal2HexPipe,
+    FeeRoundingPipe,
     ColoredPriceDirective,
   ],
   imports: [
@@ -87,6 +89,7 @@ import { ColoredPriceDirective } from './directives/colored-price.directive';
     CeilPipe,
     ShortenStringPipe,
     Decimal2HexPipe,
+    FeeRoundingPipe,
     ColoredPriceDirective,
   ]
 })
