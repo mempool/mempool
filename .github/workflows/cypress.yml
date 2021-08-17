@@ -46,7 +46,7 @@ jobs:
           record: true
           parallel: true
           spec: cypress/integration/liquid/liquid.spec.ts
-          env: BASE_MODULE=lidquid
+          env: BASE_MODULE=liquid
           group: Tests on ${{ matrix.browser }} (Liquid)
           browser: ${{ matrix.browser }}
           ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
