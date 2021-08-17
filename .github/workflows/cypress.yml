@@ -36,6 +36,7 @@ jobs:
 
       - name: ${{ matrix.browser }} browser tests (Liquid)
         uses: cypress-io/github-action@v2
+        if: always()
         with:
           working-directory: frontend
           build: npm run config:defaults:liquid
@@ -56,6 +57,7 @@ jobs:
 
       - name: ${{ matrix.browser }} browser tests (Bisq)
         uses: cypress-io/github-action@v2
+        if: always()
         with:
           working-directory: frontend
           build: npm run config:defaults:bisq
