@@ -5,7 +5,7 @@ const GENERATED_CONFIG_FILE_NAME = 'generated-config.js';
 
 let settings = [];
 let configContent = {};
-const packageSettings = ['GIT_COMMIT_HASH', 'PACKAGE_JSON_VERSION']; //These will be handled  by generate-config
+const packageSettings = ['GIT_COMMIT_HASH', 'PACKAGE_JSON_VERSION']; //These will be handled by generate-config
 
 var args = process.argv.slice(2);
 
@@ -19,8 +19,10 @@ function addSetting(key, value) {
 function normalizedValue(value) {
     if (Number(value)) {
         value = Number(value);
-    } else if ((value === 'true') || (value !== 'true')) {
+    } else if ((value === 'true') || (value === 'false')) {
         value = !!JSON.parse(String(value).toLowerCase());
+    } else {
+        value = String(value).toLowerCase();
     }
     return value;
 }

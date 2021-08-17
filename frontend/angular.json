@@ -200,7 +200,7 @@
               "verbose": true
             },
             "local-prod": {
-              "proxyConfig": "proxy.prod.conf.json",
+              "proxyConfig": "proxy.conf.js",
               "disableHostCheck": true,
               "host": "0.0.0.0",
               "verbose": false
