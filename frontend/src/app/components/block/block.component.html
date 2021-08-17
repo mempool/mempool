@@ -9,76 +9,7 @@
 
   <ng-template [ngIf]="!isLoadingBlock && !error">
 
-    <div class="box">
-      <div class="row">
-        <div class="col-sm">
-          <table class="table table-borderless table-striped">
-            <tbody>
-              <tr>
-                <td class="td-width" i18n="block.hash">Hash</td>
-                <td><a [routerLink]="['/block/' | relativeUrl, block.id]" title="{{ block.id }}">{{ block.id | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="block.id"></app-clipboard></td>
-              </tr>
-              <tr>
-                <td i18n="block.timestamp">Timestamp</td>
-                <td>
-                  {{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
-                  <div class="lg-inline">
-                    <i class="symbol">(<app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since>)</i>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td i18n="block.size">Size</td>
-                <td [innerHTML]="block.size | bytes: 2"></td>
-              </tr>
-              <tr>
-                <td i18n="block.weight">Weight</td>
-                <td [innerHTML]="block.weight | wuBytes: 2"></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="col-sm">
-          <table class="table table-borderless table-striped">
-            <tbody>
-              <tr *ngIf="block.medianFee !== undefined">
-                <td class="td-width" i18n="block.median-fee">Median fee</td>
-                <td>~{{ block.medianFee | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span> <span class="fiat"><app-fiat [value]="block.medianFee * 140" digitsInfo="1.2-2" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat></span></td>
-              </tr>
-              <ng-template [ngIf]="fees !== undefined" [ngIfElse]="loadingFees">
-                <tr>
-                  <td i18n="block.total-fees|Total fees in a block">Total fees</td>
-                  <td *ngIf="network !== 'liquid'; else liquidTotalFees"><app-amount [satoshis]="fees * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="fees * 100000000" digitsInfo="1.0-0"></app-fiat></span></td>
-                  <ng-template #liquidTotalFees>
-                    <td>{{ fees * 100000000 | number }} L-sat (<app-fiat [value]="fees * 100000000" digitsInfo="1.2-2"></app-fiat>)</td>
-                  </ng-template>
-                </tr>
-                <tr *ngIf="network !== 'liquid'">
-                  <td i18n="block.subsidy-and-fees|Total subsidy and fees in a block">Subsidy + fees:</td>
-                  <td>
-                    <app-amount [satoshis]="(blockSubsidy + fees) * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="(blockSubsidy + fees) * 100000000" digitsInfo="1.0-0"></app-fiat></span>
-                  </td>
-                </tr>
-              </ng-template>
-              <ng-template #loadingFees>
-                <tr>
-                  <td i18n="block.total-fees|Total fees in a block">Total fees</td>
-                  <td style="width: 75%;"><span class="skeleton-loader"></span></td>
-                </tr>
-                <tr *ngIf="network !== 'liquid'">
-                  <td i18n="block.subsidy-and-fees|Total subsidy and fees in a block">Subsidy + fees:</td>
-                  <td><span class="skeleton-loader"></span></td>
-                </tr>
-              </ng-template>
-              <tr>
-                <td i18n="block.miner">Miner</td>
-                <td><app-miner [coinbaseTransaction]="coinbaseTx"></app-miner></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+   <app-block-details [block]="block"></app-block-details>
 
     <div [hidden]="!showDetails" id="details">
       <br>

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-start',
@@ -6,5 +7,6 @@ import { Component } from '@angular/core';
   styleUrls: ['./start.component.scss'],
 })
 export class StartComponent {
-  constructor() { }
+  isMobile = window.innerWidth <= 767.98;
+  constructor(public stateService: StateService) { }
 }

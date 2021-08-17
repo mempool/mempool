@@ -1,5 +1,9 @@
 <div id="blockchain-container" dir="ltr">
   <app-blockchain></app-blockchain>
 </div>
-
+<div class="container-xl" *ngIf="(stateService.showOverlayBlock | json) != '{}' && !isMobile">
+  <div class="overlay">
+    <app-block-details  [block]="stateService.showOverlayBlock"></app-block-details>
+  </div>
+</div>
 <router-outlet></router-outlet>

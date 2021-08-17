@@ -14,6 +14,7 @@ import { TransactionsListComponent } from './components/transactions-list/transa
 import { AmountComponent } from './components/amount/amount.component';
 import { StateService } from './services/state.service';
 import { BlockComponent } from './components/block/block.component';
+import { BlockDetailsComponent } from './components/block-details/block-details.component';
 import { AddressComponent } from './components/address/address.component';
 import { SearchFormComponent } from './components/search-form/search-form.component';
 import { LatestBlocksComponent } from './components/latest-blocks/latest-blocks.component';
@@ -70,6 +71,7 @@ import { SponsorComponent } from './components/sponsor/sponsor.component';
     StatisticsComponent,
     TransactionComponent,
     BlockComponent,
+    BlockDetailsComponent,
     TransactionsListComponent,
     AddressComponent,
     AmountComponent,

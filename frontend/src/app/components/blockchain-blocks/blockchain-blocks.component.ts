@@ -40,7 +40,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   };
 
   constructor(
-    private stateService: StateService,
+    public stateService: StateService,
     private router: Router,
     private cd: ChangeDetectorRef,
   ) { }
@@ -222,5 +222,18 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
       });
     }
     return emptyBlocks;
+  }
+
+
+  show(block)
+  {
+    if(block.id && block.height!=this.markHeight)
+    {
+    this.stateService.showOverlayBlock=block;
+    }
+    else
+    {
+    this.stateService.showOverlayBlock={};
+    }
   }
 }
