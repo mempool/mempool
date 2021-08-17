@@ -121,7 +121,7 @@
       <div class="col mobile-bottomcol">
         <table class="table table-borderless smaller-text table-sm"  id="table-tx-vout">
           <tbody>
-            <ng-template ngFor let-vout let-vindex="index"  [ngForOf]="tx['@voutLimit'] ? tx.vout.slice(0, 10) : tx.vout" [ngForTrackBy]="trackByIndexFn">
+            <ng-template ngFor let-vout let-vindex="index"  [ngForOf]="tx['@voutLimit'] ?((tx.vout.length>12)?tx.vout.slice(0, 10): tx.vout.slice(0, 12)) : tx.vout" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="assetsMinimal && assetsMinimal[vout.asset] && vout.scriptpubkey_address && tx.vin && !tx.vin[0].is_coinbase && tx._unblinded ? 'assetBox' : ''">
                 <td>
                   <a *ngIf="vout.scriptpubkey_address; else scriptpubkey_type" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">
@@ -197,7 +197,7 @@
                 </td>
               </tr>
             </ng-template>
-            <tr *ngIf="tx.vout.length > 10 && tx['@voutLimit']">
+            <tr *ngIf="tx.vout.length > 12 && tx['@voutLimit']">
               <td colspan="3" class="text-center">
                 <button class="btn btn-sm btn-primary mt-2" (click)="tx['@voutLimit'] = false;"><span i18n="transactions-list.load-all">Load all</span> ({{ tx.vout.length - 10 }})</button>
               </td>
