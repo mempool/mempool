@@ -54,6 +54,126 @@ describe('Mainnet', () => {
         cy.waitForSkeletonGone();
     });
 
+    describe('blocks navigation', () => {
+
+        describe('keyboard events', () => {
+            it('loads first blockchain blocks visible and keypress arrow right', () => {
+                cy.viewport('macbook-16');
+                cy.visit('/');
+                cy.waitForSkeletonGone();
+                cy.get('.blockchain-blocks-0 > a').click().then(() => {
+                    cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
+                    cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+                    cy.waitForPageIdle();
+                    cy.document().right();
+                    cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+                    cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+                });
+            });
+
+            it('loads first blockchain blocks visible and keypress arrow left', () => {
+                cy.viewport('macbook-16');
+                cy.visit('/');
+                cy.waitForSkeletonGone();
+                cy.get('.blockchain-blocks-0 > a').click().then(() => {
+                    cy.waitForPageIdle();
+                    cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
+                    cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+                    cy.document().left();
+                    cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+                });
+            });
+
+            it('loads last blockchain blocks and keypress arrow right', () => {
+                cy.viewport('macbook-16');
+                cy.visit('/');
+                cy.waitForSkeletonGone();
+                cy.get('.blockchain-blocks-4 > a').click().then(() => {
+                    cy.waitForPageIdle();
+                    
+                    // block 6
+                    cy.document().right();
+                    cy.wait(5000);
+                    cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+                    cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+
+                    // block 7
+                    cy.document().right();
+                    cy.wait(5000);
+                    cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+                    cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+
+                    // block 8 - last visible block
+                    cy.document().right();
+                    cy.wait(5000);
+                    cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+                    cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+                    
+                    // block 9 - not visible at the blochchain blocks visible block
+                    cy.document().right();
+                    cy.wait(5000);
+                    cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+                    cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+
+                });
+            });
+
+            it('loads genesis block and keypress arrow right', () => {
+                cy.viewport('macbook-16');
+                cy.visit('/block/0');
+                cy.waitForSkeletonGone();
+                cy.waitForPageIdle();
+
+                cy.document().right();
+                cy.wait(5000);
+                cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+                cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
+            });
+
+            it('loads genesis block and keypress arrow left', () => {
+                cy.viewport('macbook-16');
+                cy.visit('/block/0');
+                cy.waitForSkeletonGone();
+                cy.waitForPageIdle();
+
+                cy.document().left();
+                cy.wait(5000);
+                cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+                cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+            });
+        });
+        describe('mouse events', () => {
+            it('loads first blockchain blocks visible and click on the arrow right', () => {
+                cy.viewport('macbook-16');
+                cy.visit('/');
+                cy.waitForSkeletonGone();
+                cy.get('.blockchain-blocks-0 > a').click().then(() => {
+                    cy.waitForPageIdle();
+                    cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
+                    cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+                    cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').click().then(() => {
+                        cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+                        cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+                    });
+                });
+            });
+
+            it('loads genesis block and click on the arrow left', () => {
+                cy.viewport('macbook-16');
+                cy.visit('/block/0');
+                cy.waitForSkeletonGone();
+                cy.waitForPageIdle();
+                cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+                cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
+                cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').click().then(() => {
+                    cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+                    cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+                });
+            });
+        });
+    });
+
+
     it('loads skeleton when changes between networks', () => {
         cy.visit('/');
         cy.waitForSkeletonGone();
