@@ -2375,6 +2375,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8f3ac0544491bf048120928d39e02a6baeb0b278">
         <source>Privacy Policy</source>
+        <target>Personvernerklæring</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">880,885</context>
@@ -3585,6 +3586,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a2fbb7745c7048af923991e08ccd6975364be90d">
         <source>Transaction Hex</source>
+        <target>Transaksjon Hex</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">220,221</context>
@@ -3908,6 +3910,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="86d26b45470e43b409e589517922276109138e87">
         <source>Transaction Fees</source>
+        <target>Transaksjonsavgift</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">6,9</context>
@@ -4061,6 +4064,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="680d5c75b7fd8d37961083608b9fcdc4167b4c43">
         <source>Previous</source>
+        <target>Forrige</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">235,236</context>
