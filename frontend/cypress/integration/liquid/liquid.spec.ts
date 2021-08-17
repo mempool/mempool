@@ -60,7 +60,7 @@ describe('Liquid', () => {
             it('shows the assets screen', () => {
                 cy.visit(`${baseModule}/assets`);
                 cy.waitForSkeletonGone();
-                cy.get('table tr').should('have.length', 5);
+                cy.get('table tr').should('have.length.at.least', 5);
             });
 
             it('allows searching assets', () => {
@@ -74,7 +74,7 @@ describe('Liquid', () => {
             it('shows a specific asset ID', () => {
                 cy.visit(`${baseModule}/assets`);
                 cy.waitForSkeletonGone();
-                cy.get('.container-xl input').click().type('Liquid CAD').then(() => {
+                cy.get('.container-xl input').click().type('Liquid AUD').then(() => {
                     cy.get('table tr td:nth-of-type(1) a').click();
                 });
             });
