@@ -29,6 +29,10 @@ jobs:
           group: Tests on ${{ matrix.browser }} (Mempool)
           browser: ${{ matrix.browser }}
           ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
 
       - name: ${{ matrix.browser }} browser tests (Liquid)
         uses: cypress-io/github-action@v2
@@ -45,6 +49,10 @@ jobs:
           group: Tests on ${{ matrix.browser }} (Liquid)
           browser: ${{ matrix.browser }}
           ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
 
       - name: ${{ matrix.browser }} browser tests (Bisq)
         uses: cypress-io/github-action@v2
@@ -65,4 +73,3 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
-          DEBUG: 'cypress:*'
