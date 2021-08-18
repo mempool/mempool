@@ -156,10 +156,19 @@ export class TransactionComponent implements OnInit, OnDestroy {
           );
         })
       )
-      .subscribe((tx: Transaction) => {
+      .subscribe(async (tx: Transaction) => {
           if (!tx) {
             return;
           }
+
+           if (this.network === 'liquid') {
+             try {
+               await this.liquidUnblinding.checkUnblindedTx(tx)
+             } catch (error) {
+               this.errorUnblinded = error;
+             }
+          }
+
           this.tx = tx;
           if (tx.fee === undefined) {
             this.tx.fee = 0;
@@ -196,12 +205,6 @@ export class TransactionComponent implements OnInit, OnDestroy {
             } else {
               this.fetchCpfp$.next(this.tx.txid);
             }
-          }
-          if (this.network === 'liquid') {
-            this.liquidUnblinding.checkUnblindedTx(this.tx)
-              .catch((error) => {
-                this.errorUnblinded = error;
-              });
           }
         },
         (error) => {
