@@ -11,7 +11,8 @@ export class BisqMasterPageComponent implements OnInit {
   connectionState$: Observable<number>;
   navCollapsed = false;
   env: Env;
-
+  isMobile = window.innerWidth <= 767.98;
+  
   constructor(
     private stateService: StateService,
   ) { }
@@ -23,5 +24,9 @@ export class BisqMasterPageComponent implements OnInit {
 
   collapse(): void {
     this.navCollapsed = !this.navCollapsed;
+  }
+
+  onResize(event: any) {
+    this.isMobile = window.innerWidth <= 767.98;
   }
 }
