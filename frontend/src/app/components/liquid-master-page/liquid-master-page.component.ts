@@ -26,4 +26,8 @@ export class LiquidMasterPageComponent implements OnInit {
   collapse(): void {
     this.navCollapsed = !this.navCollapsed;
   }
+
+  onResize(event: any) {
+    this.isMobile = window.innerWidth <= 767.98;
+  }
 }

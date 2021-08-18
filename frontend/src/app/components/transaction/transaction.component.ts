@@ -17,6 +17,7 @@ import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { CpfpInfo } from 'src/app/interfaces/node-api.interface';
+import { LiquidUnblinding } from './liquid-ublinding';
 
 @Component({
   selector: 'app-transaction',
@@ -40,9 +41,9 @@ export class TransactionComponent implements OnInit, OnDestroy {
   cpfpInfo: CpfpInfo | null;
   showCpfpDetails = false;
   fetchCpfp$ = new Subject<string>();
-  commitments: Map<any, any>;
   now = new Date().getTime();
   timeAvg$: Observable<number>;
+  liquidUnblinding = new LiquidUnblinding();
 
   constructor(
     private route: ActivatedRoute,
@@ -123,10 +124,8 @@ export class TransactionComponent implements OnInit, OnDestroy {
 
     this.subscription = this.route.paramMap
       .pipe(
-        switchMap(async (params: ParamMap) => {
+        switchMap((params: ParamMap) => {
           this.txId = params.get('id') || '';
-
-          await this.checkUnblindedTx();
           this.seoService.setTitle(
             $localize`:@@bisq.transaction.browser-title:Transaction: ${this.txId}:INTERPOLATION:`
           );
@@ -157,11 +156,19 @@ export class TransactionComponent implements OnInit, OnDestroy {
           );
         })
       )
-      .subscribe(
-        async (tx: Transaction) => {
+      .subscribe(async (tx: Transaction) => {
           if (!tx) {
             return;
           }
+
+           if (this.network === 'liquid') {
+             try {
+               await this.liquidUnblinding.checkUnblindedTx(tx)
+             } catch (error) {
+               this.errorUnblinded = error;
+             }
+          }
+
           this.tx = tx;
           if (tx.fee === undefined) {
             this.tx.fee = 0;
@@ -199,7 +206,6 @@ export class TransactionComponent implements OnInit, OnDestroy {
               this.fetchCpfp$.next(this.tx.txid);
             }
           }
-          await this.checkUnblindedTx();
         },
         (error) => {
           this.error = error;
@@ -293,146 +299,5 @@ export class TransactionComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
     this.fetchCpfpSubscription.unsubscribe();
     this.leaveTransaction();
-  }
-
-  // Parse the blinders data from a string encoded as a comma separated list, in the following format:
-  // <value_in_satoshis>,<asset_tag_hex>,<amount_blinder_hex>,<asset_blinder_hex>
-  // This can be repeated with a comma separator to specify blinders for multiple outputs.
-
-  parseBlinders(str: string) {
-    const parts = str.split(',');
-    const blinders = [];
-    while (parts.length) {
-      blinders.push({
-        value: this.verifyNum(parts.shift()),
-        asset: this.verifyHex32(parts.shift()),
-        value_blinder: this.verifyHex32(parts.shift()),
-        asset_blinder: this.verifyHex32(parts.shift()),
-      });
-    }
-    return blinders;
-  }
-
-  verifyNum(num: string) {
-    if (!+num) {
-      throw new Error('Invalid blinding data (invalid number)');
-    }
-    return +num;
-  }
-  verifyHex32(str: string) {
-    if (!str || !/^[0-9a-f]{64}$/i.test(str)) {
-      throw new Error('Invalid blinding data (invalid hex)');
-    }
-    return str;
-  }
-
-  async makeCommitmentMap(blinders: any) {
-    const libwally = await import('./libwally.js');
-    await libwally.load();
-    const commitments = new Map();
-    blinders.forEach(b => {
-      const { asset_commitment, value_commitment } =
-      libwally.generate_commitments(b.value, b.asset, b.value_blinder, b.asset_blinder);
-
-      commitments.set(`${asset_commitment}:${value_commitment}`, {
-        asset: b.asset,
-        value: b.value,
-      });
-    });
-    return commitments;
-  }
-
-  // Look for the given output, returning an { value, asset } object
-  find(vout: any) {
-    return vout.assetcommitment && vout.valuecommitment &&
-      this.commitments.get(`${vout.assetcommitment}:${vout.valuecommitment}`);
-  }
-
-  // Lookup all transaction inputs/outputs and attach the unblinded data
-  tryUnblindTx(tx: any) {
-    if (tx) {
-      if (tx._unblinded) { return tx._unblinded; }
-      let matched = 0;
-      if (tx.vout !== undefined) {
-        tx.vout.forEach(vout => matched += +this.tryUnblindOut(vout));
-        tx.vin.filter(vin => vin.prevout).forEach(vin => matched += +this.tryUnblindOut(vin.prevout));
-      }
-      if (this.commitments !== undefined) {
-        tx._unblinded = { matched, total: this.commitments.size };
-        this.deduceBlinded(tx);
-        if (matched < this.commitments.size) {
-          this.errorUnblinded = `Error: Invalid blinding data.`;
-        }
-        tx._deduced = false; // invalidate cache so deduction is attempted again
-        return tx._unblinded;
-      }
-    }
-  }
-
-  // Look the given output and attach the unblinded data
-  tryUnblindOut(vout: any) {
-    const unblinded = this.find(vout);
-    if (unblinded) { Object.assign(vout, unblinded); }
-    return !!unblinded;
-  }
-
-  // Attempt to deduce the blinded input/output based on the available information
-  deduceBlinded(tx: any) {
-    if (tx._deduced) { return; }
-    tx._deduced = true;
-
-    // Find ins/outs with unknown amounts (blinded ant not revealed via the `#blinded` hash fragment)
-    const unknownIns = tx.vin.filter(vin => vin.prevout && vin.prevout.value == null);
-    const unknownOuts = tx.vout.filter(vout => vout.value == null);
-
-    // If the transaction has a single unknown input/output, we can deduce its asset/amount
-    // based on the other known inputs/outputs.
-    if (unknownIns.length + unknownOuts.length === 1) {
-
-      // Keep a per-asset tally of all known input amounts, minus all known output amounts
-      const totals = new Map();
-      tx.vin.filter(vin => vin.prevout && vin.prevout.value != null)
-        .forEach(({ prevout }) =>
-          totals.set(prevout.asset, (totals.get(prevout.asset) || 0) + prevout.value));
-      tx.vout.filter(vout => vout.value != null)
-        .forEach(vout =>
-          totals.set(vout.asset, (totals.get(vout.asset) || 0) - vout.value));
-
-      // There should only be a single asset where the inputs and outputs amounts mismatch,
-      // which is the asset of the blinded input/output
-      const remainder = Array.from(totals.entries()).filter(([ asset, value ]) => value !== 0);
-      if (remainder.length !== 1) { throw new Error('unexpected remainder while deducing blinded tx'); }
-      const [ blindedAsset, blindedValue ] = remainder[0];
-
-      // A positive remainder (when known in > known out) is the asset/amount of the unknown blinded output,
-      // a negative one is the input.
-      if (blindedValue > 0) {
-        if (!unknownOuts.length) { throw new Error('expected unknown output'); }
-        unknownOuts[0].asset = blindedAsset;
-        unknownOuts[0].value = blindedValue;
-      } else {
-        if (!unknownIns.length) { throw new Error('expected unknown input'); }
-        unknownIns[0].prevout.asset = blindedAsset;
-        unknownIns[0].prevout.value = blindedValue * -1;
-      }
-    }
-  }
-
-  async checkUnblindedTx() {
-    try {
-      if (this.network === 'liquid') {
-        const windowLocationHash = window.location.hash.substring('#blinded='.length);
-        if (windowLocationHash.length > 0) {
-
-          const blinders = this.parseBlinders(windowLocationHash);
-          if (blinders) {
-            this.commitments = await this.makeCommitmentMap(blinders);
-            this.tryUnblindTx(this.tx);
-          }
-        }
-      }
-    } catch (error) {
-      this.errorUnblinded = error;
-    }
   }
 }

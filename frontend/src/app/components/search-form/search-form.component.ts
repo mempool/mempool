@@ -119,7 +119,7 @@ export class SearchFormComponent implements OnInit {
   }
 
   navigate(url: string, searchText: string) {
-    this.router.navigate([(this.network ? '/' + this.network : '') + url, searchText]);
+    this.router.navigate([(this.network && this.stateService.env.BASE_MODULE === 'mempool' ? '/' + this.network : '') + url, searchText]);
     this.searchTriggered.emit();
     this.searchForm.setValue({
       searchText: '',

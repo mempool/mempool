@@ -10,11 +10,11 @@
     </ng-container>
   </a>
 
-  <div ngbDropdown display="dynamic" class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED">
+  <div ngbDropdown (window:resize)="onResize($event)" class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED">
     <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split" aria-haspopup="true">
       <img src="./resources/bisq-logo.png" style="width: 25px; height: 25px;" class="mr-1">
     </button>
-    <div ngbDropdownMenu>
+    <div ngbDropdownMenu [ngClass]="{'dropdown-menu-right' : isMobile}">
       <a href="https://mempool.space" ngbDropdownItem class="mainnet"><img src="./resources/bitcoin-logo.png" style="width: 30px;" class="mr-1"> Mainnet</a>
       <a href="https://mempool.space/signet" ngbDropdownItem *ngIf="env.SIGNET_ENABLED" class="signet"><img src="./resources/signet-logo.png" style="width: 30px;" class="mr-1"> Signet</a>
       <a href="https://mempool.space/testnet" ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet"><img src="./resources/testnet-logo.png" style="width: 30px;" class="mr-1"> Testnet</a>
@@ -29,6 +29,15 @@
       <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
         <a class="nav-link" [routerLink]="['/' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'tachometer-alt']" [fixedWidth]="true" i18n-title="master-page.dashboard" title="Dashboard"></fa-icon></a>
       </li>
+      <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        <a class="nav-link" [routerLink]="['/transactions']" (click)="collapse()"><fa-icon [icon]="['fas', 'list']" [fixedWidth]="true" i18n-title="master-page.transactions" title="Transactions"></fa-icon></a>
+      </li>
+      <li class="nav-item" routerLinkActive="active">
+        <a class="nav-link" [routerLink]="['/blocks']" (click)="collapse()"><fa-icon [icon]="['fas', 'cubes']" [fixedWidth]="true" i18n-title="master-page.blocks" title="Blocks"></fa-icon></a>
+      </li>
+      <li class="nav-item" routerLinkActive="active">
+        <a class="nav-link" [routerLink]="['/stats']" (click)="collapse()"><fa-icon [icon]="['fas', 'file-alt']" [fixedWidth]="true"  i18n-title="master-page.stats" title="Stats"></fa-icon></a>
+      </li>
       <li class="nav-item mr-2" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/api' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'cogs']" [fixedWidth]="true" i18n-title="master-page.api" title="API"></fa-icon></a>
       </li>
@@ -36,6 +45,7 @@
         <a class="nav-link" [routerLink]="['/about']" (click)="collapse()"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true" i18n-title="master-page.about" title="About"></fa-icon></a>
       </li>
     </ul>
+    <app-search-form class="search-form-container" location="top" (searchTriggered)="collapse()"></app-search-form>
   </div>
 </nav>
 </header>
