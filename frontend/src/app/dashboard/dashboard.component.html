@@ -115,7 +115,7 @@
                   <td class="table-cell-txid"><a [routerLink]="['/tx' | relativeUrl, transaction.txid]">{{ transaction.txid | shortenString : 10 }}</a></td>
                   <td class="table-cell-satoshis"><app-amount *ngIf="(network$ | async) !== 'liquid'; else liquidAmount" [satoshis]="transaction.value" digitsInfo="1.2-4" [noFiat]="true"></app-amount><ng-template #liquidAmount i18n="shared.confidential">Confidential</ng-template></td>
                   <td class="table-cell-fiat" *ngIf="(network$ | async) === ''" ><app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat></td>
-                  <td class="table-cell-fees">{{ transaction.fee / transaction.vsize | number : '1.1-1' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
+                  <td class="table-cell-fees">{{ transaction.fee / transaction.vsize | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
                 </tr>
               </tbody>
             </table>
@@ -168,7 +168,7 @@
       <h5 *ngIf="!mempoolInfoData.value || mempoolInfoData.value.memPoolInfo.mempoolminfee === 0.00001 || (stateService.env.BASE_MODULE === 'liquid' && mempoolInfoData.value.memPoolInfo.mempoolminfee === 0.000001) else purgingText" class="card-title" i18n="dashboard.minimum-fee|Minimum mempool fee">Minimum fee</h5>
       <ng-template #purgingText><h5 class="card-title" i18n="dashboard.purging|Purgin below fee">Purging</h5></ng-template>
       <p class="card-text" *ngIf="(isLoadingWebSocket$ | async) === false && mempoolInfoData.value; else loading">
-        <ng-template [ngIf]="mempoolInfoData.value.memPoolInfo.mempoolminfee > 0.00001">&lt; </ng-template>{{ mempoolInfoData.value.memPoolInfo.mempoolminfee * 100000 | number : '1.1-1' }} <span><ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container></span>
+        <ng-template [ngIf]="mempoolInfoData.value.memPoolInfo.mempoolminfee > 0.00001">&lt; </ng-template>{{ mempoolInfoData.value.memPoolInfo.mempoolminfee * 100000 | feeRounding }} <span><ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container></span>
       </p>
     </div>
     <div class="item">
