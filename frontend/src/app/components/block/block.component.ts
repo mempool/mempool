@@ -27,7 +27,6 @@ export class BlockComponent implements OnInit, OnDestroy {
   isLoadingTransactions = true;
   error: any;
   blockSubsidy: number;
-  subscription: Subscription;
   fees: number;
   paginationMaxSize: number;
   coinbaseTx: Transaction;
@@ -37,6 +36,12 @@ export class BlockComponent implements OnInit, OnDestroy {
   showDetails = false;
   showPreviousBlocklink = true;
   showNextBlocklink = true;
+
+  subscription: Subscription;
+  keyNavigationSubscription: Subscription;
+  blocksSubscription: Subscription;
+  networkChangedSubscription: Subscription;
+  queryParamsSubscription: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -154,7 +159,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       this.isLoadingBlock = false;
     });
 
-    this.stateService.blocks$
+    this.blocksSubscription = this.stateService.blocks$
       .subscribe(([block]) => {
         this.latestBlock = block;
         this.latestBlocks.unshift(block);
@@ -162,10 +167,10 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.setNextAndPreviousBlockLink();
       });
 
-    this.stateService.networkChanged$
+    this.networkChangedSubscription = this.stateService.networkChanged$
       .subscribe((network) => this.network = network);
 
-    this.route.queryParams.subscribe((params) => {
+    this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
       if (params.showDetails === 'true') {
         this.showDetails = true;
       } else {
@@ -173,7 +178,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.stateService.keyNavigation$.subscribe((event) => {
+    this.keyNavigationSubscription = this.stateService.keyNavigation$.subscribe((event) => {
       if (this.showPreviousBlocklink && event.key === 'ArrowRight' && this.nextBlockHeight - 2 >= 0) {
         this.navigateToPreviousBlock();
       }
@@ -186,6 +191,10 @@ export class BlockComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.stateService.markBlock$.next({});
     this.subscription.unsubscribe();
+    this.keyNavigationSubscription.unsubscribe();
+    this.blocksSubscription.unsubscribe();
+    this.networkChangedSubscription.unsubscribe();
+    this.queryParamsSubscription.unsubscribe();
   }
 
   setBlockSubsidy() {
