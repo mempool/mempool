@@ -11,11 +11,11 @@
     </ng-container>
   </a>
 
-  <div ngbDropdown display="dynamic" class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED">
+  <div (window:resize)="onResize($event)" ngbDropdown class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED">
     <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split" aria-haspopup="true">
       <img src="./resources/{{ network.val === '' ? 'bitcoin' : network.val }}-logo.png" style="width: 25px; height: 25px;" class="mr-1">
     </button>
-    <div ngbDropdownMenu>
+    <div ngbDropdownMenu [ngClass]="{'dropdown-menu-right' : isMobile}">
       <button ngbDropdownItem class="mainnet" routerLink="/"><img src="./resources/bitcoin-logo.png" style="width: 30px;" class="mr-1"> Mainnet</button>
       <button ngbDropdownItem *ngIf="env.SIGNET_ENABLED" class="signet" [class.active]="network.val === 'signet'" routerLink="/signet"><img src="./resources/signet-logo.png" style="width: 30px;" class="mr-1"> Signet</button>
       <button ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet" [class.active]="network.val === 'testnet'" routerLink="/testnet"><img src="./resources/testnet-logo.png" style="width: 30px;" class="mr-1"> Testnet</button>
