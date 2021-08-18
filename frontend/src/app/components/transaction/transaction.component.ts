@@ -10,7 +10,7 @@ import {
   map
 } from 'rxjs/operators';
 import { Transaction, Block } from '../../interfaces/electrs.interface';
-import { of, merge, Subscription, Observable, Subject, timer, combineLatest,  } from 'rxjs';
+import { of, merge, Subscription, Observable, Subject, timer, combineLatest, from } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from 'src/app/services/audio.service';
@@ -154,19 +154,23 @@ export class TransactionComponent implements OnInit, OnDestroy {
             transactionObservable$,
             this.stateService.mempoolTransactions$
           );
+        }),
+        switchMap((tx) => {
+          if (this.network === 'liquid') {
+            return from(this.liquidUnblinding.checkUnblindedTx(tx))
+              .pipe(
+                catchError((error) => {
+                  this.errorUnblinded = error;
+                  return of(tx);
+                })
+              )
+          }
+          return of(tx);
         })
       )
-      .subscribe(async (tx: Transaction) => {
+      .subscribe((tx: Transaction) => {
           if (!tx) {
             return;
-          }
-
-           if (this.network === 'liquid') {
-             try {
-               await this.liquidUnblinding.checkUnblindedTx(tx)
-             } catch (error) {
-               this.errorUnblinded = error;
-             }
           }
 
           this.tx = tx;
