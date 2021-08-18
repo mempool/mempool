@@ -63,6 +63,7 @@ export class StateService {
   env: Env;
   latestBlockHeight = 0;
   showOverlayBlock:any={};
+  showOverlayMempoolBlock:any={};
   networkChanged$ = new ReplaySubject<string>(1);
   blocks$: ReplaySubject<[Block, boolean]>;
   transactions$ = new ReplaySubject<TransactionStripped>(6);

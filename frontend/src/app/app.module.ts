@@ -33,6 +33,7 @@ import { BlockchainComponent } from './components/blockchain/blockchain.componen
 import { FooterComponent } from './components/footer/footer.component';
 import { AudioService } from './services/audio.service';
 import { MempoolBlockComponent } from './components/mempool-block/mempool-block.component';
+import { MempoolBlockDetailsComponent } from './components/mempool-block-details/mempool-block-details.component';
 import { FeeDistributionGraphComponent } from './components/fee-distribution-graph/fee-distribution-graph.component';
 import { TimeSpanComponent } from './components/time-span/time-span.component';
 import { SeoService } from './services/seo.service';
@@ -83,6 +84,7 @@ import { SponsorComponent } from './components/sponsor/sponsor.component';
     ChartistComponent,
     FooterComponent,
     MempoolBlockComponent,
+    MempoolBlockDetailsComponent,
     FeeDistributionGraphComponent,
     MempoolGraphComponent,
     AssetComponent,

@@ -309,4 +309,16 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     }
     return emptyBlocks;
   }
+
+  show(block)
+  {
+    if(Object.keys(block).length !== 0 && (block.index-9)!=this.markIndex)
+    {
+    this.stateService.showOverlayMempoolBlock=block;
+    }
+    else
+    {
+    this.stateService.showOverlayMempoolBlock={};
+    }
+  }
 }

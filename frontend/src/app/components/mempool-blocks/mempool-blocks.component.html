@@ -2,7 +2,7 @@
   <div class="mempool-blocks-container" *ngIf="(timeAvg$ | async) as timeAvg;">
     <div class="flashing">      
       <ng-template ngFor let-projectedBlock [ngForOf]="mempoolBlocks$ | async" let-i="index" [ngForTrackBy]="trackByFn">
-        <div class="bitcoin-block text-center mempool-block" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]">
+        <div class="bitcoin-block text-center mempool-block" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]" (mouseover)="show(projectedBlock)" (mouseout)="show({})">
           <a [routerLink]="['/mempool-block/' | relativeUrl, i]" class="blockLink">&nbsp;</a>
           <div class="block-body">
             <div class="fees">

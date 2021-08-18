@@ -6,4 +6,9 @@
     <app-block-details  [block]="stateService.showOverlayBlock"></app-block-details>
   </div>
 </div>
+<div class="container-xl" *ngIf="(stateService.showOverlayMempoolBlock | json) != '{}' && !isMobile">
+  <div class="overlay">
+<app-mempool-block-details [mempoolBlock]="stateService.showOverlayMempoolBlock"></app-mempool-block-details>
+</div>
+</div>
 <router-outlet></router-outlet>
