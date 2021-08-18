@@ -58,7 +58,7 @@ export class LiquidUnblinding {
   // Lookup all transaction inputs/outputs and attach the unblinded data
   tryUnblindTx(tx: Transaction) {
     if (tx) {
-      if (tx._unblinded) { return tx._unblinded; }
+      if (tx._unblinded) { return tx; }
       let matched = 0;
       if (tx.vout !== undefined) {
         tx.vout.forEach(vout => matched += +this.tryUnblindOut(vout));
@@ -71,7 +71,7 @@ export class LiquidUnblinding {
           throw new Error(`Invalid blinding data.`)
         }
         tx._deduced = false; // invalidate cache so deduction is attempted again
-        return tx._unblinded;
+        return tx;
       }
     }
   }
@@ -131,8 +131,9 @@ export class LiquidUnblinding {
       const blinders = this.parseBlinders(windowLocationHash);
       if (blinders) {
         this.commitments = await this.makeCommitmentMap(blinders);
-        this.tryUnblindTx(tx);
+        return this.tryUnblindTx(tx);
       }
     }
+    throw new Error('Invalid blinding data.');
   }
 }
