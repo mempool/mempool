@@ -4,7 +4,7 @@
     <h1>
       <ng-template [ngIf]="blockHeight === 0" i18n="block.genesis">Genesis 
         <div class="next-previous-blocks">
-          <a *ngIf="showNextBlocklink" [routerLink]="['/block/' | relativeUrl, nextBlockHeight]" i18n-ngbTooltip="Next Block" ngbTooltip="Next Block" placement="bottom">
+          <a *ngIf="showNextBlocklink" [routerLink]="['/block/' | relativeUrl, nextBlockHeight]" (click)="navigateToNextBlock()" i18n-ngbTooltip="Next Block" ngbTooltip="Next Block" placement="bottom">
             <fa-icon [icon]="['fas', 'angle-left']" [fixedWidth]="true" i18n-title="dashboard.collapse" title="Collapse"></fa-icon>
           </a>
           <a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a>
@@ -15,14 +15,14 @@
       </ng-template>
       <ng-template [ngIf]="blockHeight" i18n="block.block"> Block 
         <div class="next-previous-blocks">
-          <a *ngIf="showNextBlocklink" [routerLink]="['/block/' | relativeUrl, nextBlockHeight]" i18n-ngbTooltip="Next Block" ngbTooltip="Next Block" placement="bottom">
+          <a *ngIf="showNextBlocklink" [routerLink]="['/block/' | relativeUrl, nextBlockHeight]" (click)="navigateToNextBlock()" i18n-ngbTooltip="Next Block" ngbTooltip="Next Block" placement="bottom">
             <fa-icon [icon]="['fas', 'angle-left']" [fixedWidth]="true" i18n-title="dashboard.collapse" title="Collapse"></fa-icon>
           </a>
           <span *ngIf="!showNextBlocklink" placement="bottom" class="disable">
             <fa-icon [icon]="['fas', 'angle-left']" [fixedWidth]="true" i18n-title="dashboard.collapse" title="Collapse"></fa-icon>
           </span>
           <a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a>
-          <a *ngIf="showPreviousBlocklink" [routerLink]="['/block/' | relativeUrl, previousBlockHeight]" i18n-ngbTooltip="Previous Block" ngbTooltip="Previous Block" placement="bottom">
+          <a *ngIf="showPreviousBlocklink" [routerLink]="['/block/' | relativeUrl, block?.previousblockhash]" (click)="navigateToPreviousBlock()" i18n-ngbTooltip="Previous Block" ngbTooltip="Previous Block" placement="bottom">
             <fa-icon [icon]="['fas', 'angle-right']" [fixedWidth]="true" i18n-title="dashboard.collapse" title="Collapse"></fa-icon>
           </a>
           <span *ngIf="!showPreviousBlocklink" placement="bottom" class="disable">
