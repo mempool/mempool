@@ -18,11 +18,11 @@ export class BlockComponent implements OnInit, OnDestroy {
   network = '';
   block: Block;
   blockHeight: number;
-  previousBlockHeight: number;
   nextBlockHeight: number;
   blockHash: string;
   isLoadingBlock = true;
   latestBlock: Block;
+  latestBlocks: Block[] = [];
   transactions: Transaction[];
   isLoadingTransactions = true;
   error: any;
@@ -73,9 +73,6 @@ export class BlockComponent implements OnInit, OnDestroy {
 
         if (history.state.data && history.state.data.blockHeight) {
           this.blockHeight = history.state.data.blockHeight;
-          this.previousBlockHeight = history.state.data.blockHeight - 1;
-          this.nextBlockHeight = history.state.data.blockHeight + 1;
-          this.setNextAndPreviousBlockLink();
         }
 
         let isBlockHeight = false;
@@ -88,9 +85,6 @@ export class BlockComponent implements OnInit, OnDestroy {
 
         if (history.state.data && history.state.data.block) {
           this.blockHeight = history.state.data.block.height;
-          this.previousBlockHeight = history.state.data.block.height - 1;
-          this.nextBlockHeight = history.state.data.block.height + 1;
-          this.setNextAndPreviousBlockLink();
           return of(history.state.data.block);
         } else {
           this.isLoadingBlock = true;
@@ -120,7 +114,6 @@ export class BlockComponent implements OnInit, OnDestroy {
       tap((block: Block) => {
         this.block = block;
         this.blockHeight = block.height;
-        this.previousBlockHeight = block.height - 1;
         this.nextBlockHeight = block.height + 1;
         this.setNextAndPreviousBlockLink();
 
@@ -164,6 +157,8 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.stateService.blocks$
       .subscribe(([block]) => {
         this.latestBlock = block;
+        this.latestBlocks.unshift(block);
+        this.latestBlocks = this.latestBlocks.slice(0, this.stateService.env.KEEP_BLOCKS_AMOUNT);
         this.setNextAndPreviousBlockLink();
       });
 
@@ -179,19 +174,11 @@ export class BlockComponent implements OnInit, OnDestroy {
     });
 
     this.stateService.keyNavigation$.subscribe((event) => {
-      if (this.showPreviousBlocklink) {
-        if (event.key === 'ArrowRight') {
-          if (this.previousBlockHeight >= 0) {
-            this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', this.previousBlockHeight]);
-            this.blockHeight = this.previousBlockHeight;
-          }
-        }
+      if (this.showPreviousBlocklink && event.key === 'ArrowRight' && this.nextBlockHeight - 2 >= 0) {
+        this.navigateToPreviousBlock();
       }
-      if (this.showNextBlocklink) {
-        if (event.key === 'ArrowLeft') {
-          this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', this.nextBlockHeight]);
-          this.blockHeight = this.nextBlockHeight;
-        }
+      if (this.showNextBlocklink && event.key === 'ArrowLeft') {
+        this.navigateToNextBlock();
       }
     });
   }
@@ -263,8 +250,19 @@ export class BlockComponent implements OnInit, OnDestroy {
   onResize(event: any) {
     this.paginationMaxSize = event.target.innerWidth < 670 ? 3 : 5;
   }
+
+  navigateToPreviousBlock() {
+    const block = this.latestBlocks.find((b) => b.height === this.nextBlockHeight - 2);
+    this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', block ? block.id : this.block.previousblockhash], { state: { data: { block, blockHeight: this.nextBlockHeight - 2 } } });
+  }
+
+  navigateToNextBlock() {
+    const block = this.latestBlocks.find((b) => b.height === this.nextBlockHeight);
+    this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', block ? block.id : this.nextBlockHeight], { state: { data: { block, blockHeight: this.nextBlockHeight } } });
+  }
+
   setNextAndPreviousBlockLink(){
-    if (this.latestBlock && this.blockHeight){
+    if (this.latestBlock && this.blockHeight) {
       if (this.blockHeight === 0){
         this.showPreviousBlocklink = false;
       } else {
@@ -272,7 +270,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       }
       if (this.latestBlock.height && this.latestBlock.height === this.blockHeight) {
         this.showNextBlocklink = false;
-      }else{
+      } else {
         this.showNextBlocklink = true;
       }
     }
