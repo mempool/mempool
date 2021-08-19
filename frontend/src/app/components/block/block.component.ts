@@ -18,14 +18,15 @@ export class BlockComponent implements OnInit, OnDestroy {
   network = '';
   block: Block;
   blockHeight: number;
+  nextBlockHeight: number;
   blockHash: string;
   isLoadingBlock = true;
   latestBlock: Block;
+  latestBlocks: Block[] = [];
   transactions: Transaction[];
   isLoadingTransactions = true;
   error: any;
   blockSubsidy: number;
-  subscription: Subscription;
   fees: number;
   paginationMaxSize: number;
   coinbaseTx: Transaction;
@@ -33,6 +34,14 @@ export class BlockComponent implements OnInit, OnDestroy {
   itemsPerPage: number;
   txsLoadingStatus$: Observable<number>;
   showDetails = false;
+  showPreviousBlocklink = true;
+  showNextBlocklink = true;
+
+  subscription: Subscription;
+  keyNavigationSubscription: Subscription;
+  blocksSubscription: Subscription;
+  networkChangedSubscription: Subscription;
+  queryParamsSubscription: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -110,6 +119,9 @@ export class BlockComponent implements OnInit, OnDestroy {
       tap((block: Block) => {
         this.block = block;
         this.blockHeight = block.height;
+        this.nextBlockHeight = block.height + 1;
+        this.setNextAndPreviousBlockLink();
+
         this.seoService.setTitle($localize`:@@block.component.browser-title:Block ${block.height}:BLOCK_HEIGHT:: ${block.id}:BLOCK_ID:`);
         this.isLoadingBlock = false;
         if (block.coinbaseTx) {
@@ -147,17 +159,31 @@ export class BlockComponent implements OnInit, OnDestroy {
       this.isLoadingBlock = false;
     });
 
-    this.stateService.blocks$
-      .subscribe(([block]) => this.latestBlock = block);
+    this.blocksSubscription = this.stateService.blocks$
+      .subscribe(([block]) => {
+        this.latestBlock = block;
+        this.latestBlocks.unshift(block);
+        this.latestBlocks = this.latestBlocks.slice(0, this.stateService.env.KEEP_BLOCKS_AMOUNT);
+        this.setNextAndPreviousBlockLink();
+      });
 
-    this.stateService.networkChanged$
+    this.networkChangedSubscription = this.stateService.networkChanged$
       .subscribe((network) => this.network = network);
 
-    this.route.queryParams.subscribe((params) => {
+    this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
       if (params.showDetails === 'true') {
         this.showDetails = true;
       } else {
         this.showDetails = false;
+      }
+    });
+
+    this.keyNavigationSubscription = this.stateService.keyNavigation$.subscribe((event) => {
+      if (this.showPreviousBlocklink && event.key === 'ArrowRight' && this.nextBlockHeight - 2 >= 0) {
+        this.navigateToPreviousBlock();
+      }
+      if (this.showNextBlocklink && event.key === 'ArrowLeft') {
+        this.navigateToNextBlock();
       }
     });
   }
@@ -165,6 +191,10 @@ export class BlockComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.stateService.markBlock$.next({});
     this.subscription.unsubscribe();
+    this.keyNavigationSubscription.unsubscribe();
+    this.blocksSubscription.unsubscribe();
+    this.networkChangedSubscription.unsubscribe();
+    this.queryParamsSubscription.unsubscribe();
   }
 
   setBlockSubsidy() {
@@ -228,5 +258,30 @@ export class BlockComponent implements OnInit, OnDestroy {
 
   onResize(event: any) {
     this.paginationMaxSize = event.target.innerWidth < 670 ? 3 : 5;
+  }
+
+  navigateToPreviousBlock() {
+    const block = this.latestBlocks.find((b) => b.height === this.nextBlockHeight - 2);
+    this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', block ? block.id : this.block.previousblockhash], { state: { data: { block, blockHeight: this.nextBlockHeight - 2 } } });
+  }
+
+  navigateToNextBlock() {
+    const block = this.latestBlocks.find((b) => b.height === this.nextBlockHeight);
+    this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', block ? block.id : this.nextBlockHeight], { state: { data: { block, blockHeight: this.nextBlockHeight } } });
+  }
+
+  setNextAndPreviousBlockLink(){
+    if (this.latestBlock && this.blockHeight) {
+      if (this.blockHeight === 0){
+        this.showPreviousBlocklink = false;
+      } else {
+        this.showPreviousBlocklink = true;
+      }
+      if (this.latestBlock.height && this.latestBlock.height === this.blockHeight) {
+        this.showNextBlocklink = false;
+      } else {
+        this.showNextBlocklink = true;
+      }
+    }
   }
 }

@@ -15,17 +15,60 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: ${{ matrix.browser }} browser tests
+      - name: ${{ matrix.browser }} browser tests (Mempool)
         uses: cypress-io/github-action@v2
         with:
           working-directory: frontend
-          build: npm run config:defaults
+          build: npm run config:defaults:mempool
           start: npm run start:local-prod
           wait-on: 'http://localhost:4200'
           wait-on-timeout: 120
           record: true
           parallel: true
-          group: Tests on ${{ matrix.browser }}
+          env: BASE_MODULE=mempool
+          group: Tests on ${{ matrix.browser }} (Mempool)
+          browser: ${{ matrix.browser }}
+          ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+
+      - name: ${{ matrix.browser }} browser tests (Liquid)
+        uses: cypress-io/github-action@v2
+        if: always()
+        with:
+          working-directory: frontend
+          build: npm run config:defaults:liquid
+          start: npm run start:local-prod
+          wait-on: 'http://localhost:4200'
+          wait-on-timeout: 120
+          record: true
+          parallel: true
+          spec: cypress/integration/liquid/liquid.spec.ts
+          env: BASE_MODULE=liquid
+          group: Tests on ${{ matrix.browser }} (Liquid)
+          browser: ${{ matrix.browser }}
+          ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+
+      - name: ${{ matrix.browser }} browser tests (Bisq)
+        uses: cypress-io/github-action@v2
+        if: always()
+        with:
+          working-directory: frontend
+          build: npm run config:defaults:bisq
+          start: npm run start:local-prod
+          wait-on: 'http://localhost:4200'
+          wait-on-timeout: 120
+          record: true
+          parallel: true
+          spec: cypress/integration/bisq/bisq.spec.ts
+          env: BASE_MODULE=bisq
+          group: Tests on ${{ matrix.browser }} (Bisq)
           browser: ${{ matrix.browser }}
           ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
         env:

@@ -20,7 +20,7 @@
       <div class="col">
         <table class="table table-borderless smaller-text table-sm" id="table-tx-vin">
           <tbody>
-            <ng-template ngFor let-vin [ngForOf]="tx['@vinLimit'] ? tx.vin.slice(0, 10) : tx.vin" [ngForTrackBy]="trackByIndexFn">
+            <ng-template ngFor let-vin [ngForOf]="tx['@vinLimit'] ? ((tx.vin.length>12)?tx.vin.slice(0, 10): tx.vin.slice(0, 12)) : tx.vin" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="assetsMinimal && vin.prevout && assetsMinimal[vin.prevout.asset] && !vin.is_coinbase && vin.prevout.scriptpubkey_address && tx._unblinded ? 'assetBox' : ''">
                 <td class="arrow-td">
                   <ng-template [ngIf]="vin.prevout === null && !vin.is_pegin" [ngIfElse]="hasPrevout">
@@ -109,7 +109,7 @@
                 </td>
               </tr>
             </ng-template>
-            <tr *ngIf="tx.vin.length > 10 && tx['@vinLimit']">
+            <tr *ngIf="tx.vin.length > 12 && tx['@vinLimit']">
               <td colspan="3" class="text-center">
                 <button class="btn btn-sm btn-primary mt-2" (click)="tx['@vinLimit'] = false;"><span i18n="transactions-list.load-all">Load all</span> ({{ tx.vin.length - 10 }})</button>
               </td>
@@ -121,7 +121,7 @@
       <div class="col mobile-bottomcol">
         <table class="table table-borderless smaller-text table-sm"  id="table-tx-vout">
           <tbody>
-            <ng-template ngFor let-vout let-vindex="index"  [ngForOf]="tx['@voutLimit'] ? tx.vout.slice(0, 10) : tx.vout" [ngForTrackBy]="trackByIndexFn">
+            <ng-template ngFor let-vout let-vindex="index"  [ngForOf]="tx['@voutLimit'] ?((tx.vout.length>12)?tx.vout.slice(0, 10): tx.vout.slice(0, 12)) : tx.vout" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="assetsMinimal && assetsMinimal[vout.asset] && vout.scriptpubkey_address && tx.vin && !tx.vin[0].is_coinbase && tx._unblinded ? 'assetBox' : ''">
                 <td>
                   <a *ngIf="vout.scriptpubkey_address; else scriptpubkey_type" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">
@@ -197,7 +197,7 @@
                 </td>
               </tr>
             </ng-template>
-            <tr *ngIf="tx.vout.length > 10 && tx['@voutLimit']">
+            <tr *ngIf="tx.vout.length > 12 && tx['@voutLimit']">
               <td colspan="3" class="text-center">
                 <button class="btn btn-sm btn-primary mt-2" (click)="tx['@voutLimit'] = false;"><span i18n="transactions-list.load-all">Load all</span> ({{ tx.vout.length - 10 }})</button>
               </td>
@@ -209,7 +209,7 @@
 
     <div>
       <div class="float-left mt-2-5" *ngIf="!transactionPage && tx.fee">
-        {{ tx.fee / (tx.weight / 4) | number : '1.1-1' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span> <span class="d-none d-sm-inline-block">&nbsp;&ndash; {{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [value]="tx.fee"></app-fiat></span></span>
+        {{ tx.fee / (tx.weight / 4) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span> <span class="d-none d-sm-inline-block">&nbsp;&ndash; {{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [value]="tx.fee"></app-fiat></span></span>
       </div>
 
       <div class="float-right">
