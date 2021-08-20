@@ -85,7 +85,11 @@ export class BisqTransactionComponent implements OnInit, OnDestroy {
         }
 
         if (tx.version) {
-          this.router.navigate(['/tx/', this.txId], { state: { data: tx, bsqTx: true }});
+          if (this.stateService.env.BASE_MODULE === 'bisq') {
+            window.location.replace('https://mempool.space/tx/' + this.txId);
+          } else {
+            this.router.navigate(['/tx/', this.txId], { state: { data: tx, bsqTx: true }});
+          }
           return of(null);
         }
 
