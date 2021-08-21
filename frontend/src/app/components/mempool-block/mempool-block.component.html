@@ -9,7 +9,7 @@
 
   <div class="box">
     <div class="row">
-      <div class="col-sm">
+      <div class="col-md">
         <table class="table table-borderless table-striped">
           <tbody>
             <tr>
@@ -40,8 +40,8 @@
           </tbody>
         </table>
       </div>
-      <div class="col-sm">
-        <app-fee-distribution-graph [feeRange]="mempoolBlock.feeRange"></app-fee-distribution-graph>
+      <div class="col-md chart-container">
+        <app-fee-distribution-graph [data]="mempoolBlock.feeRange" ></app-fee-distribution-graph>
       </div>
     </div>
   </div>

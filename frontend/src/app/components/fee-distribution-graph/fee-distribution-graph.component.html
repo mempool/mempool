@@ -1,9 +1,5 @@
-<div style="height: 225px;" *ngIf="mempoolVsizeFeesData; else loadingFees">
-  <app-chartist
-    [data]="mempoolVsizeFeesData"
-    [type]="'Line'"
-    [options]="mempoolVsizeFeesOptions">
-  </app-chartist>
+<div class="fee-distribution-chart" *ngIf="mempoolVsizeFeesOptions; else loadingFees">
+  <div echarts [options]="mempoolVsizeFeesOptions"></div>
 </div>
 
 <ng-template #loadingFees>

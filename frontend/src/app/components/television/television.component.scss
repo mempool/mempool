@@ -16,30 +16,21 @@
 }
 
 .chart-holder {
-  height: calc(100vh - 270px);
-  min-height: 525px;
-  padding-left: 20px;
-  width: 98.5%;
-  padding-top: 20px;
-  @media(min-width: 992px){
-    padding-top: 10px;
-  }
-  @media(min-height: 800px){
-    padding-top: 60px !important;
-  }
+  height: 650px;
+  width: 100%;
+  margin: 30px auto;
 }
 
 .blockchain-wrapper {
-
   display: flex;
   height: 100%;
   min-height: 240px;
   position: relative;
   top: -20px;
   @media(min-height: 800px) {
-    top: 10px;
+    top: 30px;
   }
-  
+
   .position-container {
     position: absolute;
     left: 50%;

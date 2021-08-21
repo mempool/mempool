@@ -58,11 +58,11 @@
   display: block;
   @media (min-width: 485px) {
     display: flex;
-    flex-direction: row; 
+    flex-direction: row;
   }
   h5 {
     margin-bottom: 10px;
-  } 
+  }
   .item {
     width: 50%;
     margin: 0px auto 20px;
@@ -131,7 +131,7 @@
 .latest-transactions {
   width: 100%;
   text-align: left;
-  table-layout:fixed; 
+  table-layout:fixed;
   tr, td, th {
     border: 0px;
   }
@@ -220,6 +220,11 @@
 .mempool-graph {
   height: 250px;
 }
+.loadingGraphs{
+  height: 250px;
+  display: grid;
+  place-items: center;
+}
 
 .inc-tx-progress-bar {
   max-width: 250px;
@@ -247,7 +252,7 @@
     color: #ffffff66;
     font-size: 12px;
   }
-  .item {    
+  .item {
     padding: 0 5px;
     width: 100%;
     &:nth-child(1) {
@@ -276,25 +281,25 @@
   justify-content: space-between;
   @media (min-width: 376px) {
     flex-direction: row;
-  }  
+  }
   .item {
     max-width: 150px;
     margin: 0;
     width: -webkit-fill-available;
     @media (min-width: 376px) {
       margin: 0 auto 0px;
-    }    
+    }
     &:first-child{
       display: none;
       @media (min-width: 485px) {
         display: block;
-      }    
+      }
       @media (min-width: 768px) {
         display: none;
-      }    
+      }
       @media (min-width: 992px) {
         display: block;
-      }    
+      }
     }
     &:last-child {
       margin-bottom: 0;

@@ -36,12 +36,12 @@
                 <input ngbButton type="radio" [value]="'1y'" [routerLink]="['/graphs' | relativeUrl]" fragment="1y"> 1Y
               </label>
             </div>
-            <button (click)="invertGraph()" class="btn btn-primary btn-sm ml-2 d-none d-md-inline"><fa-icon [icon]="['fas', 'exchange-alt']" [rotate]="90" [fixedWidth]="true" i18n-title="statistics.component-invert.title" title="Invert"></fa-icon></button>
+            <!-- <button (click)="invertGraph()" class="btn btn-primary btn-sm ml-2 d-none d-md-inline"><fa-icon [icon]="['fas', 'exchange-alt']" [rotate]="90" [fixedWidth]="true" i18n-title="statistics.component-invert.title" title="Invert"></fa-icon></button> -->
           </form>
         </div>
         <div class="card-body">
-          <div style="height: 600px;">
-            <app-mempool-graph dir="ltr" [data]="mempoolStats" [dateSpan]="radioGroupForm.controls.dateSpan.value"></app-mempool-graph>
+          <div class="incoming-transactions-graph">
+            <app-mempool-graph dir="ltr" [limitFee]="1200" [height]="550" [left]="60" [data]="mempoolStats"></app-mempool-graph>
           </div>
         </div>
       </div>
@@ -53,12 +53,8 @@
             <i class="fa fa-area-chart"></i> <span i18n="statistics.transaction-vbytes-per-second">Transaction vBytes per second (vB/s)</span>
         </div>
         <div class="card-body">
-          <div style="height: 600px;">
-            <app-chartist
-              [data]="mempoolTransactionsWeightPerSecondData"
-              [type]="'Line'"
-              [options]="transactionsWeightPerSecondOptions">
-            </app-chartist>
+          <div class="incoming-transactions-graph">
+            <app-incoming-transactions-graph [height]="500" [data]="mempoolTransactionsWeightPerSecondData"></app-incoming-transactions-graph>
           </div>
         </div>
       </div>
