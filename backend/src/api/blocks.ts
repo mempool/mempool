@@ -86,7 +86,7 @@ class Blocks {
         } else if (config.MEMPOOL.BACKEND === 'esplora' || memPool.isInSync() || i === 0) {
           logger.debug(`Fetching block tx ${i} of ${txIds.length}`);
           try {
-            const tx = await transactionUtils.$getTransactionExtended(txIds[i]);
+            const tx = await transactionUtils.$getTransactionExtended(txIds[i], true);
             transactions.push(tx);
           } catch (e) {
             logger.debug('Error fetching block tx: ' + e.message || e);

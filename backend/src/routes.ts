@@ -570,15 +570,15 @@ class Routes {
   public async getBlockTransactions(req: Request, res: Response) {
     try {
       loadingIndicators.setProgress('blocktxs-' + req.params.hash, 0);
-
       const txIds = await bitcoinApi.$getTxIdsForBlock(req.params.hash);
       const transactions: TransactionExtended[] = [];
       const startingIndex = Math.max(0, parseInt(req.params.index || '0', 10));
 
       const endIndex = Math.min(startingIndex + 10, txIds.length);
+     
       for (let i = startingIndex; i < endIndex; i++) {
         try {
-          const transaction = await transactionUtils.$getTransactionExtended(txIds[i], true);
+          const transaction = await transactionUtils.$getTransactionExtended(txIds[i], true, false);
           transactions.push(transaction);
           loadingIndicators.setProgress('blocktxs-' + req.params.hash, (i + 1) / endIndex * 100);
         } catch (e) {

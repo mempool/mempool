@@ -143,6 +143,7 @@ export class BlockComponent implements OnInit, OnDestroy {
             return of([]);
         }))
       ),
+      
     )
     .subscribe((transactions: Transaction[]) => {
       if (this.fees === undefined && transactions[0]) {

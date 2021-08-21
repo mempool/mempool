@@ -1,6 +1,6 @@
 <ng-container *ngFor="let tx of transactions; let i = index; trackBy: trackByFn">
   <div *ngIf="!transactionPage" class="header-bg box tx-page-container">
-    <a class="float-left" [routerLink]="['/tx/' | relativeUrl, tx.txid]" [state]="{ data: tx }">
+    <a class="float-left" target="_blank" [routerLink]="['/tx/' | relativeUrl, tx.txid]" [state]="{ data: tx }">
       <span style="float: left;" class="d-block d-md-none">{{ tx.txid | shortenString : 16 }}</span>
       <span style="float: left;" class="d-none d-md-block">{{ tx.txid }}</span>
     </a>
@@ -20,7 +20,7 @@
       <div class="col">
         <table class="table table-borderless smaller-text table-sm" id="table-tx-vin">
           <tbody>
-            <ng-template ngFor let-vin [ngForOf]="tx['@vinLimit'] ? ((tx.vin.length>12)?tx.vin.slice(0, 10): tx.vin.slice(0, 12)) : tx.vin" [ngForTrackBy]="trackByIndexFn">
+            <ng-template ngFor let-vin [ngForOf]="tx['@loadAll']==true?tx['@expTx'].vin:tx.vin" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="assetsMinimal && vin.prevout && assetsMinimal[vin.prevout.asset] && !vin.is_coinbase && vin.prevout.scriptpubkey_address && tx._unblinded ? 'assetBox' : ''">
                 <td class="arrow-td">
                   <ng-template [ngIf]="vin.prevout === null && !vin.is_pegin" [ngIfElse]="hasPrevout">
@@ -109,9 +109,11 @@
                 </td>
               </tr>
             </ng-template>
-            <tr *ngIf="tx.vin.length > 12 && tx['@vinLimit']">
-              <td colspan="3" class="text-center">
-                <button class="btn btn-sm btn-primary mt-2" (click)="tx['@vinLimit'] = false;"><span i18n="transactions-list.load-all">Load all</span> ({{ tx.vin.length - 10 }})</button>
+            
+            <div *ngIf="tx['@loadingInputsStatus']==true" class="skeleton-loader"></div>
+            <tr *ngIf="tx.fee==0">
+              <td colspan="3" class="text-center">     
+                <button *ngIf="tx['@loadingInputsStatus']==false && !tx.vin[0].is_coinbase" class="btn btn-sm btn-primary mt-2" (click)="toggleLoadAll(tx)" ><span i18n="transactions-list.load-all">Load {{tx['@loadAll'] ? 'less':'all'}}</span></button>
               </td>
             </tr>
           </tbody>
@@ -208,8 +210,8 @@
     </div>
 
     <div>
-      <div class="float-left mt-2-5" *ngIf="!transactionPage && tx.fee">
-        {{ tx.fee / (tx.weight / 4) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span> <span class="d-none d-sm-inline-block">&nbsp;&ndash; {{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [value]="tx.fee"></app-fiat></span></span>
+      <div class="float-left mt-2-5" *ngIf="!transactionPage && (tx['@expTx'].fee || tx.fee)">
+        {{ (tx['@expTx'].fee?tx['@expTx'].fee:tx.fee) / (tx.weight / 4) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span> <span class="d-none d-sm-inline-block">&nbsp;&ndash; {{ (tx['@expTx'].fee?tx['@expTx'].fee:tx.fee) | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [value]="(tx['@expTx'].fee?tx['@expTx'].fee:tx.fee)"></app-fiat></span></span>
       </div>
 
       <div class="float-right">

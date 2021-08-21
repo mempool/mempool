@@ -106,7 +106,7 @@ class Mempool {
     for (const txid of transactions) {
       if (!this.mempoolCache[txid]) {
         try {
-          const transaction = await transactionUtils.$getTransactionExtended(txid);
+          const transaction = await transactionUtils.$getTransactionExtended(txid, true);
           this.mempoolCache[txid] = transaction;
           txCount++;
           if (this.inSync) {

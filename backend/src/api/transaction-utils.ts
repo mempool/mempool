@@ -20,8 +20,8 @@ class TransactionUtils {
     };
   }
 
-  public async $getTransactionExtended(txId: string, addPrevouts = false): Promise<TransactionExtended> {
-    const transaction: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(txId, false, addPrevouts);
+  public async $getTransactionExtended(txId: string, addPrevouts = false,  allInputs:boolean = true): Promise<TransactionExtended> {
+    const transaction: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(txId, allInputs, false, addPrevouts);
     return this.extendTransaction(transaction);
   }
 
