@@ -235,7 +235,7 @@ body {
   color: #dc3545;
 }
 
-.yellow-color { 
+.yellow-color {
   color: #ffd800;
 }
 
@@ -255,168 +255,64 @@ html:lang(ru) .card-title {
   font-size: 0.9rem;
 }
 
-/* Chartist */
-$ct-series-names: (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z);
-$ct-series-colors: (
-  #D81B60,
-  #8E24AA,
-  #5E35B1,
-  #3949AB,
-  #1E88E5,
-  #039BE5,
-  #00ACC1,
-  #00897B,
-  #43A047,
-  #7CB342,
-  #C0CA33,
-  #FDD835,
-  #FFB300,
-  #FB8C00,
-  #F4511E,
-  #6D4C41,
-  #757575,
-  #546E7A,
-  #b71c1c,
-  #880E4F,
-  #4A148C,
-  #311B92,
-  #1A237E,
-  #0D47A1,
-  #01579B,
-  #006064,
-  #004D40,
-  #1B5E20,
-  #33691E,
-  #827717,
-  #F57F17,
-  #FF6F00,
-  #E65100,
-  #BF360C,
-  #3E2723,
-  #212121,
-  #263238,
-  #a748ca,
-  #6188e2,
-  #a748ca,
-  #6188e2,
-);
+/* MEMPOOL CHARTS */
 
-@import "../node_modules/@mempool/chartist/dist/scss/chartist.scss";
-
-.ct-bar-label {
-  font-size: 20px;
-  font-weight: bold;
-  fill: #fff;
+.mempool-wrapper-tooltip-chart {
+  height: 250px;
 }
 
-.ct-target-line {
-  stroke: #f5f5f5;
-  stroke-width: 3px;
-  stroke-dasharray: 7px;
+.echarts {
+  height: 100%;
+  min-height: 180px;
 }
 
-.ct-area {
-  stroke: none;
-  fill-opacity: 0.9;
-}
-
-.ct-label {
-    fill: rgba(255, 255, 255, 0.4);
-    color: rgba(255, 255, 255, 0.4);
-}
-
-.ct-point-label {
-  fill: rgba(255, 255, 255, 1);
-  color: rgba(255, 255, 255, 1);
-  font-size: 14px;
-}
-
-.ct-grid {
-    stroke: rgba(255, 255, 255, 0.2);
-}
-
-/* LEGEND */
-
-.ct-legend {
-  position: absolute;
-  z-index: 10;
-  left: 0px;
-  list-style: none;
-  font-size: 13px;
-  padding: 0px 0px 0px 30px;
-  top: 90px;
-
-  li {
-      position: relative;
-      padding-left: 23px;
-      margin-bottom: 0px;
+.tx-wrapper-tooltip-chart, .fees-wrapper-tooltip-chart {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  background: rgba(#11131f, 0.85);
+  color: #fff;
+  padding: 10px 15px;
+  border-radius: 4px;
+  box-shadow: 1px 1px 10px rgba(0,0,0,0.2);
+  .item {
+    text-align: left;
+    display: flex;
+    .indicator {
+      display: block;
+      margin-right: 5px;
+      border-radius: 10px;
+      margin-top: 5px;
+      width: 9px;
+      height: 9px;
     }
-
-  li:before {
-      width: 12px;
-      height: 12px;
-      position: absolute;
-      left: 0;
-      bottom: 3px;
-      content: '';
-      border: 3px solid transparent;
-      border-radius: 2px;
-  }
-
-  li.inactive:before {
-      background: transparent;
-  }
-
-  &.ct-legend-inside {
-      position: absolute;
-      top: 0;
-      right: 0;
-  }
-
-  @for $i from 0 to length($ct-series-colors) {
-      .ct-series-#{$i}:before {
-          background-color: nth($ct-series-colors, $i + 1);
-          border-color: nth($ct-series-colors, $i + 1);
+    .value {
+      text-align: right;
+      span {
+        color: #212121 !important;
       }
+    }
   }
 }
 
+.grow {
+  flex-grow: 1;
+}
 
-.chartist-tooltip {
-  position: absolute;
-  display: inline-block;
-  opacity: 0;
-  min-width: 5em;
-  padding: .5em;
-  background: #F4C63D;
-  color: #453D3F;
-  font-family: Oxygen,Helvetica,Arial,sans-serif;
-  font-weight: 700;
-  text-align: center;
-  pointer-events: none;
-  z-index: 1;
-  -webkit-transition: opacity .2s linear;
-  -moz-transition: opacity .2s linear;
-  -o-transition: opacity .2s linear;
-  transition: opacity .2s linear; }
-  .chartist-tooltip:before {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    margin-left: -15px;
-    border: 15px solid transparent;
-    border-top-color: #F4C63D; }
-  .chartist-tooltip.tooltip-show {
-    opacity: 1; }
+.fees-wrapper-tooltip-chart {
+  .item {
+    font-size: 9px;
+    line-height: 1;
+  }
+  .indicator {
+    margin-right: 5px !important;
+    border-radius: 10px !important;
+    margin-top: 0px !important;
+  }
+}
 
-.ct-area, .ct-line {
-  pointer-events: none; }
-
-.ct-bar {
-  stroke-width: 1px;
+.fee-distribution-chart {
+  height: 250px;
 }
 
 hr {
@@ -639,7 +535,7 @@ th {
   .card {
     background-color: transparent;
     padding: 0;
-  
+
     button {
       text-align: left;
       display: block;
@@ -653,17 +549,17 @@ th {
         box-shadow: none;
       }
     }
-  
+
     .card-header {
       padding: 0;
     }
-  
+
     .collapsed{
       background-color: #2d3348;
       color: #1bd8f4;
     }
   }
-  
+
   .subtitle {
     font-weight: bold;
     margin-bottom: 3px;
@@ -675,7 +571,6 @@ th {
 
 
 .pagination-container {
-  
   display: inline-block;
   width: 100%;
   justify-content: space-between;

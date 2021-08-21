@@ -6,11 +6,11 @@ import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
 import { ApiService } from '../services/api.service';
 import { StateService } from '../services/state.service';
-import * as Chartist from '@mempool/chartist';
 import { formatDate } from '@angular/common';
 import { WebsocketService } from '../services/websocket.service';
 import { SeoService } from '../services/seo.service';
 import { StorageService } from '../services/storage.service';
+import { EChartsOption } from 'echarts';
 
 interface MempoolBlocksData {
   blocks: number;
@@ -34,7 +34,7 @@ interface MempoolInfoData {
   memPoolInfo: MempoolInfo;
   vBytesPerSecond: number;
   progressWidth: string;
-  progressClass: string;
+  progressColor: string;
 }
 
 interface MempoolStatsData {
@@ -74,15 +74,15 @@ export class DashboardComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
     this.isLoadingWebSocket$ = this.stateService.isLoadingWebSocket$;
     this.seoService.resetTitle();
     this.websocketService.want(['blocks', 'stats', 'mempool-blocks', 'live-2h-chart']);
     this.network$ = merge(of(''), this.stateService.networkChanged$);
     this.collapseLevel = this.storageService.getValue('dashboard-collapsed') || 'one';
-    this.mempoolLoadingStatus$ = this.stateService.loadingIndicators$.pipe(
-      map((indicators) => indicators.mempool !== undefined ? indicators.mempool : 100)
-    );
+    this.mempoolLoadingStatus$ = this.stateService.loadingIndicators$
+      .pipe(
+        map((indicators) => indicators.mempool !== undefined ? indicators.mempool : 100)
+      );
 
     this.mempoolInfoData$ = combineLatest([
       this.stateService.mempoolInfo$,
@@ -92,11 +92,21 @@ export class DashboardComponent implements OnInit {
       map(([mempoolInfo, vbytesPerSecond]) => {
         const percent = Math.round((Math.min(vbytesPerSecond, this.vBytesPerSecondLimit) / this.vBytesPerSecondLimit) * 100);
 
-        let progressClass = 'bg-danger';
-        if (percent <= 75) {
-          progressClass = 'bg-success';
-        } else if (percent <= 99) {
-          progressClass = 'bg-warning';
+        let progressColor = '#7CB342';
+        if (vbytesPerSecond > 1667) {
+          progressColor = '#FDD835';
+        }
+        if (vbytesPerSecond > 2000) {
+          progressColor = '#FFB300';
+        }
+        if (vbytesPerSecond > 2500) {
+          progressColor = '#FB8C00';
+        }
+        if (vbytesPerSecond > 3000) {
+          progressColor = '#F4511E';
+        }
+        if (vbytesPerSecond > 3500) {
+          progressColor = '#D81B60';
         }
 
         const mempoolSizePercentage = (mempoolInfo.usage / mempoolInfo.maxmempool * 100);
@@ -111,7 +121,7 @@ export class DashboardComponent implements OnInit {
           memPoolInfo: mempoolInfo,
           vBytesPerSecond: vbytesPerSecond,
           progressWidth: percent + '%',
-          progressClass: progressClass,
+          progressColor: progressColor,
           mempoolSizeProgress: mempoolSizeProgress,
         };
       })
@@ -164,7 +174,7 @@ export class DashboardComponent implements OnInit {
           }
 
           let colorPreviousAdjustments = '#dc3545';
-          if (previousRetarget){
+          if (previousRetarget) {
             if (previousRetarget >= 0) {
               colorPreviousAdjustments = '#3bcc49';
             }
@@ -190,7 +200,6 @@ export class DashboardComponent implements OnInit {
           };
         })
       );
-
 
     this.mempoolBlocksData$ = this.stateService.mempoolBlocks$
       .pipe(
@@ -226,50 +235,32 @@ export class DashboardComponent implements OnInit {
         }, []),
       );
 
-    this.mempoolStats$ = this.stateService.connectionState$.pipe(
-      filter((state) => state === 2),
-      switchMap(() => this.apiService.list2HStatistics$()),
-      switchMap((mempoolStats) => {
-        return merge(
-          this.stateService.live2Chart$
-            .pipe(
-              scan((acc, stats) => {
-                acc.unshift(stats);
-                acc = acc.slice(0, 120);
-                return acc;
-              }, mempoolStats)
-            ),
-          of(mempoolStats)
-        );
-      }),
-      map((mempoolStats) => {
-        return {
-          mempool: mempoolStats,
-          weightPerSecond: this.handleNewMempoolData(mempoolStats.concat([])),
-        };
-      }),
-      share(),
-    );
-
-    this.transactionsWeightPerSecondOptions = {
-        showArea: false,
-        showLine: true,
-        fullWidth: true,
-        showPoint: false,
-        low: 0,
-        axisY: {
-          offset: 40
-        },
-        axisX: {
-          labelInterpolationFnc: (value: any, index: any) => index % 24 === 0 ? formatDate(value, 'HH:mm', this.locale) : null,
-          offset: 20
-        },
-        plugins: [
-          Chartist.plugins.ctTargetLine({
-            value: 1667
-          }),
-        ]
-      };
+    this.mempoolStats$ = this.stateService.connectionState$
+      .pipe(
+        filter((state) => state === 2),
+        switchMap(() => this.apiService.list2HStatistics$()),
+        switchMap((mempoolStats) => {
+          return merge(
+            this.stateService.live2Chart$
+              .pipe(
+                scan((acc, stats) => {
+                  acc.unshift(stats);
+                  acc = acc.slice(0, 120);
+                  return acc;
+                }, mempoolStats)
+              ),
+            of(mempoolStats)
+          );
+        }),
+        map((mempoolStats) => {
+          const data = this.handleNewMempoolData(mempoolStats.concat([]));
+          return {
+            mempool: mempoolStats,
+            weightPerSecond: this.handleNewMempoolData(mempoolStats.concat([])),
+          };
+        }),
+        share(),
+      );
   }
 
   handleNewMempoolData(mempoolStats: OptimizedMempoolStats[]) {

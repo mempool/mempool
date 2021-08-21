@@ -68,7 +68,6 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@juggle/resize-observer": "^3.3.1",
-    "@mempool/chartist": "^0.11.4",
     "@mempool/mempool.js": "^2.2.4",
     "@ng-bootstrap/ng-bootstrap": "^7.0.0",
     "@nguniversal/express-engine": "11.2.1",

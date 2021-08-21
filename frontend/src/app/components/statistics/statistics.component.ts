@@ -9,7 +9,6 @@ import { OptimizedMempoolStats } from '../../interfaces/node-api.interface';
 import { WebsocketService } from '../../services/websocket.service';
 import { ApiService } from '../../services/api.service';
 
-import * as Chartist from '@mempool/chartist';
 import { StateService } from 'src/app/services/state.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { StorageService } from 'src/app/services/storage.service';
@@ -30,8 +29,6 @@ export class StatisticsComponent implements OnInit {
   mempoolVsizeFeesData: any;
   mempoolUnconfirmedTransactionsData: any;
   mempoolTransactionsWeightPerSecondData: any;
-
-  transactionsWeightPerSecondOptions: any;
 
   radioGroupForm: FormGroup;
   inverted: boolean;
@@ -63,43 +60,6 @@ export class StatisticsComponent implements OnInit {
     this.radioGroupForm = this.formBuilder.group({
       dateSpan: this.graphWindowPreference
     });
-
-    const labelInterpolationFnc = (value: any, index: any) => {
-      switch (this.graphWindowPreference) {
-        case '2h':
-        case '24h':
-          value = formatDate(value, 'HH:mm', this.locale);
-          break;
-        case '1w':
-          value = formatDate(value, 'dd/MM HH:mm', this.locale);
-          break;
-        case '1m':
-        case '3m':
-        case '6m':
-        case '1y':
-          value = formatDate(value, 'dd/MM', this.locale);
-      }
-
-      return index % labelHops === 0 ? value : null;
-    };
-
-    this.transactionsWeightPerSecondOptions = {
-      showArea: false,
-      showLine: true,
-      showPoint: false,
-      low: 0,
-      axisY: {
-        offset: 40
-      },
-      axisX: {
-        labelInterpolationFnc: labelInterpolationFnc
-      },
-      plugins: [
-        Chartist.plugins.ctTargetLine({
-          value: 1667
-        }),
-      ]
-    };
 
     this.route
       .fragment
