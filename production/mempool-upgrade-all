@@ -1,9 +1,8 @@
 #!/usr/local/bin/zsh
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:$HOME/bin
-LOCKFILE="${HOME}/lock"
-REPO=origin
-BRANCH=master
 HOSTNAME=$(hostname)
+LOCKFILE="${HOME}/lock"
+REF=$(echo "${1:=origin/master}"|sed -e 's!:!/!')
 
 if [ -f "${LOCKFILE}" ];then
     echo "upgrade already running? check lockfile ${LOCKFILE}"
@@ -13,21 +12,23 @@ fi
 trap 'rm -f "${LOCKFILE}"; exit $?' INT TERM EXIT
 touch "${LOCKFILE}"
 
-TAG="${BRANCH}"
-[ ! -z "$1" ] && TAG=$1
-
-echo "Upgrading mempool to ${TAG}" | wall
+echo "Upgrading mempool to ${REF}" | wall
 
 update_repo()
 {
     local site="$1"
-    echo "[*] Upgrading ${site} to ${TAG}"
+    echo "[*] Upgrading ${site} to ${REF}"
     cd "$HOME/${site}" || exit 1
-    git fetch "${REPO}" || exit 1
-    if [ $(git tag -l "${TAG}") ];then
-        git reset --hard "tags/${TAG}" || exit 1
+
+    for remote in mempool MiguelMedeiros knorrium;do
+        git remote add "${remote}" "https://github.com/${remote}/mempool" >/dev/null 2>&1
+        git fetch "${remote}" || exit 1
+    done
+
+    if [ $(git tag -l "${REF}") ];then
+        git reset --hard "tags/${REF}" || exit 1
     else
-        git reset --hard "${REPO}/${TAG}" || exit 1
+        git reset --hard "${REF}" || exit 1
     fi
     export HASH=$(git rev-parse HEAD)
 }
@@ -67,7 +68,7 @@ for target in mainnet liquid bisq testnet signet;do build_backend "${target}";do
 for target in mainnet liquid bisq;do build_frontend "${target}";done
 for target in mainnet liquid bisq;do ship_frontend "${target}";done
 
-echo "${HOSTNAME} updated to \`${TAG}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel ops mempool.space
-echo "${HOSTNAME} updated to \`${TAG}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel general mempool.dev
+echo "${HOSTNAME} updated to \`${REF}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel general mempool.dev
+echo "${HOSTNAME} updated to \`${REF}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel general mempool.devops
 
 exit 0
