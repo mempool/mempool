@@ -134,6 +134,6 @@ export class LiquidUnblinding {
         return this.tryUnblindTx(tx);
       }
     }
-    throw new Error('Invalid blinding data.');
+    return tx;
   }
 }
