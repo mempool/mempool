@@ -182,8 +182,12 @@ export class BlockComponent implements OnInit, OnDestroy {
       if (this.showPreviousBlocklink && event.key === 'ArrowRight' && this.nextBlockHeight - 2 >= 0) {
         this.navigateToPreviousBlock();
       }
-      if (this.showNextBlocklink && event.key === 'ArrowLeft') {
-        this.navigateToNextBlock();
+      if (event.key === 'ArrowLeft') {
+        if (this.showNextBlocklink) {
+          this.navigateToNextBlock();
+        } else {
+          this.router.navigate([(this.network && this.stateService.env.BASE_MODULE === 'mempool' ? '/' + this.network : '') + '/mempool-block/', '0']);
+        }
       }
     });
   }
@@ -261,13 +265,16 @@ export class BlockComponent implements OnInit, OnDestroy {
   }
 
   navigateToPreviousBlock() {
+    if (!this.block) {
+      return;
+    }
     const block = this.latestBlocks.find((b) => b.height === this.nextBlockHeight - 2);
-    this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', block ? block.id : this.block.previousblockhash], { state: { data: { block, blockHeight: this.nextBlockHeight - 2 } } });
+    this.router.navigate([(this.network && this.stateService.env.BASE_MODULE === 'mempool' ? '/' + this.network : '') + '/block/', block ? block.id : this.block.previousblockhash], { state: { data: { block, blockHeight: this.nextBlockHeight - 2 } } });
   }
 
   navigateToNextBlock() {
     const block = this.latestBlocks.find((b) => b.height === this.nextBlockHeight);
-    this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', block ? block.id : this.nextBlockHeight], { state: { data: { block, blockHeight: this.nextBlockHeight } } });
+    this.router.navigate([(this.network && this.stateService.env.BASE_MODULE === 'mempool' ? '/' + this.network : '') + '/block/', block ? block.id : this.nextBlockHeight], { state: { data: { block, blockHeight: this.nextBlockHeight } } });
   }
 
   setNextAndPreviousBlockLink(){
