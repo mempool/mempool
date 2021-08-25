@@ -116,7 +116,7 @@ export class DashboardComponent implements OnInit {
         };
       })
     );
-    
+
     this.difficultyEpoch$ = timer(0, 1000)
       .pipe(
         switchMap(() => combineLatest([
@@ -128,72 +128,65 @@ export class DashboardComponent implements OnInit {
           const now = new Date().getTime() / 1000;
           const diff = now - DATime;
           const blocksInEpoch = block.height % 2016;
-          const estimatedBlocks = Math.round(diff / 60 / 10);
-          let difficultyChange = 0;
+          const progress = (blocksInEpoch >= 0) ? (blocksInEpoch / 2016 * 100).toFixed(2) : `100`;
+          const remainingBlocks = 2016 - blocksInEpoch;
+          const newDifficultyHeight = block.height + remainingBlocks;
+
+          let change = 0;
           if (blocksInEpoch > 0) {
-            difficultyChange = (600 / (diff / blocksInEpoch ) - 1) * 100;
+            change = (600 / (diff / blocksInEpoch ) - 1) * 100;
+          }
+          if (change > 300) {
+            change = 300;
+          }
+          if (change < -75) {
+            change = -75;
           }
 
-          let base = 0;
+          const timeAvgDiff = change * 0.1;
 
-          if (blocksInEpoch >= estimatedBlocks) {
-            base = estimatedBlocks / 2016 * 100;
+          let timeAvgMins = 10;
+          if (timeAvgDiff > 0) {
+            timeAvgMins -= Math.abs(timeAvgDiff);
           } else {
-            base = blocksInEpoch / 2016 * 100;
+            timeAvgMins += Math.abs(timeAvgDiff);
           }
 
-          let colorAdjustments = '#dc3545';
-          if (difficultyChange >= 0) {
+          const timeAvg = timeAvgMins.toFixed(0);
+          const remainingTime = (remainingBlocks * timeAvgMins * 60 * 1000) + (now * 1000);
+
+          let colorAdjustments = '#ffffff66';
+          if (change > 0) {
             colorAdjustments = '#3bcc49';
+          }
+          if (change < 0) {
+            colorAdjustments = '#dc3545';
           }
 
           let colorPreviousAdjustments = '#dc3545';
-          if(previousRetarget){
+          if (previousRetarget){
             if (previousRetarget >= 0) {
               colorPreviousAdjustments = '#3bcc49';
             }
             if (previousRetarget === 0) {
               colorPreviousAdjustments = '#ffffff66';
             }
-          }else{
+          } else {
             colorPreviousAdjustments = '#ffffff66';
           }
 
-
-          const timeAvgDiff = difficultyChange * 0.1;
-
-          let timeAvgMins = 10;
-          if(timeAvgDiff > timeAvgDiff){
-            if (timeAvgDiff > 0){
-              timeAvgMins -= Math.abs(timeAvgDiff);
-            } else {
-              timeAvgMins += Math.abs(timeAvgDiff);
-            }
-          }
-          const remainingBlocks = 2016 - blocksInEpoch;
-          const nowMilliseconds = now * 1000;
-          const timeAvgMilliseconds = timeAvgMins * 60 * 1000;
-          const remainingBlocsMilliseconds = remainingBlocks * timeAvgMilliseconds;
-
-          if(difficultyChange > 300) {
-            difficultyChange = 300;
-          }
-          if(difficultyChange < -75){
-            difficultyChange = -75;
-          }
-
           return {
-            base: base + '%',
-            change: difficultyChange,
-            progress: base.toFixed(2),
+            base: `${progress}%`,
+            change,
+            progress,
             remainingBlocks,
-            timeAvg: timeAvgMins.toFixed(0),
+            timeAvg,
             colorAdjustments,
             colorPreviousAdjustments,
             blocksInEpoch,
-            newDifficultyHeight: block.height + remainingBlocks,
-            remainingTime: remainingBlocsMilliseconds + nowMilliseconds,
-            previousRetarget: previousRetarget ? previousRetarget : 0
+            newDifficultyHeight,
+            remainingTime,
+            previousRetarget,
           };
         })
       );
