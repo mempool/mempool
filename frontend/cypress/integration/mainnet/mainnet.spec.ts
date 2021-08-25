@@ -82,7 +82,7 @@ describe('Mainnet', () => {
                         cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
                         cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
                         cy.document().left();
-                        cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+                        cy.get('h1').invoke('.title-block h1').should('equal', 'Next block');
                     });
                 });
 
