@@ -14,6 +14,7 @@ interface IConfig {
     BLOCK_WEIGHT_UNITS: number;
     INITIAL_BLOCKS_AMOUNT: number;
     MEMPOOL_BLOCKS_AMOUNT: number;
+    PRICE_FEED_UPDATE_INTERVAL: number;
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -75,6 +76,7 @@ const defaults: IConfig = {
     'BLOCK_WEIGHT_UNITS': 4000000,
     'INITIAL_BLOCKS_AMOUNT': 8,
     'MEMPOOL_BLOCKS_AMOUNT': 8,
+    'PRICE_FEED_UPDATE_INTERVAL': 3600,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
