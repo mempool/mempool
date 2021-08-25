@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Inject, LOCALE_ID, ChangeDetectionStrategy } 
 import { formatDate } from '@angular/common';
 import { EChartsOption } from 'echarts';
 import { OnChanges } from '@angular/core';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-incoming-transactions-graph',
@@ -15,14 +16,18 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
   @Input() right: number | string = '10';
   @Input() top: number | string = '20';
   @Input() left: number | string = '50';
+  @Input() size: ('small' | 'big') = 'small';
 
   mempoolStatsChartOption: EChartsOption = {};
+  windowPreference: string;
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
+    private storageService: StorageService,
   ) { }
 
   ngOnChanges(): void {
+    this.windowPreference = this.storageService.getValue('graphWindowPreference');
     this.mountChart();
   }
 
@@ -38,6 +43,24 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         top: this.top,
         left: this.left,
       },
+      dataZoom: [{
+        type: 'inside',
+        realtime: true,
+      }, {
+        show: (this.size === 'big') ? true : false,
+        type: 'slider',
+        brushSelect: false,
+        realtime: true,
+        selectedDataBackground: {
+          lineStyle: {
+            color: '#fff',
+            opacity: 0.45,
+          },
+          areaStyle: {
+            opacity: 0,
+          }
+        }
+      }],
       tooltip: {
         trigger: 'axis',
         position: (pos, params, el, elRect, size) => {
@@ -45,25 +68,16 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
           obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 80;
           return obj;
         },
-        extraCssText: `background: transparent;
+        extraCssText: `width: ${(['2h', '24h'].includes(this.windowPreference) || this.size === 'small') ? '105px' : '135px'};
+                      background: transparent;
                       border: none;
                       box-shadow: none;`,
         axisPointer: {
-          type: 'cross',
-          label: {
-            formatter: (axis: any) => {
-              if (axis.axisDimension === 'y') {
-                return `${Math.floor(axis.value)}`;
-              }
-              if (axis.axisDimension === 'x') {
-                return axis.value;
-              }
-            },
-          }
+          type: 'line',
         },
         formatter: (params: any) => {
           const colorSpan = (color: string) => `<div class="indicator" style="background-color: ` + color + `"></div>`;
-          let itemFormatted = '<div>' + params[0].axisValue + '</div>';
+          let itemFormatted = '<div class="title">' + params[0].axisValue + '</div>';
           params.map((item: any, index: number) => {
             if (index < 26) {
               itemFormatted += `<div class="item">
@@ -73,15 +87,18 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
               </div>`;
             }
           });
-          if (this.theme !== '') {
-            return `<div class="tx-wrapper-tooltip-chart ${this.theme}">${itemFormatted}</div>`;
-          }
-          return `<div class="tx-wrapper-tooltip-chart">${itemFormatted}</div>`;
+          return `<div class="tx-wrapper-tooltip-chart ${(this.size === 'big') ? 'tx-wrapper-tooltip-chart-big' : ''}">${itemFormatted}</div>`;
         }
       },
       xAxis: {
         type: 'category',
-        data: this.data.labels.map((value: any) => formatDate(value, 'HH:mm', this.locale)),
+        data: this.data.labels.map((value: any) => {
+          if (['2h', '24h'].includes(this.windowPreference) || this.size === 'small') {
+            return formatDate(value, 'HH:mm', this.locale);
+          } else {
+            return formatDate(value, 'MM/dd - HH:mm', this.locale);
+          }
+        }),
       },
       yAxis: {
         type: 'value',

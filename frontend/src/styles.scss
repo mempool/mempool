@@ -255,7 +255,7 @@ html:lang(ru) .card-title {
   font-size: 0.9rem;
 }
 
-/* MEMPOOL CHARTS */
+/* MEMPOOL CHARTS - start */
 
 .mempool-wrapper-tooltip-chart {
   height: 250px;
@@ -267,52 +267,114 @@ html:lang(ru) .card-title {
 }
 
 .tx-wrapper-tooltip-chart, .fees-wrapper-tooltip-chart {
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
   background: rgba(#11131f, 0.85);
-  color: #fff;
-  padding: 10px 15px;
   border-radius: 4px;
   box-shadow: 1px 1px 10px rgba(0,0,0,0.2);
+  color: #b1b1b1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px 15px;
+  text-align: left;
+  .title {
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 2px;
+    color: #fff;
+  }
+  .active {
+    color: yellow !important;
+    font-weight: 900;
+    .value {
+      .symbol {
+        color: yellow !important;
+      }
+    }
+  }
   .item {
-    text-align: left;
     display: flex;
     .indicator {
-      display: block;
       margin-right: 5px;
-      border-radius: 10px;
+      border-radius: 0px;
       margin-top: 5px;
       width: 9px;
       height: 9px;
     }
     .value {
       text-align: right;
-      span {
-        color: #212121 !important;
+      .symbol {
+        color: #7e7e7e;
+        font-size: 9px !important;
       }
     }
   }
-}
-
-.grow {
-  flex-grow: 1;
+  .total-label {
+    width: 100%;
+    margin-top: 0px;
+    font-size: 10px;
+    text-align: left;
+    color: #fff;
+    span {
+      font-weight: 700;
+      float: right !important;
+    }
+  }
 }
 
 .fees-wrapper-tooltip-chart {
   .item {
     font-size: 9px;
     line-height: 1;
+    margin: 0px;
   }
   .indicator {
     margin-right: 5px !important;
-    border-radius: 10px !important;
+    border-radius: 1px !important;
     margin-top: 0px !important;
+  }
+}
+
+.fees-wrapper-tooltip-chart-big, .tx-wrapper-tooltip-chart-big {
+  background: rgba(#1d1f31, 0.85);
+  .title {
+    font-size: 15px;
+    margin-bottom: 5px;
+  }
+  .item {
+    font-size: 12px;
+    line-height: 1;
+    margin: 2px 0px;
+    .value {
+      .symbol {
+        font-size: 12px !important;
+      }
+    }
+  }
+  .total-label {
+    width: 100%;
+    margin-top: 5px;
+    font-size: 14px;
+    span {
+      font-weight: 700;
+      float: right !important;
+    }
+  }
+}
+
+.tx-wrapper-tooltip-chart-big {
+  .indicator {
+    margin: 0px !important;;
   }
 }
 
 .fee-distribution-chart {
   height: 250px;
+}
+
+/* MEMPOOL CHARTS - end */
+
+.grow {
+  flex-grow: 1;
 }
 
 hr {

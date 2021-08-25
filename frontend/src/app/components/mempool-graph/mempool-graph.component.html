@@ -1,1 +1,1 @@
-<div class="echarts" echarts [options]="mempoolVsizeFeesOptions"></div>
+<div echarts class="echarts" (chartInit)="onChartReady($event)" [options]="mempoolVsizeFeesOptions"></div>

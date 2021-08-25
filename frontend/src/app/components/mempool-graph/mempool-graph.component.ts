@@ -7,13 +7,6 @@ import { StorageService } from 'src/app/services/storage.service';
 import { EChartsOption } from 'echarts';
 import { feeLevels, chartColors } from 'src/app/app.constants';
 
-interface AxisObject {
-  axisDimension: string;
-  axisIndex: number;
-  seriesData: any;
-  value: string;
-}
-
 @Component({
   selector: 'app-mempool-graph',
   templateUrl: './mempool-graph.component.html',
@@ -26,18 +19,18 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   @Input() top: number | string = 20;
   @Input() right: number | string = 10;
   @Input() left: number | string = 75;
-  @Input() dateSpan = '2h';
-  @Input() showLegend = true;
   @Input() small = false;
+  @Input() size: ('small' | 'big') = 'small';
 
   mempoolVsizeFeesData: any;
   mempoolVsizeFeesOptions: EChartsOption;
-
-  inverted: boolean;
+  windowPreference: string;
+  hoverIndexSerie: -1;
 
   constructor(
     private vbytesPipe: VbytesPipe,
     private stateService: StateService,
+    private storageService: StorageService,
     @Inject(LOCALE_ID) private locale: string,
   ) { }
 
@@ -46,9 +39,15 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
-    // this.inverted = this.storageService.getValue('inverted-graph') === 'true';
+    this.windowPreference = this.storageService.getValue('graphWindowPreference');
     this.mempoolVsizeFeesData = this.handleNewMempoolData(this.data.concat([]));
     this.mountFeeChart();
+  }
+
+  onChartReady(myChart: any) {
+    myChart.on('mouseover', 'series', (serie: any) => {
+      this.hoverIndexSerie = serie.seriesIndex;
+    });
   }
 
   handleNewMempoolData(mempoolStats: OptimizedMempoolStats[]) {
@@ -81,9 +80,9 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           feesArray.push(0);
         }
       });
-      // if (this.inverted && finalArray.length) {
-      //   feesArray = feesArray.map((value, i) => value + finalArray[finalArray.length - 1][i]);
-      // }
+      if (finalArray.length) {
+        feesArray = feesArray.map((value, i) => value + finalArray[finalArray.length - 1][i]);
+      }
       finalArray.push(feesArray);
     }
     finalArray.reverse();
@@ -93,45 +92,45 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   mountFeeChart(){
     const { labels, series } = this.mempoolVsizeFeesData;
 
-    const legendNames: string[] = feeLevels.map((sat, i, arr) => {
-      if (sat > this.limitFee) { return `${this.limitFee}+`; }
-      if (i === 0) { return '0 - 1'; }
-      return arr[i - 1] + ' - ' + sat;
+    const feeLevelsOrdered = feeLevels.map((sat, i, arr) => {
+      if (i <= 26) {
+        if (i === 0) { return '0 - 1'; }
+        if (i === 26) { return '350+'; }
+        return arr[i - 1] + ' - ' + sat;
+      }
     });
 
     const yAxisSeries = series.map((value: Array<number>, index: number) => {
-      return {
-        name: labels[index].name,
-        type: 'line',
-        stack: 'total',
-        smooth: false,
-        lineStyle: {
-          width: 0,
-          opacity: 0,
-        },
-        showSymbol: false,
-        areaStyle: {
-          opacity: 1,
-          color: chartColors[index],
-        },
-        emphasis: {
-          focus: 'series'
-        },
-        markLine: {
-          symbol: 'none',
-          itemStyle: {
-            borderWidth: 0,
-            borderColor: 'none',
-            color: '#fff',
+      if (index <= 26){
+        return {
+          name: feeLevelsOrdered[index],
+          type: 'line',
+          stack: 'total',
+          smooth: false,
+          markPoint: {
+            symbol: 'rect',
           },
           lineStyle: {
-            color: '#fff',
-            opacity: 0.75,
-            width: 2,
+            width: 0,
+            opacity: 0,
           },
-        },
-        data: this.vbytesPipe.transform(value, 2, 'vB', 'MvB', true)
-      };
+          symbolSize: (this.size === 'big') ? 15 : 10,
+          showSymbol: false,
+          areaStyle: {
+            opacity: 1,
+            color: chartColors[index],
+          },
+          emphasis: {
+            focus: 'series',
+          },
+          itemStyle: {
+            borderWidth: 30,
+            color: chartColors[index],
+            borderColor: chartColors[index],
+          },
+          data: this.vbytesPipe.transform(value, 2, 'vB', 'MvB', true)
+        };
+      }
     });
 
     this.mempoolVsizeFeesOptions = {
@@ -143,39 +142,57 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           positions[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 80;
           return positions;
         },
-        extraCssText: `width: 150px;
+        extraCssText: `width: ${(this.size === 'big') ? '200px' : '170px'};
                       background: transparent;
                       border: none;
                       box-shadow: none;`,
         axisPointer: {
-          type: 'cross',
-          label: {
-            formatter: (axis: AxisObject) => {
-              if (axis.axisDimension === 'y') {
-                return `${this.vbytesPipe.transform(axis.value, 2, 'vB', 'MvB', true)}`;
-              }
-              if (axis.axisDimension === 'x') {
-                return axis.value;
-              }
-            },
-          }
+          type: 'line',
         },
         formatter: (params: any) => {
           const colorSpan = (index: number) => `<div class="indicator" style="background-color: ` + chartColors[index] + `"></div>`;
-          const legendName = (index: number) => legendNames[index];
-          let itemFormatted = '<div>' + params[0].axisValue + '</div>';
+          const legendName = (index: number) => feeLevelsOrdered[index];
+          let itemFormatted = `<div class="title">${params[0].axisValue}</div>`;
+          let total = 0;
           params.map((item: any, index: number) => {
-            if (feeLevels[index - 1] < this.limitFee) {
-              itemFormatted += `<div class="item">
-                ${colorSpan(index - 1)} ${legendName(index)}
+            total += item.value;
+            if (index <= 26) {
+              let activeItemClass = '';
+              if (this.hoverIndexSerie === index){
+                activeItemClass = 'active';
+              }
+              itemFormatted += `<div class="item ${activeItemClass}">
+                ${colorSpan(index)} ${legendName(index)}
                 <div class="grow"></div>
-                <div class="value">${this.vbytesPipe.transform(item.value, 2, 'vB', 'MvB', true)}</div>
+                <div class="value">${this.vbytesPipe.transform(item.value, 2, 'vB', 'MvB', false)}</div>
               </div>`;
             }
           });
-          return `<div class="fees-wrapper-tooltip-chart">${itemFormatted}</div>`;
+          const totalDiv = `<div class="total-label">Total
+            <span class="total-value">${this.vbytesPipe.transform(total, 2, 'vB', 'MvB', true)}</span>
+          </div>`;
+          const bigClass = (this.size === 'big') ? 'fees-wrapper-tooltip-chart-big' : '';
+          return `<div class="fees-wrapper-tooltip-chart ${bigClass}">${itemFormatted} ${totalDiv}</div>`;
         }
       },
+      dataZoom: [{
+        type: 'inside',
+        realtime: true,
+      }, {
+        show: (this.size === 'big') ? true : false,
+        type: 'slider',
+        brushSelect: false,
+        realtime: true,
+        selectedDataBackground: {
+          lineStyle: {
+            color: '#fff',
+            opacity: 0.45,
+          },
+          areaStyle: {
+            opacity: 0,
+          }
+        }
+      }],
       grid: {
         height: this.height,
         right: this.right,
@@ -186,11 +203,19 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         {
           type: 'category',
           boundaryGap: false,
-          data: labels.map((value: any) => formatDate(value, 'HH:mm', this.locale)),
+          axisLine: { onZero: false },
+          data: labels.map((value: any) => {
+            if (['2h', '24h'].includes(this.windowPreference) || this.size === 'small') {
+              return formatDate(value, 'HH:mm', this.locale);
+            } else {
+              return formatDate(value, 'MM/dd - HH:mm', this.locale);
+            }
+          }),
         }
       ],
       yAxis: {
         type: 'value',
+        axisLine: { onZero: false },
         axisLabel: {
           formatter: (value: number) => (`${this.vbytesPipe.transform(value, 2, 'vB', 'MvB', true)}`),
         },
