@@ -693,37 +693,50 @@ class Routes {
 
   public getDifficultyChange(req: Request, res: Response) {
     try {
-      const now = new Date().getTime() / 1000;
       const DATime = blocks.getLastDifficultyAdjustmentTime();
       const previousRetarget = blocks.getPreviousDifficultyRetarget();
-      const diff = now - DATime;
       const blockHeight = blocks.getCurrentBlockHeight();
+
+      const now = new Date().getTime() / 1000;
+      const diff = now - DATime;
       const blocksInEpoch = blockHeight % 2016;
-      const difficultyChange = (600 / (diff / blocksInEpoch) - 1) * 100;
+      const progressPercent = (blocksInEpoch >= 0) ? blocksInEpoch / 2016 * 100 : 100;
+      const remainingBlocks = 2016 - blocksInEpoch;
+      const nextRetargetHeight = blockHeight + remainingBlocks;
+
+      let difficultyChange = 0;
+      if (blocksInEpoch > 0) {
+        difficultyChange = (600 / (diff / blocksInEpoch ) - 1) * 100;
+      }
+      if (difficultyChange > 300) {
+        difficultyChange = 300;
+      }
+      if (difficultyChange < -75) {
+        difficultyChange = -75;
+      }
 
       const timeAvgDiff = difficultyChange * 0.1;
 
       let timeAvgMins = 10;
-      if (timeAvgDiff > 0 ){
+      if (timeAvgDiff > 0) {
         timeAvgMins -= Math.abs(timeAvgDiff);
       } else {
         timeAvgMins += Math.abs(timeAvgDiff);
       }
 
-      const remainingBlocks = 2016 - blocksInEpoch;
-      const timeAvgSeconds = timeAvgMins * 60;
-      const remainingTime = remainingBlocks * timeAvgSeconds;
-      const estimatedRetargetDate = (remainingTime + now);
-      const totalTime = estimatedRetargetDate-DATime;
-      const progressPercent = 100 - ((remainingTime * 100) / totalTime);
-
-      const result={
+      const timeAvg = timeAvgMins * 60;
+      const remainingTime =  remainingBlocks * timeAvg;
+      const estimatedRetargetDate = remainingTime + now;
+      
+      const result = {
         progressPercent,
         difficultyChange,
         estimatedRetargetDate,
         remainingBlocks,
         remainingTime,
         previousRetarget,
+        nextRetargetHeight,
+        timeAvg,
       }
       res.json(result);
 
