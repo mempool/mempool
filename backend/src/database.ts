@@ -19,7 +19,7 @@ export async function checkDbConnection() {
     const connection = await DB.pool.getConnection();
     logger.info('Database connection established.');
     connection.release();
-  } catch (e) {
+  } catch (e: any) {
     logger.err('Could not connect to database: ' + e.message || e);
     process.exit(1);
   }

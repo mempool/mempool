@@ -89,7 +89,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
         },
         'electrum': true,
       };
-    } catch (e) {
+    } catch (e: any) {
       if (e === 'failed to get confirmed status') {
         e = 'The number of transactions on this address exceeds the Electrum server limit';
       }
@@ -126,7 +126,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
       }
 
       return transactions;
-    } catch (e) {
+    } catch (e: any) {
       loadingIndicators.setProgress('address-' + address, 100);
       if (e === 'failed to get confirmed status') {
         e = 'The number of transactions on this address exceeds the Electrum server limit';

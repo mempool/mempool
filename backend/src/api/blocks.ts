@@ -88,7 +88,7 @@ class Blocks {
           try {
             const tx = await transactionUtils.$getTransactionExtended(txIds[i]);
             transactions.push(tx);
-          } catch (e) {
+          } catch (e: any) {
             logger.debug('Error fetching block tx: ' + e.message || e);
             if (i === 0) {
               throw new Error('Failed to fetch Coinbase transaction: ' + txIds[i]);

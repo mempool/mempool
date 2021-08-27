@@ -161,7 +161,7 @@ class Bisq {
       await this.loadBisqBlocksDump(data);
       this.buildIndex();
       this.calculateStats();
-    } catch (e) {
+    } catch (e: any) {
       logger.info('loadBisqDumpFile() error.' + e.message || e);
     }
   }

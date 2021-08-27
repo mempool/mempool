@@ -254,7 +254,7 @@ class Statistics {
       const [result]: any = await connection.query(query, params);
       connection.release();
       return result.insertId;
-    } catch (e) {
+    } catch (e: any) {
       logger.err('$create() error' + e.message || e);
     }
   }
@@ -312,7 +312,7 @@ class Statistics {
       if (rows[0]) {
         return this.mapStatisticToOptimizedStatistic([rows[0]])[0];
       }
-    } catch (e) {
+    } catch (e: any) {
       logger.err('$list2H() error' + e.message || e);
     }
   }
@@ -324,7 +324,7 @@ class Statistics {
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
-    } catch (e) {
+    } catch (e: any) {
       logger.err('$list2H() error' + e.message || e);
       return [];
     }
@@ -337,7 +337,7 @@ class Statistics {
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
-    } catch (e) {
+    } catch (e: any) {
       logger.err('$list24h() error' + e.message || e);
       return [];
     }
@@ -350,7 +350,7 @@ class Statistics {
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
-    } catch (e) {
+    } catch (e: any) {
       logger.err('$list1W() error' + e);
       return [];
     }
@@ -363,7 +363,7 @@ class Statistics {
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
-    } catch (e) {
+    } catch (e: any) {
       logger.err('$list1M() error' + e);
       return [];
     }
@@ -376,7 +376,7 @@ class Statistics {
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
-    } catch (e) {
+    } catch (e: any) {
       logger.err('$list3M() error' + e);
       return [];
     }
@@ -389,7 +389,7 @@ class Statistics {
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
-    } catch (e) {
+    } catch (e: any) {
       logger.err('$list6M() error' + e);
       return [];
     }
@@ -402,7 +402,7 @@ class Statistics {
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
-    } catch (e) {
+    } catch (e: any) {
       logger.err('$list6M() error' + e);
       return [];
     }

@@ -60,7 +60,7 @@ class WebsocketHandler {
                     try {
                       const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, true);
                       response['tx'] = fullTx;
-                    } catch (e) {
+                    } catch (e: any) {
                       logger.debug('Error finding transaction: ' + e.message || e);
                     }
                   }
@@ -68,7 +68,7 @@ class WebsocketHandler {
                   try {
                     const fullTx = await transactionUtils.$getTransactionExtended(client['track-tx'], true);
                     response['tx'] = fullTx;
-                  } catch (e) {
+                  } catch (e: any) {
                     logger.debug('Error finding transaction. ' + e.message || e);
                     client['track-mempool-tx'] = parsedMessage['track-tx'];
                   }
@@ -123,7 +123,7 @@ class WebsocketHandler {
           if (Object.keys(response).length) {
             client.send(JSON.stringify(response));
           }
-        } catch (e) {
+        } catch (e: any) {
           logger.debug('Error parsing websocket message: ' + e.message || e);
         }
       });
@@ -251,7 +251,7 @@ class WebsocketHandler {
             try {
               const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, true);
               response['tx'] = fullTx;
-            } catch (e) {
+            } catch (e: any) {
               logger.debug('Error finding transaction in mempool: ' + e.message || e);
             }
           } else {
@@ -271,7 +271,7 @@ class WebsocketHandler {
               try {
                 const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, true);
                 foundTransactions.push(fullTx);
-              } catch (e) {
+              } catch (e: any) {
                 logger.debug('Error finding transaction in mempool: ' + e.message || e);
               }
             } else {
@@ -285,7 +285,7 @@ class WebsocketHandler {
               try {
                 const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, true);
                 foundTransactions.push(fullTx);
-              } catch (e) {
+              } catch (e: any) {
                 logger.debug('Error finding transaction in mempool: ' + e.message || e);
               }
             } else {
@@ -336,7 +336,7 @@ class WebsocketHandler {
               try {
                 const fullTx = await transactionUtils.$getTransactionExtended(rbfTransaction, true);
                 response['rbfTransaction'] = fullTx;
-              } catch (e) {
+              } catch (e: any) {
                 logger.debug('Error finding transaction in mempool: ' + e.message || e);
               }
             } else {

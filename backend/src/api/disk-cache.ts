@@ -51,7 +51,7 @@ class DiskCache {
       }
       logger.debug('Mempool and blocks data saved to disk cache');
       this.isWritingCache = false;
-    } catch (e) {
+    } catch (e: any) {
       logger.warn('Error writing to cache file: ' + e.message || e);
       this.isWritingCache = false;
     }
@@ -87,14 +87,14 @@ class DiskCache {
               Object.assign(data.mempool, cacheData2.mempool);
             }
           }
-        } catch (e) {
+        } catch (e: any) {
           logger.debug('Error parsing ' + fileName + '. Skipping.');
         }
       }
 
       memPool.setMempool(data.mempool);
       blocks.setBlocks(data.blocks);
-    } catch (e) {
+    } catch (e: any) {
       logger.warn('Failed to parse mempoool and blocks cache. Skipping.');
     }
   }
