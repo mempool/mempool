@@ -65,6 +65,20 @@ export class BlockComponent implements OnInit, OnDestroy {
         map((indicators) => indicators['blocktxs-' + this.blockHash] !== undefined ? indicators['blocktxs-' + this.blockHash] : 0)
       );
 
+    
+    this.blocksSubscription = this.stateService.blocks$
+      .subscribe(([block]) => {
+        this.latestBlock = block;
+        this.latestBlocks.unshift(block);
+        this.latestBlocks = this.latestBlocks.slice(0, this.stateService.env.KEEP_BLOCKS_AMOUNT);
+        this.setNextAndPreviousBlockLink();
+
+        if (block.id === this.blockHash) {
+          this.block = block;
+          this.fees = block.reward / 100000000 - this.blockSubsidy;
+        }
+      });
+
     this.subscription = this.route.paramMap
     .pipe(
       switchMap((params: ParamMap) => {
@@ -95,6 +109,10 @@ export class BlockComponent implements OnInit, OnDestroy {
           this.isLoadingBlock = true;
 
           if (isBlockHeight) {
+            const blockInCache = this.latestBlocks.find((block) => block.height === parseInt(blockHash, 10));
+            if (blockInCache) {
+              return of(blockInCache);
+            }
             return this.electrsApiService.getBlockHashFromHeight$(parseInt(blockHash, 10))
               .pipe(
                 switchMap((hash) => {
@@ -107,12 +125,11 @@ export class BlockComponent implements OnInit, OnDestroy {
               );
           }
 
-          this.stateService.blocks$.subscribe(([block]) => {
-            if (block.id === blockHash) {
-              this.block = block;
-            }
-          });
-          
+          const blockInCache = this.latestBlocks.find((block) => block.id === this.blockHash);
+          if (blockInCache) {
+            return of(blockInCache);
+          }
+
           return this.electrsApiService.getBlock$(blockHash);
         }
       }),
@@ -158,14 +175,6 @@ export class BlockComponent implements OnInit, OnDestroy {
       this.error = error;
       this.isLoadingBlock = false;
     });
-
-    this.blocksSubscription = this.stateService.blocks$
-      .subscribe(([block]) => {
-        this.latestBlock = block;
-        this.latestBlocks.unshift(block);
-        this.latestBlocks = this.latestBlocks.slice(0, this.stateService.env.KEEP_BLOCKS_AMOUNT);
-        this.setNextAndPreviousBlockLink();
-      });
 
     this.networkChangedSubscription = this.stateService.networkChanged$
       .subscribe((network) => this.network = network);
