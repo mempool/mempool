@@ -1583,6 +1583,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="42b59f1f3dfde09c4c04f711307847438e057efb">
         <source>General</source>
+        <target>Splošno</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -1933,6 +1934,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2761d0de651f1c4395e6e7fbc7fded09918f8dcb">
         <source>Returns details about difficulty adjustment.</source>
+        <target>Vrne podrobnosti o prilagoditvi težavnosti.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">24,26</context>
@@ -2046,6 +2048,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2ca235ae8c14854eb6ea6d42fd2521204d3db01f">
         <source>Returns the hex-encoded block header.</source>
+        <target>Vrne šestnajstiško vrednost glave bloka.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">230,233</context>
@@ -2372,6 +2375,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="8f3ac0544491bf048120928d39e02a6baeb0b278">
         <source>Privacy Policy</source>
+        <target>Politika zasebnosti</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">880,885</context>
@@ -2850,6 +2854,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="cbfb79ff517493268a49acffa81ecc02336d8372">
         <source>Block Header Hex</source>
+        <target>Glava bloka (Hex)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">118,119</context>
@@ -3385,6 +3390,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-until">
         <source>In ~<x equiv-text="dateStrings.i18nMinute" id="DATE"/></source>
+        <target>Še ~<x equiv-text="dateStrings.i18nMinute" id="DATE"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
           <context context-type="linenumber">66</context>
@@ -3580,6 +3586,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a2fbb7745c7048af923991e08ccd6975364be90d">
         <source>Transaction Hex</source>
+        <target>Šestnajstiška vrednost</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">220,221</context>
@@ -3903,6 +3910,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="86d26b45470e43b409e589517922276109138e87">
         <source>Transaction Fees</source>
+        <target>Omrežnina</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">6,9</context>
@@ -4056,6 +4064,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="680d5c75b7fd8d37961083608b9fcdc4167b4c43">
         <source>Previous</source>
+        <target>Prejšnja</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">235,236</context>
@@ -4157,6 +4166,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.minute">
         <source><x equiv-text="counter" id="DATE"/> minute</source>
+        <target><x equiv-text="counter" id="DATE"/> min</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">13</context>
