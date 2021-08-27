@@ -101,8 +101,8 @@ class Bisq {
         const time = new Date().getTime() - start;
         logger.debug('Bisq market data updated in ' + time + ' ms');
       }
-    } catch (e: any) {
-      logger.err('loadBisqMarketDataDumpFile() error.' + e.message || e);
+    } catch (e) {
+      logger.err('loadBisqMarketDataDumpFile() error.' + (e instanceof Error ? e.message : e));
     }
   }
 
@@ -120,7 +120,7 @@ class Bisq {
         try {
           const parsedData = JSON.parse(data);
           resolve(parsedData);
-        } catch (e: any) {
+        } catch (e) {
           reject('JSON parse error (' + path + ')');
         }
       });

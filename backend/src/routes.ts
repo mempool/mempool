@@ -54,8 +54,8 @@ class Routes {
     try {
       const result = websocketHandler.getInitData();
       res.json(result);
-    } catch (e: any) {
-      res.status(500).send(e.message);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -73,8 +73,8 @@ class Routes {
     try {
       const result = mempoolBlocks.getMempoolBlocks();
       res.json(result);
-    } catch (e: any) {
-      res.status(500).send(e.message);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -475,12 +475,12 @@ class Routes {
     try {
       const transaction = await transactionUtils.$getTransactionExtended(req.params.txId, true);
       res.json(transaction);
-    } catch (e: any) {
+    } catch (e) {
       let statusCode = 500;
-      if (e.message && e.message.indexOf('No such mempool or blockchain transaction') > -1) {
+      if (e instanceof Error && e instanceof Error && e.message && e.message.indexOf('No such mempool or blockchain transaction') > -1) {
         statusCode = 404;
       }
-      res.status(statusCode).send(e.message || e);
+      res.status(statusCode).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -489,12 +489,12 @@ class Routes {
       const transaction: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(req.params.txId, true);
       res.setHeader('content-type', 'text/plain');
       res.send(transaction.hex);
-    } catch (e: any) {
+    } catch (e) {
       let statusCode = 500;
-      if (e.message && e.message.indexOf('No such mempool or blockchain transaction') > -1) {
+      if (e instanceof Error && e.message && e.message.indexOf('No such mempool or blockchain transaction') > -1) {
         statusCode = 404;
       }
-      res.status(statusCode).send(e.message || e);
+      res.status(statusCode).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -502,12 +502,12 @@ class Routes {
     try {
       const transaction = await transactionUtils.$getTransactionExtended(req.params.txId, true);
       res.json(transaction.status);
-    } catch (e: any) {
+    } catch (e) {
       let statusCode = 500;
-      if (e.message && e.message.indexOf('No such mempool or blockchain transaction') > -1) {
+      if (e instanceof Error && e.message && e.message.indexOf('No such mempool or blockchain transaction') > -1) {
         statusCode = 404;
       }
-      res.status(statusCode).send(e.message || e);
+      res.status(statusCode).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -515,8 +515,8 @@ class Routes {
     try {
       const result = await bitcoinApi.$getBlock(req.params.hash);
       res.json(result);
-    } catch (e: any) {
-      res.status(500).send(e.message || e);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -525,8 +525,8 @@ class Routes {
       const blockHeader = await bitcoinApi.$getBlockHeader(req.params.hash);
       res.setHeader('content-type', 'text/plain');
       res.send(blockHeader);
-    } catch (e: any) {
-      res.status(500).send(e.message || e);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -561,9 +561,9 @@ class Routes {
       }
 
       res.json(returnBlocks);
-    } catch (e: any) {
+    } catch (e) {
       loadingIndicators.setProgress('blocks', 100);
-      res.status(500).send(e.message || e);
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -581,14 +581,14 @@ class Routes {
           const transaction = await transactionUtils.$getTransactionExtended(txIds[i], true);
           transactions.push(transaction);
           loadingIndicators.setProgress('blocktxs-' + req.params.hash, (i + 1) / endIndex * 100);
-        } catch (e: any) {
-          logger.debug('getBlockTransactions error: ' + e.message || e);
+        } catch (e) {
+          logger.debug('getBlockTransactions error: ' + (e instanceof Error ? e.message : e));
         }
       }
       res.json(transactions);
-    } catch (e: any) {
+    } catch (e) {
       loadingIndicators.setProgress('blocktxs-' + req.params.hash, 100);
-      res.status(500).send(e.message || e);
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -596,8 +596,8 @@ class Routes {
     try {
       const blockHash = await bitcoinApi.$getBlockHash(parseInt(req.params.height, 10));
       res.send(blockHash);
-    } catch (e: any) {
-      res.status(500).send(e.message || e);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -610,11 +610,11 @@ class Routes {
     try {
       const addressData = await bitcoinApi.$getAddress(req.params.address);
       res.json(addressData);
-    } catch (e: any) {
-      if (e.message && e.message.indexOf('exceeds') > 0) {
-        return res.status(413).send(e.message);
+    } catch (e) {
+      if (e instanceof Error && e.message && e.message.indexOf('exceeds') > 0) {
+        return res.status(413).send(e instanceof Error ? e.message : e);
       }
-      res.status(500).send(e.message || e);
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -627,11 +627,11 @@ class Routes {
     try {
       const transactions = await bitcoinApi.$getAddressTransactions(req.params.address, req.params.txId);
       res.json(transactions);
-    } catch (e: any) {
-      if (e.message && e.message.indexOf('exceeds') > 0) {
-        return res.status(413).send(e.message);
+    } catch (e) {
+      if (e instanceof Error && e.message && e.message.indexOf('exceeds') > 0) {
+        return res.status(413).send(e instanceof Error ? e.message : e);
       }
-      res.status(500).send(e.message || e);
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -643,8 +643,8 @@ class Routes {
     try {
       const blockHash = await bitcoinApi.$getAddressPrefix(req.params.prefix);
       res.send(blockHash);
-    } catch (e: any) {
-      res.status(500).send(e.message || e);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -664,8 +664,8 @@ class Routes {
     try {
       const rawMempool = await bitcoinApi.$getRawMempool();
       res.send(rawMempool);
-    } catch (e: any) {
-      res.status(500).send(e.message || e);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -673,8 +673,8 @@ class Routes {
     try {
       const result = await bitcoinApi.$getBlockHeightTip();
       res.json(result);
-    } catch (e: any) {
-      res.status(500).send(e.message || e);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -682,8 +682,8 @@ class Routes {
     try {
       const result = await bitcoinApi.$getTxIdsForBlock(req.params.hash);
       res.json(result);
-    } catch (e: any) {
-      res.status(500).send(e.message || e);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -740,8 +740,8 @@ class Routes {
       }
       res.json(result);
 
-    } catch (e: any) {
-      res.status(500).send(e.message || e);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 }

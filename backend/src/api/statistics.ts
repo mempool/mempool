@@ -254,8 +254,8 @@ class Statistics {
       const [result]: any = await connection.query(query, params);
       connection.release();
       return result.insertId;
-    } catch (e: any) {
-      logger.err('$create() error' + e.message || e);
+    } catch (e) {
+      logger.err('$create() error' + (e instanceof Error ? e.message : e));
     }
   }
 
@@ -312,8 +312,8 @@ class Statistics {
       if (rows[0]) {
         return this.mapStatisticToOptimizedStatistic([rows[0]])[0];
       }
-    } catch (e: any) {
-      logger.err('$list2H() error' + e.message || e);
+    } catch (e) {
+      logger.err('$list2H() error' + (e instanceof Error ? e.message : e));
     }
   }
 
@@ -324,8 +324,8 @@ class Statistics {
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
-    } catch (e: any) {
-      logger.err('$list2H() error' + e.message || e);
+    } catch (e) {
+      logger.err('$list2H() error' + (e instanceof Error ? e.message : e));
       return [];
     }
   }
@@ -337,8 +337,8 @@ class Statistics {
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
-    } catch (e: any) {
-      logger.err('$list24h() error' + e.message || e);
+    } catch (e) {
+      logger.err('$list24h() error' + (e instanceof Error ? e.message : e));
       return [];
     }
   }
@@ -350,8 +350,8 @@ class Statistics {
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
-    } catch (e: any) {
-      logger.err('$list1W() error' + e);
+    } catch (e) {
+      logger.err('$list1W() error' + (e instanceof Error ? e.message : e));
       return [];
     }
   }
@@ -363,8 +363,8 @@ class Statistics {
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
-    } catch (e: any) {
-      logger.err('$list1M() error' + e);
+    } catch (e) {
+      logger.err('$list1M() error' + (e instanceof Error ? e.message : e));
       return [];
     }
   }
@@ -376,8 +376,8 @@ class Statistics {
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
-    } catch (e: any) {
-      logger.err('$list3M() error' + e);
+    } catch (e) {
+      logger.err('$list3M() error' + (e instanceof Error ? e.message : e));
       return [];
     }
   }
@@ -389,8 +389,8 @@ class Statistics {
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
-    } catch (e: any) {
-      logger.err('$list6M() error' + e);
+    } catch (e) {
+      logger.err('$list6M() error' + (e instanceof Error ? e.message : e));
       return [];
     }
   }
@@ -402,8 +402,8 @@ class Statistics {
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
-    } catch (e: any) {
-      logger.err('$list6M() error' + e);
+    } catch (e) {
+      logger.err('$list6M() error' + (e instanceof Error ? e.message : e));
       return [];
     }
   }

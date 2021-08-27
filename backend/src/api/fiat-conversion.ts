@@ -34,8 +34,8 @@ class FiatConversion {
       if (this.ratesChangedCallback) {
         this.ratesChangedCallback(this.conversionRates);
       }
-    } catch (e: any) {
-      logger.err('Error updating fiat conversion rates: ' + e);
+    } catch (e) {
+      logger.err('Error updating fiat conversion rates: ' + (e instanceof Error ? e.message : e));
     }
   }
 }

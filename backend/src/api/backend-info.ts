@@ -29,8 +29,8 @@ class BackendInfo {
   private setLatestCommitHash(): void {
     try {
       this.gitCommitHash = fs.readFileSync('../.git/refs/heads/master').toString().trim();
-    } catch (e: any) {
-      logger.err('Could not load git commit info: ' + e.message || e);
+    } catch (e) {
+      logger.err('Could not load git commit info: ' + (e instanceof Error ? e.message : e));
     }
   }
 
@@ -38,8 +38,8 @@ class BackendInfo {
     try {
       const packageJson = fs.readFileSync('package.json').toString();
       this.version = JSON.parse(packageJson).version;
-    } catch (e: any) {
-      throw new Error(e);
+    } catch (e) {
+      throw new Error(e instanceof Error ? e.message : 'Error');
     }
   }
 }

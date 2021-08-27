@@ -123,8 +123,8 @@ class Mempool {
             logger.debug('Fetched transaction ' + txCount);
           }
           newTransactions.push(transaction);
-        } catch (e: any) {
-          logger.debug('Error finding transaction in mempool: ' + e.message || e);
+        } catch (e) {
+          logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
         }
       }
 

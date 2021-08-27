@@ -110,8 +110,8 @@ class Server {
     try {
       try {
         await memPool.$updateMemPoolInfo();
-      } catch (e: any) {
-        const msg = `updateMempoolInfo: ${(e.message || e)}`;
+      } catch (e) {
+        const msg = `updateMempoolInfo: ${(e instanceof Error ? e.message : e)}`;
         if (config.CORE_RPC_MINFEE.ENABLED) {
           logger.warn(msg);
         } else {
@@ -122,8 +122,8 @@ class Server {
       await memPool.$updateMempool();
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;
-    } catch (e: any) {
-      const loggerMsg = `runMainLoop error: ${(e.message || e)}. Retrying in ${this.currentBackendRetryInterval} sec.`;
+    } catch (e) {
+      const loggerMsg = `runMainLoop error: ${(e instanceof Error ? e.message : e)}. Retrying in ${this.currentBackendRetryInterval} sec.`;
       if (this.currentBackendRetryInterval > 5) {
         logger.warn(loggerMsg);
         mempool.setOutOfSync();
@@ -162,7 +162,7 @@ class Server {
         try {
           const response = await axios.get('https://mempool.space/api/v1/donations', { responseType: 'stream', timeout: 10000 });
           response.data.pipe(res);
-        } catch (e: any) {
+        } catch (e) {
           res.status(500).end();
         }
       })
@@ -172,7 +172,7 @@ class Server {
             responseType: 'stream', timeout: 10000
           });
           response.data.pipe(res);
-        } catch (e: any) {
+        } catch (e) {
           res.status(500).end();
         }
       })
@@ -180,7 +180,7 @@ class Server {
         try {
           const response = await axios.get('https://mempool.space/api/v1/contributors', { responseType: 'stream', timeout: 10000 });
           response.data.pipe(res);
-        } catch (e: any) {
+        } catch (e) {
           res.status(500).end();
         }
       })
@@ -190,7 +190,7 @@ class Server {
             responseType: 'stream', timeout: 10000
           });
           response.data.pipe(res);
-        } catch (e: any) {
+        } catch (e) {
           res.status(500).end();
         }
       })
