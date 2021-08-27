@@ -15,8 +15,8 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
   @Input() height: number | string = '200';
   @Input() right: number | string = '10';
   @Input() top: number | string = '20';
-  @Input() left: number | string = '50';
-  @Input() size: ('small' | 'big') = 'small';
+  @Input() left: number | string = '0';
+  @Input() template: ('widget' | 'advanced') = 'widget';
 
   mempoolStatsChartOption: EChartsOption = {};
   windowPreference: string;
@@ -43,11 +43,15 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         top: this.top,
         left: this.left,
       },
+      animation: false,
       dataZoom: [{
         type: 'inside',
         realtime: true,
+        zoomOnMouseWheel: (this.template === 'advanced') ? true : false,
+        maxSpan: 100,
+        minSpan: 10,
       }, {
-        show: (this.size === 'big') ? true : false,
+        show: (this.template === 'advanced') ? true : false,
         type: 'slider',
         brushSelect: false,
         realtime: true,
@@ -68,7 +72,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
           obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 80;
           return obj;
         },
-        extraCssText: `width: ${(['2h', '24h'].includes(this.windowPreference) || this.size === 'small') ? '125px' : '135px'};
+        extraCssText: `width: ${(['2h', '24h'].includes(this.windowPreference) || this.template === 'widget') ? '125px' : '135px'};
                       background: transparent;
                       border: none;
                       box-shadow: none;`,
@@ -76,18 +80,18 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
           type: 'line',
         },
         formatter: (params: any) => {
-          const colorSpan = (color: string) => `<div class="indicator" style="background-color: ` + color + `"></div>`;
+          const colorSpan = (color: string) => `<span class="indicator" style="background-color: ` + color + `"></span>`;
           let itemFormatted = '<div class="title">' + params[0].axisValue + '</div>';
           params.map((item: any, index: number) => {
             if (index < 26) {
               itemFormatted += `<div class="item">
-                ${colorSpan(item.color)}
+                <div class="indicator-container">${colorSpan(item.color)}</div>
                 <div class="grow"></div>
                 <div class="value">${item.value} <span class="symbol">vB/s</span></div>
               </div>`;
             }
           });
-          return `<div class="tx-wrapper-tooltip-chart ${(this.size === 'big') ? 'tx-wrapper-tooltip-chart-big' : ''}">${itemFormatted}</div>`;
+          return `<div class="tx-wrapper-tooltip-chart ${(this.template === 'advanced') ? 'tx-wrapper-tooltip-chart-advanced' : ''}">${itemFormatted}</div>`;
         }
       },
       xAxis: {

@@ -42,10 +42,10 @@
           <div class="incoming-transactions-graph">
             <app-mempool-graph
               dir="ltr"
-              [size]="'big'"
-              [limitFee]="1200"
+              [template]="'advanced'"
+              [limitFee]="500"
               [height]="500"
-              [left]="60"
+              [left]="50"
               [data]="mempoolStats"
             ></app-mempool-graph>
           </div>
@@ -62,8 +62,8 @@
           <div class="incoming-transactions-graph">
             <app-incoming-transactions-graph
               [height]="500"
-              [left]="60"
-              [size]="'big'"
+              [left]="50"
+              [template]="'advanced'"
               [data]="mempoolTransactionsWeightPerSecondData"
             ></app-incoming-transactions-graph>
           </div>

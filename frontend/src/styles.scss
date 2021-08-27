@@ -266,16 +266,29 @@ html:lang(ru) .card-title {
   min-height: 180px;
 }
 
-.tx-wrapper-tooltip-chart, .fees-wrapper-tooltip-chart {
-  background: rgba(#11131f, 0.85);
+.tx-wrapper-tooltip-chart,
+.fees-wrapper-tooltip-chart {
+  background: rgba(#11131f, 0.95);
   border-radius: 4px;
-  box-shadow: 1px 1px 10px rgba(0,0,0,0.2);
+  box-shadow: 1px 1px 10px rgba(0,0,0,0.5);
   color: #b1b1b1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 10px 15px;
   text-align: left;
+  thead {
+    th {
+      font-size: 9px;
+      color: #b1b1b1;
+      text-align: right;
+      &:first-child {
+        text-align: left;
+        left: -1px;
+        position: relative;
+      }
+    }
+  }
   .title {
     font-size: 12px;
     font-weight: 700;
@@ -284,21 +297,25 @@ html:lang(ru) .card-title {
   }
   .active {
     color: yellow !important;
-    font-weight: 900;
-    .value {
+    .value,
+    .total-partial {
+      color: yellow !important;
       .symbol {
         color: yellow !important;
       }
     }
   }
   .item {
-    display: flex;
-    .indicator {
-      margin-right: 5px;
-      border-radius: 0px;
-      margin-top: 5px;
-      width: 9px;
-      height: 9px;
+    line-height: 0.8;
+    .indicator-container {
+      .indicator {
+        display: inline-block;
+        margin-right: 5px;
+        border-radius: 0px;
+        margin-top: 5px;
+        width: 9px;
+        height: 9px;
+      }
     }
     .value {
       text-align: right;
@@ -307,24 +324,81 @@ html:lang(ru) .card-title {
         font-size: 9px !important;
       }
     }
+    .total-partial {
+      text-align: right;
+      font-size: 10px;
+      width: 70px;
+    }
+    .total-percentage-bar {
+      padding-left: 8px;
+    }
   }
   .total-label {
     width: 100%;
-    margin-top: 0px;
-    font-size: 10px;
     text-align: left;
     color: #fff;
+    margin-top: 5px;
+    font-size: 14px;
     span {
-      font-weight: 700;
-      float: right !important;
+      float: right;
+    }
+    .symbol {
+      margin-left: 3px;
+      font-size: 9px;
+      position: relative;
+      top: 2px;
     }
   }
+  .total-percentage-bar {
+    margin: auto;
+    width: 35px;
+    position: relative;
+    span {
+      display: block;
+      background: #282d47;
+      height: 5px;
+      border-radius: 2px;
+    }
+  }
+  .total-parcial-active {
+    text-align: right;
+    margin: 5px auto 5px;
+    padding-left: 0px;
+    span {
+      font-size: 10px;
+    }
+    .symbol {
+      font-size: 9px;
+    }
+    .total-percentage-bar {
+      width: 100%;
+      span {
+        transition: 1000 all ease-in-out;
+      }
+    }
+  }
+}
+
+.tx-wrapper-tooltip-chart {
+  .item {
+    display: flex;
+  }
+  .value {
+    margin-top: 5px;
+  }
+  .indicator-container {
+    border-radius: 2px;
+  }
+}
+
+.fee-distribution-chart {
+  height: 250px;
 }
 
 .fees-wrapper-tooltip-chart {
   .item {
     font-size: 9px;
-    line-height: 1;
+    line-height: 0.8;
     margin: 0px;
   }
   .indicator {
@@ -334,8 +408,9 @@ html:lang(ru) .card-title {
   }
 }
 
-.fees-wrapper-tooltip-chart-big, .tx-wrapper-tooltip-chart-big {
-  background: rgba(#1d1f31, 0.85);
+.fees-wrapper-tooltip-chart-big,
+.tx-wrapper-tooltip-chart-big {
+  background: rgba(#1d1f31, 0.98);
   .title {
     font-size: 15px;
     margin-bottom: 5px;
@@ -343,7 +418,6 @@ html:lang(ru) .card-title {
   .item {
     font-size: 12px;
     line-height: 1;
-    margin: 2px 0px;
     .value {
       .symbol {
         font-size: 12px !important;
@@ -351,25 +425,40 @@ html:lang(ru) .card-title {
     }
   }
   .total-label {
-    width: 100%;
     margin-top: 5px;
     font-size: 14px;
     span {
-      font-weight: 700;
-      float: right !important;
+      float: right;
+    }
+  }
+  .total-parcial-active {
+    text-align: right;
+    margin: 5px auto 5px;
+    span {
+      font-size: 10px;
+    }
+    .total-percentage-bar {
+      width: 100%;
+      left: 0;
+      span {
+        transition: 1000 all ease-in-out;
+      }
     }
   }
 }
 
 .tx-wrapper-tooltip-chart-big {
-  .indicator {
-    margin: 0px !important;;
+  .indicator-container {
+    .indicator {
+      margin-right: 5px;
+      border-radius: 0px;
+      margin-top: 5px;
+      width: 9px;
+      height: 9px;
+    }
   }
 }
 
-.fee-distribution-chart {
-  height: 250px;
-}
 
 /* MEMPOOL CHARTS - end */
 
