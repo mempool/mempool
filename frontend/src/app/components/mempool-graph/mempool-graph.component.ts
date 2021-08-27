@@ -204,13 +204,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           type: 'category',
           boundaryGap: false,
           axisLine: { onZero: false },
-          data: labels.map((value: any) => {
-            if (['2h', '24h'].includes(this.windowPreference) || this.size === 'small') {
-              return formatDate(value, 'HH:mm', this.locale);
-            } else {
-              return formatDate(value, 'MM/dd - HH:mm', this.locale);
-            }
-          }),
+          data: labels.map((value: any) => formatDate(value, 'MM/dd - HH:mm', this.locale)),
         }
       ],
       yAxis: {
