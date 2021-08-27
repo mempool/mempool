@@ -68,7 +68,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
           obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 80;
           return obj;
         },
-        extraCssText: `width: ${(['2h', '24h'].includes(this.windowPreference) || this.size === 'small') ? '105px' : '135px'};
+        extraCssText: `width: ${(['2h', '24h'].includes(this.windowPreference) || this.size === 'small') ? '125px' : '135px'};
                       background: transparent;
                       border: none;
                       box-shadow: none;`,
@@ -83,7 +83,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
               itemFormatted += `<div class="item">
                 ${colorSpan(item.color)}
                 <div class="grow"></div>
-                <div class="value">${item.value}</div>
+                <div class="value">${item.value} <span class="symbol">vB/s</span></div>
               </div>`;
             }
           });
@@ -92,13 +92,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
       },
       xAxis: {
         type: 'category',
-        data: this.data.labels.map((value: any) => {
-          if (['2h', '24h'].includes(this.windowPreference) || this.size === 'small') {
-            return formatDate(value, 'HH:mm', this.locale);
-          } else {
-            return formatDate(value, 'MM/dd - HH:mm', this.locale);
-          }
-        }),
+        data: this.data.labels.map((value: any) => formatDate(value, 'MM/dd - HH:mm', this.locale)),
       },
       yAxis: {
         type: 'value',
