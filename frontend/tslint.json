@@ -12,6 +12,7 @@
     "arrow-parens": false,
     "arrow-return-shorthand": true,
     "curly": true,
+    "no-bitwise": false,
     "deprecation": {
       "severity": "warning"
     },

@@ -65,7 +65,6 @@ export class BlockComponent implements OnInit, OnDestroy {
         map((indicators) => indicators['blocktxs-' + this.blockHash] !== undefined ? indicators['blocktxs-' + this.blockHash] : 0)
       );
 
-    
     this.blocksSubscription = this.stateService.blocks$
       .subscribe(([block]) => {
         this.latestBlock = block;
@@ -79,8 +78,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.subscription = this.route.paramMap
-    .pipe(
+    this.subscription = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         const blockHash: string = params.get('id') || '';
         this.block = undefined;
@@ -108,8 +106,9 @@ export class BlockComponent implements OnInit, OnDestroy {
         } else {
           this.isLoadingBlock = true;
 
+          let blockInCache: Block;
           if (isBlockHeight) {
-            const blockInCache = this.latestBlocks.find((block) => block.height === parseInt(blockHash, 10));
+            blockInCache = this.latestBlocks.find((block) => block.height === parseInt(blockHash, 10));
             if (blockInCache) {
               return of(blockInCache);
             }
@@ -125,7 +124,7 @@ export class BlockComponent implements OnInit, OnDestroy {
               );
           }
 
-          const blockInCache = this.latestBlocks.find((block) => block.id === this.blockHash);
+          blockInCache = this.latestBlocks.find((block) => block.id === this.blockHash);
           if (blockInCache) {
             return of(blockInCache);
           }
@@ -278,12 +277,14 @@ export class BlockComponent implements OnInit, OnDestroy {
       return;
     }
     const block = this.latestBlocks.find((b) => b.height === this.nextBlockHeight - 2);
-    this.router.navigate([(this.network && this.stateService.env.BASE_MODULE === 'mempool' ? '/' + this.network : '') + '/block/', block ? block.id : this.block.previousblockhash], { state: { data: { block, blockHeight: this.nextBlockHeight - 2 } } });
+    this.router.navigate([(this.network && this.stateService.env.BASE_MODULE === 'mempool' ? '/' + this.network : '') + '/block/',
+      block ? block.id : this.block.previousblockhash], { state: { data: { block, blockHeight: this.nextBlockHeight - 2 } } });
   }
 
   navigateToNextBlock() {
     const block = this.latestBlocks.find((b) => b.height === this.nextBlockHeight);
-    this.router.navigate([(this.network && this.stateService.env.BASE_MODULE === 'mempool' ? '/' + this.network : '') + '/block/', block ? block.id : this.nextBlockHeight], { state: { data: { block, blockHeight: this.nextBlockHeight } } });
+    this.router.navigate([(this.network && this.stateService.env.BASE_MODULE === 'mempool' ? '/' + this.network : '') + '/block/',
+      block ? block.id : this.nextBlockHeight], { state: { data: { block, blockHeight: this.nextBlockHeight } } });
   }
 
   setNextAndPreviousBlockLink(){
