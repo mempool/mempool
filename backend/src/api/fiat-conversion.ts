@@ -1,6 +1,7 @@
 import logger from '../logger';
 import axios from 'axios';
 import { IConversionRates } from '../mempool.interfaces';
+import config from '../config';
 
 class FiatConversion {
   private conversionRates: IConversionRates = {
@@ -16,7 +17,7 @@ class FiatConversion {
 
   public startService() {
     logger.info('Starting currency rates service');
-    setInterval(this.updateCurrency.bind(this), 1000 * 60);
+    setInterval(this.updateCurrency.bind(this), 1000 * config.MEMPOOL.PRICE_FEED_UPDATE_INTERVAL);
     this.updateCurrency();
   }
 
