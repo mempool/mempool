@@ -92,7 +92,7 @@ export class SearchFormComponent implements OnInit {
   }
 
   search() {
-    const searchText = this.searchForm.value.searchText.trim();
+    const searchText = this.searchForm.get('searchText').value.trim().toLowerCase();
     if (searchText) {
       this.isSearching = true;
       if (this.regexAddress.test(searchText)) {
