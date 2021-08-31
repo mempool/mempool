@@ -61,7 +61,7 @@ class WebsocketHandler {
                       const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, true);
                       response['tx'] = fullTx;
                     } catch (e) {
-                      logger.debug('Error finding transaction: ' + e.message || e);
+                      logger.debug('Error finding transaction: ' + (e instanceof Error ? e.message : e));
                     }
                   }
                 } else {
@@ -69,7 +69,7 @@ class WebsocketHandler {
                     const fullTx = await transactionUtils.$getTransactionExtended(client['track-tx'], true);
                     response['tx'] = fullTx;
                   } catch (e) {
-                    logger.debug('Error finding transaction. ' + e.message || e);
+                    logger.debug('Error finding transaction. ' + (e instanceof Error ? e.message : e));
                     client['track-mempool-tx'] = parsedMessage['track-tx'];
                   }
                 }
@@ -124,7 +124,7 @@ class WebsocketHandler {
             client.send(JSON.stringify(response));
           }
         } catch (e) {
-          logger.debug('Error parsing websocket message: ' + e.message || e);
+          logger.debug('Error parsing websocket message: ' + (e instanceof Error ? e.message : e));
         }
       });
     });
@@ -252,7 +252,7 @@ class WebsocketHandler {
               const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, true);
               response['tx'] = fullTx;
             } catch (e) {
-              logger.debug('Error finding transaction in mempool: ' + e.message || e);
+              logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
             }
           } else {
             response['tx'] = tx;
@@ -272,7 +272,7 @@ class WebsocketHandler {
                 const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, true);
                 foundTransactions.push(fullTx);
               } catch (e) {
-                logger.debug('Error finding transaction in mempool: ' + e.message || e);
+                logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
               }
             } else {
               foundTransactions.push(tx);
@@ -286,7 +286,7 @@ class WebsocketHandler {
                 const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, true);
                 foundTransactions.push(fullTx);
               } catch (e) {
-                logger.debug('Error finding transaction in mempool: ' + e.message || e);
+                logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
               }
             } else {
               foundTransactions.push(tx);
@@ -337,7 +337,7 @@ class WebsocketHandler {
                 const fullTx = await transactionUtils.$getTransactionExtended(rbfTransaction, true);
                 response['rbfTransaction'] = fullTx;
               } catch (e) {
-                logger.debug('Error finding transaction in mempool: ' + e.message || e);
+                logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
               }
             } else {
               response['rbfTransaction'] = rbfTx;

@@ -20,7 +20,7 @@ export async function checkDbConnection() {
     logger.info('Database connection established.');
     connection.release();
   } catch (e) {
-    logger.err('Could not connect to database: ' + e.message || e);
+    logger.err('Could not connect to database: ' + (e instanceof Error ? e.message : e));
     process.exit(1);
   }
 }

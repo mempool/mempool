@@ -111,7 +111,7 @@ class Server {
       try {
         await memPool.$updateMemPoolInfo();
       } catch (e) {
-        const msg = `updateMempoolInfo: ${(e.message || e)}`;
+        const msg = `updateMempoolInfo: ${(e instanceof Error ? e.message : e)}`;
         if (config.CORE_RPC_MINFEE.ENABLED) {
           logger.warn(msg);
         } else {
@@ -123,7 +123,7 @@ class Server {
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;
     } catch (e) {
-      const loggerMsg = `runMainLoop error: ${(e.message || e)}. Retrying in ${this.currentBackendRetryInterval} sec.`;
+      const loggerMsg = `runMainLoop error: ${(e instanceof Error ? e.message : e)}. Retrying in ${this.currentBackendRetryInterval} sec.`;
       if (this.currentBackendRetryInterval > 5) {
         logger.warn(loggerMsg);
         mempool.setOutOfSync();

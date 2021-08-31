@@ -52,7 +52,7 @@ class DiskCache {
       logger.debug('Mempool and blocks data saved to disk cache');
       this.isWritingCache = false;
     } catch (e) {
-      logger.warn('Error writing to cache file: ' + e.message || e);
+      logger.warn('Error writing to cache file: ' + (e instanceof Error ? e.message : e));
       this.isWritingCache = false;
     }
   }

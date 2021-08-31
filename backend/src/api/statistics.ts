@@ -255,7 +255,7 @@ class Statistics {
       connection.release();
       return result.insertId;
     } catch (e) {
-      logger.err('$create() error' + e.message || e);
+      logger.err('$create() error' + (e instanceof Error ? e.message : e));
     }
   }
 
@@ -313,7 +313,7 @@ class Statistics {
         return this.mapStatisticToOptimizedStatistic([rows[0]])[0];
       }
     } catch (e) {
-      logger.err('$list2H() error' + e.message || e);
+      logger.err('$list2H() error' + (e instanceof Error ? e.message : e));
     }
   }
 
@@ -325,7 +325,7 @@ class Statistics {
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
-      logger.err('$list2H() error' + e.message || e);
+      logger.err('$list2H() error' + (e instanceof Error ? e.message : e));
       return [];
     }
   }
@@ -338,7 +338,7 @@ class Statistics {
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
-      logger.err('$list24h() error' + e.message || e);
+      logger.err('$list24h() error' + (e instanceof Error ? e.message : e));
       return [];
     }
   }
@@ -351,7 +351,7 @@ class Statistics {
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
-      logger.err('$list1W() error' + e);
+      logger.err('$list1W() error' + (e instanceof Error ? e.message : e));
       return [];
     }
   }
@@ -364,7 +364,7 @@ class Statistics {
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
-      logger.err('$list1M() error' + e);
+      logger.err('$list1M() error' + (e instanceof Error ? e.message : e));
       return [];
     }
   }
@@ -377,7 +377,7 @@ class Statistics {
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
-      logger.err('$list3M() error' + e);
+      logger.err('$list3M() error' + (e instanceof Error ? e.message : e));
       return [];
     }
   }
@@ -390,7 +390,7 @@ class Statistics {
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
-      logger.err('$list6M() error' + e);
+      logger.err('$list6M() error' + (e instanceof Error ? e.message : e));
       return [];
     }
   }
@@ -403,7 +403,7 @@ class Statistics {
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
-      logger.err('$list6M() error' + e);
+      logger.err('$list6M() error' + (e instanceof Error ? e.message : e));
       return [];
     }
   }
