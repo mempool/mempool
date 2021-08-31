@@ -1,0 +1,4 @@
+{
+  "editor.tabSize": 2,
+  "typescript.tsdk": "../backend/node_modules/typescript/lib"
+}

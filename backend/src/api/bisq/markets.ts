@@ -102,7 +102,7 @@ class Bisq {
         logger.debug('Bisq market data updated in ' + time + ' ms');
       }
     } catch (e) {
-      logger.err('loadBisqMarketDataDumpFile() error.' + e.message || e);
+      logger.err('loadBisqMarketDataDumpFile() error.' + (e instanceof Error ? e.message : e));
     }
   }
 

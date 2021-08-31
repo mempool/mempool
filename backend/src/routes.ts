@@ -55,7 +55,7 @@ class Routes {
       const result = websocketHandler.getInitData();
       res.json(result);
     } catch (e) {
-      res.status(500).send(e.message);
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -74,7 +74,7 @@ class Routes {
       const result = mempoolBlocks.getMempoolBlocks();
       res.json(result);
     } catch (e) {
-      res.status(500).send(e.message);
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -477,10 +477,10 @@ class Routes {
       res.json(transaction);
     } catch (e) {
       let statusCode = 500;
-      if (e.message && e.message.indexOf('No such mempool or blockchain transaction') > -1) {
+      if (e instanceof Error && e instanceof Error && e.message && e.message.indexOf('No such mempool or blockchain transaction') > -1) {
         statusCode = 404;
       }
-      res.status(statusCode).send(e.message || e);
+      res.status(statusCode).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -491,10 +491,10 @@ class Routes {
       res.send(transaction.hex);
     } catch (e) {
       let statusCode = 500;
-      if (e.message && e.message.indexOf('No such mempool or blockchain transaction') > -1) {
+      if (e instanceof Error && e.message && e.message.indexOf('No such mempool or blockchain transaction') > -1) {
         statusCode = 404;
       }
-      res.status(statusCode).send(e.message || e);
+      res.status(statusCode).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -504,10 +504,10 @@ class Routes {
       res.json(transaction.status);
     } catch (e) {
       let statusCode = 500;
-      if (e.message && e.message.indexOf('No such mempool or blockchain transaction') > -1) {
+      if (e instanceof Error && e.message && e.message.indexOf('No such mempool or blockchain transaction') > -1) {
         statusCode = 404;
       }
-      res.status(statusCode).send(e.message || e);
+      res.status(statusCode).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -516,7 +516,7 @@ class Routes {
       const result = await bitcoinApi.$getBlock(req.params.hash);
       res.json(result);
     } catch (e) {
-      res.status(500).send(e.message || e);
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -526,7 +526,7 @@ class Routes {
       res.setHeader('content-type', 'text/plain');
       res.send(blockHeader);
     } catch (e) {
-      res.status(500).send(e.message || e);
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -563,7 +563,7 @@ class Routes {
       res.json(returnBlocks);
     } catch (e) {
       loadingIndicators.setProgress('blocks', 100);
-      res.status(500).send(e.message || e);
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -582,13 +582,13 @@ class Routes {
           transactions.push(transaction);
           loadingIndicators.setProgress('blocktxs-' + req.params.hash, (i + 1) / endIndex * 100);
         } catch (e) {
-          logger.debug('getBlockTransactions error: ' + e.message || e);
+          logger.debug('getBlockTransactions error: ' + (e instanceof Error ? e.message : e));
         }
       }
       res.json(transactions);
     } catch (e) {
       loadingIndicators.setProgress('blocktxs-' + req.params.hash, 100);
-      res.status(500).send(e.message || e);
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -597,7 +597,7 @@ class Routes {
       const blockHash = await bitcoinApi.$getBlockHash(parseInt(req.params.height, 10));
       res.send(blockHash);
     } catch (e) {
-      res.status(500).send(e.message || e);
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -611,10 +611,10 @@ class Routes {
       const addressData = await bitcoinApi.$getAddress(req.params.address);
       res.json(addressData);
     } catch (e) {
-      if (e.message && e.message.indexOf('exceeds') > 0) {
-        return res.status(413).send(e.message);
+      if (e instanceof Error && e.message && e.message.indexOf('exceeds') > 0) {
+        return res.status(413).send(e instanceof Error ? e.message : e);
       }
-      res.status(500).send(e.message || e);
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -628,10 +628,10 @@ class Routes {
       const transactions = await bitcoinApi.$getAddressTransactions(req.params.address, req.params.txId);
       res.json(transactions);
     } catch (e) {
-      if (e.message && e.message.indexOf('exceeds') > 0) {
-        return res.status(413).send(e.message);
+      if (e instanceof Error && e.message && e.message.indexOf('exceeds') > 0) {
+        return res.status(413).send(e instanceof Error ? e.message : e);
       }
-      res.status(500).send(e.message || e);
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -644,7 +644,7 @@ class Routes {
       const blockHash = await bitcoinApi.$getAddressPrefix(req.params.prefix);
       res.send(blockHash);
     } catch (e) {
-      res.status(500).send(e.message || e);
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -665,7 +665,7 @@ class Routes {
       const rawMempool = await bitcoinApi.$getRawMempool();
       res.send(rawMempool);
     } catch (e) {
-      res.status(500).send(e.message || e);
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -674,7 +674,7 @@ class Routes {
       const result = await bitcoinApi.$getBlockHeightTip();
       res.json(result);
     } catch (e) {
-      res.status(500).send(e.message || e);
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -683,7 +683,7 @@ class Routes {
       const result = await bitcoinApi.$getTxIdsForBlock(req.params.hash);
       res.json(result);
     } catch (e) {
-      res.status(500).send(e.message || e);
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
@@ -741,7 +741,7 @@ class Routes {
       res.json(result);
 
     } catch (e) {
-      res.status(500).send(e.message || e);
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 }

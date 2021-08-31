@@ -162,7 +162,7 @@ class Bisq {
       this.buildIndex();
       this.calculateStats();
     } catch (e) {
-      logger.info('loadBisqDumpFile() error.' + e.message || e);
+      logger.info('loadBisqDumpFile() error.' + (e instanceof Error ? e.message : e));
     }
   }
 

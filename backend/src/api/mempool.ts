@@ -124,7 +124,7 @@ class Mempool {
           }
           newTransactions.push(transaction);
         } catch (e) {
-          logger.debug('Error finding transaction in mempool: ' + e.message || e);
+          logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
         }
       }
 
