@@ -59,7 +59,7 @@ const codes = {
 Cypress.Commands.add('waitForSkeletonGone', () => {
     cy.waitUntil(() => {
         return Cypress.$('.skeleton-loader').length === 0;
-    }, { verbose: true, description: "waitForSkeletonGone", errorMsg: "skeleton loaders never went away", timeout: 7000, interval: 50});
+    }, { verbose: true, description: "waitForSkeletonGone", errorMsg: "skeleton loaders never went away", timeout: 15000, interval: 50});
 });
 
 Cypress.Commands.add(
