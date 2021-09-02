@@ -9,6 +9,11 @@ describe('Mainnet', () => {
         cy.intercept('/api/tx/*/outspends').as('tx-outspends');
         cy.intercept('/resources/pools.json').as('pools');
 
+        // Search Auto Complete
+        cy.intercept('/api/address-prefix/1wiz').as('search-1wiz');
+        cy.intercept('/api/address-prefix/1wizS').as('search-1wizS');
+        cy.intercept('/api/address-prefix/1wizSA').as('search-1wizSA');
+
         Cypress.Commands.add('waitForBlockData', () => {
             cy.wait('@tx-outspends');
             cy.wait('@pools');
@@ -54,6 +59,46 @@ describe('Mainnet', () => {
         it('loads the dashboard', () => {
             cy.visit('/');
             cy.waitForSkeletonGone();
+        });
+
+        describe('search', () => {
+            it('allows searching for partial Bitcoin addresses', () => {
+                cy.visit('/');
+                cy.get('.search-box-container > .form-control').type('1wiz').then(() => {
+                    cy.wait('@search-1wiz');
+                    cy.get('ngb-typeahead-window button.dropdown-item').should('have.length', 10);
+                });
+
+                cy.get('.search-box-container > .form-control').type('S').then(() => {
+                    cy.wait('@search-1wizS');
+                    cy.get('ngb-typeahead-window button.dropdown-item').should('have.length', 5);
+                });
+
+                cy.get('.search-box-container > .form-control').type('A').then(() => {
+                    cy.wait('@search-1wizSA');
+                    cy.get('ngb-typeahead-window button.dropdown-item').should('have.length', 1)
+                });
+
+                cy.get('ngb-typeahead-window button.dropdown-item.active').click().then(() => {
+                    cy.url().should('include', '/address/1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC');
+                    cy.waitForSkeletonGone();
+                    cy.get('.text-center').should('not.have.text', 'Invalid Bitcoin address');
+                });
+            });
+
+            ['BC1PQYQSZQ', 'bc1PqYqSzQ'].forEach((searchTerm) => {
+                it(`allows searching for partial case insensitive bc1 addresses: ${searchTerm}`, () => {
+                    cy.visit('/');
+                    cy.get('.search-box-container > .form-control').type(searchTerm).then(() => {
+                        cy.get('ngb-typeahead-window button.dropdown-item').should('have.length', 1);
+                        cy.get('ngb-typeahead-window button.dropdown-item.active').click().then(() => {
+                            cy.url().should('include', '/address/bc1pqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqs3wf0qm');
+                            cy.waitForSkeletonGone();
+                            cy.get('.text-center').should('not.have.text', 'Invalid Bitcoin address');
+                        });
+                    });
+                });
+            });
         });
 
         describe('blocks navigation', () => {
