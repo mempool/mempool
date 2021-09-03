@@ -172,6 +172,14 @@ init();`;
         importText = `<script src="https://liquid.network/liquid.js"></script>`;
       }
 
+      let resultHtml = '<pre id="result"></pre>';
+      if (this.method === 'websocket') {
+        resultHtml = `<pre id="result-blocks"></pre>
+    <pre id="result-mempool-info"></pre>
+    <pre id="result-transactions"></pre>
+    <pre id="result-mempool-blocks"></pre>`;
+      }
+
       return `<!DOCTYPE html>
 <html>
   <head>
@@ -184,7 +192,7 @@ init();`;
     </script>
   </head>
   <body>
-    <pre id="result"></pre>
+    ${resultHtml}
   </body>
 </html>`;
     }
