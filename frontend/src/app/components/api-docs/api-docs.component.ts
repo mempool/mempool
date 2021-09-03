@@ -37,14 +37,10 @@ export class ApiDocsComponent implements OnInit {
     );
 
     if (document.location.port !== '') {
-      this.hostname = this.hostname + ':' + document.location.port;
+      this.hostname = `${this.hostname}:${document.location.port}`;
     }
 
-    if (document.location.protocol === 'https') {
-      this.hostname = `https://${this.hostname}`;
-    } else {
-      this.hostname = `http://${this.hostname}`;
-    }
+    this.hostname = `${document.location.protocol}//${this.hostname}`;
 
     if (document.location.hostname === 'localhost') {
       if (this.env.BASE_MODULE === 'bisq') {
