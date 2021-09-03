@@ -15,8 +15,6 @@ export class ApiDocsComponent implements OnInit {
   active = 0;
   env: Env;
   code: any;
-  liquidUrl = '';
-  bisqUrl = '';
   baseNetworkUrl = '';
 
   constructor(
