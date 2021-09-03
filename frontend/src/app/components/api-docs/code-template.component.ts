@@ -272,17 +272,23 @@ yarn add @mempool/liquid.js`;
       const indexNumber = index + 1;
       text = text.replace('%{' + indexNumber + '}', textReplace);
     }
-    if (this.network === 'main' || this.network === '') {
-      if (this.method === 'post') {
-        return `curl POST -sSLd ${text}`;
+
+    if (this.env.BASE_MODULE === 'mempool') {
+      if (this.network === 'main' || this.network === '') {
+        if (this.method === 'post') {
+          return `curl POST -sSLd "${text}"`;
+        }
+        return `curl -sSL "${this.hostname}${text}"`;
       }
-      return `curl -sSL ${this.hostname}${text}`;
+      if (this.method === 'post') {
+        text = text.replace('/api', `/${this.network}/api`);
+        return `curl POST -sSLd "${text}"`;
+      }
+      return `curl -sSL "${this.hostname}/${this.network}${text}"`;
     }
-    if (this.method === 'post') {
-      text = text.replace('/api', `/${this.network}/api`);
-      return `curl POST -sSLd ${text}`;
+    if (this.env.BASE_MODULE !== 'mempool') {
+      return `curl -sSL "${this.hostname}${text}"`;
     }
-    return `curl -sSL ${this.hostname}/${this.network}${text}`;
   }
 
 }
