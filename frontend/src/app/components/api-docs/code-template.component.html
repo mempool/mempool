@@ -1,20 +1,20 @@
 <div class="code">
   <ul ngbNav #navCodeTemplate="ngbNav" class="nav-tabs code-tab">
-    <li ngbNavItem *ngIf="code.codeSample.curl">
+    <li ngbNavItem *ngIf="code.codeTemplate.curl && method !== 'websocket'">
       <a ngbNavLink>cURL</a>
       <ng-template ngbNavContent>
-        <div class="subtitle"><ng-container i18n="API Docs code example">Code Example</ng-container> <app-clipboard [text]="wrapCurl(code.codeSample.curl)"></app-clipboard></div>
-        <pre><code [innerText]="wrapCurl(code.codeSample.curl)"></code></pre>
+        <div class="subtitle"><ng-container i18n="API Docs code example">Code Example</ng-container> <app-clipboard [text]="wrapCurlTemplate(code)"></app-clipboard></div>
+        <pre><code [innerText]="wrapCurlTemplate(code)"></code></pre>
       </ng-template>
     </li>
     <li ngbNavItem>
       <a ngbNavLink>CommonJS</a>
       <ng-template ngbNavContent>
-        <div class="subtitle"><ng-container i18n="API Docs code example">Code Example</ng-container> <app-clipboard [text]="wrapCommonJS(code.codeSample.commonJS)"></app-clipboard></div>
+        <div class="subtitle"><ng-container i18n="API Docs code example">Code Example</ng-container> <app-clipboard [text]="wrapCommonJS(code)"></app-clipboard></div>
         <div class="links">
           <a [href]="npmGithubLink()" target="_blank">github repository</a>
         </div>
-        <pre><code [innerText]="wrapCommonJS(code.codeSample.commonJS)"></code></pre>
+        <pre><code [innerText]="wrapCommonJS(code)"></code></pre>
       </ng-template>
     </li>
     <li ngbNavItem>
@@ -26,14 +26,14 @@
           <a [href]="npmModuleLink()" target="_blank">npm package</a>
         </div>
         <pre><code [innerText]="wrapImportTemplate()"></code></pre>
-        <div class="subtitle"><ng-container i18n="API Docs code example">Code Example</ng-container> <app-clipboard [text]="wrapESmodule(code.codeSample.esModule)"></app-clipboard></div>
-        <pre><code [innerText]="wrapESmodule(code.codeSample.esModule)"></code></pre>
+        <div class="subtitle"><ng-container i18n="API Docs code example">Code Example</ng-container> <app-clipboard [text]="wrapEsModule(code)"></app-clipboard></div>
+        <pre><code [innerText]="wrapEsModule(code)"></code></pre>
       </ng-template>
     </li>
   </ul>
   <div [ngbNavOutlet]="navCodeTemplate"></div>
-  <div *ngIf="code.responseSample" class="response">
-    <div class="subtitle"><ng-container i18n="API Docs API response">Response</ng-container> <app-clipboard [text]="code.responseSample"></app-clipboard></div>
-    <pre><code [innerText]="code.responseSample"></code></pre>
+  <div *ngIf="code.codeTemplate && wrapResponse(code) !== ''" class="response">
+    <div class="subtitle"><ng-container i18n="API Docs API response">Response</ng-container> <app-clipboard [text]="wrapResponse(code)"></app-clipboard></div>
+    <pre><code [innerText]="wrapResponse(code)"></code></pre>
   </div>
 </div>
