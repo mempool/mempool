@@ -2859,7 +2859,7 @@ export class ApiDocsComponent implements OnInit {
       },
       transactionPost: {
         codeTemplate: {
-          curl: `%{1} "${this.hostname}${this.baseNetworkUrl}/api/tx"`,
+          curl: `%{1}" "${this.hostname}${this.baseNetworkUrl}/api/tx`,
           commonJS: `
         const { %{0}: { transactions } } = mempoolJS();
 
