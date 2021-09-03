@@ -3505,7 +3505,7 @@ export class ApiDocsComponent implements OnInit {
       },
       difficulty: {
         codeTemplate: {
-          commonJs: `
+          commonJS: `
         const { %{0}: { difficulty } } = mempoolJS();
 
         const difficultyAdjustment = await difficulty.getDifficultyAdjustment();
