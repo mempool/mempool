@@ -3429,16 +3429,16 @@ export class ApiDocsComponent implements OnInit {
         ws.addEventListener('message', function incoming({data}) {
           const res = JSON.parse(data.toString());
           if (res.blocks) {
-            document.getElementById("result").textContent = JSON.stringify(res.blocks, undefined, 2);
+            document.getElementById("result-blocks").textContent = JSON.stringify(res.blocks, undefined, 2);
           }
           if (res.mempoolInfo) {
-            document.getElementById("result").textContent = JSON.stringify(res.mempoolInfo, undefined, 2);
+            document.getElementById("result-mempool-info").textContent = JSON.stringify(res.mempoolInfo, undefined, 2);
           }
           if (res.transactions) {
-            document.getElementById("result").textContent = JSON.stringify(res.transactions, undefined, 2);
+            document.getElementById("result-transactions").textContent = JSON.stringify(res.transactions, undefined, 2);
           }
           if (res.mempoolBlocks) {
-            document.getElementById("result").textContent = JSON.stringify(res.mempoolBlocks, undefined, 2);
+            document.getElementById("result-mempool-blocks").textContent = JSON.stringify(res.mempoolBlocks, undefined, 2);
           }
         });
         `,
