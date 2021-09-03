@@ -3639,7 +3639,7 @@ export class ApiDocsComponent implements OnInit {
     };
 
     this.network$.subscribe((network) => {
-      this.active = (network === 'liquid') ? 1 : 0;
+      this.active = (network === 'liquid') ? 2 : 0;
     });
   }
 
