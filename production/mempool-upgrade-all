@@ -70,6 +70,6 @@ for target in mainnet liquid bisq;do build_frontend "${target}";done
 for target in mainnet liquid bisq;do ship_frontend "${target}";done
 
 echo "${HOSTNAME} updated to \`${REF}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel general mempool.dev
-echo "${HOSTNAME} updated to \`${REF}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel general mempool.devops
+echo "${HOSTNAME} updated to \`${REF}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel general mempool.ops
 
 exit 0
