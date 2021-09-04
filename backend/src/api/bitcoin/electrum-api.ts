@@ -93,7 +93,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
       if (e === 'failed to get confirmed status') {
         e = 'The number of transactions on this address exceeds the Electrum server limit';
       }
-      throw new Error(e instanceof Error ? e.message : 'Error');
+      throw new Error(typeof e === 'string' ? e : 'Error');
     }
   }
 
@@ -131,7 +131,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
       if (e === 'failed to get confirmed status') {
         e = 'The number of transactions on this address exceeds the Electrum server limit';
       }
-      throw new Error(e instanceof Error ? e.message : 'Error');
+      throw new Error(typeof e === 'string' ? e : 'Error');
     }
   }
 
