@@ -80,7 +80,7 @@ class WebsocketHandler {
           }
 
           if (parsedMessage && parsedMessage['track-address']) {
-            if (/^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,87})$/
+            if (/^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,100}|[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100})$/
               .test(parsedMessage['track-address'])) {
               client['track-address'] = parsedMessage['track-address'];
             } else {
