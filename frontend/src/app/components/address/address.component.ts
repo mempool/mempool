@@ -9,6 +9,7 @@ import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
 import { of, merge, Subscription, Observable } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
+import { AddressInformation } from 'src/app/interfaces/node-api.interface';
 
 @Component({
   selector: 'app-address',
@@ -27,6 +28,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   error: any;
   mainSubscription: Subscription;
   addressLoadingStatus$: Observable<number>;
+  addressInfo: null | AddressInformation = null;
 
   totalConfirmedTxCount = 0;
   loadedConfirmedTxCount = 0;
@@ -67,6 +69,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.address = null;
           this.isLoadingTransactions = true;
           this.transactions = null;
+          this.addressInfo = null;
           document.body.scrollTo(0, 0);
           this.addressString = params.get('id') || '';
           this.seoService.setTitle($localize`:@@address.component.browser-title:Address: ${this.addressString}:INTERPOLATION:`);
@@ -92,10 +95,20 @@ export class AddressComponent implements OnInit, OnDestroy {
       )
       .pipe(
         filter((address) => !!address),
+        tap((address: Address) => {
+          if (this.stateService.network === 'liquid' && /^([m-zA-HJ-NP-Z1-9]{26,35}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,100}|[a-km-zA-HJ-NP-Z1-9]{80})$/.test(address.address)) {
+            this.apiService.validateAddress$(address.address)
+              .subscribe((addressInfo) => {
+                this.addressInfo = addressInfo;
+                this.websocketService.startTrackAddress(addressInfo.unconfidential);
+              });
+          } else {
+            this.websocketService.startTrackAddress(address.address);
+          }
+        }),
         switchMap((address) => {
           this.address = address;
           this.updateChainStats();
-          this.websocketService.startTrackAddress(address.address);
           this.isLoadingAddress = false;
           this.isLoadingTransactions = true;
           return this.electrsApiService.getAddressTransactions$(address.address);

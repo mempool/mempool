@@ -18,6 +18,10 @@
         <div class="col-md">
           <table class="table table-borderless table-striped">
             <tbody>
+              <tr *ngIf="addressInfo && addressInfo.unconfidential">
+                <td i18n="address.unconfidential">Unconfidential</td>
+                <td><a [routerLink]="['/address/' | relativeUrl, addressInfo.unconfidential]">{{ addressInfo.unconfidential }}</a> <app-clipboard [text]="addressInfo.unconfidential"></app-clipboard></td>
+              </tr>
               <ng-template [ngIf]="!address.electrum">
                 <tr>
                   <td i18n="address.total-received">Total received</td>
