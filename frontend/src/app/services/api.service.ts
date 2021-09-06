@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { CpfpInfo, OptimizedMempoolStats, DifficultyAdjustment } from '../interfaces/node-api.interface';
+import { CpfpInfo, OptimizedMempoolStats, DifficultyAdjustment, AddressInformation } from '../interfaces/node-api.interface';
 import { Observable } from 'rxjs';
 import { StateService } from './state.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
@@ -95,5 +95,9 @@ export class ApiService {
 
   getDifficultyAdjustment$(): Observable<DifficultyAdjustment> {
     return this.httpClient.get<DifficultyAdjustment>(this.apiBaseUrl + this.apiBasePath + '/api/v1/difficulty-adjustment');
+  }
+
+  validateAddress$(address: string): Observable<AddressInformation> {
+    return this.httpClient.get<AddressInformation>(this.apiBaseUrl + this.apiBasePath + '/api/v1/validate-address/' + address);
   }
 }

@@ -251,6 +251,7 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs', routes.getAddressTransactions)
         .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs/chain/:txId', routes.getAddressTransactions)
         .get(config.MEMPOOL.API_URL_PREFIX + 'address-prefix/:prefix', routes.getAddressPrefix)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'validate-address/:address', routes.validateAddress)
       ;
     }
   }
