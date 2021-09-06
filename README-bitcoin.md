@@ -63,7 +63,7 @@ Returns details about an address. Available fields: `address`, `chain_stats`, an
 
 - {string} address
 
-[ [NodeJS Example](examples/nodejs/bitcoin/addresses.ts) ] [ [HTML Example](examples/html/bitcoin/addresses.html) ] [ [Top](#features) ]
+[ [NodeJS Example](examples/nodejs/mempool-js/bitcoin/addresses.ts) ] [ [HTML Example](examples/html/mempool-js/bitcoin/addresses.html) ] [ [Top](#features) ]
 
 ```js
 const {
@@ -84,7 +84,7 @@ Get transaction history for the specified address/scripthash, sorted with newest
 
 - {string} address
 
-[ [NodeJS Example](examples/nodejs/bitcoin/addresses.ts) ] [ [HTML Example](examples/html/bitcoin/addresses.html) ] [ [Top](#features) ]
+[ [NodeJS Example](examples/nodejs/mempool-js/bitcoin/addresses.ts) ] [ [HTML Example](examples/html/mempool-js/bitcoin/addresses.html) ] [ [Top](#features) ]
 
 ```js
 const {
@@ -105,7 +105,7 @@ Get confirmed transaction history for the specified address/scripthash, sorted w
 
 - {string} address
 
-[ [NodeJS Example](examples/nodejs/bitcoin/addresses.ts) ] [ [HTML Example](examples/html/bitcoin/addresses.html) ] [ [Top](#features) ]
+[ [NodeJS Example](examples/nodejs/mempool-js/bitcoin/addresses.ts) ] [ [HTML Example](examples/html/mempool-js/bitcoin/addresses.html) ] [ [Top](#features) ]
 
 ```js
 const {
@@ -126,7 +126,7 @@ Get unconfirmed transaction history for the specified `address/scripthash`. Retu
 
 - {string} address
 
-[ [NodeJS Example](examples/nodejs/bitcoin/addresses.ts) ] [ [HTML Example](examples/html/bitcoin/addresses.html) ] [ [Top](#features) ]
+[ [NodeJS Example](examples/nodejs/mempool-js/bitcoin/addresses.ts) ] [ [HTML Example](examples/html/mempool-js/bitcoin/addresses.html) ] [ [Top](#features) ]
 
 ```js
 const {
@@ -147,7 +147,7 @@ Get the list of unspent transaction outputs associated with the `address/scripth
 
 - {string} address
 
-[ [NodeJS Example](examples/nodejs/bitcoin/addresses.ts) ] [ [HTML Example](examples/html/bitcoin/addresses.html) ] [ [Top](#features) ]
+[ [NodeJS Example](examples/nodejs/mempool-js/bitcoin/addresses.ts) ] [ [HTML Example](examples/html/mempool-js/bitcoin/addresses.html) ] [ [Top](#features) ]
 
 ```js
 const { addresses } = mempoolJS();
