@@ -60,13 +60,12 @@ class BitcoinApi implements AbstractBitcoinApi {
     return this.bitcoindClient.getBlock(hash, 0);
   }
 
-
   $getBlockHash(height: number): Promise<string> {
     return this.bitcoindClient.getBlockHash(height);
   }
 
   $getBlockHeader(hash: string): Promise<string> {
-    return this.bitcoindClient.getBlockHeader(hash,false);
+    return this.bitcoindClient.getBlockHeader(hash, false);
   }
 
   async $getBlock(hash: string): Promise<IEsploraApi.Block> {
@@ -236,10 +235,6 @@ class BitcoinApi implements AbstractBitcoinApi {
           confirmations: blocks.getCurrentBlockHeight() + 1,
           blocktime: 1231006505 }), false);
       });
-  }
-
-  protected $validateAddress(address: string): Promise<IBitcoinApi.AddressInformation> {
-    return this.bitcoindClient.validateAddress(address);
   }
 
   private $getMempoolEntry(txid: string): Promise<IBitcoinApi.MempoolEntry> {

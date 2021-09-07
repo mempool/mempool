@@ -11,6 +11,7 @@ import * as sha256 from 'crypto-js/sha256';
 import * as hexEnc from 'crypto-js/enc-hex';
 import loadingIndicators from '../loading-indicators';
 import memoryCache from '../memory-cache';
+import bitcoinBaseApi from './bitcoin-base.api';
 
 class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
   private electrumClient: any;
@@ -44,7 +45,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
   }
 
   async $getAddress(address: string): Promise<IEsploraApi.Address> {
-    const addressInfo = await this.$validateAddress(address);
+    const addressInfo = await bitcoinBaseApi.$validateAddress(address);
     if (!addressInfo || !addressInfo.isvalid) {
       return ({
         'address': address,
@@ -98,7 +99,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
   }
 
   async $getAddressTransactions(address: string, lastSeenTxId: string): Promise<IEsploraApi.Transaction[]> {
-    const addressInfo = await this.$validateAddress(address);
+    const addressInfo = await bitcoinBaseApi.$validateAddress(address);
     if (!addressInfo || !addressInfo.isvalid) {
      return [];
     }
