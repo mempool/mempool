@@ -44,6 +44,10 @@ class BitcoinBaseApi {
   $getBlockchainInfo(): Promise<IBitcoinApi.BlockchainInfo> {
     return this.bitcoindClient.getBlockchainInfo();
   }
+
+  $validateAddress(address: string): Promise<IBitcoinApi.AddressInformation> {
+    return this.bitcoindClient.validateAddress(address);
+  }
 }
 
 export default new BitcoinBaseApi();

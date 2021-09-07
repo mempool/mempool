@@ -158,6 +158,7 @@ class Server {
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/mempool-blocks', routes.getMempoolBlocks)
       .get(config.MEMPOOL.API_URL_PREFIX + 'backend-info', routes.getBackendInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'init-data', routes.getInitData)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'validate-address/:address', routes.validateAddress)
       .get(config.MEMPOOL.API_URL_PREFIX + 'donations', async (req, res) => {
         try {
           const response = await axios.get('https://mempool.space/api/v1/donations', { responseType: 'stream', timeout: 10000 });
