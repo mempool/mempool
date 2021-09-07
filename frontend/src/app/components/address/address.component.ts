@@ -69,6 +69,9 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.transactions = null;
           document.body.scrollTo(0, 0);
           this.addressString = params.get('id') || '';
+          if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}$/.test(this.addressString)) {
+            this.addressString = this.addressString.toLowerCase();
+          }
           this.seoService.setTitle($localize`:@@address.component.browser-title:Address: ${this.addressString}:INTERPOLATION:`);
 
           return merge(
