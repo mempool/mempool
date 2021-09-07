@@ -24,6 +24,9 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
   mempoolVsizeFeesData: any;
   mempoolVsizeFeesOptions: EChartsOption;
+  mempoolVsizeFeesInitOptions = {
+    renderer: 'svg',
+  };
   windowPreference: string;
   hoverIndexSerie: -1;
   feeLimitIndex: number;
@@ -70,20 +73,11 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   generateArray(mempoolStats: OptimizedMempoolStats[]) {
     const finalArray: number[][] = [];
     let feesArray: number[] = [];
-
     for (let index = 37; index > -1; index--) {
       feesArray = [];
       mempoolStats.forEach((stats) => {
-        const theFee = stats.vsizes[index].toString();
-        if (theFee) {
-          feesArray.push(parseInt(theFee, 10));
-        } else {
-          feesArray.push(0);
-        }
+        feesArray.push(stats.vsizes[index] ? stats.vsizes[index] : 0);
       });
-      if (finalArray.length) {
-        feesArray = feesArray.map((value, i) => value + finalArray[finalArray.length - 1][i]);
-      }
       finalArray.push(feesArray);
     }
     finalArray.reverse();
@@ -103,10 +97,9 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       }
     });
 
-    const yAxisSeries = series.map((value: Array<number>, index: number) => {
+    const seriesGraph = series.map((value: Array<number>, index: number) => {
       if (index <= this.feeLimitIndex){
         return {
-          name: feeLevelsOrdered[index],
           type: 'line',
           stack: 'total',
           smooth: false,
@@ -157,42 +150,37 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         },
         formatter: (params: any) => {
           const legendName = (index: number) => feeLevelsOrdered[index];
-          const colorSpan = (index: number) => `<span class="indicator" style="background-color: ${chartColors[index]}"></span><span>${legendName(index)}</span>`;
-          const title = `<div class="title">${params[0].axisValue}</div>`;
-          const rangeLines = params;
+          const colorSpan = (index: number) => `<span class="indicator" style="background-color: ${chartColors[index]}"></span><span>${legendName(index)}`;
           let total = 0;
-          rangeLines.map((item: any) => {
+          params.map((item: any) => {
             total += item.value;
           });
+          const title = `<div class="title">${params[0].axisValue}
+          <span class="total-value">${this.vbytesPipe.transform(total, 2, 'vB', 'MvB', false)}</span></div>`;
           const itemFormatted = [];
           let totalParcial = 0;
           let progressPercentageText = '';
-          rangeLines.map((item: any, index: number) => {
+          params.map((item: any, index: number) => {
             totalParcial += item.value;
             let progressPercentage = 0;
-            let progressPercentageTotalParcial = 0;
             if (index <= this.feeLimitIndex) {
               progressPercentage = (item.value / total) * 100;
-              progressPercentageTotalParcial = (totalParcial / total) * 100;
               let activeItemClass = '';
               if (this.hoverIndexSerie === index) {
                 progressPercentageText = `<div class="total-parcial-active">
-                  <span>${this.vbytesPipe.transform(totalParcial, 2, 'vB', 'MvB', false)}</span>
-                  <div class="total-percentage-bar"><span><span style="width: ${progressPercentageTotalParcial}%; background: ${chartColors[index]}"></span></span></div>
+                  <span class="progress-percentage">${progressPercentage.toFixed(2)} <span class="symbol">%</span></span><span class="total-parcial-vbytes">${this.vbytesPipe.transform(totalParcial, 2, 'vB', 'MvB', false)}</span>
+                  <div class="total-percentage-bar"><span><span style="width: ${progressPercentage}%; background: ${chartColors[index]}"></span></span></div>
                 </div>`;
                 activeItemClass = 'active';
               }
               itemFormatted.push(`<tr class="item ${activeItemClass}">
               <td class="indicator-container">${colorSpan(index)}</td>
               <td class="value">${this.vbytesPipe.transform(item.value, 2, 'vB', 'MvB', false)}</td>
-              <td class="total-percentage-bar"><span><span style="width: ${progressPercentage}%; background: ${chartColors[index]}"></span></span></td>
+              <td class="total-progress-percentage"><span color: ${chartColors[index]}">${progressPercentage.toFixed(1)} <span class="symbol">%</span></td>
             </tr>`);
             }
           });
           const progressActiveDiv = `<span class="total-value">${progressPercentageText}</span>`;
-          const totalDiv = `<div class="total-label">Total
-            <span class="total-value">${this.vbytesPipe.transform(total, 2, 'vB', 'MvB', false)}</span>
-          </div>`;
           const advancedClass = (this.template === 'advanced') ? 'fees-wrapper-tooltip-chart-advanced' : '';
           return `<div class="fees-wrapper-tooltip-chart ${advancedClass}">
             ${title}
@@ -207,7 +195,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
               <tbody>${itemFormatted.reverse().join('')}</tbody>
             </table>
             ${progressActiveDiv}
-            ${totalDiv}
           </div>`;
         }
       },
@@ -261,7 +248,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           }
         }
       },
-      series: yAxisSeries
+      series: seriesGraph
     };
   }
 }
