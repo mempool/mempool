@@ -1651,7 +1651,7 @@ export class ApiDocsComponent implements OnInit {
       },
       feeMempoolBlocks: {
         codeTemplate: {
-          curl: `/api/fees/mempool-blocks`,
+          curl: `/api/v1/fees/mempool-blocks`,
           commonJS: `
         const { %{0}: { fees } } = mempoolJS();
 
@@ -1771,7 +1771,7 @@ export class ApiDocsComponent implements OnInit {
       },
       feeRecommended: {
         codeTemplate: {
-          curl: `/api/fees/recommended`,
+          curl: `/api/v1/fees/recommended`,
           commonJS: `
         const { %{0}: { fees } } = mempoolJS();
 
