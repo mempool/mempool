@@ -294,6 +294,9 @@ html:lang(ru) .card-title {
     font-weight: 700;
     margin-bottom: 2px;
     color: #fff;
+    .total-value {
+      float: right;
+    }
   }
   .active {
     color: yellow !important;
@@ -331,6 +334,9 @@ html:lang(ru) .card-title {
     }
     .total-percentage-bar {
       padding-left: 8px;
+    }
+    .total-progress-percentage {
+      text-align: right;
     }
   }
   .total-label {
@@ -375,6 +381,9 @@ html:lang(ru) .card-title {
       span {
         transition: 1000 all ease-in-out;
       }
+    }
+    .progress-percentage {
+      float: left;
     }
   }
 }
