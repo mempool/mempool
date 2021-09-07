@@ -19,6 +19,9 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
   @Input() template: ('widget' | 'advanced') = 'widget';
 
   mempoolStatsChartOption: EChartsOption = {};
+  mempoolStatsChartInitOption = {
+    renderer: 'svg'
+  };
   windowPreference: string;
 
   constructor(

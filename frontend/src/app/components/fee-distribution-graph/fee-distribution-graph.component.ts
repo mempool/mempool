@@ -14,6 +14,9 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges {
   @Input() left: number | string = 30;
 
   mempoolVsizeFeesOptions: any;
+  mempoolVsizeFeesInitOptions = {
+    renderer: 'svg'
+  };
 
   constructor() { }
 
