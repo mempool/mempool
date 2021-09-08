@@ -1,6 +1,5 @@
 import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { formatDate } from '@angular/common';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { of, merge} from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -31,7 +30,6 @@ export class StatisticsComponent implements OnInit {
   mempoolTransactionsWeightPerSecondData: any;
 
   radioGroupForm: FormGroup;
-  inverted: boolean;
   graphWindowPreference: String;
 
   constructor(
@@ -48,7 +46,6 @@ export class StatisticsComponent implements OnInit {
   ngOnInit() {
     this.seoService.setTitle($localize`:@@5d4f792f048fcaa6df5948575d7cb325c9393383:Graphs`);
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
-    this.inverted = this.storageService.getValue('inverted-graph') === 'true';
     this.graphWindowPreference = this.storageService.getValue('graphWindowPreference') ? this.storageService.getValue('graphWindowPreference').trim() : '2h';
     const isMobile = window.innerWidth <= 767.98;
     let labelHops = isMobile ? 48 : 24;
@@ -122,11 +119,6 @@ export class StatisticsComponent implements OnInit {
       labels: labels,
       series: [mempoolStats.map((stats) => stats.vbytes_per_second)],
     };
-  }
-
-  invertGraph() {
-    this.storageService.setValue('inverted-graph', !this.inverted);
-    document.location.reload();
   }
 
   saveGraphPreference() {
