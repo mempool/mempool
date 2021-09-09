@@ -73,17 +73,17 @@ export class ApiDocsComponent implements OnInit {
           `,
         },
         codeSampleMainnet: {
-          esModule: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
-          commonJS: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
-          curl: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
+          esModule: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
+          commonJS: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
+          curl: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
           response: `{
-  address: "1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC",
+  address: "1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv",
   chain_stats: {
-    funded_txo_count: 765,
-    funded_txo_sum: 87749875807,
-    spent_txo_count: 765,
-    spent_txo_sum: 87749875807,
-    tx_count: 875
+    funded_txo_count: 5,
+    funded_txo_sum: 15007599040,
+    spent_txo_count: 5,
+    spent_txo_sum: 15007599040,
+    tx_count: 7
   },
   mempool_stats: {
     funded_txo_count: 0,
@@ -117,17 +117,17 @@ export class ApiDocsComponent implements OnInit {
 }`
         },
         codeSampleSignet: {
-          esModule: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
-          commonJS: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
-          curl: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
+          esModule: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
+          commonJS: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
+          curl: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
           response: `{
-  address: "1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC",
+  address: "1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv",
   chain_stats: {
-    funded_txo_count: 765,
-    funded_txo_sum: 87749875807,
-    spent_txo_count: 765,
-    spent_txo_sum: 87749875807,
-    tx_count: 875
+    funded_txo_count: 5,
+    funded_txo_sum: 15007599040,
+    spent_txo_count: 5,
+    spent_txo_sum: 15007599040,
+    tx_count: 7
   },
   mempool_stats: {
     funded_txo_count: 0,
@@ -199,24 +199,24 @@ export class ApiDocsComponent implements OnInit {
           `,
         },
         codeSampleMainnet: {
-          esModule: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
-          commonJS: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
-          curl: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
+          esModule: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
+          commonJS: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
+          curl: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
           response: `[
   {
-    txid: "f39fbfd2482ac8a7174fe27caddd66aec05eec0d0e988ddf0de2136a416394c4",
-    version: 2,
+    txid: "dba43fd04b7ae3df8e5b596f2e7fab247c58629d622e3a5213f03a5a09684430",
+    version: 1,
     locktime: 0,
     vin: [ [Object] ],
     vout: [ [Object], [Object] ],
-    size: 251,
-    weight: 1004,
-    fee: 8212,
+    size: 255,
+    weight: 1020,
+    fee: 10000,
     status: {
       confirmed: true,
-      block_height: 684536,
-      block_hash: "00000000000000000008df08f428ca4e8251ba9171d9060b056f1f94d4fefbc7",
-      block_time: 1621687336
+      block_height: 326148,
+      block_hash: "00000000000000001e4118adcfbb02364bc13c41c210d8811e4f39aeb3687e36",
+      block_time: 1413798020
     }
   },
   ...
@@ -247,17 +247,17 @@ export class ApiDocsComponent implements OnInit {
 ]`
         },
         codeSampleSignet: {
-          esModule: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
-          commonJS: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
-          curl: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
+          esModule: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
+          commonJS: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
+          curl: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
           response: `{
-  address: "1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC",
+  address: "1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv",
   chain_stats: {
-    funded_txo_count: 765,
-    funded_txo_sum: 87749875807,
-    spent_txo_count: 765,
-    spent_txo_sum: 87749875807,
-    tx_count: 875
+    funded_txo_count: 5,
+    funded_txo_sum: 15007599040,
+    spent_txo_count: 5,
+    spent_txo_sum: 15007599040,
+    tx_count: 7
   },
   mempool_stats: {
     funded_txo_count: 0,
@@ -319,9 +319,9 @@ export class ApiDocsComponent implements OnInit {
           `,
         },
         codeSampleMainnet: {
-          esModule: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
-          commonJS: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
-          curl: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
+          esModule: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
+          commonJS: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
+          curl: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
           response: `[
   {
     txid: "c4e53c2e37f4fac759fdb0d8380e4d49e6c7211233ae276a44ce7074a1d6d168",
@@ -367,11 +367,11 @@ export class ApiDocsComponent implements OnInit {
 ],`
         },
         codeSampleSignet: {
-          esModule: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
-          commonJS: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
-          curl: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
+          esModule: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
+          commonJS: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
+          curl: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
           response: `{
-  address: "1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC",
+  address: "1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv",
   chain_stats: {
     funded_txo_count: 765,
     funded_txo_sum: 87749875807,
@@ -439,9 +439,9 @@ export class ApiDocsComponent implements OnInit {
           `,
         },
         codeSampleMainnet: {
-          esModule: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
-          commonJS: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
-          curl: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
+          esModule: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
+          commonJS: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
+          curl: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
           response: `[
   {
     txid: "16cd9bbc6b62313a22d16671fa559aec6bf581df8b5853d37775c84b0fddfa90",
@@ -475,9 +475,9 @@ export class ApiDocsComponent implements OnInit {
 ]`
         },
         codeSampleSignet: {
-          esModule: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
-          commonJS: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
-          curl: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
+          esModule: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
+          commonJS: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
+          curl: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
           response: `[
   {
     txid: "16cd9bbc6b62313a22d16671fa559aec6bf581df8b5853d37775c84b0fddfa90",
@@ -575,9 +575,9 @@ export class ApiDocsComponent implements OnInit {
 ]`
         },
         codeSampleSignet: {
-          esModule: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
-          commonJS: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
-          curl: [`1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC`],
+          esModule: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
+          commonJS: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
+          curl: [`1wiz18xYmhRX6xStj2b9t1rwWX4GKUgpv`],
           response: `[
   {
     txid: "e58b47f657b496a083ad9a4fb10c744d5e993028efd9cfba149885334d98bdf5",
