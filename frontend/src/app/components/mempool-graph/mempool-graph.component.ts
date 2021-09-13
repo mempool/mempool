@@ -176,16 +176,19 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         },
         formatter: (params: any) => {
           const legendName = (index: number) => this.feeLevelsOrdered[index];
-          const colorSpan = (index: number) => `<span class="indicator" style="background-color: ${chartColors[index]}"></span><span>${legendName(index)}`;
+          const colorSpan = (index: number) => `<span class="indicator" style="background-color: ${chartColors[index]}"></span><span>${legendName(index)}</span>`;
           const totals = (values: any) => {
-            let totalValue = 0;
-            const totalValueArray = [];
+            let totalValueTemp = 0;
+            const totalValueArrayTemp = [];
             const valuesInverted = values.slice(0).reverse();
             for (const item of valuesInverted) {
-              totalValue += item.value;
-              totalValueArray.push(totalValue);
+              totalValueTemp += item.value;
+              totalValueArrayTemp.push(totalValueTemp);
             }
-            return { totalValue, totalValueArray: totalValueArray.reverse() };
+            return {
+              totalValue: totalValueTemp,
+              totalValueArray: totalValueArrayTemp.reverse()
+            };
           };
           const { totalValue, totalValueArray } = totals(params);
           const title = `<div class="title">${params[0].axisValue}
@@ -203,8 +206,16 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
               let activeItemClass = '';
               if (this.hoverIndexSerie === index) {
                 progressPercentageText = `<div class="total-parcial-active">
-                  <span class="progress-percentage">${progressPercentage.toFixed(2)} <span class="symbol">%</span></span><span class="total-parcial-vbytes">${this.vbytesPipe.transform(totalParcial, 2, 'vB', 'MvB', false)}</span>
-                  <div class="total-percentage-bar"><span><span style="width: ${progressPercentage}%; background: ${chartColors[index]}"></span></span></div>
+                  <span class="progress-percentage">
+                    ${progressPercentage.toFixed(2)}
+                    <span class="symbol">%</span>
+                  </span>
+                  <span class="total-parcial-vbytes">${this.vbytesPipe.transform(totalParcial, 2, 'vB', 'MvB', false)}</span>
+                  <div class="total-percentage-bar">
+                    <span>
+                      <span style="width: ${progressPercentage}%; background: ${chartColors[index]}"></span>
+                    </span>
+                  </div>
                 </div>`;
                 activeItemClass = 'active';
               }
