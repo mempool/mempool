@@ -99,7 +99,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
       },
       xAxis: {
         type: 'category',
-        data: this.data.labels.map((value: any) => formatDate(value, 'MM/dd - HH:mm', this.locale)),
+        data: this.data.labels.map((value: any) => `${formatDate(value, 'M/d', this.locale)}\n${formatDate(value, 'H:mm', this.locale)}`),
       },
       yAxis: {
         type: 'value',
@@ -115,7 +115,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         {
           data: this.data.series[0],
           type: 'line',
-          smooth: true,
+          smooth: (this.template === 'advanced') ? false : true,
           showSymbol: false,
           lineStyle: {
             width: 3,
