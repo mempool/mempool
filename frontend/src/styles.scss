@@ -277,6 +277,7 @@ html:lang(ru) .card-title {
   justify-content: space-between;
   padding: 10px 15px;
   text-align: left;
+  width: 200px;
   thead {
     th {
       font-size: 9px;
@@ -286,6 +287,9 @@ html:lang(ru) .card-title {
         text-align: left;
         left: -1px;
         position: relative;
+      }
+      &:nth-child(4){
+        display: none;
       }
     }
   }
@@ -327,15 +331,25 @@ html:lang(ru) .card-title {
         font-size: 9px !important;
       }
     }
+    .symbol {
+      font-size: 9px;
+    }
     .total-partial {
-      text-align: right;
       font-size: 10px;
-      width: 70px;
+      width: 58px;
+      text-align: right;
     }
     .total-percentage-bar {
       padding-left: 8px;
     }
     .total-progress-percentage {
+      width: 45px;
+      height: 5px;
+      text-align: right;
+      display: none;
+    }
+    .total-progress-sum {
+      width: 58px;
       text-align: right;
     }
   }
@@ -353,6 +367,24 @@ html:lang(ru) .card-title {
       font-size: 9px;
       position: relative;
       top: 2px;
+    }
+  }
+  thead {
+    th {
+      font-size: 9px;
+      color: #b1b1b1;
+      text-align: right;
+      &:first-child {
+        text-align: left;
+        left: -1px;
+        position: relative;
+      }
+      &:nth-child(4){
+        display: none;
+      }
+      &:nth-child(5){
+        display: none;
+      }
     }
   }
   .total-percentage-bar {
@@ -389,6 +421,7 @@ html:lang(ru) .card-title {
 }
 
 .tx-wrapper-tooltip-chart {
+  width: 115px;
   .item {
     display: flex;
   }
@@ -417,19 +450,65 @@ html:lang(ru) .card-title {
   }
 }
 
-.fees-wrapper-tooltip-chart-big,
-.tx-wrapper-tooltip-chart-big {
+.fees-wrapper-tooltip-chart-advanced,
+.tx-wrapper-tooltip-chart-advanced {
   background: rgba(#1d1f31, 0.98);
+  width: 250px;
+
+  thead {
+    th {
+      &:nth-child(4){
+        display: table-cell;
+      }
+      &:nth-child(5){
+        display: table-cell;
+      }
+    }
+  }
   .title {
     font-size: 15px;
     margin-bottom: 5px;
   }
   .item {
-    font-size: 12px;
     line-height: 1;
     .value {
+      width: 60px;
       .symbol {
-        font-size: 12px !important;
+        font-size: 10px !important;
+      }
+    }
+    .total-partial {
+      font-size: 10px;
+      width: 58px;
+      text-align: right;
+    }
+    .total-progress-percentage {
+      width: 65px;
+      height: 4px;
+      padding: 0px 5px;
+      display: table-cell !important;
+      border-radius: 4px;
+    }
+    .total-progress-sum {
+      width: 65px;
+      height: 4px;
+      padding: 0px 5px;
+      border-radius: 4px;
+    }
+    .total-progress-percentage-bar,
+    .total-progress-sum-bar {
+      width: 35px;
+      height: 4px;
+      div {
+        width: 100%;
+        border-radius: 4px;
+        display: block;
+        background: #29324c94;
+      }
+      span {
+        height: 4px;
+        border-radius: 4px;
+        display: block;
       }
     }
   }
@@ -456,7 +535,8 @@ html:lang(ru) .card-title {
   }
 }
 
-.tx-wrapper-tooltip-chart-big {
+.tx-wrapper-tooltip-chart-advanced {
+  width: 115px;
   .indicator-container {
     .indicator {
       margin-right: 5px;
