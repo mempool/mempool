@@ -30,7 +30,7 @@ interface IConfig {
     USERNAME: string;
     PASSWORD: string;
   };
-  CORE_RPC_MINFEE: {
+  SECOND_CORE_RPC: {
     ENABLED: boolean;
     HOST: string;
     PORT: number;
@@ -92,7 +92,7 @@ const defaults: IConfig = {
     'USERNAME': 'mempool',
     'PASSWORD': 'mempool'
   },
-  'CORE_RPC_MINFEE': {
+  'SECOND_CORE_RPC': {
     'ENABLED': false,
     'HOST': '127.0.0.1',
     'PORT': 8332,
@@ -129,7 +129,7 @@ class Config implements IConfig {
   ESPLORA: IConfig['ESPLORA'];
   ELECTRUM: IConfig['ELECTRUM'];
   CORE_RPC: IConfig['CORE_RPC'];
-  CORE_RPC_MINFEE: IConfig['CORE_RPC_MINFEE'];
+  SECOND_CORE_RPC: IConfig['SECOND_CORE_RPC'];
   DATABASE: IConfig['DATABASE'];
   SYSLOG: IConfig['SYSLOG'];
   STATISTICS: IConfig['STATISTICS'];
@@ -141,7 +141,7 @@ class Config implements IConfig {
     this.ESPLORA = configs.ESPLORA;
     this.ELECTRUM = configs.ELECTRUM;
     this.CORE_RPC = configs.CORE_RPC;
-    this.CORE_RPC_MINFEE = configs.CORE_RPC_MINFEE;
+    this.SECOND_CORE_RPC = configs.SECOND_CORE_RPC;
     this.DATABASE = configs.DATABASE;
     this.SYSLOG = configs.SYSLOG;
     this.STATISTICS = configs.STATISTICS;
