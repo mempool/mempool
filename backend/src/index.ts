@@ -112,7 +112,7 @@ class Server {
         await memPool.$updateMemPoolInfo();
       } catch (e) {
         const msg = `updateMempoolInfo: ${(e instanceof Error ? e.message : e)}`;
-        if (config.CORE_RPC_MINFEE.ENABLED) {
+        if (config.SECOND_CORE_RPC.ENABLED) {
           logger.warn(msg);
         } else {
           logger.debug(msg);

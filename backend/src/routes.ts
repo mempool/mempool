@@ -17,7 +17,7 @@ import transactionUtils from './api/transaction-utils';
 import blocks from './api/blocks';
 import loadingIndicators from './api/loading-indicators';
 import { Common } from './api/common';
-import bitcoinBaseApi from './api/bitcoin/bitcoin-base.api';
+import bitcoinClient from './api/bitcoin/bitcoin-client';
 
 class Routes {
   constructor() {}
@@ -690,7 +690,7 @@ class Routes {
 
   public async validateAddress(req: Request, res: Response) {
     try {
-      const result = await bitcoinBaseApi.$validateAddress(req.params.address);
+      const result = await bitcoinClient.validateAddress(req.params.address);
       res.json(result);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
