@@ -12,7 +12,7 @@
     <tbody *ngIf="(trades$ | async) as trades; else loadingTmpl">
       <tr *ngFor="let trade of trades;">
         <td>
-          {{ trade.trade_date | date:'yyyy-MM-dd HH:mm' }}
+          &lrm;{{ trade.trade_date | date:'yyyy-MM-dd HH:mm' }}
         </td>
         <td *ngIf="view === 'all'">
           <ng-container *ngIf="(trade._market || market).rtype === 'fiat'; else priceCrypto"><span class="green-color">{{ trade.price | currency: (trade._market || market).rsymbol }}</span></ng-container>

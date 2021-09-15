@@ -185,7 +185,7 @@
       <div class="card-text" *ngIf="(isLoadingWebSocket$ | async) === false && mempoolInfoData.value; else loadingbig">
         <div class="progress">
           <div class="progress-bar {{ mempoolInfoData.value.mempoolSizeProgress }}" role="progressbar" [ngStyle]="{'width': (mempoolInfoData.value.memPoolInfo.usage / mempoolInfoData.value.memPoolInfo.maxmempool * 100) + '%' }">&nbsp;</div>
-          <div class="progress-text"><span [innerHTML]="mempoolInfoData.value.memPoolInfo.usage | bytes"></span> / <span [innerHTML]="mempoolInfoData.value.memPoolInfo.maxmempool | bytes"></span></div>
+          <div class="progress-text">&lrm;<span [innerHTML]="mempoolInfoData.value.memPoolInfo.usage | bytes"></span> / <span [innerHTML]="mempoolInfoData.value.memPoolInfo.maxmempool | bytes"></span></div>
         </div>
       </div>
     </div>
@@ -201,7 +201,7 @@
     <ng-template #inSync>
       <div class="progress inc-tx-progress-bar">
         <div class="progress-bar" role="progressbar" [ngStyle]="{'width': mempoolInfoData.value.progressWidth, 'background-color': mempoolInfoData.value.progressColor}">&nbsp;</div>
-        <div class="progress-text">{{ mempoolInfoData.value.vBytesPerSecond | ceil | number }} <ng-container i18n="shared.vbytes-per-second|vB/s">vB/s</ng-container></div>
+        <div class="progress-text">&lrm;{{ mempoolInfoData.value.vBytesPerSecond | ceil | number }} <ng-container i18n="shared.vbytes-per-second|vB/s">vB/s</ng-container></div>
       </div>
     </ng-template>
   </ng-template>

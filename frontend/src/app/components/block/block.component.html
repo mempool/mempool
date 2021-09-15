@@ -53,7 +53,7 @@
               <tr>
                 <td i18n="block.timestamp">Timestamp</td>
                 <td>
-                  {{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
+                  &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
                   <div class="lg-inline">
                     <i class="symbol">(<app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since>)</i>
                   </div>
@@ -61,11 +61,11 @@
               </tr>
               <tr>
                 <td i18n="block.size">Size</td>
-                <td [innerHTML]="block.size | bytes: 2"></td>
+                <td [innerHTML]="'&lrm;' + (block.size | bytes: 2)"></td>
               </tr>
               <tr>
                 <td i18n="block.weight">Weight</td>
-                <td [innerHTML]="block.weight | wuBytes: 2"></td>
+                <td [innerHTML]="'&lrm;' + (block.weight | wuBytes: 2)"></td>
               </tr>
             </tbody>
           </table>
@@ -162,13 +162,13 @@
     </div>
 
     <div #blockTxTitle id="block-tx-title" class="block-tx-title">
-      <h2>
+      <h2 class="float-left">
         <ng-container *ngTemplateOutlet="block.tx_count === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: block.tx_count | number}"></ng-container>
         <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
         <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
       </h2>
 
-      <ngb-pagination class="pagination-container" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page, blockTxTitle)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
+      <ngb-pagination class="pagination-container float-right" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page, blockTxTitle)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
     </div>
     <div class="clearfix"></div>
 
