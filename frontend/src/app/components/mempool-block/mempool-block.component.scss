@@ -13,11 +13,8 @@
 
 .fiat {
   font-size: 13px;
-  display: block;
-  @media (min-width: 992px) {
-    display: inline-block;
-    margin-left: 10px;
-  }
+  display: inline-block;
+  margin-left: 10px;
 }
 
 .table {
@@ -37,5 +34,12 @@ h1 {
   @media (min-width: 576px) {
     float: left;
     margin-right: 10px;
+  }
+}
+
+.chart-container{
+  margin: 20px auto;
+  @media (min-width: 768px) {
+    margin: auto;
   }
 }

@@ -281,12 +281,12 @@ describe('Mainnet', () => {
             });
         });
 
-        it('loads the tv screen - mobile', () => {
+        it.only('loads the tv screen - mobile', () => {
             cy.viewport('iphone-6');
             cy.visit('/tv');
             cy.waitForSkeletonGone();
             cy.get('.chart-holder');
-            cy.get('.blockchain-wrapper').should('be.visible');
+            cy.get('.blockchain-wrapper').should('not.visible');
         });
 
         it('loads the api screen', () => {

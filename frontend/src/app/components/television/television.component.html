@@ -4,12 +4,17 @@
     <div class="spinner-border text-light"></div>
   </div>
 
-  <div class="tv-container">
-
-    <div class="chart-holder" *ngIf="mempoolStats.length">
-      <app-mempool-graph dir="ltr" [data]="mempoolStats"></app-mempool-graph>
+  <div class="tv-container" *ngIf="mempoolStats.length">
+    <div class="chart-holder">
+      <app-mempool-graph
+        [template]="'advanced'"
+        [limitFee]="500"
+        [height]="600"
+        [left]="60"
+        [data]="mempoolStats"
+        [showZoom]="false"
+      ></app-mempool-graph>
     </div>
-
     <div class="blockchain-wrapper">
       <div class="position-container">
         <app-mempool-blocks></app-mempool-blocks>

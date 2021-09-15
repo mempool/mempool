@@ -47,8 +47,12 @@
               <ng-container *ngTemplateOutlet="mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
               <hr>
             </div>
-            <div class="mempool-graph" *ngIf="(mempoolStats$ | async) as mempoolStats">
-              <app-mempool-graph [data]="mempoolStats.mempool" [showLegend]="false" [offsetX]="20" [small]="true"></app-mempool-graph>
+            <div class="mempool-graph" *ngIf="(mempoolStats$ | async) as mempoolStats; else loadingSpinner">
+              <app-mempool-graph
+                [template]="'widget'"
+                [limitFee]="150"
+                [data]="mempoolStats.mempool"
+              ></app-mempool-graph>
             </div>
           </div>
         </div>
@@ -59,12 +63,11 @@
             <ng-container *ngTemplateOutlet="txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
             <br>
             <hr>
-            <div class="mempool-graph" *ngIf="(mempoolStats$ | async) as mempoolStats">
-              <app-chartist
-                  [data]="mempoolStats.weightPerSecond"
-                  [type]="'Line'"
-                  [options]="transactionsWeightPerSecondOptions">
-                </app-chartist>
+            <div class="mempool-graph" *ngIf="(mempoolStats$ | async) as mempoolStats; else loadingSpinner">
+              <app-incoming-transactions-graph
+                [left]="50"
+                [data]="mempoolStats.weightPerSecond"
+                ></app-incoming-transactions-graph>
             </div>
           </div>
         </div>
@@ -197,12 +200,13 @@
     </span>
     <ng-template #inSync>
       <div class="progress inc-tx-progress-bar">
-        <div class="progress-bar {{ mempoolInfoData.value.progressClass }}" role="progressbar" [ngStyle]="{'width': mempoolInfoData.value.progressWidth}">&nbsp;</div>
+        <div class="progress-bar" role="progressbar" [ngStyle]="{'width': mempoolInfoData.value.progressWidth, 'background-color': mempoolInfoData.value.progressColor}">&nbsp;</div>
         <div class="progress-text">{{ mempoolInfoData.value.vBytesPerSecond | ceil | number }} <ng-container i18n="shared.vbytes-per-second|vB/s">vB/s</ng-container></div>
       </div>
     </ng-template>
   </ng-template>
 </ng-template>
+
 
 <ng-template #difficultyEpoch>
   <div class="main-title" i18n="dashboard.difficulty-adjustment">Difficulty Adjustment</div>
@@ -228,11 +232,11 @@
               <ng-template #arrowDownDifficulty >
                 <fa-icon class="retarget-sign" [icon]="['fas', 'caret-down']" [fixedWidth]="true"></fa-icon>
               </ng-template>
-              {{ epochData.change | absolute | number: '1.2-2' }} 
+              {{ epochData.change | absolute | number: '1.2-2' }}
               <span class="symbol">%</span>
             </div>
             <div class="symbol">
-              <span i18n="difficulty-box.previous">Previous</span>: 
+              <span i18n="difficulty-box.previous">Previous</span>:
               <span [ngStyle]="{'color': epochData.colorPreviousAdjustments}">
                 <span *ngIf="epochData.previousRetarget > 0; else arrowDownPreviousDifficulty" >
                   <fa-icon class="previous-retarget-sign" [icon]="['fas', 'caret-up']" [fixedWidth]="true"></fa-icon>
@@ -256,6 +260,12 @@
   </div>
 </ng-template>
 
+
+<ng-template #loadingSpinner>
+  <div class="text-center loadingGraphs">
+    <div class="spinner-border text-light"></div>
+  </div>
+</ng-template>
 
 <ng-template #loadingDifficulty>
   <div class="difficulty-skeleton loading-container">
