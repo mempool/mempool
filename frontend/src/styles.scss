@@ -669,14 +669,19 @@ th {
 .reserved { color: #ff8c00 }
 
 .rtl-layout {
-    .arrow {
-        @extend .arrow;
+    .fa-arrow-alt-circle-right {
+        @extend .fa-arrow-alt-circle-right;
         -webkit-transform: scaleX(-1);
         transform: scaleX(-1);
     }
 
     .table td {
         text-align: right;
+        .fiat {
+          @extend .fiat;
+          margin-left: 0px !important;
+          margin-right: 15px;
+        }
     }
 
     .table th {
@@ -714,6 +719,32 @@ th {
 
     .bitcoin-block {
         direction: rtl;
+    }
+
+    .next-previous-blocks {
+      @extend .next-previous-blocks;
+      direction: ltr;
+    }
+
+    .tx-link {
+      @extend .tx-link;
+      margin-left: 0px;
+      margin-right: 10px;
+    }
+
+    .pagination-container {
+      @extend .pagination-container;
+      ul {
+        @extend ul;
+        padding-left: 0px;
+        padding-right: 5px;
+      }
+    }
+
+    .search-box-container {
+      @extend .search-box-container;
+      margin-right: 0 !important;
+      margin-left: 0.5rem !important;
     }
 }
 

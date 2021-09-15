@@ -1,5 +1,5 @@
 <ng-container *ngIf="{ val: network$ | async } as network">
-  <div class="container-xl">
+  <div class="container-xl text-left">
     <div class="text-center">
       <h2>{{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} <ng-container i18n="api-docs.title">API Service</ng-container></h2>
     </div>
