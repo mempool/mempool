@@ -746,6 +746,30 @@ th {
       margin-right: 0 !important;
       margin-left: 0.5rem !important;
     }
+
+    .code {
+      @extend .code;
+      text-align: left !important;
+      direction: ltr;
+      .subtitle {
+        @extend .subtitle;
+        direction: rtl;
+        text-align: right !important;
+      }
+    }
+
+    .container-graph {
+      @extend .container-graph;
+      .formRadioGroup {
+        @extend .formRadioGroup;
+        direction: ltr;
+      }
+    }
+
+    .mempool-graph {
+      @extend .mempool-graph;
+      direction: ltr;
+    }
 }
 
 
