@@ -1,6 +1,5 @@
 import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { formatDate } from '@angular/common';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { of, merge} from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -9,7 +8,6 @@ import { OptimizedMempoolStats } from '../../interfaces/node-api.interface';
 import { WebsocketService } from '../../services/websocket.service';
 import { ApiService } from '../../services/api.service';
 
-import * as Chartist from '@mempool/chartist';
 import { StateService } from 'src/app/services/state.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { StorageService } from 'src/app/services/storage.service';
@@ -31,10 +29,7 @@ export class StatisticsComponent implements OnInit {
   mempoolUnconfirmedTransactionsData: any;
   mempoolTransactionsWeightPerSecondData: any;
 
-  transactionsWeightPerSecondOptions: any;
-
   radioGroupForm: FormGroup;
-  inverted: boolean;
   graphWindowPreference: String;
 
   constructor(
@@ -51,7 +46,6 @@ export class StatisticsComponent implements OnInit {
   ngOnInit() {
     this.seoService.setTitle($localize`:@@5d4f792f048fcaa6df5948575d7cb325c9393383:Graphs`);
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
-    this.inverted = this.storageService.getValue('inverted-graph') === 'true';
     this.graphWindowPreference = this.storageService.getValue('graphWindowPreference') ? this.storageService.getValue('graphWindowPreference').trim() : '2h';
     const isMobile = window.innerWidth <= 767.98;
     let labelHops = isMobile ? 48 : 24;
@@ -63,43 +57,6 @@ export class StatisticsComponent implements OnInit {
     this.radioGroupForm = this.formBuilder.group({
       dateSpan: this.graphWindowPreference
     });
-
-    const labelInterpolationFnc = (value: any, index: any) => {
-      switch (this.graphWindowPreference) {
-        case '2h':
-        case '24h':
-          value = formatDate(value, 'HH:mm', this.locale);
-          break;
-        case '1w':
-          value = formatDate(value, 'dd/MM HH:mm', this.locale);
-          break;
-        case '1m':
-        case '3m':
-        case '6m':
-        case '1y':
-          value = formatDate(value, 'dd/MM', this.locale);
-      }
-
-      return index % labelHops === 0 ? value : null;
-    };
-
-    this.transactionsWeightPerSecondOptions = {
-      showArea: false,
-      showLine: true,
-      showPoint: false,
-      low: 0,
-      axisY: {
-        offset: 40
-      },
-      axisX: {
-        labelInterpolationFnc: labelInterpolationFnc
-      },
-      plugins: [
-        Chartist.plugins.ctTargetLine({
-          value: 1667
-        }),
-      ]
-    };
 
     this.route
       .fragment
@@ -162,11 +119,6 @@ export class StatisticsComponent implements OnInit {
       labels: labels,
       series: [mempoolStats.map((stats) => stats.vbytes_per_second)],
     };
-  }
-
-  invertGraph() {
-    this.storageService.setValue('inverted-graph', !this.inverted);
-    document.location.reload();
   }
 
   saveGraphPreference() {

@@ -6,7 +6,7 @@ export interface OptimizedMempoolStats {
   vbytes_per_second: number;
   total_fee: number;
   mempool_byte_weight: number;
-  vsizes: number[] | string[];
+  vsizes: number[];
 }
 
 interface Ancestor {

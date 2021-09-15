@@ -1,70 +1,83 @@
-import { Component, Input, OnChanges, ChangeDetectionStrategy } from '@angular/core';
-import * as Chartist from '@mempool/chartist';
+import { OnChanges } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-fee-distribution-graph',
   templateUrl: './fee-distribution-graph.component.html',
-  styleUrls: ['./fee-distribution-graph.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FeeDistributionGraphComponent implements OnChanges {
-  @Input() feeRange;
+export class FeeDistributionGraphComponent implements OnInit, OnChanges {
+  @Input() data: any;
+  @Input() height: number | string = 210;
+  @Input() top: number | string = 20;
+  @Input() right: number | string = 22;
+  @Input() left: number | string = 30;
 
-  mempoolVsizeFeesData: any;
   mempoolVsizeFeesOptions: any;
+  mempoolVsizeFeesInitOptions = {
+    renderer: 'svg'
+  };
 
-  feeLevels = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
-  250, 300, 350, 400, 500];
+  constructor() { }
 
-  constructor(
-  ) { }
-
-  ngOnChanges() {
-    this.mempoolVsizeFeesOptions = {
-      showArea: true,
-      showLine: true,
-      fullWidth: true,
-      showPoint: true,
-      low: 0,
-      axisY: {
-        showLabel: false,
-        offset: 0
-      },
-      axisX: {
-        showGrid: true,
-        showLabel: false,
-        offset: 0
-      },
-      plugins: [
-        Chartist.plugins.ctPointLabels({
-          textAnchor: 'middle',
-          labelInterpolationFnc: (value) => Math.round(value)
-        })
-      ]
-    };
-
-    const fees = this.feeRange;
-    const series = [];
-
-    for (let i = 0; i < this.feeLevels.length; i++) {
-      let total = 0;
-      // for (let j = 0; j < fees.length; j++) {
-      for (const fee of fees) {
-        if (i === this.feeLevels.length - 1) {
-          if (fee >= this.feeLevels[i]) {
-            total += 1;
-          }
-        } else  if (fee >= this.feeLevels[i] && fee < this.feeLevels[i + 1]) {
-          total += 1;
-        }
-      }
-      series.push(total);
-    }
-
-    this.mempoolVsizeFeesData = {
-      series: [fees],
-      labels: fees.map((d, i) => i)
-    };
+  ngOnInit() {
+    this.mountChart();
   }
 
+  ngOnChanges() {
+    this.mountChart();
+  }
+
+  mountChart() {
+    this.mempoolVsizeFeesOptions = {
+      grid: {
+        height: '210',
+        right: '20',
+        top: '22',
+        left: '30',
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap: false,
+      },
+      yAxis: {
+        type: 'value',
+        splitLine: {
+          lineStyle: {
+            type: 'dotted',
+            color: '#ffffff66',
+            opacity: 0.25,
+          }
+        }
+      },
+      series: [{
+        data: this.data,
+        type: 'line',
+        label: {
+          show: true,
+          position: 'top',
+          color: '#ffffff',
+          textShadowBlur: 0,
+          formatter: (label: any) => {
+            return Math.floor(label.data);
+          },
+        },
+        smooth: true,
+        lineStyle: {
+          color: '#D81B60',
+          width: 4,
+        },
+        itemStyle: {
+          color: '#b71c1c',
+          borderWidth: 10,
+          borderMiterLimit: 10,
+          opacity: 1,
+        },
+        areaStyle: {
+          color: '#D81B60',
+          opacity: 1,
+        }
+      }]
+    };
+  }
 }

@@ -235,7 +235,7 @@ body {
   color: #dc3545;
 }
 
-.yellow-color { 
+.yellow-color {
   color: #ffd800;
 }
 
@@ -255,168 +255,304 @@ html:lang(ru) .card-title {
   font-size: 0.9rem;
 }
 
-/* Chartist */
-$ct-series-names: (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z);
-$ct-series-colors: (
-  #D81B60,
-  #8E24AA,
-  #5E35B1,
-  #3949AB,
-  #1E88E5,
-  #039BE5,
-  #00ACC1,
-  #00897B,
-  #43A047,
-  #7CB342,
-  #C0CA33,
-  #FDD835,
-  #FFB300,
-  #FB8C00,
-  #F4511E,
-  #6D4C41,
-  #757575,
-  #546E7A,
-  #b71c1c,
-  #880E4F,
-  #4A148C,
-  #311B92,
-  #1A237E,
-  #0D47A1,
-  #01579B,
-  #006064,
-  #004D40,
-  #1B5E20,
-  #33691E,
-  #827717,
-  #F57F17,
-  #FF6F00,
-  #E65100,
-  #BF360C,
-  #3E2723,
-  #212121,
-  #263238,
-  #a748ca,
-  #6188e2,
-  #a748ca,
-  #6188e2,
-);
+/* MEMPOOL CHARTS - start */
 
-@import "../node_modules/@mempool/chartist/dist/scss/chartist.scss";
-
-.ct-bar-label {
-  font-size: 20px;
-  font-weight: bold;
-  fill: #fff;
+.mempool-wrapper-tooltip-chart {
+  height: 250px;
 }
 
-.ct-target-line {
-  stroke: #f5f5f5;
-  stroke-width: 3px;
-  stroke-dasharray: 7px;
+.echarts {
+  height: 100%;
+  min-height: 180px;
 }
 
-.ct-area {
-  stroke: none;
-  fill-opacity: 0.9;
-}
-
-.ct-label {
-    fill: rgba(255, 255, 255, 0.4);
-    color: rgba(255, 255, 255, 0.4);
-}
-
-.ct-point-label {
-  fill: rgba(255, 255, 255, 1);
-  color: rgba(255, 255, 255, 1);
-  font-size: 14px;
-}
-
-.ct-grid {
-    stroke: rgba(255, 255, 255, 0.2);
-}
-
-/* LEGEND */
-
-.ct-legend {
-  position: absolute;
-  z-index: 10;
-  left: 0px;
-  list-style: none;
-  font-size: 13px;
-  padding: 0px 0px 0px 30px;
-  top: 90px;
-
-  li {
-      position: relative;
-      padding-left: 23px;
-      margin-bottom: 0px;
-    }
-
-  li:before {
-      width: 12px;
-      height: 12px;
-      position: absolute;
-      left: 0;
-      bottom: 3px;
-      content: '';
-      border: 3px solid transparent;
-      border-radius: 2px;
-  }
-
-  li.inactive:before {
-      background: transparent;
-  }
-
-  &.ct-legend-inside {
-      position: absolute;
-      top: 0;
-      right: 0;
-  }
-
-  @for $i from 0 to length($ct-series-colors) {
-      .ct-series-#{$i}:before {
-          background-color: nth($ct-series-colors, $i + 1);
-          border-color: nth($ct-series-colors, $i + 1);
+.tx-wrapper-tooltip-chart,
+.fees-wrapper-tooltip-chart {
+  background: rgba(#11131f, 0.95);
+  border-radius: 4px;
+  box-shadow: 1px 1px 10px rgba(0,0,0,0.5);
+  color: #b1b1b1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px 15px;
+  text-align: left;
+  width: 200px;
+  thead {
+    th {
+      font-size: 9px;
+      color: #b1b1b1;
+      text-align: right;
+      &:first-child {
+        text-align: left;
+        left: -1px;
+        position: relative;
       }
+      &:nth-child(4){
+        display: none;
+      }
+    }
+  }
+  .title {
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 2px;
+    color: #fff;
+    .total-value {
+      float: right;
+    }
+  }
+  .active {
+    color: yellow !important;
+    .value,
+    .total-partial {
+      color: yellow !important;
+      .symbol {
+        color: yellow !important;
+      }
+    }
+  }
+  .item {
+    line-height: 0.8;
+    .indicator-container {
+      .indicator {
+        display: inline-block;
+        margin-right: 5px;
+        border-radius: 2px;
+        margin-top: 5px;
+        width: 9px;
+        height: 9px;
+      }
+    }
+    .value {
+      text-align: right;
+      .symbol {
+        color: #7e7e7e;
+        font-size: 9px !important;
+      }
+    }
+    .symbol {
+      font-size: 9px;
+    }
+    .total-partial {
+      font-size: 10px;
+      width: 58px;
+      text-align: right;
+    }
+    .total-percentage-bar {
+      padding-left: 8px;
+    }
+    .total-progress-percentage {
+      width: 45px;
+      height: 5px;
+      text-align: right;
+      display: none;
+    }
+    .total-progress-sum {
+      width: 58px;
+      text-align: right;
+    }
+  }
+  .total-label {
+    width: 100%;
+    text-align: left;
+    color: #fff;
+    margin-top: 5px;
+    font-size: 14px;
+    span {
+      float: right;
+    }
+    .symbol {
+      margin-left: 3px;
+      font-size: 9px;
+      position: relative;
+      top: 2px;
+    }
+  }
+  thead {
+    th {
+      font-size: 9px;
+      color: #b1b1b1;
+      text-align: right;
+      &:first-child {
+        text-align: left;
+        left: -1px;
+        position: relative;
+      }
+      &:nth-child(4){
+        display: none;
+      }
+      &:nth-child(5){
+        display: none;
+      }
+    }
+  }
+  .total-percentage-bar {
+    margin: auto;
+    width: 35px;
+    position: relative;
+    span {
+      display: block;
+      background: #282d47;
+      height: 5px;
+      border-radius: 2px;
+    }
+  }
+  .total-parcial-active {
+    text-align: right;
+    margin: 5px auto 5px;
+    padding-left: 0px;
+    span {
+      font-size: 10px;
+    }
+    .symbol {
+      font-size: 9px;
+    }
+    .total-percentage-bar {
+      width: 100%;
+      span {
+        transition: 1000 all ease-in-out;
+      }
+    }
+    .progress-percentage {
+      float: left;
+    }
+  }
+}
+
+.tx-wrapper-tooltip-chart {
+  width: 115px;
+  .item {
+    display: flex;
+  }
+  .value {
+    margin-top: 5px;
+  }
+  .indicator-container {
+    border-radius: 2px;
+  }
+}
+
+.fee-distribution-chart {
+  height: 250px;
+}
+
+.fees-wrapper-tooltip-chart {
+  .item {
+    font-size: 9px;
+    line-height: 0.8;
+    margin: 0px;
+  }
+  .indicator {
+    margin-right: 5px !important;
+    border-radius: 1px !important;
+    margin-top: 0px !important;
+  }
+}
+
+.fees-wrapper-tooltip-chart-advanced,
+.tx-wrapper-tooltip-chart-advanced {
+  background: rgba(#1d1f31, 0.98);
+  width: 250px;
+
+  thead {
+    th {
+      &:nth-child(4){
+        display: table-cell;
+      }
+      &:nth-child(5){
+        display: table-cell;
+      }
+    }
+  }
+  .title {
+    font-size: 15px;
+    margin-bottom: 5px;
+  }
+  .item {
+    line-height: 1;
+    .value {
+      width: 60px;
+      .symbol {
+        font-size: 10px !important;
+      }
+    }
+    .total-partial {
+      font-size: 10px;
+      width: 58px;
+      text-align: right;
+    }
+    .total-progress-percentage {
+      width: 65px;
+      height: 4px;
+      padding: 0px 5px;
+      display: table-cell !important;
+      border-radius: 4px;
+    }
+    .total-progress-sum {
+      width: 65px;
+      height: 4px;
+      padding: 0px 5px;
+      border-radius: 4px;
+    }
+    .total-progress-percentage-bar,
+    .total-progress-sum-bar {
+      width: 35px;
+      height: 4px;
+      div {
+        width: 100%;
+        border-radius: 4px;
+        display: block;
+        background: #29324c94;
+      }
+      span {
+        height: 4px;
+        border-radius: 4px;
+        display: block;
+      }
+    }
+  }
+  .total-label {
+    margin-top: 5px;
+    font-size: 14px;
+    span {
+      float: right;
+    }
+  }
+  .total-parcial-active {
+    text-align: right;
+    margin: 5px auto 5px;
+    span {
+      font-size: 10px;
+    }
+    .total-percentage-bar {
+      width: 100%;
+      left: 0;
+      span {
+        transition: 1000 all ease-in-out;
+      }
+    }
+  }
+}
+
+.tx-wrapper-tooltip-chart-advanced {
+  width: 115px;
+  .indicator-container {
+    .indicator {
+      margin-right: 5px;
+      border-radius: 0px;
+      margin-top: 5px;
+      width: 9px;
+      height: 9px;
+    }
   }
 }
 
 
-.chartist-tooltip {
-  position: absolute;
-  display: inline-block;
-  opacity: 0;
-  min-width: 5em;
-  padding: .5em;
-  background: #F4C63D;
-  color: #453D3F;
-  font-family: Oxygen,Helvetica,Arial,sans-serif;
-  font-weight: 700;
-  text-align: center;
-  pointer-events: none;
-  z-index: 1;
-  -webkit-transition: opacity .2s linear;
-  -moz-transition: opacity .2s linear;
-  -o-transition: opacity .2s linear;
-  transition: opacity .2s linear; }
-  .chartist-tooltip:before {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    margin-left: -15px;
-    border: 15px solid transparent;
-    border-top-color: #F4C63D; }
-  .chartist-tooltip.tooltip-show {
-    opacity: 1; }
+/* MEMPOOL CHARTS - end */
 
-.ct-area, .ct-line {
-  pointer-events: none; }
-
-.ct-bar {
-  stroke-width: 1px;
+.grow {
+  flex-grow: 1;
 }
 
 hr {
@@ -639,7 +775,7 @@ th {
   .card {
     background-color: transparent;
     padding: 0;
-  
+
     button {
       text-align: left;
       display: block;
@@ -653,17 +789,17 @@ th {
         box-shadow: none;
       }
     }
-  
+
     .card-header {
       padding: 0;
     }
-  
+
     .collapsed{
       background-color: #2d3348;
       color: #1bd8f4;
     }
   }
-  
+
   .subtitle {
     font-weight: bold;
     margin-bottom: 3px;
@@ -675,7 +811,6 @@ th {
 
 
 .pagination-container {
-  
   display: inline-block;
   width: 100%;
   justify-content: space-between;

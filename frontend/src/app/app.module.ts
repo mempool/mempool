@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { NgxEchartsModule } from 'ngx-echarts';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app/app.component';
@@ -26,13 +27,13 @@ import { LiquidMasterPageComponent } from './components/liquid-master-page/liqui
 import { AboutComponent } from './components/about/about.component';
 import { TelevisionComponent } from './components/television/television.component';
 import { StatisticsComponent } from './components/statistics/statistics.component';
-import { ChartistComponent } from './components/statistics/chartist.component';
 import { BlockchainBlocksComponent } from './components/blockchain-blocks/blockchain-blocks.component';
 import { BlockchainComponent } from './components/blockchain/blockchain.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { AudioService } from './services/audio.service';
 import { MempoolBlockComponent } from './components/mempool-block/mempool-block.component';
 import { FeeDistributionGraphComponent } from './components/fee-distribution-graph/fee-distribution-graph.component';
+import { IncomingTransactionsGraphComponent } from './components/incoming-transactions-graph/incoming-transactions-graph.component';
 import { TimeSpanComponent } from './components/time-span/time-span.component';
 import { SeoService } from './services/seo.service';
 import { MempoolGraphComponent } from './components/mempool-graph/mempool-graph.component';
@@ -78,10 +79,10 @@ import { SponsorComponent } from './components/sponsor/sponsor.component';
     TimeSpanComponent,
     AddressLabelsComponent,
     MempoolBlocksComponent,
-    ChartistComponent,
     FooterComponent,
     MempoolBlockComponent,
     FeeDistributionGraphComponent,
+    IncomingTransactionsGraphComponent,
     MempoolGraphComponent,
     AssetComponent,
     AssetsComponent,
@@ -106,6 +107,9 @@ import { SponsorComponent } from './components/sponsor/sponsor.component';
     NgbTypeaheadModule,
     FontAwesomeModule,
     SharedModule,
+    NgxEchartsModule.forRoot({
+      echarts: () => import('echarts')
+    })
   ],
   providers: [
     ElectrsApiService,
