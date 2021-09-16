@@ -142,7 +142,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       },
       color: chartColors,
       tooltip: {
-        show: true,
+        show: (window.innerWidth >= 768) ? true : false,
         trigger: 'axis',
         alwaysShowContent: false,
         position: (pos, params, el, elRect, size) => {
