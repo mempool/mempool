@@ -92,8 +92,8 @@ export namespace IBitcoinApi {
       hex: string;                   //  (string) the hex
       reqSigs?: number;              //  (numeric) The required sigs
       type: string;                  //  (string) The type, eg 'pubkeyhash'
-      addresses?: string[]           //  (string) bitcoin addresses
-      address?: string              //  (string) bitcoin address
+      addresses?: string[];           //  (string) bitcoin addresses
+      address?: string;              //  (string) bitcoin address
     };
   }
 
