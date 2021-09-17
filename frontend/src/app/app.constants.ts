@@ -115,7 +115,7 @@ export const languages: Language[] = [
    { code: 'pl', name: 'Polski' },          // Polish
    { code: 'pt', name: 'Português' },       // Portuguese
 // { code: 'pt-BR', name: 'Português (Brazil)' }, // Portuguese (Brazil)
-// { code: 'ro', name: 'Română' },          // Romanian
+   { code: 'ro', name: 'Română' },          // Romanian
    { code: 'ru', name: 'Русский' },         // Russian
 // { code: 'sk', name: 'Slovenčina' },      // Slovak
    { code: 'sl', name: 'Slovenščina' },     // Slovenian

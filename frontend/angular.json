@@ -118,6 +118,10 @@
             "translation": "src/locale/messages.zh.xlf",
             "baseHref": "/zh/"
           },
+          "ro": {
+            "translation": "src/locale/messages.ro.xlf",
+            "baseHref": "/ro/"
+          },
           "ru": {
             "translation": "src/locale/messages.ru.xlf",
             "baseHref": "/ru/"
