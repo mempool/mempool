@@ -114,6 +114,10 @@
             "translation": "src/locale/messages.hu.xlf",
             "baseHref": "/hu/"
           },
+          "mk": {
+            "translation": "src/locale/messages.mk.xlf",
+            "baseHref": "/mk/"
+          },
           "zh": {
             "translation": "src/locale/messages.zh.xlf",
             "baseHref": "/zh/"
