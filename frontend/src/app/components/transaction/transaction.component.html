@@ -10,11 +10,11 @@
     </div>
   
     <div>
-      <div class="title">
+      <div class="title float-left">
         <h1 i18n="shared.transaction">Transaction</h1>
       </div>
 
-      <div class="tx-link">
+      <div class="tx-link float-left">
         <a [routerLink]="['/tx/' | relativeUrl, txId]">
           <span class="d-inline d-lg-none">{{ txId | shortenString : 24 }}</span>
           <span class="d-none d-lg-inline">{{ txId }}</span>
@@ -22,7 +22,7 @@
         <app-clipboard [text]="txId"></app-clipboard>
       </div>
 
-      <div class="container-buttons">
+      <div class="container-buttons float-right">
         <ng-template [ngIf]="tx?.status?.confirmed">
           <button *ngIf="latestBlock" type="button" class="btn btn-sm btn-success">
             <ng-container *ngTemplateOutlet="latestBlock.height - tx.status.block_height + 1 == 1 ? confirmationSingular : confirmationPlural; context: {$implicit: latestBlock.height - tx.status.block_height + 1}"></ng-container>
@@ -50,7 +50,7 @@
                 <tr>
                   <td i18n="transaction.timestamp|Transaction Timestamp">Timestamp</td>
                   <td>
-                    {{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}
+                    &lrm;{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}
                     <div class="lg-inline">
                       <i class="symbol">(<app-time-since [time]="tx.status.block_time" [fastRender]="true"></app-time-since>)</i>
                     </div>
@@ -206,15 +206,15 @@
         <tbody>
           <tr>
             <td i18n="transaction.size|Transaction Size">Size</td>
-            <td [innerHTML]="tx.size | bytes: 2"></td>
+            <td [innerHTML]="'&lrm;' + (tx.size | bytes: 2)"></td>
           </tr>
           <tr>
             <td i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
-            <td [innerHTML]="tx.weight / 4 | vbytes: 2"></td>
+            <td [innerHTML]="'&lrm;' + (tx.weight / 4 | vbytes: 2)"></td>
           </tr>
           <tr>
             <td i18n="transaction.weight|Transaction Weight">Weight</td>
-            <td [innerHTML]="tx.weight | wuBytes: 2"></td>
+            <td [innerHTML]="'&lrm;' + (tx.weight | wuBytes: 2)"></td>
           </tr>
           <tr>
             <td i18n="transaction.hex">Transaction Hex</td>
