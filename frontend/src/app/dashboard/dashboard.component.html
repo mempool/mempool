@@ -51,6 +51,8 @@
               <app-mempool-graph
                 [template]="'widget'"
                 [limitFee]="150"
+                [left]="65"
+                [right]="5"
                 [data]="mempoolStats.mempool"
               ></app-mempool-graph>
             </div>
@@ -65,7 +67,8 @@
             <hr>
             <div class="mempool-graph" *ngIf="(mempoolStats$ | async) as mempoolStats; else loadingSpinner">
               <app-incoming-transactions-graph
-                [left]="50"
+                [left]="35"
+                [right]="5"
                 [data]="mempoolStats.weightPerSecond"
                 ></app-incoming-transactions-graph>
             </div>

@@ -46,7 +46,8 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         top: this.top,
         left: this.left,
       },
-      animation: false,
+      replaceMerge: ['xAxis', 'yAxis', 'series'],
+      animation: true,
       dataZoom: [{
         type: 'inside',
         realtime: true,
@@ -99,10 +100,18 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
       },
       xAxis: {
         type: 'category',
+        axisLabel:{
+          align: "center",
+          fontSize: 10,
+          lineHeight: 12
+        },
         data: this.data.labels.map((value: any) => `${formatDate(value, 'M/d', this.locale)}\n${formatDate(value, 'H:mm', this.locale)}`),
       },
       yAxis: {
         type: 'value',
+        axisLabel:{
+          fontSize: 10,
+        },
         splitLine: {
           lineStyle: {
             type: 'dotted',
@@ -115,7 +124,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         {
           data: this.data.series[0],
           type: 'line',
-          smooth: (this.template === 'advanced') ? false : true,
+          smooth: false,
           showSymbol: false,
           lineStyle: {
             width: 3,

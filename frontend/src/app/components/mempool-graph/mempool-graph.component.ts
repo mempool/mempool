@@ -141,6 +141,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         }
       },
       color: chartColors,
+      replaceMerge: ['xAxis', 'yAxis', 'series'],
       tooltip: {
         show: (window.innerWidth >= 768) ? true : false,
         trigger: 'axis',
@@ -275,7 +276,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           }
         }
       }],
-      animation: false,
+      animation: true,
       grid: {
         height: this.height,
         right: this.right,
@@ -286,7 +287,12 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         {
           type: 'category',
           boundaryGap: false,
-          axisLine: { onZero: false },
+          axisLine: { onZero: true },
+          axisLabel:{
+            align: "center",
+            fontSize: 10,
+            lineHeight: 12
+          },
           data: labels.map((value: any) => `${formatDate(value, 'M/d', this.locale)}\n${formatDate(value, 'H:mm', this.locale)}`),
         }
       ],
@@ -294,6 +300,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         type: 'value',
         axisLine: { onZero: false },
         axisLabel: {
+          fontSize: 10,
           formatter: (value: number) => (`${this.vbytesPipe.transform(value, 2, 'vB', 'MvB', true)}`),
         },
         splitLine: {
