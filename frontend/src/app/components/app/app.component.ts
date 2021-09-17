@@ -39,7 +39,13 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) {
-        this.link.setAttribute('href', 'https://mempool.space' + (this.location.path() === '/' ? '' : this.location.path()));
+        let domain = 'mempool.space';
+        if (this.stateService.env.BASE_MODULE === 'liquid') {
+          domain = 'liquid.network';
+        } else if (this.stateService.env.BASE_MODULE === 'bisq') {
+          domain = 'bisq.markets';
+        }
+        this.link.setAttribute('href', 'https://' + domain + this.location.path());
       }
     });
   }
