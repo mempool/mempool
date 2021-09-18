@@ -208,7 +208,7 @@ class Mempool {
   }
 
   private $getMempoolInfo() {
-    if (config.SECOND_CORE_RPC.ENABLED) {
+    if (config.MEMPOOL.USE_SECOND_NODE_FOR_MINFEE) {
       return Promise.all([
         bitcoinClient.getMempoolInfo(),
         bitcoinSecondClient.getMempoolInfo()

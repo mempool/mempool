@@ -15,6 +15,7 @@ interface IConfig {
     INITIAL_BLOCKS_AMOUNT: number;
     MEMPOOL_BLOCKS_AMOUNT: number;
     PRICE_FEED_UPDATE_INTERVAL: number;
+    USE_SECOND_NODE_FOR_MINFEE: boolean;
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -31,7 +32,6 @@ interface IConfig {
     PASSWORD: string;
   };
   SECOND_CORE_RPC: {
-    ENABLED: boolean;
     HOST: string;
     PORT: number;
     USERNAME: string;
@@ -77,6 +77,7 @@ const defaults: IConfig = {
     'INITIAL_BLOCKS_AMOUNT': 8,
     'MEMPOOL_BLOCKS_AMOUNT': 8,
     'PRICE_FEED_UPDATE_INTERVAL': 3600,
+    'USE_SECOND_NODE_FOR_MINFEE': false,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
@@ -93,7 +94,6 @@ const defaults: IConfig = {
     'PASSWORD': 'mempool'
   },
   'SECOND_CORE_RPC': {
-    'ENABLED': false,
     'HOST': '127.0.0.1',
     'PORT': 8332,
     'USERNAME': 'mempool',
