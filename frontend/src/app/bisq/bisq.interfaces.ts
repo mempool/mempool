@@ -71,7 +71,7 @@ interface BisqScriptPubKey {
   addresses: string[];
   asm: string;
   hex: string;
-  reqSigs: number;
+  reqSigs?: number;
   type: string;
 }
 
