@@ -18,6 +18,7 @@ import blocks from './api/blocks';
 import loadingIndicators from './api/loading-indicators';
 import { Common } from './api/common';
 import bitcoinClient from './api/bitcoin/bitcoin-client';
+import elementsParser from './api/liquid/elements-parser';
 
 class Routes {
   constructor() {}
@@ -750,6 +751,15 @@ class Routes {
       };
       res.json(result);
 
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  public async $getElementsPegsByMonth(req: Request, res: Response) {
+    try {
+      const pegs = await elementsParser.$getPegDataByMonth();
+      res.json(pegs);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

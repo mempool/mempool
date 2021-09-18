@@ -1,6 +1,8 @@
 import { CpfpInfo, TransactionExtended, TransactionStripped } from '../mempool.interfaces';
 import config from '../config';
 export class Common {
+  static nativeAssetId = '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
+
   static median(numbers: number[]) {
     let medianNr = 0;
     const numsLen = numbers.length;
