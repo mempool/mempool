@@ -123,7 +123,8 @@ class BitcoinApi implements AbstractBitcoinApi {
       return {
         value: vout.value * 100000000,
         scriptpubkey: vout.scriptPubKey.hex,
-        scriptpubkey_address: vout.scriptPubKey && vout.scriptPubKey.addresses ? vout.scriptPubKey.addresses[0] : '',
+        scriptpubkey_address: vout.scriptPubKey && vout.scriptPubKey.address ? vout.scriptPubKey.address
+          : vout.scriptPubKey.addresses ? vout.scriptPubKey.addresses[0] : '',
         scriptpubkey_asm: vout.scriptPubKey.asm ? this.convertScriptSigAsm(vout.scriptPubKey.asm) : '',
         scriptpubkey_type: this.translateScriptPubKeyType(vout.scriptPubKey.type),
       };
