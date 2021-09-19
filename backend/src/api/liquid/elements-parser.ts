@@ -6,24 +6,30 @@ import { DB } from '../../database';
 import logger from '../../logger';
 
 class ElementsParser {
-  isRunning = false;
+  private isRunning = false;
+
   constructor() { }
 
   public async $parse() {
     if (this.isRunning) {
       return;
     }
-    this.isRunning = true;
-    const result = await bitcoinClient.getChainTips();
-    const tip = result[0].height;
-    const latestBlock = await this.$getLatestBlockFromDatabase();
-    for (let height = latestBlock.block + 1; height <= tip; height++) {
-      const blockHash: IBitcoinApi.ChainTips = await bitcoinClient.getBlockHash(height);
-      const block: IBitcoinApi.Block = await bitcoinClient.getBlock(blockHash, 2);
-      await this.$parseBlock(block);
-      await this.$saveLatestBlockToDatabase(block.height, block.time, block.hash);
+    try {
+      this.isRunning = true;
+      const result = await bitcoinClient.getChainTips();
+      const tip = result[0].height;
+      const latestBlock = await this.$getLatestBlockFromDatabase();
+      for (let height = latestBlock.block + 1; height <= tip; height++) {
+        const blockHash: IBitcoinApi.ChainTips = await bitcoinClient.getBlockHash(height);
+        const block: IBitcoinApi.Block = await bitcoinClient.getBlock(blockHash, 2);
+        await this.$parseBlock(block);
+        await this.$saveLatestBlockToDatabase(block.height, block.time, block.hash);
+      }
+      this.isRunning = false;
+    } catch (e) {
+      this.isRunning = false;
+      throw new Error(e instanceof Error ? e.message : 'Error');
     }
-    this.isRunning = false;
   }
 
   public async $getPegDataByMonth(): Promise<any> {
