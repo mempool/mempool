@@ -3270,7 +3270,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since">
         <source><x equiv-text="dateStrings.i18nYear" id="DATE"/> ago</source>
-        <target><x equiv-text="dateStrings.i18nYear" id="DATE"/> óta</target>
+        <target><x equiv-text="dateStrings.i18nYear" id="DATE"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -3390,7 +3390,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-until">
         <source>In ~<x equiv-text="dateStrings.i18nMinute" id="DATE"/></source>
-        <target>~<x equiv-text="dateStrings.i18nMinute" id="DATE"/> percen belül</target>
+        <target>~<x equiv-text="dateStrings.i18nMinute" id="DATE"/> belül</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
           <context context-type="linenumber">66</context>
@@ -4142,7 +4142,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.days">
         <source><x equiv-text="counter" id="DATE"/> days</source>
-        <target><x equiv-text="counter" id="DATE"/> napok</target>
+        <target><x equiv-text="counter" id="DATE"/> nap</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">10</context>
@@ -4158,7 +4158,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.hours">
         <source><x equiv-text="counter" id="DATE"/> hours</source>
-        <target><x equiv-text="counter" id="DATE"/> órák</target>
+        <target><x equiv-text="counter" id="DATE"/> óra</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">12</context>
@@ -4174,7 +4174,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.minutes">
         <source><x equiv-text="counter" id="DATE"/> minutes</source>
-        <target><x equiv-text="counter" id="DATE"/> percek</target>
+        <target><x equiv-text="counter" id="DATE"/> perce</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">14</context>
@@ -4190,7 +4190,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="date-base.seconds">
         <source><x equiv-text="counter" id="DATE"/> seconds</source>
-        <target><x equiv-text="counter" id="DATE"/> másodpercek</target>
+        <target><x equiv-text="counter" id="DATE"/> másodperc</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">16</context>
