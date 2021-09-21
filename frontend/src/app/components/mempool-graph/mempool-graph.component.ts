@@ -286,7 +286,12 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         {
           type: 'category',
           boundaryGap: false,
-          axisLine: { onZero: false },
+          axisLine: { onZero: true },
+          axisLabel: {
+            align: 'center',
+            fontSize: 11,
+            lineHeight: 12,
+          },
           data: labels.map((value: any) => `${formatDate(value, 'M/d', this.locale)}\n${formatDate(value, 'H:mm', this.locale)}`),
         }
       ],
@@ -294,6 +299,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         type: 'value',
         axisLine: { onZero: false },
         axisLabel: {
+          fontSize: 11,
           formatter: (value: number) => (`${this.vbytesPipe.transform(value, 2, 'vB', 'MvB', true)}`),
         },
         splitLine: {
