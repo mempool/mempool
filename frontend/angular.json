@@ -151,8 +151,9 @@
               "src/robots.txt"
             ],
             "styles": [
-              "src/styles.scss",
-              "node_modules/@fortawesome/fontawesome-svg-core/styles.css"
+              "node_modules/@fortawesome/fontawesome-svg-core/styles.css",
+              "node_modules/bootstrap/scss/bootstrap.scss",
+              "src/styles.scss"
             ],
             "scripts": [
               "generated-config.js"
@@ -176,7 +177,7 @@
                 "scripts": true,
                 "styles": {
                   "minify": true,
-                  "inlineCritical": false
+                  "inlineCritical": true
                 },
                 "fonts": true
               },
