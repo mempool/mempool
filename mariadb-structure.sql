@@ -70,6 +70,11 @@ CREATE TABLE `transactions` (
   `feePerVsize` double NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `preimages` (
+  `added` datetime NOT NULL,
+  `preimage` varchar(65) NOT NULL,
+  `preimageHash` varchar(65) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `blocks`
   ADD PRIMARY KEY (`height`);

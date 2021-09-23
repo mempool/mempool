@@ -7,6 +7,9 @@ import { Common } from './common';
 import diskCache from './disk-cache';
 import transactionUtils from './transaction-utils';
 import bitcoinBaseApi from './bitcoin/bitcoin-base.api';
+import { DB } from '../database';
+import * as sha256 from 'crypto-js/sha256';
+import * as hexEnc from 'crypto-js/enc-hex';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -101,6 +104,14 @@ class Blocks {
         if (!tx.cpfpChecked) {
           Common.setRelativesAndGetCpfpInfo(tx, mempool);
         }
+        tx.vout.map((vout) => {
+          if(vout.scriptpubkey_type === 'op_return'){
+            if(vout.scriptpubkey_asm.includes("OP_PUSHBYTES_32")){
+              const preimages = vout.scriptpubkey_asm.split("OP_PUSHBYTES_32").slice(1).map(item => item.trim());
+              preimages.map(preimage => this.insertPreimage(preimage));
+            }
+          }
+        });
       });
 
       logger.debug(`${transactionsFound} of ${txIds.length} found in mempool. ${txIds.length - transactionsFound} not found.`);
@@ -144,6 +155,46 @@ class Blocks {
   public getCurrentBlockHeight(): number {
     return this.currentBlockHeight;
   }
+
+  private async insertPreimage(preimage: String): Promise<number | undefined> {
+    try {
+      const connection = await DB.pool.getConnection();
+      const query = `INSERT INTO preimages(
+              added,
+              preimage,
+              preimageHash
+            )
+            VALUES (NOW(), ?, ?)`;
+
+      const params: (string)[] = [
+        preimage,
+        hexEnc.stringify(sha256(hexEnc.parse(preimage)))
+      ];
+      logger.debug(`inserting preimage: ${params}`);
+      const [result]: any = await connection.query(query, params);
+      connection.release();
+      return result.insertId;
+    } catch (e) {
+      logger.err('insertPreimage error' + (e instanceof Error ? e.message : e));
+    }
+  }
+
+  public async getPreimage(preimageHash: string): Promise<string> {
+    try {
+      const connection = await DB.pool.getConnection();
+      const query = `SELECT preimage FROM preimages WHERE preimageHash = ?`;
+      const [rows] = await connection.query<any>(query, [preimageHash]);
+      connection.release();
+      if (rows[0]) {
+        return rows[0].preimage;
+      }
+      return 'Not Found';
+    } catch (e) {
+      logger.err('getPreimage error' + (e instanceof Error ? e.message : e));
+      return 'Not Found';
+    }
+  }
+
 }
 
 export default new Blocks();

@@ -754,6 +754,23 @@ class Routes {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
+
+  public async getPreimageByHash(req: Request, res: Response) {
+    if (!mempool.isInSync()) {
+      res.statusCode = 503;
+      res.send('Service Unavailable');
+      return;
+    }
+    if(!req.query.preimageHash || (typeof req.query.preimageHash !== "string")){
+      return res.status(400).json({
+        'success': 0,
+        'error': "preimageHash string is required"
+      });
+    }
+    const queryResult = await blocks.getPreimage(req.query.preimageHash);
+    const result = {preimage: queryResult};
+    res.json(result);
+  }
 }
 
 export default new Routes();
