@@ -14,7 +14,6 @@ import transactionUtils from './transaction-utils';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
-  private nativeAssetId = '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
   private extraInitProperties = {};
 
   constructor() { }
@@ -308,7 +307,7 @@ class WebsocketHandler {
 
         newTransactions.forEach((tx) => {
 
-          if (client['track-asset'] === this.nativeAssetId) {
+          if (client['track-asset'] === Common.nativeAssetId) {
             if (tx.vin.some((vin) => !!vin.is_pegin)) {
               foundTransactions.push(tx);
               return;
@@ -439,7 +438,7 @@ class WebsocketHandler {
         const foundTransactions: TransactionExtended[] = [];
 
         transactions.forEach((tx) => {
-          if (client['track-asset'] === this.nativeAssetId) {
+          if (client['track-asset'] === Common.nativeAssetId) {
             if (tx.vin && tx.vin.some((vin) => !!vin.is_pegin)) {
               foundTransactions.push(tx);
               return;

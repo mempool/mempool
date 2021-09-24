@@ -12,7 +12,8 @@
     "BLOCK_WEIGHT_UNITS": 4000000,
     "INITIAL_BLOCKS_AMOUNT": 8,
     "MEMPOOL_BLOCKS_AMOUNT": 8,
-    "PRICE_FEED_UPDATE_INTERVAL": 3600
+    "PRICE_FEED_UPDATE_INTERVAL": 3600,
+    "USE_SECOND_NODE_FOR_MINFEE": false
   },
   "CORE_RPC": {
     "HOST": "127.0.0.1",
@@ -28,8 +29,7 @@
   "ESPLORA": {
     "REST_API_URL": "http://127.0.0.1:3000"
   },
-  "CORE_RPC_MINFEE": {
-    "ENABLED": false,
+  "SECOND_CORE_RPC": {
     "HOST": "127.0.0.1",
     "PORT": 8332,
     "USERNAME": "mempool",

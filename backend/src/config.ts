@@ -15,6 +15,7 @@ interface IConfig {
     INITIAL_BLOCKS_AMOUNT: number;
     MEMPOOL_BLOCKS_AMOUNT: number;
     PRICE_FEED_UPDATE_INTERVAL: number;
+    USE_SECOND_NODE_FOR_MINFEE: boolean;
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -30,8 +31,7 @@ interface IConfig {
     USERNAME: string;
     PASSWORD: string;
   };
-  CORE_RPC_MINFEE: {
-    ENABLED: boolean;
+  SECOND_CORE_RPC: {
     HOST: string;
     PORT: number;
     USERNAME: string;
@@ -77,6 +77,7 @@ const defaults: IConfig = {
     'INITIAL_BLOCKS_AMOUNT': 8,
     'MEMPOOL_BLOCKS_AMOUNT': 8,
     'PRICE_FEED_UPDATE_INTERVAL': 3600,
+    'USE_SECOND_NODE_FOR_MINFEE': false,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
@@ -92,8 +93,7 @@ const defaults: IConfig = {
     'USERNAME': 'mempool',
     'PASSWORD': 'mempool'
   },
-  'CORE_RPC_MINFEE': {
-    'ENABLED': false,
+  'SECOND_CORE_RPC': {
     'HOST': '127.0.0.1',
     'PORT': 8332,
     'USERNAME': 'mempool',
@@ -129,7 +129,7 @@ class Config implements IConfig {
   ESPLORA: IConfig['ESPLORA'];
   ELECTRUM: IConfig['ELECTRUM'];
   CORE_RPC: IConfig['CORE_RPC'];
-  CORE_RPC_MINFEE: IConfig['CORE_RPC_MINFEE'];
+  SECOND_CORE_RPC: IConfig['SECOND_CORE_RPC'];
   DATABASE: IConfig['DATABASE'];
   SYSLOG: IConfig['SYSLOG'];
   STATISTICS: IConfig['STATISTICS'];
@@ -141,7 +141,7 @@ class Config implements IConfig {
     this.ESPLORA = configs.ESPLORA;
     this.ELECTRUM = configs.ELECTRUM;
     this.CORE_RPC = configs.CORE_RPC;
-    this.CORE_RPC_MINFEE = configs.CORE_RPC_MINFEE;
+    this.SECOND_CORE_RPC = configs.SECOND_CORE_RPC;
     this.DATABASE = configs.DATABASE;
     this.SYSLOG = configs.SYSLOG;
     this.STATISTICS = configs.STATISTICS;
