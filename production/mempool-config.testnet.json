@@ -8,6 +8,9 @@
     "API_URL_PREFIX": "/api/v1/",
     "POLL_RATE_MS": 2000
   },
+  "SYSLOG" : {
+    "MIN_PRIORITY": "debug"
+  },
   "CORE_RPC": {
     "PORT": 18332,
     "USERNAME": "foo",
