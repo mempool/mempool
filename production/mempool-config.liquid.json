@@ -8,8 +8,16 @@
     "API_URL_PREFIX": "/api/v1/",
     "WEBSOCKET_REFRESH_RATE_MS": 2000
   },
+  "SYSLOG" : {
+    "MIN_PRIORITY": "debug"
+  },
   "CORE_RPC": {
     "PORT": 7041,
+    "USERNAME": "foo",
+    "PASSWORD": "bar"
+  },
+  "SECOND_CORE_RPC": {
+    "PORT": 8332,
     "USERNAME": "foo",
     "PASSWORD": "bar"
   },
