@@ -33,8 +33,6 @@ mempool-config.json
 npm-debug.log
 testem.log
 /typings
-nohup.out
-startmempoolbackend.sh
 
 # e2e
 /e2e/*.js
