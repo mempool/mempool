@@ -84,3 +84,23 @@ ALTER TABLE `transactions`
 
 ALTER TABLE `statistics`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+CREATE TABLE `last_elements_block` (
+  `block` int(11) NOT NULL,
+  `datetime` int(11) NOT NULL,
+  `block_hash` varchar(65) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `last_elements_block` VALUES(0, 0, '');
+
+CREATE TABLE `elements_pegs` (
+  `block` int(11) NOT NULL,
+  `datetime` int(11) NOT NULL,
+  `amount` bigint(20) NOT NULL,
+  `txid` varchar(65) NOT NULL,
+  `txindex` int(11) NOT NULL,
+  `bitcoinaddress` varchar(100) NOT NULL,
+  `bitcointxid` varchar(65) NOT NULL,
+  `bitcoinindex` int(11) NOT NULL,
+  `final_tx` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

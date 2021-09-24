@@ -72,7 +72,7 @@ export namespace IBitcoinApi {
     time: number;                    //  (numeric) Same as blocktime
   }
 
-  interface Vin {
+  export interface Vin {
     txid?: string;                   //  (string) The transaction id
     vout?: number;                   //  (string)
     scriptSig?: {                    //  (json object) The script
@@ -82,18 +82,22 @@ export namespace IBitcoinApi {
     sequence: number;                //  (numeric) The script sequence number
     txinwitness?: string[];          //  (string) hex-encoded witness data
     coinbase?: string;
+    is_pegin?: boolean;              //  (boolean) Elements peg-in
   }
 
-  interface Vout {
+  export interface Vout {
     value: number;                   //  (numeric) The value in BTC
     n: number;                       //  (numeric) index
+    asset?: string;                  //  (string) Elements asset id
     scriptPubKey: {                  //  (json object)
       asm: string;                   //  (string) the asm
       hex: string;                   //  (string) the hex
       reqSigs?: number;              //  (numeric) The required sigs
       type: string;                  //  (string) The type, eg 'pubkeyhash'
-      addresses?: string[];           //  (string) bitcoin addresses
       address?: string;              //  (string) bitcoin address
+      addresses?: string[];           //  (string) bitcoin addresses
+      pegout_chain?: string;         //  (string) Elements peg-out chain
+      pegout_addresses?: string[];   //  (string) Elements peg-out addresses
     };
   }
 

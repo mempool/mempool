@@ -6,7 +6,7 @@ import { BlockExtended, TransactionExtended } from '../mempool.interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
 import transactionUtils from './transaction-utils';
-import bitcoinBaseApi from './bitcoin/bitcoin-base.api';
+import bitcoinClient from './bitcoin/bitcoin-client';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -45,7 +45,7 @@ class Blocks {
     }
 
     if (!this.lastDifficultyAdjustmentTime) {
-      const blockchainInfo = await bitcoinBaseApi.$getBlockchainInfo();
+      const blockchainInfo = await bitcoinClient.getBlockchainInfo();
       if (blockchainInfo.blocks === blockchainInfo.headers) {
         const heightDiff = blockHeightTip % 2016;
         const blockHash = await bitcoinApi.$getBlockHash(blockHeightTip - heightDiff);
