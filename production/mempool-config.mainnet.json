@@ -7,9 +7,19 @@
     "SPAWN_CLUSTER_PROCS": 0,
     "API_URL_PREFIX": "/api/v1/",
     "CLEAR_PROTECTION_MINUTES": 5,
-    "POLL_RATE_MS": 2000
+    "POLL_RATE_MS": 2000,
+    "USE_SECOND_NODE_FOR_MINFEE": true
+  },
+  "SYSLOG" : {
+    "MIN_PRIORITY": "debug"
   },
   "CORE_RPC": {
+    "PORT": 8332,
+    "USERNAME": "foo",
+    "PASSWORD": "bar"
+  },
+  "SECOND_CORE_RPC": {
+    "PORT": 8302,
     "USERNAME": "foo",
     "PASSWORD": "bar"
   },
