@@ -50,7 +50,7 @@
             <div class="mempool-graph" *ngIf="(mempoolStats$ | async) as mempoolStats; else loadingSpinner">
               <app-mempool-graph
                 [template]="'widget'"
-                [limitFee]="150"
+                [limitFee]="50"
                 [data]="mempoolStats.mempool"
               ></app-mempool-graph>
             </div>

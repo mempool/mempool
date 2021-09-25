@@ -36,6 +36,7 @@
                 <input ngbButton type="radio" [value]="'1y'" [routerLink]="['/graphs' | relativeUrl]" fragment="1y"> 1Y
               </label>
             </div>
+            <!-- <button (click)="invertGraph()" class="btn btn-primary btn-sm ml-2 d-none d-md-inline"><fa-icon [icon]="['fas', 'exchange-alt']" [rotate]="90" [fixedWidth]="true" i18n-title="statistics.component-invert.title" title="Invert"></fa-icon></button> -->
           </form>
         </div>
         <div class="card-body">
@@ -43,9 +44,10 @@
             <app-mempool-graph
               dir="ltr"
               [template]="'advanced'"
-              [limitFee]="500"
+              [limitFee]="200"
               [height]="500"
-              [left]="65"
+              [left]="145"
+              [right]="10"
               [data]="mempoolStats"
             ></app-mempool-graph>
           </div>
