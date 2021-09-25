@@ -5,7 +5,7 @@ import { OptimizedMempoolStats } from 'src/app/interfaces/node-api.interface';
 import { StateService } from 'src/app/services/state.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { EChartsOption } from 'echarts';
-import { feeLevels, chartColors } from 'src/app/app.constants';
+import { feeLevels, chartColors, chartColors200 } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-mempool-graph',
@@ -31,6 +31,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   hoverIndexSerie = 0;
   feeLimitIndex: number;
   feeLevelsOrdered = [];
+  inverted: boolean;
 
   constructor(
     private vbytesPipe: VbytesPipe,
@@ -40,15 +41,19 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    this.feeLevelsOrdered = feeLevels.map((sat, i, arr) => {
-      if (arr[i] === this.limitFee) { this.feeLimitIndex = i; }
-      if (arr[i] < this.limitFee) {
-        if (i === 0) { return '0 - 1'; }
-        return `${arr[i - 1]} - ${arr[i]}`;
-      } else {
-        return `${this.limitFee}+`;
+    this.inverted = this.storageService.getValue('inverted-graph') === 'true';
+    for (let i = 0; i < feeLevels.length; i++) {
+      if (feeLevels[i] === this.limitFee) {
+        this.feeLimitIndex = i;
       }
-    });
+      if (feeLevels[i] <= this.limitFee) {
+        if (i === 0) {
+          this.feeLevelsOrdered.push('0 - 1');
+        } else {
+          this.feeLevelsOrdered.push(`${feeLevels[i - 1]} - ${feeLevels[i]}`);
+        }
+      }
+    }
     this.mountFeeChart();
   }
 
@@ -59,8 +64,33 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   }
 
   onChartReady(myChart: any) {
+
     myChart.on('mouseover', 'series', (serie: any) => {
       this.hoverIndexSerie = serie.seriesIndex;
+    });
+
+    myChart.on('mouseover', 'series.line', (serie: any) => {
+      this.hoverIndexSerie = serie.seriesIndex;
+    });
+
+    myChart.on('legendselectchanged', (params) => {
+      let control = false;
+      Object.entries(params.selected).forEach(([key]) => {
+        if (control) {
+          myChart.dispatchAction({
+            type: 'legendUnSelect',
+            name: key
+          });
+        } else {
+          myChart.dispatchAction({
+            type: 'legendSelect',
+            name: key
+          });
+        }
+        if (params.name === key) {
+          control = true;
+        }
+      });
     });
   }
 
@@ -68,12 +98,10 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     mempoolStats.reverse();
     const labels = mempoolStats.map(stats => stats.added);
     const finalArrayVByte = this.generateArray(mempoolStats);
-
     // Only Liquid has lower than 1 sat/vb transactions
     if (this.stateService.network !== 'liquid') {
       finalArrayVByte.shift();
     }
-
     return {
       labels: labels,
       series: finalArrayVByte
@@ -96,7 +124,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
   mountFeeChart() {
     const { labels, series } = this.mempoolVsizeFeesData;
-
     const seriesGraph = series.map((value: Array<number>, index: number) => {
       if (index <= this.feeLimitIndex){
         return {
@@ -109,25 +136,17 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           },
           lineStyle: {
             width: 0,
-            opacity: 0,
           },
           symbolSize: (this.template === 'advanced') ? 10 : 10,
           showSymbol: false,
           areaStyle: {
-            opacity: 1,
+            opacity: 0.95,
             color: chartColors[index],
           },
           emphasis: {
-            focus: 'series',
             areaStyle: {
               opacity: 1,
             },
-            itemStyle: {
-              opacity: 0.2,
-            },
-          },
-          itemStyle: {
-            opacity: 0,
           },
           data: this.vbytesPipe.transform(value, 2, 'vB', 'MvB', true)
         };
@@ -135,18 +154,35 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     });
 
     this.mempoolVsizeFeesOptions = {
-      emphasis: {
-        areaStyle: {
-          opacity: 1,
-        }
+      series: this.inverted ? seriesGraph : [...seriesGraph].reverse(),
+      hover: true,
+      legend: {
+        bottom: 20,
+        data: this.inverted ? [...this.feeLevelsOrdered].reverse() : this.feeLevelsOrdered,
+        left: 0,
+        icon: 'square',
+        inactiveColor: '#444',
+        orient: 'vertical',
+        pageIconSize: 12,
+        pageIconColor: '#fff',
+        pageIconInactiveColor: '#444',
+        pageTextStyle: {
+          color: '#666',
+        },
+        show: (this.template === 'advanced') ? true : false,
+        textStyle: {
+          color: '#888',
+        },
+        top: 20,
+        type: 'scroll',
       },
-      color: chartColors,
+      color: this.inverted ? chartColors : [...chartColors200].reverse(),
       tooltip: {
         show: (window.innerWidth >= 768) ? true : false,
         trigger: 'axis',
         alwaysShowContent: false,
         position: (pos, params, el, elRect, size) => {
-          const positions = { top: (this.template === 'advanced') ? 30 : -30 };
+          const positions = { top: (this.template === 'advanced') ? -10 : -30 };
           positions[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 60;
           return positions;
         },
@@ -204,7 +240,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
                     ${this.vbytesPipe.transform(totalParcial, 2, 'vB', 'MvB', false)}
                   </span>
                   <div class="total-percentage-bar">
-                    <span>
+                    <span class="total-percentage-bar-background">
                       <span style="width: ${progressPercentage}%; background: ${chartColors[index]}"></span>
                     </span>
                   </div>
@@ -213,10 +249,12 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
               }
               itemFormatted.push(`<tr class="item ${activeItemClass}">
               <td class="indicator-container">
-                ${colorSpan(index)}
+                ${colorSpan(item.seriesIndex)}
               </td>
-              <td class="value">
-                ${this.vbytesPipe.transform(item.value, 2, 'vB', 'MvB', false)}
+              <td class="total-progress-sum">
+                <span>
+                  ${this.vbytesPipe.transform(item.value, 2, 'vB', 'MvB', false)}
+                </span>
               </td>
               <td class="total-progress-sum">
                 <span>
@@ -224,9 +262,9 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
                 </span>
               </td>
               <td class="total-progress-sum-bar">
-                <div>
-                  <span style="width: ${progressPercentageSum.toFixed(2)}%; background-color: ${chartColors[index]}"></span>
-                </div>
+                <span class="total-percentage-bar-background">
+                  <span style="width: ${progressPercentageSum.toFixed(2)}%; background-color: ${chartColors[3]}"></span>
+                </span>
               </td>
             </tr>`);
             }
@@ -244,7 +282,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
                 </tr>
               </thead>
               <tbody>
-                ${itemFormatted.reverse().join('')}
+                ${this.inverted ? itemFormatted.reverse().join('') : itemFormatted.join('')}
               </tbody>
             </table>
             <span class="total-value">
@@ -310,7 +348,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           }
         }
       },
-      series: seriesGraph
     };
   }
 }

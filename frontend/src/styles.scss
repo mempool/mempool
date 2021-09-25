@@ -453,7 +453,7 @@ html:lang(ru) .card-title {
 .fees-wrapper-tooltip-chart-advanced,
 .tx-wrapper-tooltip-chart-advanced {
   background: rgba(#1d1f31, 0.98);
-  width: 250px;
+  width: 310px;
 
   thead {
     th {
@@ -470,44 +470,49 @@ html:lang(ru) .card-title {
     margin-bottom: 5px;
   }
   .item {
-    line-height: 1;
+    line-height: 1.4;
+    font-size: 12px;
+    font-weight: 400;
     .value {
-      width: 60px;
+      width: 80px;
       .symbol {
         font-size: 10px !important;
       }
     }
     .total-partial {
-      font-size: 10px;
-      width: 58px;
+      font-size: 16px;
+      width: 75px;
       text-align: right;
     }
     .total-progress-percentage {
-      width: 65px;
-      height: 4px;
+      width: 75px;
+      height: 6px;
       padding: 0px 5px;
       display: table-cell !important;
-      border-radius: 4px;
+      border-radius: 6px;
     }
     .total-progress-sum {
-      width: 65px;
-      height: 4px;
+      width: 75px;
+      height: 10px;
       padding: 0px 5px;
-      border-radius: 4px;
+      border-radius: 5px;
+    }
+    .total-percentage-bar-background {
+      background-color: #2d3047;
     }
     .total-progress-percentage-bar,
     .total-progress-sum-bar {
-      width: 35px;
-      height: 4px;
+      width: 40px;
+      height: 5px;
       div {
-        width: 100%;
-        border-radius: 4px;
+        width: 50%;
+        border-radius: 5px;
         display: block;
         background: #29324c94;
       }
       span {
-        height: 4px;
-        border-radius: 4px;
+        height: 5px;
+        border-radius: 5px;
         display: block;
       }
     }
@@ -523,7 +528,8 @@ html:lang(ru) .card-title {
     text-align: right;
     margin: 5px auto 5px;
     span {
-      font-size: 10px;
+      font-size: 14px;
+      font-weight: 400;
     }
     .total-percentage-bar {
       width: 100%;
