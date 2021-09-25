@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnInit } from '@
 import { combineLatest, merge, Observable, of, timer } from 'rxjs';
 import { filter, map, scan, share, switchMap, tap } from 'rxjs/operators';
 import { Block } from '../interfaces/electrs.interface';
-import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
+import { LiquidPegs, OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
 import { ApiService } from '../services/api.service';
 import { StateService } from '../services/state.service';
@@ -63,6 +63,7 @@ export class DashboardComponent implements OnInit {
   mempoolStats$: Observable<MempoolStatsData>;
   transactionsWeightPerSecondOptions: any;
   isLoadingWebSocket$: Observable<boolean>;
+  liquidPegsMonth$: Observable<any>;
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
@@ -261,6 +262,22 @@ export class DashboardComponent implements OnInit {
         }),
         share(),
       );
+
+    if (this.stateService.network === 'liquid') {
+      this.liquidPegsMonth$ = this.apiService.listLiquidPegsMonth$()
+        .pipe(
+          map((pegs) => {
+            const labels = pegs.map(stats => stats.date);
+            const series = pegs.map(stats => parseFloat(stats.amount) / 100000000);
+            series.reduce((prev, curr, i) => series[i] = prev + curr, 0);
+            return {
+              series,
+              labels
+            };
+          }),
+          share(),
+        );
+    }
   }
 
   handleNewMempoolData(mempoolStats: OptimizedMempoolStats[]) {

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { CpfpInfo, OptimizedMempoolStats, DifficultyAdjustment, AddressInformation } from '../interfaces/node-api.interface';
+import { CpfpInfo, OptimizedMempoolStats, DifficultyAdjustment, AddressInformation, LiquidPegs } from '../interfaces/node-api.interface';
 import { Observable } from 'rxjs';
 import { StateService } from './state.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
@@ -99,5 +99,9 @@ export class ApiService {
 
   validateAddress$(address: string): Observable<AddressInformation> {
     return this.httpClient.get<AddressInformation>(this.apiBaseUrl + this.apiBasePath + '/api/v1/validate-address/' + address);
+  }
+
+  listLiquidPegsMonth$(): Observable<LiquidPegs[]> {
+    return this.httpClient.get<LiquidPegs[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegs/month');
   }
 }

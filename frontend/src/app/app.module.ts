@@ -37,6 +37,7 @@ import { IncomingTransactionsGraphComponent } from './components/incoming-transa
 import { TimeSpanComponent } from './components/time-span/time-span.component';
 import { SeoService } from './services/seo.service';
 import { MempoolGraphComponent } from './components/mempool-graph/mempool-graph.component';
+import { LbtcPegsGraphComponent } from './components/lbtc-pegs-graph/lbtc-pegs-graph.component';
 import { AssetComponent } from './components/asset/asset.component';
 import { AssetsComponent } from './assets/assets.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
@@ -84,6 +85,7 @@ import { SponsorComponent } from './components/sponsor/sponsor.component';
     FeeDistributionGraphComponent,
     IncomingTransactionsGraphComponent,
     MempoolGraphComponent,
+    LbtcPegsGraphComponent,
     AssetComponent,
     AssetsComponent,
     MinerComponent,
