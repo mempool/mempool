@@ -47,3 +47,8 @@ export interface AddressInformation {
   confidential_key?: string;       //  (string) Elements only
   unconfidential?: string;         //  (string) Elements only
 }
+
+export interface LiquidPegs {
+  amount: string;
+  date: string;
+}
