@@ -136,7 +136,13 @@ export class AssetComponent implements OnInit, OnDestroy {
           this.tempTransactions[this.timeTxIndexes[index]].firstSeen = time;
         });
         this.tempTransactions.sort((a, b) => {
-          return b.status.block_time - a.status.block_time || b.firstSeen - a.firstSeen;
+          if (b.status.confirmed) {
+            if (b.status.block_height === a.status.block_height) {
+              return b.status.block_time - a.status.block_time;
+            }
+            return b.status.block_height - a.status.block_height;
+          }
+          return b.firstSeen - a.firstSeen;
         });
 
         this.transactions = this.tempTransactions;
