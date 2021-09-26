@@ -177,9 +177,10 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
             return {
               totalValue: totalValueTemp,
               totalValueArray: this.inverted ? totalValueArrayTemp.reverse() : totalValueArrayTemp.reverse(),
+              values: this.inverted ? [...values].reverse() : values,
             };
           };
-          const { totalValue, totalValueArray } = totals(params);
+          const { totalValue, totalValueArray, values } = totals(params);
           const title = `<div class="title">
             ${params[0].axisValue}
             <span class="total-value">
@@ -217,16 +218,16 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
               }
               itemFormatted.push(`<tr class="item ${activeItemClass}">
               <td class="indicator-container">
-                ${colorSpan(index)}
+                ${colorSpan(item.seriesIndex)}
               </td>
               <td class="total-progress-sum">
                 <span>
-                  ${this.vbytesPipe.transform(item.value, 2, 'vB', 'MvB', false)}
+                  ${this.vbytesPipe.transform(values[item.seriesIndex].value, 2, 'vB', 'MvB', false)}
                 </span>
               </td>
               <td class="total-progress-sum">
                 <span>
-                  ${this.vbytesPipe.transform(totalValueArray[index], 2, 'vB', 'MvB', false)}
+                  ${this.vbytesPipe.transform(totalValueArray[item.seriesIndex], 2, 'vB', 'MvB', false)}
                 </span>
               </td>
               <td class="total-progress-sum-bar">
