@@ -30,6 +30,9 @@ export class LbtcPegsGraphComponent implements OnChanges {
   ) { }
 
   ngOnChanges() {
+    if (!this.data) {
+      return;
+    }
     this.pegsChartOptions = this.createChartOptions(this.data.series, this.data.labels);
   }
 
