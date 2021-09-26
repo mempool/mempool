@@ -1,12 +1,10 @@
-import { Component, OnInit, Inject, LOCALE_ID, ChangeDetectionStrategy, Output, EventEmitter, Input, OnChanges } from '@angular/core';
+import { Component, Inject, LOCALE_ID, ChangeDetectionStrategy, Input, OnChanges } from '@angular/core';
 import { formatDate, formatNumber } from '@angular/common';
 import { EChartsOption } from 'echarts';
-import { ApiService } from 'src/app/services/api.service';
-import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-lbtc-pegs-graph',
+  styles: [`::ng-deep .tx-wrapper-tooltip-chart { width: 135px; }`],
   templateUrl: './lbtc-pegs-graph.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -102,6 +100,7 @@ export class LbtcPegsGraphComponent implements OnChanges {
           fontSize: 11,
           lineHeight: 12
         },
+        boundaryGap: false,
         data: labels.map((value: any) => `${formatDate(value, 'MMM\ny', this.locale)}`),
       },
       yAxis: {
