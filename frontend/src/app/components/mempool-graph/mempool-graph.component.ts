@@ -162,21 +162,21 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           type: 'line',
         },
         formatter: (params: any) => {
-          const colorSpan = (item: any) => `<span class="indicator" style="background-color: ${this.chartColorsOrdered[item.seriesIndex]}"></span>
+          const colorSpan = (index: any) => `<span class="indicator" style="background-color: ${this.chartColorsOrdered[index]}"></span>
             <span>
-              ${this.feeLevelsOrdered[item.seriesIndex]}
+              ${this.feeLevelsOrdered[index]}
             </span>`;
           const totals = (values: any) => {
             let totalValueTemp = 0;
             const totalValueArrayTemp = [];
-            const valuesInverted = [...values].reverse();
+            const valuesInverted = this.inverted ? values : [...values].reverse();
             for (const item of valuesInverted) {
               totalValueTemp += item.value;
               totalValueArrayTemp.push(totalValueTemp);
             }
             return {
               totalValue: totalValueTemp,
-              totalValueArray: totalValueArrayTemp.reverse()
+              totalValueArray: this.inverted ? totalValueArrayTemp.reverse() : totalValueArrayTemp.reverse(),
             };
           };
           const { totalValue, totalValueArray } = totals(params);
@@ -197,7 +197,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
               progressPercentage = (item.value / totalValue) * 100;
               progressPercentageSum = (totalValueArray[index] / totalValue) * 100;
               let activeItemClass = '';
-              if (this.hoverIndexSerie === index) {
+              if (this.hoverIndexSerie === item.seriesIndex) {
                 progressPercentageText = `<div class="total-parcial-active">
                   <span class="progress-percentage">
                     ${progressPercentage.toFixed(2)}
@@ -216,7 +216,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
               }
               itemFormatted.push(`<tr class="item ${activeItemClass}">
               <td class="indicator-container">
-                ${colorSpan(item)}
+                ${colorSpan(index)}
               </td>
               <td class="total-progress-sum">
                 <span>
