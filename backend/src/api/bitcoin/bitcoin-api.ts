@@ -98,6 +98,10 @@ class BitcoinApi implements AbstractBitcoinApi {
     return found;
   }
 
+  $sendRawTransaction(rawTransaction: string): Promise<string> {
+    return this.bitcoindClient.sendRawTransaction(rawTransaction);
+  }
+
   protected async $convertTransaction(transaction: IBitcoinApi.Transaction, addPrevout: boolean): Promise<IEsploraApi.Transaction> {
     let esploraTransaction: IEsploraApi.Transaction = {
       txid: transaction.txid,
