@@ -284,13 +284,13 @@ yarn add @mempool/liquid.js`;
     if (this.env.BASE_MODULE === 'mempool') {
       if (this.network === 'main' || this.network === '') {
         if (this.method === 'post') {
-          return `curl POST -sSLd "${text}"`;
+          return `curl -X POST -sSLd "${text}"`;
         }
         return `curl -sSL "${this.hostname}${text}"`;
       }
       if (this.method === 'post') {
         text = text.replace('/api', `/${this.network}/api`);
-        return `curl POST -sSLd "${text}"`;
+        return `curl -X POST -sSLd "${text}"`;
       }
       return `curl -sSL "${this.hostname}/${this.network}${text}"`;
     }
