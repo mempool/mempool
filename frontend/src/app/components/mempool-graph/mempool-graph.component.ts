@@ -176,7 +176,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
             }
             return {
               totalValue: totalValueTemp,
-              totalValueArray: this.inverted ? totalValueArrayTemp.reverse() : totalValueArrayTemp.reverse(),
+              totalValueArray: totalValueArrayTemp.reverse(),
               values: this.inverted ? [...values].reverse() : values,
             };
           };
