@@ -1,8 +1,8 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { BisqTransaction, BisqOutput } from '../bisq.interfaces';
 
-import { merge, Observable } from 'rxjs';
-import { switchMap, map, tap, filter } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
+import { switchMap, map, tap } from 'rxjs/operators';
 import { BisqApiService } from '../bisq-api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
@@ -16,7 +16,7 @@ import { WebsocketService } from 'src/app/services/websocket.service';
   styleUrls: ['./bisq-transactions.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BisqTransactionsComponent implements OnInit {
+export class BisqTransactionsComponent implements OnInit, OnDestroy {
   transactions$: Observable<[BisqTransaction[], number]>;
   page = 1;
   itemsPerPage = 50;
@@ -25,6 +25,7 @@ export class BisqTransactionsComponent implements OnInit {
   loadingItems: number[];
   radioGroupForm: FormGroup;
   types: string[] = [];
+  radioGroupSubscription: Subscription;
 
   txTypeOptions: IMultiSelectOption[] = [
       { id: 1, name: $localize`Asset listing fee` },
@@ -90,52 +91,39 @@ export class BisqTransactionsComponent implements OnInit {
       this.paginationMaxSize = 3;
     }
 
-    this.transactions$ = merge(
-      this.route.queryParams
-        .pipe(
-          filter((queryParams) => {
-            const newPage = parseInt(queryParams.page, 10);
-            const types = queryParams.types;
-            if (newPage !== this.page || types !== this.types.map((type) => this.txTypes.indexOf(type) + 1).join(',')) {
-              return true;
-            }
-            return false;
-          }),
-          tap((queryParams) => {
-            if (queryParams.page) {
-              const newPage = parseInt(queryParams.page, 10);
-              this.page = newPage;
-            } else {
-              this.page = 1;
-            }
-            if (queryParams.types) {
-              const types = queryParams.types.split(',').map((str: string) => parseInt(str, 10));
-              this.types = types.map((id: number) => this.txTypes[id - 1]);
-              this.radioGroupForm.get('txTypes').setValue(types, { emitEvent: false });
-            } else {
-              this.types = [];
-              this.radioGroupForm.get('txTypes').setValue(this.txTypesDefaultChecked, { emitEvent: false });
-            }
-            this.cd.markForCheck();
-          })
-        ),
-      this.radioGroupForm.valueChanges
-        .pipe(
-          tap((data) => {
-            this.types = data.txTypes.map((id: number) => this.txTypes[id - 1]);
-            if (this.types.length === this.txTypes.length) {
-              this.types = [];
-            }
-            this.page = 1;
-            this.typesChanged(data.txTypes);
-            this.cd.markForCheck();
-          })
-        ),
-      )
+    this.transactions$ = this.route.queryParams
       .pipe(
+        tap((queryParams) => {
+          if (queryParams.page) {
+            const newPage = parseInt(queryParams.page, 10);
+            this.page = newPage;
+          } else {
+            this.page = 1;
+          }
+          if (queryParams.types) {
+            const types = queryParams.types.split(',').map((str: string) => parseInt(str, 10));
+            this.types = types.map((id: number) => this.txTypes[id - 1]);
+            this.radioGroupForm.get('txTypes').setValue(types, { emitEvent: false });
+          } else {
+            this.types = [];
+            this.radioGroupForm.get('txTypes').setValue([], { emitEvent: false });
+          }
+          this.cd.markForCheck();
+        }),
         switchMap(() => this.bisqApiService.listTransactions$((this.page - 1) * this.itemsPerPage, this.itemsPerPage, this.types)),
         map((response) =>  [response.body, parseInt(response.headers.get('x-total-count'), 10)])
       );
+
+    this.radioGroupSubscription = this.radioGroupForm.valueChanges
+      .subscribe((data) => {
+        this.types = data.txTypes.map((id: number) => this.txTypes[id - 1]);
+        if (this.types.length === this.txTypes.length) {
+          this.types = [];
+        }
+        this.page = 1;
+        this.typesChanged(data.txTypes);
+        this.cd.markForCheck();
+      });
   }
 
   pageChange(page: number) {
@@ -144,8 +132,6 @@ export class BisqTransactionsComponent implements OnInit {
       queryParams: { page: page },
       queryParamsHandling: 'merge',
     });
-    // trigger queryParams change
-    this.page = -1;
   }
 
   typesChanged(types: number[]) {
@@ -171,5 +157,9 @@ export class BisqTransactionsComponent implements OnInit {
 
   onResize(event: any) {
     this.paginationMaxSize = event.target.innerWidth < 670 ? 3 : 5;
+  }
+
+  ngOnDestroy(): void {
+    this.radioGroupSubscription.unsubscribe();
   }
 }
