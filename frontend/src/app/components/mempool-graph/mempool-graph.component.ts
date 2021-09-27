@@ -120,21 +120,15 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           },
           symbolSize: (this.template === 'advanced') ? 10 : 10,
           showSymbol: false,
-          areaStyle: {
-            opacity: 1,
-            color: chartColors[index],
-          },
           emphasis: {
-            focus: 'series',
+            focus: 'none',
             areaStyle: {
-              opacity: 1,
-            },
-            itemStyle: {
-              opacity: 0.2,
+              opacity: 0.85,
             },
           },
-          itemStyle: {
-            opacity: 0,
+          areaStyle: {
+            color: chartColors[index],
+            opacity: 1,
           },
           data: this.vbytesPipe.transform(value, 2, 'vB', 'MvB', true)
         };
