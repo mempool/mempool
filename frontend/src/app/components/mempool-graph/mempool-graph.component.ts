@@ -226,7 +226,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
               </td>
               <td class="total-progress-sum-bar">
                 <span class="total-percentage-bar-background">
-                  <span style="width: ${progressPercentageSum.toFixed(2)}%; background-color: ${this.chartColorsOrdered[index]}"></span>
+                  <span style="width: ${progressPercentageSum.toFixed(2)}%; background-color: ${this.chartColorsOrdered[3]}"></span>
                 </span>
               </td>
             </tr>`);
