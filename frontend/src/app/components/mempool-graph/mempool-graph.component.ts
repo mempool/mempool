@@ -66,8 +66,10 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   }
 
   onChartReady(myChart: any) {
-    myChart.on('mouseover', 'series', (serie: any) => {
-      this.hoverIndexSerie = serie.seriesIndex;
+    myChart.getZr().on('mousemove', e => {
+      if (e.target !== undefined) {
+        this.hoverIndexSerie = e.target.parent.parent.__ecComponentInfo.index;
+      }
     });
   }
 
@@ -109,7 +111,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         return {
           name: this.feeLevelsOrdered[index],
           type: 'line',
-          stack: 'total',
+          stack: 'fees',
           smooth: false,
           markPoint: {
             symbol: 'rect',
@@ -118,8 +120,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
             width: 0,
             opacity: 0,
           },
-          symbolSize: (this.template === 'advanced') ? 10 : 10,
-          showSymbol: false,
+          symbol: 'none',
           emphasis: {
             focus: 'none',
             areaStyle: {
