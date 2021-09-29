@@ -1,6 +1,8 @@
 import { Component, OnInit, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnChanges } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { VbytesPipe } from 'src/app/shared/pipes/bytes-pipe/vbytes.pipe';
+import { formatNumber } from "@angular/common";
+
 import { OptimizedMempoolStats } from 'src/app/interfaces/node-api.interface';
 import { StateService } from 'src/app/services/state.service';
 import { StorageService } from 'src/app/services/storage.service';
@@ -196,7 +198,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
               if (this.hoverIndexSerie === hoverActive) {
                 progressPercentageText = `<div class="total-parcial-active">
                   <span class="progress-percentage">
-                    ${progressPercentage.toFixed(2)}
+                    ${formatNumber(progressPercentage, this.locale, '1.2-2')}
                     <span class="symbol">%</span>
                   </span>
                   <span class="total-parcial-vbytes">
@@ -226,7 +228,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
               </td>
               <td class="total-progress-sum-bar">
                 <span class="total-percentage-bar-background">
-                  <span style="width: ${progressPercentageSum.toFixed(2)}%; background-color: ${this.chartColorsOrdered[3]}"></span>
+                  <span style="width: ${formatNumber(progressPercentageSum, this.locale, '1.2-2')}%; background-color: ${this.chartColorsOrdered[3]}"></span>
                 </span>
               </td>
             </tr>`);
