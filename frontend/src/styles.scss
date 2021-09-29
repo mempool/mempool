@@ -773,6 +773,21 @@ th {
       @extend .mempool-graph;
       direction: ltr;
     }
+    .title-block {
+      .title {
+        float: right;
+      }
+    }
+    .container-buttons {
+      float: left !important;
+      width: auto !important;
+    }
+    .tx-link {
+      margin-right: 0px;
+      @media (min-width: 768px) {
+        margin-right: 10px;
+      }
+    }
 }
 
 
