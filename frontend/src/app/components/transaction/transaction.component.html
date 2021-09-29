@@ -8,9 +8,9 @@
         <span class="d-none d-lg-inline">{{ rbfTransaction.txid }}</span>
       </a>
     </div>
-  
+
     <div>
-      <div class="title float-left">
+      <div class="title">
         <h1 i18n="shared.transaction">Transaction</h1>
       </div>
 
@@ -22,7 +22,7 @@
         <app-clipboard [text]="txId"></app-clipboard>
       </div>
 
-      <div class="container-buttons float-right">
+      <div class="container-buttons">
         <ng-template [ngIf]="tx?.status?.confirmed">
           <button *ngIf="latestBlock" type="button" class="btn btn-sm btn-success">
             <ng-container *ngTemplateOutlet="latestBlock.height - tx.status.block_height + 1 == 1 ? confirmationSingular : confirmationPlural; context: {$implicit: latestBlock.height - tx.status.block_height + 1}"></ng-container>
@@ -41,7 +41,7 @@
   <ng-template [ngIf]="!isLoadingTx && !error">
 
     <ng-template [ngIf]="tx.status.confirmed" [ngIfElse]="unconfirmedTemplate">
-    
+
       <div class="box">
         <div class="row">
           <div class="col-sm">
@@ -309,7 +309,7 @@
       <h5 i18n="transaction.error.waiting-for-it-to-appear">Waiting for it to appear in the mempool...</h5>
       <div class="spinner-border text-light mt-2"></div>
     </div>
-    
+
     <ng-template #errorTemplate>
       <div class="text-center">
         <h3>{{ error.error }}</h3>
