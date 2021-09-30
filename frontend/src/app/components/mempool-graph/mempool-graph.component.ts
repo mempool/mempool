@@ -129,6 +129,22 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
               opacity: 0.85,
             },
           },
+          markLine: {
+            silent: true,
+            symbol: 'none',
+            lineStyle: {
+              color: '#fff',
+              opacity: 0.75,
+              width: 2,
+            },
+            data: [{
+              yAxis: '1000000',
+              label: {
+                show: false,
+                color: '#ffffff',
+              }
+            }],
+          },
           areaStyle: {
             color: chartColors[index],
             opacity: 1,
