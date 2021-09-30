@@ -133,7 +133,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
             color: chartColors[index],
             opacity: 1,
           },
-          data: this.vbytesPipe.transform(value, 2, 'vB', 'MvB', true)
+          data: value
         };
       }
     });
