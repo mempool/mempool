@@ -133,7 +133,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
             symbol: 'none',
             lineStyle: {
               color: '#fff',
-              opacity: 0.75,
+              opacity: 1,
               width: 2,
             },
             data: [{
