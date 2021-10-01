@@ -134,8 +134,8 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
             symbol: 'none',
             lineStyle: {
               color: '#fff',
-              opacity: 0.75,
-              width: 2,
+              opacity: 1,
+              width: this.inverted ? 2 : 0,
             },
             data: [{
               yAxis: '1000000',
