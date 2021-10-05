@@ -16,14 +16,14 @@
       <div class="col">
         <div class="card">
           <div class="card-body">
-            <ng-container *ngTemplateOutlet="stateService.network === 'liquid' ? lbtcPegs : mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
+            <ng-container *ngTemplateOutlet="mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
           </div>
         </div>
       </div>
       <div class="col">
         <div class="card">
           <div class="card-body">
-            <ng-container *ngTemplateOutlet="txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
+            <ng-container *ngTemplateOutlet="stateService.network === 'liquid' ? lbtcPegs : txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
           </div>
         </div>
       </div>
@@ -44,36 +44,35 @@
         <div class="card graph-card">
           <div class="card-body pl-0">
             <div style="padding-left: 1.25rem;">
-              <ng-container *ngTemplateOutlet="stateService.network === 'liquid' ? lbtcPegs : mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
+              <ng-container *ngTemplateOutlet="mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
               <hr>
             </div>
-            <div class="mempool-graph" *ngIf="stateService.network === 'liquid'; else mempoolGraph">
-              <app-lbtc-pegs-graph [data]="liquidPegsMonth$ | async"></app-lbtc-pegs-graph>
+            <div class="mempool-graph" *ngIf="(mempoolStats$ | async) as mempoolStats; else loadingSpinner">
+              <app-mempool-graph
+                [template]="'widget'"
+                [limitFee]="150"
+                [data]="mempoolStats.mempool"
+              ></app-mempool-graph>
             </div>
-            <ng-template #mempoolGraph>
-              <div class="mempool-graph" *ngIf="(mempoolStats$ | async) as mempoolStats; else loadingSpinner">
-                <app-mempool-graph
-                  [template]="'widget'"
-                  [limitFee]="150"
-                  [data]="mempoolStats.mempool"
-                ></app-mempool-graph>
-              </div>
-            </ng-template>
           </div>
         </div>
       </div>
       <div class="col">
         <div class="card graph-card">
           <div class="card-body">
-            <ng-container *ngTemplateOutlet="txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
-            <br>
+            <ng-container *ngTemplateOutlet="stateService.network === 'liquid' ? lbtcPegs : txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
             <hr>
-            <div class="mempool-graph" *ngIf="(mempoolStats$ | async) as mempoolStats; else loadingSpinner">
-              <app-incoming-transactions-graph
-                [left]="50"
-                [data]="mempoolStats.weightPerSecond"
-                ></app-incoming-transactions-graph>
+            <div class="mempool-graph" *ngIf="stateService.network === 'liquid'; else mempoolGraph">
+              <app-lbtc-pegs-graph [data]="liquidPegsMonth$ | async"></app-lbtc-pegs-graph>
             </div>
+            <ng-template #mempoolGraph>
+              <div class="mempool-graph" *ngIf="(mempoolStats$ | async) as mempoolStats; else loadingSpinner">
+                <app-incoming-transactions-graph
+                  [left]="50"
+                  [data]="mempoolStats.weightPerSecond"
+                  ></app-incoming-transactions-graph>
+              </div>
+            </ng-template>
           </div>
         </div>
       </div>
