@@ -61,3 +61,39 @@
 .incoming-transactions-graph {
   height: 600px;
 }
+
+
+.dropdown-fees {
+  padding: 10px 0px;
+  min-width: 130px;
+  padding: 2px ​20px 0px;
+  li {
+    width: 100%;
+    font-size: 14px;
+    padding: 0px 0px;
+    padding-left: 20px;
+    transition: 200ms all ease-in-out;
+    &:hover {
+      background-color: #10121e;
+      cursor: pointer;
+    }
+  }
+  .square {
+    transition: 200ms all ease-in-out;
+    height: 12px;
+    width: 12px;
+    margin-right: 10px;
+    border-radius: 1px;
+    display: inline-block;
+    position: relative;
+    top: 1px;
+  }
+  .inactive {
+    .square {
+      background-color: #aaa !important;
+    }
+    .fee-text {
+      text-decoration: line-through;
+    }
+  }
+}
