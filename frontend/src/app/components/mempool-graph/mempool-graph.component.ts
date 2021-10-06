@@ -45,19 +45,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.inverted = this.storageService.getValue('inverted-graph') === 'true';
-    for (let i = 0; i < feeLevels.length; i++) {
-      if (feeLevels[i] === this.limitFee) {
-        this.feeLimitIndex = i;
-      }
-      if (feeLevels[i] <= this.limitFee) {
-        if (i === 0) {
-          this.feeLevelsOrdered.push('0 - 1');
-        } else {
-          this.feeLevelsOrdered.push(`${feeLevels[i - 1]} - ${feeLevels[i]}`);
-        }
-      }
-    }
-    this.chartColorsOrdered =  chartColors.slice(0, this.feeLevelsOrdered.length);
     this.mountFeeChart();
   }
 
@@ -136,6 +123,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   }
 
   mountFeeChart() {
+    this.orderLevels();
     const { labels, series } = this.mempoolVsizeFeesData;
 
     const seriesGraph = series.map((value: Array<number>, index: number) => {
@@ -201,7 +189,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         pageTextStyle: {
           color: '#666',
         },
-        show: (this.template === 'advanced') ? true : false,
+        show: false,
         textStyle: {
           color: '#888',
         },
@@ -391,6 +379,22 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       totalValue: totalValueTemp,
       totalValueArray: totalValueArray.reverse(),
     };
+  }
+
+  orderLevels() {
+    for (let i = 0; i < feeLevels.length; i++) {
+      if (feeLevels[i] === this.limitFee) {
+        this.feeLimitIndex = i;
+      }
+      if (feeLevels[i] <= this.limitFee) {
+        if (i === 0) {
+          this.feeLevelsOrdered.push('0 - 1');
+        } else {
+          this.feeLevelsOrdered.push(`${feeLevels[i - 1]} - ${feeLevels[i]}`);
+        }
+      }
+    }
+    this.chartColorsOrdered =  chartColors.slice(0, this.feeLevelsOrdered.length);
   }
 }
 
