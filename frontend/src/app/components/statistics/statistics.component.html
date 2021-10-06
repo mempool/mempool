@@ -38,7 +38,7 @@
             </div>
 
             <div class="d-inline-block" ngbDropdown #myDrop="ngbDropdown">
-              <button class="btn btn-primary btn-sm ml-2" id="dropdownFees" ngbDropdownAnchor (focus)="myDrop.open()">Fee Ranges</button>
+              <button class="btn btn-primary btn-sm ml-2" id="dropdownFees" ngbDropdownAnchor (focus)="myDrop.open()">Fees Range</button>
               <div class="dropdown-fees" ngbDropdownMenu aria-labelledby="dropdownFees">
                 <ng-template ngFor let-fee let-i="index" [ngForOf]="feeLevels">
                   <ng-template [ngIf]="fee === 1">
