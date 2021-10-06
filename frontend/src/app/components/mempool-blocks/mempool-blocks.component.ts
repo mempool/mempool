@@ -184,7 +184,8 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   }
 
   reduceMempoolBlocksToFitScreen(blocks: MempoolBlock[]): MempoolBlock[] {
-    const blocksAmount = Math.min(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT, Math.floor(window.innerWidth / 2 / (this.blockWidth + this.blockPadding)));
+    const innerWidth = this.stateService.env.BASE_MODULE !== 'liquid' && window.innerWidth <= 767.98 ? window.innerWidth : window.innerWidth / 2;
+    const blocksAmount = Math.min(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT, Math.floor(innerWidth / (this.blockWidth + this.blockPadding)));
     while (blocks.length > blocksAmount) {
       const block = blocks.pop();
       const lastBlock = blocks[blocks.length - 1];
