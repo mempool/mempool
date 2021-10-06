@@ -67,6 +67,14 @@
   padding: 10px 0px;
   min-width: 130px;
   padding: 2px ​20px 0px;
+  left: -38px !important;
+  position: absolute !important;
+
+  ul {
+    list-style: none;
+    padding: 0px;
+    margin-bottom: 0px;
+  }
   li {
     width: 100%;
     font-size: 14px;
@@ -90,10 +98,11 @@
   }
   .inactive {
     .square {
-      background-color: #aaa !important;
+      background-color: #ffffff66 !important;
     }
     .fee-text {
       text-decoration: line-through;
+      color: #777;
     }
   }
 }

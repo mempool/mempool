@@ -25,7 +25,8 @@ export class StatisticsComponent implements OnInit {
   spinnerLoading = false;
   feeLevels = feeLevels;
   chartColors = chartColors;
-  filterFeeIndex = 200;
+  filterFeeIndex = 500;
+  dropDownOpen = false;
 
   mempoolStats: OptimizedMempoolStats[] = [];
 
@@ -142,5 +143,9 @@ export class StatisticsComponent implements OnInit {
 
   filterFees(index: number) {
     this.filterFeeIndex = index;
+  }
+
+  filterClick() {
+    this.dropDownOpen = !this.dropDownOpen;
   }
 }
