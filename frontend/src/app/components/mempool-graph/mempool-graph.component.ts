@@ -163,7 +163,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         trigger: 'axis',
         alwaysShowContent: false,
         position: (pos, params, el, elRect, size) => {
-          const positions = { top: (this.template === 'advanced') ? 30 : -30 };
+          const positions = { top: (this.template === 'advanced') ? 0 : -30 };
           positions[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 60;
           return positions;
         },
