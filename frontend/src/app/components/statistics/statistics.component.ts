@@ -25,7 +25,7 @@ export class StatisticsComponent implements OnInit {
   spinnerLoading = false;
   feeLevels = feeLevels;
   chartColors = chartColors;
-  filterFeeIndex = 500;
+  filterFeeIndex = 1;
   dropDownOpen = false;
 
   mempoolStats: OptimizedMempoolStats[] = [];

@@ -17,6 +17,7 @@ import { feeLevels, chartColors } from 'src/app/app.constants';
 export class MempoolGraphComponent implements OnInit, OnChanges {
   @Input() data: any[];
   @Input() limitFee = 350;
+  @Input() limitFilterFee = 1;
   @Input() height: number | string = 200;
   @Input() top: number | string = 20;
   @Input() right: number | string = 10;
@@ -63,33 +64,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           this.hoverIndexSerie = e.target.parent.parent.__ecComponentInfo.index;
       }
     });
-
-    myChart.on('legendselectchanged', (params) => {
-      let control = false;
-      Object.entries(params.selected).forEach(([key]) => {
-        if (control) {
-          myChart.dispatchAction({
-            type: 'legendUnSelect',
-            name: key
-          });
-        } else {
-          myChart.dispatchAction({
-            type: 'legendSelect',
-            name: key
-          });
-        }
-        if (params.name === key) {
-          control = true;
-        }
-      });
-      for (let i = 0; i < params.length; i++) {
-        if (i === 0) {
-          this.feeLevelsOrdered.push('0 - 1');
-        } else {
-          this.feeLevelsOrdered.push(`${params[i - 1]} - ${params[i]}`);
-        }
-      }
-    });
   }
 
   handleNewMempoolData(mempoolStats: OptimizedMempoolStats[]) {
@@ -127,7 +101,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     const { labels, series } = this.mempoolVsizeFeesData;
 
     const seriesGraph = series.map((value: Array<number>, index: number) => {
-      if (index <= this.feeLimitIndex){
+      if (index >= this.feeLimitIndex){
         return {
           name: this.feeLevelsOrdered[index],
           type: 'line',
@@ -176,26 +150,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       series: this.inverted ? [...seriesGraph].reverse() : seriesGraph,
       hover: true,
       color: this.inverted ? [...this.chartColorsOrdered].reverse() : this.chartColorsOrdered,
-      legend: {
-        bottom: 20,
-        data: this.inverted ? this.feeLevelsOrdered : [...this.feeLevelsOrdered].reverse(),
-        left: 0,
-        icon: 'square',
-        inactiveColor: '#444',
-        orient: 'vertical',
-        pageIconSize: 12,
-        pageIconColor: '#fff',
-        pageIconInactiveColor: '#444',
-        pageTextStyle: {
-          color: '#666',
-        },
-        show: false,
-        textStyle: {
-          color: '#888',
-        },
-        top: 20,
-        type: 'scroll',
-      },
       tooltip: {
         show: (window.innerWidth >= 768) ? true : false,
         trigger: 'axis',
@@ -383,7 +337,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
   orderLevels() {
     for (let i = 0; i < feeLevels.length; i++) {
-      if (feeLevels[i] === this.limitFee) {
+      if (feeLevels[i] === this.limitFilterFee) {
         this.feeLimitIndex = i;
       }
       if (feeLevels[i] <= this.limitFee) {

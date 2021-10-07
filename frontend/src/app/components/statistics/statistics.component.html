@@ -45,7 +45,7 @@
                 <ul>
                   <ng-template ngFor let-fee let-i="index" [ngForOf]="feeLevels">
                     <ng-template [ngIf]="fee === 1">
-                      <li (click)="filterFees(fee)" [class]="filterFeeIndex < fee ? 'inactive' : ''">
+                      <li (click)="filterFees(fee)" [class]="filterFeeIndex > fee ? 'inactive' : ''">
                         <ng-template [ngIf]="inverted">
                           <span class="square" [ngStyle]="{'backgroundColor': chartColors[i]}"></span>
                         </ng-template>
@@ -56,7 +56,7 @@
                       </li>
                     </ng-template>
                     <ng-template [ngIf]="fee <= 500 && fee !== 1">
-                      <li (click)="filterFees(fee)" [class]="filterFeeIndex < fee ? 'inactive' : ''">
+                      <li (click)="filterFees(fee)" [class]="filterFeeIndex > fee ? 'inactive' : ''">
                       <ng-template [ngIf]="inverted">
                         <span class="square" [ngStyle]="{'backgroundColor': chartColors[i]}"></span>
                         <span class="fee-text" >{{feeLevels[i - 1]}} - {{ fee }}</span>
@@ -80,7 +80,8 @@
             <app-mempool-graph
               dir="ltr"
               [template]="'advanced'"
-              [limitFee]="filterFeeIndex"
+              [limitFee]="500"
+              [limitFilterFee]="filterFeeIndex"
               [height]="500"
               [left]="65"
               [right]="10"
