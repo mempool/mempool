@@ -453,7 +453,7 @@ html:lang(ru) .card-title {
 .fees-wrapper-tooltip-chart-advanced,
 .tx-wrapper-tooltip-chart-advanced {
   background: rgba(#1d1f31, 0.98);
-  width: 250px;
+  width: 275px;
 
   thead {
     th {
@@ -470,11 +470,12 @@ html:lang(ru) .card-title {
     margin-bottom: 5px;
   }
   .item {
-    line-height: 1;
+    line-height: 1.25;
+    font-size: 11px;
     .value {
       width: 60px;
       .symbol {
-        font-size: 10px !important;
+        font-size: 9px !important;
       }
     }
     .total-partial {
