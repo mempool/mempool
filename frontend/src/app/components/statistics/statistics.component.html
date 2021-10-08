@@ -50,7 +50,7 @@
                           <span class="square" [ngStyle]="{'backgroundColor': chartColors[i]}"></span>
                         </ng-template>
                         <ng-template [ngIf]="!inverted">
-                          <span class="square" [ngStyle]="{'backgroundColor': chartColors[i]}"></span>
+                          <span class="square" [ngStyle]="{'backgroundColor': chartColors[i - 1]}"></span>
                         </ng-template>
                         <span class="fee-text" >0 - {{ fee }}</span>
                       </li>
@@ -62,8 +62,8 @@
                         <span class="fee-text" >{{feeLevels[i - 1]}} - {{ fee }}</span>
                       </ng-template>
                       <ng-template [ngIf]="!inverted">
-                          <span class="square" [ngStyle]="{'backgroundColor': chartColors[i]}"></span>
-                          <span class="fee-text" >{{feeLevels[i + 1]}} - {{ fee }}</span>
+                        <span class="square" [ngStyle]="{'backgroundColor': chartColors[i - 1]}"></span>
+                        <span class="fee-text" >{{feeLevels[i + 1]}} - {{ fee }}</span>
                       </ng-template>
                     </li>
                     </ng-template>
