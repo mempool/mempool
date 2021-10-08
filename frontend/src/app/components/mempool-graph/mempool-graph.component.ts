@@ -17,6 +17,7 @@ import { feeLevels, chartColors } from 'src/app/app.constants';
 export class MempoolGraphComponent implements OnInit, OnChanges {
   @Input() data: any[];
   @Input() limitFee = 350;
+  @Input() limitFilterFee = 1;
   @Input() height: number | string = 200;
   @Input() top: number | string = 20;
   @Input() right: number | string = 10;
@@ -45,19 +46,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.inverted = this.storageService.getValue('inverted-graph') === 'true';
-    for (let i = 0; i < feeLevels.length; i++) {
-      if (feeLevels[i] === this.limitFee) {
-        this.feeLimitIndex = i;
-      }
-      if (feeLevels[i] <= this.limitFee) {
-        if (i === 0) {
-          this.feeLevelsOrdered.push('0 - 1');
-        } else {
-          this.feeLevelsOrdered.push(`${feeLevels[i - 1]} - ${feeLevels[i]}`);
-        }
-      }
-    }
-    this.chartColorsOrdered =  chartColors.slice(0, this.feeLevelsOrdered.length);
     this.mountFeeChart();
   }
 
@@ -68,9 +56,12 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   }
 
   onChartReady(myChart: any) {
-    myChart.getZr().on('mousemove', e => {
-      if (e.target !== undefined) {
-        this.hoverIndexSerie = e.target.parent.parent.__ecComponentInfo.index;
+    myChart.getZr().on('mousemove', (e: any) => {
+      if (e.target !== undefined &&
+        e.target.parent !== undefined &&
+        e.target.parent.parent !== null &&
+        e.target.parent.parent.__ecComponentInfo !== undefined) {
+          this.hoverIndexSerie = e.target.parent.parent.__ecComponentInfo.index;
       }
     });
   }
@@ -106,10 +97,11 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   }
 
   mountFeeChart() {
+    this.orderLevels();
     const { labels, series } = this.mempoolVsizeFeesData;
 
     const seriesGraph = series.map((value: Array<number>, index: number) => {
-      if (index <= this.feeLimitIndex){
+      if (index >= this.feeLimitIndex){
         return {
           name: this.feeLevelsOrdered[index],
           type: 'line',
@@ -175,85 +167,81 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           type: 'line',
         },
         formatter: (params: any) => {
-          const colorSpan = (index: any) => `<span class="indicator" style="background-color: ${this.chartColorsOrdered[index]}"></span>
-            <span>
-              ${this.feeLevelsOrdered[index]}
-            </span>`;
-          const totals = (values: any) => {
-            let totalValueTemp = 0;
-            const totalValueArrayTemp = [];
-            const valuesInverted = this.inverted ? values : [...values].reverse();
-            for (const item of valuesInverted) {
-              totalValueTemp += item.value;
-              totalValueArrayTemp.push(totalValueTemp);
-            }
-            return {
-              totalValue: totalValueTemp,
-              totalValueArray: totalValueArrayTemp.reverse(),
-              valuesOrdered: this.inverted ? [...values].reverse() : values,
-            };
-          };
-          const { totalValue, totalValueArray, valuesOrdered } = totals(params);
-          const title = `<div class="title">
-            ${params[0].axisValue}
-            <span class="total-value">
-              ${this.vbytesPipe.transform(totalValue, 2, 'vB', 'MvB', false)}
-            </span>
-          </div>`;
+          const { totalValue, totalValueArray } = this.getTotalValues(params);
           const itemFormatted = [];
           let totalParcial = 0;
           let progressPercentageText = '';
-          params.map((item: any, index: number) => {
+          const items = this.inverted ? [...params].reverse() : params;
+          items.map((item: any, index: number) => {
             totalParcial += item.value;
             let progressPercentage = 0;
             let progressPercentageSum = 0;
-            if (index <= this.feeLimitIndex) {
-              progressPercentage = (item.value / totalValue) * 100;
-              progressPercentageSum = (totalValueArray[index] / totalValue) * 100;
-              let activeItemClass = '';
-              const hoverActive = (this.inverted) ? Math.abs(item.seriesIndex - params.length + 1) : item.seriesIndex;
-              if (this.hoverIndexSerie === hoverActive) {
-                progressPercentageText = `<div class="total-parcial-active">
-                  <span class="progress-percentage">
-                    ${formatNumber(progressPercentage, this.locale, '1.2-2')}
-                    <span class="symbol">%</span>
+            progressPercentage = (item.value / totalValue) * 100;
+            progressPercentageSum = (totalValueArray[index] / totalValue) * 100;
+            let activeItemClass = '';
+            let hoverActive: number;
+            if (this.inverted) {
+              hoverActive = Math.abs(this.feeLevelsOrdered.length - item.seriesIndex - this.feeLevelsOrdered.length);
+            } else {
+              hoverActive = item.seriesIndex;
+            }
+            if (this.hoverIndexSerie === hoverActive) {
+              progressPercentageText = `<div class="total-parcial-active">
+                <span class="progress-percentage">
+                  ${formatNumber(progressPercentage, this.locale, '1.2-2')}
+                  <span class="symbol">%</span>
+                </span>
+                <span class="total-parcial-vbytes">
+                  ${this.vbytesPipe.transform(totalParcial, 2, 'vB', 'MvB', false)}
+                </span>
+                <div class="total-percentage-bar">
+                  <span class="total-percentage-bar-background">
+                    <span style="
+                      width: ${progressPercentage}%;
+                      background: ${this.inverted ? this.chartColorsOrdered[index] : item.color}
+                    "></span>
                   </span>
-                  <span class="total-parcial-vbytes">
-                    ${this.vbytesPipe.transform(totalParcial, 2, 'vB', 'MvB', false)}
-                  </span>
-                  <div class="total-percentage-bar">
-                    <span class="total-percentage-bar-background">
-                      <span style="width: ${progressPercentage}%; background: ${this.chartColorsOrdered[index]}"></span>
-                    </span>
-                  </div>
-                </div>`;
-                activeItemClass = 'active';
-              }
-              itemFormatted.push(`<tr class="item ${activeItemClass}">
+                </div>
+              </div>`;
+              activeItemClass = 'active';
+            }
+            itemFormatted.push(`<tr class="item ${activeItemClass}">
               <td class="indicator-container">
-                ${colorSpan(item.seriesIndex)}
-              </td>
-              <td class="total-progress-sum">
+                <span class="indicator" style="
+                  background-color: ${this.inverted ? this.chartColorsOrdered[index] : item.color}
+                "></span>
                 <span>
-                  ${this.vbytesPipe.transform(valuesOrdered[item.seriesIndex].value, 2, 'vB', 'MvB', false)}
+                  ${this.inverted ? this.feeLevelsOrdered[index] : item.seriesName}
                 </span>
               </td>
               <td class="total-progress-sum">
                 <span>
-                  ${this.vbytesPipe.transform(totalValueArray[item.seriesIndex], 2, 'vB', 'MvB', false)}
+                  ${this.vbytesPipe.transform(item.value, 2, 'vB', 'MvB', false)}
+                </span>
+              </td>
+              <td class="total-progress-sum">
+                <span>
+                  ${this.vbytesPipe.transform(totalValueArray[index], 2, 'vB', 'MvB', false)}
                 </span>
               </td>
               <td class="total-progress-sum-bar">
                 <span class="total-percentage-bar-background">
-                  <span style="width: ${progressPercentageSum.toFixed(2)}%; background-color: ${this.chartColorsOrdered[3]}"></span>
+                  <span style="
+                    width: ${progressPercentageSum.toFixed(2)}%;
+                    background-color: ${this.chartColorsOrdered[3]}
+                  "></span>
                 </span>
               </td>
             </tr>`);
-            }
           });
           const classActive = (this.template === 'advanced') ? 'fees-wrapper-tooltip-chart-advanced' : '';
           return `<div class="fees-wrapper-tooltip-chart ${classActive}">
-            ${title}
+            <div class="title">
+              ${params[0].axisValue}
+              <span class="total-value">
+                ${this.vbytesPipe.transform(totalValue, 2, 'vB', 'MvB', false)}
+              </span>
+            </div>
             <table>
               <thead>
                 <tr>
@@ -331,6 +319,36 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         }
       },
     };
+  }
+
+  getTotalValues = (values: any) => {
+    let totalValueTemp = 0;
+    const totalValueArray = [];
+    const valuesInverted = this.inverted ? values : [...values].reverse();
+    for (const item of valuesInverted) {
+      totalValueTemp += item.value;
+      totalValueArray.push(totalValueTemp);
+    }
+    return {
+      totalValue: totalValueTemp,
+      totalValueArray: totalValueArray.reverse(),
+    };
+  }
+
+  orderLevels() {
+    for (let i = 0; i < feeLevels.length; i++) {
+      if (feeLevels[i] === this.limitFilterFee) {
+        this.feeLimitIndex = i;
+      }
+      if (feeLevels[i] <= this.limitFee) {
+        if (i === 0) {
+          this.feeLevelsOrdered.push('0 - 1');
+        } else {
+          this.feeLevelsOrdered.push(`${feeLevels[i - 1]} - ${feeLevels[i]}`);
+        }
+      }
+    }
+    this.chartColorsOrdered =  chartColors.slice(0, this.feeLevelsOrdered.length);
   }
 }
 

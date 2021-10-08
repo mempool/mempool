@@ -36,6 +36,42 @@
                 <input ngbButton type="radio" [value]="'1y'" [routerLink]="['/graphs' | relativeUrl]" fragment="1y"> 1Y
               </label>
             </div>
+
+            <div class="d-inline-block" ngbDropdown #myDrop="ngbDropdown">
+              <button class="btn btn-primary btn-sm ml-2" id="dropdownFees" ngbDropdownAnchor (click)="myDrop.toggle()">
+                <fa-icon [icon]="['fas', 'filter']" [fixedWidth]="true" i18n-title="statistics.component-filter.title" title="Filter"></fa-icon>
+              </button>
+              <div class="dropdown-fees" ngbDropdownMenu aria-labelledby="dropdownFees">
+                <ul>
+                  <ng-template ngFor let-fee let-i="index" [ngForOf]="feeLevels">
+                    <ng-template [ngIf]="fee === 1">
+                      <li (click)="filterFees(fee)" [class]="filterFeeIndex > fee ? 'inactive' : ''">
+                        <ng-template [ngIf]="inverted">
+                          <span class="square" [ngStyle]="{'backgroundColor': chartColors[i]}"></span>
+                        </ng-template>
+                        <ng-template [ngIf]="!inverted">
+                          <span class="square" [ngStyle]="{'backgroundColor': chartColors[i - 1]}"></span>
+                        </ng-template>
+                        <span class="fee-text" >0 - {{ fee }}</span>
+                      </li>
+                    </ng-template>
+                    <ng-template [ngIf]="fee <= 500 && fee !== 1">
+                      <li (click)="filterFees(fee)" [class]="filterFeeIndex > fee ? 'inactive' : ''">
+                      <ng-template [ngIf]="inverted">
+                        <span class="square" [ngStyle]="{'backgroundColor': chartColors[i]}"></span>
+                        <span class="fee-text" >{{feeLevels[i - 1]}} - {{ fee }}</span>
+                      </ng-template>
+                      <ng-template [ngIf]="!inverted">
+                          <span class="square" [ngStyle]="{'backgroundColor': chartColors[i - 1]}"></span>
+                          <span class="fee-text" >{{feeLevels[i + 1]}} - {{ fee }}</span>
+                      </ng-template>
+                    </li>
+                    </ng-template>
+                  </ng-template>
+                </ul>
+              </div>
+            </div>
+
             <button (click)="invertGraph()" class="btn btn-primary btn-sm ml-2 d-none d-md-inline"><fa-icon [icon]="['fas', 'exchange-alt']" [rotate]="90" [fixedWidth]="true" i18n-title="statistics.component-invert.title" title="Invert"></fa-icon></button>
           </form>
         </div>
@@ -45,8 +81,10 @@
               dir="ltr"
               [template]="'advanced'"
               [limitFee]="500"
+              [limitFilterFee]="filterFeeIndex"
               [height]="500"
               [left]="65"
+              [right]="10"
               [data]="mempoolStats"
             ></app-mempool-graph>
           </div>
