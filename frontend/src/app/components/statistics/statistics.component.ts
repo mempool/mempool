@@ -11,6 +11,7 @@ import { ApiService } from '../../services/api.service';
 import { StateService } from 'src/app/services/state.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { StorageService } from 'src/app/services/storage.service';
+import { feeLevels, chartColors } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-statistics',
@@ -22,6 +23,10 @@ export class StatisticsComponent implements OnInit {
 
   loading = true;
   spinnerLoading = false;
+  feeLevels = feeLevels;
+  chartColors = chartColors;
+  filterFeeIndex = 1;
+  dropDownOpen = false;
 
   mempoolStats: OptimizedMempoolStats[] = [];
 
@@ -30,7 +35,7 @@ export class StatisticsComponent implements OnInit {
   mempoolTransactionsWeightPerSecondData: any;
 
   radioGroupForm: FormGroup;
-  graphWindowPreference: String;
+  graphWindowPreference: string;
   inverted: boolean;
 
   constructor(
@@ -46,6 +51,10 @@ export class StatisticsComponent implements OnInit {
 
   ngOnInit() {
     this.inverted = this.storageService.getValue('inverted-graph') === 'true';
+    if (!this.inverted) {
+      this.feeLevels = [...feeLevels].reverse();
+      this.chartColors = [...chartColors].reverse();
+    }
     this.seoService.setTitle($localize`:@@5d4f792f048fcaa6df5948575d7cb325c9393383:Graphs`);
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.graphWindowPreference = this.storageService.getValue('graphWindowPreference') ? this.storageService.getValue('graphWindowPreference').trim() : '2h';
@@ -130,5 +139,13 @@ export class StatisticsComponent implements OnInit {
   invertGraph() {
     this.storageService.setValue('inverted-graph', !this.inverted);
     document.location.reload();
+  }
+
+  filterFees(index: number) {
+    this.filterFeeIndex = index;
+  }
+
+  filterClick() {
+    this.dropDownOpen = !this.dropDownOpen;
   }
 }
