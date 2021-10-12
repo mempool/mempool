@@ -138,8 +138,11 @@ h1 {
 }
 
 .disable {
-  font-size: 36px;
+  font-size: 30px;
   color: #393e5c73;
+  @media (min-width: 768px) {
+    font-size: 36px;
+  }
 }
 
 .tx-skeleton {
