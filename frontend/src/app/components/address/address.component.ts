@@ -24,7 +24,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   isLoadingAddress = true;
   transactions: Transaction[];
   isLoadingTransactions = true;
-  retryLoadmore = false;
+  retryLoadMore = false;
   error: any;
   mainSubscription: Subscription;
   addressLoadingStatus$: Observable<number>;
@@ -33,7 +33,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   totalConfirmedTxCount = 0;
   loadedConfirmedTxCount = 0;
   txCount = 0;
-  receieved = 0;
+  received = 0;
   sent = 0;
 
   private tempTransactions: Transaction[];
@@ -183,7 +183,7 @@ export class AddressComponent implements OnInit, OnDestroy {
         });
         transaction.vout.forEach((vout) => {
           if (vout.scriptpubkey_address === this.address.address) {
-            this.receieved += vout.value;
+            this.received += vout.value;
           }
         });
       });
@@ -206,7 +206,7 @@ export class AddressComponent implements OnInit, OnDestroy {
       return;
     }
     this.isLoadingTransactions = true;
-    this.retryLoadmore = false;
+    this.retryLoadMore = false;
     this.electrsApiService.getAddressTransactionsFromHash$(this.address.address, this.lastTransactionTxId)
       .subscribe((transactions: Transaction[]) => {
         this.lastTransactionTxId = transactions[transactions.length - 1].txid;
@@ -216,12 +216,12 @@ export class AddressComponent implements OnInit, OnDestroy {
       },
       (error) => {
         this.isLoadingTransactions = false;
-        this.retryLoadmore = true;
+        this.retryLoadMore = true;
       });
   }
 
   updateChainStats() {
-    this.receieved = this.address.chain_stats.funded_txo_sum + this.address.mempool_stats.funded_txo_sum;
+    this.received = this.address.chain_stats.funded_txo_sum + this.address.mempool_stats.funded_txo_sum;
     this.sent = this.address.chain_stats.spent_txo_sum + this.address.mempool_stats.spent_txo_sum;
     this.txCount = this.address.chain_stats.tx_count + this.address.mempool_stats.tx_count;
     this.totalConfirmedTxCount = this.address.chain_stats.tx_count;
