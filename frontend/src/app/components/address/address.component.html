@@ -1,13 +1,14 @@
 <div class="container-xl">
-  <h1 i18n="shared.address">Address</h1>
-  <div class="tx-link">
-    <a [routerLink]="['/address/' | relativeUrl, addressString]" >
-      <span class="d-inline d-lg-none">{{ addressString | shortenString : 18 }}</span>
-      <span class="d-none d-lg-inline">{{ addressString }}</span>
-    </a>
-    <app-clipboard [text]="addressString"></app-clipboard>
+  <div class="title-address">
+    <h1 i18n="shared.address">Address</h1>
+    <div class="tx-link">
+      <a [routerLink]="['/address/' | relativeUrl, addressString]" >
+        <span class="d-inline d-lg-none">{{ addressString | shortenString : 18 }}</span>
+        <span class="d-none d-lg-inline">{{ addressString }}</span>
+      </a>
+      <app-clipboard [text]="addressString"></app-clipboard>
+    </div>
   </div>
-  <br>
 
   <div class="clearfix"></div>
 

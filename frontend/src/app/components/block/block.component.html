@@ -2,8 +2,8 @@
 
   <div class="title-block" id="block">
     <h1>
-      <ng-template [ngIf]="blockHeight === 0" i18n="block.genesis">Genesis 
-        <div class="next-previous-blocks">
+      <ng-template [ngIf]="blockHeight === 0" i18n="block.genesis">Genesis
+        <span class="next-previous-blocks">
           <a *ngIf="showNextBlocklink" [routerLink]="['/block/' | relativeUrl, nextBlockHeight]" (click)="navigateToNextBlock()" i18n-ngbTooltip="Next Block" ngbTooltip="Next Block" placement="bottom">
             <fa-icon [icon]="['fas', 'angle-left']" [fixedWidth]="true"></fa-icon>
           </a>
@@ -11,10 +11,10 @@
           <span placement="bottom" class="disable">
             <fa-icon [icon]="['fas', 'angle-right']" [fixedWidth]="true"></fa-icon>
           </span>
-        </div>
+        </span>
       </ng-template>
-      <ng-template [ngIf]="blockHeight" i18n="block.block"> Block 
-        <div class="next-previous-blocks">
+      <ng-template [ngIf]="blockHeight" i18n="block.block"> Block
+        <span class="next-previous-blocks">
           <a *ngIf="showNextBlocklink" [routerLink]="['/block/' | relativeUrl, nextBlockHeight]" (click)="navigateToNextBlock()" i18n-ngbTooltip="Next Block" ngbTooltip="Next Block" placement="bottom">
             <fa-icon [icon]="['fas', 'angle-left']" [fixedWidth]="true"></fa-icon>
           </a>
@@ -28,7 +28,7 @@
           <span *ngIf="!showPreviousBlocklink" placement="bottom" class="disable">
             <fa-icon [icon]="['fas', 'angle-right']" [fixedWidth]="true"></fa-icon>
           </span>
-        </div>
+        </span>
       </ng-template>
     </h1>
 
@@ -199,7 +199,7 @@
             <div class="progress-bar progress-darklight" role="progressbar" [ngStyle]="{'width': txsLoadingStatus + '%' }"></div>
           </div>
         </ng-container>
-        
+
       </div>
     </ng-template>
     <ngb-pagination class="pagination-container float-right" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page, blockTxTitle)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
@@ -207,7 +207,7 @@
   </ng-template>
 
   <ng-template [ngIf]="isLoadingBlock && !error">
-    
+
     <div class="box">
       <div class="row">
         <div class="col-sm">

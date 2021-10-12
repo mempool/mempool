@@ -18,7 +18,7 @@
 }
 
 .fiat {
-  display: block;    
+  display: block;
   font-size: 13px;
   @media (min-width: 768px) {
     font-size: 14px;
@@ -122,17 +122,17 @@ h1 {
 }
 
 .next-previous-blocks {
-  font-size: 36px;
+  font-size: 30px;
   display: inline-block;
-  vertical-align: bottom;
+  @media (min-width: 768px) {
+    font-size: 36px;
+  }
 
   a {
     color: #1ad8f4;
     &:hover, &:focus {
       color: #09a3ba;
       display: inline-block;
-      // transform: scale(1.2);
-      // transition: 150ms all ease-in-out;
     }
   }
 }
