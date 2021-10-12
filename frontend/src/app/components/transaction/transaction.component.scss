@@ -39,7 +39,10 @@
 	@media (min-width: 650px) {
     margin-left: 15px;
     align-self: end;
-    margin-bottom: 3px;
+    margin-bottom: 9px;
+	}
+	@media (min-width: 768px) {
+    margin-bottom: 2px;
 	}
 }
 
