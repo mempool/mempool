@@ -35,17 +35,22 @@
 h1 {
   margin: 0px;
   padding: 0px;
+  margin-right: 10px;
+  font-size: 1.9rem;
   @media (min-width: 576px) {
+    font-size: 2rem;
     float: left;
-    margin-right: 10px;
+  }
+  @media (min-width: 768px) {
+    font-size: 2.5rem;
   }
 }
 
 .address-link {
-  line-height: 56px; 
+  line-height: 56px;
   margin-left: 0px;
   top: -2px;
-  position: relative;  
+  position: relative;
   @media (min-width: 768px) {
     line-height: 69px;
   }
@@ -70,8 +75,11 @@ h1 {
 .tx-link {
   display: block;
   width: 100%;
-  top: 14px;
+  top: 12px;
   position: relative;
+  @media (min-width: 576px) {
+    top: 14px;
+  }
   @media (min-width: 768px) {
     top: 20px;
   }
