@@ -197,6 +197,18 @@ body {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  height: 80px;
+}
+
+.title-address, .title-asset {
+  color: #FFF;
+  padding-top: 20px;
+  padding-bottom: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 80px;
+  margin-top: -20px;
 }
 
 .smaller-text {
