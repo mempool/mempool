@@ -175,14 +175,14 @@
     <app-transactions-list [transactions]="transactions"></app-transactions-list>
 
     <ng-template [ngIf]="isLoadingTransactions">
-      <div class="text-center mb-4 mt-3">
+      <div class="text-center mb-4" class="tx-skeleton">
 
-        <div class="header-bg box" style="padding: 10px; margin-bottom: 10px;">
+        <div class="header-bg box">
           <span class="skeleton-loader"></span>
         </div>
 
         <div class="header-bg box">
-          <div class="row" style="height: 107px;">
+          <div class="row">
             <div class="col-sm">
               <span class="skeleton-loader"></span>
             </div>

@@ -141,3 +141,19 @@ h1 {
   font-size: 36px;
   color: #393e5c73;
 }
+
+.tx-skeleton {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  .header-bg {
+    &:first-child {
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    &:nth-child(2) {
+      .row {
+        height: 107px;
+      }
+    }
+  }
+}
