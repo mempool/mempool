@@ -25,7 +25,7 @@
               <ng-template [ngIf]="!address.electrum">
                 <tr>
                   <td i18n="address.total-received">Total received</td>
-                  <td *ngIf="address.chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="receieved" [noFiat]="true"></app-amount></td>
+                  <td *ngIf="address.chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="received" [noFiat]="true"></app-amount></td>
                 </tr>
                 <tr>
                   <td i18n="address.total-sent">Total sent</td>
@@ -34,7 +34,7 @@
               </ng-template>
               <tr>
                 <td i18n="address.balance">Balance</td>
-                <td *ngIf="address.chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="receieved - sent" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="receieved - sent"></app-fiat></span></td>
+                <td *ngIf="address.chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="received - sent" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="received - sent"></app-fiat></span></td>
               </tr>
             </tbody>
           </table>
@@ -85,7 +85,7 @@
 
       </ng-template>
 
-      <ng-template [ngIf]="retryLoadmore">
+      <ng-template [ngIf]="retryLoadMore">
         <br>
         <button type="button" class="btn btn-outline-info btn-sm" (click)="loadMore()"><fa-icon [icon]="['fas', 'redo-alt']" [fixedWidth]="true"></fa-icon></button>
       </ng-template>
@@ -114,7 +114,7 @@
         </div>
         <div class="w-100 d-block d-md-none"></div>
         <div class="col">
-          
+
         </div>
       </div>
     </div>
