@@ -21,12 +21,17 @@ import { TrademarkPolicyComponent } from './components/trademark-policy/trademar
 import { BisqMasterPageComponent } from './components/bisq-master-page/bisq-master-page.component';
 import { SponsorComponent } from './components/sponsor/sponsor.component';
 import { LiquidMasterPageComponent } from './components/liquid-master-page/liquid-master-page.component';
+import { PushTransactionComponent } from './components/push-transaction/push-transaction.component';
 
 let routes: Routes = [
   {
     path: '',
     component: MasterPageComponent,
     children: [
+      {
+        path: 'tx/push',
+        component: PushTransactionComponent,
+      },
       {
         path: '',
         component: StartComponent,
@@ -95,6 +100,10 @@ let routes: Routes = [
         path: '',
         component: MasterPageComponent,
         children: [
+          {
+            path: 'tx/push',
+            component: PushTransactionComponent,
+          },
           {
             path: '',
             component: StartComponent,
@@ -165,6 +174,10 @@ let routes: Routes = [
         component: MasterPageComponent,
         children: [
           {
+            path: 'tx/push',
+            component: PushTransactionComponent,
+          },
+          {
             path: '',
             component: StartComponent,
             children: [
@@ -226,6 +239,10 @@ let routes: Routes = [
         path: '',
         component: MasterPageComponent,
         children: [
+          {
+            path: 'tx/push',
+            component: PushTransactionComponent,
+          },
           {
             path: '',
             component: StartComponent,
@@ -324,6 +341,10 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
           {
             path: '',
             component: DashboardComponent
+          },
+          {
+            path: 'tx/push',
+            component: PushTransactionComponent,
           },
           {
             path: 'tx/:id',

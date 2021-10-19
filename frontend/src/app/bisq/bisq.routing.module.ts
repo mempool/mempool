@@ -12,6 +12,7 @@ import { BisqDashboardComponent } from './bisq-dashboard/bisq-dashboard.componen
 import { BisqMarketComponent } from './bisq-market/bisq-market.component';
 import { BisqMainDashboardComponent } from './bisq-main-dashboard/bisq-main-dashboard.component';
 import { TermsOfServiceComponent } from '../components/terms-of-service/terms-of-service.component';
+import { PushTransactionComponent } from '../components/push-transaction/push-transaction.component';
 
 const routes: Routes = [
     {
@@ -29,6 +30,10 @@ const routes: Routes = [
     {
       path: 'market/:pair',
       component: BisqMarketComponent,
+    },
+    {
+      path: 'tx/push',
+      component: PushTransactionComponent,
     },
     {
       path: 'tx/:id',
