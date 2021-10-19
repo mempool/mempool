@@ -57,6 +57,7 @@ import { TrademarkPolicyComponent } from './components/trademark-policy/trademar
 import { StorageService } from './services/storage.service';
 import { HttpCacheInterceptor } from './services/http-cache.interceptor';
 import { SponsorComponent } from './components/sponsor/sponsor.component';
+import { PushTransactionComponent } from './components/push-transaction/push-transaction.component';
 
 @NgModule({
   declarations: [
@@ -98,6 +99,7 @@ import { SponsorComponent } from './components/sponsor/sponsor.component';
     PrivacyPolicyComponent,
     TrademarkPolicyComponent,
     SponsorComponent,
+    PushTransactionComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),

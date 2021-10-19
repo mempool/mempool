@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, DifficultyAdjustment, AddressInformation, LiquidPegs } from '../interfaces/node-api.interface';
 import { Observable } from 'rxjs';
 import { StateService } from './state.service';
@@ -103,5 +103,9 @@ export class ApiService {
 
   listLiquidPegsMonth$(): Observable<LiquidPegs[]> {
     return this.httpClient.get<LiquidPegs[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegs/month');
+  }
+
+  postTransaction$(hexPayload: string): Observable<any> {
+    return this.httpClient.post<any>(this.apiBaseUrl + this.apiBasePath + '/api/tx', hexPayload, { responseType: 'text' as 'json'});
   }
 }
