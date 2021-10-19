@@ -69,7 +69,8 @@ class Server {
         next();
       })
       .use(express.urlencoded({ extended: true }))
-      .use(express.json());
+      .use(express.text())
+    ;
 
     this.server = http.createServer(this.app);
     this.wss = new WebSocket.Server({ server: this.server });
