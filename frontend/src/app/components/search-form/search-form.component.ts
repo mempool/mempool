@@ -25,7 +25,7 @@ export class SearchFormComponent implements OnInit {
 
   regexAddress = /^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,100}|[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100})$/;
   regexBlockhash = /^[0]{8}[a-fA-F0-9]{56}$/;
-  regexTransaction = /^[a-fA-F0-9]{64}$/;
+  regexTransaction = /^([a-fA-F0-9]{64}):?(\d+)?$/;
   regexBlockheight = /^[0-9]+$/;
 
   @ViewChild('instance', {static: true}) instance: NgbTypeahead;
@@ -100,22 +100,23 @@ export class SearchFormComponent implements OnInit {
       } else if (this.regexBlockhash.test(searchText) || this.regexBlockheight.test(searchText)) {
         this.navigate('/block/', searchText);
       } else if (this.regexTransaction.test(searchText)) {
+        const matches = this.regexTransaction.exec(searchText);
         if (this.network === 'liquid') {
-          if (this.assets[searchText]) {
-            this.navigate('/asset/', searchText);
+          if (this.assets[matches[1]]) {
+            this.navigate('/asset/', matches[1]);
           }
-          this.electrsApiService.getAsset$(searchText)
+          this.electrsApiService.getAsset$(matches[1])
             .subscribe(
-              () => { this.navigate('/asset/', searchText); },
+              () => { this.navigate('/asset/', matches[1]); },
               () => {
-                this.electrsApiService.getBlock$(searchText)
+                this.electrsApiService.getBlock$(matches[1])
                   .subscribe(
-                    (block) => { this.navigate('/block/', searchText, { state: { data: { block } } }); },
-                    () => { this.navigate('/tx/', searchText); });
+                    (block) => { this.navigate('/block/', matches[1], { state: { data: { block } } }); },
+                    () => { this.navigate('/tx/', matches[0]); });
               }
             );
         } else {
-          this.navigate('/tx/', searchText);
+          this.navigate('/tx/', matches[0]);
         }
       } else {
         this.isSearching = false;

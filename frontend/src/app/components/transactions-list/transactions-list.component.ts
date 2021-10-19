@@ -22,6 +22,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   @Input() showConfirmations = false;
   @Input() transactionPage = false;
   @Input() errorUnblinded = false;
+  @Input() outputIndex: number;
 
   @Output() loadMore = new EventEmitter();
 
@@ -50,6 +51,14 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   ngOnChanges() {
     if (!this.transactions || !this.transactions.length) {
       return;
+    }
+    if (this.outputIndex) {
+      setTimeout(() => {
+        const assetBoxElements = document.getElementsByClassName('assetBox');
+        if (assetBoxElements && assetBoxElements[0]) {
+          assetBoxElements[0].scrollIntoView();
+        }
+      }, 10);
     }
     const observableObject = {};
     this.transactions.forEach((tx, i) => {
