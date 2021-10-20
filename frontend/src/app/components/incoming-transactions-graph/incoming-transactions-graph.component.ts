@@ -100,11 +100,32 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
       xAxis: {
         type: 'category',
         axisLabel: {
+          interval: this.getAxisLabelInterval(),
           align: 'center',
           fontSize: 11,
-          lineHeight: 12
+          lineHeight: 12,
+          formatter: (value: string) => {
+            const date = new Date(value);
+            if (this.template !== 'advanced') {
+              return `${date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' })}`;
+            }
+            switch (this.windowPreference) {
+              case '1w':
+                return `${date.toLocaleDateString(this.locale, { month: 'short', weekday: 'short', day: 'numeric' })}`;
+              case '1m':
+                return `${date.toLocaleDateString(this.locale, { month: 'short', day: 'numeric' })}`;
+              case '3m':
+                return `${date.toLocaleDateString(this.locale, { month: 'short', day: 'numeric' })}`;
+              case '6m':
+                return `${date.toLocaleDateString(this.locale, { year: 'numeric', month: 'short' })}`;
+              case '1y':
+                return `${date.toLocaleDateString(this.locale, { year: 'numeric', month: 'short' })}`;
+              default: // 2m, 24h
+                return `${date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' })}`;
+            }
+          }
         },
-        data: this.data.labels.map((value: any) => `${formatDate(value, 'M/d', this.locale)}\n${formatDate(value, 'H:mm', this.locale)}`),
+        data: this.data.labels,
       },
       yAxis: {
         type: 'value',
@@ -184,5 +205,28 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         }
       },
     };
+  }
+  getAxisLabelInterval() {
+    if (this.template !== 'advanced') {
+      return 20;
+    }
+    switch (this.windowPreference) {
+      case '2h':
+        return 10;
+      case '24h':
+        return 40;
+      case '1w':
+        return 68;
+      case '1m':
+        return 40;
+      case '3m':
+        return 37;
+      case '6m':
+        return 80;
+      case '1y':
+        return 40;
+      default:
+        return 5;
+    }
   }
 }
