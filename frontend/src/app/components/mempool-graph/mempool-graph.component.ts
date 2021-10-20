@@ -314,21 +314,21 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
             formatter: (value: string) => {
               const date = new Date(value);
               if (this.template !== 'advanced') {
-                return `${date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' })}`;
+                return date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' });
               }
               switch (this.windowPreference) {
                 case '1w':
-                  return `${date.toLocaleDateString(this.locale, { month: 'short', weekday: 'short', day: 'numeric' })}`;
+                  return date.toLocaleDateString(this.locale, { month: 'short', weekday: 'short', day: 'numeric' });
                 case '1m':
-                  return `${date.toLocaleDateString(this.locale, { month: 'short', day: 'numeric' })}`;
+                  return date.toLocaleDateString(this.locale, { month: 'short', day: 'numeric' });
                 case '3m':
-                  return `${date.toLocaleDateString(this.locale, { month: 'short', day: 'numeric' })}`;
+                  return date.toLocaleDateString(this.locale, { month: 'short', day: 'numeric' });
                 case '6m':
-                  return `${date.toLocaleDateString(this.locale, { year: 'numeric', month: 'short' })}`;
+                  return date.toLocaleDateString(this.locale, { year: 'numeric', month: 'short' });
                 case '1y':
-                  return `${date.toLocaleDateString(this.locale, { year: 'numeric', month: 'short' })}`;
+                  return date.toLocaleDateString(this.locale, { year: 'numeric', month: 'short' });
                 default: // 2m, 24h
-                  return `${date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' })}`;
+                  return date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' });
               }
             }
           },
