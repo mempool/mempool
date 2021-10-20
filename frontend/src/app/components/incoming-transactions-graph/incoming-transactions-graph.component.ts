@@ -84,7 +84,8 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         },
         formatter: (params: any) => {
           const colorSpan = (color: string) => `<span class="indicator" style="background-color: ` + color + `"></span>`;
-          let itemFormatted = '<div class="title">' + params[0].axisValue + '</div>';
+          const date = new Date(params[0].axisValue);
+          let itemFormatted = '<div class="title">' + date.toLocaleDateString(this.locale, { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' }) + '</div>';
           params.map((item: any, index: number) => {
             if (index < 26) {
               itemFormatted += `<div class="item">
