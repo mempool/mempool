@@ -22,7 +22,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   @Input() top: number | string = 20;
   @Input() right: number | string = 10;
   @Input() left: number | string = 75;
-  @Input() template: ('widget' | 'advanced') = 'widget';
+  @Input() template: ('widget' | 'advanced' | 'tv') = 'widget';
   @Input() showZoom = true;
 
   mempoolVsizeFeesData: any;
@@ -163,11 +163,11 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         trigger: 'axis',
         alwaysShowContent: false,
         position: (pos, params, el, elRect, size) => {
-          const positions = { top: (this.template === 'advanced') ? 0 : -30 };
+          const positions = { top: (this.template !== 'widget') ? 0 : -30 };
           positions[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 60;
           return positions;
         },
-        extraCssText: `width: ${(this.template === 'advanced') ? '275px' : '200px'};
+        extraCssText: `width: ${(this.template !== 'widget') ? '275px' : '200px'};
                       background: transparent;
                       border: none;
                       box-shadow: none;`,
@@ -240,10 +240,12 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
               </td>
             </tr>`);
           });
-          const classActive = (this.template === 'advanced') ? 'fees-wrapper-tooltip-chart-advanced' : '';
+          const classActive = (this.template !== 'widget') ? 'fees-wrapper-tooltip-chart-advanced' : '';
+
+          const date = new Date (params[0].axisValue);
           return `<div class="fees-wrapper-tooltip-chart ${classActive}">
             <div class="title">
-              ${params[0].axisValue}
+              ${date.toLocaleDateString(this.locale, { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' })}
               <span class="total-value">
                 ${this.vbytesPipe.transform(totalValue, 2, 'vB', 'MvB', false)}
               </span>
@@ -302,11 +304,32 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           boundaryGap: false,
           axisLine: { onZero: true },
           axisLabel: {
+            interval: this.getAxisLabelInterval(),
             align: 'center',
             fontSize: 11,
             lineHeight: 12,
+            formatter: (value: string) => {
+              const date = new Date(value);
+              if (this.template !== 'advanced') {
+                return `${date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' })}`;
+              }
+              switch (this.windowPreference) {
+                case '1w':
+                  return `${date.toLocaleDateString(this.locale, { month: 'short', weekday: 'short', day: 'numeric' })}`;
+                case '1m':
+                  return `${date.toLocaleDateString(this.locale, { month: 'short', day: 'numeric' })}`;
+                case '3m':
+                  return `${date.toLocaleDateString(this.locale, { month: 'short', day: 'numeric' })}`;
+                case '6m':
+                  return `${date.toLocaleDateString(this.locale, { year: 'numeric', month: 'short' })}`;
+                case '1y':
+                  return `${date.toLocaleDateString(this.locale, { year: 'numeric', month: 'short' })}`;
+                default: // 2m, 24h
+                  return `${date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' })}`;
+              }
+            }
           },
-          data: labels.map((value: any) => `${formatDate(value, 'M/d', this.locale)}\n${formatDate(value, 'H:mm', this.locale)}`),
+          data: labels,
         }
       ],
       yAxis: {
@@ -356,6 +379,29 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       }
     }
     this.chartColorsOrdered =  chartColors.slice(0, this.feeLevelsOrdered.length);
+  }
+  getAxisLabelInterval() {
+    if (this.template !== 'advanced') {
+      return 20;
+    }
+    switch (this.windowPreference) {
+      case '2h':
+        return 10;
+      case '24h':
+        return 40;
+      case '1w':
+        return 68;
+      case '1m':
+        return 40;
+      case '3m':
+        return 37;
+      case '6m':
+        return 80;
+      case '1y':
+        return 40;
+      default:
+        return 5;
+    }
   }
 }
 
