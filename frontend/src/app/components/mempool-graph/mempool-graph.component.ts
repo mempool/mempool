@@ -300,29 +300,53 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           type: 'category',
           boundaryGap: false,
           axisLine: { onZero: true },
+          axisTick: {
+            alignWithLabel: true,
+            lineStyle: {
+              width: 1,
+            },
+            length: 8
+          },
           axisLabel: {
             interval: this.getAxisLabelInterval(),
             align: 'center',
             fontSize: 11,
             lineHeight: 12,
-            formatter: (value: string) => {
+            margin: 11,
+            formatter: (value: string, index: number) => {
               const date = new Date(value);
               if (this.template !== 'advanced') {
-                return date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' });
+                const dayControl = date.getDay();
+                if (index === 0) {
+                  return date.toLocaleTimeString(this.locale, { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' });
+                } else {
+                  if (dayControl < date.getDay()) {
+                    return date.toLocaleTimeString(this.locale, { month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' });
+                  } else {
+                    return date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' });
+                  }
+                }
               }
               switch (this.windowPreference) {
                 case '1w':
                   return date.toLocaleDateString(this.locale, { month: 'short', weekday: 'short', day: 'numeric' });
                 case '1m':
-                  return date.toLocaleDateString(this.locale, { month: 'short', day: 'numeric' });
                 case '3m':
                   return date.toLocaleDateString(this.locale, { month: 'short', day: 'numeric' });
                 case '6m':
-                  return date.toLocaleDateString(this.locale, { year: 'numeric', month: 'short' });
                 case '1y':
                   return date.toLocaleDateString(this.locale, { year: 'numeric', month: 'short' });
                 default: // 2m, 24h
-                  return date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' });
+                  const dayControl = date.getDay();
+                  if (index === 0) {
+                    return date.toLocaleTimeString(this.locale, { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' });
+                  } else {
+                    if (dayControl < date.getDay()) {
+                      return date.toLocaleTimeString(this.locale, { month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' });
+                    } else {
+                      return date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' });
+                    }
+                  }
               }
             }
           },
@@ -379,7 +403,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   }
   getAxisLabelInterval() {
     if (this.template !== 'advanced') {
-      return 20;
+      return 25;
     }
     switch (this.windowPreference) {
       case '2h':
