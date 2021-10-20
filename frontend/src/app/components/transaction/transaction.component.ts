@@ -44,6 +44,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
   now = new Date().getTime();
   timeAvg$: Observable<number>;
   liquidUnblinding = new LiquidUnblinding();
+  outputIndex: number;
 
   constructor(
     private route: ActivatedRoute,
@@ -125,7 +126,9 @@ export class TransactionComponent implements OnInit, OnDestroy {
     this.subscription = this.route.paramMap
       .pipe(
         switchMap((params: ParamMap) => {
-          this.txId = params.get('id') || '';
+          const urlMatch = (params.get('id') || '').split(':');
+          this.txId = urlMatch[0];
+          this.outputIndex = urlMatch[1] === undefined ? null : parseInt(urlMatch[1], 10);
           this.seoService.setTitle(
             $localize`:@@bisq.transaction.browser-title:Transaction: ${this.txId}:INTERPOLATION:`
           );
