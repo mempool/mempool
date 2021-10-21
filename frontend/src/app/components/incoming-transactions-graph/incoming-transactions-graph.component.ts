@@ -51,13 +51,27 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         type: 'inside',
         realtime: true,
         zoomOnMouseWheel: (this.template === 'advanced') ? true : false,
-        maxSpan: 100,
+        maxSpan: (window.innerWidth >= 850 || this.template === 'widget') ? 100 : 40,
         minSpan: 10,
       }, {
         show: (this.template === 'advanced') ? true : false,
         type: 'slider',
         brushSelect: false,
         realtime: true,
+        labelFormatter: (value, valueStr) => {
+          const date = new Date (valueStr);
+          switch (this.windowPreference) {
+            case '1w':
+            case '1m':
+              return date.toLocaleDateString(this.locale, { month: 'short', weekday: 'short', day: 'numeric' });
+            case '3m':
+            case '6m':
+            case '1y':
+              return date.toLocaleDateString(this.locale, { year: 'numeric', month: 'short' });
+            default: // 2m, 24h
+              return date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' });
+          }
+        },
         selectedDataBackground: {
           lineStyle: {
             color: '#fff',
@@ -111,7 +125,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
           interval: this.getAxisLabelInterval(),
           align: 'center',
           fontSize: 11,
-          lineHeight: 12,
+          lineHeight: 25,
           margin: 11,
           formatter: (value: string, index: number) => {
             const date = new Date(value);
@@ -129,10 +143,9 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
             }
             switch (this.windowPreference) {
               case '1w':
-                return date.toLocaleDateString(this.locale, { month: 'short', weekday: 'short', day: 'numeric' });
               case '1m':
+                return date.toLocaleDateString(this.locale, { month: 'short', weekday: 'short', day: 'numeric' });
               case '3m':
-                return date.toLocaleDateString(this.locale, { month: 'short', day: 'numeric' });
               case '6m':
               case '1y':
                 return date.toLocaleDateString(this.locale, { year: 'numeric', month: 'short' });
@@ -233,21 +246,21 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
   }
   getAxisLabelInterval() {
     if (this.template !== 'advanced') {
-      return 25;
+      return 30;
     }
     switch (this.windowPreference) {
       case '2h':
-        return 10;
+        return 14;
       case '24h':
         return 40;
       case '1w':
         return 68;
       case '1m':
-        return 40;
+        return 118;
       case '3m':
-        return 37;
+        return 140;
       case '6m':
-        return 80;
+        return 70;
       case '1y':
         return 40;
       default:
