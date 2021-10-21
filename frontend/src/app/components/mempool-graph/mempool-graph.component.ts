@@ -346,16 +346,9 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
                   }
                 }
               }
+              const dayControl = date.getDay();
               switch (this.windowPreference) {
-                case '1w':
-                case '1m':
-                  return date.toLocaleDateString(this.locale, { month: 'short', weekday: 'short', day: 'numeric' });
-                case '3m':
-                case '6m':
-                case '1y':
-                  return date.toLocaleDateString(this.locale, { year: 'numeric', month: 'short' });
-                default: // 2m, 24h
-                  const dayControl = date.getDay();
+                case '2h':
                   if (index === 0) {
                     return date.toLocaleTimeString(this.locale, { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' });
                   } else {
@@ -365,6 +358,24 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
                       return date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' });
                     }
                   }
+                case '24h':
+                  if (index === 0) {
+                    return date.toLocaleTimeString(this.locale, { month: 'short', day: 'numeric', hour: 'numeric' });
+                  } else {
+                    if (dayControl < date.getDay()) {
+                      return date.toLocaleTimeString(this.locale, { month: 'numeric', day: 'numeric', hour: 'numeric' });
+                    } else {
+                      return date.toLocaleTimeString(this.locale, { hour: 'numeric' });
+                    }
+                  }
+                case '1w':
+                case '1m':
+                  return date.toLocaleDateString(this.locale, { month: 'short', weekday: 'short', day: 'numeric' });
+                case '3m':
+                  return date.toLocaleDateString(this.locale, { month: 'short', day: 'numeric' });
+                case '6m':
+                case '1y':
+                  return date.toLocaleDateString(this.locale, { year: 'numeric', month: 'short' });
               }
             }
           },
@@ -439,9 +450,9 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       case '1w':
         return 68;
       case '1m':
-        return 118;
+        return 112;
       case '3m':
-        return 140;
+        return 35;
       case '6m':
         return 70;
       case '1y':
