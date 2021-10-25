@@ -697,8 +697,8 @@ const init = async () => {
   
   ws.on("message", function incoming(data) {
     const res = JSON.parse(data.toString());
-    if (res.blocks) {
-      console.log(res.blocks);
+    if (res.block) {
+      console.log(res.block);
     }
     if (res.mempoolInfo) {
       console.log(res.mempoolInfo);
@@ -730,8 +730,8 @@ const init = async () => {
 
   ws.addEventListener('message', function incoming({data}) {
     const res = JSON.parse(data.toString());
-    if (res.blocks) {
-      console.log(res.blocks);
+    if (res.block) {
+      console.log(res.block);
     }
     if (res.mempoolInfo) {
       console.log(res.mempoolInfo);
