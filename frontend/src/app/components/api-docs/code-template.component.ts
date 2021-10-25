@@ -174,10 +174,10 @@ init();`;
 
       let resultHtml = '<pre id="result"></pre>';
       if (this.method === 'websocket') {
-        resultHtml = `<pre id="result-blocks"></pre>
-    <pre id="result-mempool-info"></pre>
-    <pre id="result-transactions"></pre>
-    <pre id="result-mempool-blocks"></pre>`;
+        resultHtml = `<h2>Blocks</h2><pre id="result-blocks">Waiting for data</pre><br>
+    <h2>Mempool Info</h2><pre id="result-mempool-info">Waiting for data</pre><br>
+    <h2>Transactions</h2><pre id="result-transactions">Waiting for data</pre><br>
+    <h2>Mempool Blocks</h2><pre id="result-mempool-blocks">Waiting for data</pre><br>`;
       }
 
       return `<!DOCTYPE html>
