@@ -3416,8 +3416,8 @@ export class ApiDocsComponent implements OnInit {
 
         ws.addEventListener('message', function incoming({data}) {
           const res = JSON.parse(data.toString());
-          if (res.blocks) {
-            document.getElementById("result-blocks").textContent = JSON.stringify(res.blocks, undefined, 2);
+          if (res.block) {
+            document.getElementById("result-blocks").textContent = JSON.stringify(res.block, undefined, 2);
           }
           if (res.mempoolInfo) {
             document.getElementById("result-mempool-info").textContent = JSON.stringify(res.mempoolInfo, undefined, 2);
@@ -3425,8 +3425,8 @@ export class ApiDocsComponent implements OnInit {
           if (res.transactions) {
             document.getElementById("result-transactions").textContent = JSON.stringify(res.transactions, undefined, 2);
           }
-          if (res.mempoolBlocks) {
-            document.getElementById("result-mempool-blocks").textContent = JSON.stringify(res.mempoolBlocks, undefined, 2);
+          if (res["mempool-blocks"]) {
+            document.getElementById("result-mempool-blocks").textContent = JSON.stringify(res["mempool-blocks"], undefined, 2);
           }
         });
         `,
@@ -3439,8 +3439,8 @@ export class ApiDocsComponent implements OnInit {
 
   ws.on("message", function incoming(data) {
     const res = JSON.parse(data.toString());
-    if (res.blocks) {
-      console.log(res.blocks);
+    if (res.block) {
+      console.log(res.block);
     }
     if (res.mempoolInfo) {
       console.log(res.mempoolInfo);
@@ -3448,8 +3448,8 @@ export class ApiDocsComponent implements OnInit {
     if (res.transactions) {
       console.log(res.transactions);
     }
-    if (res.mempoolBlocks) {
-      console.log(res.mempoolBlocks);
+    if (res["mempool-blocks"]) {
+      console.log(res["mempool-blocks"]);
     }
   });
           `,
