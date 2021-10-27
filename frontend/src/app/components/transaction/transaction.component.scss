@@ -21,28 +21,29 @@
 }
 
 .title-block {
-  height: 100px;
   flex-direction: column;
-  h1 {
-    margin-bottom: 0rem;
-  }
-	@media (min-width: 650px) {
-    height: 80px;
+  @media (min-width: 650px) {
     flex-direction: row;
-    h1 {
-      margin-bottom: 1rem;
-    }
-	}
+  }
+  h1 {
+    margin: 0rem;
+    line-height: 1;
+  }
 }
 .tx-link {
   display: flex;
+  margin-bottom: 0px;
+  margin-top: 8px;
 	@media (min-width: 650px) {
-    margin-left: 15px;
     align-self: end;
-    margin-bottom: 9px;
+    margin-left: 15px;
+    margin-top: 0px;
+    margin-bottom: -3px;
 	}
 	@media (min-width: 768px) {
-    margin-bottom: 2px;
+    margin-bottom: 0px;
+    top: 1px;
+    position: relative;
 	}
 }
 
@@ -69,10 +70,6 @@
 
 .arrow-red {
 	color: #dc3545;
-}
-
-.btn {
-	margin-top: 5px;
 }
 
 .container-xl {
@@ -123,9 +120,26 @@
 	}
 }
 
-.effective-fee-container{
+.effective-fee-container {
 	display: block;
 	@media (min-width: 768px){
 		display: inline-block;
+	}
+}
+
+
+.title {
+  h2 {
+    line-height: 1;
+    margin: 0;
+    padding-bottom: 10px;
+  }
+}
+
+.btn-outline-info {
+  margin-top: -10px;
+	@media (min-width: 768px){
+		display: inline-block;
+    margin-top: 0px;
 	}
 }

@@ -74,13 +74,20 @@ h1 {
 
 .tx-link {
   display: block;
-  width: 100%;
-  top: 12px;
+  height: 100%;
+  top: 9px;
   position: relative;
-  @media (min-width: 576px) {
-    top: 14px;
-  }
+	@media (min-width: 576px) {
+    top: 11px;
+	}
   @media (min-width: 768px) {
-    top: 20px;
+    top: 17px;
+  }
+}
+
+.title-tx {
+  h2 {
+    line-height: 1;
+    margin-bottom: 10px;
   }
 }

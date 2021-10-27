@@ -192,15 +192,19 @@
 
     <br>
 
-    <h2 class="float-left" i18n="transaction.inputs-and-outputs|Transaction inputs and outputs">Inputs & Outputs</h2>
+    <div class="title float-left">
+      <h2 i18n="transaction.inputs-and-outputs|Transaction inputs and outputs">Inputs & Outputs</h2>
+    </div>
 
-    <button type="button" class="btn btn-outline-info btn-sm float-right mr-1 mt-0 mt-md-2" (click)="txList.toggleDetails()" i18n="transaction.details|Transaction Details">Details</button>
+    <button type="button" class="btn btn-outline-info btn-sm float-right" (click)="txList.toggleDetails()" i18n="transaction.details|Transaction Details">Details</button>
 
     <div class="clearfix"></div>
 
     <app-transactions-list #txList [transactions]="[tx]" [errorUnblinded]="errorUnblinded" [outputIndex]="outputIndex" [transactionPage]="true"></app-transactions-list>
 
-    <h2 class="text-left" i18n="transaction.details">Details</h2>
+    <div class="title">
+      <h2 i18n="transaction.details">Details</h2>
+    </div>
     <div class="box">
       <table class="table table-borderless table-striped">
         <tbody>
