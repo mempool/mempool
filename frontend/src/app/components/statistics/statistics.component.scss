@@ -34,11 +34,12 @@
   }
 }
 
-.formRadioGroup{
+.formRadioGroup {
   margin-top: 6px;
   display: flex;
-  @media (min-width: 653px) {
-    display: block;
+  flex-direction: column;
+  @media (min-width: 650px) {
+    flex-direction: row;
     float: right;
     margin-top: 0px;
   }
@@ -103,6 +104,54 @@
     .fee-text {
       text-decoration: line-through;
       color: #777;
+    }
+  }
+}
+
+.btn-group-toggle {
+  display: inline-flex;
+  @media (min-width: 650px) {
+    display: block;
+  }
+  label {
+    padding: 5px;
+  }
+}
+
+.small-buttons {
+  width: 100%;
+  display: flex;
+  font-size: 12px;
+  margin: 5px 0px;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+
+  @media (min-width: 650px) {
+    margin: 2px 0px;
+    width: auto;
+    flex-direction: row;
+  }
+  @media (min-width: 768px) {
+    margin: 0px 0px;
+  }
+  .btn {
+    width: 49.25%;
+    @media (min-width: 650px) {
+      width: auto;
+    }
+  }
+  .dropdown {
+    width: 49.25%;
+    display: flex;
+    @media (min-width: 650px) {
+      width: auto;
+      margin: 0px 5px;
+    }
+  }
+  #dropdownFees {
+    width: 100%;
+    @media (min-width: 650px) {
+      width: auto;
     }
   }
 }
