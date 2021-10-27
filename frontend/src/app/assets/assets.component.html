@@ -1,11 +1,11 @@
 <div class="container-xl">
-  <h1 style="float: left;" i18n="Registered assets page header">Registered assets</h1>
-  <br>
-
+  <div class="title-asset">
+    <h1 i18n="Registered assets page header">Registered assets</h1>
+  </div>
   <div class="clearfix"></div>
 
   <form [formGroup]="searchForm" class="form-inline">
-    <div class="input-group m-2">
+    <div class="input-group mb-2">
       <input style="width: 250px;" formControlName="searchText" type="text" class="form-control" i18n-placeholder="Search Assets Placeholder Text" placeholder="Search asset">
       <div class="input-group-append">
         <button [disabled]="!searchForm.get('searchText')?.value.length" class="btn btn-secondary" type="button" (click)="searchForm.get('searchText')?.setValue('');" autocomplete="off" i18n="Search Clear Button">Clear</button>
@@ -27,7 +27,7 @@
           <td>{{ asset.ticker }}</td>
           <td class="d-none d-md-block">{{ asset.entity && asset.entity.domain }}</td>
           <td><a [routerLink]="['/asset/' | relativeUrl, asset.asset_id]">{{ asset.asset_id | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="asset.asset_id"></app-clipboard></td>
-        </tr> 
+        </tr>
       </tbody>
     </table>
 
@@ -52,7 +52,7 @@
           <td><span class="skeleton-loader"></span></td>
           <td class="d-none d-md-block"><span class="skeleton-loader"></span></td>
           <td><span class="skeleton-loader"></span></td>
-        </tr> 
+        </tr>
       </tbody>
     </table>
 

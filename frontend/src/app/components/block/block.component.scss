@@ -40,10 +40,7 @@
 h1 {
   margin: 0px;
   padding: 0px;
-  @media (min-width: 576px) {
-    float: left;
-    margin-right: 10px;
-  }
+  line-height: 1;
   a {
     &:hover, &:focus{
       text-decoration: none;;
@@ -87,32 +84,23 @@ h1 {
 }
 
 .block-tx-title {
-  padding-top: 10px;
-  display: block;
-  text-align: right;
-  margin-top: -30px;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  margin-top: -15px;
+  position: relative;
   @media (min-width: 550px) {
-    margin-top: 0px;
-    padding-top: 10px;
+    margin-top: 1rem;
+    flex-direction: row;
   }
   h2 {
-    display: inline-block;
-    float: left;
-    line-height: 1.6;
+    line-height: 1;
     margin: 0;
-    margin-bottom: -15px;
-    padding-right: 10px;
-    padding-top: 15px;
     position: relative;
-    top: -22px;
-    width: auto;
+    padding-bottom: 10px;
     @media (min-width: 550px) {
-      padding-top: 0px;
-      top: 0px;
-    }
-    @media (min-width: 768px) {
-      padding-top: 5px;
-      line-height: 1;
+      padding-bottom: 0px;
+      align-self: end;
     }
   }
 }
@@ -122,7 +110,7 @@ h1 {
 }
 
 .next-previous-blocks {
-  font-size: 30px;
+  font-size: 28px;
   display: inline-block;
   @media (min-width: 768px) {
     font-size: 36px;
@@ -138,7 +126,7 @@ h1 {
 }
 
 .disable {
-  font-size: 30px;
+  font-size: 28px;
   color: #393e5c73;
   @media (min-width: 768px) {
     font-size: 36px;
