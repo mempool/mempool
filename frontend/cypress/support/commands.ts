@@ -56,13 +56,6 @@ const codes = {
     ArrowDown: 40
 }
 
-Cypress.Commands.add("getBaseModule", () => {
-  return cy.task("getBaseModule").then((baseModule) => {
-    console.log(baseModule);
-      return baseModule;
-  });
-});
-
 Cypress.Commands.add('waitForSkeletonGone', () => {
     cy.waitUntil(() => {
         return Cypress.$('.skeleton-loader').length === 0;
