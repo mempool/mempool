@@ -1,5 +1,7 @@
 import { confirmAddress, emitMempoolInfo, sendWsMock, showNewTx, startTrackingAddress } from "../../support/websocket";
 
+const baseModule = Cypress.env("BASE_MODULE");
+
 describe('Testnet', () => {
   beforeEach(() => {
     cy.intercept('/api/block-height/*').as('block-height');
@@ -8,7 +10,7 @@ describe('Testnet', () => {
     cy.intercept('/api/tx/*/outspends').as('tx-outspends');
   });
 
-  if (Cypress.env("BASE_MODULE") === '' || Cypress.env("BASE_MODULE") === 'mempool') {
+  if (baseModule === 'mempool') {
 
     it('loads the dashboard', () => {
         cy.visit('/testnet');
@@ -123,6 +125,6 @@ describe('Testnet', () => {
         });
     });
     } else {
-        it.skip("Tests cannot be run on the selected BASE_MODULE");
+        it.skip(`Tests cannot be run on the selected BASE_MODULE ${baseModule}`);
     }
   });
