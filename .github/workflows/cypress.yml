@@ -25,7 +25,6 @@ jobs:
           wait-on-timeout: 120
           record: true
           parallel: true
-          env: BASE_MODULE=mempool
           group: Tests on ${{ matrix.browser }} (Mempool)
           browser: ${{ matrix.browser }}
           ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
@@ -46,7 +45,6 @@ jobs:
           record: true
           parallel: true
           spec: cypress/integration/liquid/liquid.spec.ts
-          env: BASE_MODULE=liquid
           group: Tests on ${{ matrix.browser }} (Liquid)
           browser: ${{ matrix.browser }}
           ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
@@ -67,7 +65,6 @@ jobs:
           record: true
           parallel: true
           spec: cypress/integration/bisq/bisq.spec.ts
-          env: BASE_MODULE=bisq
           group: Tests on ${{ matrix.browser }} (Bisq)
           browser: ${{ matrix.browser }}
           ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
