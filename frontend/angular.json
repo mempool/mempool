@@ -211,11 +211,11 @@
               "browserTarget": "mempool:build:production"
             },
             "local": {
-              "proxyConfig": "proxy.conf.json",
+              "proxyConfig": "proxy.conf.js",
               "verbose": true
             },
             "staging": {
-              "proxyConfig": "proxy.stg.conf.json",
+              "proxyConfig": "proxy.conf.js",
               "disableHostCheck": true,
               "host": "0.0.0.0",
               "verbose": true

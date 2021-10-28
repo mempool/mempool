@@ -15,7 +15,6 @@ try {
       throw new Error(e);
   } else {
       console.log(`${CONFIG_FILE_NAME} file not found, using default config`);
-      
   }
 }
 
@@ -60,5 +59,21 @@ PROXY_CONFIG = [
         changeOrigin: true
     }
 ];
+
+if (configContent && configContent.BASE_MODULE == "liquid") {
+    PROXY_CONFIG.push({
+        context: ['/resources/pools.json', '/resources/assets.json', '/resources/assets.minimal.json'],
+        target: "https://liquid.network",
+        secure: false,
+        changeOrigin: true,
+    });
+} else {
+    PROXY_CONFIG.push({
+        context: ['/resources/pools.json', '/resources/assets.json', '/resources/assets.minimal.json'],
+        target: "https://mempool.space",
+        secure: false,
+        changeOrigin: true,
+    });
+}
 
 module.exports = PROXY_CONFIG;

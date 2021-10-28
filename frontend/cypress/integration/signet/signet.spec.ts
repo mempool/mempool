@@ -1,5 +1,7 @@
 import { emitMempoolInfo } from "../../support/websocket";
 
+const baseModule = Cypress.env("BASE_MODULE");
+
 describe('Signet', () => {
   beforeEach(() => {
     cy.intercept('/api/block-height/*').as('block-height');
@@ -9,7 +11,7 @@ describe('Signet', () => {
   });
 
 
-  if (Cypress.env("BASE_MODULE") === '' || Cypress.env("BASE_MODULE") === 'mempool') {
+  if (baseModule === 'mempool') {
     it('loads the dashboard', () => {
         cy.visit('/signet');
         cy.waitForSkeletonGone();
@@ -126,6 +128,6 @@ describe('Signet', () => {
         });
     });
     } else {
-        it.skip("Tests cannot be run on the selected BASE_MODULE");
+        it.skip(`Tests cannot be run on the selected BASE_MODULE ${baseModule}`);
     }
   });

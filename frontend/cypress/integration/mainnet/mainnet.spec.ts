@@ -1,5 +1,7 @@
 import { emitMempoolInfo, dropWebSocket } from "../../support/websocket";
 
+const baseModule = Cypress.env("BASE_MODULE");
+
 describe('Mainnet', () => {
     beforeEach(() => {
         //cy.intercept('/sockjs-node/info*').as('socket');
@@ -20,7 +22,7 @@ describe('Mainnet', () => {
         });
     });
 
-    if (Cypress.env("BASE_MODULE") === '' || Cypress.env("BASE_MODULE") === 'mempool') {
+    if (baseModule === 'mempool') {
 
         it('loads the status screen', () => {
             cy.visit('/status');
@@ -281,7 +283,7 @@ describe('Mainnet', () => {
             });
         });
 
-        it.only('loads the tv screen - mobile', () => {
+        it('loads the tv screen - mobile', () => {
             cy.viewport('iphone-6');
             cy.visit('/tv');
             cy.waitForSkeletonGone();
@@ -363,6 +365,6 @@ describe('Mainnet', () => {
             });
         });
     } else {
-        it.skip("Tests cannot be run on the selected BASE_MODULE");
+        it.skip(`Tests cannot be run on the selected BASE_MODULE ${baseModule}`);
     }
 });
