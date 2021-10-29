@@ -122,10 +122,11 @@
   </ng-template>
 
   <ng-template [ngIf]="error">
+    <br>
     <div class="text-center">
       <span i18n="address.error.loading-address-data">Error loading address data.</span>
       <br>
-      <ng-template #displayServerError><i>{{ error.error }}</i></ng-template>
+      <ng-template #displayServerError><i class="small">({{ error.error }})</i></ng-template>
       <ng-template [ngIf]="error.status === 413 || error.status === 405" [ngIfElse]="displayServerError">
         <ng-container i18n="Electrum server limit exceeded error">
           <i>The number of transactions on this address exceeds the Electrum server limit</i>
@@ -136,6 +137,8 @@
         <a href="https://mempool.space/address/{{ addressString }}" target="_blank">https://mempool.space/address/{{ addressString }}</a>
         <br>
         <a href="http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/address/{{ addressString }}" target="_blank">http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/address/{{ addressString }}</a>
+        <br><br>
+        <i class="small">({{ error.error }})</i>
       </ng-template>
     </div>
   </ng-template>
