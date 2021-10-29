@@ -613,7 +613,7 @@ class Routes {
       const addressData = await bitcoinApi.$getAddress(req.params.address);
       res.json(addressData);
     } catch (e) {
-      if (e instanceof Error && e.message && e.message.indexOf('exceeds') > 0) {
+      if (e instanceof Error && e.message && (e.message.indexOf('too long') > 0 || e.message.indexOf('confirmed status') > 0)) {
         return res.status(413).send(e instanceof Error ? e.message : e);
       }
       res.status(500).send(e instanceof Error ? e.message : e);
@@ -630,7 +630,7 @@ class Routes {
       const transactions = await bitcoinApi.$getAddressTransactions(req.params.address, req.params.txId);
       res.json(transactions);
     } catch (e) {
-      if (e instanceof Error && e.message && e.message.indexOf('exceeds') > 0) {
+      if (e instanceof Error && e.message && (e.message.indexOf('too long') > 0 || e.message.indexOf('confirmed status') > 0)) {
         return res.status(413).send(e instanceof Error ? e.message : e);
       }
       res.status(500).send(e instanceof Error ? e.message : e);
