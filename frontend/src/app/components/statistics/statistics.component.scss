@@ -18,12 +18,14 @@
 .bootstrap-spinner {
   width: 22px;
   height: 22px;
-  margin-right: 10px;
-  order: 2;
   margin-left: 10px;
-  @media (min-width: 653px) {
-    margin-left: 0px;
-    order: 1;
+  position: absolute;
+  top: 17px;
+  right: 25px;
+  @media (min-width: 720px) {
+    position: relative;
+    top: 0px;
+    right: 0px;
   }
 }
 
@@ -38,14 +40,14 @@
   margin-top: 6px;
   display: flex;
   flex-direction: column;
-  @media (min-width: 650px) {
+  @media (min-width: 720px) {
     flex-direction: row;
     float: right;
     margin-top: 0px;
   }
   .btn-sm {
     font-size: 10px;
-    @media (min-width: 768px) {
+    @media (min-width: 790px) {
       font-size: 14px;
     }
   }
@@ -110,11 +112,8 @@
 
 .btn-group-toggle {
   display: inline-flex;
-  @media (min-width: 650px) {
+  @media (min-width: 720px) {
     display: block;
-  }
-  label {
-    padding: 5px;
   }
 }
 
@@ -126,7 +125,7 @@
   justify-content: space-between;
   flex-direction: row-reverse;
 
-  @media (min-width: 650px) {
+  @media (min-width: 720px) {
     margin: 2px 0px;
     width: auto;
     flex-direction: row;
@@ -136,21 +135,21 @@
   }
   .btn {
     width: 49.25%;
-    @media (min-width: 650px) {
+    @media (min-width: 720px) {
       width: auto;
     }
   }
   .dropdown {
     width: 49.25%;
     display: flex;
-    @media (min-width: 650px) {
+    @media (min-width: 720px) {
       width: auto;
       margin: 0px 5px;
     }
   }
   #dropdownFees {
     width: 100%;
-    @media (min-width: 650px) {
+    @media (min-width: 720px) {
       width: auto;
     }
   }

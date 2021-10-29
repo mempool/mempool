@@ -12,7 +12,6 @@
         <div class="card-header">
           <i class="fa fa-area-chart"></i> <span i18n="statistics.memory-by-vBytes">Mempool by vBytes (sat/vByte)</span>
           <form [formGroup]="radioGroupForm" class="formRadioGroup" (click)="saveGraphPreference()">
-            <div class="spinner-border text-light bootstrap-spinner" *ngIf="spinnerLoading"></div>
             <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
               <label ngbButtonLabel class="btn-primary btn-sm">
                 <input ngbButton type="radio" [value]="'2h'" [routerLink]="['/graphs' | relativeUrl]" fragment="2h"> 2H (LIVE)
@@ -75,6 +74,7 @@
               <button (click)="invertGraph()" class="btn btn-primary btn-sm"><fa-icon [icon]="['fas', 'exchange-alt']" [rotate]="90" [fixedWidth]="true" i18n-title="statistics.component-invert.title" title="Invert"></fa-icon></button>
             </div>
           </form>
+          <div class="spinner-border text-light bootstrap-spinner" *ngIf="spinnerLoading"></div>
         </div>
         <div class="card-body">
           <div class="incoming-transactions-graph">
