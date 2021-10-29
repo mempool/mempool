@@ -85,7 +85,10 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   generateArray(mempoolStats: OptimizedMempoolStats[]) {
     const finalArray: number[][] = [];
     let feesArray: number[] = [];
-    const limitFeesTemplate = this.template === 'advanced' ? 28 : 21;
+    let limitFeesTemplate = this.template === 'advanced' ? 28 : 21;
+    if (this.stateService.network === 'liquid') {
+      limitFeesTemplate = this.template === 'advanced' ? 26 : 20;
+    }
     for (let index = limitFeesTemplate; index > -1; index--) {
       feesArray = [];
       mempoolStats.forEach((stats) => {
