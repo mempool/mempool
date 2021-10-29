@@ -2,53 +2,48 @@
   padding: 0.55rem;
 }
 
-.title-block {
-  color: #FFF;
-  padding-top: 20px;
-  border-top: 3px solid #FFF;
-  width: 100%;
-  padding-bottom: 30px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  @media (min-width: 768px) {
-  	padding-bottom: 0px;
-  }
-}
-
-h1{
-    margin-top: 2px;
-	margin-bottom: 0;
-	float: left;
-    margin-top: 2px;
-	@media (min-width: 768px){
-		margin-top: -8px;
-	}
-}
-
 .container-buttons {
 	text-align: right;
-    width: 100%;
-	@media (min-width: 850px) {
-		width: auto;
+  align-self: start;
+  width: auto;
+  margin-right: 15px;
+  right: 0;
+  position: absolute;
+	@media (min-width: 650px) {
+    right: auto;
+    margin-right: auto;
+    position: relative;
+  }
+	@media (min-width: 768px) {
+    align-self: center;
 		float: right;
 	}
 }
 
+.title-block {
+  flex-direction: column;
+  @media (min-width: 650px) {
+    flex-direction: row;
+  }
+  h1 {
+    margin: 0rem;
+    line-height: 1;
+  }
+}
 .tx-link {
-	display: block;
-	width: auto;
-	margin-bottom: 10px;
-    margin-left: 2px;
-	margin-top: 40px;
-    position: absolute;
+  display: flex;
+  margin-bottom: 0px;
+  margin-top: 8px;
+	@media (min-width: 650px) {
+    align-self: end;
+    margin-left: 15px;
+    margin-top: 0px;
+    margin-bottom: -3px;
+	}
 	@media (min-width: 768px) {
-	  margin-top: 14px;
-	  margin-left: 10px;
-	  position: relative;	  
-	  text-align: left;
-	  width: auto;
-	  float: left;
+    margin-bottom: 0px;
+    top: 1px;
+    position: relative;
 	}
 }
 
@@ -75,10 +70,6 @@ h1{
 
 .arrow-red {
 	color: #dc3545;
-}
-
-.btn {
-	margin-top: 5px;
 }
 
 .container-xl {
@@ -129,9 +120,26 @@ h1{
 	}
 }
 
-.effective-fee-container{
+.effective-fee-container {
 	display: block;
 	@media (min-width: 768px){
 		display: inline-block;
+	}
+}
+
+
+.title {
+  h2 {
+    line-height: 1;
+    margin: 0;
+    padding-bottom: 10px;
+  }
+}
+
+.btn-outline-info {
+  margin-top: -10px;
+	@media (min-width: 768px){
+		display: inline-block;
+    margin-top: 0px;
 	}
 }
