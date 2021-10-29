@@ -1,7 +1,7 @@
 <div class="container-xl" *ngIf="mempoolBlock$ | async as mempoolBlock">
 
   <div class="title-block">
-    <h1 class="float-left">{{ ordinal$ | async }}</h1>
+    <h1>{{ ordinal$ | async }}</h1>
     <button [routerLink]="['/' | relativeUrl]" class="btn btn-sm float-right">&#10005;</button>
   </div>
 

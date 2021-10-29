@@ -21,3 +21,32 @@
     margin-right: 0px;
   }
 }
+
+h1 {
+  margin: 0px;
+  padding: 0px;
+  margin-right: 15px;
+  @media (min-width: 576px) {
+    float: left;
+  }
+}
+
+.tx-link {
+  display: block;
+  height: 100%;
+  top: 9px;
+  position: relative;
+	@media (min-width: 576px) {
+    top: 11px;
+	}
+  @media (min-width: 768px) {
+    top: 17px;
+  }
+}
+.title-tx {
+  h2 {
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+}
+

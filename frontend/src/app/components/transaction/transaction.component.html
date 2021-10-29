@@ -9,18 +9,18 @@
       </a>
     </div>
 
-    <div>
-      <div class="title">
-        <h1 i18n="shared.transaction">Transaction</h1>
-      </div>
+    <ng-container>
+      <h1 i18n="shared.transaction">Transaction</h1>
 
-      <div class="tx-link float-left">
+      <span class="tx-link float-left">
         <a [routerLink]="['/tx/' | relativeUrl, txId]">
           <span class="d-inline d-lg-none">{{ txId | shortenString : 24 }}</span>
           <span class="d-none d-lg-inline">{{ txId }}</span>
         </a>
         <app-clipboard [text]="txId"></app-clipboard>
-      </div>
+      </span>
+
+      <span class="grow"></span>
 
       <div class="container-buttons">
         <ng-template [ngIf]="tx?.status?.confirmed">
@@ -34,7 +34,7 @@
           <button type="button" class="btn btn-sm btn-danger" i18n="transaction.unconfirmed|Transaction unconfirmed state">Unconfirmed</button>
         </ng-template>
       </div>
-    </div>
+    </ng-container>
   </div>
   <div class="clearfix"></div>
 
@@ -192,15 +192,19 @@
 
     <br>
 
-    <h2 class="float-left" i18n="transaction.inputs-and-outputs|Transaction inputs and outputs">Inputs & Outputs</h2>
+    <div class="title float-left">
+      <h2 i18n="transaction.inputs-and-outputs|Transaction inputs and outputs">Inputs & Outputs</h2>
+    </div>
 
-    <button type="button" class="btn btn-outline-info btn-sm float-right mr-1 mt-0 mt-md-2" (click)="txList.toggleDetails()" i18n="transaction.details|Transaction Details">Details</button>
+    <button type="button" class="btn btn-outline-info btn-sm float-right" (click)="txList.toggleDetails()" i18n="transaction.details|Transaction Details">Details</button>
 
     <div class="clearfix"></div>
 
     <app-transactions-list #txList [transactions]="[tx]" [errorUnblinded]="errorUnblinded" [outputIndex]="outputIndex" [transactionPage]="true"></app-transactions-list>
 
-    <h2 class="text-left" i18n="transaction.details">Details</h2>
+    <div class="title">
+      <h2 i18n="transaction.details">Details</h2>
+    </div>
     <div class="box">
       <table class="table table-borderless table-striped">
         <tbody>

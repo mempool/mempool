@@ -4,22 +4,22 @@
 }
 .green, .grey, .red {
 	font-size: 16px;
-    top: -2px;
+  top: -2px;
 	position: relative;
 	@media( min-width: 576px){
 		font-size: 19px;
 	}
 }
 .green {
-  	color:#28a745;
+  color:#28a745;
 }
 
 .red {
-  	color:#dc3545;
+  color:#dc3545;
 }
 
 .grey {
-  	color:#6c757d;
+  color:#6c757d;
 }
 
 .mobile-bottomcol {
@@ -43,7 +43,7 @@
 	}
 }
 
-.extra-info {	
+.extra-info {
 	display: none;
 	@media (min-width: 576px) {
 		display: inline-table;
@@ -75,11 +75,11 @@
 	}
 }
 .fiat {
-	margin-left: 10px; 
+	margin-left: 10px;
 }
 
 .tx-page-container {
-	padding: 10px; 
+	padding: 10px;
 	margin-bottom: 10px;
 	margin-top: 10px;
 }
@@ -112,6 +112,10 @@
 	width: 100%;
 	color: #d43131;
 	text-align: right;
-    margin-top: 0px;
-    margin-bottom: 10px;
+  margin-top: 0px;
+  margin-bottom: 10px;
+}
+
+h2 {
+  line-height: 1;
 }
