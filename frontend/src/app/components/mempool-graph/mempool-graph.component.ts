@@ -30,7 +30,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   mempoolVsizeFeesInitOptions = {
     renderer: 'svg',
   };
-  windowPreference: string;
+  windowPreference = '2h';
   hoverIndexSerie = 0;
   feeLimitIndex: number;
   feeLevelsOrdered = [];
