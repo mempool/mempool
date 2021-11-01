@@ -688,6 +688,25 @@ th {
 .reserved { color: #ff8c00 }
 
 .rtl-layout {
+
+  .navbar-brand {
+    margin-right: 0px;
+    text-align: right;
+  }
+  .dropdown {
+    margin-right: 1rem;
+    margin-left: 0;
+    @media (min-width: 576px) {
+      margin-left: 1rem;
+    }
+    @media (min-width: 768px) {
+      margin-left: 0;
+    }
+  }
+  .dropdown-menu-right {
+    left: 0px;
+    right: auto;
+  }
   .fa-arrow-alt-circle-right {
     @extend .fa-arrow-alt-circle-right;
     -webkit-transform: scaleX(-1);
@@ -737,7 +756,7 @@ th {
   }
 
   .bitcoin-block {
-      direction: rtl;
+    direction: rtl;
   }
 
   .next-previous-blocks {
