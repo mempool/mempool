@@ -211,7 +211,6 @@
               "browserTarget": "mempool:build:production"
             },
             "local": {
-              "proxyConfig": "proxy.conf.js",
               "verbose": true
             },
             "staging": {
