@@ -16,7 +16,7 @@
           
           ws.addEventListener('message', function incoming({data}) {
             const res = JSON.parse(data.toString());
-            if (res.blocks) {
+            if (res.block) {
               console.log(res.blocks);
             }
             if (res.mempoolInfo) {
