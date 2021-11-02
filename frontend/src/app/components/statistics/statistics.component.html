@@ -35,6 +35,12 @@
               <label ngbButtonLabel class="btn-primary btn-sm">
                 <input ngbButton type="radio" [value]="'1y'" [routerLink]="['/graphs' | relativeUrl]" fragment="1y"> 1Y
               </label>
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="'2y'" [routerLink]="['/graphs' | relativeUrl]" fragment="2y"> 2Y
+              </label>
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="'3y'" [routerLink]="['/graphs' | relativeUrl]" fragment="3y"> 3Y
+              </label>
             </div>
 
             <div class="d-inline-block" ngbDropdown #myDrop="ngbDropdown">
