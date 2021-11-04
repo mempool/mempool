@@ -271,6 +271,33 @@ describe('Mainnet', () => {
             });
         });
 
+        describe('graphs page', () => {
+          it('check buttons - mobile', () => {
+              cy.viewport('iphone-6');
+              cy.visit('/graphs');
+              cy.waitForSkeletonGone();
+              cy.get('.small-buttons > :nth-child(2)').should('be.visible');
+              cy.get('#dropdownFees').should('be.visible');
+              cy.get('.btn-group').should('be.visible');
+          });
+          it('check buttons - tablet', () => {
+            cy.viewport('ipad-2');
+            cy.visit('/graphs');
+            cy.waitForSkeletonGone();
+            cy.get('.small-buttons > :nth-child(2)').should('be.visible');
+            cy.get('#dropdownFees').should('be.visible');
+            cy.get('.btn-group').should('be.visible');
+          });
+          it('check buttons - desktop', () => {
+            cy.viewport('macbook-16');
+            cy.visit('/graphs');
+            cy.waitForSkeletonGone();
+            cy.get('.small-buttons > :nth-child(2)').should('be.visible');
+            cy.get('#dropdownFees').should('be.visible');
+            cy.get('.btn-group').should('be.visible');
+          });
+        });
+
         it('loads the tv screen - desktop', () => {
             cy.viewport('macbook-16');
             cy.visit('/');
