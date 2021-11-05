@@ -9,7 +9,7 @@ class Statistics {
   protected newStatisticsEntryCallback: ((stats: OptimizedStatistic) => void) | undefined;
   protected queryTimeout = 120000;
   protected cache: { [date: string]: OptimizedStatistic[] } = {
-    '24h': [], '1w': [], '1m': [], '3m': [], '6m': [], '1y': [],
+    '24h': [], '1w': [], '1m': [], '3m': [], '6m': [], '1y': [], '2y': [], '3y': []
   };
 
   public setNewStatisticsEntryCallback(fn: (stats: OptimizedStatistic) => void) {
@@ -48,6 +48,8 @@ class Statistics {
     this.cache['3m'] = await this.$list3M();
     this.cache['6m'] = await this.$list6M();
     this.cache['1y'] = await this.$list1Y();
+    this.cache['2y'] = await this.$list2Y();
+    this.cache['3y'] = await this.$list3Y();
     logger.debug('Statistics cache created');
   }
 
@@ -403,10 +405,37 @@ class Statistics {
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
     } catch (e) {
-      logger.err('$list6M() error' + (e instanceof Error ? e.message : e));
+      logger.err('$list1Y() error' + (e instanceof Error ? e.message : e));
       return [];
     }
   }
+
+  public async $list2Y(): Promise<OptimizedStatistic[]> {
+    try {
+      const connection = await DB.pool.getConnection();
+      const query = this.getQueryForDays(120960);
+      const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
+      connection.release();
+      return this.mapStatisticToOptimizedStatistic(rows);
+    } catch (e) {
+      logger.err('$list2Y() error' + (e instanceof Error ? e.message : e));
+      return [];
+    }
+  }
+
+  public async $list3Y(): Promise<OptimizedStatistic[]> {
+    try {
+      const connection = await DB.pool.getConnection();
+      const query = this.getQueryForDays(181440);
+      const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
+      connection.release();
+      return this.mapStatisticToOptimizedStatistic(rows);
+    } catch (e) {
+      logger.err('$list3Y() error' + (e instanceof Error ? e.message : e));
+      return [];
+    }
+  }
+
   private mapStatisticToOptimizedStatistic(statistic: Statistic[]): OptimizedStatistic[] {
     return statistic.map((s) => {
       return {

@@ -217,6 +217,8 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/3m', routes.get3MStatistics.bind(routes))
         .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/6m', routes.get6MStatistics.bind(routes))
         .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/1y', routes.get1YStatistics.bind(routes))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/2y', routes.get2YStatistics.bind(routes))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/3y', routes.get3YStatistics.bind(routes))
         ;
     }
 
