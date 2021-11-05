@@ -52,6 +52,14 @@ class Routes {
     res.json(statistics.getCache()['1y']);
   }
 
+  public get2YStatistics(req: Request, res: Response) {
+    res.json(statistics.getCache()['2y']);
+  }
+  
+  public get3YStatistics(req: Request, res: Response) {
+    res.json(statistics.getCache()['3y']);
+  }
+
   public getInitData(req: Request, res: Response) {
     try {
       const result = websocketHandler.getInitData();
