@@ -72,6 +72,14 @@ li.nav-item {
   width: 60%;
 }
 
+.navbar {
+  .dropdown {
+    button {
+      width: 62px;
+    }
+  }
+}
+
 @media (min-width: 576px) {
   .navbar-brand {
     width: 140px;
