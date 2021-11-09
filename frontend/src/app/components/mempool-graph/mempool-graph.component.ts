@@ -349,9 +349,17 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       }
       if (feeLevels[i] <= this.limitFee) {
         if (i === 0) {
-          this.feeLevelsOrdered.push('0 - 1');
+          if (this.stateService.network === 'liquid') {
+            this.feeLevelsOrdered.push('0 - 0.1');
+          } else {
+            this.feeLevelsOrdered.push('0 - 1');
+          }
         } else {
-          this.feeLevelsOrdered.push(`${feeLevels[i - 1]} - ${feeLevels[i]}`);
+          if (this.stateService.network === 'liquid') {
+            this.feeLevelsOrdered.push(`${feeLevels[i - 1] / 10} - ${feeLevels[i] / 10}`);
+          } else {
+            this.feeLevelsOrdered.push(`${feeLevels[i - 1]} - ${feeLevels[i]}`);
+          }
         }
       }
     }
