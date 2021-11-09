@@ -7,5 +7,17 @@
 }
 
 #blockchain-container::-webkit-scrollbar {
-    display: none;
+  display: none;
+}
+
+.warning-label {
+  position: absolute;
+  width: 150px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 6px 4px;
+  border-radius: 4px;
+  margin-top: -10px;
+  margin-left: 10px;
 }

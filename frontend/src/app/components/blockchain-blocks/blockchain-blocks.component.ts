@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { Block } from 'src/app/interfaces/electrs.interface';
 import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
+import { specialBlocks } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-blockchain-blocks',
@@ -11,7 +12,7 @@ import { Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlockchainBlocksComponent implements OnInit, OnDestroy {
-  
+  specialBlocks = specialBlocks;
   network = '';
   blocks: Block[] = [];
   emptyBlocks: Block[] = this.mountEmptyBlocks();

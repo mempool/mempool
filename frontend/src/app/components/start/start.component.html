@@ -1,3 +1,10 @@
+<ng-container *ngIf="specialEvent">
+  <div class="confetti">
+    <app-confetti [interval]="interval" [options]="optionsLeft"></app-confetti>
+    <app-confetti [interval]="interval" [options]="optionsRight"></app-confetti>
+  </div>
+  <div class="warning-label">{{ eventName }}</div>
+</ng-container>
 <div id="blockchain-container" dir="ltr">
   <app-blockchain></app-blockchain>
 </div>

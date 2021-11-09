@@ -4,10 +4,12 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { NgxEchartsModule } from 'ngx-echarts';
+import { InViewportModule } from 'ng-in-viewport';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app/app.component';
 
+import { ConfettiComponent } from './components/confetti/confetti.component';
 import { StartComponent } from './components/start/start.component';
 import { ElectrsApiService } from './services/electrs-api.service';
 import { TransactionComponent } from './components/transaction/transaction.component';
@@ -100,6 +102,7 @@ import { PushTransactionComponent } from './components/push-transaction/push-tra
     TrademarkPolicyComponent,
     SponsorComponent,
     PushTransactionComponent,
+    ConfettiComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
@@ -113,7 +116,8 @@ import { PushTransactionComponent } from './components/push-transaction/push-tra
     SharedModule,
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts')
-    })
+    }),
+    InViewportModule,
   ],
   providers: [
     ElectrsApiService,
