@@ -100,10 +100,16 @@
                         <td i18n="transactions-list.nsequence">nSequence</td>
                         <td style="text-align: left;">{{ formatHex(vin.sequence) }}</td>
                       </tr>
-                      <tr *ngIf="vin.prevout">
-                        <td i18n="transactions-list.previous-output-script">Previous output script</td>
-                        <td style="text-align: left;" [innerHTML]="vin.prevout.scriptpubkey_asm | asmStyler">{{ vin.prevout.scriptpubkey_type ? ('(' + vin.prevout.scriptpubkey_type + ')') : '' }}"</td>
-                      </tr>
+                      <ng-template [ngIf]="vin.prevout">
+                        <tr>
+                          <td i18n="transactions-list.previous-output-script">Previous output script</td>
+                          <td style="text-align: left;" [innerHTML]="vin.prevout.scriptpubkey_asm | asmStyler"></td>
+                        </tr>
+                        <tr>
+                          <td i18n="transactions-list.previous-output-type">Previous output type</td>
+                          <td style="text-align: left;">{{ vin.prevout.scriptpubkey_type?.toUpperCase() }}</td>
+                        </tr>
+                    </ng-template>
                     </tbody>
                   </table>
                 </td>
@@ -176,10 +182,6 @@
                 <td colspan="3" class=" details-container" >
                   <table class="table table-striped table-borderless details-table mb-3">
                     <tbody>
-                      <tr *ngIf="vout.scriptpubkey_type">
-                        <td i18n="transactions-list.vout.scriptpubkey-type">Type</td>
-                        <td style="text-align: left;">{{ vout.scriptpubkey_type.toUpperCase() }}</td>
-                      </tr>
                       <tr>
                         <td i18n="transactions-list.scriptpubkey.asm|ScriptPubKey (ASM)">ScriptPubKey (ASM)</td>
                         <td style="text-align: left;" [innerHTML]="vout.scriptpubkey_asm | asmStyler"></td>
@@ -191,6 +193,10 @@
                       <tr *ngIf="vout.scriptpubkey_type == 'op_return'">
                         <td>OP_RETURN <span i18n="transactions-list.vout.scriptpubkey-type.data">data</span></td>
                         <td style="text-align: left;">{{ vout.scriptpubkey_asm | hex2ascii }}</td>
+                      </tr>
+                      <tr *ngIf="vout.scriptpubkey_type">
+                        <td i18n="transactions-list.vout.scriptpubkey-type">Type</td>
+                        <td style="text-align: left;">{{ vout.scriptpubkey_type.toUpperCase() }}</td>
                       </tr>
                     </tbody>
                   </table>
