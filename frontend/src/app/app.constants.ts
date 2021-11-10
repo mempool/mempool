@@ -129,3 +129,13 @@ export const languages: Language[] = [
    { code: 'vi', name: 'Tiếng Việt' },      // Vietnamese
    { code: 'zh', name: '中文' },            // Chinese
 ];
+
+
+export const specialBlocks = {
+  '708998': {
+    labelEvent: '🌱 Taproot Activated!',
+  },
+  '840000': {
+    labelEvent: '🥳 Halving Event!',
+  }
+};
