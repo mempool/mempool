@@ -11,6 +11,7 @@ do
 		-- \
 		-vv \
 		--network signet \
+		--address-search \
 		--cors '*' \
 		--db-dir /electrs \
 		--daemon-rpc-addr '127.0.0.1:38332' \
