@@ -11,6 +11,7 @@ do
 		-- \
 		-vvvv \
 		--network testnet \
+		--address-search \
 		--cors '*' \
 		--db-dir /electrs \
 		--daemon-dir $HOME \
