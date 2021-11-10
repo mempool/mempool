@@ -17,6 +17,7 @@ export class TxFeaturesComponent implements OnChanges {
     potentialP2shGains: 0,
   };
   isRbfTransaction: boolean;
+  isTaproot: boolean;
 
   constructor() { }
 
@@ -26,5 +27,6 @@ export class TxFeaturesComponent implements OnChanges {
     }
     this.segwitGains = calcSegwitFeeGains(this.tx);
     this.isRbfTransaction = this.tx.vin.some((v) => v.sequence < 0xfffffffe);
+    this.isTaproot = this.tx.vin.some((v) => v.prevout && v.prevout.scriptpubkey_type === 'v1_p2tr');
   }
 }
