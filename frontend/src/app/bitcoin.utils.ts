@@ -16,6 +16,7 @@ export function calcSegwitFeeGains(tx: Transaction) {
     const isP2sh  = vin.prevout.scriptpubkey_type === 'p2sh';
     const isP2wsh = vin.prevout.scriptpubkey_type === 'v0_p2wsh';
     const isP2wpkh = vin.prevout.scriptpubkey_type === 'v0_p2wpkh';
+    const isP2tr  = vin.prevout.scriptpubkey_type === 'v1_p2tr';
 
     const op = vin.scriptsig ? vin.scriptsig_asm.split(' ')[0] : null;
     const isP2sh2Wpkh = isP2sh && !!vin.witness && op === 'OP_PUSHBYTES_22';
@@ -25,6 +26,7 @@ export function calcSegwitFeeGains(tx: Transaction) {
       // Native Segwit - P2WPKH/P2WSH (Bech32)
       case isP2wpkh:
       case isP2wsh:
+      case isP2tr:
         // maximal gains: the scriptSig is moved entirely to the witness part
         realizedGains += witnessSize(vin) * 3;
         // XXX P2WSH output creation is more expensive, should we take this into consideration?
