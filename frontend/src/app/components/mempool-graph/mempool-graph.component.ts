@@ -242,7 +242,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           });
           const classActive = (this.template === 'advanced') ? 'fees-wrapper-tooltip-chart-advanced' : '';
           const titleRange = $localize`Range`;
-          const titleSize = $localize`Size`;
+          const titleSize = $localize`:@@7faaaa08f56427999f3be41df1093ce4089bbd75:Size`;
           const titleSum = $localize`Sum`;
           return `<div class="fees-wrapper-tooltip-chart ${classActive}">
             <div class="title">
