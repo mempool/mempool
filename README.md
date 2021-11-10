@@ -176,7 +176,7 @@ Install the supplied nginx.conf and nginx-mempool.conf in /etc/nginx
 
 ```bash
   # install nginx and certbot
-  apt-get install -y nginx python-certbot-nginx
+  apt-get install -y nginx python3-certbot-nginx
 
   # install the mempool configuration for nginx
   cp nginx.conf nginx-mempool.conf /etc/nginx/
