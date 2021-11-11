@@ -130,12 +130,11 @@ export const languages: Language[] = [
    { code: 'zh', name: '中文' },            // Chinese
 ];
 
-
 export const specialBlocks = {
-  '708998': {
-    labelEvent: '🌱 Taproot Activated!',
+  '709632': {
+    labelEvent: '🌱 Taproot activated!',
   },
   '840000': {
-    labelEvent: '🥳 Halving Event!',
+    labelEvent: '🥳 Halving',
   }
 };
