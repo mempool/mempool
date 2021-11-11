@@ -241,6 +241,9 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
             </tr>`);
           });
           const classActive = (this.template === 'advanced') ? 'fees-wrapper-tooltip-chart-advanced' : '';
+          const titleRange = $localize`Range`;
+          const titleSize = $localize`:@@7faaaa08f56427999f3be41df1093ce4089bbd75:Size`;
+          const titleSum = $localize`Sum`;
           return `<div class="fees-wrapper-tooltip-chart ${classActive}">
             <div class="title">
               ${params[0].axisValue}
@@ -251,9 +254,9 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
             <table>
               <thead>
                 <tr>
-                  <th>Range</th>
-                  <th>Size</th>
-                  <th>Sum</th>
+                  <th>${titleRange}</th>
+                  <th>${titleSize}</th>
+                  <th>${titleSum}</th>
                   <th></th>
                 </tr>
               </thead>
