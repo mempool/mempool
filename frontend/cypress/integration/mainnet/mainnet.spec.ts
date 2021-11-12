@@ -89,18 +89,33 @@ describe('Mainnet', () => {
             });
 
             ['BC1PQYQSZQ', 'bc1PqYqSzQ'].forEach((searchTerm) => {
-                it(`allows searching for partial case insensitive bc1 addresses: ${searchTerm}`, () => {
+                it(`allows searching for partial case insensitive bech32m addresses: ${searchTerm}`, () => {
                     cy.visit('/');
                     cy.get('.search-box-container > .form-control').type(searchTerm).then(() => {
                         cy.get('ngb-typeahead-window button.dropdown-item').should('have.length', 1);
                         cy.get('ngb-typeahead-window button.dropdown-item.active').click().then(() => {
-                            cy.url().should('include', '/address/bc1pqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqs3wf0qm');
+                            cy.url().should('include', '/address/bc1pqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqsyjer9e');
                             cy.waitForSkeletonGone();
                             cy.get('.text-center').should('not.have.text', 'Invalid Bitcoin address');
                         });
                     });
                 });
             });
+
+            ['BC1Q000375VXCU', 'bC1q000375vXcU'].forEach((searchTerm) => {
+                it(`allows searching for partial case insensitive bech32 addresses: ${searchTerm}`, () => {
+                    cy.visit('/');
+                    cy.get('.search-box-container > .form-control').type(searchTerm).then(() => {
+                        cy.get('ngb-typeahead-window button.dropdown-item').should('have.length', 1);
+                        cy.get('ngb-typeahead-window button.dropdown-item.active').click().then(() => {
+                            cy.url().should('include', '/address/bc1q000375vxcuf5v04lmwy22vy2thvhqkxghgq7dy');
+                            cy.waitForSkeletonGone();
+                            cy.get('.text-center').should('not.have.text', 'Invalid Bitcoin address');
+                        });
+                    });
+                });
+            });
+
         });
 
         describe('blocks navigation', () => {
