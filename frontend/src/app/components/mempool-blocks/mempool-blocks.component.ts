@@ -3,10 +3,9 @@ import { Subscription, Observable, fromEvent, merge, of, combineLatest, timer } 
 import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
 import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
-import { take, map, switchMap, share } from 'rxjs/operators';
+import { take, map, switchMap } from 'rxjs/operators';
 import { feeLevels, mempoolFeeColors } from 'src/app/app.constants';
 import { specialBlocks } from 'src/app/app.constants';
-import { Block } from 'src/app/interfaces/electrs.interface';
 
 @Component({
   selector: 'app-mempool-blocks',
@@ -85,7 +84,9 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
           mempoolBlocks.forEach((block, i) => {
             block.index = this.blockIndex + i;
             block.height = lastBlock.height + i + 1;
-            block.blink = specialBlocks[block.height] ? true : false;
+            if (this.stateService.network === '') {
+              block.blink = specialBlocks[block.height] ? true : false;
+            }
           });
           const stringifiedBlocks = JSON.stringify(mempoolBlocks);
           this.mempoolBlocksFull = JSON.parse(stringifiedBlocks);
