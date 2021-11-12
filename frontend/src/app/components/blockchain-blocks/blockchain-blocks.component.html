@@ -25,7 +25,7 @@
   <div [hidden]="!arrowVisible" id="arrow-up" [style.transition]="transition" [ngStyle]="{'left': arrowLeftPx + 'px' }"></div>
 </div>
 
-<ng-template #loadingBlocksTemplate >
+<ng-template #loadingBlocksTemplate>
   <div class="blocks-container">
     <div class="flashing">
       <div *ngFor="let block of emptyBlocks; let i = index; trackBy: trackByBlocksFn" >
