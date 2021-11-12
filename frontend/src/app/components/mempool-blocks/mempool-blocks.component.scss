@@ -18,7 +18,7 @@
 
 .flashing {
   animation: opacityPulse 2s ease-out;
-  animation-iteration-count: infinite; 
+  animation-iteration-count: infinite;
   opacity: 1;
 }
 
@@ -60,7 +60,7 @@
 }
 
 .bitcoin-block::after {
-  content: '';   
+  content: '';
   width: 125px;
   height: 24px;
   position:absolute;
@@ -68,7 +68,7 @@
   left: -20px;
   background-color: #232838;
   transform:skew(40deg);
-  transform-origin:top;    
+  transform-origin:top;
 }
 
 .bitcoin-block::before {
@@ -78,18 +78,18 @@
   position: absolute;
   top: -12px;
   left: -20px;
-  background-color: #191c27; 
-  
+  background-color: #191c27;
+
   transform: skewY(50deg);
-  transform-origin: top;     
+  transform-origin: top;
 }
 
 .mempool-block.bitcoin-block::after {
-  background-color: #403834; 
+  background-color: #403834;
 }
 
 .mempool-block.bitcoin-block::before {
-  background-color: #2d2825; 
+  background-color: #2d2825;
 }
 
 .black-background {
@@ -102,8 +102,8 @@
   position: relative;
   right: 75px;
   top: 140px;
-  width: 0; 
-  height: 0; 
+  width: 0;
+  height: 0;
   border-left: 35px solid transparent;
   border-right: 35px solid transparent;
   border-bottom: 35px solid #FFF;
