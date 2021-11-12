@@ -5,6 +5,8 @@ import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
 import { take, map, switchMap, share } from 'rxjs/operators';
 import { feeLevels, mempoolFeeColors } from 'src/app/app.constants';
+import { specialBlocks } from 'src/app/app.constants';
+import { Block } from 'src/app/interfaces/electrs.interface';
 
 @Component({
   selector: 'app-mempool-blocks',
@@ -13,12 +15,13 @@ import { feeLevels, mempoolFeeColors } from 'src/app/app.constants';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MempoolBlocksComponent implements OnInit, OnDestroy {
-
+  specialBlocks = specialBlocks;
   mempoolBlocks: MempoolBlock[] = [];
   mempoolEmptyBlocks: MempoolBlock[] = this.mountEmptyBlocks();
   mempoolBlocks$: Observable<MempoolBlock[]>;
   timeAvg$: Observable<number>;
   loadingBlocks$: Observable<boolean>;
+  blocksSubscription: Subscription;
 
   mempoolBlocksFull: MempoolBlock[] = [];
   mempoolBlockStyles = [];
@@ -74,26 +77,25 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
       fromEvent(window, 'resize')
     )
     .pipe(
-      switchMap(() => this.stateService.mempoolBlocks$),
-      map((blocks) => {
-        if (!blocks.length) {
-          return [{ index: 0, blockSize: 0, blockVSize: 0, feeRange: [0, 0], medianFee: 0, nTx: 0, totalFees: 0 }];
-        }
-        return blocks;
-      }),
-      map((blocks) => {
-        blocks.forEach((block, i) => {
-          block.index = this.blockIndex + i;
-        });
-        const stringifiedBlocks = JSON.stringify(blocks);
-        this.mempoolBlocksFull = JSON.parse(stringifiedBlocks);
-        this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(stringifiedBlocks));
-        this.updateMempoolBlockStyles();
-        this.calculateTransactionPosition();
-        return this.mempoolBlocks;
-      })
-    );
+        switchMap(() => combineLatest([
+          this.stateService.blocks$.pipe(map(([block]) => block)),
+          this.stateService.mempoolBlocks$
+        ])),
+        map(([lastBlock, mempoolBlocks]) => {
+          mempoolBlocks.forEach((block, i) => {
+            block.index = this.blockIndex + i;
+            block.height = lastBlock.height + i + 1;
+            block.blink = specialBlocks[block.height] ? true : false;
+          });
+          const stringifiedBlocks = JSON.stringify(mempoolBlocks);
+          this.mempoolBlocksFull = JSON.parse(stringifiedBlocks);
+          this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(stringifiedBlocks));
+          this.updateMempoolBlockStyles();
+          this.calculateTransactionPosition();
 
+          return this.mempoolBlocks;
+        })
+      );
 
     this.timeAvg$ = timer(0, 1000)
       .pipe(
@@ -118,7 +120,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
           } else {
             timeAvgMins += Math.abs(timeAvgDiff);
           }
-          
+
           return timeAvgMins * 60 * 1000;
         })
       );

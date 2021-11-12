@@ -26,6 +26,8 @@ export interface WebsocketResponse {
 }
 
 export interface MempoolBlock {
+  blink?: boolean;
+  height?: number;
   blockSize: number;
   blockVSize: number;
   nTx: number;

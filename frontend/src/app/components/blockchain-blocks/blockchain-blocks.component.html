@@ -1,6 +1,6 @@
 <div class="blocks-container blockchain-blocks-container" *ngIf="(loadingBlocks$ | async) === false; else loadingBlocksTemplate">
   <div *ngFor="let block of blocks; let i = index; trackBy: trackByBlocksFn" >
-    <div class="text-center bitcoin-block mined-block blockchain-blocks-{{ i }}" id="bitcoin-block-{{ block.height }}" [ngStyle]="blockStyles[i]">
+    <div class="text-center bitcoin-block mined-block blockchain-blocks-{{ i }}" id="bitcoin-block-{{ block.height }}" [ngStyle]="blockStyles[i]" [class.blink-bg]="(specialBlocks[block.height] !== undefined)">
       <a [routerLink]="['/block/' | relativeUrl, block.id]" [state]="{ data: { block: block } }" class="blockLink">&nbsp;</a>
       <div class="block-height">
         <a [routerLink]="['/block/' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a>
