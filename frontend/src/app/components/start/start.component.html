@@ -5,6 +5,9 @@
   </div>
   <div class="warning-label">{{ eventName }}</div>
 </ng-container>
+
+<div *ngIf="countdown > 0" class="warning-label">{{ eventName }} in {{ countdown | number }} block{{ countdown === 1 ? '' : 's' }}!</div>
+
 <div id="blockchain-container" dir="ltr">
   <app-blockchain></app-blockchain>
 </div>

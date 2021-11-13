@@ -166,7 +166,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
                   this.errorUnblinded = error;
                   return of(tx);
                 })
-              )
+              );
           }
           return of(tx);
         })
