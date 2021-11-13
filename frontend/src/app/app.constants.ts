@@ -137,6 +137,6 @@ export const specialBlocks = {
   },
   '840000': {
     labelEvent: 'Halving 🥳',
-    labelEventCompleted: 'Block Subsidy has halved to 6.25 BTC per block',
+    labelEventCompleted: 'Block Subsidy has halved to 3.125 BTC per block',
   }
 };
