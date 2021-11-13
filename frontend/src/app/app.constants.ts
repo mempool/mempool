@@ -132,9 +132,11 @@ export const languages: Language[] = [
 
 export const specialBlocks = {
   '709632': {
-    labelEvent: '🌱 Taproot activated!',
+    labelEvent: 'Taproot 🌱 activation',
+    labelEventCompleted: 'Taproot 🌱 has been activated!',
   },
   '840000': {
-    labelEvent: '🥳 Halving',
+    labelEvent: 'Halving 🥳',
+    labelEventCompleted: 'Block Subsidy has halved to 3.125 BTC per block',
   }
 };
