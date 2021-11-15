@@ -24,6 +24,12 @@ describe('Mainnet', () => {
 
     if (baseModule === 'mempool') {
 
+        it('check first mempool block after skeleton loads', () => {
+          cy.visit('/');
+          cy.waitForSkeletonGone();
+          cy.get('#mempool-block-0 > .blockLink').should('exist');
+        });
+
         it('loads the status screen', () => {
             cy.visit('/status');
             cy.get('#mempool-block-0').should('be.visible');

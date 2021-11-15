@@ -88,13 +88,16 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
               block.blink = specialBlocks[block.height] ? true : false;
             }
           });
-          const stringifiedBlocks = JSON.stringify(mempoolBlocks);
-          this.mempoolBlocksFull = JSON.parse(stringifiedBlocks);
-          this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(stringifiedBlocks));
+
+          let blocks = mempoolBlocks;
+          if (!mempoolBlocks.length) {
+            blocks = [{ index: 0, blockSize: 0, blockVSize: 0, feeRange: [0, 0], medianFee: 0, nTx: 0, totalFees: 0 }];
+          }
+          this.mempoolBlocksFull = blocks;
+          this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(blocks);
           this.updateMempoolBlockStyles();
           this.calculateTransactionPosition();
-
-          return this.mempoolBlocks;
+          return blocks;
         })
       );
 
