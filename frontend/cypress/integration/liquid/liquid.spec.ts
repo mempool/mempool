@@ -18,6 +18,12 @@ describe('Liquid', () => {
 
     if (baseModule === 'mempool' || baseModule === 'liquid') {
 
+        it('check first mempool block after skeleton loads', () => {
+            cy.visit(`${basePath}`);
+            cy.waitForSkeletonGone();
+            cy.get('#mempool-block-0 > .blockLink').should('exist');
+        });
+
         it('loads the dashboard', () => {
             cy.visit(`${basePath}`);
             cy.waitForSkeletonGone();
