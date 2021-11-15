@@ -17,6 +17,12 @@ describe('Signet', () => {
         cy.waitForSkeletonGone();
     });
 
+    it('check first mempool block after skeleton loads', () => {
+      cy.visit('/');
+      cy.waitForSkeletonGone();
+      cy.get('#mempool-block-0 > .blockLink').should('exist');
+    });
+
     it('loads the dashboard with the skeleton blocks', () => {
         cy.mockMempoolSocket();
         cy.visit("/signet");
