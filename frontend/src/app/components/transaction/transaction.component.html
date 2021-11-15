@@ -206,26 +206,44 @@
       <h2 i18n="transaction.details">Details</h2>
     </div>
     <div class="box">
-      <table class="table table-borderless table-striped">
-        <tbody>
-          <tr>
-            <td i18n="transaction.size|Transaction Size">Size</td>
-            <td [innerHTML]="'&lrm;' + (tx.size | bytes: 2)"></td>
-          </tr>
-          <tr>
-            <td i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
-            <td [innerHTML]="'&lrm;' + (tx.weight / 4 | vbytes: 2)"></td>
-          </tr>
-          <tr>
-            <td i18n="transaction.weight|Transaction Weight">Weight</td>
-            <td [innerHTML]="'&lrm;' + (tx.weight | wuBytes: 2)"></td>
-          </tr>
-          <tr>
-            <td i18n="transaction.hex">Transaction Hex</td>
-            <td><a target="_blank" href="{{ network === '' ? '' : '/' + network }}/api/tx/{{ txId }}/hex"><fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true"></fa-icon></a></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="row">
+        <div class="col-sm">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td i18n="transaction.size|Transaction Size">Size</td>
+                <td [innerHTML]="'&lrm;' + (tx.size | bytes: 2)"></td>
+              </tr>
+              <tr>
+                <td i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
+                <td [innerHTML]="'&lrm;' + (tx.weight / 4 | vbytes: 2)"></td>
+              </tr>
+              <tr>
+                <td i18n="transaction.weight|Transaction Weight">Weight</td>
+                <td [innerHTML]="'&lrm;' + (tx.weight | wuBytes: 2)"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-sm">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td i18n="transaction.version">Version</td>
+                <td [innerHTML]="'&lrm;' + (tx.version | number)"></td>
+              </tr>
+              <tr>
+                <td i18n="transaction.locktime">Locktime</td>
+                <td [innerHTML]="'&lrm;' + (tx.locktime | number)"></td>
+              </tr>
+              <tr>
+                <td i18n="transaction.hex">Transaction Hex</td>
+                <td><a target="_blank" href="{{ network === '' ? '' : '/' + network }}/api/tx/{{ txId }}/hex"><fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true"></fa-icon></a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
   </ng-template>
@@ -286,22 +304,44 @@
 
     <h2 i18n="transaction.details">Details</h2>
     <div class="box">
-      <table class="table table-borderless table-striped">
-        <tbody>
-          <tr>
-            <td><span class="skeleton-loader"></span></td>
-            <td><span class="skeleton-loader"></span></td>
-          </tr>
-          <tr>
-            <td><span class="skeleton-loader"></span></td>
-            <td><span class="skeleton-loader"></span></td>
-          </tr>
-          <tr>
-            <td><span class="skeleton-loader"></span></td>
-            <td><span class="skeleton-loader"></span></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="row">
+        <div class="col-sm">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-sm">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
   </ng-template>
