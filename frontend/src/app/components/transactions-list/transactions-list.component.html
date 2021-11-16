@@ -41,7 +41,7 @@
                 </td>
                 <td>
                   <div [ngSwitch]="true">
-                    <ng-container *ngSwitchCase="vin.is_coinbase"><a placement="bottom" [ngbTooltip]="vin.scriptsig | hex2ascii"><span i18n="transactions-list.coinbase">Coinbase</span><ng-template [ngIf]="network !== 'liquid'">&nbsp;<span i18n="transactions-list.newly-generated-coins">(Newly Generated Coins)</span></ng-template></a><br /><span class="badge badge-secondary scriptmessage longer">{{ vin.scriptsig | hex2ascii }}</span></ng-container>
+                    <ng-container *ngSwitchCase="vin.is_coinbase"><span i18n="transactions-list.coinbase">Coinbase</span><ng-template [ngIf]="network !== 'liquid'">&nbsp;<span i18n="transactions-list.newly-generated-coins">(Newly Generated Coins)</span></ng-template><br /><a placement="bottom" [ngbTooltip]="vin.scriptsig | hex2ascii"><span class="badge badge-secondary scriptmessage longer">{{ vin.scriptsig | hex2ascii }}</span></a></ng-container>
                     <ng-container *ngSwitchCase="vin.is_pegin">
                       <span i18n="transactions-list.peg-in">Peg-in</span>
                     </ng-container>
@@ -146,7 +146,7 @@
                     </ng-template>
                     <ng-template #defaultscriptpubkey_type>
                       <ng-template [ngIf]="vout.scriptpubkey_type === 'op_return'" [ngIfElse]="otherPubkeyType">
-                        <a placement="bottom" [ngbTooltip]="vout.scriptpubkey_asm | hex2ascii">OP_RETURN</a>&nbsp;<span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" class="badge badge-secondary scriptmessage">{{ vout.scriptpubkey_asm | hex2ascii }}</span>
+                        OP_RETURN&nbsp;<a placement="bottom" [ngbTooltip]="vout.scriptpubkey_asm | hex2ascii"><span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" class="badge badge-secondary scriptmessage">{{ vout.scriptpubkey_asm | hex2ascii }}</span></a>
                       </ng-template>
                       <ng-template #otherPubkeyType>{{ vout.scriptpubkey_type | scriptpubkeyType }}</ng-template>
                     </ng-template>
