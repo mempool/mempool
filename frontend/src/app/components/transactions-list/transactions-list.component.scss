@@ -119,3 +119,9 @@
 h2 {
   line-height: 1;
 }
+
+.badge {
+  &:hover {
+    cursor: zoom-in;
+  }
+}
