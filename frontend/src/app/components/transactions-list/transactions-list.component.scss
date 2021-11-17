@@ -119,3 +119,34 @@
 h2 {
   line-height: 1;
 }
+
+@keyframes fireAnimation {
+  0% {
+    color: #b71c1c;
+    opacity: 0.5;
+  }
+  25% {
+    color: #F4511E;
+    opacity: 1;
+  }
+  50% {
+    color: #F4511E;
+    opacity: 1;
+  }
+  100% {
+    color: #b71c1c;
+    opacity: 0.5;
+  }
+}
+
+.opreturn-icon {
+  cursor: help;
+  color: #b71c1c;
+  opacity: 0.5;
+  animation-name: 'fireAnimation';
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-duration: 1s;
+  margin-right: 2px;
+  transition: ease-in-out 100ms all;
+}

@@ -17,6 +17,26 @@ describe('Testnet', () => {
         cy.waitForSkeletonGone();
     });
 
+    it('check opreturn burned icon', () => {
+        cy.visit('/testnet/tx/340e112617871db69b98bfce262159fff02f3a64b75c192338d1b7baed93e96f');
+        cy.waitForSkeletonGone();
+        cy.get('.opreturn-icon > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+    });
+
+    it('check opreturn burned tooltip', () => {
+        cy.visit('/testnet/tx/340e112617871db69b98bfce262159fff02f3a64b75c192338d1b7baed93e96f');
+        cy.waitForSkeletonGone();
+        cy.get('.opreturn-icon > .ng-fa-icon > .svg-inline--fa').first().trigger('onmouseover');
+        cy.get('.opreturn-icon > .ng-fa-icon > .svg-inline--fa').first().trigger('mouseenter');
+        cy.get('.tooltip-inner').should('be.visible');
+    });
+
+    it('check opreturn not burned', () => {
+        cy.visit('/testnet/block/00000000000000222c79e3600bdc87a6f21db40061d99c813db554598d184189');
+        cy.waitForSkeletonGone();
+        cy.get('app-transactions-list > :nth-child(2) .opreturn-icon > .ng-fa-icon > .svg-inline--fa').should('not.be.NaN');
+    });
+
     it('check first mempool block after skeleton loads', () => {
       cy.visit('/');
       cy.waitForSkeletonGone();

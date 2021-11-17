@@ -159,6 +159,11 @@
                     </div>
                   </ng-template>
                   <ng-template #defaultOutput>
+                    <ng-template [ngIf]="vout.scriptpubkey_type === 'op_return' && vout.value > 0">
+                      <a class="opreturn-icon" placement="bottom" [ngbTooltip]="'Burned output - as an OP_RETURN output, this value is provably unspendable.'">
+                        <fa-icon [icon]="['fas', 'fire']" [fixedWidth]="true"></fa-icon>
+                      </a>
+                    </ng-template>
                     <app-amount [satoshis]="vout.value"></app-amount>
                   </ng-template>
                 </td>
@@ -179,7 +184,7 @@
                 </td>
               </tr>
               <tr *ngIf="displayDetails">
-                <td colspan="3" class=" details-container" >
+                <td colspan="3" class=" details-container">
                   <table class="table table-striped table-borderless details-table mb-3">
                     <tbody>
                       <tr>
