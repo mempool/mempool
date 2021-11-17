@@ -123,7 +123,7 @@ export const languages: Language[] = [
 // { code: 'sh', name: 'Srpskohrvatski / српскохрватски' },// Serbo-Croatian
    { code: 'fi', name: 'Suomi' },           // Finnish
    { code: 'sv', name: 'Svenska' },         // Swedish
-// { code: 'th', name: 'ไทย' },             // Thai
+   { code: 'th', name: 'ไทย' },             // Thai
    { code: 'tr', name: 'Türkçe' },          // Turkish
    { code: 'uk', name: 'Українська' },      // Ukrainian
    { code: 'vi', name: 'Tiếng Việt' },      // Vietnamese

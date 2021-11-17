@@ -94,6 +94,10 @@
             "translation": "src/locale/messages.sv.xlf",
             "baseHref": "/sv/"
           },
+          "th": {
+            "translation": "src/locale/messages.th.xlf",
+            "baseHref": "/th/"
+          },
           "tr": {
             "translation": "src/locale/messages.tr.xlf",
             "baseHref": "/tr/"
