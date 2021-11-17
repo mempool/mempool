@@ -3,6 +3,7 @@ import { DB } from '../database';
 import logger from '../logger';
 
 import { Statistic, TransactionExtended, OptimizedStatistic } from '../mempool.interfaces';
+import config from '../config';
 
 class Statistics {
   protected intervalTimer: NodeJS.Timer | undefined;
@@ -87,7 +88,15 @@ class Statistics {
 
     memPoolArray.forEach((transaction) => {
       for (let i = 0; i < logFees.length; i++) {
-        if ((logFees[i] === 2000 && transaction.effectiveFeePerVsize >= 2000) || transaction.effectiveFeePerVsize <= logFees[i]) {
+        if (
+          (config.MEMPOOL.NETWORK === 'liquid'
+            && ((logFees[i] === 2000 && transaction.effectiveFeePerVsize * 10 >= 2000)
+            || transaction.effectiveFeePerVsize * 10 <= logFees[i]))
+          ||
+          (config.MEMPOOL.NETWORK !== 'liquid'
+            && ((logFees[i] === 2000 && transaction.effectiveFeePerVsize >= 2000)
+            || transaction.effectiveFeePerVsize <= logFees[i]))
+        ) {
           if (weightVsizeFees[logFees[i]]) {
             weightVsizeFees[logFees[i]] += transaction.vsize;
           } else {
