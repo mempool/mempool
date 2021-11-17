@@ -724,14 +724,16 @@ class Routes {
       const nextRetargetHeight = blockHeight + remainingBlocks;
 
       let difficultyChange = 0;
-      if (blocksInEpoch > 0) {
-        difficultyChange = (600 / (diff / blocksInEpoch ) - 1) * 100;
-      }
-      if (difficultyChange > 300) {
-        difficultyChange = 300;
-      }
-      if (difficultyChange < -75) {
-        difficultyChange = -75;
+      if (remainingBlocks < 1870) {
+        if (blocksInEpoch > 0) {
+          difficultyChange = (600 / (diff / blocksInEpoch ) - 1) * 100;
+        }
+        if (difficultyChange > 300) {
+          difficultyChange = 300;
+        }
+        if (difficultyChange < -75) {
+          difficultyChange = -75;
+        }
       }
 
       const timeAvgDiff = difficultyChange * 0.1;

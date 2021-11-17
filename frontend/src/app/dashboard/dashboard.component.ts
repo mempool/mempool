@@ -144,14 +144,16 @@ export class DashboardComponent implements OnInit {
           const newDifficultyHeight = block.height + remainingBlocks;
 
           let change = 0;
-          if (blocksInEpoch > 0) {
-            change = (600 / (diff / blocksInEpoch ) - 1) * 100;
-          }
-          if (change > 300) {
-            change = 300;
-          }
-          if (change < -75) {
-            change = -75;
+          if (remainingBlocks < 1870) {
+            if (blocksInEpoch > 0) {
+              change = (600 / (diff / blocksInEpoch ) - 1) * 100;
+            }
+            if (change > 300) {
+              change = 300;
+            }
+            if (change < -75) {
+              change = -75;
+            }
           }
 
           const timeAvgDiff = change * 0.1;
