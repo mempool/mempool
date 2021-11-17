@@ -76,10 +76,18 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
       fromEvent(window, 'resize')
     )
     .pipe(
-        switchMap(() => combineLatest([
-          this.stateService.blocks$.pipe(map(([block]) => block)),
-          this.stateService.mempoolBlocks$
-        ])),
+      switchMap(() => combineLatest([
+        this.stateService.blocks$.pipe(map(([block]) => block)),
+        this.stateService.mempoolBlocks$
+          .pipe(
+            map((mempoolBlocks) => {
+              if (!mempoolBlocks.length) {
+                return [{ index: 0, blockSize: 0, blockVSize: 0, feeRange: [0, 0], medianFee: 0, nTx: 0, totalFees: 0 }];
+              }
+              return mempoolBlocks;
+            }),
+          )
+      ])),
         map(([lastBlock, mempoolBlocks]) => {
           mempoolBlocks.forEach((block, i) => {
             block.index = this.blockIndex + i;
@@ -89,14 +97,10 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
             }
           });
 
-          if (!mempoolBlocks.length) {
-            const emptyBlock = [{ index: 0, blockSize: 0, blockVSize: 0, feeRange: [0, 0], medianFee: 0, nTx: 0, totalFees: 0 }];
-            this.mempoolBlocks = emptyBlock;
-          } else {
-            const stringifiedBlocks = JSON.stringify(mempoolBlocks);
-            this.mempoolBlocksFull = JSON.parse(stringifiedBlocks);
-            this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(stringifiedBlocks));
-          }
+          const stringifiedBlocks = JSON.stringify(mempoolBlocks);
+          this.mempoolBlocksFull = JSON.parse(stringifiedBlocks);
+          this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(stringifiedBlocks));
+
           this.updateMempoolBlockStyles();
           this.calculateTransactionPosition();
           return this.mempoolBlocks;
