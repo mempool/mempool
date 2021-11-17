@@ -69,6 +69,22 @@ describe('Mainnet', () => {
             cy.waitForSkeletonGone();
         });
 
+        it('check op_return tx tooltip', () => {
+            cy.visit('/block/00000000000000000003c5f542bed265319c6cf64238cf1f1bb9bca3ebf686d2');
+            cy.waitForSkeletonGone();
+            cy.get('tbody > :nth-child(2) > :nth-child(1) > a').first().trigger('onmouseover');
+            cy.get('tbody > :nth-child(2) > :nth-child(1) > a').first().trigger('mouseenter');
+            cy.get('.tooltip-inner').should('be.visible');
+        });
+
+        it('check op_return coinbase tooltip', () => {
+            cy.visit('/block/00000000000000000003c5f542bed265319c6cf64238cf1f1bb9bca3ebf686d2');
+            cy.waitForSkeletonGone();
+            cy.get('div > a > .badge').first().trigger('onmouseover');
+            cy.get('div > a > .badge').first().trigger('mouseenter');
+            cy.get('.tooltip-inner').should('be.visible');
+        });
+
         describe('search', () => {
             it('allows searching for partial Bitcoin addresses', () => {
                 cy.visit('/');
