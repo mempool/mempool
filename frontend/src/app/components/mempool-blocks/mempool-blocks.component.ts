@@ -91,7 +91,9 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
           if (!mempoolBlocks.length) {
             const emptyBlock = [{ index: 0, blockSize: 0, blockVSize: 0, feeRange: [0, 0], medianFee: 0, nTx: 0, totalFees: 0 }];
-            this.mempoolBlocks = emptyBlock;
+            const stringifiedBlocks = JSON.stringify(emptyBlock);
+            this.mempoolBlocksFull = JSON.parse(stringifiedBlocks);
+            this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(stringifiedBlocks));
           } else {
             const stringifiedBlocks = JSON.stringify(mempoolBlocks);
             this.mempoolBlocksFull = JSON.parse(stringifiedBlocks);
