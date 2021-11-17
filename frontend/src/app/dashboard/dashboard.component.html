@@ -242,7 +242,7 @@
           </div>
           <div class="item">
             <h5 class="card-title" i18n="difficulty-box.estimate">Estimate</h5>
-            <div class="card-text" [ngStyle]="{'color': epochData.colorAdjustments}">
+            <div *ngIf="epochData.remainingBlocks < 1870; else recentlyAdjusted" class="card-text" [ngStyle]="{'color': epochData.colorAdjustments}">
               <span *ngIf="epochData.change > 0; else arrowDownDifficulty" >
                 <fa-icon class="retarget-sign" [icon]="['fas', 'caret-up']" [fixedWidth]="true"></fa-icon>
               </span>
@@ -252,6 +252,9 @@
               {{ epochData.change | absolute | number: '1.2-2' }}
               <span class="symbol">%</span>
             </div>
+            <ng-template #recentlyAdjusted>
+              <div class="card-text">&#8212;</div>
+            </ng-template>
             <div class="symbol">
               <span i18n="difficulty-box.previous">Previous</span>:
               <span [ngStyle]="{'color': epochData.colorPreviousAdjustments}">
