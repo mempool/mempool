@@ -66,6 +66,7 @@ https://www.transifex.com/mempool/mempool/dashboard/
 * Slovenian @thepkbadger
 * Finnish @bio_bitcoin
 * Swedish @softsimon_
+* Thai @Gusb3ll
 * Turkish @stackmore
 * Ukrainian @volbil
 * Vietnamese @bitcoin_vietnam
