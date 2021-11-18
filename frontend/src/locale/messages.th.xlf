@@ -524,7 +524,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="804faeaeb734a942eeb814dd53eceed25427d864">
         <source>Timestamp</source>
-        <target>ประทับเวลา</target>
+        <target>เวลา</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
           <context context-type="linenumber">21</context>
@@ -577,7 +577,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="179eb5c4a21ad324f75f723218a621d120e39d30">
         <source>Height</source>
-        <target>ความสูง</target>
+        <target>ที่</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
           <context context-type="linenumber">12,13</context>
@@ -1377,7 +1377,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="4b137ec8bf73a47063740b75c0c40d5fd3c48015">
         <source>The Mempool Open Source Project</source>
-        <target>โปรเจคเปิด mempool</target>
+        <target>โปรเจค mempool</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">12</context>
@@ -1386,7 +1386,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f447b21299afc5bc9dadade96dbc90114bea837a">
         <source>Building a mempool and blockchain explorer for the Bitcoin community, focusing on the transaction fee market and multi-layer ecosystem, without any advertising, altcoins, or third-party trackers.</source>
-        <target>สร้าง mempool และ blockchain explorer สำหรับชุมชนบิตคอยน์ โดยมุ่งเน้นไปที่ตลาดค่าธรรมเนียมการทำธุรกรรมและระบบนิเวศแบบหลายชั้น โดยไร้โฆษณา, altcoins และการติดตาม</target>
+        <target>Blockchain Explorer สำหรับชุมชนบิตคอยน์ โดยมุ่งเน้นไปที่การแสดงค่าธรรมเนียม, ธุรกรรมต่างๆ โดยปราศจากโฆษณาและการเก็บข้อมูล</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">13,17</context>
@@ -1403,7 +1403,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a46e9bc519dc1c320d48635e924d444364845ca8">
         <source>Community Sponsors ❤️</source>
-        <target>ผู้สนับสนุนระดับชุมชน ❤️</target>
+        <target>ผู้สนับสนุน ❤️</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">54,57</context>
@@ -1434,7 +1434,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1405c5f1a9834338ff13442c550927ab7144fdc8">
         <source>Community Integrations</source>
-        <target>การร่วมมือกับชุมชน</target>
+        <target>โปรเจคที่ร่วมมือกับเรา</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">71,74</context>
@@ -1443,7 +1443,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="020cce975a5d7e0cc0f4578903358459d693e4bb">
         <source>Community Alliances</source>
-        <target>พันธมิตรชุมชน</target>
+        <target>พันธมิตรของเรา</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">142,144</context>
@@ -1452,7 +1452,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2dd9b8a8997a6b57413ca3cd32dd38cef9fa39c2">
         <source>Project Contributors</source>
-        <target>ผู้มีส่วนร่วมในการพัฒนาโปรเจค</target>
+        <target>ผู้พัฒนาโปรเจค</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">157,159</context>
@@ -2626,7 +2626,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="07193288a0312875e18f38c3a2486b927a15520a">
         <source>Timestamp</source>
-        <target>ประทับเวลา</target>
+        <target>เวลา</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">22,24</context>
@@ -2795,7 +2795,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b784270035273a5744e3c23c0fff31eebca32050">
         <source>Subsidy + fees:</source>
-        <target>เงินสนับสนุน + ค่าธรรมเนียม:</target>
+        <target>ธุรกรรม + ค่าธรรมเนียม:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">57,59</context>
@@ -2902,7 +2902,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f2385584215e9b925b6347de866110d5e07d3a35">
         <source>Low priority</source>
-        <target>ต่ำ</target>
+        <target>สำคัญต่ำ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">4,5</context>
@@ -2915,7 +2915,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="0ba9d74c1d31a9d98829892f40334a22624564b8">
         <source>Medium priority</source>
-        <target>กลาง</target>
+        <target>สำคัญปานกลาง</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">10,11</context>
@@ -2928,7 +2928,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f80dd1511a91af4e592a538f95fa29d24907176f">
         <source>High priority</source>
-        <target>สูง</target>
+        <target>สำคัญสูง</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">16,17</context>
@@ -3031,7 +3031,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="65d447765db0bf3390e9b3ecce142bf34bb602a3">
         <source>Mined</source>
-        <target>ถูกขุด</target>
+        <target>ถูกขุดเมื่อ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
           <context context-type="linenumber">11,12</context>
@@ -3231,7 +3231,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="75c20c8a9cd9723d45bee0230dd582d7c2e4ecbc">
         <source>Mempool by vBytes (sat/vByte)</source>
-        <target>Mempool โดย vBytes (sat/vByte)</target>
+        <target>ขนาดหน่วยความจำ vBytes (sat/vByte)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">13</context>
@@ -3249,7 +3249,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="dc15ec15e6206b40133f2c1b06095ce75aaee1ef">
         <source>Transaction vBytes per second (vB/s)</source>
-        <target>vBytes ธุรกรรมต่อวินาที (vB/s)</target>
+        <target>ธุรกรรมต่อวินาที (vB/s)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">53</context>
@@ -3270,7 +3270,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="time-since">
         <source><x equiv-text="dateStrings.i18nYear" id="DATE"/> ago</source>
-        <target> <x equiv-text="dateStrings.i18nYear" id="DATE"/> ที่ผ่านมา</target>
+        <target> <x equiv-text="dateStrings.i18nYear" id="DATE"/> ที่ผ่านมา </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -4029,7 +4029,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="63da83692b85cf17e0606153029a83fd4038d6dd">
         <source>Difficulty Adjustment</source>
-        <target>การเปลี่ยนแปลงความยาก</target>
+        <target>การเปลี่ยนแปลงระดับความยาก</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">208,211</context>
