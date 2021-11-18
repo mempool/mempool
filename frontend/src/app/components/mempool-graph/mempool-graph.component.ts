@@ -12,6 +12,14 @@ import { feeLevels, chartColors } from 'src/app/app.constants';
 @Component({
   selector: 'app-mempool-graph',
   templateUrl: './mempool-graph.component.html',
+  styles: [`
+    .loadingGraphs {
+      position: absolute;
+      top: 50%;
+      left: calc(50% - 16px);
+      z-index: 100;
+    }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MempoolGraphComponent implements OnInit, OnChanges {
@@ -25,6 +33,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   @Input() template: ('widget' | 'advanced') = 'widget';
   @Input() showZoom = true;
 
+  isLoading = true;
   mempoolVsizeFeesData: any;
   mempoolVsizeFeesOptions: EChartsOption;
   mempoolVsizeFeesInitOptions = {
@@ -45,14 +54,24 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
+    this.isLoading = true;
     this.inverted = this.storageService.getValue('inverted-graph') === 'true';
-    this.mountFeeChart();
   }
 
   ngOnChanges() {
+    if (!this.data) {
+      return;
+    }
     this.windowPreference = this.storageService.getValue('graphWindowPreference');
     this.mempoolVsizeFeesData = this.handleNewMempoolData(this.data.concat([]));
     this.mountFeeChart();
+  }
+
+  rendered() {
+    if (!this.data) {
+      return;
+    }
+    this.isLoading = false;
   }
 
   onChartReady(myChart: any) {
