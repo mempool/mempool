@@ -791,6 +791,22 @@ class Routes {
         : (e.message || 'Error'));
     }
   }
+
+  public async $postTransactionForm(req: Request, res: Response) {
+    res.setHeader('content-type', 'text/plain');
+    const matches = /tx=([a-z0-9]+)/.exec(req.body);
+    let txHex = '';
+    if (matches && matches[1]) {
+      txHex = matches[1];
+    }
+    try {
+      const txIdResult = await bitcoinClient.sendRawTransaction(txHex);
+      res.send(txIdResult);
+    } catch (e: any) {
+      res.status(400).send(e.message && e.code ? 'sendrawtransaction RPC error: ' + JSON.stringify({ code: e.code, message: e.message })
+        : (e.message || 'Error'));
+    }
+  }
 }
 
 export default new Routes();
