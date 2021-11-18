@@ -5,40 +5,53 @@
     <br><br>
 
     <h2>Privacy Policy</h2>
-    <h6>Updated: August 2, 2021</h6>
+    <h6>Updated: November 18, 2021</h6>
 
     <br><br>
 
     <div class="text-left">
 
+      <p *ngIf="officialMempoolSpace">The <a href="https://mempool.space/">mempool.space</a> website, the <a href="https://liquid.network/">liquid.network</a> website, the <a href="https://bisq.markets/">bisq.markets</a> website, their associated API services, and related network and server infrastructure (collectively, the "Website") are operated by Mempool Space K.K. in Japan ("Mempool", "We", or "Us") and self-hosted from <a href="https://wq.apnic.net/static/search.html?query=AS142052">AS142052</a>.</p>
+
+      <p *ngIf="!officialMempoolSpace">This website and its API service (collectively, the "Website") are operated by a member of the Bitcoin community ("We" or "Us"). Mempool Space K.K. in Japan ("Mempool") has no affiliation with the operator of this Website, and does not sponsor or endorse the information provided herein.</p>
+
+      <h5>By accessing this Website, you agree to the following Privacy Policy:</h5>
+
+      <br>
+
       <h4>TRUSTED THIRD PARTIES ARE SECURITY HOLES</h4>
 
-      <ul>
-        <li>We do not use any third-party analytics, trackers, or cookies.</li>
-        <li>We do not share any private user data with third-parties.</li>
-      </ul>
+      <p>Out of respect for the Bitcoin community, this website does not use any third-party analytics, third-party trackers, or third-party cookies, and we do not share any private user data with third-parties. Additionally, to mitigate the risk of surveillance by malicious third-parties, we self-host this website on our own hardware and network infrastructure, so there are no "hosting companies" or "cloud providers" involved with the operation of this website.</p>
+
+      <br>
 
       <h4>TRUSTED FIRST PARTIES ARE ALSO SECURITY HOLES</h4>
 
-      <ul>
-        <li>Your IP address may be collected in our webserver logs used for sysadmin purposes.</li>
-        <li>Your IP address may be collected in our self-hosted statistics matomo app.</li>
-      </ul>
-
-      <h4>DON'T TRUST US, PROTECT YOUR PRIVACY</h4>
+      <p>Out of respect for the Bitcoin community, this website does not use any first-party cookies, except to store your preferred language setting (if any). However, we do use minimal first-party analytics and logging as needed for the operation of this website, as follows:</p>
 
       <ul>
-        <li>Use a Tor Browser or a privacy VPN service to hide your IP address from us.</li>
-        <li>Use a self-hosted instance of The Mempool Open Source Project&trade; on your own hardware.</li>
+
+        <li>We use basic webserver logging (nginx) for sysadmin purposes, which collects your IP address along with the requests you make. These logs are deleted after 10 days, and we do not share this data with any third-party. To conceal your IP address from our webserver logs, we recommend that you use Tor Browser with our Tor v3 hidden service onion hostname.</li>
+
+        <br>
+
+        <li>We use a self-hosted statistics application (matomo) for analytics purposes, which collects your IP address along with the requests you make. Our matomo instance is configured to respect your privacy by redacting your IP address and other methods, and we do not share this data with any third-party. To conceal your activity from our analytics, we recommend that you use a privacy protecting browser extension that blocks matomo from being loaded.</li>
+
       </ul>
 
-      <h4>IF YOU DONATE TO MEMPOOL.SPACE</h4>
+      <br>
 
-      <ul>
-        <li>Your payment information, together with your Twitter identity (if provided) will be collected.</li>
-        <li>We display sponsor profiles publicly on <a href="https://mempool.space/about">mempool.space/about</a>.</li>
-        <li>Thank you :)</li>
-      </ul>
+      <h4>TRUST YOUR OWN SELF-HOSTED MEMPOOL EXPLORER</h4>
+
+      <p>For maximum privacy, we recommend that you use your own self-hosted instance of The Mempool Open Source Project&trade; on your own hardware. You can easily install your own self-hosted instance of this website on a Raspberry Pi using a one-click installation method maintained by various Bitcoin fullnode distributions such as Umbrel, RaspiBlitz, MyNode, and RoninDojo. See our project's GitHub page for more details about self-hosting this website.</p>
+
+      <br>
+
+      <h4>DONATING TO MEMPOOL.SPACE</h4>
+
+      <p>If you donate to mempool.space, your payment information and your Twitter identity (if provided) will be collected in a database, which may be used to publicly display the sponsor profiles on <a href="https://mempool.space/about">mempool.space/about</a>. Thank you for supporting The Mempool Open Source Project.</p>
+
+      <br>
 
       <p>EOF</p>
 
