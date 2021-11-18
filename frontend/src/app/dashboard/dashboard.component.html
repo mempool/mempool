@@ -47,14 +47,16 @@
               <ng-container *ngTemplateOutlet="mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
               <hr>
             </div>
-            <div class="mempool-graph" *ngIf="(mempoolStats$ | async) as mempoolStats; else loadingSpinner">
-              <app-mempool-graph
+            <ng-container *ngIf="{ value: (mempoolStats$ | async) } as mempoolStats">
+              <div class="mempool-graph">
+                <app-mempool-graph
                 [template]="'widget'"
                 [limitFee]="150"
                 [limitFilterFee]="1"
-                [data]="mempoolStats.mempool"
-              ></app-mempool-graph>
-            </div>
+                [data]="mempoolStats.value?.mempool"
+                ></app-mempool-graph>
+              </div>
+            </ng-container>
           </div>
         </div>
       </div>
@@ -67,10 +69,10 @@
               <app-lbtc-pegs-graph [data]="liquidPegsMonth$ | async"></app-lbtc-pegs-graph>
             </div>
             <ng-template #mempoolGraph>
-              <div class="mempool-graph" *ngIf="(mempoolStats$ | async) as mempoolStats; else loadingSpinner">
+              <div class="mempool-graph" *ngIf="{ value: (mempoolStats$ | async) } as mempoolStats">
                 <app-incoming-transactions-graph
                   [left]="50"
-                  [data]="mempoolStats.weightPerSecond"
+                  [data]="mempoolStats.value?.weightPerSecond"
                   ></app-incoming-transactions-graph>
               </div>
             </ng-template>
@@ -277,13 +279,6 @@
         </div>
       </div>
     </div>
-  </div>
-</ng-template>
-
-
-<ng-template #loadingSpinner>
-  <div class="text-center loadingGraphs">
-    <div class="spinner-border text-light"></div>
   </div>
 </ng-template>
 
