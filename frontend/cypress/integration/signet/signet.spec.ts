@@ -23,7 +23,7 @@ describe('Signet', () => {
       cy.get('#mempool-block-0 > .blockLink').should('exist');
     });
 
-    it('loads the dashboard with the skeleton blocks', () => {
+    it.skip('loads the dashboard with the skeleton blocks', () => {
         cy.mockMempoolSocket();
         cy.visit("/signet");
         cy.get(':nth-child(1) > #bitcoin-block-0').should('be.visible');

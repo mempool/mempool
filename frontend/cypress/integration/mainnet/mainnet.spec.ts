@@ -271,7 +271,7 @@ describe('Mainnet', () => {
             cy.changeNetwork("bisq");
         });
 
-        it('loads the dashboard with the skeleton blocks', () => {
+        it.skip('loads the dashboard with the skeleton blocks', () => {
             cy.mockMempoolSocket();
             cy.visit("/");
             cy.get(':nth-child(1) > #bitcoin-block-0').should('be.visible');
