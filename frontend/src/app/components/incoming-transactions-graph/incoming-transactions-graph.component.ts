@@ -67,6 +67,8 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
             case '3m':
             case '6m':
             case '1y':
+            case '2y':
+            case '3y':
               return date.toLocaleDateString(this.locale, { year: 'numeric', month: 'short' });
             default: // 2m, 24h
               return date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' });
@@ -117,12 +119,11 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         axisTick: {
           alignWithLabel: true,
           lineStyle: {
-            width: 1,
+            width: 0,
           },
-          length: 8
         },
         axisLabel: {
-          interval: this.getAxisLabelInterval(),
+          interval: 'auto',
           align: 'center',
           fontSize: 11,
           lineHeight: 25,
@@ -130,45 +131,27 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
           formatter: (value: string, index: number) => {
             const date = new Date(value);
             if (this.template !== 'advanced') {
-              const dayControl = date.getDay();
-              if (index === 0) {
-                return date.toLocaleTimeString(this.locale, { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' });
-              } else {
-                if (dayControl < date.getDay()) {
-                  return date.toLocaleTimeString(this.locale, { month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' });
-                } else {
-                  return date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' });
-                }
-              }
+              return date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' });
             }
-            const dayControl = date.getDay();
+            if(index === 0){
+              return date.toLocaleDateString(this.locale, {  year: '2-digit', month: 'short', 'day': 'numeric' });
+            }
+
             switch (this.windowPreference) {
               case '2h':
-                if (index === 0) {
-                  return date.toLocaleTimeString(this.locale, { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' });
-                } else {
-                  if (dayControl < date.getDay()) {
-                    return date.toLocaleTimeString(this.locale, { month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' });
-                  } else {
-                    return date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' });
-                  }
-                }
+                return date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' });
               case '24h':
-                if (index === 0) {
-                  return date.toLocaleTimeString(this.locale, { month: 'short', day: 'numeric', hour: 'numeric' });
-                } else {
-                  if (dayControl < date.getDay()) {
-                    return date.toLocaleTimeString(this.locale, { month: 'numeric', day: 'numeric', hour: 'numeric' });
-                  } else {
-                    return date.toLocaleTimeString(this.locale, { hour: 'numeric' });
-                  }
-                }
+                return date.toLocaleTimeString(this.locale, { hour: 'numeric' });
               case '1w':
+                return date.toLocaleDateString(this.locale, { month: 'short', day: 'numeric', weekday: 'short' });
               case '1m':
-                return date.toLocaleDateString(this.locale, { month: 'short', weekday: 'short', day: 'numeric' });
+                return date.toLocaleDateString(this.locale, { year: '2-digit', month: 'short', day: 'numeric' });
               case '3m':
+                return date.toLocaleDateString(this.locale, { year: '2-digit', month: 'short', day: 'numeric' });
               case '6m':
               case '1y':
+              case '2y':
+              case '3y':
                 return date.toLocaleDateString(this.locale, { year: 'numeric', month: 'short' });
             }
           }
@@ -253,28 +236,5 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         }
       },
     };
-  }
-  getAxisLabelInterval() {
-    if (this.template !== 'advanced') {
-      return 30;
-    }
-    switch (this.windowPreference) {
-      case '2h':
-        return 14;
-      case '24h':
-        return 40;
-      case '1w':
-        return 68;
-      case '1m':
-        return 112;
-      case '3m':
-        return 140;
-      case '6m':
-        return 70;
-      case '1y':
-        return 40;
-      default:
-        return 5;
-    }
   }
 }

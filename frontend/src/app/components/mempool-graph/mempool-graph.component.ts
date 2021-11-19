@@ -99,109 +99,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     return finalArray;
   }
 
-  // filterLabelDates(labels: any) {
-  //   const labelDates = [];
-
-  //   if (labels.length > 0) {
-  //     for (let index = 0; index < labels.length; index++) {
-  //       const labelDate = new Date(labels[index]);
-
-  //       // add the first date to the array
-  //       if (index === 0) {
-  //         labelDates.push(labelDate.toISOString());
-  //       } else {
-
-  //         // mobile sizes
-  //         if(window.innerWidth < 500) {
-
-  //           if (this.windowPreference === '2h') {
-  //             if (labelDate.getMinutes() % 60 === 0) {
-  //               labelDates.push(labelDate.toISOString());
-  //             }
-  //           }
-
-  //           if (this.windowPreference === '24h') {
-  //             if (labelDate.getMinutes() % 60 === 0 && labelDate.getHours() % 2 === 0) {
-  //               labelDates.push(labelDate.toISOString());
-  //             }
-  //           }
-
-  //           if (this.windowPreference === '1w') {
-  //             if (labelDate.getMinutes() % 60 === 0 && labelDate.getHours() % 2 === 0) {
-  //               labelDates.push(labelDate.toISOString());
-  //             }
-  //           }
-
-  //           if (this.windowPreference === '1m') {
-  //             if (labelDate.getMinutes() % 60 === 0 && labelDate.getHours() % 2 === 0) {
-  //               labelDates.push(labelDate.toISOString());
-  //             }
-  //           }
-  //         }
-
-  //         // tablet sizes
-  //         if (window.innerWidth > 500 && window.innerWidth < 900) {
-
-  //           if (this.windowPreference === '2h') {
-  //             if (labelDate.getMinutes() % 20 === 0) {
-  //               labelDates.push(labelDate.toISOString());
-  //             }
-  //           }
-
-  //           if (this.windowPreference === '24h') {
-  //             if (labelDate.getMinutes() % 60 === 0 && labelDate.getHours() % 2 === 0) {
-  //               labelDates.push(labelDate.toISOString());
-  //             }
-  //           }
-
-  //           if (this.windowPreference === '1w') {
-  //             if (labelDate.getMinutes() % 60 === 0 && labelDate.getHours() % 2 === 0) {
-  //               labelDates.push(labelDate.toISOString());
-  //             }
-  //           }
-
-  //           if (this.windowPreference === '1m') {
-  //             if (labelDate.getMinutes() % 60 === 0 && labelDate.getHours() % 2 === 0) {
-  //               labelDates.push(labelDate.toISOString());
-  //             }
-  //           }
-  //         }
-
-  //         // PC sizes
-  //         if (window.innerWidth > 900) {
-
-  //           if (this.windowPreference === '2h') {
-  //             if (labelDate.getMinutes() % 10 === 0) {
-  //               labelDates.push(labelDate.toISOString());
-  //             }
-  //           }
-
-  //           if (this.windowPreference === '24h') {
-  //             if (labelDate.getMinutes() % 60 === 0 && labelDate.getHours() % 2 === 0) {
-  //               labelDates.push(labelDate.toISOString());
-  //             }
-  //           }
-
-  //           if (this.windowPreference === '1w') {
-  //             if (labelDate.getMinutes() % 60 === 0 && labelDate.getHours() % 2 === 0) {
-  //               labelDates.push(labelDate.toISOString());
-  //             }
-  //           }
-
-  //           if (this.windowPreference === '1m') {
-  //             if (labelDate.getMinutes() % 60 === 0 && labelDate.getHours() % 2 === 0) {
-  //               labelDates.push(labelDate.toISOString());
-  //             }
-  //           }
-  //         }
-
-  //       }
-  //     }
-
-  //   }
-
-  //   return labelDates;
-  // }
 
   mountFeeChart() {
     this.orderLevels();
@@ -381,8 +278,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         type: 'inside',
         realtime: true,
         zoomOnMouseWheel: (this.template === 'advanced') ? true : false,
-        // maxSpan: (window.innerWidth >= 850 || this.template === 'widget') ? 100 : 40,
-        maxSpan: 100,
+        maxSpan: (window.innerWidth >= 850 || this.template === 'widget') ? 100 : 40,
         minSpan: 10,
       }, {
         show: (this.template === 'advanced' && this.showZoom) ? true : false,
@@ -399,6 +295,8 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
             case '3m':
             case '6m':
             case '1y':
+            case '2y':
+            case '3y':
               return date.toLocaleDateString(this.locale, { year: 'numeric', month: 'short' });
             default: // 2m, 24h
               return date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' });
@@ -439,7 +337,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
             lineHeight: 25,
             formatter: (value: string, index: number) => {
               const date = new Date(value);
-              console.log(index);
               if (this.template !== 'advanced') {
                 return date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' });
               }
