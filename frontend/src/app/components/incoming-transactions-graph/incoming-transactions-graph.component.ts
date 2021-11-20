@@ -245,8 +245,9 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         axisTick: {
           alignWithLabel: true,
           lineStyle: {
-            width: 0,
+            width: 1,
           },
+          customValues: labelDates.length ? labelDates : null,
         },
         axisLabel: {
           interval: labelDates.length ? labelDates.length : 'auto',

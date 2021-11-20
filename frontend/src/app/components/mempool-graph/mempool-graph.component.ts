@@ -448,8 +448,9 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           axisLine: { onZero: true },
           axisTick: {
             lineStyle: {
-              width: 0,
+              width: 1,
             },
+            customValues: labelDates.length ? labelDates : null,
           },
           axisLabel: {
             interval: labelDates.length ? labelDates.length : 'auto',
