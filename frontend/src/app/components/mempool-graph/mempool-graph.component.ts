@@ -400,7 +400,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         type: 'inside',
         realtime: true,
         zoomOnMouseWheel: (this.template === 'advanced') ? true : false,
-        maxSpan: (window.innerWidth >= 850 || this.template === 'widget') ? 100 : 40,
+        maxSpan: 100,
         minSpan: 10,
       }, {
         show: (this.template === 'advanced' && this.showZoom) ? true : false,
