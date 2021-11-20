@@ -1,6 +1,6 @@
 import { Component, Inject, LOCALE_ID, ChangeDetectionStrategy, Input, OnChanges } from '@angular/core';
 import { formatDate, formatNumber } from '@angular/common';
-import { EChartsOption } from 'echarts';
+import { EChartsOption } from '@mempool/echarts';
 
 @Component({
   selector: 'app-lbtc-pegs-graph',

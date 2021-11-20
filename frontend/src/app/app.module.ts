@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
-import { NgxEchartsModule } from 'ngx-echarts';
+import { NgxEchartsModule } from '@mempool/ngx-echarts';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app/app.component';
@@ -112,7 +112,7 @@ import { PushTransactionComponent } from './components/push-transaction/push-tra
     FontAwesomeModule,
     SharedModule,
     NgxEchartsModule.forRoot({
-      echarts: () => import('echarts')
+      echarts: () => import('@mempool/echarts')
     })
   ],
   providers: [

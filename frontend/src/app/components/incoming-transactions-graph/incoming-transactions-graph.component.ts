@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, Inject, LOCALE_ID, ChangeDetectionStrategy } from '@angular/core';
-import { formatDate } from '@angular/common';
-import { EChartsOption } from 'echarts';
+import { EChartsOption } from '@mempool/echarts';
 import { OnChanges } from '@angular/core';
 import { StorageService } from 'src/app/services/storage.service';
 
@@ -38,7 +37,134 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
     this.mountChart();
   }
 
+
+  filterLabelDates(labels: any) {
+    let labelDates = [];
+
+    if (labels.length > 0) {
+      for (let index = 0; index < labels.length; index++) {
+        const labelDate = new Date(labels[index]);
+
+        // add the first date to the array
+        if (index === 0) {
+          labelDates.push(labelDate.toISOString());
+        } else {
+
+          // mobile sizes
+          if(window.innerWidth < 500) {
+
+            if (this.windowPreference === '2h') {
+              if (labelDate.getMinutes() % 60 === 0) {
+                labelDates.push(labelDate.toISOString());
+              }
+            }
+
+            if (this.windowPreference === '24h') {
+              if (labelDate.getMinutes() % 60 === 0 &&
+                  labelDate.getHours() % 2 === 0) {
+                labelDates.push(labelDate.toISOString());
+              }
+            }
+
+            if (this.windowPreference === '1w') {
+              if (labelDate.getMinutes() % 60 === 0 &&
+                  labelDate.getHours() % 6 === 0) {
+                labelDates.push(labelDate.toISOString());
+              }
+            }
+
+            if (this.windowPreference === '1m') {
+              if (labelDate.getMinutes() % 60 === 0 &&
+                  labelDate.getHours() % 12 === 0) {
+                labelDates.push(labelDate.toISOString());
+              }
+            }
+
+          }
+
+          // tablet sizes
+          if (window.innerWidth > 500 && window.innerWidth < 900) {
+
+            if (this.windowPreference === '2h') {
+              if (labelDate.getMinutes() % 20 === 0) {
+                labelDates.push(labelDate.toISOString());
+              }
+            }
+
+            if (this.windowPreference === '24h') {
+              if (labelDate.getMinutes() % 60 === 0 &&
+                  labelDate.getHours() % 2 === 0) {
+                labelDates.push(labelDate.toISOString());
+              }
+            }
+
+            if (this.windowPreference === '1w') {
+              if (labelDate.getMinutes() % 60 === 0 &&
+                  labelDate.getHours() % 2 === 0) {
+                labelDates.push(labelDate.toISOString());
+              }
+            }
+
+            if (this.windowPreference === '1m') {
+              if (labelDate.getMinutes() % 60 === 0 &&
+                  labelDate.getHours() % 6 === 0) {
+                labelDates.push(labelDate.toISOString());
+              }
+            }
+
+          }
+
+          // PC sizes
+          if (window.innerWidth > 900) {
+
+            if (this.windowPreference === '2h') {
+              if (labelDate.getMinutes() % 10 === 0) {
+                labelDates.push(labelDate.toISOString());
+              }
+            }
+
+            if (this.windowPreference === '24h') {
+              if (labelDate.getMinutes() % 60 === 0 &&
+                  labelDate.getHours() % 2 === 0) {
+                labelDates.push(labelDate.toISOString());
+              }
+            }
+
+            if (this.windowPreference === '1w') {
+              if (labelDate.getMinutes() % 60 === 0 &&
+                  labelDate.getHours() % 4 === 0) {
+                labelDates.push(labelDate.toISOString());
+              }
+            }
+
+            if (this.windowPreference === '1m') {
+              if (labelDate.getMinutes() % 60 === 0 &&
+                  labelDate.getHours() % 12 === 0) {
+                labelDates.push(labelDate.toISOString());
+              }
+            }
+
+          }
+        }
+      }
+    }
+    // use the default
+    if (this.template === 'widget' ||
+        this.windowPreference === '3m' ||
+        this.windowPreference === '6m' ||
+        this.windowPreference === '1y' ||
+        this.windowPreference === '2y' ||
+        this.windowPreference === '3y') {
+      labelDates = [];
+    }
+    return labelDates;
+  }
+
   mountChart(): void {
+
+    const labelDates = this.filterLabelDates(this.data.labels);
+
+
     this.mempoolStatsChartOption = {
       grid: {
         height: this.height,
@@ -67,6 +193,8 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
             case '3m':
             case '6m':
             case '1y':
+            case '2y':
+            case '3y':
               return date.toLocaleDateString(this.locale, { year: 'numeric', month: 'short' });
             default: // 2m, 24h
               return date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' });
@@ -117,58 +245,40 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         axisTick: {
           alignWithLabel: true,
           lineStyle: {
-            width: 1,
+            width: 0,
           },
-          length: 8
         },
         axisLabel: {
-          interval: this.getAxisLabelInterval(),
+          interval: labelDates.length ? labelDates.length : 'auto',
           align: 'center',
           fontSize: 11,
           lineHeight: 25,
-          margin: 11,
+          customValues: labelDates.length ? labelDates : null,
           formatter: (value: string, index: number) => {
             const date = new Date(value);
-            if (this.template !== 'advanced') {
-              const dayControl = date.getDay();
-              if (index === 0) {
-                return date.toLocaleTimeString(this.locale, { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' });
-              } else {
-                if (dayControl < date.getDay()) {
-                  return date.toLocaleTimeString(this.locale, { month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' });
-                } else {
-                  return date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' });
-                }
-              }
+            if (this.template === 'widget') {
+              return date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' });
             }
-            const dayControl = date.getDay();
+
+            // first date
+            if (index === 0) {
+              return date.toLocaleDateString(this.locale, {  year: '2-digit', month: 'short', 'day': 'numeric' });
+            }
+
             switch (this.windowPreference) {
               case '2h':
-                if (index === 0) {
-                  return date.toLocaleTimeString(this.locale, { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' });
-                } else {
-                  if (dayControl < date.getDay()) {
-                    return date.toLocaleTimeString(this.locale, { month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' });
-                  } else {
-                    return date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' });
-                  }
-                }
+                return date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' });
               case '24h':
-                if (index === 0) {
-                  return date.toLocaleTimeString(this.locale, { month: 'short', day: 'numeric', hour: 'numeric' });
-                } else {
-                  if (dayControl < date.getDay()) {
-                    return date.toLocaleTimeString(this.locale, { month: 'numeric', day: 'numeric', hour: 'numeric' });
-                  } else {
-                    return date.toLocaleTimeString(this.locale, { hour: 'numeric' });
-                  }
-                }
+                return date.toLocaleTimeString(this.locale, { hour: 'numeric' });
               case '1w':
+                return date.toLocaleDateString(this.locale, { month: 'short', day: 'numeric', weekday: 'short' });
               case '1m':
-                return date.toLocaleDateString(this.locale, { month: 'short', weekday: 'short', day: 'numeric' });
               case '3m':
               case '6m':
               case '1y':
+                return date.toLocaleDateString(this.locale, { month: 'short', day: 'numeric' });
+              case '2y':
+              case '3y':
                 return date.toLocaleDateString(this.locale, { year: 'numeric', month: 'short' });
             }
           }
@@ -253,28 +363,5 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         }
       },
     };
-  }
-  getAxisLabelInterval() {
-    if (this.template !== 'advanced') {
-      return 30;
-    }
-    switch (this.windowPreference) {
-      case '2h':
-        return 14;
-      case '24h':
-        return 40;
-      case '1w':
-        return 68;
-      case '1m':
-        return 112;
-      case '3m':
-        return 140;
-      case '6m':
-        return 70;
-      case '1y':
-        return 40;
-      default:
-        return 5;
-    }
   }
 }
