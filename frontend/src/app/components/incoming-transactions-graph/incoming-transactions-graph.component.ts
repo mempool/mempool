@@ -37,132 +37,85 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
     this.mountChart();
   }
 
+  addMinutes =  function (dt: Date, minutes: number) {
+    return new Date(dt.getTime() + minutes * 60000);
+  }
 
   filterLabelDates(labels: any) {
     let labelDates = [];
 
     if (labels.length > 0) {
-      for (let index = 0; index < labels.length; index++) {
-        const labelDate = new Date(labels[index]);
+      const firstDate = new Date(labels[0]);
+      const lastDate = new Date(labels[labels.length - 1]);
+      let currentDate = firstDate;
 
-        // add the first date to the array
-        if (index === 0) {
-          labelDates.push(labelDate.toISOString());
-        } else {
+      currentDate.setUTCMilliseconds(0);
+      currentDate.setUTCSeconds(0);
+      currentDate.setUTCMinutes(0);
 
-          // mobile sizes
-          if(window.innerWidth < 500) {
+      if(['1w', '1m', '2m', '3m', '6m', '1y', '2y', '3y'].includes(this.windowPreference)){
+        currentDate.setUTCMinutes(0);
+      }
 
-            if (this.windowPreference === '2h') {
-              if (labelDate.getMinutes() % 60 === 0) {
-                labelDates.push(labelDate.toISOString());
-              }
-            }
+      if(['6m', '1y', '2y', '3y'].includes(this.windowPreference)){
+        currentDate.setUTCHours(0);
+      }
 
-            if (this.windowPreference === '24h') {
-              if (labelDate.getMinutes() % 60 === 0 &&
-                  labelDate.getHours() % 2 === 0) {
-                labelDates.push(labelDate.toISOString());
-              }
-            }
+      let timeIntervals = {
+        '2h' : 10,           // 10 mins
+        '24h': 120,          //  2 hours
+        '1w' : 60 * 24,      //  1 day
+        '1m' : 60 * 24 * 7,  //  7 days
+        '3m' : 60 * 24 * 7,  //  7 days
+        '6m' : 60 * 24 * 15, // 15 days
+        '1y' : 60 * 24 * 30, // 30 days
+        '2y' : 60 * 24 * 60, // 30 days
+        '3y' : 60 * 24 * 60, // 30 days
+      };
 
-            if (this.windowPreference === '1w') {
-              if (labelDate.getMinutes() % 60 === 0 &&
-                  labelDate.getHours() % 6 === 0) {
-                labelDates.push(labelDate.toISOString());
-              }
-            }
+      if (window.innerWidth < 600) {
+        timeIntervals = {
+          '2h' : 30,           // 30 mins
+          '24h': 60 * 6,       //  6 hours
+          '1w' : 60 * 48,      //  2 day
+          '1m' : 60 * 24 * 7,  //  7 days
+          '3m' : 60 * 24 * 7,  // 15 days
+          '6m' : 60 * 24 * 30, // 30 days
+          '1y' : 60 * 24 * 30, // 30 days
+          '2y' : 60 * 24 * 60, // 30 days
+          '3y' : 60 * 24 * 60, // 30 days
+        };
+      }
 
-            if (this.windowPreference === '1m') {
-              if (labelDate.getMinutes() % 60 === 0 &&
-                  labelDate.getHours() % 12 === 0) {
-                labelDates.push(labelDate.toISOString());
-              }
-            }
-
-          }
-
-          // tablet sizes
-          if (window.innerWidth > 500 && window.innerWidth < 900) {
-
-            if (this.windowPreference === '2h') {
-              if (labelDate.getMinutes() % 20 === 0) {
-                labelDates.push(labelDate.toISOString());
-              }
-            }
-
-            if (this.windowPreference === '24h') {
-              if (labelDate.getMinutes() % 60 === 0 &&
-                  labelDate.getHours() % 2 === 0) {
-                labelDates.push(labelDate.toISOString());
-              }
-            }
-
-            if (this.windowPreference === '1w') {
-              if (labelDate.getMinutes() % 60 === 0 &&
-                  labelDate.getHours() % 2 === 0) {
-                labelDates.push(labelDate.toISOString());
-              }
-            }
-
-            if (this.windowPreference === '1m') {
-              if (labelDate.getMinutes() % 60 === 0 &&
-                  labelDate.getHours() % 6 === 0) {
-                labelDates.push(labelDate.toISOString());
-              }
-            }
-
-          }
-
-          // PC sizes
-          if (window.innerWidth > 900) {
-
-            if (this.windowPreference === '2h') {
-              if (labelDate.getMinutes() % 10 === 0) {
-                labelDates.push(labelDate.toISOString());
-              }
-            }
-
-            if (this.windowPreference === '24h') {
-              if (labelDate.getMinutes() % 60 === 0 &&
-                  labelDate.getHours() % 2 === 0) {
-                labelDates.push(labelDate.toISOString());
-              }
-            }
-
-            if (this.windowPreference === '1w') {
-              if (labelDate.getMinutes() % 60 === 0 &&
-                  labelDate.getHours() % 4 === 0) {
-                labelDates.push(labelDate.toISOString());
-              }
-            }
-
-            if (this.windowPreference === '1m') {
-              if (labelDate.getMinutes() % 60 === 0 &&
-                  labelDate.getHours() % 12 === 0) {
-                labelDates.push(labelDate.toISOString());
-              }
-            }
-
-          }
-        }
+      const windowPreference = this.windowPreference in timeIntervals ? this.windowPreference : '2h';
+      while (currentDate.getTime() < lastDate.getTime()) {
+        currentDate = this.addMinutes(currentDate, timeIntervals[windowPreference]);
+        labelDates.push(currentDate.toISOString());
       }
     }
-    // use the default
-    if (this.template === 'widget' ||
-        this.windowPreference === '3m' ||
-        this.windowPreference === '6m' ||
-        this.windowPreference === '1y' ||
-        this.windowPreference === '2y' ||
-        this.windowPreference === '3y') {
-      labelDates = [];
-    }
+
     return labelDates;
   }
 
   mountChart(): void {
 
-    const labelDates = this.filterLabelDates(this.data.labels);
+    const labelsData = this.data.labels.map((label: string, index: number) => {
+      const date = new Date(label);
+
+      date.setUTCMilliseconds(0);
+      date.setUTCSeconds(0);
+
+      if(['1w', '1m', '2m', '3m', '6m', '1y', '2y', '3y'].includes(this.windowPreference)){
+        date.setUTCMinutes(0);
+      }
+
+      if(['6m', '1y', '2y', '3y'].includes(this.windowPreference)){
+        date.setUTCHours(0);
+      }
+
+      return date.toISOString();
+    })
+    const labelsFiltered = this.filterLabelDates(this.data.labels);
 
 
     this.mempoolStatsChartOption = {
@@ -242,28 +195,29 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
       },
       xAxis: {
         type: 'category',
+        data: labelsData,
         axisTick: {
           alignWithLabel: true,
           lineStyle: {
             width: 1,
           },
-          customValues: labelDates.length ? labelDates : null,
+          customValues: ['1y', '2y', '3y'].includes(this.windowPreference) ? null : labelsFiltered,
         },
         axisLabel: {
-          interval: labelDates.length ? labelDates.length : 'auto',
+          interval: ['1y', '2y', '3y'].includes(this.windowPreference) ? 'auto' : labelsFiltered.length,
           align: 'center',
           fontSize: 11,
           lineHeight: 25,
-          customValues: labelDates.length ? labelDates : null,
+          customValues: ['1y', '2y', '3y'].includes(this.windowPreference) ? null : labelsFiltered,
           formatter: (value: string, index: number) => {
+
+            if(value.length === 0){
+              return null;
+            }
+
             const date = new Date(value);
             if (this.template === 'widget') {
               return date.toLocaleTimeString(this.locale, { hour: 'numeric', minute: 'numeric' });
-            }
-
-            // first date
-            if (index === 0) {
-              return date.toLocaleDateString(this.locale, {  year: '2-digit', month: 'short', 'day': 'numeric' });
             }
 
             switch (this.windowPreference) {
@@ -272,19 +226,18 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
               case '24h':
                 return date.toLocaleTimeString(this.locale, { hour: 'numeric' });
               case '1w':
-                return date.toLocaleDateString(this.locale, { month: 'short', day: 'numeric', weekday: 'short' });
               case '1m':
+                return date.toLocaleDateString(this.locale, { month: 'short', day: 'numeric', weekday: 'short' });
               case '3m':
               case '6m':
-              case '1y':
                 return date.toLocaleDateString(this.locale, { month: 'short', day: 'numeric' });
+              case '1y':
               case '2y':
               case '3y':
                 return date.toLocaleDateString(this.locale, { year: 'numeric', month: 'short' });
             }
           }
         },
-        data: this.data.labels,
       },
       yAxis: {
         type: 'value',
