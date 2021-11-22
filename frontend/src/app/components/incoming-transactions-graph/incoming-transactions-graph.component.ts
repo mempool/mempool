@@ -53,12 +53,15 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
       currentDate.setUTCSeconds(0);
       currentDate.setUTCMinutes(0);
 
-      if(['1w', '1m', '2m', '3m', '6m', '1y', '2y', '3y'].includes(this.windowPreference)){
-        currentDate.setUTCMinutes(0);
-      }
+      if (this.template !== 'widget') {
 
-      if(['6m', '1y', '2y', '3y'].includes(this.windowPreference)){
-        currentDate.setUTCHours(0);
+        if(['1w', '1m', '2m', '3m', '6m', '1y', '2y', '3y'].includes(this.windowPreference)){
+          currentDate.setUTCMinutes(0);
+        }
+
+        if(['6m', '1y', '2y', '3y'].includes(this.windowPreference)){
+          currentDate.setUTCHours(0);
+        }
       }
 
       let timeIntervals = {
@@ -73,7 +76,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         '3y' : 60 * 24 * 60, // 30 days
       };
 
-      if (window.innerWidth < 600) {
+      if (window.innerWidth < 600 || this.template === 'widget') {
         timeIntervals = {
           '2h' : 30,           // 30 mins
           '24h': 60 * 6,       //  6 hours
@@ -87,7 +90,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         };
       }
 
-      const windowPreference = this.windowPreference in timeIntervals ? this.windowPreference : '2h';
+      const windowPreference = this.windowPreference in timeIntervals && this.template !== 'widget' ? this.windowPreference : '2h';
       while (currentDate.getTime() < lastDate.getTime()) {
         currentDate = this.addMinutes(currentDate, timeIntervals[windowPreference]);
         labelDates.push(currentDate.toISOString());
@@ -105,12 +108,15 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
       date.setUTCMilliseconds(0);
       date.setUTCSeconds(0);
 
-      if(['1w', '1m', '2m', '3m', '6m', '1y', '2y', '3y'].includes(this.windowPreference)){
-        date.setUTCMinutes(0);
-      }
+      if (this.template !== 'widget') {
 
-      if(['6m', '1y', '2y', '3y'].includes(this.windowPreference)){
-        date.setUTCHours(0);
+        if(['1w', '1m', '2m', '3m', '6m', '1y', '2y', '3y'].includes(this.windowPreference)){
+          date.setUTCMinutes(0);
+        }
+
+        if(['6m', '1y', '2y', '3y'].includes(this.windowPreference)){
+          date.setUTCHours(0);
+        }
       }
 
       return date.toISOString();
