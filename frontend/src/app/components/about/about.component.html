@@ -170,6 +170,11 @@
             <span>{{ contributor.name }}</span>
           </a>
         </ng-template>
+
+        <a href="https://github.com/emzy" target="_blank" title="Emzy">
+          <img class="image" src="/resources/profile/emzy.jpeg" />
+          <span>Emzy</span>
+        </a>
       </ng-container>
     </div>
   </div>
@@ -222,7 +227,7 @@
     <a href="/3rdpartylicenses.txt">Third-party Licenses</a>
     <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a>
   </div>
-  
+
   <div class="footer-version" *ngIf="officialMempoolSpace">
     {{ (backendInfo$ | async)?.hostname }} (v{{ (backendInfo$ | async )?.version }}) [{{ (backendInfo$ | async )?.gitCommit | slice:0:8 }}]
   </div>
