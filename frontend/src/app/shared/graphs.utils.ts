@@ -2,7 +2,12 @@ export const addMinutes = (dt: Date, minutes: number) => {
   return new Date(dt.getTime() + minutes * 60000);
 };
 
-export const filterLabelDates = (labels: any, template: string, windowPreference: string) => {
+export const filterLabelDates = (
+  labels: any,
+  template: string,
+  windowPreference: string
+) => {
+
   let labelDates = [];
 
   if (labels.length > 0) {
@@ -64,36 +69,43 @@ export const filterLabelDates = (labels: any, template: string, windowPreference
   }
 
   return labelDates;
-}
+};
 
+export const labelsData = (
+  labels: any,
+  template: string,
+  windowPreference: string
+) =>  {
 
-export const labelsData = (labels: any, template: string, windowPreference: string) =>  (labels.map((label: string) => {
-  const date = new Date(label);
+  return labels.map((label: string) => {
 
-  date.setUTCMilliseconds(0);
-  date.setUTCSeconds(0);
+    const date = new Date(label);
 
-  if (template !== 'widget') {
+    date.setUTCMilliseconds(0);
+    date.setUTCSeconds(0);
 
-    if(['1w', '1m', '2m', '3m', '6m', '1y', '2y', '3y'].includes(windowPreference)){
-      date.setUTCMinutes(0);
+    if (template !== 'widget') {
+
+      if(['1w', '1m', '2m', '3m', '6m', '1y', '2y', '3y'].includes(windowPreference)){
+        date.setUTCMinutes(0);
+      }
+
+      if(['6m', '1y', '2y', '3y'].includes(windowPreference)){
+        date.setUTCHours(0);
+      }
     }
 
-    if(['6m', '1y', '2y', '3y'].includes(windowPreference)){
-      date.setUTCHours(0);
-    }
-  }
-
-  return date.toISOString();
-}));
+    return date.toISOString();
+  });
+};
 
 
 export const formatterXAxis = (
-    template: string,
-    locale: string,
-    windowPreference: string,
-    value: string
-  ) => {
+  template: string,
+  locale: string,
+  windowPreference: string,
+  value: string
+) => {
 
   if(value.length === 0){
     return null;
@@ -120,48 +132,51 @@ export const formatterXAxis = (
     case '3y':
       return date.toLocaleDateString(locale, { year: 'numeric', month: 'short' });
   }
-}
+};
 
 export const dataZoom = (
-    template: string,
-    locale: string,
-    showZoom: Boolean,
-    windowPreference: string
-  ) => ([{
-  type: 'inside',
-  realtime: true,
-  zoomOnMouseWheel: (template === 'advanced') ? true : false,
-  maxSpan: 100,
-  minSpan: 10,
-}, {
-  show: (template === 'advanced' && showZoom) ? true : false,
-  type: 'slider',
-  brushSelect: false,
-  realtime: true,
-  bottom: 0,
-  labelFormatter: (value, valueStr) => {
-    const date = new Date (valueStr);
-    switch (windowPreference) {
-      case '1w':
-      case '1m':
-        return date.toLocaleDateString(locale, { month: 'short', weekday: 'short', day: 'numeric' });
-      case '3m':
-      case '6m':
-      case '1y':
-      case '2y':
-      case '3y':
-        return date.toLocaleDateString(locale, { year: 'numeric', month: 'short' });
-      default: // 2m, 24h
-        return date.toLocaleTimeString(locale, { hour: 'numeric', minute: 'numeric' });
-    }
-  },
-  selectedDataBackground: {
-    lineStyle: {
-      color: '#fff',
-      opacity: 0.45,
+  template: string,
+  locale: string,
+  showZoom: Boolean,
+  windowPreference: string
+) => {
+
+  return [{
+    type: 'inside',
+    realtime: true,
+    zoomOnMouseWheel: (template === 'advanced') ? true : false,
+    maxSpan: 100,
+    minSpan: 10,
+  }, {
+    show: (template === 'advanced' && showZoom) ? true : false,
+    type: 'slider',
+    brushSelect: false,
+    realtime: true,
+    bottom: 0,
+    labelFormatter: (value, valueStr) => {
+      const date = new Date (valueStr);
+      switch (windowPreference) {
+        case '1w':
+        case '1m':
+          return date.toLocaleDateString(locale, { month: 'short', weekday: 'short', day: 'numeric' });
+        case '3m':
+        case '6m':
+        case '1y':
+        case '2y':
+        case '3y':
+          return date.toLocaleDateString(locale, { year: 'numeric', month: 'short' });
+        default: // 2m, 24h
+          return date.toLocaleTimeString(locale, { hour: 'numeric', minute: 'numeric' });
+      }
     },
-    areaStyle: {
-      opacity: 0,
+    selectedDataBackground: {
+      lineStyle: {
+        color: '#fff',
+        opacity: 0.45,
+      },
+      areaStyle: {
+        opacity: 0,
+      }
     }
-  }
-}]);
+  }];
+};
