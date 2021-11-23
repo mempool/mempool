@@ -22,7 +22,7 @@
   position: absolute;
   top: 17px;
   right: 25px;
-  @media (min-width: 720px) {
+  @media (min-width: 830px) {
     position: relative;
     top: 0px;
     right: 0px;
@@ -40,14 +40,14 @@
   margin-top: 6px;
   display: flex;
   flex-direction: column;
-  @media (min-width: 720px) {
+  @media (min-width: 830px) {
     flex-direction: row;
     float: right;
     margin-top: 0px;
   }
   .btn-sm {
-    font-size: 10px;
-    @media (min-width: 790px) {
+    font-size: 9px;
+    @media (min-width: 830px) {
       font-size: 14px;
     }
   }
@@ -112,7 +112,7 @@
 
 .btn-group-toggle {
   display: inline-flex;
-  @media (min-width: 720px) {
+  @media (min-width: 830px) {
     display: block;
   }
 }
@@ -120,36 +120,36 @@
 .small-buttons {
   width: 100%;
   display: flex;
-  font-size: 12px;
-  margin: 5px 0px;
+  font-size: 14px;
+  margin: 7px 0px;
   justify-content: space-between;
   flex-direction: row-reverse;
 
-  @media (min-width: 720px) {
+  @media (min-width: 830px) {
     margin: 2px 0px;
     width: auto;
     flex-direction: row;
   }
-  @media (min-width: 768px) {
+  @media (min-width: 830px) {
     margin: 0px 0px;
   }
   .btn {
     width: 49.25%;
-    @media (min-width: 720px) {
+    @media (min-width: 830px) {
       width: auto;
     }
   }
   .dropdown {
     width: 49.25%;
     display: flex;
-    @media (min-width: 720px) {
+    @media (min-width: 830px) {
       width: auto;
       margin: 0px 5px;
     }
   }
   #dropdownFees {
     width: 100%;
-    @media (min-width: 720px) {
+    @media (min-width: 830px) {
       width: auto;
     }
   }
