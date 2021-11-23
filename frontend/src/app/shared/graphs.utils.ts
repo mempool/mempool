@@ -15,18 +15,18 @@ export const filterLabelDates = (
     const lastDate = new Date(labels[labels.length - 1]);
     let currentDate = firstDate;
 
-    currentDate.setUTCMilliseconds(0);
-    currentDate.setUTCSeconds(0);
-    currentDate.setUTCMinutes(0);
+    currentDate.setMilliseconds(0);
+    currentDate.setSeconds(0);
+    currentDate.setMinutes(0);
 
     if (template !== 'widget') {
 
       if(['1w', '1m', '2m', '3m', '6m', '1y', '2y', '3y'].includes(windowPreference)){
-        currentDate.setUTCMinutes(0);
+        currentDate.setMinutes(0);
       }
 
       if(['6m', '1y', '2y', '3y'].includes(windowPreference)){
-        currentDate.setUTCHours(0);
+        currentDate.setHours(0);
       }
     }
 
@@ -81,24 +81,23 @@ export const labelsData = (
 
     const date = new Date(label);
 
-    date.setUTCMilliseconds(0);
-    date.setUTCSeconds(0);
+    date.setMilliseconds(0);
+    date.setSeconds(0);
 
     if (template !== 'widget') {
 
       if(['1w', '1m', '2m', '3m', '6m', '1y', '2y', '3y'].includes(windowPreference)){
-        date.setUTCMinutes(0);
+        date.setMinutes(0);
       }
 
       if(['6m', '1y', '2y', '3y'].includes(windowPreference)){
-        date.setUTCHours(0);
+        date.setHours(0);
       }
     }
 
     return date.toISOString();
   });
 };
-
 
 export const formatterXAxis = (
   template: string,
