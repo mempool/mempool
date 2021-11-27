@@ -1,20 +1,19 @@
 <div class="container-xl">
 
-  <div class="title-block">
   <ng-template [ngIf]="!isLoading && !error">
-
-    <div>
+    <div class="title-block">
       <div class="title">
         <h1 i18n="shared.transaction">Transaction</h1>
       </div>
 
-      <div class="tx-link">
+      <span class="tx-link float-left">
         <a [routerLink]="['/bisq-tx' | relativeUrl, bisqTx.id]">
           <span class="d-inline d-lg-none">{{ bisqTx.id | shortenString : 24 }}</span>
           <span class="d-none d-lg-inline">{{ bisqTx.id }}</span>
         </a>
         <app-clipboard [text]="bisqTx.id"></app-clipboard>
-      </div>
+      </span>
+      <span class="grow"></span>
       <div class="container-buttons">
         <button *ngIf="(latestBlock$ | async) as latestBlock" type="button" class="btn btn-sm btn-success float-right">
           <ng-container *ngTemplateOutlet="latestBlock.height - bisqTx.blockHeight + 1 == 1 ? confirmationSingular : confirmationPlural; context: {$implicit: latestBlock.height - bisqTx.blockHeight + 1}"></ng-container>
@@ -22,6 +21,8 @@
           <ng-template #confirmationPlural let-i i18n="shared.confirmation-count.plural|Transaction plural confirmation count">{{ i }} confirmations</ng-template>
         </button>
       </div>
+    </div>
+    
       <div class="clearfix"></div>
 
       <div class="box transaction-container">
@@ -84,24 +85,32 @@
 
       <br>
 
-      <h2 i18n="transaction.details">Details</h2>
-
+      <div class="title">
+        <h2 i18n="transaction.details">Details</h2>
+      </div>
 
       <app-bisq-transaction-details [tx]="bisqTx"></app-bisq-transaction-details>
 
       <br>
 
-      <h2 i18n="transaction.inputs-and-outputs|Transaction inputs and outputs">Inputs & Outputs</h2>
+      <div class="title">
+        <h2 i18n="transaction.inputs-and-outputs|Transaction inputs and outputs">Inputs & Outputs</h2>
+      </div>
 
       <app-bisq-transfers [tx]="bisqTx"></app-bisq-transfers>
 
       <br>
-    </div>
-  </ng-template>
+    </ng-template>
 
-  <ng-template [ngIf="isLoading && !error">
+    <ng-template [ngIf]="isLoading && !error">
 
     <div class="clearfix"></div>
+
+    <div class="title-block">
+      <div class="title">
+        <h1 i18n="shared.transaction">Transaction</h1>
+      </div>
+    </div>
 
     <div class="box">
       <div class="row">
@@ -112,12 +121,24 @@
                 <td class="td-width"><span class="skeleton-loader"></span></td>
                 <td><span class="skeleton-loader"></span></td>
               </tr>
+              <tr>
+                <td class="td-width"><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td class="td-width"><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
             </tbody>
           </table>
         </div>
         <div class="col-sm">
           <table class="table table-borderless table-striped">
             <tbody>
+              <tr>
+                <td class="td-width"><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
               <tr>
                 <td class="td-width"><span class="skeleton-loader"></span></td>
                 <td><span class="skeleton-loader"></span></td>
@@ -130,7 +151,10 @@
 
     <br>
 
-    <h2 i18n="transaction.details">Details</h2>
+    <div class="title">
+      <h2 i18n="transaction.details">Details</h2>
+    </div>
+
     <div class="box">
       <table class="table table-borderless table-striped">
         <tbody>
@@ -151,18 +175,30 @@
 
     <br>
 
-    <h2 i18n="transaction.inputs-and-outputs|Transaction inputs and outputs">Inputs & Outputs</h2>
-
+    <div class="title">
+      <h2 i18n="transaction.inputs-and-outputs|Transaction inputs and outputs">Inputs & Outputs</h2>
+    </div>
+    
     <div class="box">
       <div class="row">
-        <table class="table table-borderless table-striped">
-          <tbody>
-            <tr>
-              <td><span class="skeleton-loader"></span></td>
-              <td><span class="skeleton-loader"></span></td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="col-sm">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-sm">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
