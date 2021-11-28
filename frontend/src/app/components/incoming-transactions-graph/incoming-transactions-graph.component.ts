@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Inject, LOCALE_ID, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { EChartsOption } from 'echarts';
 import { OnChanges } from '@angular/core';
@@ -7,6 +7,14 @@ import { StorageService } from 'src/app/services/storage.service';
 @Component({
   selector: 'app-incoming-transactions-graph',
   templateUrl: './incoming-transactions-graph.component.html',
+  styles: [`
+    .loadingGraphs {
+      position: absolute;
+      top: 50%;
+      left: calc(50% - 16px);
+      z-index: 100;
+    }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
@@ -18,6 +26,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
   @Input() left: number | string = '0';
   @Input() template: ('widget' | 'advanced') = 'widget';
 
+  isLoading = true;
   mempoolStatsChartOption: EChartsOption = {};
   mempoolStatsChartInitOption = {
     renderer: 'svg'
@@ -29,13 +38,23 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
     private storageService: StorageService,
   ) { }
 
+  ngOnInit() {
+    this.isLoading = true;
+  }
+
   ngOnChanges(): void {
+    if (!this.data) {
+      return;
+    }
     this.windowPreference = this.storageService.getValue('graphWindowPreference');
     this.mountChart();
   }
 
-  ngOnInit(): void {
-    this.mountChart();
+  rendered() {
+    if (!this.data) {
+      return;
+    }
+    this.isLoading = false;
   }
 
   mountChart(): void {
