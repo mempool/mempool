@@ -1,14 +1,22 @@
-import { Component, Inject, LOCALE_ID, ChangeDetectionStrategy, Input, OnChanges } from '@angular/core';
+import { Component, Inject, LOCALE_ID, ChangeDetectionStrategy, Input, OnChanges, OnInit } from '@angular/core';
 import { formatDate, formatNumber } from '@angular/common';
 import { EChartsOption } from 'echarts';
 
 @Component({
   selector: 'app-lbtc-pegs-graph',
-  styles: [`::ng-deep .tx-wrapper-tooltip-chart { width: 135px; }`],
+  styles: [`
+  ::ng-deep .tx-wrapper-tooltip-chart { width: 135px; }
+  .loadingGraphs {
+      position: absolute;
+      top: 50%;
+      left: calc(50% - 16px);
+      z-index: 100;
+    }
+  `],
   templateUrl: './lbtc-pegs-graph.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LbtcPegsGraphComponent implements OnChanges {
+export class LbtcPegsGraphComponent implements OnInit, OnChanges {
   @Input() data: any;
   pegsChartOptions: EChartsOption;
 
@@ -17,6 +25,7 @@ export class LbtcPegsGraphComponent implements OnChanges {
   top: number | string = '20';
   left: number | string = '50';
   template: ('widget' | 'advanced') = 'widget';
+  isLoading = true;
 
   pegsChartOption: EChartsOption = {};
   pegsChartInitOption = {
@@ -27,11 +36,22 @@ export class LbtcPegsGraphComponent implements OnChanges {
     @Inject(LOCALE_ID) private locale: string,
   ) { }
 
+  ngOnInit() {
+    this.isLoading = true;
+  }
+
   ngOnChanges() {
     if (!this.data) {
       return;
     }
     this.pegsChartOptions = this.createChartOptions(this.data.series, this.data.labels);
+  }
+
+  rendered() {
+    if (!this.data) {
+      return;
+    }
+    this.isLoading = false;
   }
 
   createChartOptions(series: number[], labels: string[]): EChartsOption {
