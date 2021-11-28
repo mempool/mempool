@@ -2,7 +2,7 @@
 
   <div class="title-block" id="block">
     <h1>
-      <ng-template [ngIf]="blockHeight === 0" i18n="block.genesis">Genesis
+      <ng-template [ngIf]="blockHeight === 0"><ng-container i18n="@@2303359202781425764">Genesis</ng-container>
         <span class="next-previous-blocks">
           <a *ngIf="showNextBlocklink" [routerLink]="['/block/' | relativeUrl, nextBlockHeight]" (click)="navigateToNextBlock()" i18n-ngbTooltip="Next Block" ngbTooltip="Next Block" placement="bottom">
             <fa-icon [icon]="['fas', 'angle-left']" [fixedWidth]="true"></fa-icon>
@@ -13,7 +13,8 @@
           </span>
         </span>
       </ng-template>
-      <ng-template [ngIf]="blockHeight" i18n="block.block"> Block
+      <ng-template [ngIf]="blockHeight" i18n="shared.block-title">Block <ng-container *ngTemplateOutlet="blockTemplateContent"></ng-container></ng-template>
+      <ng-template #blockTemplateContent>
         <span class="next-previous-blocks">
           <a *ngIf="showNextBlocklink" [routerLink]="['/block/' | relativeUrl, nextBlockHeight]" (click)="navigateToNextBlock()" i18n-ngbTooltip="Next Block" ngbTooltip="Next Block" placement="bottom">
             <fa-icon [icon]="['fas', 'angle-left']" [fixedWidth]="true"></fa-icon>
