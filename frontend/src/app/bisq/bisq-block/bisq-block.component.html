@@ -1,8 +1,10 @@
 <div class="container-xl">
 
   <div class="title-block">
-    <h1><ng-template [ngIf]="blockHeight" i18n="block.block">Block <a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a></ng-template></h1>
+    <h1><ng-template [ngIf]="blockHeight" i18n="shared.block-title">Block <ng-container *ngTemplateOutlet="blockTemplateContent"></ng-container></ng-template></h1>
   </div>
+
+  <ng-template #blockTemplateContent><a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a></ng-template>
 
   <div class="clearfix"></div>
 
