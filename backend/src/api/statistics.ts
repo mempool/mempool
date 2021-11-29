@@ -85,17 +85,14 @@ class Statistics {
       250, 300, 350, 400, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000];
 
     const weightVsizeFees: { [feePerWU: number]: number } = {};
+    const lastItem = logFees.length - 1;
 
     memPoolArray.forEach((transaction) => {
       for (let i = 0; i < logFees.length; i++) {
         if (
-          (config.MEMPOOL.NETWORK === 'liquid'
-            && ((logFees[i] === 2000 && transaction.effectiveFeePerVsize * 10 >= 2000)
-            || transaction.effectiveFeePerVsize * 10 <= logFees[i]))
+          (config.MEMPOOL.NETWORK === 'liquid' && (i === lastItem || transaction.effectiveFeePerVsize * 10 < logFees[i + 1]))
           ||
-          (config.MEMPOOL.NETWORK !== 'liquid'
-            && ((logFees[i] === 2000 && transaction.effectiveFeePerVsize >= 2000)
-            || transaction.effectiveFeePerVsize <= logFees[i]))
+          (config.MEMPOOL.NETWORK !== 'liquid' && (i === lastItem || transaction.effectiveFeePerVsize < logFees[i + 1]))
         ) {
           if (weightVsizeFees[logFees[i]]) {
             weightVsizeFees[logFees[i]] += transaction.vsize;
