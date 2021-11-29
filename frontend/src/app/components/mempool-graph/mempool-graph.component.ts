@@ -90,11 +90,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     const labels = mempoolStats.map(stats => stats.added);
     const finalArrayVByte = this.generateArray(mempoolStats);
 
-    // Only Liquid has lower than 1 sat/vb transactions
-    if (this.stateService.network !== 'liquid') {
-      finalArrayVByte.shift();
-    }
-
     return {
       labels: labels,
       series: finalArrayVByte
@@ -104,10 +99,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   generateArray(mempoolStats: OptimizedMempoolStats[]) {
     const finalArray: number[][] = [];
     let feesArray: number[] = [];
-    let limitFeesTemplate = this.template === 'advanced' ? 28 : 21;
-    if (this.stateService.network === 'liquid') {
-      limitFeesTemplate = this.template === 'advanced' ? 26 : 20;
-    }
+    let limitFeesTemplate = this.template === 'advanced' ? 26 : 20;
     for (let index = limitFeesTemplate; index > -1; index--) {
       feesArray = [];
       mempoolStats.forEach((stats) => {
@@ -370,18 +362,10 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         this.feeLimitIndex = i;
       }
       if (feeLevels[i] <= this.limitFee) {
-        if (i === 0) {
-          if (this.stateService.network === 'liquid') {
-            this.feeLevelsOrdered.push('0 - 0.1');
-          } else {
-            this.feeLevelsOrdered.push('0 - 1');
-          }
+        if (this.stateService.network === 'liquid') {
+          this.feeLevelsOrdered.push(`${(feeLevels[i] / 10).toFixed(1)} - ${(feeLevels[i + 1]  / 10).toFixed(1)}`);
         } else {
-          if (this.stateService.network === 'liquid') {
-            this.feeLevelsOrdered.push(`${feeLevels[i - 1] / 10} - ${feeLevels[i] / 10}`);
-          } else {
-            this.feeLevelsOrdered.push(`${feeLevels[i - 1]} - ${feeLevels[i]}`);
-          }
+          this.feeLevelsOrdered.push(`${feeLevels[i]} - ${feeLevels[i + 1]}`);
         }
       }
     }
