@@ -143,7 +143,7 @@ class Server {
     if (this.wss) {
       websocketHandler.setWebsocketServer(this.wss);
     }
-    if (config.MEMPOOL.NETWORK === 'liquid') {
+    if (config.MEMPOOL.NETWORK === 'liquid' && config.DATABASE.ENABLED) {
       blocks.setNewBlockCallback(async () => {
         try {
           await elementsParser.$parse();
@@ -270,7 +270,7 @@ class Server {
       ;
     }
 
-    if (config.MEMPOOL.NETWORK === 'liquid') {
+    if (config.MEMPOOL.NETWORK === 'liquid' && config.DATABASE.ENABLED) {
       this.app
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/month', routes.$getElementsPegsByMonth)
       ;
