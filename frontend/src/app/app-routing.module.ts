@@ -22,6 +22,7 @@ import { BisqMasterPageComponent } from './components/bisq-master-page/bisq-mast
 import { SponsorComponent } from './components/sponsor/sponsor.component';
 import { LiquidMasterPageComponent } from './components/liquid-master-page/liquid-master-page.component';
 import { PushTransactionComponent } from './components/push-transaction/push-transaction.component';
+import { DocsComponent } from './components/docs/docs.component';
 
 let routes: Routes = [
   {
@@ -77,6 +78,10 @@ let routes: Routes = [
       {
         path: 'privacy-policy',
         component: PrivacyPolicyComponent
+      },
+      {
+        path: 'docs',
+        component: DocsComponent
       },
       {
         path: 'trademark-policy',
@@ -227,6 +232,10 @@ let routes: Routes = [
         component: StatusViewComponent
       },
       {
+        path: 'docs',
+        component: DocsComponent
+      },
+      {
         path: '**',
         redirectTo: ''
       },
@@ -281,6 +290,10 @@ let routes: Routes = [
           {
             path: 'api',
             component: ApiDocsComponent,
+          },
+          {
+            path: 'docs',
+            component: DocsComponent
           },
         ],
       },
