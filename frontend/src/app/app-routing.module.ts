@@ -14,7 +14,7 @@ import { AssetsComponent } from './assets/assets.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LatestBlocksComponent } from './components/latest-blocks/latest-blocks.component';
-import { ApiDocsComponent } from './components/api-docs/api-docs.component';
+import { DocsComponent } from './components/docs/docs.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
 import { TrademarkPolicyComponent } from './components/trademark-policy/trademark-policy.component';
@@ -67,8 +67,20 @@ let routes: Routes = [
         component: AboutComponent,
       },
       {
+        path: 'docs/api/:type',
+        component: DocsComponent
+      },
+      {
+        path: 'docs/api',
+        redirectTo: 'docs/api/rest'
+      },
+      {
+        path: 'docs',
+        redirectTo: 'docs/api/rest'
+      },
+      {
         path: 'api',
-        component: ApiDocsComponent,
+        redirectTo: 'docs/api/rest'
       },
       {
         path: 'terms-of-service',
@@ -147,8 +159,20 @@ let routes: Routes = [
             component: AssetsComponent,
           },
           {
+            path: 'docs/api/:type',
+            component: DocsComponent
+          },
+          {
+            path: 'docs/api',
+            redirectTo: 'docs/api/rest'
+          },
+          {
+            path: 'docs',
+            redirectTo: 'docs/api/rest'
+          },
+          {
             path: 'api',
-            component: ApiDocsComponent,
+            redirectTo: 'docs/api/rest'
           },
         ],
       },
@@ -213,8 +237,20 @@ let routes: Routes = [
             component: AddressComponent
           },
           {
+            path: 'docs/api/:type',
+            component: DocsComponent
+          },
+          {
+            path: 'docs/api',
+            redirectTo: 'docs/api/rest'
+          },
+          {
+            path: 'docs',
+            redirectTo: 'docs/api/rest'
+          },
+          {
             path: 'api',
-            component: ApiDocsComponent,
+            redirectTo: 'docs/api/rest'
           },
         ],
       },
@@ -279,8 +315,20 @@ let routes: Routes = [
             component: AddressComponent
           },
           {
+            path: 'docs/api/:type',
+            component: DocsComponent
+          },
+          {
+            path: 'docs/api',
+            redirectTo: 'docs/api/rest'
+          },
+          {
+            path: 'docs',
+            redirectTo: 'docs/api/rest'
+          },
+          {
             path: 'api',
-            component: ApiDocsComponent,
+            redirectTo: 'docs/api/rest'
           },
         ],
       },
@@ -381,8 +429,20 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
         component: AssetsComponent,
       },
       {
+        path: 'docs/api/:type',
+        component: DocsComponent
+      },
+      {
+        path: 'docs/api',
+        redirectTo: 'docs/api/rest'
+      },
+      {
+        path: 'docs',
+        redirectTo: 'docs/api/rest'
+      },
+      {
         path: 'api',
-        component: ApiDocsComponent,
+        redirectTo: 'docs/api/rest'
       },
       {
         path: 'about',
@@ -429,3 +489,4 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
+
