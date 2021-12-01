@@ -22,7 +22,7 @@
   },
   "ELECTRUM": {
     "HOST": "127.0.0.1",
-    "PORT": 50002,
+    "PORT": 50001,
     "TLS_ENABLED": true
   },
   "ESPLORA": {
