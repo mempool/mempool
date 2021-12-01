@@ -120,7 +120,7 @@ const defaults: IConfig = {
   },
   'BISQ': {
     'ENABLED': false,
-    'DATA_PATH': '/bisq/statsnode-data/btc_mainnet/db'
+    'DATA_PATH': '/bisq/statsnode-data/bch_mainnet/db'
   },
 };
 

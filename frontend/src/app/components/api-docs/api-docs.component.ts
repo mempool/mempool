@@ -3015,7 +3015,7 @@ export class ApiDocsComponent implements OnInit {
           commonJS: ['BCH_USD'],
           curl: ['BCH_USD'],
           response: `{
-  btc_usd: {
+  bch_usd: {
     buys: [
       '4.56941560',
       ...
@@ -3138,8 +3138,8 @@ export class ApiDocsComponent implements OnInit {
           commonJS: ['BCH_USD'],
           curl: ['BCH_USD'],
           response: `{
-    btc_brl: {
-      pair: 'btc_brl',
+    bch_brl: {
+      pair: 'bch_brl',
       lname: 'Bitcoin',
       rname: 'Brazilian Real',
       lsymbol: 'BCH',
@@ -3204,7 +3204,7 @@ export class ApiDocsComponent implements OnInit {
           commonJS: ['BCH_USD'],
           curl: ['BCH_USD'],
           response: `{
-  btc_usd: {
+  bch_usd: {
     buys: [
       {
         offer_id: "ORHL1BE-0c193d04-be60-4657-ba42-cc172bb4ae5d-172",

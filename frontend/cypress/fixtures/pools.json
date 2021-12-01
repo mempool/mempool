@@ -14,11 +14,11 @@
         },
         "/BCH.COM/" : {
             "name" : "BCH.com",
-            "link" : "https://pool.btc.com"
+            "link" : "https://pool.bch.com"
         },
         "/BCH.com/" : {
             "name" : "BCH.com",
-            "link" : "https://pool.btc.com"
+            "link" : "https://pool.bch.com"
         },
         "BITFARMS": {
             "name": "Bitfarms",
@@ -42,15 +42,15 @@
         },
         "/BCH.TOP/": {
             "name" : "BCH.TOP",
-            "link" : "http://www.btc.top/"
+            "link" : "http://www.bch.top/"
         },
         "pool.bitcoin.com" : {
             "name" : "Bitcoin.com",
             "link" : "https://www.bitcoin.com/"
         },
-        "Mined By 175btc.com" : {
-            "name" : "175btc",
-            "link" : "http://www.175btc.com/"
+        "Mined By 175bch.com" : {
+            "name" : "175bch",
+            "link" : "http://www.175bch.com/"
         },
         "/mined by gbminers/" : {
             "name" : "GBMiners",
@@ -72,9 +72,9 @@
             "name" : "BitcoinRussia",
             "link" : "https://bitcoin-russia.ru"
         },
-        "btcserv" : {
+        "bchserv" : {
             "name" : "BCHServ",
-            "link" : "http://btcserv.net/"
+            "link" : "http://bchserv.net/"
         },
         "simplecoin" : {
             "name" : "simplecoin.us",
@@ -82,7 +82,7 @@
         },
         "BCH Guild" : {
             "name" : "BCH Guild",
-            "link" : "http://www.btcguild.com/"
+            "link" : "http://www.bchguild.com/"
         },
         "Eligius" : {
             "name" : "Eligius",
@@ -102,7 +102,7 @@
         },
         "MaxBCH" : {
             "name" : "MaxBCH",
-            "link" : "http://maxbtc.com/"
+            "link" : "http://maxbch.com/"
         },
         "triplemining" : {
             "name" : "TripleMining",
@@ -118,7 +118,7 @@
         },
         "50BCH" : {
             "name" : "50BCH",
-            "link" : "https://www.50btc.com/"
+            "link" : "https://www.50bch.com/"
         },
         "ghash.io" : {
             "name" : "GHash.IO",
@@ -176,9 +176,9 @@
             "name" : "NMCbit",
             "link" : "http://nmcbit.com/"
         },
-        "yourbtc.net" : {
-            "name" : "Yourbtc.net",
-            "link" : "http://yourbtc.net/"
+        "yourbch.net" : {
+            "name" : "Yourbch.net",
+            "link" : "http://yourbch.net/"
         },
         "Give-Me-Coins" : {
             "name" : "Give Me Coins",
@@ -238,19 +238,19 @@
         },
         "BCHChina Pool" : {
             "name" : "BCHC",
-            "link" : "https://pool.btcc.com/"
+            "link" : "https://pool.bchc.com/"
         },
-        "btcchina.com" : {
+        "bchchina.com" : {
             "name" : "BCHC",
-            "link" : "https://pool.btcc.com/"
+            "link" : "https://pool.bchc.com/"
         },
         "BCHChina.com" : {
             "name" : "BCHC",
-            "link" : "https://pool.btcc.com/"
+            "link" : "https://pool.bchc.com/"
         },
         "/BCHC/" : {
             "name" : "BCHC",
-            "link" : "https://pool.btcc.com/"
+            "link" : "https://pool.bchc.com/"
         },
         "BW Pool" : {
             "name" : "BWPool",
@@ -260,9 +260,9 @@
             "name" : "BWPool",
             "link" : "https://bwpool.net/"
         },
-        "xbtc.exx.com&bw.com" : {
+        "xbch.exx.com&bw.com" : {
             "name" : "EXX&BW",
-            "link" : "https://xbtc.exx.com/"
+            "link" : "https://xbch.exx.com/"
         },
         "Bitsolo Pool" : {
             "name" : "Bitsolo",
@@ -282,7 +282,7 @@
         },
         "/agentD/" : {
             "name" : "digitalBCH",
-            "link" : "http://digitalbtc.com/"
+            "link" : "http://digitalbch.com/"
         },
         "/八宝池 8baochi.com/" : {
             "name" : "8baochi",
@@ -290,7 +290,7 @@
         },
         "myBCHcoin Pool" : {
             "name" : "myBCHcoin Pool",
-            "link" : "http://mybtccoin.com/"
+            "link" : "http://mybchcoin.com/"
         },
         "TBDice" : {
             "name" : "TBDice",
@@ -340,17 +340,17 @@
             "name" : "TATMAS Pool",
             "link" : "https://tmsminer.com/"
         },
-        "viabtc.com deploy" : {
+        "viabch.com deploy" : {
             "name": "ViaBCH",
-            "link": "https://viabtc.com"
+            "link": "https://viabch.com"
         },
         "/ViaBCH/" : {
             "name": "ViaBCH",
-            "link": "http://viabtc.com/"
+            "link": "http://viabch.com/"
         },
         "/ConnectBCH - Home for Miners/" : {
             "name" : "ConnectBCH",
-            "link" : "https://www.connectbtc.com/"
+            "link" : "https://www.connectbch.com/"
         },
         "/BATPOOL/" : {
             "name" : "BATPOOL",
@@ -358,11 +358,11 @@
         },
         "/CANOE/" : {
             "name" : "CanoePool",
-            "link" : "https://btc.canoepool.com/"
+            "link" : "https://bch.canoepool.com/"
         },
         "/WATERHOLE.IO/" : {
             "name" : "Waterhole",
-            "link" : "https://btc.waterhole.io/"
+            "link" : "https://bch.waterhole.io/"
         },
         "/DCExploration/" : {
             "name" : "DCExploration",
@@ -506,7 +506,7 @@
         },
         "/TMSPOOL/" : {
             "name" : "TMSPool",
-            "link" : "https://btc.tmspool.top"
+            "link" : "https://bch.tmspool.top"
         },
         "/one_more_mcd/" : {
             "name" : "EMCDPool",
@@ -538,7 +538,7 @@
         },
         "/PureBCH.COM/": {
             "name": "PureBCH.COM",
-            "link": "https://purebtc.com"
+            "link": "https://purebch.com"
         }
     },
     "payout_addresses" : {
@@ -676,7 +676,7 @@
         },
         "1MimPd6LrPKGftPRHWdfk8S3KYBfN4ELnD" : {
             "name" : "digitalBCH",
-            "link" : "http://digitalbtc.com/"
+            "link" : "http://digitalbch.com/"
         },
         "1NY15MK947MLzmPUa2gL7UgyR8prLh2xfu" : {
             "name" : "digitalX Mintsy",
@@ -708,11 +708,11 @@
         },
         "152f1muMCNa7goXYhYAQC61hxEgGacmncB" : {
             "name" : "BCHC",
-            "link" : "https://pool.btcc.com/"
+            "link" : "https://pool.bchc.com/"
         },
         "1PmRrdp1YSkp1LxPyCfcmBHDEipG5X4eJB" : {
             "name" : "BCH Pool Party",
-            "link" : "https://btcpoolparty.com/"
+            "link" : "https://bchpoolparty.com/"
         },
         "1Hk9gD8xMo2XBUhE73y5zXEM8xqgffTB5f" : {
             "name" : "8baochi",
@@ -720,7 +720,7 @@
         },
         "151T7r1MhizzJV6dskzzUkUdr7V8JxV2Dx" : {
             "name" : "myBCHcoin Pool",
-            "link" : "http://www.mybtccoin.com/"
+            "link" : "http://www.mybchcoin.com/"
         },
         "1MFsp2txCPwMMBJjNNeKaduGGs8Wi1Ce7X" : {
             "name" : "A-XBT",
@@ -740,7 +740,7 @@
         },
         "15MxzsutVroEE9XiDckLxUHTCDAEZgPZJi" : {
             "name" : "BCHDig",
-            "link" : "https://btcdig.com/"
+            "link" : "https://bchdig.com/"
         },
         "1GBo1f2tzVx5jScV9kJXPUP9RjvYXuNzV7" : {
             "name" : "Nexious",
@@ -756,7 +756,7 @@
         },
         "1jKSjMLnDNup6NPgCjveeP9tUn4YpT94Y" : {
             "name" : "BCHMP",
-            "link" : "https://www.btcmp.com/"
+            "link" : "https://www.bchmp.com/"
         },
         "1MPxhNkSzeTNTHSZAibMaS8HS1esmUL1ne" : {
             "name" : "Eobot",
@@ -784,23 +784,23 @@
         },
         "3NA8hsjfdgVkmmVS9moHmkZsVCoLxUkvvv" : {
             "name" : "BCH.com",
-            "link" : "https://pool.btc.com"
+            "link" : "https://pool.bch.com"
         },
         "34qkc2iac6RsyxZVfyE2S5U5WcRsbg2dpK" : {
             "name" : "BCH.com",
-            "link" : "https://pool.btc.com"
+            "link" : "https://pool.bch.com"
         },
         "3EhLZarJUNSfV6TWMZY1Nh5mi3FMsdHa5U" : {
             "name" : "BCH.com",
-            "link" : "https://pool.btc.com"
+            "link" : "https://pool.bch.com"
         },
         "bc1qjl8uwezzlech723lpnyuza0h2cdkvxvh54v3dn" : {
             "name" : "BCH.com",
-            "link" : "https://pool.btc.com"
+            "link" : "https://pool.bch.com"
         },
         "1Bf9sZvBHPFGVPX71WX2njhd1NXKv5y7v5" : {
             "name" : "BCH.com",
-            "link" : "https://pool.btc.com"
+            "link" : "https://pool.bch.com"
         },
         "18EPLvrs2UE11kWBB3ABS7Crwj5tTBYPoa" : {
             "name" : "GoGreenLight",
@@ -808,7 +808,7 @@
         },
         "1KPQkehgYAqwiC6UCcbojM3mbGjURrQJF2" : {
             "name" : "ConnectBCH",
-            "link" : "https://www.connectbtc.com/"
+            "link" : "https://www.connectbch.com/"
         },
         "167ApWWxUSFQmz2jdz9xop3oAKdLejvMML" : {
             "name" : "BATPOOL",
@@ -832,11 +832,11 @@
         },
         "1FLH1SoLv4U68yUERhDiWzrJn5TggMqkaZ" : {
             "name" : "Waterhole",
-            "link" : "https://btc.waterhole.io/"
+            "link" : "https://bch.waterhole.io/"
         },
         "1GP8eWArgpwRum76saJS4cZKCHWJHs9PQo" : {
             "name" : "CanoePool",
-            "link" : "https://btc.canoepool.com/"
+            "link" : "https://bch.canoepool.com/"
         },
         "199EDJoCpqV672qESEkfFgEqNT1iR2gj3t" : {
             "name" : "58COIN",
@@ -844,7 +844,7 @@
         },
         "1Cs5RT9SRk1hxsdzivAfkjesNmVVJqfqkw" : {
             "name" : "EkanemBCH",
-            "link" : "https://ekanembtc.com/"
+            "link" : "https://ekanembch.com/"
         },
         "13Sd8Y7nUao3z4bJFkZvCRXpFqHvLy49YY" : {
             "name" : "Telco 214",
@@ -880,7 +880,7 @@
         },
         "1Hz96kJKF2HLPGY15JWLB5m9qGNxvt8tHJ" : {
             "name" : "BCH.TOP",
-            "link" : "http://btc.top"
+            "link" : "http://bch.top"
         },
         "1Afcpc2FpPnREU6i52K3cicmHdvYRAH9Wo" : {
             "name" : "CANOE",

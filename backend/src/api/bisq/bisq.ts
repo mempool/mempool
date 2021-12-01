@@ -139,7 +139,7 @@ class Bisq {
   }
 
   private updatePrice() {
-    axios.get<BisqTrade[]>('https://bisq.markets/api/trades/?market=bsq_btc', { timeout: 10000 })
+    axios.get<BisqTrade[]>('https://bisq.markets/api/trades/?market=bsq_bch', { timeout: 10000 })
       .then((response) => {
         const prices: number[] = [];
         response.data.forEach((trade) => {

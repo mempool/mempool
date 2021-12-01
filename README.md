@@ -8,7 +8,7 @@ Mempool is the fully featured visualizer, explorer, and API service running on [
 
 Mempool can be self-hosted on a wide variety of your own hardware, ranging from a simple one-click installation on a Raspberry Pi distro, all the way to an advanced high availability cluster of powerful servers for a production instance. We support the following installation methods, ranked in order from simple to advanced:
 
-1) One-click installation on: [Umbrel](https://github.com/getumbrel/umbrel), [RaspiBlitz](https://github.com/rootzoll/raspiblitz), [RoninDojo](https://code.samourai.io/ronindojo/RoninDojo), or [MyNode](https://github.com/mynodebtc/mynode).
+1) One-click installation on: [Umbrel](https://github.com/getumbrel/umbrel), [RaspiBlitz](https://github.com/rootzoll/raspiblitz), [RoninDojo](https://code.samourai.io/ronindojo/RoninDojo), or [MyNode](https://github.com/mynodebch/mynode).
 2) [Docker installation on Linux using docker-compose](https://github.com/mempool/mempool/tree/master/docker)
 3) [Manual installation on Linux or FreeBSD](https://github.com/mempool/mempool#manual-installation)
 4) [Production installation on a powerful FreeBSD server](https://github.com/mempool/mempool/tree/master/production)

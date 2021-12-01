@@ -4,7 +4,7 @@ describe('Bisq', () => {
         baseModule = (Cypress.env('BASE_MODULE') && Cypress.env('BASE_MODULE') === 'bisq') ? '' : '/bisq';
 
         cy.intercept('/sockjs-node/info*').as('socket');
-        cy.intercept('/bisq/api/markets/hloc?market=btc_usd&interval=day').as('hloc');
+        cy.intercept('/bisq/api/markets/hloc?market=bch_usd&interval=day').as('hloc');
         cy.intercept('/bisq/api/markets/ticker').as('ticker');
         cy.intercept('/bisq/api/markets/markets').as('markets');
         cy.intercept('/bisq/api/markets/volumes/7d').as('7d');

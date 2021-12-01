@@ -41,7 +41,7 @@ export interface BisqOutput {
   txId: string;
   index: number;
   bsqAmount: number;
-  btcAmount: number;
+  bchAmount: number;
   height: number;
   isVerified: boolean;
   burntFee: number;

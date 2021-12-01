@@ -33,7 +33,7 @@ function download(filename, url) {
   });
 }
 
-const poolsJsonUrl = 'https://raw.githubusercontent.com/btccom/Blockchain-Known-Pools/master/pools.json';
+const poolsJsonUrl = 'https://raw.githubusercontent.com/bchcom/Blockchain-Known-Pools/master/pools.json';
 let assetsJsonUrl = 'https://raw.githubusercontent.com/mempool/asset_registry_db/master/index.json';
 let assetsMinimalJsonUrl = 'https://raw.githubusercontent.com/mempool/asset_registry_db/master/index.minimal.json';
 

@@ -18,8 +18,8 @@ https://www.transifex.com/mempool/mempool/dashboard/
 * Italian @HodlBits
 * Hebrew @Sh0ham
 * Georgian @wyd_idk
-* Hungarian @btcdragonlord
-* Dutch @m__btc
+* Hungarian @bchdragonlord
+* Dutch @m__bch
 * Japanese @wiz @japananon
 * Norwegian @T82771355
 * Polish @maciejsoltysiak
