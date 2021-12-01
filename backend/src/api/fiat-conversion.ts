@@ -27,10 +27,10 @@ class FiatConversion {
 
   private async updateCurrency(): Promise<void> {
     try {
-      const response = await axios.get('https://price.bisq.wiz.biz/getAllMarketPrices', { timeout: 10000 });
-      const usd = response.data.data.find((item: any) => item.currencyCode === 'USD');
+      const response = await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin-cash&vs_currencies=usd', { timeout: 10000 });
+      const exchangerate = response.data.data.find((item: any));
       this.conversionRates = {
-        'USD': usd.price,
+        'USD': exchangerate.usd,
       };
       if (this.ratesChangedCallback) {
         this.ratesChangedCallback(this.conversionRates);
