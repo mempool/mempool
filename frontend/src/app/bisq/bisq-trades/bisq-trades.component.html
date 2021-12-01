@@ -3,9 +3,9 @@
     <thead>
       <th i18n>Date</th>
       <th *ngIf="view === 'all'" i18n>Price</th>
-      <th><ng-container *ngTemplateOutlet="amount; context: {$implicit:  'BTC' }"></ng-container></th>
+      <th><ng-container *ngTemplateOutlet="amount; context: {$implicit:  'BCH' }"></ng-container></th>
       <th>
-        <ng-template [ngIf]="market" [ngIfElse]="noMarket"><ng-container *ngTemplateOutlet="amount; context: {$implicit: market.lsymbol === 'BTC' ? market.rsymbol : market.lsymbol }"></ng-container></ng-template>
+        <ng-template [ngIf]="market" [ngIfElse]="noMarket"><ng-container *ngTemplateOutlet="amount; context: {$implicit: market.lsymbol === 'BCH' ? market.rsymbol : market.lsymbol }"></ng-container></ng-template>
         <ng-template #noMarket i18n>Amount</ng-template>
       </th>
     </thead>
@@ -18,8 +18,8 @@
           <ng-container *ngIf="(trade._market || market).rtype === 'fiat'; else priceCrypto"><span class="green-color">{{ trade.price | currency: (trade._market || market).rsymbol }}</span></ng-container>
           <ng-template #priceCrypto>{{ trade.price | number: '1.2-' + (trade._market || market).rprecision }} <span class="symbol">{{ (trade._market || market).rsymbol }}</span></ng-template>
         </td>
-        <ng-container *ngTemplateOutlet="(trade._market || market).rsymbol === 'BTC' ? tradeVolume : tradeAmount"></ng-container>
-        <ng-container *ngTemplateOutlet="(trade._market || market).rsymbol === 'BTC' ? tradeAmount : tradeVolume"></ng-container>
+        <ng-container *ngTemplateOutlet="(trade._market || market).rsymbol === 'BCH' ? tradeVolume : tradeAmount"></ng-container>
+        <ng-container *ngTemplateOutlet="(trade._market || market).rsymbol === 'BCH' ? tradeAmount : tradeVolume"></ng-container>
         <ng-template #tradeAmount>
           <td>
             <ng-container *ngIf="(trade._market || market).ltype === 'fiat'; else amountCrypto"><span class="green-color">{{ trade.amount | currency: (trade._market || market).rsymbol }}</span></ng-container>

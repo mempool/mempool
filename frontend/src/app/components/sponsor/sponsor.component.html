@@ -32,7 +32,7 @@
                <div class="card" (click)="setSelection(1)" [class.shiny-border]="donationForm.get('selection').value === 1">
                   <div class="card-header">Enterprise Sponsor</div>
                   <div class="card-body">
-                  <h5 class="card-title">1 <span class="symbol">BTC</span></h5>
+                  <h5 class="card-title">1 <span class="symbol">BCH</span></h5>
                   <p class="card-text">Backlink to your organization's website</p>
                   </div>
                </div>
@@ -63,11 +63,11 @@
                <input ngbButton type="radio" value="chain"> <fa-icon [icon]="['fas', 'link']" [fixedWidth]="true" title="Onchain"></fa-icon>
             </label>
 
-            <label ngbButtonLabel class="btn-primary" *ngIf="donationObj.addresses.BTC_LightningLike">
+            <label ngbButtonLabel class="btn-primary" *ngIf="donationObj.addresses.BCH_LightningLike">
                <input ngbButton type="radio" value="lightning"> <fa-icon [icon]="['fas', 'bolt']" [fixedWidth]="true" title="Lightning"></fa-icon>
             </label>
 
-            <label ngbButtonLabel class="btn-primary" *ngIf="donationObj.addresses.LBTC">
+            <label ngbButtonLabel class="btn-primary" *ngIf="donationObj.addresses.LBCH">
                <input ngbButton type="radio" value="lbtc"> <fa-icon [icon]="['fas', 'tint']" [fixedWidth]="true" title="Liquid Bitcoin"></fa-icon>
             </label>
 
@@ -77,33 +77,33 @@
       <ng-template [ngIf]="paymentForm.get('method').value === 'chain'">
 
          <div class="qr-wrapper">
-            <a [href]="bypassSecurityTrustUrl('bitcoin:' + donationObj.addresses.BTC + '?amount=' + donationObj.amount)" target="_blank">
-               <app-qrcode imageUrl="./resources/bitcoin-logo.png" [size]="200" [data]="'bitcoin:' + donationObj.addresses.BTC + '?amount=' + donationObj.amount"></app-qrcode>
+            <a [href]="bypassSecurityTrustUrl('bitcoin:' + donationObj.addresses.BCH + '?amount=' + donationObj.amount)" target="_blank">
+               <app-qrcode imageUrl="./resources/bitcoin-logo.png" [size]="200" [data]="'bitcoin:' + donationObj.addresses.BCH + '?amount=' + donationObj.amount"></app-qrcode>
             </a>
          </div>
          
          <div class="input-group input-group-sm info-group">
-            <input type="text" class="form-control" readonly [value]="donationObj.addresses.BTC">
+            <input type="text" class="form-control" readonly [value]="donationObj.addresses.BCH">
             <div class="input-group-append">
-               <button class="btn btn-outline-secondary" type="button" ><app-clipboard [text]="donationObj.addresses.BTC"></app-clipboard></button>
+               <button class="btn btn-outline-secondary" type="button" ><app-clipboard [text]="donationObj.addresses.BCH"></app-clipboard></button>
             </div>
          </div>
-         <p>{{ donationObj.amount }} <span class="symbol">BTC</span></p>
+         <p>{{ donationObj.amount }} <span class="symbol">BCH</span></p>
 
       </ng-template>
 
       <ng-template [ngIf]="paymentForm.get('method').value === 'lightning'">
 
          <div class="qr-wrapper">
-            <a [href]="bypassSecurityTrustUrl('lightning:' + donationObj.addresses.BTC_LightningLike)" target="_blank">
-               <app-qrcode imageUrl="./resources/bitcoin-logo.png" [size]="200" [data]="donationObj.addresses.BTC_LightningLike.toUpperCase()"></app-qrcode>
+            <a [href]="bypassSecurityTrustUrl('lightning:' + donationObj.addresses.BCH_LightningLike)" target="_blank">
+               <app-qrcode imageUrl="./resources/bitcoin-logo.png" [size]="200" [data]="donationObj.addresses.BCH_LightningLike.toUpperCase()"></app-qrcode>
             </a>
          </div>
 
          <div class="input-group input-group-sm info-group">
-            <input type="text" class="form-control" readonly [value]="donationObj.addresses.BTC_LightningLike">
+            <input type="text" class="form-control" readonly [value]="donationObj.addresses.BCH_LightningLike">
             <div class="input-group-append">
-               <button class="btn btn-outline-secondary" type="button"><app-clipboard [text]="donationObj.addresses.BTC_LightningLike"></app-clipboard></button>
+               <button class="btn btn-outline-secondary" type="button"><app-clipboard [text]="donationObj.addresses.BCH_LightningLike"></app-clipboard></button>
             </div>
          </div>
 
@@ -113,25 +113,25 @@
                <button class="btn btn-outline-secondary" type="button"><app-clipboard [text]="'036f7fad4938521ddc6fc87ab7d6c6a091cef23cad87564a1f55adb806c017575e@103.99.170.198:9735'"></app-clipboard></button>
             </div>
          </div>
-         <p>{{ donationObj.amount }} <span class="symbol">BTC</span></p>
+         <p>{{ donationObj.amount }} <span class="symbol">BCH</span></p>
 
       </ng-template>
 
       <ng-template [ngIf]="paymentForm.get('method').value === 'lbtc'">
 
          <div class="qr-wrapper">
-            <a [href]="bypassSecurityTrustUrl('liquidnetwork:' + donationObj.addresses.LBTC + '?amount=' + donationObj.amount + '&assetid=6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d')" target="_blank">
-               <app-qrcode imageUrl="./resources/liquid-bitcoin.png" [size]="200" [data]="'liquidnetwork:' + donationObj.addresses.LBTC + '?amount=' + donationObj.amount + '&assetid=6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d'"></app-qrcode>
+            <a [href]="bypassSecurityTrustUrl('liquidnetwork:' + donationObj.addresses.LBCH + '?amount=' + donationObj.amount + '&assetid=6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d')" target="_blank">
+               <app-qrcode imageUrl="./resources/liquid-bitcoin.png" [size]="200" [data]="'liquidnetwork:' + donationObj.addresses.LBCH + '?amount=' + donationObj.amount + '&assetid=6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d'"></app-qrcode>
             </a>
          </div>
          <br>
          <div class="input-group input-group-sm info-group">
-            <input type="text" class="form-control" readonly [value]="donationObj.addresses.LBTC" />
+            <input type="text" class="form-control" readonly [value]="donationObj.addresses.LBCH" />
             <div class="input-group-append">
-               <button class="btn btn-outline-secondary" type="button" ><app-clipboard [text]="donationObj.addresses.LBTC"></app-clipboard></button>
+               <button class="btn btn-outline-secondary" type="button" ><app-clipboard [text]="donationObj.addresses.LBCH"></app-clipboard></button>
             </div>
          </div>
-         <p>{{ donationObj.amount }} <span class="symbol">BTC</span></p>
+         <p>{{ donationObj.amount }} <span class="symbol">BCH</span></p>
 
       </ng-template>
 

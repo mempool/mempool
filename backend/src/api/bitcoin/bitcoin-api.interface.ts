@@ -5,7 +5,7 @@ export namespace IBitcoinApi {
     bytes: number;                   //  (numeric) Sum of all virtual transaction sizes as defined in BIP 141.
     usage: number;                   //  (numeric) Total memory usage for the mempool
     maxmempool: number;              //  (numeric) Maximum memory usage for the mempool
-    mempoolminfee: number;           //  (numeric) Minimum fee rate in BTC/kB for tx to be accepted.
+    mempoolminfee: number;           //  (numeric) Minimum fee rate in BCH/kB for tx to be accepted.
     minrelaytxfee: number;           //  (numeric) Current minimum relay fee for transactions
   }
 
@@ -22,10 +22,10 @@ export namespace IBitcoinApi {
     ancestorsize: number;            //  (numeric) virtual transaction size of in-mempool ancestors (including this one)
     wtxid: string;                   //  (string) hash of serialized transactionumber; including witness data
     fees: {
-      base: number;                  //  (numeric) transaction fee in BTC
-      modified: number;              //  (numeric) transaction fee with fee deltas used for mining priority in BTC
-      ancestor: number;              //  (numeric) modified fees (see above) of in-mempool ancestors (including this one) in BTC
-      descendant: number;            //  (numeric) modified fees (see above) of in-mempool descendants (including this one) in BTC
+      base: number;                  //  (numeric) transaction fee in BCH
+      modified: number;              //  (numeric) transaction fee with fee deltas used for mining priority in BCH
+      ancestor: number;              //  (numeric) modified fees (see above) of in-mempool ancestors (including this one) in BCH
+      descendant: number;            //  (numeric) modified fees (see above) of in-mempool descendants (including this one) in BCH
     };
     depends: string[];               //  (string) parent transaction id
     spentby: string[];               //  (array) unconfirmed transactions spending outputs from this transaction
@@ -85,7 +85,7 @@ export namespace IBitcoinApi {
   }
 
   interface Vout {
-    value: number;                   //  (numeric) The value in BTC
+    value: number;                   //  (numeric) The value in BCH
     n: number;                       //  (numeric) index
     scriptPubKey: {                  //  (json object)
       asm: string;                   //  (string) the asm

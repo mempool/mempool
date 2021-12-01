@@ -55,7 +55,7 @@ export class AssetsComponent implements OnInit {
         // @ts-ignore
         this.assets.push({
           name: 'Liquid Bitcoin',
-          ticker: 'L-BTC',
+          ticker: 'L-BCH',
           asset_id: this.nativeAssetId,
         });
         this.assets = this.assets.sort((a: any, b: any) => a.name.localeCompare(b.name));

@@ -147,15 +147,15 @@ class BisqMarketsApi {
     const markets = {};
 
     for (const currency of Object.keys(activeCurrencies)) {
-      if (allCurrencies[currency].code === 'BTC') {
+      if (allCurrencies[currency].code === 'BCH') {
         continue;
       }
 
       const isFiat = allCurrencies[currency]._type === 'fiat';
-      const pmarketname = allCurrencies['BTC']['name'];
+      const pmarketname = allCurrencies['BCH']['name'];
 
-      const lsymbol = isFiat ? 'BTC' : currency;
-      const rsymbol = isFiat ? currency : 'BTC';
+      const lsymbol = isFiat ? 'BCH' : currency;
+      const rsymbol = isFiat ? currency : 'BCH';
       const lname = isFiat ? pmarketname : allCurrencies[currency].name;
       const rname = isFiat ? allCurrencies[currency].name : pmarketname;
       const ltype = isFiat ? 'crypto' : allCurrencies[currency]._type;
@@ -582,7 +582,7 @@ class BisqMarketsApi {
         continue;
       }
 
-      // Filter out bogus trades with BTC/BTC or XXX/XXX market.
+      // Filter out bogus trades with BCH/BCH or XXX/XXX market.
       // See github issue: https://github.com/bitsquare/bitsquare/issues/883
       const currencyPairs = trade.currencyPair.split('/');
       if (currencyPairs[0] === currencyPairs[1]) {

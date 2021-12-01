@@ -345,7 +345,7 @@
                 </div>
                 <div class="description">
                   <div class="subtitle" i18n>Description</div>
-                  <div i18n>Get the current total supply of the specified asset. For the native asset (L-BTC), this is calculated as [chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount. For issued assets, this is calculated as [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount. Not available for assets with blinded issuances. If /decimal is specified, returns the supply as a decimal according to the asset's divisibility. Otherwise, returned in base units.</div>
+                  <div i18n>Get the current total supply of the specified asset. For the native asset (L-BCH), this is calculated as [chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount. For issued assets, this is calculated as [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount. Not available for assets with blinded issuances. If /decimal is specified, returns the supply as a decimal according to the asset's divisibility. Otherwise, returned in base units.</div>
                 </div>
                 <app-code-template [hostname]="hostname" [code]="code.assetSupply" [network]="network.val" ></app-code-template>
               </ng-template>

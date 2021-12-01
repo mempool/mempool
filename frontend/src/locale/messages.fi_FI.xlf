@@ -1237,8 +1237,8 @@
         <note from="description" priority="1">about.sponsor.amount-required</note>
       </trans-unit>
       <trans-unit datatype="html" id="c525ee366d56496a39853d54f8f08fcaed0eaf40">
-        <source>Minimum amount is 0.001 BTC</source>
-        <target>Vähimmäismäärä on 0,001 BTC</target>
+        <source>Minimum amount is 0.001 BCH</source>
+        <target>Vähimmäismäärä on 0,001 BCH</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">83</context>
@@ -1246,8 +1246,8 @@
         <note from="description" priority="1">about.sponsor.minimum-amount</note>
       </trans-unit>
       <trans-unit datatype="html" id="9b8d8dedba1ce2bf7b44f324993f8df5d7a75410">
-        <source>If you donate 0.01 BTC or more, your profile photo will be added to the list of sponsors above :)</source>
-        <target>Jos lahjoitat 0,01 BTC tai enemmän, profiilikuvasi lisätään yllä olevaan sponsoriluetteloon :)</target>
+        <source>If you donate 0.01 BCH or more, your profile photo will be added to the list of sponsors above :)</source>
+        <target>Jos lahjoitat 0,01 BCH tai enemmän, profiilikuvasi lisätään yllä olevaan sponsoriluetteloon :)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">92</context>
@@ -2153,7 +2153,7 @@
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="44a238eb28145f904f3a5bbfd4050987668f78d0">
-        <source>Get the current total supply of the specified asset. For the native asset (L-BTC), this is calculated as [chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount. For issued assets, this is calculated as [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount. Not available for assets with blinded issuances. If /decimal is specified, returns the supply as a decimal according to the asset's divisibility. Otherwise, returned in base units.</source>
+        <source>Get the current total supply of the specified asset. For the native asset (L-BCH), this is calculated as [chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount. For issued assets, this is calculated as [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount. Not available for assets with blinded issuances. If /decimal is specified, returns the supply as a decimal according to the asset's divisibility. Otherwise, returned in base units.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">231</context>

@@ -41,7 +41,7 @@ export interface MempoolInfo {
   bytes: number;                   //  (numeric) Sum of all virtual transaction sizes as defined in BIP 141.
   usage: number;                   //  (numeric) Total memory usage for the mempool
   maxmempool: number;              //  (numeric) Maximum memory usage for the mempool
-  mempoolminfee: number;           //  (numeric) Minimum fee rate in BTC/kB for tx to be accepted.
+  mempoolminfee: number;           //  (numeric) Minimum fee rate in BCH/kB for tx to be accepted.
   minrelaytxfee: number;           //  (numeric) Current minimum relay fee for transactions
 }
 

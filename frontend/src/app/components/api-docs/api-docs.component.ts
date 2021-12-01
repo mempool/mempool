@@ -2955,8 +2955,8 @@ export class ApiDocsComponent implements OnInit {
           commonJS: [],
           curl: [],
           response: `{
-  BTC: {
-    code: 'BTC',
+  BCH: {
+    code: 'BCH',
     name: 'Bitcoin',
     precision: 8,
     _type: 'crypto'
@@ -3011,9 +3011,9 @@ export class ApiDocsComponent implements OnInit {
           response: ``,
         },
         codeSampleBisq: {
-          esModule: ['BTC_USD'],
-          commonJS: ['BTC_USD'],
-          curl: ['BTC_USD'],
+          esModule: ['BCH_USD'],
+          commonJS: ['BCH_USD'],
+          curl: ['BCH_USD'],
           response: `{
   btc_usd: {
     buys: [
@@ -3074,9 +3074,9 @@ export class ApiDocsComponent implements OnInit {
           response: ``,
         },
         codeSampleBisq: {
-          esModule: ['BTC_USD'],
-          commonJS: ['BTC_USD'],
-          curl: ['BTC_USD'],
+          esModule: ['BCH_USD'],
+          commonJS: ['BCH_USD'],
+          curl: ['BCH_USD'],
           response: `[
   {
     period_start: 1609459200,
@@ -3134,15 +3134,15 @@ export class ApiDocsComponent implements OnInit {
           response: ``,
         },
         codeSampleBisq: {
-          esModule: ['BTC_USD'],
-          commonJS: ['BTC_USD'],
-          curl: ['BTC_USD'],
+          esModule: ['BCH_USD'],
+          commonJS: ['BCH_USD'],
+          curl: ['BCH_USD'],
           response: `{
     btc_brl: {
       pair: 'btc_brl',
       lname: 'Bitcoin',
       rname: 'Brazilian Real',
-      lsymbol: 'BTC',
+      lsymbol: 'BCH',
       rsymbol: 'BRL',
       lprecision: 8,
       rprecision: 2,
@@ -3200,9 +3200,9 @@ export class ApiDocsComponent implements OnInit {
           response: ``,
         },
         codeSampleBisq: {
-          esModule: ['BTC_USD'],
-          commonJS: ['BTC_USD'],
-          curl: ['BTC_USD'],
+          esModule: ['BCH_USD'],
+          commonJS: ['BCH_USD'],
+          curl: ['BCH_USD'],
           response: `{
   btc_usd: {
     buys: [
@@ -3283,9 +3283,9 @@ export class ApiDocsComponent implements OnInit {
           response: ``,
         },
         codeSampleBisq: {
-          esModule: ['BTC_USD'],
-          commonJS: ['BTC_USD'],
-          curl: ['BTC_USD'],
+          esModule: ['BCH_USD'],
+          commonJS: ['BCH_USD'],
+          curl: ['BCH_USD'],
           response: `{
   last: "53923.20570000",
   high: "53923.20570000",
@@ -3343,9 +3343,9 @@ export class ApiDocsComponent implements OnInit {
           response: ``,
         },
         codeSampleBisq: {
-          esModule: ['BTC_USD', '1'],
-          commonJS: ['BTC_USD', '1'],
-          curl: ['BTC_USD', '1'],
+          esModule: ['BCH_USD', '1'],
+          commonJS: ['BCH_USD', '1'],
+          curl: ['BCH_USD', '1'],
           response: `[
   {
     price: "53923.20570000",
@@ -3403,9 +3403,9 @@ export class ApiDocsComponent implements OnInit {
           response: ``,
         },
         codeSampleBisq: {
-          esModule: ['BTC_USD', 'BTC'],
-          commonJS: ['BTC_USD', 'BTC'],
-          curl: ['BTC_USD', 'BTC'],
+          esModule: ['BCH_USD', 'BCH'],
+          commonJS: ['BCH_USD', 'BCH'],
+          curl: ['BCH_USD', 'BCH'],
           response: `[
   {
     period_start: 1451606400,

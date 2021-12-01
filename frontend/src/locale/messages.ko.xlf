@@ -2020,8 +2020,8 @@
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="44a238eb28145f904f3a5bbfd4050987668f78d0">
-        <source>Get the current total supply of the specified asset. For the native asset (L-BTC), this is calculated as [chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount. For issued assets, this is calculated as [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount. Not available for assets with blinded issuances. If /decimal is specified, returns the supply as a decimal according to the asset's divisibility. Otherwise, returned in base units.</source>
-        <target>지정된 자산의 현재 총 공급량을 가져옵니다. 네이티브 자산 (L-BTC)의 경우 [chain, mempool] _stats.peg_in_amount-
+        <source>Get the current total supply of the specified asset. For the native asset (L-BCH), this is calculated as [chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount. For issued assets, this is calculated as [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount. Not available for assets with blinded issuances. If /decimal is specified, returns the supply as a decimal according to the asset's divisibility. Otherwise, returned in base units.</source>
+        <target>지정된 자산의 현재 총 공급량을 가져옵니다. 네이티브 자산 (L-BCH)의 경우 [chain, mempool] _stats.peg_in_amount-
 [chain, mempool] _stats.peg_out_amount-
 [chain, mempool] _stats.burned_amount로 계산됩니다.
 발행 된 자산의 경우 

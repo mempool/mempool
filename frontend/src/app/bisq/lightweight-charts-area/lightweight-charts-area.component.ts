@@ -92,7 +92,7 @@ export class LightweightChartsAreaComponent implements OnInit, OnChanges, OnDest
 
       toolTip.innerHTML = `<table>
           <tr><td class="tradesText">${tradesText}:</td><td class="text-right tradesText">${Math.round(line * 100) / 100}</td></tr>
-          <tr><td class="volumeText">${volumeText}:<td class="text-right volumeText">${Math.round(price * 100) / 100} BTC</td></tr>
+          <tr><td class="volumeText">${volumeText}:<td class="text-right volumeText">${Math.round(price * 100) / 100} BCH</td></tr>
         </table>
         <div>${dateStr}</div>`;
 
