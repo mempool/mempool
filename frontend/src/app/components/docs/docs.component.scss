@@ -23,3 +23,7 @@ p.faq-question {
 .italic {
   font-style: italic;
 }
+
+.breakable-long-string {
+  word-wrap: break-word;
+}
