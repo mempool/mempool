@@ -8,75 +8,81 @@
       <li [ngbNavItem]="0">
         <a ngbNavLink>FAQ</a>
           <ng-template ngbNavContent>
-            <br>
 
-            <p class="faq-question">What is Mempool?</p>
+            <div class="faq-item">
+              <p class="faq-question">What is Mempool?</p>
 
-            <p>Mempool is a block explorer for Bitcoin and some of its Layer 2 networks like Liquid and Bisq.</p>
+              <p>Mempool is a block explorer for Bitcoin and some of its Layer 2 networks like Liquid and Bisq.</p>
+              <p>Mempool is not a Bitcoin mining pool. Mempool is also not a wallet.</p>
+              <p>Like many other block explorers, Mempool merely provides data about the Bitcoin network. It does not "control" the Bitcoin network in any way, and it cannot help you make or change Bitcoin transactions.</p>
+            </div>
 
-            <p>Mempool is not a Bitcoin mining pool. Mempool is also not a wallet.</p>
+            <div class="faq-item">
+              <p class="faq-question">What can I do on the Mempool website?</p>
 
-            <p>Like many other block explorers, Mempool merely provides data about the Bitcoin network. It does not "control" the Bitcoin network in any way, and it cannot help you make or change Bitcoin transactions.</p>
+              <p>Mempool's real-time metrics and visualizations can help you understand the Bitcoin network in a variety of ways.</p>
+              <p>Some examples:</p>
+              <ul>
+                <li>see status of your Bitcoin transactions</li>
+                <li>see how long a transaction may take to confirm</li>
+                <li>get suggestions for fee-rate (s/vb) based on how quickly you need a transaction to confirm</li>
+                <li>see Layer 2 Bitcoin network metrics (e.g. Liquid, Bisq)</li>
+              </ul>
+              <p>Much of Mempool's data is available freely for casual use through <a [routerLink]="['/api']">an API</a>.</p>
+            </div>
 
-            <p class="faq-question">What can I do on the Mempool website?</p>
+            <div class="faq-item">
+              <p class="faq-question">I'm having issues with a transaction. It's taking a very long time to confirm, or Mempool can't find it at all. What can I do?</p>
 
-            <p>Mempool's real-time metrics and visualizations can help you understand the Bitcoin network in a variety of ways.</p>
+              <p>If you need support for a specific transaction, you must work with the entity who helped you make that transaction (wallet software, exchange company, etc). Mempool can only help you see data about these transactions.</p>
+            </div>
 
-            <p>Some examples:</p>
-            <ul>
-              <li>see status of your Bitcoin transactions</li>
-              <li>see how long a transaction may take to confirm</li>
-              <li>get suggestions for fee-rate (s/vb) based on how quickly you need a transaction to confirm</li>
-              <li>see Layer 2 Bitcoin network metrics (e.g. Liquid, Bisq)</li>
-            </ul>
+            <div class="faq-item">
+              <p class="faq-question">Can I self-host Mempool?</p>
 
-            <p>Much of Mempool's data is available freely for casual use through <a [routerLink]="['/api']">an API</a>.</p>
+              <p>Yes! Mempool is free/libre open-source software, and it's built to make users sovereign so they don't have to trust anyone.</p>
+              <p>You can host your own Mempool instance in a variety of ways for a variety of use cases. Many people find it easiest to run Mempool on a full node solution like Umbrel, RaspiBlitz, and myNode. Depending on your needs, you can also run Mempool on a custom Linux or FreeBSD setup.</p>
+              <p>See more details <a href="https://github.com/mempool/mempool#installation-methods" target="_blank">on GitHub</a>.</p>
+            </div>
 
-            <p class="faq-question">I'm having issues with a transaction. It's taking a very long time to confirm, or Mempool can't find it at all. What can I do?</p>
+            <div class="faq-item">
+              <p class="faq-question">I'm having issues with my self-hosted Mempool instance. Can you help?</p>
 
-            <p>If you need support for a specific transaction, you must work with the entity who helped you make that transaction (wallet software, exchange company, etc). Mempool can only help you see data about these transactions.</p>
+              <p>Many issues can be solved by making sure you're running the latest official release of Mempool, and making sure both Bitcoin and Electrum are fully synced. Keep in mind that Electrum can take another day or so to sync <span class="italic">after</span> Bitcoin Core has finished syncing.</p>
+            </div>
 
-            <!--<p>With that said, this is our #1 support question, so here is a [collection of advice you might find helpful](https://mempool.space/docs/using-mempool/troubleshooting-transactions).</p>-->
+            <div class="faq-item">
+              <p class="faq-question">I have an idea for a new feature for the Mempool website. Where can I suggest it?</p>
 
-            <p class="faq-question">Can I self-host Mempool?</p>
+              <p>Feel free to reach out to us on <a href="https://t.me/mempoolspace" target="_blank">Telegram</a> or <a href="https://keybase.io/team/mempool" target="_blank">Keybase</a>—it's possible there is already a way to accomplish what you're trying to do.</p>
+              <p>Otherwise open an issue in our <a href="https://github.com/mempool/mempool/issues" target="_blank">GitHub repository</a>.</p>
+            </div>
 
-            <p>Yes! Mempool is free/libre open-source software, and it's built to make users sovereign so they don't have to trust anyone.</p>
+            <div class="faq-item">
+              <p class="faq-question">I found a bug. How can I report it?</p>
 
-            <p>You can host your own Mempool instance in a variety of ways for a variety of use cases. Many people find it easiest to run Mempool on a full node solution like Umbrel, RaspiBlitz, and myNode. Depending on your needs, you can also run Mempool on a custom Linux or FreeBSD setup.</p>
+              <p>Please open an issue in our <a href="https://github.com/mempool/mempool/issues" target="_blank">GitHub repository</a>.</p>
+            </div>
 
-            <p>See more details <a href="https://github.com/mempool/mempool#installation-methods" target="_blank">on GitHub</a>.</p>
+            <div class="faq-item">
+              <p class="faq-question">I really like the Mempool project and want to support it. How can I do that?</p>
 
-            <p class="faq-question">I'm having issues with my self-hosted Mempool instance. Can you help?</p>
+              <p>We sincerely appreciate your support! The Mempool project is strong because its community is strong, and that's because of people like you.</p>
+              <p>There are many ways you can contribute your skills to the project, whether you're interested in development, design, translations, or something else. Reach out to us on <a href="https://keybase.io/team/mempool" target="_blank">Keybase</a> if you're interested.</p>
+              <p>You can also contribute some sats through <a href="https://mempool.space/sponsor" target="_blank">our sponsorship page</a>.</p>
+            </div>
 
-            <p>Many issues can be solved by making sure you're running the latest official release of Mempool, and making sure both Bitcoin and Electrum are fully synced. Keep in mind that Electrum can take another day or so to sync <span class="italic">after</span> Bitcoin Core has finished syncing.</p>
+            <div class="faq-item" *ngIf="officialMempoolSpace">
+              <p class="faq-question">Does this site have an onion address?</p>
 
-            <!--[See docs](https://mempool.space/docs/using-mempool/self-hosting/troubleshooting) for more in-depth troubleshooting on supported platforms like Umbrel, RaspiBlitz, or myNode.-->
+              <p>Yes, visit <a href="http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion">http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion</a> in the Tor Browser.
+            </div>
 
-            <p class="faq-question">I have an idea for a new feature for the Mempool website. Where can I suggest it?</p>
+            <div class="faq-item">
+              <p class="faq-question">Can Mempool visualize the blockchain for &#123;LTC, BCH, etc&#125; too?</p>
 
-            <p>Feel free to reach out to us on <a href="https://t.me/mempoolspace" target="_blank">Telegram</a> or <a href="https://keybase.io/team/mempool" target="_blank">Keybase</a>—it's possible there is already a way to accomplish what you're trying to do.</p>
-
-            <p>Otherwise open an issue in our <a href="https://github.com/mempool/mempool/issues" target="_blank">GitHub repository</a>.</p>
-
-            <p class="faq-question">I found a bug. How can I report it?</p>
-
-            <p>Please open an issue in our <a href="https://github.com/mempool/mempool/issues" target="_blank">GitHub repository</a>.</p>
-
-            <p class="faq-question">I really like the Mempool project and want to support it. How can I do that?</p>
-
-            <p>We sincerely appreciate your support! The Mempool project is strong because its community is strong, and that's because of people like you.</p>
-
-            <p>There are many ways you can contribute your skills to the project, whether you're interested in development, design, translations, or something else. Reach out to us on <a href="https://keybase.io/team/mempool" target="_blank">Keybase</a> if you're interested.</p>
-
-            <p>You can also contribute some sats through <a href="https://mempool.space/sponsor" target="_blank">our sponsorship page</a>.</p>
-
-            <p class="faq-question" *ngIf="officialMempoolSpace">Does this site have an onion address?</p>
-
-            <p *ngIf="officialMempoolSpace">Yes, visit <a href="http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion">http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion</a> in the Tor Browser.
-
-            <p class="faq-question">Can Mempool visualize the blockchain for &#123;LTC, BCH, etc&#125; too?</p>
-
-            <p>Mempool is strictly a Bitcoin-only explorer, and will only cover Bitcoin and its secondary networks.</p>
+              <p>Mempool is strictly a Bitcoin-only explorer, and will only cover Bitcoin and its secondary networks.</p>
+            </div>
 
           </ng-template>
       </li>
