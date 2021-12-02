@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Env, StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-docs',
@@ -8,8 +9,11 @@ import { Component, OnInit } from '@angular/core';
 export class DocsComponent implements OnInit {
 
   active = 0;
+  officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
 
-  constructor() { }
+  constructor(
+    private stateService: StateService,
+  ) { }
 
   ngOnInit(): void {
   }

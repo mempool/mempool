@@ -70,9 +70,9 @@
 
             <p>You can also contribute some sats through <a href="https://mempool.space/sponsor" target="_blank">our sponsorship page</a>.</p>
 
-            <p class="faq-question">Does this site have an onion address?</p>
+            <p class="faq-question" *ngIf="officialMempoolSpace">Does this site have an onion address?</p>
 
-            <p>Yes, visit <a href="http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion">http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion</a> in the Tor Browser.
+            <p *ngIf="officialMempoolSpace">Yes, visit <a href="http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion">http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion</a> in the Tor Browser.
 
             <p class="faq-question">Can Mempool visualize the blockchain for &#123;LTC, BCH, etc&#125; too?</p>
 
