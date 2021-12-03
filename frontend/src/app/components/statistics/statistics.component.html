@@ -42,26 +42,15 @@
                 <div class="dropdown-fees" ngbDropdownMenu aria-labelledby="dropdownFees">
                   <ul>
                     <ng-template ngFor let-fee let-i="index" [ngForOf]="feeLevels">
-                      <ng-template [ngIf]="fee === 1">
-                        <li (click)="filterFees(fee)" [class]="filterFeeIndex > fee ? 'inactive' : ''">
-                          <ng-template [ngIf]="inverted">
-                            <span class="square" [ngStyle]="{'backgroundColor': chartColors[i]}"></span>
-                          </ng-template>
-                          <ng-template [ngIf]="!inverted">
-                            <span class="square" [ngStyle]="{'backgroundColor': chartColors[i - 1]}"></span>
-                          </ng-template>
-                          <span class="fee-text" >0 - {{ fee }}</span>
-                        </li>
-                      </ng-template>
-                      <ng-template [ngIf]="fee <= 500 && fee !== 1">
+                      <ng-template [ngIf]="fee <= 400">
                         <li (click)="filterFees(fee)" [class]="filterFeeIndex > fee ? 'inactive' : ''">
                         <ng-template [ngIf]="inverted">
                           <span class="square" [ngStyle]="{'backgroundColor': chartColors[i]}"></span>
-                          <span class="fee-text" >{{feeLevels[i - 1]}} - {{ fee }}</span>
+                          <span class="fee-text" >{{feeLevels[i]}} - {{ feeLevels[i + 1] }}</span>
                         </ng-template>
                         <ng-template [ngIf]="!inverted">
                           <span class="square" [ngStyle]="{'backgroundColor': chartColors[i - 1]}"></span>
-                          <span class="fee-text" >{{feeLevels[i + 1]}} - {{ fee }}</span>
+                          <span class="fee-text" >{{feeLevels[i]}} - {{ feeLevels[i - 1] }}</span>
                         </ng-template>
                       </li>
                       </ng-template>
