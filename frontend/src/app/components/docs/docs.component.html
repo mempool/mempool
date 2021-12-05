@@ -3,10 +3,10 @@
 
     <h2>Documentation</h2>
 
-    <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
+    <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav-tabs">
 
       <li [ngbNavItem]="0">
-        <a ngbNavLink>FAQ</a>
+        <a ngbNavLink routerLink="/docs/faq">FAQ</a>
           <ng-template ngbNavContent>
 
             <ngb-accordion [closeOthers]="true" animated="true" type="dark" [activeIds]="['what-is-mempool']">
@@ -141,6 +141,16 @@
 
           </ng-template>
       </li>
+
+      <li [ngbNavItem]="1">
+        <a ngbNavLink routerLink="/docs/api">API</a>
+        <ng-template ngbNavContent>
+
+          <p>Placeholder for API content.</p>
+
+        </ng-template>
+      </li>
+
 
     </ul>
 

@@ -81,6 +81,10 @@ let routes: Routes = [
       },
       {
         path: 'docs',
+        redirectTo: 'docs/faq'
+      },
+      {
+        path: 'docs/:tab',
         component: DocsComponent
       },
       {
@@ -233,6 +237,10 @@ let routes: Routes = [
       },
       {
         path: 'docs',
+        redirectTo: 'docs/faq'
+      },
+      {
+        path: 'docs/:tab',
         component: DocsComponent
       },
       {
@@ -293,6 +301,10 @@ let routes: Routes = [
           },
           {
             path: 'docs',
+            redirectTo: 'docs/faq'
+          },
+          {
+            path: 'docs/:tab',
             component: DocsComponent
           },
         ],
