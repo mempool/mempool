@@ -7,139 +7,139 @@
 
       <li [ngbNavItem]="0">
         <a ngbNavLink routerLink="/docs/faq">FAQ</a>
-          <ng-template ngbNavContent>
+        <ng-template ngbNavContent>
 
-            <ngb-accordion [closeOthers]="true" animated="true" type="dark" [activeIds]="['what-is-mempool']">
+          <ngb-accordion [closeOthers]="true" animated="true" type="dark" [activeIds]="['what-is-mempool']">
 
-              <ngb-panel id="what-is-mempool">
-                <ng-template ngbPanelTitle>
-                  <span class="question">What is Mempool?</span>
-                </ng-template>
-                <ng-template ngbPanelContent>
-                  <div class="answer">
-                    <p>Mempool is a block explorer for Bitcoin and some of its Layer 2 networks like Liquid and Bisq.</p>
-                    <p>Mempool is not a Bitcoin mining pool. Mempool is also not a wallet.</p>
-                    <p>Like many other block explorers, Mempool merely provides data about the Bitcoin network. It does not "control" the Bitcoin network in any way, and it cannot help you make or change Bitcoin transactions.</p>
-                  </div>
-                </ng-template>
-              </ngb-panel>
+            <ngb-panel id="what-is-mempool">
+              <ng-template ngbPanelTitle>
+                <span class="question">What is Mempool?</span>
+              </ng-template>
+              <ng-template ngbPanelContent>
+                <div class="answer">
+                  <p>Mempool is a block explorer for Bitcoin and some of its Layer 2 networks like Liquid and Bisq.</p>
+                  <p>Mempool is not a Bitcoin mining pool. Mempool is also not a wallet.</p>
+                  <p>Like many other block explorers, Mempool merely provides data about the Bitcoin network. It does not "control" the Bitcoin network in any way, and it cannot help you make or change Bitcoin transactions.</p>
+                </div>
+              </ng-template>
+            </ngb-panel>
 
-              <ngb-panel id="what-mempool-does">
-                <ng-template ngbPanelTitle>
-                  <span class="question">What can I do on the Mempool website?</span>
-                </ng-template>
-                <ng-template ngbPanelContent>
-                  <div class="answer">
-                    <p>Mempool's real-time metrics and visualizations can help you understand the Bitcoin network in a variety of ways.</p>
-                    <p>Some examples:</p>
-                    <ul>
-                      <li>see status of your Bitcoin transactions</li>
-                      <li>see how long a transaction may take to confirm</li>
-                      <li>get suggestions for fee-rate (s/vb) based on how quickly you need a transaction to confirm</li>
-                      <li>see Layer 2 Bitcoin network metrics (e.g. Liquid, Bisq)</li>
-                    </ul>
-                    <p>Much of Mempool's data is available freely for casual use through <a [routerLink]="['/api']">an API</a>.</p>
-                  </div>
-                </ng-template>
-              </ngb-panel>
+            <ngb-panel id="what-mempool-does">
+              <ng-template ngbPanelTitle>
+                <span class="question">What can I do on the Mempool website?</span>
+              </ng-template>
+              <ng-template ngbPanelContent>
+                <div class="answer">
+                  <p>Mempool's real-time metrics and visualizations can help you understand the Bitcoin network in a variety of ways.</p>
+                  <p>Some examples:</p>
+                  <ul>
+                    <li>see status of your Bitcoin transactions</li>
+                    <li>see how long a transaction may take to confirm</li>
+                    <li>get suggestions for fee-rate (s/vb) based on how quickly you need a transaction to confirm</li>
+                    <li>see Layer 2 Bitcoin network metrics (e.g. Liquid, Bisq)</li>
+                  </ul>
+                  <p>Much of Mempool's data is available freely for casual use through <a [routerLink]="['/api']">an API</a>.</p>
+                </div>
+              </ng-template>
+            </ngb-panel>
 
-              <ngb-panel id="issues-with-bitcoin-transaction">
-                <ng-template ngbPanelTitle>
-                  <span class="question">I'm having issues with a transaction. It's taking a very long time to confirm, it got sent to the wrong address, or Mempool can't find it at all. What can I do?</span>
-                </ng-template>
-                <ng-template ngbPanelContent>
-                  <div class="answer">
-                    <p>If you need support for a specific transaction, you must work with the entity who helped you make that transaction (wallet software, exchange company, etc). Mempool can only help you see data about these transactions.</p>
-                  </div>
-                </ng-template>
-              </ngb-panel>
+            <ngb-panel id="issues-with-bitcoin-transaction">
+              <ng-template ngbPanelTitle>
+                <span class="question">I'm having issues with a transaction. It's taking a very long time to confirm, it got sent to the wrong address, or Mempool can't find it at all. What can I do?</span>
+              </ng-template>
+              <ng-template ngbPanelContent>
+                <div class="answer">
+                  <p>If you need support for a specific transaction, you must work with the entity who helped you make that transaction (wallet software, exchange company, etc). Mempool can only help you see data about these transactions.</p>
+                </div>
+              </ng-template>
+            </ngb-panel>
 
-              <ngb-panel id="self-hosting-mempool">
-                <ng-template ngbPanelTitle>
-                  <span class="question">Can I self-host Mempool?</span>
-                </ng-template>
-                <ng-template ngbPanelContent>
-                  <div class="answer">
-                    <p>Yes! Mempool is free/libre open-source software, and it's built to make users sovereign so they don't have to trust anyone.</p>
-                    <p>You can host your own Mempool instance in a variety of ways for a variety of use cases. Many people find it easiest to run Mempool on a full node solution like Umbrel, RaspiBlitz, and myNode. Depending on your needs, you can also run Mempool on a custom Linux or FreeBSD setup.</p>
-                    <p>See more details <a href="https://github.com/mempool/mempool#installation-methods" target="_blank">on GitHub</a>.</p>
-                  </div>
-                </ng-template>
-              </ngb-panel>
+            <ngb-panel id="self-hosting-mempool">
+              <ng-template ngbPanelTitle>
+                <span class="question">Can I self-host Mempool?</span>
+              </ng-template>
+              <ng-template ngbPanelContent>
+                <div class="answer">
+                  <p>Yes! Mempool is free/libre open-source software, and it's built to make users sovereign so they don't have to trust anyone.</p>
+                  <p>You can host your own Mempool instance in a variety of ways for a variety of use cases. Many people find it easiest to run Mempool on a full node solution like Umbrel, RaspiBlitz, and myNode. Depending on your needs, you can also run Mempool on a custom Linux or FreeBSD setup.</p>
+                  <p>See more details <a href="https://github.com/mempool/mempool#installation-methods" target="_blank">on GitHub</a>.</p>
+                </div>
+              </ng-template>
+            </ngb-panel>
 
-              <ngb-panel id="self-hosting-mempool-issues">
-                <ng-template ngbPanelTitle>
-                  <span class="question">I'm having issues with my self-hosted Mempool instance. Can you help?</span>
-                </ng-template>
-                <ng-template ngbPanelContent>
-                  <div class="answer">
-                    <p>Many issues can be solved by making sure you're running the latest official release of Mempool, and making sure both Bitcoin and Electrum are fully synced.</p>
-                    <p>Keep in mind that Electrum can take another day or so to sync <span class="italic">after</span> Bitcoin Core has finished syncing.</p>
-                  </div>
-                </ng-template>
-              </ngb-panel>
+            <ngb-panel id="self-hosting-mempool-issues">
+              <ng-template ngbPanelTitle>
+                <span class="question">I'm having issues with my self-hosted Mempool instance. Can you help?</span>
+              </ng-template>
+              <ng-template ngbPanelContent>
+                <div class="answer">
+                  <p>Many issues can be solved by making sure you're running the latest official release of Mempool, and making sure both Bitcoin and Electrum are fully synced.</p>
+                  <p>Keep in mind that Electrum can take another day or so to sync <span class="italic">after</span> Bitcoin Core has finished syncing.</p>
+                </div>
+              </ng-template>
+            </ngb-panel>
 
-              <ngb-panel id="sending-feedback">
-                <ng-template ngbPanelTitle>
-                  <span class="question">I have an idea for a new feature for the Mempool website. Where can I suggest it?</span>
-                </ng-template>
-                <ng-template ngbPanelContent>
-                  <div class="answer">
-                    <p>Feel free to reach out to us on <a href="https://t.me/mempoolspace" target="_blank">Telegram</a> or <a href="https://keybase.io/team/mempool" target="_blank">Keybase</a>—it's possible there is already a way to accomplish what you're trying to do.</p>
-                    <p>Otherwise open an issue in our <a href="https://github.com/mempool/mempool/issues" target="_blank">GitHub repository</a>.</p>
-                  </div>
-                </ng-template>
-              </ngb-panel>
+            <ngb-panel id="sending-feedback">
+              <ng-template ngbPanelTitle>
+                <span class="question">I have an idea for a new feature for the Mempool website. Where can I suggest it?</span>
+              </ng-template>
+              <ng-template ngbPanelContent>
+                <div class="answer">
+                  <p>Feel free to reach out to us on <a href="https://t.me/mempoolspace" target="_blank">Telegram</a> or <a href="https://keybase.io/team/mempool" target="_blank">Keybase</a>—it's possible there is already a way to accomplish what you're trying to do.</p>
+                  <p>Otherwise open an issue in our <a href="https://github.com/mempool/mempool/issues" target="_blank">GitHub repository</a>.</p>
+                </div>
+              </ng-template>
+            </ngb-panel>
 
-              <ngb-panel id="reporting-bugs">
-                <ng-template ngbPanelTitle>
-                  <span class="question">I found a bug. How can I report it?</span>
-                </ng-template>
-                <ng-template ngbPanelContent>
-                  <div class="answer">
-                    <p>Please open an issue in our <a href="https://github.com/mempool/mempool/issues" target="_blank">GitHub repository</a>.</p>
-                  </div>
-                </ng-template>
-              </ngb-panel>
+            <ngb-panel id="reporting-bugs">
+              <ng-template ngbPanelTitle>
+                <span class="question">I found a bug. How can I report it?</span>
+              </ng-template>
+              <ng-template ngbPanelContent>
+                <div class="answer">
+                  <p>Please open an issue in our <a href="https://github.com/mempool/mempool/issues" target="_blank">GitHub repository</a>.</p>
+                </div>
+              </ng-template>
+            </ngb-panel>
 
-              <ngb-panel id="contributing-to-mempool">
-                <ng-template ngbPanelTitle>
-                  <span class="question">I really like the Mempool project and want to support it. How can I do that?</span>
-                </ng-template>
-                <ng-template ngbPanelContent>
-                  <div class="answer">
-                    <p>We sincerely appreciate your support! The Mempool project is strong because its community is strong, and that's because of people like you.</p>
-                    <p>There are many ways you can contribute your skills to the project, whether you're interested in development, design, translations, or something else. Reach out to us on <a href="https://keybase.io/team/mempool" target="_blank">Keybase</a> if you're interested.</p>
-                    <p>You can also contribute some sats through <a href="https://mempool.space/sponsor" target="_blank">our sponsorship page</a>.</p>
-                  </div>
-                </ng-template>
-              </ngb-panel>
+            <ngb-panel id="contributing-to-mempool">
+              <ng-template ngbPanelTitle>
+                <span class="question">I really like the Mempool project and want to support it. How can I do that?</span>
+              </ng-template>
+              <ng-template ngbPanelContent>
+                <div class="answer">
+                  <p>We sincerely appreciate your support! The Mempool project is strong because its community is strong, and that's because of people like you.</p>
+                  <p>There are many ways you can contribute your skills to the project, whether you're interested in development, design, translations, or something else. Reach out to us on <a href="https://keybase.io/team/mempool" target="_blank">Keybase</a> if you're interested.</p>
+                  <p>You can also contribute some sats through <a href="https://mempool.space/sponsor" target="_blank">our sponsorship page</a>.</p>
+                </div>
+              </ng-template>
+            </ngb-panel>
 
-              <ngb-panel id="mempool-onion-address" *ngIf="officialMempoolSpace">
-                <ng-template ngbPanelTitle>
-                  <span class="question">Does this site have an onion address?</span>
-                </ng-template>
-                <ng-template ngbPanelContent>
-                  <div class="answer">
-                    <p>Yes, visit <a class="breakable-long-string" href="http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion">http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion</a> in the Tor Browser.
-                  </div>
-                </ng-template>
-              </ngb-panel>
+            <ngb-panel id="mempool-onion-address" *ngIf="officialMempoolSpace">
+              <ng-template ngbPanelTitle>
+                <span class="question">Does this site have an onion address?</span>
+              </ng-template>
+              <ng-template ngbPanelContent>
+                <div class="answer">
+                  <p>Yes, visit <a class="breakable-long-string" href="http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion">http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion</a> in the Tor Browser.
+                </div>
+              </ng-template>
+            </ngb-panel>
 
-              <ngb-panel id="adding-shitcoins">
-                <ng-template ngbPanelTitle>
-                  <span class="question">Can Mempool visualize the blockchain for &#123;LTC, BCH, etc&#125; too?</span>
-                </ng-template>
-                <ng-template ngbPanelContent>
-                  <div class="answer">
-                    <p>Mempool is strictly a Bitcoin-only explorer, and will only cover Bitcoin and its secondary networks.</p>
-                  </div>
-                </ng-template>
-              </ngb-panel>
+            <ngb-panel id="adding-shitcoins">
+              <ng-template ngbPanelTitle>
+                <span class="question">Can Mempool visualize the blockchain for &#123;LTC, BCH, etc&#125; too?</span>
+              </ng-template>
+              <ng-template ngbPanelContent>
+                <div class="answer">
+                  <p>Mempool is strictly a Bitcoin-only explorer, and will only cover Bitcoin and its secondary networks.</p>
+                </div>
+              </ng-template>
+            </ngb-panel>
 
-            </ngb-accordion>
+          </ngb-accordion>
 
-          </ng-template>
+        </ng-template>
       </li>
 
       <li [ngbNavItem]="1">
