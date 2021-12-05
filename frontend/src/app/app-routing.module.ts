@@ -69,7 +69,7 @@ let routes: Routes = [
       },
       {
         path: 'api',
-        component: ApiDocsComponent,
+        redirectTo: 'docs/api'
       },
       {
         path: 'terms-of-service',
@@ -157,7 +157,7 @@ let routes: Routes = [
           },
           {
             path: 'api',
-            component: ApiDocsComponent,
+            redirectTo: 'docs/api'
           },
         ],
       },
@@ -223,7 +223,7 @@ let routes: Routes = [
           },
           {
             path: 'api',
-            component: ApiDocsComponent,
+            redirectTo: 'docs/api'
           },
         ],
       },
@@ -297,7 +297,7 @@ let routes: Routes = [
           },
           {
             path: 'api',
-            component: ApiDocsComponent,
+            redirectTo: 'docs/api'
           },
           {
             path: 'docs',
@@ -407,7 +407,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
       },
       {
         path: 'api',
-        component: ApiDocsComponent,
+        redirectTo: 'docs/api'
       },
       {
         path: 'about',
