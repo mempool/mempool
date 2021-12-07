@@ -159,20 +159,32 @@
       </a>
     </div>
   </div>
-
-  <div class="contributors">
-    <h3 i18n="about.contributors">Project Contributors</h3>
-    <div class="wrapper">
-      <ng-container *ngIf="contributors$ | async as contributors; else loadingSponsors">
-        <ng-template ngFor let-contributor [ngForOf]="contributors">
+  
+  <ng-container *ngIf="allContributors$ | async as contributors else loadingSponsors">
+    <div class="contributors">
+      <h3 i18n="about.contributors">Project Contributors</h3>
+      <div class="wrapper">
+        <ng-template ngFor let-contributor [ngForOf]="contributors.regular">
           <a [href]="'https://github.com/' + contributor.name" target="_blank" [title]="contributor.name">
             <img class="image" [src]="'/api/v1/contributors/images/' + contributor.id" />
             <span>{{ contributor.name }}</span>
           </a>
         </ng-template>
-      </ng-container>
+      </div>
     </div>
-  </div>
+
+    <div class="maintainers" *ngIf="contributors.core.length">
+      <h3 i18n="about.core_contributors">Core Contributors</h3>
+      <div class="wrapper">
+        <ng-template ngFor let-contributor [ngForOf]="contributors.core">
+          <a [href]="'https://github.com/' + contributor.name" target="_blank" [title]="contributor.name">
+            <img class="image" [src]="'/api/v1/contributors/images/' + contributor.id" />
+            <span>{{ contributor.name }}</span>
+          </a>
+        </ng-template>
+      </div>
+    </div>
+  </ng-container>
 
   <div class="maintainers">
     <h3 i18n="about.maintainers">Project Maintainers</h3>
