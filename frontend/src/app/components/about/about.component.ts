@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { IBackendInfo } from 'src/app/interfaces/websocket.interface';
 import { Router } from '@angular/router';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-about',
@@ -16,7 +17,7 @@ import { Router } from '@angular/router';
 export class AboutComponent implements OnInit {
   backendInfo$: Observable<IBackendInfo>;
   sponsors$: Observable<any>;
-  contributors$: Observable<any>;
+  allContributors$: Observable<any>;
   frontendGitCommitHash = this.stateService.env.GIT_COMMIT_HASH;
   packetJsonVersion = this.stateService.env.PACKAGE_JSON_VERSION;
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
@@ -37,7 +38,14 @@ export class AboutComponent implements OnInit {
     this.websocketService.want(['blocks']);
 
     this.sponsors$ = this.apiService.getDonation$();
-    this.contributors$ = this.apiService.getContributor$();
+    this.allContributors$ = this.apiService.getContributor$().pipe(
+      map((contributors) => {
+        return {
+          regular: contributors.filter((user) => !user.core_constributor),
+          core: contributors.filter((user) => user.core_constributor),
+        };
+      })
+    );
   }
 
   sponsor() {
