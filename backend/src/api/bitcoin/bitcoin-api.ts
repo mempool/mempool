@@ -299,6 +299,11 @@ class BitcoinApi implements AbstractBitcoinApi {
       const witnessScript = vin.witness[vin.witness.length - 1];
       vin.inner_witnessscript_asm = this.convertScriptSigAsm(bitcoinjs.script.toASM(Buffer.from(witnessScript, 'hex')));
     }
+
+    if (vin.prevout.scriptpubkey_type === 'v1_p2tr' && vin.witness && vin.witness.length > 1) {
+      const witnessScript = vin.witness[vin.witness.length - 2];
+      vin.inner_witnessscript_asm = this.convertScriptSigAsm(bitcoinjs.script.toASM(Buffer.from(witnessScript, 'hex')));
+    }
   }
 
 }
