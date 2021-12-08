@@ -15,6 +15,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.10.0
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
       - name: ${{ matrix.browser }} browser tests (Mempool)
         uses: cypress-io/github-action@v2
         with:
