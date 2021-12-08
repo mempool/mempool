@@ -1,8 +1,8 @@
-# The Mempool Open Source Project
+# The Mempool Open Source Project™
 
 Mempool is the fully featured visualizer, explorer, and API service running on [mempool.space](https://mempool.space/), an open source project developed and operated for the benefit of the Bitcoin community, with a focus on the emerging transaction fee market to help our transition into a multi-layer ecosystem.
 
-![mempool](https://mempool.space/resources/screenshots/v2.2.1-dashboard.png)
+![mempool](https://mempool.space/resources/screenshots/v2.3.0-dashboard.png)
 
 ## Installation Methods
 
@@ -20,11 +20,11 @@ The following instructions are for a manual installation on Linux or FreeBSD. Th
 
 ## Dependencies
 
-* Bitcoin Core (no pruning, txindex=1)
-* Electrum Server (romanz/electrs)
-* NodeJS (official stable LTS)
-* MariaDB (default config)
-* Nginx (use supplied nginx.conf and nginx-mempool.conf)
+* [Bitcoin](https://github.com/bitcoin/bitcoin)
+* [Electrum](https://github.com/romanz/electrs)
+* [NodeJS](https://github.com/nodejs/node)
+* [MariaDB](https://github.com/mariadb/server)
+* [Nginx](https://github.com/nginx/nginx)
 
 ## Mempool
 
@@ -41,7 +41,7 @@ Clone the mempool repo, and checkout the latest release tag:
 Enable RPC and txindex in `bitcoin.conf`:
 ```bash
   rpcuser=mempool
-  rpcpassword=71b61986da5b03a5694d7c7d5165ece5
+  rpcpassword=mempool
   txindex=1
 ```
 
@@ -54,7 +54,7 @@ Install MariaDB from OS package manager:
 
   # macOS
   brew install mariadb
-  brew services start mariadb
+  mysql.server start
 ```
 
 Create database and grant privileges:
@@ -80,7 +80,7 @@ Install mempool dependencies from npm and build the backend:
 ```bash
   # backend
   cd backend
-  npm install
+  npm install --prod
   npm run build
 ```
 
@@ -96,18 +96,18 @@ Edit `mempool-config.json` to add your Bitcoin Core node RPC credentials:
   "MEMPOOL": {
     "NETWORK": "mainnet",
     "BACKEND": "electrum",
-    "HTTP_PORT": 8999,
-    "API_URL_PREFIX": "/api/v1/",
-    "POLL_RATE_MS": 2000
+    "HTTP_PORT": 8999
   },
   "CORE_RPC": {
+    "HOST": "127.0.0.1",
+    "PORT": 8332,
     "USERNAME": "mempool",
-    "PASSWORD": "71b61986da5b03a5694d7c7d5165ece5"
+    "PASSWORD": "mempool"
   },
   "ELECTRUM": {
     "HOST": "127.0.0.1",
     "PORT": 50002,
-    "TLS_ENABLED": true,
+    "TLS_ENABLED": true
   },
   "DATABASE": {
     "ENABLED": true,
@@ -116,10 +116,6 @@ Edit `mempool-config.json` to add your Bitcoin Core node RPC credentials:
     "USERNAME": "mempool",
     "PASSWORD": "mempool",
     "DATABASE": "mempool"
-  },
-  "STATISTICS": {
-    "ENABLED": true,
-    "TX_PER_SECOND_SAMPLE_PERIOD": 150
   }
 }
 ```
@@ -160,14 +156,14 @@ Install mempool dependencies from npm and build the frontend static HTML/CSS/JS:
 ```bash
   # frontend
   cd frontend
-  npm install
+  npm install --prod
   npm run build
 ```
 
 Install the output into nginx webroot folder:
 
 ```bash
-  sudo rsync -av --delete dist/mempool /var/www/
+  sudo rsync -av --delete dist/mempool/ /var/www/
 ```
 
 ## nginx + certbot
