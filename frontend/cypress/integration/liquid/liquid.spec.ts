@@ -62,6 +62,40 @@ describe('Liquid', () => {
             });
         });
 
+        describe('peg in/peg out', () => {
+            it('loads peg in addresses', () => {
+                cy.visit(`${basePath}/tx/fe764f7bedfc2a37b29d9c8aef67d64a57d253a6b11c5a55555cfd5826483a58`);
+                cy.waitForSkeletonGone();
+                //TODO: Change to an element id so we don't assert on a string
+                cy.get('#table-tx-vin').should('contain', 'Peg-in');
+                cy.get('#table-tx-vin a').click().then(() => {
+                    cy.waitForSkeletonGone();
+                    if (baseModule === 'liquid') {
+                        cy.url().should('eq', 'https://mempool.space/tx/f148c0d854db4174ea420655235f910543f0ec3680566dcfdf84fb0a1697b592');
+                    } else {
+                        //TODO: Use an environment variable to get the hostname
+                        cy.url().should('eq', 'http://localhost:4200/tx/f148c0d854db4174ea420655235f910543f0ec3680566dcfdf84fb0a1697b592');
+                    }
+                });
+            });
+
+            it('loads peg out addresses', () => {
+                cy.visit(`${basePath}/tx/ecf6eba04ffb3946faa172343c87162df76f1a57b07b0d6dc6ad956b13376dc8`);
+                cy.waitForSkeletonGone();
+                cy.get('#table-tx-vout a').first().click().then(() => {
+                    cy.waitForSkeletonGone();
+                    if (baseModule === 'liquid') {
+                        cy.url().should('eq', 'https://mempool.space/address/1BxoGcMg14oaH3CwHD2hF4gU9VcfgX5yoR');
+                    } else {
+                        //TODO: Use an environment variable to get the hostname
+                        cy.url().should('eq', 'http://localhost:4200/address/1BxoGcMg14oaH3CwHD2hF4gU9VcfgX5yoR');
+                    }
+                    //TODO: Add a custom class so we don't assert on a string
+                    cy.get('.badge').should('contain','Liquid Peg Out');
+                });
+            });
+        });
+
         describe('assets', () => {
             it('shows the assets screen', () => {
                 cy.visit(`${basePath}/assets`);
