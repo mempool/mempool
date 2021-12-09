@@ -1,0 +1,31 @@
+<div class="container-xl">
+  <div class="text-center">
+
+    <h2>Documentation</h2>
+
+    <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav-tabs">
+
+      <li [ngbNavItem]="0">
+        <a ngbNavLink routerLink="../rest">API - REST</a>
+        <ng-template ngbNavContent>
+
+          <app-api-docs [restTabActivated]="true"></app-api-docs>
+
+        </ng-template>
+      </li>
+
+      <li [ngbNavItem]="1" *ngIf="showWebSocketTab">
+        <a ngbNavLink routerLink="../websocket">API - WebSocket</a>
+        <ng-template ngbNavContent>
+
+          <app-api-docs [restTabActivated]="false"></app-api-docs>
+
+        </ng-template>
+      </li>
+
+    </ul>
+
+    <div id="main-tab-content" [ngbNavOutlet]="nav" class="mt-2"></div>
+
+  </div>
+</div>
