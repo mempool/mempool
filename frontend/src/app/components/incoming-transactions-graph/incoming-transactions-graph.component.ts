@@ -123,7 +123,30 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
           fontSize: 11,
           lineHeight: 12
         },
-        data: this.data.labels.map((value: any) => `${formatDate(value, 'M/d', this.locale)}\n${formatDate(value, 'H:mm', this.locale)}`),
+        data: this.data.labels.map((value: any) => {
+          switch (this.windowPreference) {
+            case "2h":
+              return `${formatDate(value, 'h:mm a', this.locale)}`
+            case "24h":
+              return `${formatDate(value, 'h a', this.locale)}`
+            case "1w":
+              return `${formatDate(value, 'EEE, MMM d', this.locale)}`
+            case "1m":
+              return `${formatDate(value, 'EEE, MMM d', this.locale)}`
+            case "3m":
+              return `${formatDate(value, 'MMM d', this.locale)}`
+            case "6m":
+              return `${formatDate(value, 'MMM d', this.locale)}`
+            case "1y":
+              return `${formatDate(value, 'MMM y', this.locale)}`
+            case "2y":                
+              return `${formatDate(value, 'MMM y', this.locale)}`
+            case "3y":
+              return `${formatDate(value, 'MMM y', this.locale)}`
+            default:
+              return `${formatDate(value, 'M/d', this.locale)}\n${formatDate(value, 'H:mm', this.locale)}`
+          }
+        }),
       },
       yAxis: {
         type: 'value',
