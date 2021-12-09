@@ -14,7 +14,7 @@
         </ng-template>
       </li>
 
-      <li [ngbNavItem]="1">
+      <li [ngbNavItem]="1" *ngIf="showWebSocketTab">
         <a ngbNavLink routerLink="../websocket">API - WebSocket</a>
         <ng-template ngbNavContent>
 
