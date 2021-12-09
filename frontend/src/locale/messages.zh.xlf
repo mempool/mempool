@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+<?xml version="1.0" ?><xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file datatype="plaintext" original="ng2.template" source-language="en-US" target-language="zh">
     <body>
       <trans-unit datatype="html" id="ngb.alert.close">
@@ -490,6 +490,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="70572fa5fe9d93f071fbb0f3556d86de39f9e4af">
         <source>Block <x ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;blockTemplateContent&quot;&gt;" id="START_TAG_NG_CONTAINER"/><x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></source>
+        <target>区块<x ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;blockTemplateContent&quot;&gt;" id="START_TAG_NG_CONTAINER"/><x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
           <context context-type="linenumber">4</context>
@@ -1544,6 +1545,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="04ffd930e7a2dc086c952a3a51b42c836bf21cc1">
         <source>Unconfidential</source>
+        <target>不保密</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">23,24</context>
@@ -2077,6 +2079,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a351aa34e0a33f13f4d3eb06de0faee9e99f8d0a">
         <source>General</source>
+        <target>通用</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">181,183</context>
@@ -2761,6 +2764,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bdf0e930eb22431140a2eaeacd809cc5f8ebd38c">
         <source>Next Block</source>
+        <target>下一个区块</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">7,8</context>
@@ -2773,6 +2777,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a0e07a711d171f4d40dd388d70ed32f9b8101e0a">
         <source>Previous Block</source>
+        <target>上一个区块</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">26,27</context>
@@ -3314,6 +3319,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f13cbfe8cfc955918e9f64466d2cafddb4760d9a">
         <source>Broadcast Transaction</source>
+        <target>广播交易</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/push-transaction/push-transaction.component.html</context>
           <context context-type="linenumber">2</context>
@@ -3420,6 +3426,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5ca707824ab93066c7d9b44e1b8bf216725c2c22">
         <source>Filter</source>
+        <target>过滤</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">40</context>
