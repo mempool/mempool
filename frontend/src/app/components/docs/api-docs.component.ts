@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Env, StateService } from 'src/app/services/state.service';
 import { Observable, merge, of } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
@@ -16,6 +16,7 @@ export class ApiDocsComponent implements OnInit {
   env: Env;
   code: any;
   baseNetworkUrl = '';
+  @Input() restTabActivated: Boolean;
 
   constructor(
     private stateService: StateService,

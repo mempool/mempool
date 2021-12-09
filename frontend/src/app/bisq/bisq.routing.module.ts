@@ -7,7 +7,7 @@ import { BisqBlockComponent } from './bisq-block/bisq-block.component';
 import { BisqBlocksComponent } from './bisq-blocks/bisq-blocks.component';
 import { BisqAddressComponent } from './bisq-address/bisq-address.component';
 import { BisqStatsComponent } from './bisq-stats/bisq-stats.component';
-import { ApiDocsComponent } from '../components/api-docs/api-docs.component';
+import { DocsComponent } from '../components/docs/docs.component';
 import { BisqDashboardComponent } from './bisq-dashboard/bisq-dashboard.component';
 import { BisqMarketComponent } from './bisq-market/bisq-market.component';
 import { BisqMainDashboardComponent } from './bisq-main-dashboard/bisq-main-dashboard.component';
@@ -61,8 +61,20 @@ const routes: Routes = [
       component: AboutComponent,
     },
     {
+      path: 'docs/api/:type',
+      component: DocsComponent
+    },
+    {
+      path: 'docs/api',
+      redirectTo: 'docs/api/rest'
+    },
+    {
+      path: 'docs',
+      redirectTo: 'docs/api/rest'
+    },
+    {
       path: 'api',
-      component: ApiDocsComponent,
+      redirectTo: 'docs/api/rest'
     },
     {
       path: 'terms-of-service',
