@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+<?xml version="1.0" ?><xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file datatype="plaintext" original="ng2.template" source-language="en-US" target-language="ar">
     <body>
       <trans-unit datatype="html" id="ngb.alert.close">
@@ -11,6 +11,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.carousel.slide-number">
         <source> Slide <x equiv-text="OnHover$ = new" id="INTERPOLATION"/> of <x equiv-text=";   private _pa" id="INTERPOLATION_1"/> </source>
+        <target>الشريحة <x equiv-text="OnHover$ = new" id="INTERPOLATION"/> من <x equiv-text=";   private _pa" id="INTERPOLATION_1"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/src/carousel/carousel.ts</context>
           <context context-type="linenumber">114,118</context>
@@ -147,6 +148,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.progressbar.value">
         <source><x equiv-text="; }    /**    *" id="INTERPOLATION"/></source>
+        <target><x equiv-text="; }    /**    *" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/src/progressbar/progressbar.ts</context>
           <context context-type="linenumber">32,38</context>
@@ -250,6 +252,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.AM">
         <source><x equiv-text="NgbTime;    pr" id="INTERPOLATION"/></source>
+        <target><x equiv-text="NgbTime;    pr" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/src/timepicker/timepicker.ts</context>
           <context context-type="linenumber">115,121</context>
@@ -257,6 +260,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.PM">
         <source><x equiv-text="t() meridian: b" id="INTERPOLATION"/></source>
+        <target><x equiv-text="t() meridian: b" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/src/timepicker/timepicker.ts</context>
           <context context-type="linenumber">123,131</context>
@@ -490,6 +494,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="70572fa5fe9d93f071fbb0f3556d86de39f9e4af">
         <source>Block <x ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;blockTemplateContent&quot;&gt;" id="START_TAG_NG_CONTAINER"/><x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></source>
+        <target>الكتلة <x ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;blockTemplateContent&quot;&gt;" id="START_TAG_NG_CONTAINER"/> <x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
           <context context-type="linenumber">4</context>
@@ -2077,6 +2082,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a351aa34e0a33f13f4d3eb06de0faee9e99f8d0a">
         <source>General</source>
+        <target>عام</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">181,183</context>
@@ -2761,6 +2767,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bdf0e930eb22431140a2eaeacd809cc5f8ebd38c">
         <source>Next Block</source>
+        <target>الكتلة القادمة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">7,8</context>
@@ -2773,6 +2780,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a0e07a711d171f4d40dd388d70ed32f9b8101e0a">
         <source>Previous Block</source>
+        <target>الكتلة السابقة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">26,27</context>
@@ -3314,6 +3322,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f13cbfe8cfc955918e9f64466d2cafddb4760d9a">
         <source>Broadcast Transaction</source>
+        <target>نشر التحويلات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/push-transaction/push-transaction.component.html</context>
           <context context-type="linenumber">2</context>
@@ -3922,6 +3931,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e7699861471f18a60e583512c45d84b388cfa120">
         <source>Previous output type</source>
+        <target>نص النتائج السابقة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">109,110</context>
@@ -4036,6 +4046,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e6da407140d70e08b6fba731455f8e0d72f900b5">
         <source>This transaction uses Taproot</source>
+        <target>هذه الحوالة استخدمت التابروت</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">8</context>
@@ -4044,6 +4055,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="71ed5c65589f49a732b8e93a780200191b2b6596">
         <source>Taproot</source>
+        <target>تابروت</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">8</context>
@@ -4094,6 +4106,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="60601e02e7c1f6c4dbabd0ef0bb8946003db8dec">
         <source>Only ~<x equiv-text="{{ medianFeeNeeded | feeRounding }}" id="INTERPOLATION"/> sat/vB was needed to get into this block</source>
+        <target>كان المطلوب <x equiv-text="{{ medianFeeNeeded | feeRounding }}" id="INTERPOLATION"/> سات/vB فقط لأضافة المعاملة لهذة الكتلة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
