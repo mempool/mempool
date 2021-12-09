@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+<?xml version="1.0" ?><xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file datatype="plaintext" original="ng2.template" source-language="en-US" target-language="fa">
     <body>
       <trans-unit datatype="html" id="ngb.alert.close">
@@ -11,6 +11,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.carousel.slide-number">
         <source> Slide <x equiv-text="OnHover$ = new" id="INTERPOLATION"/> of <x equiv-text=";   private _pa" id="INTERPOLATION_1"/> </source>
+        <target>صفحه <x equiv-text="OnHover$ = new" id="INTERPOLATION"/> از <x equiv-text=";   private _pa" id="INTERPOLATION_1"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/src/carousel/carousel.ts</context>
           <context context-type="linenumber">114,118</context>
@@ -147,6 +148,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.progressbar.value">
         <source><x equiv-text="; }    /**    *" id="INTERPOLATION"/></source>
+        <target><x equiv-text="; }    /**    *" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/src/progressbar/progressbar.ts</context>
           <context context-type="linenumber">32,38</context>
@@ -250,6 +252,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.AM">
         <source><x equiv-text="NgbTime;    pr" id="INTERPOLATION"/></source>
+        <target><x equiv-text="NgbTime;    pr" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/src/timepicker/timepicker.ts</context>
           <context context-type="linenumber">115,121</context>
@@ -257,6 +260,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="ngb.timepicker.PM">
         <source><x equiv-text="t() meridian: b" id="INTERPOLATION"/></source>
+        <target><x equiv-text="t() meridian: b" id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/src/timepicker/timepicker.ts</context>
           <context context-type="linenumber">123,131</context>
@@ -490,6 +494,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="70572fa5fe9d93f071fbb0f3556d86de39f9e4af">
         <source>Block <x ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;blockTemplateContent&quot;&gt;" id="START_TAG_NG_CONTAINER"/><x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></source>
+        <target>بلاک <x ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;blockTemplateContent&quot;&gt;" id="START_TAG_NG_CONTAINER"/><x ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;" id="CLOSE_TAG_NG_CONTAINER"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
           <context context-type="linenumber">4</context>
@@ -1544,6 +1549,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="04ffd930e7a2dc086c952a3a51b42c836bf21cc1">
         <source>Unconfidential</source>
+        <target>غیرمحرمانه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">23,24</context>
@@ -2021,6 +2027,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="842f6eb4d8f230db4bdf483a08d4d2a77e2d5869">
         <source>Provides list of available currencies for a given base currency. </source>
+        <target>لیست ارزهای در دسترس برای یک ارز پایه را ارائه می‌دهد.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">51,53</context>
@@ -2028,6 +2035,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="9c7dafb6f51e229d02a80844f6f99a01487e7cb2">
         <source>Provides list of open offer prices for a single market.</source>
+        <target>لیست قیمت‌های پیشنهادهای باز برای یک بازار را ارائه می‌دهد.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">68,70</context>
@@ -2035,6 +2043,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="9e95c144fcb1afd7724dc5a3aad31125a59d9d71">
         <source>Provides hi/low/open/close data for a given market. This can be used to generate a candlestick chart.</source>
+        <target>داده‌های بیشینه/کمینه/باز/بسته مربوط به یک بازار را ارائه می‌دهد. از آن می‌توان برای ساختن نمودار شمعی استفاده کرد.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">85,87</context>
@@ -2042,6 +2051,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="9c6e8e72b7a5f4e8a0e8ede12ab5ede4e0af2484">
         <source>Provides list of available markets.</source>
+        <target>لیست بازارهای در دسترس را ارائه می‌دهد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">102,104</context>
@@ -2049,6 +2059,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a02929fcc15f8b54d2f6d602722d2c7d1d790a2a">
         <source>Provides list of open offer details for a single market.</source>
+        <target>لیست جزئیات پیشنهادهای باز برای یک بازار را ارائه می‌دهد.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">119,121</context>
@@ -2056,6 +2067,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="342f8a4ceda8cda17584e920ad7459b41e86b069">
         <source>Provides 24 hour price ticker for single market or all markets</source>
+        <target>نشان‌گر قیمتی 24 ساعته برای یک یا همه بازارها را ارائه می‌دهد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">136,138</context>
@@ -2063,6 +2075,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="dd194a2109134d62cb518ba0ccfc296701de5522">
         <source>Provides list of completed trades for a single market.</source>
+        <target>لیست معاملات کامل شده برای یک بازار را ارائه می‌دهد.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">153,155</context>
@@ -2070,6 +2083,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="b925fd1f3213560c0737f6016be18eaba7c28c9c">
         <source>Provides periodic volume data in terms of base currency for one or all markets.</source>
+        <target>داده‌های حجم دوره‌ای را بر اساس ارز پایه برای یک یا همه بازارها ارائه می‌دهد.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">170,172</context>
@@ -2077,6 +2091,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a351aa34e0a33f13f4d3eb06de0faee9e99f8d0a">
         <source>General</source>
+        <target>عمومی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">181,183</context>
@@ -2765,6 +2780,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="bdf0e930eb22431140a2eaeacd809cc5f8ebd38c">
         <source>Next Block</source>
+        <target>بلاک بعدی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">7,8</context>
@@ -2777,6 +2793,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="a0e07a711d171f4d40dd388d70ed32f9b8101e0a">
         <source>Previous Block</source>
+        <target>بلاک قبلی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">26,27</context>
@@ -3279,6 +3296,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="2348971518300945764">
         <source>Range</source>
+        <target>بازه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-graph/mempool-graph.component.ts</context>
           <context context-type="linenumber">263</context>
@@ -3286,6 +3304,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="1033261550402895380">
         <source>Sum</source>
+        <target>مجموع</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-graph/mempool-graph.component.ts</context>
           <context context-type="linenumber">265</context>
@@ -3318,6 +3337,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="f13cbfe8cfc955918e9f64466d2cafddb4760d9a">
         <source>Broadcast Transaction</source>
+        <target>انتشار تراکنش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/push-transaction/push-transaction.component.html</context>
           <context context-type="linenumber">2</context>
@@ -3424,6 +3444,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="5ca707824ab93066c7d9b44e1b8bf216725c2c22">
         <source>Filter</source>
+        <target>پالایش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">40</context>
@@ -3778,6 +3799,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="516a786e59a57efaf80e11370b4bade400f19445">
         <source>Locktime</source>
+        <target>قفل‌زمانی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">236,238</context>
@@ -3926,6 +3948,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e7699861471f18a60e583512c45d84b388cfa120">
         <source>Previous output type</source>
+        <target>نوع خروجی قبلی</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">109,110</context>
@@ -4040,6 +4063,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="e6da407140d70e08b6fba731455f8e0d72f900b5">
         <source>This transaction uses Taproot</source>
+        <target>این تراکنش از تپروت استقاده می‌کند</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">8</context>
@@ -4048,6 +4072,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="71ed5c65589f49a732b8e93a780200191b2b6596">
         <source>Taproot</source>
+        <target>تپروت</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">8</context>
@@ -4098,6 +4123,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="60601e02e7c1f6c4dbabd0ef0bb8946003db8dec">
         <source>Only ~<x equiv-text="{{ medianFeeNeeded | feeRounding }}" id="INTERPOLATION"/> sat/vB was needed to get into this block</source>
+        <target>تنها به حدود <x equiv-text="{{ medianFeeNeeded | feeRounding }}" id="INTERPOLATION"/> ساتوشی بر بایت مجازی نیاز بود تا در این بلاک قرار بگیرد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
@@ -4234,6 +4260,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="eb7a000cd340b44291d790f7b56f7b926edc275b">
         <source>L-BTC in circulation</source>
+        <target>مقدار L-BTC در گردش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">207,208</context>
