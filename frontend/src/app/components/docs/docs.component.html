@@ -6,7 +6,7 @@
     <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav-tabs">
 
       <li [ngbNavItem]="0">
-        <a ngbNavLink routerLink="/docs/api/rest">API - REST</a>
+        <a ngbNavLink routerLink="../rest">API - REST</a>
         <ng-template ngbNavContent>
 
           <app-api-docs [restTabActivated]="true"></app-api-docs>
@@ -15,7 +15,7 @@
       </li>
 
       <li [ngbNavItem]="1">
-        <a ngbNavLink routerLink="/docs/api/websocket">API - WebSocket</a>
+        <a ngbNavLink routerLink="../websocket">API - WebSocket</a>
         <ng-template ngbNavContent>
 
           <app-api-docs [restTabActivated]="false"></app-api-docs>
