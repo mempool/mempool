@@ -268,7 +268,7 @@ class Statistics {
   }
 
   private getQueryForDays(div: number, limit: number) {
-    return `SELECT id, added, unconfirmed_transactions,
+    return `SELECT id, UNIX_TIMESTAMP(added) as added, unconfirmed_transactions,
       tx_per_second,
       vbytes_per_second,
       vsize_1,
@@ -314,7 +314,7 @@ class Statistics {
   public async $get(id: number): Promise<OptimizedStatistic | undefined> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = `SELECT * FROM statistics WHERE id = ?`;
+      const query = `SELECT *, UNIX_TIMESTAMP(added) as added FROM statistics WHERE id = ?`;
       const [rows] = await connection.query<any>(query, [id]);
       connection.release();
       if (rows[0]) {
@@ -328,7 +328,7 @@ class Statistics {
   public async $list2H(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = `SELECT * FROM statistics ORDER BY id DESC LIMIT 120`;
+      const query = `SELECT *, UNIX_TIMESTAMP(added) as added FROM statistics ORDER BY id DESC LIMIT 120`;
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
