@@ -97,13 +97,13 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   }
 
   generateArray(mempoolStats: OptimizedMempoolStats[]) {
-    const finalArray: number[][] = [];
-    let feesArray: number[] = [];
+    const finalArray: number[][][] = [];
+    let feesArray: number[][] = [];
     let limitFeesTemplate = this.template === 'advanced' ? 26 : 20;
     for (let index = limitFeesTemplate; index > -1; index--) {
       feesArray = [];
       mempoolStats.forEach((stats) => {
-        feesArray.push(stats.vsizes[index] ? stats.vsizes[index] : 0);
+        feesArray.push([stats.added * 1000, stats.vsizes[index] ? stats.vsizes[index] : 0]);
       });
       finalArray.push(feesArray);
     }
@@ -192,8 +192,8 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           let progressPercentageText = '';
           const items = this.inverted ? [...params].reverse() : params;
           items.map((item: any, index: number) => {
-            totalParcial += item.value;
-            const progressPercentage = (item.value / totalValue) * 100;
+            totalParcial += item.value[1];
+            const progressPercentage = (item.value[1] / totalValue) * 100;
             const progressPercentageSum = (totalValueArray[index] / totalValue) * 100;
             let activeItemClass = '';
             let hoverActive = 0;
@@ -233,7 +233,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
               </td>
               <td class="total-progress-sum">
                 <span>
-                  ${this.vbytesPipe.transform(item.value, 2, 'vB', 'MvB', false)}
+                  ${this.vbytesPipe.transform(item.value[1], 2, 'vB', 'MvB', false)}
                 </span>
               </td>
               <td class="total-progress-sum">
@@ -257,7 +257,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           const titleSum = $localize`Sum`;
           return `<div class="fees-wrapper-tooltip-chart ${classActive}">
             <div class="title">
-              ${params[0].axisValue}
+              ${params[0].axisValueLabel}
               <span class="total-value">
                 ${this.vbytesPipe.transform(totalValue, 2, 'vB', 'MvB', false)}
               </span>
@@ -312,7 +312,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       },
       xAxis: [
         {
-          type: 'category',
+          type: 'time',
           boundaryGap: false,
           axisLine: { onZero: true },
           axisLabel: {
@@ -320,30 +320,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
             fontSize: 11,
             lineHeight: 12,
           },
-          data: labels.map((value: any) => {
-            switch (this.windowPreference) {
-              case "2h":
-                return `${formatDate(value, 'h:mm a', this.locale)}`
-              case "24h":
-                return `${formatDate(value, 'h a', this.locale)}`
-              case "1w":
-                return `${formatDate(value, 'EEE, MMM d', this.locale)}`
-              case "1m":
-                return `${formatDate(value, 'EEE, MMM d', this.locale)}`
-              case "3m":
-                return `${formatDate(value, 'MMM d', this.locale)}`
-              case "6m":
-                return `${formatDate(value, 'MMM d', this.locale)}`
-              case "1y":
-                return `${formatDate(value, 'MMM y', this.locale)}`
-              case "2y":                
-                return `${formatDate(value, 'MMM y', this.locale)}`
-              case "3y":
-                return `${formatDate(value, 'MMM y', this.locale)}`
-              default:
-                return `${formatDate(value, 'M/d', this.locale)}\n${formatDate(value, 'H:mm', this.locale)}`
-            }
-          }),
         }
       ],
       yAxis: {
@@ -369,7 +345,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     const totalValueArray = [];
     const valuesInverted = this.inverted ? values : [...values].reverse();
     for (const item of valuesInverted) {
-      totalValueTemp += item.value;
+      totalValueTemp += item.value[1];
       totalValueArray.push(totalValueTemp);
     }
     return {
