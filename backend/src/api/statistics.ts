@@ -359,7 +359,6 @@ class Statistics {
     try {
       const connection = await DB.pool.getConnection();
       const query = this.getQueryForDays(1800, '1 WEEK'); // 30m interval
-      await connection.query<any>({ sql: "SET time_zone = '+9:00';", timeout: this.queryTimeout });
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
