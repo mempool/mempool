@@ -254,7 +254,6 @@ export class DashboardComponent implements OnInit {
           );
         }),
         map((mempoolStats) => {
-          const data = this.handleNewMempoolData(mempoolStats.concat([]));
           return {
             mempool: mempoolStats,
             weightPerSecond: this.handleNewMempoolData(mempoolStats.concat([])),
