@@ -1,12 +1,12 @@
 import { Component, OnInit, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnChanges } from '@angular/core';
 import { VbytesPipe } from 'src/app/shared/pipes/bytes-pipe/vbytes.pipe';
-import { formatDate, formatNumber } from "@angular/common";
-
+import { formatNumber } from "@angular/common";
 import { OptimizedMempoolStats } from 'src/app/interfaces/node-api.interface';
 import { StateService } from 'src/app/services/state.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { EChartsOption } from 'echarts';
 import { feeLevels, chartColors } from 'src/app/app.constants';
+import { formatterXAxis } from 'src/app/shared/graphs.utils';
 
 @Component({
   selector: 'app-mempool-graph',
@@ -186,33 +186,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           type: 'line',
         },
         formatter: (params: any) => {
-          // Todo - Refactor
-          let axisValueLabel: string = "";
-          switch (this.windowPreference) {
-            case "2h":
-              axisValueLabel = `${formatDate(params[0].axisValue, 'h:mm a', this.locale)}`;
-              break;
-            case "24h":
-              axisValueLabel = `${formatDate(params[0].axisValue, 'EEE HH:mm', this.locale)}`
-              break;
-            case "1w":
-              axisValueLabel = `${formatDate(params[0].axisValue, 'MMM d HH:mm', this.locale)}`
-              break;
-            case "1m":
-            case "3m":
-            case "6m":
-              axisValueLabel = `${formatDate(params[0].axisValue, 'MMM d HH:00', this.locale)}`
-              break;
-            case "1y":
-            case "2y":                
-            case "3y":
-              axisValueLabel = `${formatDate(params[0].axisValue, 'MMM d y', this.locale)}`
-              break;
-            default:
-              axisValueLabel = `${formatDate(params[0].axisValue, 'M/d', this.locale)}\n${formatDate(params[0].axisValue, 'H:mm', this.locale)}`
-              break;
-          }
-          
+          const axisValueLabel: string = formatterXAxis(this.locale, this.windowPreference, params[0].axisValue);         
           const { totalValue, totalValueArray } = this.getTotalValues(params);
           const itemFormatted = [];
           let totalParcial = 0;
