@@ -286,7 +286,7 @@ export class DashboardComponent implements OnInit {
 
     return {
       labels: labels,
-      series: [mempoolStats.map((stats) => stats.vbytes_per_second)],
+      series: [mempoolStats.map((stats) => [stats.added * 1000, stats.vbytes_per_second])],
     };
   }
 

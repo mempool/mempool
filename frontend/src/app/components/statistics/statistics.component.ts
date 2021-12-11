@@ -134,7 +134,7 @@ export class StatisticsComponent implements OnInit {
 
     this.mempoolTransactionsWeightPerSecondData = {
       labels: labels,
-      series: [mempoolStats.map((stats) => stats.vbytes_per_second)],
+      series: [mempoolStats.map((stats) => [stats.added * 1000, stats.vbytes_per_second])],
     };
   }
 
