@@ -29,9 +29,16 @@
                     </span>
                   </ng-template>
                   <ng-template #hasPrevout>
-                    <a *ngIf="vin.is_pegin; else defaultPrevout" [routerLink]="['/tx/', vin.txid]" class="red">
-                      <fa-icon [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
-                    </a>
+                    <ng-template [ngIf]="vin.is_pegin" [ngIfElse]="defaultPrevout">
+                      <a *ngIf="stateService.env.BASE_MODULE === 'liquid'; else localPegInLink" [attr.href]="'https://mempool.space/tx/' + vin.txid" class="red">
+                        <fa-icon [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
+                      </a>
+                      <ng-template #localPegInLink>
+                        <a [routerLink]="['/tx/', vin.txid]" class="red">
+                          <fa-icon [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
+                        </a>
+                      </ng-template>
+                    </ng-template>
                     <ng-template #defaultPrevout>
                       <a [routerLink]="['/tx/' | relativeUrl, vin.txid + ':' + vin.vout]" class="red">
                         <fa-icon [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
@@ -138,10 +145,16 @@
                     <ng-template [ngIf]="vout.pegout" [ngIfElse]="defaultscriptpubkey_type">
                       <ng-container i18n="transactions-list.peg-out-to">Peg-out to <ng-container *ngTemplateOutlet="pegOutLink"></ng-container></ng-container>
                       <ng-template #pegOutLink>
-                        <a [routerLink]="['/address/', vout.pegout.scriptpubkey_address]" title="{{ vout.pegout.scriptpubkey_address }}">
+                        <a *ngIf="stateService.env.BASE_MODULE === 'liquid'; else localPegoutLink" [attr.href]="'https://mempool.space/address/' + vout.pegout.scriptpubkey_address" title="{{ vout.pegout.scriptpubkey_address }}">
                           <span class="d-block d-lg-none">{{ vout.pegout.scriptpubkey_address | shortenString : 16 }}</span>
                           <span class="d-none d-lg-block">{{ vout.pegout.scriptpubkey_address | shortenString : 35 }}</span>
                         </a>
+                        <ng-template #localPegoutLink>
+                          <a [routerLink]="['/address/', vout.pegout.scriptpubkey_address]" title="{{ vout.pegout.scriptpubkey_address }}">
+                            <span class="d-block d-lg-none">{{ vout.pegout.scriptpubkey_address | shortenString : 16 }}</span>
+                            <span class="d-none d-lg-block">{{ vout.pegout.scriptpubkey_address | shortenString : 35 }}</span>
+                          </a>
+                        </ng-template>
                       </ng-template>
                     </ng-template>
                     <ng-template #defaultscriptpubkey_type>

@@ -29,7 +29,7 @@ li.nav-item {
   }
 }
 
-.code-tab { 
+.code-tab {
   width: auto;
   margin: 20px auto 10px;
   li.nav-item {
@@ -67,10 +67,15 @@ li.nav-item {
   height: 1px;
   background: #333;
 }
-.websocket {
-  padding: 15px;
-}
 
 .difficulty {
   padding: 15px;
+}
+
+#restAPI .api-category {
+  margin: 30px 0;
+}
+
+.api-category h4 {
+  margin-bottom: 15px;
 }

@@ -31,7 +31,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   assetsMinimal: any;
 
   constructor(
-    private stateService: StateService,
+    public stateService: StateService,
     private electrsApiService: ElectrsApiService,
     private assetsService: AssetsService,
     private ref: ChangeDetectorRef,
