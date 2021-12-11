@@ -18,12 +18,12 @@ class ElementsParser {
       this.isRunning = true;
       const result = await bitcoinClient.getChainTips();
       const tip = result[0].height;
-      const latestBlock = await this.$getLatestBlockFromDatabase();
-      for (let height = latestBlock.block + 1; height <= tip; height++) {
+      const latestBlockHeight = await this.$getLatestBlockHeightFromDatabase();
+      for (let height = latestBlockHeight + 1; height <= tip; height++) {
         const blockHash: IBitcoinApi.ChainTips = await bitcoinClient.getBlockHash(height);
         const block: IBitcoinApi.Block = await bitcoinClient.getBlock(blockHash, 2);
         await this.$parseBlock(block);
-        await this.$saveLatestBlockToDatabase(block.height, block.time, block.hash);
+        await this.$saveLatestBlockToDatabase(block.height);
       }
       this.isRunning = false;
     } catch (e) {
@@ -92,18 +92,18 @@ class ElementsParser {
     logger.debug(`Saved L-BTC peg from block height #${height} with TXID ${txid}.`);
   }
 
-  protected async $getLatestBlockFromDatabase(): Promise<any> {
+  protected async $getLatestBlockHeightFromDatabase(): Promise<number> {
     const connection = await DB.pool.getConnection();
-    const query = `SELECT block, datetime, block_hash FROM last_elements_block`;
+    const query = `SELECT number FROM state WHERE name = 'last_elements_block'`;
     const [rows] = await connection.query<any>(query);
     connection.release();
-    return rows[0];
+    return rows[0]['number'];
   }
 
-  protected async $saveLatestBlockToDatabase(blockHeight: number, datetime: number, blockHash: string) {
+  protected async $saveLatestBlockToDatabase(blockHeight: number) {
     const connection = await DB.pool.getConnection();
-    const query = `UPDATE last_elements_block SET block = ?, datetime = ?, block_hash = ?`;
-    await connection.query<any>(query, [blockHeight, datetime, blockHash]);
+    const query = `UPDATE state SET number = ? WHERE name = 'last_elements_block'`;
+    await connection.query<any>(query, [blockHeight]);
     connection.release();
   }
 }
