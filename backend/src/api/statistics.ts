@@ -345,7 +345,7 @@ class Statistics {
   public async $list24H(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(300, '1 DAY'); // 5m interval
+      const query = this.getQueryForDays(120, '1 DAY'); // 2m interval
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
@@ -358,7 +358,7 @@ class Statistics {
   public async $list1W(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(1800, '1 WEEK'); // 30m interval
+      const query = this.getQueryForDays(1200, '1 WEEK'); // 20m interval
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
@@ -371,7 +371,7 @@ class Statistics {
   public async $list1M(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(7200, '1 MONTH'); // 2h interval
+      const query = this.getQueryForDays(3600, '1 MONTH'); // 1h interval
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
@@ -384,7 +384,7 @@ class Statistics {
   public async $list3M(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(21600, '3 MONTH'); // 6h interval
+      const query = this.getQueryForDays(14400, '3 MONTH'); // 4h interval
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
@@ -397,7 +397,7 @@ class Statistics {
   public async $list6M(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(43200, '6 MONTH'); // 12h interval 
+      const query = this.getQueryForDays(28800, '6 MONTH'); // 8h interval 
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
@@ -410,7 +410,7 @@ class Statistics {
   public async $list1Y(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(86400, '1 YEAR'); // 1d interval
+      const query = this.getQueryForDays(54000, '1 YEAR'); // 15h interval
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
@@ -423,7 +423,7 @@ class Statistics {
   public async $list2Y(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(172800, "2 YEAR"); // 2d interval
+      const query = this.getQueryForDays(86400, "2 YEAR"); // 1d interval
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
@@ -436,7 +436,7 @@ class Statistics {
   public async $list3Y(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(259200, "3 YEAR"); // 3d interval
+      const query = this.getQueryForDays(172800, "3 YEAR"); // 2d interval
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
