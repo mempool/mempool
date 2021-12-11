@@ -54,6 +54,7 @@
                 [limitFee]="150"
                 [limitFilterFee]="1"
                 [data]="mempoolStats.value?.mempool"
+                [windowPreferenceOverride]="'2h'"
                 ></app-mempool-graph>
               </div>
             </ng-container>
@@ -73,6 +74,7 @@
                 <app-incoming-transactions-graph
                   [left]="50"
                   [data]="mempoolStats.value?.weightPerSecond"
+                  [windowPreferenceOverride]="'2h'"
                   ></app-incoming-transactions-graph>
               </div>
             </ng-template>

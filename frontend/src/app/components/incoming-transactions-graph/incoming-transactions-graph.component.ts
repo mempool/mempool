@@ -25,6 +25,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
   @Input() top: number | string = '20';
   @Input() left: number | string = '0';
   @Input() template: ('widget' | 'advanced') = 'widget';
+  @Input() windowPreferenceOverride: string;
 
   isLoading = true;
   mempoolStatsChartOption: EChartsOption = {};
@@ -46,7 +47,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
     if (!this.data) {
       return;
     }
-    this.windowPreference = this.storageService.getValue('graphWindowPreference');
+    this.windowPreference = this.windowPreferenceOverride ? this.windowPreferenceOverride : this.storageService.getValue('graphWindowPreference');
     this.mountChart();
   }
 
@@ -102,14 +103,41 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
           type: 'line',
         },
         formatter: (params: any) => {
+          // Todo - Refactor
+          let axisValueLabel: string = "";
+          switch (this.windowPreference) {
+            case "2h":
+              axisValueLabel = `${formatDate(params[0].axisValue, 'h:mm a', this.locale)}`;
+              break;
+            case "24h":
+              axisValueLabel = `${formatDate(params[0].axisValue, 'EEE HH:mm', this.locale)}`
+              break;
+            case "1w":
+              axisValueLabel = `${formatDate(params[0].axisValue, 'MMM d HH:mm', this.locale)}`
+              break;
+            case "1m":
+            case "3m":
+            case "6m":
+              axisValueLabel = `${formatDate(params[0].axisValue, 'MMM d HH:00', this.locale)}`
+              break;
+            case "1y":
+            case "2y":                
+            case "3y":
+              axisValueLabel = `${formatDate(params[0].axisValue, 'MMM d y', this.locale)}`
+              break;
+            default:
+              axisValueLabel = `${formatDate(params[0].axisValue, 'M/d', this.locale)}\n${formatDate(params[0].axisValue, 'H:mm', this.locale)}`
+              break;
+          }
+
           const colorSpan = (color: string) => `<span class="indicator" style="background-color: ` + color + `"></span>`;
-          let itemFormatted = '<div class="title">' + params[0].axisValue + '</div>';
+          let itemFormatted = '<div class="title">' + axisValueLabel + '</div>';
           params.map((item: any, index: number) => {
             if (index < 26) {
               itemFormatted += `<div class="item">
                 <div class="indicator-container">${colorSpan(item.color)}</div>
                 <div class="grow"></div>
-                <div class="value">${item.value} <span class="symbol">vB/s</span></div>
+                <div class="value">${item.value[1]} <span class="symbol">vB/s</span></div>
               </div>`;
             }
           });
@@ -117,36 +145,12 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         }
       },
       xAxis: {
-        type: 'category',
+        type: 'time',
         axisLabel: {
           align: 'center',
           fontSize: 11,
           lineHeight: 12
         },
-        data: this.data.labels.map((value: any) => {
-          switch (this.windowPreference) {
-            case "2h":
-              return `${formatDate(value, 'h:mm a', this.locale)}`
-            case "24h":
-              return `${formatDate(value, 'h a', this.locale)}`
-            case "1w":
-              return `${formatDate(value, 'EEE, MMM d', this.locale)}`
-            case "1m":
-              return `${formatDate(value, 'EEE, MMM d', this.locale)}`
-            case "3m":
-              return `${formatDate(value, 'MMM d', this.locale)}`
-            case "6m":
-              return `${formatDate(value, 'MMM d', this.locale)}`
-            case "1y":
-              return `${formatDate(value, 'MMM y', this.locale)}`
-            case "2y":                
-              return `${formatDate(value, 'MMM y', this.locale)}`
-            case "3y":
-              return `${formatDate(value, 'MMM y', this.locale)}`
-            default:
-              return `${formatDate(value, 'M/d', this.locale)}\n${formatDate(value, 'H:mm', this.locale)}`
-          }
-        }),
       },
       yAxis: {
         type: 'value',
