@@ -2,7 +2,7 @@ import { Component, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnInit } 
 import { EChartsOption } from 'echarts';
 import { OnChanges } from '@angular/core';
 import { StorageService } from 'src/app/services/storage.service';
-import { formatterXAxis } from 'src/app/shared/graphs.utils';
+import { formatterXAxis, formatterXAxisLabel } from 'src/app/shared/graphs.utils';
 
 @Component({
   selector: 'app-incoming-transactions-graph',
@@ -78,6 +78,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         type: 'slider',
         brushSelect: false,
         realtime: true,
+        bottom: 0,
         selectedDataBackground: {
           lineStyle: {
             color: '#fff',
@@ -86,7 +87,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
           areaStyle: {
             opacity: 0,
           }
-        }
+        },
       }],
       tooltip: {
         trigger: 'axis',
@@ -118,14 +119,24 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
           return `<div class="tx-wrapper-tooltip-chart ${(this.template === 'advanced') ? 'tx-wrapper-tooltip-chart-advanced' : ''}">${itemFormatted}</div>`;
         }
       },
-      xAxis: {
-        type: 'time',
-        axisLabel: {
-          align: 'center',
-          fontSize: 11,
-          lineHeight: 12
-        },
-      },
+      xAxis: [
+        {
+          name: formatterXAxisLabel(this.locale, this.windowPreference),
+          nameLocation: 'middle',
+          nameTextStyle: {
+            padding: [20, 0, 0, 0],
+          },
+          type: 'time',
+          axisLabel: {
+            margin: 20,
+            align: 'center',
+            fontSize: 11,
+            lineHeight: 12,
+            hideOverlap: true,
+            padding: [0, 5],
+          },
+        }
+      ],
       yAxis: {
         type: 'value',
         axisLabel: {

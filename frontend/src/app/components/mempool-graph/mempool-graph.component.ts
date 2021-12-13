@@ -6,7 +6,7 @@ import { StateService } from 'src/app/services/state.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { EChartsOption } from 'echarts';
 import { feeLevels, chartColors } from 'src/app/app.constants';
-import { formatterXAxis } from 'src/app/shared/graphs.utils';
+import { formatterXAxis, formatterXAxisLabel } from 'src/app/shared/graphs.utils';
 
 @Component({
   selector: 'app-mempool-graph',
@@ -113,7 +113,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
   mountFeeChart() {
     this.orderLevels();
-    const { labels, series } = this.mempoolVsizeFeesData;
+    const { series } = this.mempoolVsizeFeesData;
 
     const seriesGraph = [];
     const newColors = [];
@@ -313,13 +313,21 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       },
       xAxis: [
         {
+          name: formatterXAxisLabel(this.locale, this.windowPreference),
+          nameLocation: 'middle',
+          nameTextStyle: {
+            padding: [20, 0, 0, 0],
+          },
           type: 'time',
           boundaryGap: false,
           axisLine: { onZero: true },
           axisLabel: {
+            margin: 20,
             align: 'center',
             fontSize: 11,
             lineHeight: 12,
+            hideOverlap: true,
+            padding: [0, 5],
           },
         }
       ],
