@@ -19,6 +19,7 @@ import loadingIndicators from './api/loading-indicators';
 import { Common } from './api/common';
 import bitcoinClient from './api/bitcoin/bitcoin-client';
 import elementsParser from './api/liquid/elements-parser';
+import icons from './api/liquid/icons';
 
 class Routes {
   constructor() {}
@@ -805,6 +806,26 @@ class Routes {
     } catch (e: any) {
       res.status(400).send(e.message && e.code ? 'sendrawtransaction RPC error: ' + JSON.stringify({ code: e.code, message: e.message })
         : (e.message || 'Error'));
+    }
+  }
+
+  public getLiquidIcon(req: Request, res: Response) {
+    const result = icons.getIconByAssetId(req.params.assetId);
+    if (result) {
+      res.setHeader('content-type', 'image/png');
+      res.setHeader('content-length', result.length);
+      res.send(result);
+    } else {
+      res.status(404).send('Asset icon not found');
+    }
+  }
+
+  public getAllLiquidIcon(req: Request, res: Response) {
+    const result = icons.getAllIconIds();
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(404).send('Asset icons not found');
     }
   }
 }

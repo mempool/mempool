@@ -270,6 +270,13 @@ class Server {
       ;
     }
 
+    if (config.MEMPOOL.NETWORK === 'liquid') {
+      this.app
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/icons', routes.getAllLiquidIcon)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/icon/:assetId', routes.getLiquidIcon)
+      ;
+    }
+
     if (config.MEMPOOL.NETWORK === 'liquid' && config.DATABASE.ENABLED) {
       this.app
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/month', routes.$getElementsPegsByMonth)
