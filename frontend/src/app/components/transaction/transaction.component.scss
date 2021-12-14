@@ -127,7 +127,6 @@
 	}
 }
 
-
 .title {
   h2 {
     line-height: 1;
@@ -137,7 +136,14 @@
 }
 
 .btn-outline-info {
-  margin-top: -10px;
+	margin-top: 5px;
+	@media (min-width: 768px){
+		margin-top: 0px;
+	}
+}
+
+.details-button {
+  margin-top: -5px;
 	@media (min-width: 768px){
 		display: inline-block;
     margin-top: 0px;
