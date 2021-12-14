@@ -289,6 +289,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         maxSpan: 100,
         minSpan: 10,
       }, {
+        showDetail: false,
         show: (this.template === 'advanced' && this.showZoom) ? true : false,
         type: 'slider',
         brushSelect: false,
