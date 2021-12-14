@@ -3,25 +3,11 @@
 }
 
 .container-buttons {
-	text-align: right;
-  align-self: start;
-  width: auto;
-  margin-right: 15px;
-  right: 0;
-  position: absolute;
-	@media (min-width: 650px) {
-    right: auto;
-    margin-right: auto;
-    position: relative;
-  }
-	@media (min-width: 768px) {
-    align-self: center;
-		float: right;
-	}
+  align-self: center;
 }
 
 .title-block {
-  flex-direction: column;
+	flex-wrap: wrap;
   @media (min-width: 650px) {
     flex-direction: row;
   }
@@ -32,6 +18,7 @@
 }
 .tx-link {
   display: flex;
+	flex-grow: 1;
   margin-bottom: 0px;
   margin-top: 8px;
 	@media (min-width: 650px) {
@@ -44,6 +31,9 @@
     margin-bottom: 0px;
     top: 1px;
     position: relative;
+	}
+	@media (max-width: 768px) {
+	  order: 3;
 	}
 }
 

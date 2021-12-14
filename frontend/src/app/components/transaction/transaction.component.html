@@ -20,8 +20,6 @@
         <app-clipboard [text]="txId"></app-clipboard>
       </span>
 
-      <span class="grow"></span>
-
       <div class="container-buttons">
         <ng-template [ngIf]="tx?.status?.confirmed">
           <button *ngIf="latestBlock" type="button" class="btn btn-sm btn-success">
