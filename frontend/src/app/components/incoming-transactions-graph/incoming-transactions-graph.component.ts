@@ -74,6 +74,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         maxSpan: 100,
         minSpan: 10,
       }, {
+        showDetail: false,
         show: (this.template === 'advanced') ? true : false,
         type: 'slider',
         brushSelect: false,

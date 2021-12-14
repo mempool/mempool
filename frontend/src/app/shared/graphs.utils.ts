@@ -19,8 +19,8 @@ export const formatterXAxis = (
     case '1m':
     case '3m':
     case '6m':
-      return date.toLocaleTimeString(locale, { month: 'short', day: 'numeric', hour: 'numeric' });
     case '1y':
+      return date.toLocaleTimeString(locale, { month: 'short', day: 'numeric', hour: 'numeric' });
     case '2y':
     case '3y':
       return date.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' });
