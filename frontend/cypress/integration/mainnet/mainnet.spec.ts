@@ -458,6 +458,78 @@ describe('Mainnet', () => {
                 cy.get('.pagination-container ul.pagination').first().children().should('have.length', 7);
             });
         });
+
+        describe('RBF transactions', () => {
+            it('shows RBF transactions properly (mobile)', () => {
+                cy.viewport('iphone-xr');
+                cy.mockMempoolSocket();
+                cy.visit('/tx/f81a08699b62b2070ad8fe0f2a076f8bea0386a2fdcd8124caee42cbc564a0d5');
+
+                cy.waitForSkeletonGone();
+
+                emitMempoolInfo({
+                    'params': {
+                        command: 'init'
+                    }
+                });
+
+                cy.get('#mempool-block-0');
+
+                emitMempoolInfo({
+                    'params': {
+                        command: 'rbfTransaction'
+                    }
+                });
+
+                cy.get('.alert-mempool').should('be.visible');
+                cy.get('.alert-mempool').invoke('css', 'width').then((alertWidth) => {
+                    cy.get('.container-xl > :nth-child(3)').invoke('css', 'width').should('equal', alertWidth);
+                });
+
+                cy.get('.btn-success').then(getRectangle).then((rectA) => {
+                    cy.get('.alert-mempool').then(getRectangle).then((rectB) => {
+                        expect(areOverlapping(rectA, rectB), 'Confirmations box and RBF alert are overlapping').to.be.false;
+                    });
+                });
+            });
+
+            it('shows RBF transactions properly (desktop)', () => {
+                cy.viewport('macbook-16');
+                cy.mockMempoolSocket();
+                cy.visit('/tx/f81a08699b62b2070ad8fe0f2a076f8bea0386a2fdcd8124caee42cbc564a0d5');
+
+                cy.waitForSkeletonGone();
+
+                emitMempoolInfo({
+                    'params': {
+                        command: 'init'
+                    }
+                });
+
+                cy.get('#mempool-block-0');
+
+                emitMempoolInfo({
+                    'params': {
+                        command: 'rbfTransaction'
+                    }
+                });
+
+                cy.get('.alert-mempool').should('be.visible');
+
+                const alertLocator = '.alert-mempool';
+                const tableLocator = '.container-xl > :nth-child(3)';
+
+                cy.get(tableLocator).invoke('css', 'width').then((firstWidth) => {
+                    cy.get(alertLocator).invoke('css', 'width').should('equal', firstWidth);
+                });
+
+                cy.get('.btn-success').then(getRectangle).then((rectA) => {
+                    cy.get('.alert-mempool').then(getRectangle).then((rectB) => {
+                        expect(areOverlapping(rectA, rectB), 'Confirmations box and RBF alert are overlapping').to.be.false;
+                    });
+                });
+            });
+        });
     } else {
         it.skip(`Tests cannot be run on the selected BASE_MODULE ${baseModule}`);
     }
