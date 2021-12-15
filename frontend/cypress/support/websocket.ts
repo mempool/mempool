@@ -68,7 +68,13 @@ export const emitMempoolInfo = ({
 			//TODO: Use network specific mocks
 			case "signet":
 			case "testnet":
+			case "mainnet":
 			default:
+				break;
+		}
+
+		switch (params.command) {
+			case "init": {
 				win.mockSocket.send('{"action":"init"}');
 				win.mockSocket.send('{"action":"want","data":["blocks","stats","mempool-blocks","live-2h-chart"]}');
 				win.mockSocket.send('{"conversions":{"USD":32365.338815782445}}');
@@ -78,6 +84,16 @@ export const emitMempoolInfo = ({
 				cy.readFile('cypress/fixtures/mainnet_mempoolInfo.json', 'ascii').then((fixture) => {
 					win.mockSocket.send(JSON.stringify(fixture));
 				});
+				break;
+			}
+			case "rbfTransaction": {
+				cy.readFile('cypress/fixtures/mainnet_rbf.json', 'ascii').then((fixture) => {
+					win.mockSocket.send(JSON.stringify(fixture));
+				});
+				break;
+			}
+			default:
+				break;
 		}
 	});
     cy.waitForSkeletonGone();
