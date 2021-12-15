@@ -2,6 +2,36 @@ import { emitMempoolInfo, dropWebSocket } from "../../support/websocket";
 
 const baseModule = Cypress.env("BASE_MODULE");
 
+
+//Credit: https://github.com/bahmutov/cypress-examples/blob/6cedb17f83a3bb03ded13cf1d6a3f0656ca2cdf5/docs/recipes/overlapping-elements.md
+
+/**
+ * Returns true if two DOM rectangles are overlapping
+ * @param {DOMRect} rect1 the bounding client rectangle of the first element
+ * @param {DOMRect} rect2 the bounding client rectangle of the second element
+ * @returns {boolean}
+*/
+const areOverlapping = (rect1, rect2) => {
+    // if one rectangle is on the left side of the other
+    if (rect1.right < rect2.left || rect2.right < rect1.left) {
+        return false
+    }
+
+    // if one rectangle is above the other
+    if (rect1.bottom < rect2.top || rect2.bottom < rect1.top) {
+        return false
+    }
+
+    // the rectangles must overlap
+    return true
+}
+
+/**
+ * Returns the bounding rectangle of the first DOM
+ * element in the given jQuery object.
+ */
+const getRectangle = ($el) => $el[0].getBoundingClientRect();
+
 describe('Mainnet', () => {
     beforeEach(() => {
         //cy.intercept('/sockjs-node/info*').as('socket');
