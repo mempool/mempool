@@ -62,6 +62,18 @@ describe('Liquid', () => {
             });
         });
 
+        it('renders unconfidential addresses correctly on mobile', () => {
+            cy.viewport('iphone-6');
+            cy.visit(`${basePath}/address/ex1qqmmjdwrlg59c8q4l75sj6wedjx57tj5grt8pat`);
+            cy.waitForSkeletonGone();
+            //TODO: Add proper IDs for these selectors
+            const firstRowSelector = '.container-xl > :nth-child(3) > div > :nth-child(1) > .table > tbody';
+            const thirdRowSelector = '.container-xl > :nth-child(3) > div > :nth-child(3)';
+            cy.get(firstRowSelector).invoke('css', 'width').then((firstRowWidth) => {
+                cy.get(thirdRowSelector).invoke('css', 'width').should('equal', firstRowWidth);
+            });
+        });
+
         describe('peg in/peg out', () => {
             it('loads peg in addresses', () => {
                 cy.visit(`${basePath}/tx/fe764f7bedfc2a37b29d9c8aef67d64a57d253a6b11c5a55555cfd5826483a58`);
