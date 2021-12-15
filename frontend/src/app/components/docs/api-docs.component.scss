@@ -72,6 +72,26 @@ li.nav-item {
   padding: 15px;
 }
 
+.doc-nav-desktop {
+  width: 25%;
+  float: left;
+}
+
+.doc-content {
+  width: 75%;
+  float: right;
+}
+
+@media (max-width: 992px){
+  .doc-nav-desktop {
+    display: none;
+  }
+
+  .doc-content {
+    width: 100%;
+  }
+}
+
 #restAPI .api-category {
   margin: 30px 0;
 }
