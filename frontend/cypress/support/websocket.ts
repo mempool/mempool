@@ -31,19 +31,19 @@ export const mockWebSocket = () => {
 	cy.on('window:before:load', (win) => {
 		const winWebSocket = win.WebSocket;
 		cy.stub(win, 'WebSocket').callsFake((url) => {
-            console.log(url);
+			console.log(url);
 			if ((new URL(url).pathname.indexOf('/sockjs-node/') !== 0)) {
 				const { server, websocket } = createMock(url);
 
 				win.mockServer = server;
 				win.mockServer.on('connection', (socket) => {
 					win.mockSocket = socket;
-                    win.mockSocket.send('{"action":"init"}');
+					win.mockSocket.send('{"action":"init"}');
 				});
 
-                win.mockServer.on('message', (message) => {
-                    console.log(message);
-                });
+				win.mockServer.on('message', (message) => {
+					console.log(message);
+				});
 
 				return websocket;
 			} else {
