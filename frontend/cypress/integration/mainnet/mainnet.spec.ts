@@ -56,7 +56,7 @@ describe('Mainnet', () => {
             cy.get('.badge', {timeout: 25000}).should('not.exist');
             emitMempoolInfo({
                 'params': {
-                loaded: true
+                    command: 'init'
                 }
             });
             cy.get(':nth-child(1) > #bitcoin-block-0').should('not.exist');
@@ -283,7 +283,7 @@ describe('Mainnet', () => {
 
             emitMempoolInfo({
                 'params': {
-                loaded: true
+                    command: 'init'
                 }
             });
 
