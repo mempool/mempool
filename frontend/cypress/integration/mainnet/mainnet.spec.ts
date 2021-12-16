@@ -2,6 +2,36 @@ import { emitMempoolInfo, dropWebSocket } from "../../support/websocket";
 
 const baseModule = Cypress.env("BASE_MODULE");
 
+
+//Credit: https://github.com/bahmutov/cypress-examples/blob/6cedb17f83a3bb03ded13cf1d6a3f0656ca2cdf5/docs/recipes/overlapping-elements.md
+
+/**
+ * Returns true if two DOM rectangles are overlapping
+ * @param {DOMRect} rect1 the bounding client rectangle of the first element
+ * @param {DOMRect} rect2 the bounding client rectangle of the second element
+ * @returns {boolean}
+*/
+const areOverlapping = (rect1, rect2) => {
+    // if one rectangle is on the left side of the other
+    if (rect1.right < rect2.left || rect2.right < rect1.left) {
+        return false
+    }
+
+    // if one rectangle is above the other
+    if (rect1.bottom < rect2.top || rect2.bottom < rect1.top) {
+        return false
+    }
+
+    // the rectangles must overlap
+    return true
+}
+
+/**
+ * Returns the bounding rectangle of the first DOM
+ * element in the given jQuery object.
+ */
+const getRectangle = ($el) => $el[0].getBoundingClientRect();
+
 describe('Mainnet', () => {
     beforeEach(() => {
         //cy.intercept('/sockjs-node/info*').as('socket');
@@ -56,7 +86,7 @@ describe('Mainnet', () => {
             cy.get('.badge', {timeout: 25000}).should('not.exist');
             emitMempoolInfo({
                 'params': {
-                loaded: true
+                    command: 'init'
                 }
             });
             cy.get(':nth-child(1) > #bitcoin-block-0').should('not.exist');
@@ -283,7 +313,7 @@ describe('Mainnet', () => {
 
             emitMempoolInfo({
                 'params': {
-                loaded: true
+                    command: 'init'
                 }
             });
 
@@ -426,6 +456,78 @@ describe('Mainnet', () => {
 
                 // 3 pages + 4 buttons = 7 buttons
                 cy.get('.pagination-container ul.pagination').first().children().should('have.length', 7);
+            });
+        });
+
+        describe('RBF transactions', () => {
+            it('shows RBF transactions properly (mobile)', () => {
+                cy.viewport('iphone-xr');
+                cy.mockMempoolSocket();
+                cy.visit('/tx/f81a08699b62b2070ad8fe0f2a076f8bea0386a2fdcd8124caee42cbc564a0d5');
+
+                cy.waitForSkeletonGone();
+
+                emitMempoolInfo({
+                    'params': {
+                        command: 'init'
+                    }
+                });
+
+                cy.get('#mempool-block-0');
+
+                emitMempoolInfo({
+                    'params': {
+                        command: 'rbfTransaction'
+                    }
+                });
+
+                cy.get('.alert-mempool').should('be.visible');
+                cy.get('.alert-mempool').invoke('css', 'width').then((alertWidth) => {
+                    cy.get('.container-xl > :nth-child(3)').invoke('css', 'width').should('equal', alertWidth);
+                });
+
+                cy.get('.btn-success').then(getRectangle).then((rectA) => {
+                    cy.get('.alert-mempool').then(getRectangle).then((rectB) => {
+                        expect(areOverlapping(rectA, rectB), 'Confirmations box and RBF alert are overlapping').to.be.false;
+                    });
+                });
+            });
+
+            it('shows RBF transactions properly (desktop)', () => {
+                cy.viewport('macbook-16');
+                cy.mockMempoolSocket();
+                cy.visit('/tx/f81a08699b62b2070ad8fe0f2a076f8bea0386a2fdcd8124caee42cbc564a0d5');
+
+                cy.waitForSkeletonGone();
+
+                emitMempoolInfo({
+                    'params': {
+                        command: 'init'
+                    }
+                });
+
+                cy.get('#mempool-block-0');
+
+                emitMempoolInfo({
+                    'params': {
+                        command: 'rbfTransaction'
+                    }
+                });
+
+                cy.get('.alert-mempool').should('be.visible');
+
+                const alertLocator = '.alert-mempool';
+                const tableLocator = '.container-xl > :nth-child(3)';
+
+                cy.get(tableLocator).invoke('css', 'width').then((firstWidth) => {
+                    cy.get(alertLocator).invoke('css', 'width').should('equal', firstWidth);
+                });
+
+                cy.get('.btn-success').then(getRectangle).then((rectA) => {
+                    cy.get('.alert-mempool').then(getRectangle).then((rectB) => {
+                        expect(areOverlapping(rectA, rectB), 'Confirmations box and RBF alert are overlapping').to.be.false;
+                    });
+                });
             });
         });
     } else {
