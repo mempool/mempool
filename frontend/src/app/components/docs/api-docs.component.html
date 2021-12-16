@@ -3,7 +3,7 @@
 
     <div id="restAPI" *ngIf="restTabActivated">
 
-      <div class="doc-nav-desktop" [ngClass]="docsNavPosition">
+      <div class="doc-nav-desktop hide-on-mobile" [ngClass]="desktopDocsNavPosition">
 
         <p *ngIf="network.val !== 'bisq' && network.val !== 'liquid'">General</p>
         <a *ngIf="network.val !== 'bisq' && network.val !== 'liquid'" [routerLink]="['./']" fragment="get-difficulty-adjustment">GET Difficulty Adjustment</a>
@@ -73,7 +73,18 @@
 
       <div class="doc-content">
 
-        <p>Reference for the {{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} <ng-container i18n="api-docs.title">API service</ng-container>.</p>
+        <p class="hide-on-mobile">Reference for the {{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} <ng-container i18n="api-docs.title">API service</ng-container>.</p>
+
+        <div class="doc-nav-mobile hide-on-desktop" [ngClass]="mobileDocsNavPosition">
+          <button id="doc-nav-mobile-toggle" type="button" class="btn btn-outline-primary" [ngClass]="mobileDocsNavPosition" (click)="collapse.toggle()" [attr.aria-expanded]="mobileMenuOpen" aria-controls="collapseExample"><fa-icon [icon]="['fas', 'list-ul']" [fixedWidth]="true"></fa-icon> {{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} REST API Overview</button>
+          <div #collapse="ngbCollapse" [(ngbCollapse)]="mobileMenuOpen">
+            <div class="card">
+              <div class="card-body">
+                <p>Placeholder.</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div class="api-category" *ngIf="network.val !== 'bisq' && network.val !== 'liquid'">
 
