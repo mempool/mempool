@@ -73,27 +73,61 @@ li.nav-item {
 }
 
 .doc-nav-desktop {
-  width: 25%;
+  width: 300px;
 }
 
 .doc-nav-desktop.relative {
   float: left;
+  overflow: hidden;
 }
 
 .doc-nav-desktop.fixed {
   float: unset;
   position: fixed;
   top: 20px;
+  overflow-y: auto;
+  height: calc(100vh - 50px);
+  scrollbar-color: #2d3348 #11131f;
+  scrollbar-width: thin;
+}
+::-webkit-scrollbar {
+  width: 3px;
+}
+::-webkit-scrollbar-track {
+  background: #11131f;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #2d3348;
+  border-radius: 5px;
+  border: none;
+}
+
+.doc-nav-desktop p {
+  color: #4a68b9;
+  font-weight: 700;
+  margin: 10px 0;
+  margin: 15px 0 10px 0;
+}
+.doc-nav-desktop p:first-child {
+  margin-top: 0
+}
+
+.doc-nav-desktop a {
+  color: #fff;
+  text-decoration: none;
+  display: block;
+  margin: 5px 0;
 }
 
 .doc-content {
-  width: 75%;
+  width: calc(100% - 330px);
   float: right;
 }
 
 @media (max-width: 992px){
   .doc-nav-desktop {
     display: none;
+    height: auto;
   }
 
   .doc-content {
