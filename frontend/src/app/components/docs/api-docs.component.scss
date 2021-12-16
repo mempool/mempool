@@ -124,6 +124,14 @@ li.nav-item {
   float: right;
 }
 
+.endpoint-container:before {
+	display: block;
+ 	content: " ";
+  height: 1px;
+  margin-top: -1px;
+  visibility: hidden;
+}
+
 .endpoint-container .section-header {
   display: block;
   background-color: #2d3348;
