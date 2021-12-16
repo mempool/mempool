@@ -76,11 +76,9 @@
         <p>Reference for the {{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} <ng-container i18n="api-docs.title">API service</ng-container>.</p>
 
         <div class="api-category" *ngIf="network.val !== 'bisq' && network.val !== 'liquid'">
-          
-	        <h4 i18n="api-docs.tab.general|API Docs tab for General">General</h4>
 
           <div class="endpoint-container" id="difficultyAdjustment">
-            <a class="section-header" [routerLink]="['./']" fragment="difficultyAdjustment">GET Difficulty Adjustment</a>
+            <a class="section-header" [routerLink]="['./']" fragment="difficultyAdjustment">GET Difficulty Adjustment <span>General</span></a>
             <div class="difficulty">
               <div class="endpoint">
                 <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
@@ -97,11 +95,9 @@
         </div>
 
         <div class="api-category" *ngIf="network.val === 'bisq'">
-        
-          <h4 i18n="Bisq All Markets">Markets</h4>
 
           <div class="endpoint-container" id="bisqMarketsCurrencies">
-            <a class="section-header" [routerLink]="['./']" fragment="bisqMarketsCurrencies">GET Market Currencies</a>
+            <a class="section-header" [routerLink]="['./']" fragment="bisqMarketsCurrencies">GET Market Currencies <span>Markets</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.marketsCurrencies)" target="_blank">GET {{ baseNetworkUrl }}/api/currencies</a>
@@ -114,7 +110,7 @@
           </div>
 
           <div class="endpoint-container" id="marketDepth">
-            <a class="section-header" [routerLink]="['./']" fragment="marketDepth">GET Market Depth</a>
+            <a class="section-header" [routerLink]="['./']" fragment="marketDepth">GET Market Depth <span>Markets</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.marketDepth)" target="_blank">GET {{ baseNetworkUrl }}/api/depth?market=[:market]</a>
@@ -127,7 +123,7 @@
           </div>
 
           <div class="endpoint-container" id="bisqMarketsHloc">
-            <a class="section-header" [routerLink]="['./']" fragment="bisqMarketsHloc">GET Market HLOC</a>
+            <a class="section-header" [routerLink]="['./']" fragment="bisqMarketsHloc">GET Market HLOC <span>Markets</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.marketHloc)" target="_blank">GET {{ baseNetworkUrl }}/api/hloc?market=[:market]</a>
@@ -140,7 +136,7 @@
           </div>
 
           <div class="endpoint-container" id="bisqMarketsMarkets">
-            <a class="section-header" [routerLink]="['./']" fragment="bisqMarketsMarkets">GET Markets</a>
+            <a class="section-header" [routerLink]="['./']" fragment="bisqMarketsMarkets">GET Markets <span>Markets</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.markets)" target="_blank">GET {{ baseNetworkUrl }}/api/markets</a>
@@ -153,7 +149,7 @@
           </div>
 
           <div class="endpoint-container" id="bisqMarketsOffers">
-            <a class="section-header" [routerLink]="['./']" fragment="bisqMarketsOffers">GET Market Offers</a>
+            <a class="section-header" [routerLink]="['./']" fragment="bisqMarketsOffers">GET Market Offers <span>Markets</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.marketOffers)" target="_blank">GET {{ baseNetworkUrl }}/api/offers?market=[:market]</a>
@@ -166,7 +162,7 @@
           </div>
 
           <div class="endpoint-container" id="bisqMarketsTicker">
-            <a class="section-header" [routerLink]="['./']" fragment="bisqMarketsTicker">GET Market Ticker</a>
+            <a class="section-header" [routerLink]="['./']" fragment="bisqMarketsTicker">GET Market Ticker <span>Markets</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.marketTicker)" target="_blank">GET {{ baseNetworkUrl }}/api/ticker?market=[:market]</a>
@@ -179,7 +175,7 @@
           </div>
 
           <div class="endpoint-container" id="bisqMarketsTrades">
-            <a class="section-header" [routerLink]="['./']" fragment="bisqMarketsTrades">GET Market Trades</a>
+            <a class="section-header" [routerLink]="['./']" fragment="bisqMarketsTrades">GET Market Trades <span>Markets</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.marketTrades)" target="_blank">GET {{ baseNetworkUrl }}/api/trades?market=[:market]&limit=[:limit]</a>
@@ -192,7 +188,7 @@
           </div>
 
           <div class="endpoint-container" id="bisqMarketsVolumes">
-            <a class="section-header" [routerLink]="['./']" fragment="bisqMarketsVolumes">GET Market Volumes</a>
+            <a class="section-header" [routerLink]="['./']" fragment="bisqMarketsVolumes">GET Market Volumes <span>Markets</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.marketVolumes)" target="_blank">GET {{ baseNetworkUrl }}/api/volumes?basecurrency=[:basecurrency]</a>
@@ -207,11 +203,9 @@
         </div>
 
         <div class="api-category" *ngIf="network.val === 'bisq'">
-        
-          <h4 i18n="api-docs.tab.bsq|API Docs tab for BSQ">General</h4>
 
           <div class="endpoint-container" id="bisqStats">
-            <a class="section-header" [routerLink]="['./']" fragment="bisqStats">GET Stats</a>
+            <a class="section-header" [routerLink]="['./']" fragment="bisqStats">GET Stats <span>General</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.stats)" target="_blank'" target="_blank">GET {{ baseNetworkUrl }}/api/stats</a>
@@ -226,11 +220,9 @@
         </div>
 
         <div class="api-category">
-        
-          <h4 i18n="api-docs.tab.addresses|API Docs tab for Addresses">Addresses</h4>
 
           <div class="endpoint-container" id="address">
-            <a class="section-header" [routerLink]="['./']" fragment="address">GET Address</a>
+            <a class="section-header" [routerLink]="['./']" fragment="address">GET Address <span>Addresses</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.address)" target="_blank">GET {{ baseNetworkUrl }}/api/address/:address</a>
@@ -243,7 +235,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="addressTransactions">
-            <a class="section-header" [routerLink]="['./']" fragment="addressTransactions">GET Address Transactions</a>
+            <a class="section-header" [routerLink]="['./']" fragment="addressTransactions">GET Address Transactions <span>Addresses</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.addressTransactions)" target="_blank">GET {{ baseNetworkUrl }}/api/address/:address/txs</a>
@@ -256,7 +248,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="addressTransactionsChain">
-            <a class="section-header" [routerLink]="['./']" fragment="addressTransactionsChain">GET Address Transactions Chain</a>
+            <a class="section-header" [routerLink]="['./']" fragment="addressTransactionsChain">GET Address Transactions Chain <span>Addresses</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.addressTransactionsChain)" target="_blank">GET {{ baseNetworkUrl }}/api/address/:address/txs/chain</a>
@@ -269,7 +261,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="addressTransactionsMempool">
-              <a class="section-header" [routerLink]="['./']" fragment="addressTransactionsMempool">GET Address Transactions Mempool</a>
+              <a class="section-header" [routerLink]="['./']" fragment="addressTransactionsMempool">GET Address Transactions Mempool <span>Addresses</span></a>
               <div class="endpoint">
                 <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
                 <a [href]="wrapUrl(network.val, code.addressTransactionsMempool)" target="_blank">GET {{ baseNetworkUrl }}/api/address/:address/txs/mempool</a>
@@ -282,7 +274,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="addressUTXO">
-            <a class="section-header" [routerLink]="['./']" fragment="addressUTXO">GET Address UTXO</a>
+            <a class="section-header" [routerLink]="['./']" fragment="addressUTXO">GET Address UTXO <span>Addresses</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.addressUTXO)" target="_blank">GET {{ baseNetworkUrl }}/api/address/:address/utxo</a>
@@ -297,11 +289,9 @@
         </div>
 
         <div class="api-category" *ngIf="network.val === 'liquid'">
-        
-          <h4 i18n="api-docs.tab.assets|API Docs tab for Assets">Assets</h4>
 
           <div class="endpoint-container" id="assets">
-            <a class="section-header" [routerLink]="['./']" fragment="assets">GET Assets</a>
+            <a class="section-header" [routerLink]="['./']" fragment="assets">GET Assets <span>Assets</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.assets)" target="_blank">GET /liquid/api/asset/:asset_id</a>
@@ -314,7 +304,7 @@
           </div>
 
           <div class="endpoint-container" id="assetTransactions">
-            <a class="section-header" [routerLink]="['./']" fragment="assetTransactions">GET Asset Transactions</a>
+            <a class="section-header" [routerLink]="['./']" fragment="assetTransactions">GET Asset Transactions <span>Assets</span></a>
             <div class="endpoint">
               <a [href]="wrapUrl(network.val, code.assetTransactions)" target="_blank">GET /liquid/api/asset/:asset_id/txs[/mempool|/chain]</a>
             </div>
@@ -326,7 +316,7 @@
           </div>
 
           <div class="endpoint-container" id="assetSupply">
-            <a class="section-header" [routerLink]="['./']" fragment="assetSupply">GET Asset Supply</a>
+            <a class="section-header" [routerLink]="['./']" fragment="assetSupply">GET Asset Supply <span>Assets</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.assetSupply)" target="_blank">GET /liquid/api/asset/:asset_id/supply[/decimal]</a>
@@ -341,11 +331,9 @@
         </div>
 
         <div class="api-category">
-        
-          <h4 i18n="api-docs.tab.blocks|API Docs tab for Blocks">Blocks</h4>
 
           <div class="endpoint-container" id="block">
-            <a class="section-header" [routerLink]="['./']" fragment="block">GET Block</a>
+            <a class="section-header" [routerLink]="['./']" fragment="block">GET Block <span>Blocks</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.block)" target="_blank">GET {{ baseNetworkUrl }}/api/block/:hash</a>
@@ -358,7 +346,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="blockHeader">
-            <a class="section-header" [routerLink]="['./']" fragment="blockHeader">GET Block Header</a>
+            <a class="section-header" [routerLink]="['./']" fragment="blockHeader">GET Block Header <span>Blocks</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.blockHeader)" target="_blank">GET {{ baseNetworkUrl }}/api/block/:hash/header</a>
@@ -371,7 +359,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="blockHeight">
-            <a class="section-header" [routerLink]="['./']" fragment="blockHeight">GET Block Height</a>
+            <a class="section-header" [routerLink]="['./']" fragment="blockHeight">GET Block Height <span>Blocks</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.blockHeader)" target="_blank">GET {{ baseNetworkUrl }}/api/block-height/:height</a>
@@ -384,7 +372,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="blockRaw">
-            <a class="section-header" [routerLink]="['./']" fragment="blockRaw">GET Block Raw</a>
+            <a class="section-header" [routerLink]="['./']" fragment="blockRaw">GET Block Raw <span>Blocks</span></a>
             <div class="endpoint">
               <a [href]="wrapUrl(network.val, code.blockRaw)" target="_blank">GET {{ baseNetworkUrl }}/api/block/:hash/raw</a>
             </div>
@@ -396,7 +384,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="blockStatus">
-            <a class="section-header" [routerLink]="['./']" fragment="blockStatus">GET Block Status</a>
+            <a class="section-header" [routerLink]="['./']" fragment="blockStatus">GET Block Status <span>Blocks</span></a>
             <div class="title">Get Block Status</div>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
@@ -410,7 +398,7 @@
           </div>
 
           <div class="endpoint-container" id="blockTipHeight">
-            <a class="section-header" [routerLink]="['./']" fragment="blockTipHeight">GET Block Tip Height</a>
+            <a class="section-header" [routerLink]="['./']" fragment="blockTipHeight">GET Block Tip Height <span>Blocks</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.blockTipHeight)" target="_blank">GET {{ baseNetworkUrl }}/api/blocks/tip/height</a>
@@ -423,7 +411,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="blockTipHash">
-            <a class="section-header" [routerLink]="['./']" fragment="blockTipHash">GET Block Tip Hash</a>
+            <a class="section-header" [routerLink]="['./']" fragment="blockTipHash">GET Block Tip Hash <span>Blocks</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.blockTipHash)" target="_blank">GET {{ baseNetworkUrl }}/api/blocks/tip/hash</a>
@@ -436,7 +424,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="blockTxId">
-            <a class="section-header" [routerLink]="['./']" fragment="blockTxId">GET Block Transaction ID</a>
+            <a class="section-header" [routerLink]="['./']" fragment="blockTxId">GET Block Transaction ID <span>Blocks</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.blockTxId)" target="_blank">GET {{ baseNetworkUrl }}/api/block/:hash/txid/:index</a>
@@ -449,7 +437,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="blockTxIds">
-            <a class="section-header" [routerLink]="['./']" fragment="blockTxIds">GET Block Transaction IDs</a>
+            <a class="section-header" [routerLink]="['./']" fragment="blockTxIds">GET Block Transaction IDs <span>Blocks</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.blockTxIds)" target="_blank">GET {{ baseNetworkUrl }}/api/block/:hash/txids</a>
@@ -462,7 +450,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="blockTxs">
-            <a class="section-header" [routerLink]="['./']" fragment="blockTxs">GET Block Transactions</a>
+            <a class="section-header" [routerLink]="['./']" fragment="blockTxs">GET Block Transactions <span>Blocks</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.blockTxs)" target="_blank">GET {{ baseNetworkUrl }}/api/block/:hash/txs[/:start_index]</a>
@@ -475,7 +463,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="blocks">
-            <a class="section-header" [routerLink]="['./']" fragment="blocks">GET Blocks</a>
+            <a class="section-header" [routerLink]="['./']" fragment="blocks">GET Blocks <span>Blocks</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.blocks)" target="_blank">GET {{ baseNetworkUrl }}/api/blocks[/:start_height]</a>
@@ -488,7 +476,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val === 'bisq'" id="blocks">
-            <a class="section-header" [routerLink]="['./']" fragment="blocks">GET Blocks</a>
+            <a class="section-header" [routerLink]="['./']" fragment="blocks">GET Blocks <span>Blocks</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.blocksBisq)" target="_blank">GET {{ baseNetworkUrl }}/api/blocks/:index/:length</a>
@@ -503,11 +491,9 @@
         </div>
 
         <div class="api-category" *ngIf="network.val !== 'bisq'">
-        
-          <h4 i18n="api-docs.tab.fees|API Docs tab for Fees">Fees</h4>
 
           <div class="endpoint-container" id="feeMempoolBlocks">
-            <a class="section-header" [routerLink]="['./']" fragment="feeMempoolBlocks">GET Mempool Blocks Fees</a>
+            <a class="section-header" [routerLink]="['./']" fragment="feeMempoolBlocks">GET Mempool Blocks Fees <span>Fees</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.feeMempoolBlocks)" target="_blank">GET {{ baseNetworkUrl }}/api/v1/fees/mempool-blocks</a>
@@ -520,7 +506,7 @@
           </div>
 
           <div class="endpoint-container" id="feeRecommended">
-            <a class="section-header" [routerLink]="['./']" fragment="feeRecommended">GET Recommended Fees</a>
+            <a class="section-header" [routerLink]="['./']" fragment="feeRecommended">GET Recommended Fees <span>Fees</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.feeRecommended)" target="_blank">GET {{ baseNetworkUrl }}/api/v1/fees/recommended</a>
@@ -535,11 +521,9 @@
         </div>
 
         <div class="api-category" *ngIf="network.val !== 'bisq'">
-        
-          <h4 i18n="api-docs.tab.mempool|API Docs tab for Mempool">Mempool</h4>
 
           <div class="endpoint-container" id="mempool">
-            <a class="section-header" [routerLink]="['./']" fragment="mempool">GET Mempool</a>
+            <a class="section-header" [routerLink]="['./']" fragment="mempool">GET Mempool <span>Fees</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.mempool)" target="_blank">GET {{ baseNetworkUrl }}/api/mempool</a>
@@ -552,7 +536,7 @@
           </div>
 
           <div class="endpoint-container" id="mempoolTxs">
-            <a class="section-header" [routerLink]="['./']" fragment="mempoolTxs">GET Mempool Transactions IDs</a>
+            <a class="section-header" [routerLink]="['./']" fragment="mempoolTxs">GET Mempool Transactions IDs <span>Fees</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.mempoolTxs)" target="_blank">GET {{ baseNetworkUrl }}/api/mempool/txids</a>
@@ -565,7 +549,7 @@
           </div>
 
           <div class="endpoint-container" id="mempoolRecent">
-            <a class="section-header" [routerLink]="['./']" fragment="mempoolRecent">GET Mempool Recent</a>
+            <a class="section-header" [routerLink]="['./']" fragment="mempoolRecent">GET Mempool Recent <span>Fees</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.mempoolRecent)" target="_blank">GET {{ baseNetworkUrl }}/api/mempool/recent</a>
@@ -581,10 +565,8 @@
 
         <div class="api-category">
 
-          <h4 i18n="api-docs.tab.transactions|API Docs tab for Transactions">Transactions</h4>
-
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="cpfp">
-            <a class="section-header" [routerLink]="['./']" fragment="cpfp">GET Children Pay for Parent</a>            
+            <a class="section-header" [routerLink]="['./']" fragment="cpfp">GET Children Pay for Parent <span>Transactions</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.transactionCpfp)" target="_blank">GET {{ baseNetworkUrl }}/api/v1/cpfp/:txid</a>
@@ -597,7 +579,7 @@
           </div>
 
           <div class="endpoint-container" id="transaction">
-            <a class="section-header" [routerLink]="['./']" fragment="transaction">GET Transaction</a>
+            <a class="section-header" [routerLink]="['./']" fragment="transaction">GET Transaction <span>Transactions</span></a>
             <div class="endpoint">
               <a [href]="wrapUrl(network.val, code.transaction)" target="_blank">GET {{ baseNetworkUrl }}/api/tx/:txid</a>
             </div>
@@ -605,11 +587,11 @@
               <div class="subtitle" i18n>Description</div>
               <div i18n>Returns details about a transaction. Available fields: <code>txid</code>, <code>version</code>, <code>locktime</code>, <code>size</code>, <code>weight</code>, <code>fee</code>, <code>vin</code>, <code>vout</code>, and <code>status</code>.</div>
             </div>
-            <app-code-template [hostname]="hostname" [code]="code.transaction" [network]="network.val" ></app-code-template>            
+            <app-code-template [hostname]="hostname" [code]="code.transaction" [network]="network.val" ></app-code-template>
           </div>
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="transactionHex">
-            <a class="section-header" [routerLink]="['./']" fragment="bisqMarketsTrades">GET Transaction Hex</a>
+            <a class="section-header" [routerLink]="['./']" fragment="bisqMarketsTrades">GET Transaction Hex <span>Transactions</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
                 <a [href]="wrapUrl(network.val, code.transactionHex)" target="_blank">GET {{ baseNetworkUrl }}/api/tx/:txid/hex</a>
@@ -622,7 +604,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq' && network.val !== 'liquid'" id="transactionMerkleBlockProof">
-            <a class="section-header" [routerLink]="['./']" fragment="transactionMerkleBlockProof">GET Transaction Merkleblock Proof</a>
+            <a class="section-header" [routerLink]="['./']" fragment="transactionMerkleBlockProof">GET Transaction Merkleblock Proof <span>Transactions</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.transactionMerkleBlockProof)" target="_blank">GET {{ baseNetworkUrl }}/api/tx/:txid/merkleblock-proof</a>
@@ -635,7 +617,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="transactionMerkleProof">
-            <a class="section-header" [routerLink]="['./']" fragment="transactionMerkleProof">GET Transaction Merkle Proof</a>
+            <a class="section-header" [routerLink]="['./']" fragment="transactionMerkleProof">GET Transaction Merkle Proof <span>Transactions</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.transactionMerkleProof)" target="_blank">GET {{ baseNetworkUrl }}/api/tx/:txid/merkle-proof</a>
@@ -648,7 +630,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="transactionOutspend">
-            <a class="section-header" [routerLink]="['./']" fragment="transactionOutspend">GET Transaction Outspend</a>
+            <a class="section-header" [routerLink]="['./']" fragment="transactionOutspend">GET Transaction Outspend <span>Transactions</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.transactionOutspend)" target="_blank">GET {{ baseNetworkUrl }}/api/tx/:txid/outspend/:vout</a>
@@ -661,7 +643,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="transactionOutspends">
-            <a class="section-header" [routerLink]="['./']" fragment="transactionOutspends">GET Transaction Outspends</a>
+            <a class="section-header" [routerLink]="['./']" fragment="transactionOutspends">GET Transaction Outspends <span>Transactions</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.transactionOutspends)" target="_blank">GET {{ baseNetworkUrl }}/api/tx/:txid/outspends</a>
@@ -674,7 +656,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="transactionRaw">
-            <a class="section-header" [routerLink]="['./']" fragment="transactionRaw">GET Transaction Raw</a>
+            <a class="section-header" [routerLink]="['./']" fragment="transactionRaw">GET Transaction Raw <span>Transactions</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.transactionRaw)" target="_blank">GET {{ baseNetworkUrl }}/api/tx/:txid/raw</a>
@@ -687,7 +669,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="transactionStatus">
-            <a class="section-header" [routerLink]="['./']" fragment="transactionStatus">GET Transaction Status</a>
+            <a class="section-header" [routerLink]="['./']" fragment="transactionStatus">GET Transaction Status <span>Transactions</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.transactionStatus)" target="_blank">GET {{ baseNetworkUrl }}/api/tx/:txid/status</a>
@@ -700,7 +682,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val === 'bisq'" id="transactionsBisq">
-            <a class="section-header" [routerLink]="['./']" fragment="transactionsBisq">GET Transactions</a>
+            <a class="section-header" [routerLink]="['./']" fragment="transactionsBisq">GET Transactions <span>Transactions</span></a>
             <div class="title">Get Mempool Txids</div>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
@@ -714,7 +696,7 @@
           </div>
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="postTransaction">
-            <a class="section-header" [routerLink]="['./']" fragment="postTransaction">POST Transaction</a>
+            <a class="section-header" [routerLink]="['./']" fragment="postTransaction">POST Transaction <span>Transactions</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <div>POST /api/tx</div>
