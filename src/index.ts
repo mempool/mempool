@@ -52,7 +52,7 @@ const mempool = (
       fees: useFees(apiBitcoin),
       mempool: useMempool(apiBitcoin),
       transactions: useTransactions(apiBitcoin),
-      websocket: useWebsocket(hostname),
+      websocket: useWebsocket(hostname, network),
     },
     bisq: {
       statistics: useStatisticsBisq(apiBisq),
