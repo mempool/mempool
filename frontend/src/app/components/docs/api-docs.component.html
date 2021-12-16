@@ -79,17 +79,15 @@
 
           <div class="endpoint-container" id="difficultyAdjustment">
             <a class="section-header" [routerLink]="['./']" fragment="difficultyAdjustment">GET Difficulty Adjustment <span>General</span></a>
-            <div class="difficulty">
-              <div class="endpoint">
-                <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-                <a [href]="wrapUrl(network.val, code.difficulty)" target="_blank">GET {{ baseNetworkUrl }}/api/v1/difficulty-adjustment</a>
-              </div>
-              <div class="description">
-                <div class="subtitle" i18n>Description</div>
-                  <div i18n>Returns details about difficulty adjustment.</div>
-              </div>
-              <app-code-template [hostname]="hostname" [code]="code.difficulty" [network]="network.val" ></app-code-template>
+            <div class="endpoint">
+              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
+              <a [href]="wrapUrl(network.val, code.difficulty)" target="_blank">GET {{ baseNetworkUrl }}/api/v1/difficulty-adjustment</a>
             </div>
+            <div class="description">
+              <div class="subtitle" i18n>Description</div>
+                <div i18n>Returns details about difficulty adjustment.</div>
+            </div>
+            <app-code-template [hostname]="hostname" [code]="code.difficulty" [network]="network.val" ></app-code-template>
           </div>
 
         </div>
@@ -374,6 +372,7 @@
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="blockRaw">
             <a class="section-header" [routerLink]="['./']" fragment="blockRaw">GET Block Raw <span>Blocks</span></a>
             <div class="endpoint">
+              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.blockRaw)" target="_blank">GET {{ baseNetworkUrl }}/api/block/:hash/raw</a>
             </div>
             <div class="description">
@@ -385,7 +384,6 @@
 
           <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="blockStatus">
             <a class="section-header" [routerLink]="['./']" fragment="blockStatus">GET Block Status <span>Blocks</span></a>
-            <div class="title">Get Block Status</div>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.blockStatus)" target="_blank">GET {{ baseNetworkUrl }}/api/block/:hash/status</a>
@@ -581,6 +579,7 @@
           <div class="endpoint-container" id="transaction">
             <a class="section-header" [routerLink]="['./']" fragment="transaction">GET Transaction <span>Transactions</span></a>
             <div class="endpoint">
+              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.transaction)" target="_blank">GET {{ baseNetworkUrl }}/api/tx/:txid</a>
             </div>
             <div class="description">
@@ -683,7 +682,6 @@
 
           <div class="endpoint-container" *ngIf="network.val === 'bisq'" id="transactionsBisq">
             <a class="section-header" [routerLink]="['./']" fragment="transactionsBisq">GET Transactions <span>Transactions</span></a>
-            <div class="title">Get Mempool Txids</div>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.transactionsBisq)" target="_blank">GET {{ baseNetworkUrl }}/api/txs/:index/:length</a>
