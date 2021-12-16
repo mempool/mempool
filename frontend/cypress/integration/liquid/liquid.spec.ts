@@ -69,8 +69,10 @@ describe('Liquid', () => {
             //TODO: Add proper IDs for these selectors
             const firstRowSelector = '.container-xl > :nth-child(3) > div > :nth-child(1) > .table > tbody';
             const thirdRowSelector = '.container-xl > :nth-child(3) > div > :nth-child(3)';
-            cy.get(firstRowSelector).invoke('css', 'width').then((firstRowWidth) => {
-                cy.get(thirdRowSelector).invoke('css', 'width').should('equal', firstRowWidth);
+            cy.get(firstRowSelector).invoke('css', 'width').then(firstRowWidth => {
+                cy.get(thirdRowSelector).invoke('css', 'width').then(thirdRowWidth => {
+                    expect(parseInt(firstRowWidth)).to.be.lessThan(parseInt(thirdRowWidth));
+                });
             });
         });
 
