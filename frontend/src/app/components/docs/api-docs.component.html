@@ -4,7 +4,71 @@
     <div id="restAPI" *ngIf="restTabActivated">
 
       <div class="doc-nav-desktop" [ngClass]="docsNavPosition">
-        Placeholder.
+
+        <p *ngIf="network.val !== 'bisq' && network.val !== 'liquid'">General</p>
+        <a *ngIf="network.val !== 'bisq' && network.val !== 'liquid'" href="#">GET Difficulty Adjustment</a>
+
+        <p *ngIf="network.val === 'bisq'">Markets</p>
+        <a *ngIf="network.val === 'bisq'" href="#">GET Market Currencies</a>
+        <a *ngIf="network.val === 'bisq'" href="#">GET Market Depth</a>
+        <a *ngIf="network.val === 'bisq'" href="#">GET Market HLOC</a>
+        <a *ngIf="network.val === 'bisq'" href="#">GET Markets</a>
+        <a *ngIf="network.val === 'bisq'" href="#">GET Market Offers</a>
+        <a *ngIf="network.val === 'bisq'" href="#">GET Market Ticker</a>
+        <a *ngIf="network.val === 'bisq'" href="#">GET Market Trades</a>
+        <a *ngIf="network.val === 'bisq'" href="#">GET Market Volumes</a>
+
+        <p *ngIf="network.val === 'bisq'">General</p>
+        <a *ngIf="network.val === 'bisq'" href="#">GET Stats</a>
+
+        <p>Addresses</p>
+        <a href="#">GET Address</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Address Transactions</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Address Transactions Chain</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Address Transactions Mempool</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Address UTXO</a>
+
+        <p *ngIf="network.val === 'liquid'">Assets</p>
+        <a *ngIf="network.val === 'liquid'" href="#">GET Assets</a>
+        <a *ngIf="network.val === 'liquid'" href="#">GET Asset Transactions</a>
+        <a *ngIf="network.val === 'liquid'" href="#">GET Asset Supply</a>
+
+        <p>Blocks</p>
+        <a href="#">GET Block</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Block Header</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Block Height</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Block Raw</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Block Status</a>
+        <a href="#">GET Block Tip Height</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Block Tip Hash</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Block Transaction ID</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Block Transaction IDs</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Block Transactions</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Blocks</a>
+        <a *ngIf="network.val === 'bisq'" href="#">GET Blocks</a>
+
+        <p *ngIf="network.val !== 'bisq'">Fees</p>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Mempool Blocks Fees</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Recommended Fees</a>
+
+        <p *ngIf="network.val !== 'bisq'">Mempool</p>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Mempool</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Mempool Transaction IDs</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Mempool Recent</a>
+
+        <p>Transactions</p>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Children Pay for Parent</a>
+        <a href="#">GET Transaction</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Transaction Hex</a>
+        <a *ngIf="network.val !== 'bisq' && network.val !== 'liquid'" href="#">GET Transaction Merkleblock Proof</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Transaction Merkle Proof</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Transaction Outspend</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Transaction Outspends</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Transaction Raw</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">GET Transaction Status</a>
+        <a *ngIf="network.val === 'bisq'" href="#">GET Transactions</a>
+        <a *ngIf="network.val !== 'bisq'" href="#">POST Transaction</a>
+
       </div>
 
       <div class="doc-content">
