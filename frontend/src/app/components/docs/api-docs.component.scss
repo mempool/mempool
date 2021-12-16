@@ -163,10 +163,38 @@ li.nav-item {
   float: right;
 }
 
-@media (max-width: 992px){
-  .doc-nav-desktop {
+.doc-nav-mobile.relative {
+
+}
+
+.doc-nav-mobile.relative {
+  position: relative;
+}
+
+.doc-nav-mobile.fixed {
+  position: fixed;
+  top: 20px;
+  width: calc(100% - 60px);
+  z-index: 100;
+}
+
+.doc-nav-mobile > div {
+  background-color: #2d3348;
+  z-index: 100;
+  border-radius: 0.25rem;
+}
+
+#doc-nav-mobile-toggle {
+  width: 100%;
+  background-color: #105fb0;
+  color: #fff;
+  border-color: #105fb0;
+}
+
+@media (max-width: 992px) {
+
+  .hide-on-mobile {
     display: none;
-    height: auto;
   }
 
   .doc-content {
@@ -186,3 +214,8 @@ li.nav-item {
   }
 }
 
+@media (min-width: 992px) {
+  .hide-on-desktop {
+    display: none;
+  }
+}

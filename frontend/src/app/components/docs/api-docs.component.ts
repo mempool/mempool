@@ -17,7 +17,9 @@ export class ApiDocsComponent implements OnInit {
   code: any;
   baseNetworkUrl = '';
   @Input() restTabActivated: Boolean;
-  docsNavPosition = "relative";
+  desktopDocsNavPosition = "relative";
+  mobileDocsNavPosition = "relative";
+  mobileMenuOpen = true;
 
   constructor(
     private stateService: StateService,
@@ -39,11 +41,8 @@ export class ApiDocsComponent implements OnInit {
     //to toggle fixed menu for desktop navigation
     let that = this;
     window.addEventListener('scroll', function() {
-      if( window.pageYOffset > 182 ) {
-        that.docsNavPosition = "fixed";
-      } else {
-        that.docsNavPosition = "relative";
-      }
+      that.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
+      that.mobileDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
     });
 
     if (document.location.port !== '') {
