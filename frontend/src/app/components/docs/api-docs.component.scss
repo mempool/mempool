@@ -74,7 +74,16 @@ li.nav-item {
 
 .doc-nav-desktop {
   width: 25%;
+}
+
+.doc-nav-desktop.relative {
   float: left;
+}
+
+.doc-nav-desktop.fixed {
+  float: unset;
+  position: fixed;
+  top: 20px;
 }
 
 .doc-content {

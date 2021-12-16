@@ -17,6 +17,7 @@ export class ApiDocsComponent implements OnInit {
   code: any;
   baseNetworkUrl = '';
   @Input() restTabActivated: Boolean;
+  docsNavPosition = "relative";
 
   constructor(
     private stateService: StateService,
@@ -34,6 +35,16 @@ export class ApiDocsComponent implements OnInit {
         return network;
       })
     );
+
+    //to toggle fixed menu for desktop navigation
+    let that = this;
+    window.addEventListener('scroll', function() {
+      if( window.pageYOffset > 182 ) {
+        that.docsNavPosition = "fixed";
+      } else {
+        that.docsNavPosition = "relative";
+      }
+    });
 
     if (document.location.port !== '') {
       this.hostname = `${this.hostname}:${document.location.port}`;
