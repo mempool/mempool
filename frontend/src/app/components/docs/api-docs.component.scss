@@ -22,6 +22,10 @@ li.nav-item {
   }
 }
 
+.no-bottom-space {
+  margin-bottom: 0;
+}
+
 .nav-tabs .nav-link.active {
   border-bottom: 1px solid #fff;
   @media (min-width: 676px){
@@ -72,16 +76,16 @@ li.nav-item {
   padding: 15px;
 }
 
-.doc-nav-desktop {
+#doc-nav-desktop {
   width: 300px;
 }
 
-.doc-nav-desktop.relative {
+#doc-nav-desktop.relative {
   float: left;
   overflow: hidden;
 }
 
-.doc-nav-desktop.fixed {
+#doc-nav-desktop.fixed {
   float: unset;
   position: fixed;
   top: 20px;
@@ -122,12 +126,9 @@ li.nav-item {
   padding: 1rem 1.3rem 1rem 1.3rem;
   font-weight: bold;
   border-radius: 0.25rem;
-  margin: 40px 0 20px 0;
+  margin: 20px 0 20px 0;
   font-size: 24px;
   position: relative;
-}
-.endpoint-container .section-header:first-child {
-  margin-top: 20px;
 }
 .endpoint-container .section-header:hover {
   text-decoration: none;
@@ -146,32 +147,27 @@ li.nav-item {
   float: right;
 }
 
-.doc-nav-mobile.relative {
-
-}
-
-.doc-nav-mobile.relative {
-  position: relative;
-}
-
-.doc-nav-mobile.fixed {
+#doc-nav-mobile {
   position: fixed;
   top: 20px;
   width: calc(100% - 60px);
   z-index: 100;
 }
 
-.doc-nav-mobile > div {
+#doc-nav-mobile > div {
   background-color: #2d3348;
   z-index: 100;
-  border-radius: 0.25rem;
+  border-radius: 0 0 0.5rem 0.5rem;
+  height: 55vh;
+  overflow-y: auto;
 }
 
-#doc-nav-mobile-toggle {
+#doc-nav-mobile button {
   width: 100%;
   background-color: #105fb0;
   color: #fff;
   border-color: #105fb0;
+  border-radius: 0.5rem 0.5rem 0 0;
 }
 
 @media (max-width: 992px) {
@@ -195,6 +191,12 @@ li.nav-item {
     left: 0;
     bottom: -50px;
   }
+
+  .endpoint-container:before {
+    height: 30px;
+    margin-top: -12px;
+  }
+
 }
 
 @media (min-width: 992px) {

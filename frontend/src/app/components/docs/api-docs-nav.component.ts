@@ -8,6 +8,7 @@ import { Component, OnInit, Input } from '@angular/core';
 export class ApiDocsNavComponent implements OnInit {
 
   @Input() network: any;
+  @Input() collapseItem: any;
 
   constructor() { }
 
