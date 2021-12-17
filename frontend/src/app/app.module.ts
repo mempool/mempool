@@ -50,6 +50,7 @@ import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, fa
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown, faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl } from '@fortawesome/free-solid-svg-icons';
 import { ApiDocsComponent } from './components/docs/api-docs.component';
 import { DocsComponent } from './components/docs/docs.component';
+import { ApiDocsNavComponent } from './components/docs/api-docs-nav.component';
 import { CodeTemplateComponent } from './components/docs/code-template.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
@@ -101,6 +102,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     SponsorComponent,
     PushTransactionComponent,
     DocsComponent,
+    ApiDocsNavComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
