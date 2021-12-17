@@ -22,7 +22,7 @@
           </div>
         </div>
 
-        <div id="mobile-top-doc-nav" class="hide-on-desktop"><app-api-docs-nav [network]="{ val: network$ | async }"></app-api-docs-nav></div>
+        <div id="mobile-top-doc-nav" #mobileFixedApiNav class="hide-on-desktop"><app-api-docs-nav [network]="{ val: network$ | async }"></app-api-docs-nav></div>
 
         <div class="api-category" *ngIf="network.val !== 'bisq' && network.val !== 'liquid'">
 
