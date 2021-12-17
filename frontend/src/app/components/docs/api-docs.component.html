@@ -3,24 +3,26 @@
 
     <div id="restAPI" *ngIf="restTabActivated">
 
-      <div class="doc-nav-desktop hide-on-mobile" [ngClass]="desktopDocsNavPosition">
+      <div id="doc-nav-desktop" class="hide-on-mobile" [ngClass]="desktopDocsNavPosition">
         <app-api-docs-nav [network]="{ val: network$ | async }"></app-api-docs-nav>
       </div>
 
       <div class="doc-content">
 
-        <p class="hide-on-mobile">Reference for the {{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} <ng-container i18n="api-docs.title">API service</ng-container>.</p>
+        <p class="hide-on-mobile no-bottom-space">Reference for the {{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} <ng-container i18n="api-docs.title">API service</ng-container>.</p>
 
-        <div class="doc-nav-mobile hide-on-desktop" [ngClass]="mobileDocsNavPosition">
-          <button id="doc-nav-mobile-toggle" type="button" class="btn btn-outline-primary" [ngClass]="mobileDocsNavPosition" (click)="collapse.toggle()" [attr.aria-expanded]="mobileMenuOpen" aria-controls="collapseExample"><fa-icon [icon]="['fas', 'list-ul']" [fixedWidth]="true"></fa-icon> {{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} REST API Overview</button>
+        <div id="doc-nav-mobile" class="hide-on-desktop" *ngIf="showFloatingDocsNav">
+          <button type="button" class="btn btn-outline-primary" (click)="collapse.toggle()" [attr.aria-expanded]="mobileMenuOpen" aria-controls="collapseExample"><fa-icon [icon]="['fas', 'list-ul']" [fixedWidth]="true"></fa-icon> {{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} REST API Overview</button>
           <div #collapse="ngbCollapse" [(ngbCollapse)]="mobileMenuOpen">
             <div class="card">
               <div class="card-body">
-                <app-api-docs-nav [network]="{ val: network$ | async }"></app-api-docs-nav>
+                <app-api-docs-nav [collapseItem]="collapse" [network]="{ val: network$ | async }"></app-api-docs-nav>
               </div>
             </div>
           </div>
         </div>
+
+        <div id="mobile-top-doc-nav" class="hide-on-desktop"><app-api-docs-nav [network]="{ val: network$ | async }"></app-api-docs-nav></div>
 
         <div class="api-category" *ngIf="network.val !== 'bisq' && network.val !== 'liquid'">
 
