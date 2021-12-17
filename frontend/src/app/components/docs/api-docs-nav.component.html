@@ -1,0 +1,63 @@
+<p *ngIf="network.val !== 'bisq' && network.val !== 'liquid'">General</p>
+<a *ngIf="network.val !== 'bisq' && network.val !== 'liquid'" [routerLink]="['./']" fragment="get-difficulty-adjustment">GET Difficulty Adjustment</a>
+
+<p *ngIf="network.val === 'bisq'">Markets</p>
+<a *ngIf="network.val === 'bisq'" [routerLink]="['./']" fragment="get-market-currencies">GET Market Currencies</a>
+<a *ngIf="network.val === 'bisq'" [routerLink]="['./']" fragment="get-market-depth">GET Market Depth</a>
+<a *ngIf="network.val === 'bisq'" [routerLink]="['./']" fragment="get-market-hloc">GET Market HLOC</a>
+<a *ngIf="network.val === 'bisq'" [routerLink]="['./']" fragment="get-markets">GET Markets</a>
+<a *ngIf="network.val === 'bisq'" [routerLink]="['./']" fragment="get-market-offers">GET Market Offers</a>
+<a *ngIf="network.val === 'bisq'" [routerLink]="['./']" fragment="get-market-ticker">GET Market Ticker</a>
+<a *ngIf="network.val === 'bisq'" [routerLink]="['./']" fragment="get-market-trades">GET Market Trades</a>
+<a *ngIf="network.val === 'bisq'" [routerLink]="['./']" fragment="get-market-volumes">GET Market Volumes</a>
+
+<p *ngIf="network.val === 'bisq'">General</p>
+<a *ngIf="network.val === 'bisq'" [routerLink]="['./']" fragment="get-stats">GET Stats</a>
+
+<p>Addresses</p>
+<a [routerLink]="['./']" fragment="get-address">GET Address</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-address-transactions">GET Address Transactions</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-address-transactions-chain">GET Address Transactions Chain</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-address-transactions-mempool">GET Address Transactions Mempool</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-address-utxo">GET Address UTXO</a>
+
+<p *ngIf="network.val === 'liquid'">Assets</p>
+<a *ngIf="network.val === 'liquid'" [routerLink]="['./']" fragment="get-assets">GET Assets</a>
+<a *ngIf="network.val === 'liquid'" [routerLink]="['./']" fragment="get-asset-transactions">GET Asset Transactions</a>
+<a *ngIf="network.val === 'liquid'" [routerLink]="['./']" fragment="get-asset-supply">GET Asset Supply</a>
+
+<p>Blocks</p>
+<a [routerLink]="['./']" fragment="get-block">GET Block</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-block-header">GET Block Header</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-block-height">GET Block Height</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-block-raw">GET Block Raw</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-block-status">GET Block Status</a>
+<a [routerLink]="['./']" fragment="get-block-tip-height">GET Block Tip Height</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-block-tip-hash">GET Block Tip Hash</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-block-transaction-id">GET Block Transaction ID</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-block-transaction-ids">GET Block Transaction IDs</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-block-transactions">GET Block Transactions</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-blocks">GET Blocks</a>
+<a *ngIf="network.val === 'bisq'" [routerLink]="['./']" fragment="get-blocks">GET Blocks</a>
+
+<p *ngIf="network.val !== 'bisq'">Fees</p>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-mempool-blocks-fees">GET Mempool Blocks Fees</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-recommended-fees">GET Recommended Fees</a>
+
+<p *ngIf="network.val !== 'bisq'">Mempool</p>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-mempool">GET Mempool</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-mempool-transaction-ids">GET Mempool Transaction IDs</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-mempool-recent">GET Mempool Recent</a>
+
+<p>Transactions</p>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-cpfp">GET Children Pay for Parent</a>
+<a [routerLink]="['./']" fragment="get-transaction">GET Transaction</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-transaction-hex">GET Transaction Hex</a>
+<a *ngIf="network.val !== 'bisq' && network.val !== 'liquid'" [routerLink]="['./']" fragment="get-transaction-merkleblock-proof">GET Transaction Merkleblock Proof</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-transaction-merkle-proof">GET Transaction Merkle Proof</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-transaction-outspend">GET Transaction Outspend</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-transaction-outspends">GET Transaction Outspends</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-transaction-raw">GET Transaction Raw</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-transaction-status">GET Transaction Status</a>
+<a *ngIf="network.val === 'bisq'" [routerLink]="['./']" fragment="get-transactions">GET Transactions</a>
+<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="post-transaction">POST Transaction</a>
