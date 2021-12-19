@@ -15,6 +15,10 @@
   text-decoration: none;
 }
 
+.blockLink.disabled {
+  pointer-events: none;
+}
+
 .mined-block {
   position: absolute;
   top: 0px;
