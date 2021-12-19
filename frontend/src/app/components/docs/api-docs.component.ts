@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { Env, StateService } from 'src/app/services/state.service';
 import { Observable, merge, of } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
@@ -17,11 +17,25 @@ export class ApiDocsComponent implements OnInit {
   code: any;
   baseNetworkUrl = '';
   @Input() restTabActivated: Boolean;
+  @ViewChild( "mobileFixedApiNav", { static: false } ) mobileFixedApiNav: ElementRef;
+  desktopDocsNavPosition = "relative";
+  showFloatingDocsNav = false;
+  mobileMenuOpen = true;
 
   constructor(
     private stateService: StateService,
     private seoService: SeoService,
   ) { }
+
+  ngAfterViewInit() {
+    const that = this;
+    setTimeout( () => {
+      window.addEventListener('scroll', function() {
+        that.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
+        that.showFloatingDocsNav = ( window.pageYOffset > ( that.mobileFixedApiNav.nativeElement.offsetHeight + 188 ) ) ? true : false;
+      });
+    }, 1 );
+  }
 
   ngOnInit(): void {
     this.env = this.stateService.env;
