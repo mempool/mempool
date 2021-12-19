@@ -22,6 +22,10 @@ li.nav-item {
   }
 }
 
+.no-bottom-space {
+  margin-bottom: 0;
+}
+
 .nav-tabs .nav-link.active {
   border-bottom: 1px solid #fff;
   @media (min-width: 676px){
@@ -72,10 +76,131 @@ li.nav-item {
   padding: 15px;
 }
 
-#restAPI .api-category {
-  margin: 30px 0;
+#doc-nav-desktop {
+  width: 300px;
 }
 
-.api-category h4 {
-  margin-bottom: 15px;
+#doc-nav-desktop.relative {
+  float: left;
+  overflow: hidden;
+}
+
+#doc-nav-desktop.fixed {
+  float: unset;
+  position: fixed;
+  top: 20px;
+  overflow-y: auto;
+  height: calc(100vh - 50px);
+  scrollbar-color: #2d3348 #11131f;
+  scrollbar-width: thin;
+}
+::-webkit-scrollbar {
+  width: 3px;
+}
+::-webkit-scrollbar-track {
+  background: #11131f;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #2d3348;
+  border-radius: 5px;
+  border: none;
+}
+
+.doc-content {
+  width: calc(100% - 330px);
+  float: right;
+}
+
+.endpoint-container:before {
+	display: block;
+ 	content: " ";
+  height: 1px;
+  margin-top: -1px;
+  visibility: hidden;
+}
+
+.endpoint-container .section-header {
+  display: block;
+  background-color: #2d3348;
+  color: #1bd8f4;
+  padding: 1rem 1.3rem 1rem 1.3rem;
+  font-weight: bold;
+  border-radius: 0.25rem;
+  margin: 20px 0 20px 0;
+  font-size: 24px;
+  position: relative;
+}
+.endpoint-container .section-header:hover {
+  text-decoration: none;
+}
+
+.endpoint-container .section-header span {
+  color: #fff;
+  background-color: #653b9c;
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 400;
+  padding: 8px 10px;
+  letter-spacing: 1px;
+  border-radius: 0.25rem;
+  font-family: monospace;
+  float: right;
+}
+
+#doc-nav-mobile {
+  position: fixed;
+  top: 20px;
+  width: calc(100% - 60px);
+  z-index: 100;
+}
+
+#doc-nav-mobile > div {
+  background-color: #2d3348;
+  z-index: 100;
+  border-radius: 0 0 0.5rem 0.5rem;
+  height: 55vh;
+  overflow-y: auto;
+}
+
+#doc-nav-mobile button {
+  width: 100%;
+  background-color: #105fb0;
+  color: #fff;
+  border-color: #105fb0;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+@media (max-width: 992px) {
+
+  .hide-on-mobile {
+    display: none;
+  }
+
+  .doc-content {
+    width: 100%;
+  }
+
+  .endpoint-container .section-header {
+    margin: 40px 0 70px 0;
+  }
+
+  .endpoint-container .section-header span {
+    float: none;
+    position: absolute;
+    top: unset;
+    left: 0;
+    bottom: -50px;
+  }
+
+  .endpoint-container:before {
+    height: 30px;
+    margin-top: -12px;
+  }
+
+}
+
+@media (min-width: 992px) {
+  .hide-on-desktop {
+    display: none;
+  }
 }
