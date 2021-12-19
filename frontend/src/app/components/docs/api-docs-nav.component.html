@@ -1,18 +1,24 @@
-<p *ngIf="network.val !== 'bisq' && network.val !== 'liquid'">General</p>
-<a *ngIf="network.val !== 'bisq' && network.val !== 'liquid'" [routerLink]="['./']" fragment="get-difficulty-adjustment" (click)="collapseItem.toggle()">GET Difficulty Adjustment</a>
+<ng-template [ngIf]="network.val !== 'bisq' && network.val !== 'liquid'">
+  <p>General</p>
+  <a [routerLink]="['./']" fragment="get-difficulty-adjustment" (click)="collapseItem.toggle()">GET Difficulty Adjustment</a>
+</ng-template>
 
-<p *ngIf="network.val === 'bisq'">Markets</p>
-<a *ngIf="network.val === 'bisq'" [routerLink]="['./']" fragment="get-market-currencies" (click)="collapseItem.toggle()">GET Market Currencies</a>
-<a *ngIf="network.val === 'bisq'" [routerLink]="['./']" fragment="get-market-depth" (click)="collapseItem.toggle()">GET Market Depth</a>
-<a *ngIf="network.val === 'bisq'" [routerLink]="['./']" fragment="get-market-hloc" (click)="collapseItem.toggle()">GET Market HLOC</a>
-<a *ngIf="network.val === 'bisq'" [routerLink]="['./']" fragment="get-markets" (click)="collapseItem.toggle()">GET Markets</a>
-<a *ngIf="network.val === 'bisq'" [routerLink]="['./']" fragment="get-market-offers" (click)="collapseItem.toggle()">GET Market Offers</a>
-<a *ngIf="network.val === 'bisq'" [routerLink]="['./']" fragment="get-market-ticker" (click)="collapseItem.toggle()">GET Market Ticker</a>
-<a *ngIf="network.val === 'bisq'" [routerLink]="['./']" fragment="get-market-trades" (click)="collapseItem.toggle()">GET Market Trades</a>
-<a *ngIf="network.val === 'bisq'" [routerLink]="['./']" fragment="get-market-volumes" (click)="collapseItem.toggle()">GET Market Volumes</a>
+<ng-template [ngIf]="network.val === 'bisq'">
+  <p>Markets</p>
+  <a [routerLink]="['./']" fragment="get-market-currencies" (click)="collapseItem.toggle()">GET Market Currencies</a>
+  <a [routerLink]="['./']" fragment="get-market-depth" (click)="collapseItem.toggle()">GET Market Depth</a>
+  <a [routerLink]="['./']" fragment="get-market-hloc" (click)="collapseItem.toggle()">GET Market HLOC</a>
+  <a [routerLink]="['./']" fragment="get-markets" (click)="collapseItem.toggle()">GET Markets</a>
+  <a [routerLink]="['./']" fragment="get-market-offers" (click)="collapseItem.toggle()">GET Market Offers</a>
+  <a [routerLink]="['./']" fragment="get-market-ticker" (click)="collapseItem.toggle()">GET Market Ticker</a>
+  <a [routerLink]="['./']" fragment="get-market-trades" (click)="collapseItem.toggle()">GET Market Trades</a>
+  <a [routerLink]="['./']" fragment="get-market-volumes" (click)="collapseItem.toggle()">GET Market Volumes</a>
+</ng-template>
 
-<p *ngIf="network.val === 'bisq'">General</p>
-<a *ngIf="network.val === 'bisq'" [routerLink]="['./']" fragment="get-stats" (click)="collapseItem.toggle()">GET Stats</a>
+<ng-template [ngIf]="network.val === 'bisq'">
+  <p>General</p>
+  <a [routerLink]="['./']" fragment="get-stats" (click)="collapseItem.toggle()">GET Stats</a>
+</ng-template>
 
 <p>Addresses</p>
 <a [routerLink]="['./']" fragment="get-address" (click)="collapseItem.toggle()">GET Address</a>
@@ -21,10 +27,12 @@
 <a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-address-transactions-mempool" (click)="collapseItem.toggle()">GET Address Transactions Mempool</a>
 <a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-address-utxo" (click)="collapseItem.toggle()">GET Address UTXO</a>
 
-<p *ngIf="network.val === 'liquid'">Assets</p>
-<a *ngIf="network.val === 'liquid'" [routerLink]="['./']" fragment="get-assets" (click)="collapseItem.toggle()">GET Assets</a>
-<a *ngIf="network.val === 'liquid'" [routerLink]="['./']" fragment="get-asset-transactions" (click)="collapseItem.toggle()">GET Asset Transactions</a>
-<a *ngIf="network.val === 'liquid'" [routerLink]="['./']" fragment="get-asset-supply" (click)="collapseItem.toggle()">GET Asset Supply</a>
+<ng-template [ngIf]="network.val === 'liquid'">
+  <p>Assets</p>
+  <a [routerLink]="['./']" fragment="get-assets" (click)="collapseItem.toggle()">GET Assets</a>
+  <a [routerLink]="['./']" fragment="get-asset-transactions" (click)="collapseItem.toggle()">GET Asset Transactions</a>
+  <a [routerLink]="['./']" fragment="get-asset-supply" (click)="collapseItem.toggle()">GET Asset Supply</a>
+</ng-template>
 
 <p>Blocks</p>
 <a [routerLink]="['./']" fragment="get-block" (click)="collapseItem.toggle()">GET Block</a>
@@ -37,17 +45,20 @@
 <a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-block-transaction-id" (click)="collapseItem.toggle()">GET Block Transaction ID</a>
 <a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-block-transaction-ids" (click)="collapseItem.toggle()">GET Block Transaction IDs</a>
 <a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-block-transactions" (click)="collapseItem.toggle()">GET Block Transactions</a>
-<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-blocks" (click)="collapseItem.toggle()">GET Blocks</a>
-<a *ngIf="network.val === 'bisq'" [routerLink]="['./']" fragment="get-blocks" (click)="collapseItem.toggle()">GET Blocks</a>
+<a [routerLink]="['./']" fragment="get-blocks" (click)="collapseItem.toggle()">GET Blocks</a>
 
-<p *ngIf="network.val !== 'bisq'">Fees</p>
-<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-mempool-blocks-fees" (click)="collapseItem.toggle()">GET Mempool Blocks Fees</a>
-<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-recommended-fees" (click)="collapseItem.toggle()">GET Recommended Fees</a>
+<ng-template [ngIf]="network.val !== 'bisq'">
+  <p>Fees</p>
+  <a [routerLink]="['./']" fragment="get-mempool-blocks-fees" (click)="collapseItem.toggle()">GET Mempool Blocks Fees</a>
+  <a [routerLink]="['./']" fragment="get-recommended-fees" (click)="collapseItem.toggle()">GET Recommended Fees</a>
+</ng-template>
 
-<p *ngIf="network.val !== 'bisq'">Mempool</p>
-<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-mempool" (click)="collapseItem.toggle()">GET Mempool</a>
-<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-mempool-transaction-ids" (click)="collapseItem.toggle()">GET Mempool Transaction IDs</a>
-<a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-mempool-recent" (click)="collapseItem.toggle()">GET Mempool Recent</a>
+<ng-template [ngIf]="network.val !== 'bisq'">
+  <p>Mempool</p>
+  <a [routerLink]="['./']" fragment="get-mempool" (click)="collapseItem.toggle()">GET Mempool</a>
+  <a [routerLink]="['./']" fragment="get-mempool-transaction-ids" (click)="collapseItem.toggle()">GET Mempool Transaction IDs</a>
+  <a [routerLink]="['./']" fragment="get-mempool-recent" (click)="collapseItem.toggle()">GET Mempool Recent</a>
+</ng-template>
 
 <p>Transactions</p>
 <a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-cpfp" (click)="collapseItem.toggle()">GET Children Pay for Parent</a>
