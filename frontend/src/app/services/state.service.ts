@@ -89,6 +89,8 @@ export class StateService {
   markBlock$ = new ReplaySubject<MarkBlockState>();
   keyNavigation$ = new Subject<KeyboardEvent>();
 
+  blockScrolling$: Subject<boolean> = new Subject<boolean>();
+
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
     private router: Router,
@@ -175,5 +177,9 @@ export class StateService {
     const prop = this.getHiddenProp();
     if (!prop) { return false; }
     return document[prop];
+  }
+
+  setBlockScrollingInProgress(value: boolean) {
+    this.blockScrolling$.next(value);
   }
 }
