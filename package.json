@@ -1,6 +1,6 @@
 {
   "name": "@mempool/mempool.js",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "description": "NPM package module for Mempool APIs.",
   "main": "lib/index.js",
   "keywords": [
@@ -42,8 +42,8 @@
     "lib/**/*"
   ],
   "dependencies": {
-    "axios": "^0.21.1",
-    "ws": "^7.4.3"
+    "axios": "0.24.0",
+    "ws": "8.3.0"
   },
   "devDependencies": {
     "@types/node": "^14.14.25",
