@@ -7,7 +7,7 @@ import { useStatistics as useStatisticsBisq } from './app/bisq/statistics';
 import { useTransactions as useTransactionsBisq } from './app/bisq/transactions';
 import { useMarkets as useMarkets } from './app/bisq/markets';
 
-const hostnameEndpointDefault = 'mempool.space';
+const hostnameEndpointDefault = 'bisq.market';
 const networkEndpointDefault = 'bisq';
 
 const mempool = ({ hostname, network }: MempoolConfig = {

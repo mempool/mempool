@@ -11,7 +11,7 @@ import { useMempool as useMempoolLiquid } from './app/liquid/mempool';
 import { useTransactions as useTransactionsLiquid } from './app/liquid/transactions';
 import { useWebsocket as useWebsocketLiquid } from './app/liquid/websocket';
 
-const hostnameEndpointDefault = 'mempool.space';
+const hostnameEndpointDefault = 'liquid.network';
 const networkEndpointDefault = 'liquid';
 
 const mempool = (
