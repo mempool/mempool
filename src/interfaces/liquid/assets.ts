@@ -16,7 +16,7 @@ interface AssetStats {
 
 export interface AssetsInstance {
   getAsset: (params: { asset_id: string }) => Promise<Asset>;
-  getAssetIcon: (params: { asset_id: string }) => Promise<BinaryData>;
+  getAssetIcon: (params: { asset_id: string }) => Promise<unknown>;
   getAssetTxs: (params: {
     asset_id: string;
     is_mempool: boolean;

@@ -8,7 +8,7 @@ export const useAssets = (api: AxiosInstance): AssetsInstance => {
   };
 
   const getAssetIcon = async (params: { asset_id: string }) => {
-    const { data } = await api.get<BinaryData>(`/v1/asset/${params.asset_id}/icon`);
+    const { data } = await api.get(`/v1/asset/${params.asset_id}/icon`);
     return data;
   };
 
