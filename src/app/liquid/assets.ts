@@ -7,6 +7,11 @@ export const useAssets = (api: AxiosInstance): AssetsInstance => {
     return data;
   };
 
+  const getAssetIcon = async (params: { asset_id: string }) => {
+    const { data } = await api.get<BinaryData>(`/v1/asset/${params.asset_id}/icon`);
+    return data;
+  };
+
   const getAssetTxs = async (params: {
     asset_id: string;
     is_mempool: boolean;
@@ -29,9 +34,16 @@ export const useAssets = (api: AxiosInstance): AssetsInstance => {
     return data;
   };
 
+  const getAssetsIcons = async () => {
+    const { data } = await api.get<string[]>(`/v1/assets/icons`);
+    return data;
+  };
+
   return {
     getAsset,
+    getAssetIcon,
     getAssetTxs,
     getAssetSupply,
+    getAssetsIcons,
   };
 };

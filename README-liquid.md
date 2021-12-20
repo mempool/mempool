@@ -16,8 +16,10 @@ Interface to access Liquid APIs.
   - [Get Address Txs Utxo](#get-address-txs-utxo)
 - Assets
   - [Get Asset](#get-asset)
+  - [Get Asset Icon](#get-asset-icon)
   - [Get Asset Txs](#get-asset-txs)
   - [Get Asset Supply](#get-asset-supply)
+  - [Get Assets Icons](#get-assets-icons)
 - Blocks
   - [Get Block](#get-block)
   - [Get Block Status](#get-block-status)
