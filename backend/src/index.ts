@@ -272,8 +272,8 @@ class Server {
 
     if (config.MEMPOOL.NETWORK === 'liquid') {
       this.app
-        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/icons', routes.getAllLiquidIcon)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/icon/:assetId', routes.getLiquidIcon)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'assets/icons', routes.getAllLiquidIcon)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'asset/:assetId/icon', routes.getLiquidIcon)
       ;
     }
 

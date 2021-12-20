@@ -642,24 +642,6 @@ export class ApiDocsComponent implements OnInit {
   console.log(asset);
           `,
         },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
-        codeSampleTestnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
-        codeSampleSignet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
         codeSampleLiquid: {
           esModule: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
           commonJS: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
@@ -691,6 +673,60 @@ export class ApiDocsComponent implements OnInit {
           commonJS: [],
           curl: [],
           response: ''
+        },
+      },
+      assetIcons: {
+        codeTemplate: {
+          curl: `/api/v1/assets/icons`,
+          commonJS: `
+        const { %{0}: { assets } } = mempoolJS();
+
+        const assetsIcons = await assets.getAssetsIcons();
+
+        document.getElementById("result").textContent = JSON.stringify(assetsIcons, undefined, 2);
+        `,
+          esModule: `
+  const { %{0}: { assets } } = mempoolJS();
+
+  const assetsIcons = await assets.getAssetsIcons();
+  console.log(assetsIcons);
+          `,
+        },
+        codeSampleLiquid: {
+          esModule: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          commonJS: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          curl: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          response: `[
+  "6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d",
+  "ce091c998b83c78bb71a632313ba3760f1763d9cfcffae02258ffa9865a37bd2"
+  ...
+]`,
+        },
+      },
+      assetIcon: {
+        codeTemplate: {
+          curl: `/api/v1/asset/%{1}/icon`,
+          commonJS: `
+        const { %{0}: { assets } } = mempoolJS();
+
+        const asset_id = '%{1}';
+        const assetIcon = await assets.getAssetIcon({ asset_id });
+
+        document.getElementById("result").textContent = JSON.stringify(assetIcon, undefined, 2);
+        `,
+          esModule: `
+  const { %{0}: { assets } } = mempoolJS();
+
+  const asset_id = '%{1}';
+  const assetIcon = await assets.getAssetIcon({ asset_id });
+  console.log(assetIcon);
+          `,
+        },
+        codeSampleLiquid: {
+          esModule: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          commonJS: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          curl: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          response: `PNG`,
         },
       },
       assetTransactions: {

@@ -30,8 +30,10 @@
 <ng-template [ngIf]="network.val === 'liquid'">
   <p>Assets</p>
   <a [routerLink]="['./']" fragment="get-assets" (click)="collapseItem.toggle()">GET Assets</a>
+  <a [routerLink]="['./']" fragment="get-assets-icons" (click)="collapseItem.toggle()">GET Assets Icons</a>
   <a [routerLink]="['./']" fragment="get-asset-transactions" (click)="collapseItem.toggle()">GET Asset Transactions</a>
   <a [routerLink]="['./']" fragment="get-asset-supply" (click)="collapseItem.toggle()">GET Asset Supply</a>
+  <a [routerLink]="['./']" fragment="get-asset-icon" (click)="collapseItem.toggle()">GET Asset Icon</a>
 </ng-template>
 
 <p>Blocks</p>
