@@ -2,6 +2,7 @@
 
 # production config
 mempool-config.json
+icons.json
 
 # compiled output
 /dist
