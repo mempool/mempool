@@ -21,6 +21,8 @@ import backendInfo from './api/backend-info';
 import loadingIndicators from './api/loading-indicators';
 import mempool from './api/mempool';
 import elementsParser from './api/liquid/elements-parser';
+import syncAssets from './sync-assets';
+import icons from './api/liquid/icons';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -77,6 +79,7 @@ class Server {
 
     this.setUpWebsocketHandling();
 
+    await syncAssets.syncAssets();
     diskCache.loadMempoolCache();
 
     if (config.DATABASE.ENABLED) {
@@ -85,6 +88,10 @@ class Server {
 
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && cluster.isMaster) {
       statistics.startStatistics();
+    }
+
+    if (config.MEMPOOL.NETWORK === 'liquid') {
+      icons.loadIcons();
     }
 
     fiatConversion.startService();

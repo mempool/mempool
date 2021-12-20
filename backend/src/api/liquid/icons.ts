@@ -6,10 +6,10 @@ class Icons {
   private static FILE_NAME = './icons.json';
   private iconIds: string[] = [];
   private icons: { [assetId: string]: string; } = {};
-  constructor() {
-    if (config.MEMPOOL.NETWORK !== 'liquid') {
-      return;
-    }
+
+  constructor() {}
+
+  public loadIcons() {
     if (!fs.existsSync(Icons.FILE_NAME)) {
       logger.warn(`${Icons.FILE_NAME} does not exist. No Liquid icons loaded.`);
       return;
