@@ -62,6 +62,32 @@ export const apiDocsData = [
   remainingTime: 665977.6261244365,
   previousRetarget: -4.807005268478962
 }`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  progressPercent: 44.397234501112074,
+  difficultyChange: 0.9845932018381687,
+  estimatedRetargetDate: 1627762478.9111245,
+  remainingBlocks: 1121,
+  remainingTime: 665977.6261244365,
+  previousRetarget: -4.807005268478962
+}`
+        },
+        codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  progressPercent: 44.397234501112074,
+  difficultyChange: 0.9845932018381687,
+  estimatedRetargetDate: 1627762478.9111245,
+  remainingBlocks: 1121,
+  remainingTime: 665977.6261244365,
+  previousRetarget: -4.807005268478962
+}`
         }
       }
     }
