@@ -3,7 +3,7 @@ import { Env, StateService } from 'src/app/services/state.service';
 import { Observable, merge, of } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
 import { tap } from 'rxjs/operators';
-import { apiDocsData } from './api-docs-data';
+import { restApiDocsData, wsApiDocsData } from './api-docs-data';
 
 @Component({
   selector: 'app-api-docs',
@@ -22,7 +22,8 @@ export class ApiDocsComponent implements OnInit {
   desktopDocsNavPosition = "relative";
   showFloatingDocsNav = false;
   mobileMenuOpen = true;
-  apiDocsDataArr: any[];
+  restDocs: any[];
+  wsDocs: any;
 
   constructor(
     private stateService: StateService,
@@ -57,7 +58,8 @@ export class ApiDocsComponent implements OnInit {
 
     this.hostname = `${document.location.protocol}//${this.hostname}`;
 
-    this.apiDocsDataArr = apiDocsData;
+    this.restDocs = restApiDocsData;
+    this.wsDocs = wsApiDocsData;
 
     this.network$.subscribe((network) => {
       this.active = (network === 'liquid') ? 2 : 0;
