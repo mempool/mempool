@@ -3348,7 +3348,7 @@ export const apiDocsData = [
   }
 }`,
         },
-      } 
+      }
     }
   },
   {
