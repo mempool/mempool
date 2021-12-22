@@ -394,7 +394,7 @@ class Statistics {
   public async $list24H(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDaysAvg(120, '1 DAY'); // 2m interval
+      const query = `SELECT *, UNIX_TIMESTAMP(added) as added FROM statistics ORDER BY id DESC LIMIT 1440`;
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
