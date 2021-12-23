@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { StateService } from 'src/app/services/state.service';
 import { specialBlocks } from 'src/app/app.constants';
-import { takeLast } from 'rxjs/operators';
 
 @Component({
   selector: 'app-start',
@@ -16,6 +15,9 @@ export class StartComponent implements OnInit {
   countdown = 0;
   specialEvent = false;
   eventName = '';
+  mouseDragStartX: number;
+  blockchainScrollLeftInit: number;
+  @ViewChild('blockchainContainer') blockchainContainer: ElementRef;
 
   constructor(
     private websocketService: WebsocketService,
@@ -50,4 +52,27 @@ export class StartComponent implements OnInit {
       });
   }
 
+  onMouseDown(event: MouseEvent) {
+    this.mouseDragStartX = event.clientX;
+    this.blockchainScrollLeftInit = this.blockchainContainer.nativeElement.scrollLeft;
+  }
+  onDragStart(event: MouseEvent) { // Ignore Firefox annoying default drag behavior
+    event.preventDefault();
+  }
+
+  // We're catching the whole page event here because we still want to scroll blocks
+  // even if the mouse leave the blockchain blocks container. Same idea for mouseup below.
+  @HostListener('document:mousemove', ['$event'])
+  onMouseMove(event: MouseEvent): void {
+    if (this.mouseDragStartX != null) {
+      this.stateService.setBlockScrollingInProgress(true);
+      this.blockchainContainer.nativeElement.scrollLeft =
+        this.blockchainScrollLeftInit + this.mouseDragStartX - event.clientX
+    }
+  }
+  @HostListener('document:mouseup', [])
+  onMouseUp() {
+    this.mouseDragStartX = null;
+    this.stateService.setBlockScrollingInProgress(false);
+  }
 }

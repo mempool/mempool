@@ -20,8 +20,6 @@
         <app-clipboard [text]="txId"></app-clipboard>
       </span>
 
-      <span class="grow"></span>
-
       <div class="container-buttons">
         <ng-template [ngIf]="tx?.status?.confirmed">
           <button *ngIf="latestBlock" type="button" class="btn btn-sm btn-success">
@@ -196,7 +194,7 @@
       <h2 i18n="transaction.inputs-and-outputs|Transaction inputs and outputs">Inputs & Outputs</h2>
     </div>
 
-    <button type="button" class="btn btn-outline-info btn-sm float-right" (click)="txList.toggleDetails()" i18n="transaction.details|Transaction Details">Details</button>
+    <button type="button" class="btn btn-outline-info details-button btn-sm float-right" (click)="txList.toggleDetails()" i18n="transaction.details|Transaction Details">Details</button>
 
     <div class="clearfix"></div>
 

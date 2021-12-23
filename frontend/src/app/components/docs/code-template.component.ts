@@ -164,6 +164,10 @@ init();`;
         codeText = this.replaceJSPlaceholder(codeText, code.codeSampleBisq.esModule);
       }
 
+      if (code.noWrap) {
+        return codeText;
+      }
+
       let importText = `<script src="https://mempool.space/mempool.js"></script>`;
       if (this.env.BASE_MODULE === 'bisq') {
         importText = `<script src="https://bisq.markets/bisq.js"></script>`;

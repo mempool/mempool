@@ -59,9 +59,8 @@ describe('Bisq', () => {
             cy.visit(`${basePath}`);
             cy.waitForSkeletonGone();
             cy.get('li:nth-of-type(5) > a').click().then(() => {
-                cy.get('.card').should('have.length.at.least', 1);
-                cy.get('.card').first().click();
-                cy.get('.card-body');
+                cy.get('.section-header').should('have.length.at.least', 1);
+                cy.get('.endpoint-container').should('have.length.at.least', 1);
             });
         });
 

@@ -41,7 +41,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   };
 
   constructor(
-    private stateService: StateService,
+    public stateService: StateService,
     private router: Router,
     private cd: ChangeDetectorRef,
   ) { }

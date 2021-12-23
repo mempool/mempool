@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { Env, StateService } from 'src/app/services/state.service';
 import { Observable, merge, of } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
@@ -17,11 +17,25 @@ export class ApiDocsComponent implements OnInit {
   code: any;
   baseNetworkUrl = '';
   @Input() restTabActivated: Boolean;
+  @ViewChild( "mobileFixedApiNav", { static: false } ) mobileFixedApiNav: ElementRef;
+  desktopDocsNavPosition = "relative";
+  showFloatingDocsNav = false;
+  mobileMenuOpen = true;
 
   constructor(
     private stateService: StateService,
     private seoService: SeoService,
   ) { }
+
+  ngAfterViewInit() {
+    const that = this;
+    setTimeout( () => {
+      window.addEventListener('scroll', function() {
+        that.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
+        that.showFloatingDocsNav = ( window.pageYOffset > ( that.mobileFixedApiNav.nativeElement.offsetHeight + 188 ) ) ? true : false;
+      });
+    }, 1 );
+  }
 
   ngOnInit(): void {
     this.env = this.stateService.env;
@@ -628,24 +642,6 @@ export class ApiDocsComponent implements OnInit {
   console.log(asset);
           `,
         },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
-        codeSampleTestnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
-        codeSampleSignet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
         codeSampleLiquid: {
           esModule: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
           commonJS: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
@@ -677,6 +673,47 @@ export class ApiDocsComponent implements OnInit {
           commonJS: [],
           curl: [],
           response: ''
+        },
+      },
+      assetIcons: {
+        codeTemplate: {
+          curl: `/api/v1/assets/icons`,
+          commonJS: `
+        const { %{0}: { assets } } = mempoolJS();
+
+        const assetsIcons = await assets.getAssetsIcons();
+
+        document.getElementById("result").textContent = JSON.stringify(assetsIcons, undefined, 2);
+        `,
+          esModule: `
+  const { %{0}: { assets } } = mempoolJS();
+
+  const assetsIcons = await assets.getAssetsIcons();
+  console.log(assetsIcons);
+          `,
+        },
+        codeSampleLiquid: {
+          esModule: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          commonJS: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          curl: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          response: `[
+  "6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d",
+  "ce091c998b83c78bb71a632313ba3760f1763d9cfcffae02258ffa9865a37bd2"
+  ...
+]`,
+        },
+      },
+      assetIcon: {
+        noWrap: true,
+        codeTemplate: {
+          curl: `/api/v1/asset/%{1}/icon`,
+          commonJS: `<img src="https://liquid.place/api/v1/asset/%{1}/icon">`,
+        },
+        codeSampleLiquid: {
+          esModule: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          commonJS: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          curl: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          response: `PNG`,
         },
       },
       assetTransactions: {
