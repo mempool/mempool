@@ -16,6 +16,7 @@ interface IConfig {
     MEMPOOL_BLOCKS_AMOUNT: number;
     PRICE_FEED_UPDATE_INTERVAL: number;
     USE_SECOND_NODE_FOR_MINFEE: boolean;
+    EXTERNAL_ASSETS: string[];
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -78,6 +79,7 @@ const defaults: IConfig = {
     'MEMPOOL_BLOCKS_AMOUNT': 8,
     'PRICE_FEED_UPDATE_INTERVAL': 3600,
     'USE_SECOND_NODE_FOR_MINFEE': false,
+    'EXTERNAL_ASSETS': [],
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
