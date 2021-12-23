@@ -21,6 +21,7 @@ import backendInfo from './api/backend-info';
 import loadingIndicators from './api/loading-indicators';
 import mempool from './api/mempool';
 import elementsParser from './api/liquid/elements-parser';
+import databaseMigration from './api/database-migration';
 import syncAssets from './sync-assets';
 import icons from './api/liquid/icons';
 
@@ -84,6 +85,11 @@ class Server {
 
     if (config.DATABASE.ENABLED) {
       await checkDbConnection();
+      try {
+        await databaseMigration.$initializeOrMigrateDatabase();
+      } catch (e) {
+        throw new Error(e instanceof Error ? e.message : 'Error');
+      }
     }
 
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && cluster.isMaster) {
