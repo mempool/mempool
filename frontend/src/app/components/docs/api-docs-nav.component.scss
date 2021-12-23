@@ -1,0 +1,17 @@
+p {
+  color: #4a68b9;
+  font-weight: 700;
+  margin: 10px 0;
+  margin: 15px 0 10px 0;
+}
+
+p:first-child {
+  margin-top: 0
+}
+
+a {
+  color: #fff;
+  text-decoration: none;
+  display: block;
+  margin: 5px 0;
+}

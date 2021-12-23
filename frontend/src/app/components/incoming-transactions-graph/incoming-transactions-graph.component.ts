@@ -1,8 +1,8 @@
 import { Component, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnInit } from '@angular/core';
-import { formatDate } from '@angular/common';
 import { EChartsOption } from 'echarts';
 import { OnChanges } from '@angular/core';
 import { StorageService } from 'src/app/services/storage.service';
+import { formatterXAxis, formatterXAxisLabel } from 'src/app/shared/graphs.utils';
 
 @Component({
   selector: 'app-incoming-transactions-graph',
@@ -25,6 +25,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
   @Input() top: number | string = '20';
   @Input() left: number | string = '0';
   @Input() template: ('widget' | 'advanced') = 'widget';
+  @Input() windowPreferenceOverride: string;
 
   isLoading = true;
   mempoolStatsChartOption: EChartsOption = {};
@@ -46,7 +47,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
     if (!this.data) {
       return;
     }
-    this.windowPreference = this.storageService.getValue('graphWindowPreference');
+    this.windowPreference = this.windowPreferenceOverride ? this.windowPreferenceOverride : this.storageService.getValue('graphWindowPreference');
     this.mountChart();
   }
 
@@ -73,10 +74,12 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         maxSpan: 100,
         minSpan: 10,
       }, {
+        showDetail: false,
         show: (this.template === 'advanced') ? true : false,
         type: 'slider',
         brushSelect: false,
         realtime: true,
+        bottom: 0,
         selectedDataBackground: {
           lineStyle: {
             color: '#fff',
@@ -85,7 +88,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
           areaStyle: {
             opacity: 0,
           }
-        }
+        },
       }],
       tooltip: {
         trigger: 'axis',
@@ -102,29 +105,39 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
           type: 'line',
         },
         formatter: (params: any) => {
+          const axisValueLabel: string = formatterXAxis(this.locale, this.windowPreference, params[0].axisValue);         
           const colorSpan = (color: string) => `<span class="indicator" style="background-color: ` + color + `"></span>`;
-          let itemFormatted = '<div class="title">' + params[0].axisValue + '</div>';
+          let itemFormatted = '<div class="title">' + axisValueLabel + '</div>';
           params.map((item: any, index: number) => {
             if (index < 26) {
               itemFormatted += `<div class="item">
                 <div class="indicator-container">${colorSpan(item.color)}</div>
                 <div class="grow"></div>
-                <div class="value">${item.value} <span class="symbol">vB/s</span></div>
+                <div class="value">${item.value[1]} <span class="symbol">vB/s</span></div>
               </div>`;
             }
           });
           return `<div class="tx-wrapper-tooltip-chart ${(this.template === 'advanced') ? 'tx-wrapper-tooltip-chart-advanced' : ''}">${itemFormatted}</div>`;
         }
       },
-      xAxis: {
-        type: 'category',
-        axisLabel: {
-          align: 'center',
-          fontSize: 11,
-          lineHeight: 12
-        },
-        data: this.data.labels.map((value: any) => `${formatDate(value, 'M/d', this.locale)}\n${formatDate(value, 'H:mm', this.locale)}`),
-      },
+      xAxis: [
+        {
+          name: formatterXAxisLabel(this.locale, this.windowPreference),
+          nameLocation: 'middle',
+          nameTextStyle: {
+            padding: [20, 0, 0, 0],
+          },
+          type: 'time',
+          axisLabel: {
+            margin: 20,
+            align: 'center',
+            fontSize: 11,
+            lineHeight: 12,
+            hideOverlap: true,
+            padding: [0, 5],
+          },
+        }
+      ],
       yAxis: {
         type: 'value',
         axisLabel: {

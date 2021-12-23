@@ -48,9 +48,10 @@ import { FeesBoxComponent } from './components/fees-box/fees-box.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faDatabase, faExchangeAlt, faInfoCircle,
-  faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown, faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook } from '@fortawesome/free-solid-svg-icons';
+  faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown, faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl } from '@fortawesome/free-solid-svg-icons';
 import { ApiDocsComponent } from './components/docs/api-docs.component';
 import { DocsComponent } from './components/docs/docs.component';
+import { ApiDocsNavComponent } from './components/docs/api-docs-nav.component';
 import { CodeTemplateComponent } from './components/docs/code-template.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
@@ -59,6 +60,7 @@ import { StorageService } from './services/storage.service';
 import { HttpCacheInterceptor } from './services/http-cache.interceptor';
 import { SponsorComponent } from './components/sponsor/sponsor.component';
 import { PushTransactionComponent } from './components/push-transaction/push-transaction.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -102,6 +104,7 @@ import { PushTransactionComponent } from './components/push-transaction/push-tra
     SponsorComponent,
     PushTransactionComponent,
     DocsComponent,
+    ApiDocsNavComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
@@ -111,6 +114,7 @@ import { PushTransactionComponent } from './components/push-transaction/push-tra
     BrowserAnimationsModule,
     InfiniteScrollModule,
     NgbTypeaheadModule,
+    NgbModule,
     FontAwesomeModule,
     SharedModule,
     NgxEchartsModule.forRoot({
@@ -161,5 +165,6 @@ export class AppModule {
     library.addIcons(faAngleRight);
     library.addIcons(faAngleLeft);
     library.addIcons(faBook);
+    library.addIcons(faListUl);
   }
 }

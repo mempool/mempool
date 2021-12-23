@@ -21,7 +21,10 @@
             <tbody>
               <tr *ngIf="addressInfo && addressInfo.unconfidential">
                 <td i18n="address.unconfidential">Unconfidential</td>
-                <td><a [routerLink]="['/address/' | relativeUrl, addressInfo.unconfidential]">{{ addressInfo.unconfidential }}</a> <app-clipboard [text]="addressInfo.unconfidential"></app-clipboard></td>
+                <td><a [routerLink]="['/address/' | relativeUrl, addressInfo.unconfidential]">
+                  <span class="d-inline d-lg-none">{{ addressInfo.unconfidential | shortenString : 14 }}</span>
+                  <span class="d-none d-lg-inline">{{ addressInfo.unconfidential }}</span>
+                </a> <app-clipboard [text]="addressInfo.unconfidential"></app-clipboard></td>
               </tr>
               <ng-template [ngIf]="!address.electrum">
                 <tr>

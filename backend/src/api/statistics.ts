@@ -267,8 +267,57 @@ class Statistics {
     }
   }
 
-  private getQueryForDays(div: number) {
-    return `SELECT id, added, unconfirmed_transactions,
+  private getQueryForDaysAvg(div: number, interval: string) {
+    return `SELECT id, UNIX_TIMESTAMP(added) as added,
+      CAST(avg(unconfirmed_transactions) as FLOAT) as unconfirmed_transactions,
+      CAST(avg(tx_per_second) as FLOAT) as tx_per_second,
+      CAST(avg(vbytes_per_second) as FLOAT) as vbytes_per_second,
+      CAST(avg(vsize_1) as FLOAT) as vsize_1,
+      CAST(avg(vsize_2) as FLOAT) as vsize_2,
+      CAST(avg(vsize_3) as FLOAT) as vsize_3,
+      CAST(avg(vsize_4) as FLOAT) as vsize_4,
+      CAST(avg(vsize_5) as FLOAT) as vsize_5,
+      CAST(avg(vsize_6) as FLOAT) as vsize_6,
+      CAST(avg(vsize_8) as FLOAT) as vsize_8,
+      CAST(avg(vsize_10) as FLOAT) as vsize_10,
+      CAST(avg(vsize_12) as FLOAT) as vsize_12,
+      CAST(avg(vsize_15) as FLOAT) as vsize_15,
+      CAST(avg(vsize_20) as FLOAT) as vsize_20,
+      CAST(avg(vsize_30) as FLOAT) as vsize_30,
+      CAST(avg(vsize_40) as FLOAT) as vsize_40,
+      CAST(avg(vsize_50) as FLOAT) as vsize_50,
+      CAST(avg(vsize_60) as FLOAT) as vsize_60,
+      CAST(avg(vsize_70) as FLOAT) as vsize_70,
+      CAST(avg(vsize_80) as FLOAT) as vsize_80,
+      CAST(avg(vsize_90) as FLOAT) as vsize_90,
+      CAST(avg(vsize_100) as FLOAT) as vsize_100,
+      CAST(avg(vsize_125) as FLOAT) as vsize_125,
+      CAST(avg(vsize_150) as FLOAT) as vsize_150,
+      CAST(avg(vsize_175) as FLOAT) as vsize_175,
+      CAST(avg(vsize_200) as FLOAT) as vsize_200,
+      CAST(avg(vsize_250) as FLOAT) as vsize_250,
+      CAST(avg(vsize_300) as FLOAT) as vsize_300,
+      CAST(avg(vsize_350) as FLOAT) as vsize_350,
+      CAST(avg(vsize_400) as FLOAT) as vsize_400,
+      CAST(avg(vsize_500) as FLOAT) as vsize_500,
+      CAST(avg(vsize_600) as FLOAT) as vsize_600,
+      CAST(avg(vsize_700) as FLOAT) as vsize_700,
+      CAST(avg(vsize_800) as FLOAT) as vsize_800,
+      CAST(avg(vsize_900) as FLOAT) as vsize_900,
+      CAST(avg(vsize_1000) as FLOAT) as vsize_1000,
+      CAST(avg(vsize_1200) as FLOAT) as vsize_1200,
+      CAST(avg(vsize_1400) as FLOAT) as vsize_1400,
+      CAST(avg(vsize_1600) as FLOAT) as vsize_1600,
+      CAST(avg(vsize_1800) as FLOAT) as vsize_1800,
+      CAST(avg(vsize_2000) as FLOAT) as vsize_2000 \
+      FROM statistics \
+      WHERE added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW() \
+      GROUP BY UNIX_TIMESTAMP(added) DIV ${div} \
+      ORDER BY id DESC;`;
+  }
+
+  private getQueryForDays(div: number, interval: string) {
+    return `SELECT id, UNIX_TIMESTAMP(added) as added, unconfirmed_transactions,
       tx_per_second,
       vbytes_per_second,
       vsize_1,
@@ -308,13 +357,17 @@ class Statistics {
       vsize_1400,
       vsize_1600,
       vsize_1800,
-      vsize_2000 FROM statistics GROUP BY UNIX_TIMESTAMP(added) DIV ${div} ORDER BY id DESC LIMIT 480`;
+      vsize_2000 \
+      FROM statistics \
+      WHERE added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW() \
+      GROUP BY UNIX_TIMESTAMP(added) DIV ${div} \
+      ORDER BY id DESC;`;
   }
 
   public async $get(id: number): Promise<OptimizedStatistic | undefined> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = `SELECT * FROM statistics WHERE id = ?`;
+      const query = `SELECT *, UNIX_TIMESTAMP(added) as added FROM statistics WHERE id = ?`;
       const [rows] = await connection.query<any>(query, [id]);
       connection.release();
       if (rows[0]) {
@@ -328,7 +381,7 @@ class Statistics {
   public async $list2H(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = `SELECT * FROM statistics ORDER BY id DESC LIMIT 120`;
+      const query = `SELECT *, UNIX_TIMESTAMP(added) as added FROM statistics ORDER BY id DESC LIMIT 120`;
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
@@ -341,7 +394,7 @@ class Statistics {
   public async $list24H(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(180);
+      const query = `SELECT *, UNIX_TIMESTAMP(added) as added FROM statistics ORDER BY id DESC LIMIT 1440`;
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
@@ -354,7 +407,7 @@ class Statistics {
   public async $list1W(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(1260);
+      const query = this.getQueryForDaysAvg(600, '1 WEEK'); // 10m interval
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
@@ -367,7 +420,7 @@ class Statistics {
   public async $list1M(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(5040);
+      const query = this.getQueryForDaysAvg(3600, '1 MONTH'); // 1h interval
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
@@ -380,7 +433,7 @@ class Statistics {
   public async $list3M(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(15120);
+      const query = this.getQueryForDaysAvg(14400, '3 MONTH'); // 4h interval
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
@@ -393,7 +446,7 @@ class Statistics {
   public async $list6M(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(30240);
+      const query = this.getQueryForDaysAvg(21600, '6 MONTH'); // 6h interval 
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
@@ -406,7 +459,7 @@ class Statistics {
   public async $list1Y(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(60480);
+      const query = this.getQueryForDays(43200, '1 YEAR'); // 12h interval
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
@@ -419,7 +472,7 @@ class Statistics {
   public async $list2Y(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(120960);
+      const query = this.getQueryForDays(86400, "2 YEAR"); // 1d interval
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
@@ -432,7 +485,7 @@ class Statistics {
   public async $list3Y(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = this.getQueryForDays(181440);
+      const query = this.getQueryForDays(86400, "3 YEAR"); // 1d interval
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);

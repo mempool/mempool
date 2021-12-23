@@ -1,13 +1,12 @@
 import { Component, OnInit, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnChanges } from '@angular/core';
-import { formatDate } from '@angular/common';
 import { VbytesPipe } from 'src/app/shared/pipes/bytes-pipe/vbytes.pipe';
 import { formatNumber } from "@angular/common";
-
 import { OptimizedMempoolStats } from 'src/app/interfaces/node-api.interface';
 import { StateService } from 'src/app/services/state.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { EChartsOption } from 'echarts';
 import { feeLevels, chartColors } from 'src/app/app.constants';
+import { formatterXAxis, formatterXAxisLabel } from 'src/app/shared/graphs.utils';
 
 @Component({
   selector: 'app-mempool-graph',
@@ -32,6 +31,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   @Input() left: number | string = 75;
   @Input() template: ('widget' | 'advanced') = 'widget';
   @Input() showZoom = true;
+  @Input() windowPreferenceOverride: string;
 
   isLoading = true;
   mempoolVsizeFeesData: any;
@@ -62,7 +62,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     if (!this.data) {
       return;
     }
-    this.windowPreference = this.storageService.getValue('graphWindowPreference');
+    this.windowPreference = this.windowPreferenceOverride ? this.windowPreferenceOverride : this.storageService.getValue('graphWindowPreference');
     this.mempoolVsizeFeesData = this.handleNewMempoolData(this.data.concat([]));
     this.mountFeeChart();
   }
@@ -97,13 +97,13 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   }
 
   generateArray(mempoolStats: OptimizedMempoolStats[]) {
-    const finalArray: number[][] = [];
-    let feesArray: number[] = [];
+    const finalArray: number[][][] = [];
+    let feesArray: number[][] = [];
     let limitFeesTemplate = this.template === 'advanced' ? 26 : 20;
     for (let index = limitFeesTemplate; index > -1; index--) {
       feesArray = [];
       mempoolStats.forEach((stats) => {
-        feesArray.push(stats.vsizes[index] ? stats.vsizes[index] : 0);
+        feesArray.push([stats.added * 1000, stats.vsizes[index] ? stats.vsizes[index] : 0]);
       });
       finalArray.push(feesArray);
     }
@@ -113,7 +113,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
   mountFeeChart() {
     this.orderLevels();
-    const { labels, series } = this.mempoolVsizeFeesData;
+    const { series } = this.mempoolVsizeFeesData;
 
     const seriesGraph = [];
     const newColors = [];
@@ -186,14 +186,15 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           type: 'line',
         },
         formatter: (params: any) => {
+          const axisValueLabel: string = formatterXAxis(this.locale, this.windowPreference, params[0].axisValue);         
           const { totalValue, totalValueArray } = this.getTotalValues(params);
           const itemFormatted = [];
           let totalParcial = 0;
           let progressPercentageText = '';
           const items = this.inverted ? [...params].reverse() : params;
           items.map((item: any, index: number) => {
-            totalParcial += item.value;
-            const progressPercentage = (item.value / totalValue) * 100;
+            totalParcial += item.value[1];
+            const progressPercentage = (item.value[1] / totalValue) * 100;
             const progressPercentageSum = (totalValueArray[index] / totalValue) * 100;
             let activeItemClass = '';
             let hoverActive = 0;
@@ -233,7 +234,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
               </td>
               <td class="total-progress-sum">
                 <span>
-                  ${this.vbytesPipe.transform(item.value, 2, 'vB', 'MvB', false)}
+                  ${this.vbytesPipe.transform(item.value[1], 2, 'vB', 'MvB', false)}
                 </span>
               </td>
               <td class="total-progress-sum">
@@ -257,7 +258,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           const titleSum = $localize`Sum`;
           return `<div class="fees-wrapper-tooltip-chart ${classActive}">
             <div class="title">
-              ${params[0].axisValue}
+              ${axisValueLabel}
               <span class="total-value">
                 ${this.vbytesPipe.transform(totalValue, 2, 'vB', 'MvB', false)}
               </span>
@@ -288,6 +289,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         maxSpan: 100,
         minSpan: 10,
       }, {
+        showDetail: false,
         show: (this.template === 'advanced' && this.showZoom) ? true : false,
         type: 'slider',
         brushSelect: false,
@@ -312,15 +314,22 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       },
       xAxis: [
         {
-          type: 'category',
+          name: formatterXAxisLabel(this.locale, this.windowPreference),
+          nameLocation: 'middle',
+          nameTextStyle: {
+            padding: [20, 0, 0, 0],
+          },
+          type: 'time',
           boundaryGap: false,
           axisLine: { onZero: true },
           axisLabel: {
+            margin: 20,
             align: 'center',
             fontSize: 11,
             lineHeight: 12,
+            hideOverlap: true,
+            padding: [0, 5],
           },
-          data: labels.map((value: any) => `${formatDate(value, 'M/d', this.locale)}\n${formatDate(value, 'H:mm', this.locale)}`),
         }
       ],
       yAxis: {
@@ -346,7 +355,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     const totalValueArray = [];
     const valuesInverted = this.inverted ? values : [...values].reverse();
     for (const item of valuesInverted) {
-      totalValueTemp += item.value;
+      totalValueTemp += item.value[1];
       totalValueArray.push(totalValueTemp);
     }
     return {
