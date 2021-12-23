@@ -21,6 +21,8 @@ import backendInfo from './api/backend-info';
 import loadingIndicators from './api/loading-indicators';
 import mempool from './api/mempool';
 import elementsParser from './api/liquid/elements-parser';
+import syncAssets from './sync-assets';
+import icons from './api/liquid/icons';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -77,6 +79,7 @@ class Server {
 
     this.setUpWebsocketHandling();
 
+    await syncAssets.syncAssets();
     diskCache.loadMempoolCache();
 
     if (config.DATABASE.ENABLED) {
@@ -85,6 +88,10 @@ class Server {
 
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && cluster.isMaster) {
       statistics.startStatistics();
+    }
+
+    if (config.MEMPOOL.NETWORK === 'liquid') {
+      icons.loadIcons();
     }
 
     fiatConversion.startService();
@@ -267,6 +274,13 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs', routes.getAddressTransactions)
         .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs/chain/:txId', routes.getAddressTransactions)
         .get(config.MEMPOOL.API_URL_PREFIX + 'address-prefix/:prefix', routes.getAddressPrefix)
+      ;
+    }
+
+    if (config.MEMPOOL.NETWORK === 'liquid') {
+      this.app
+        .get(config.MEMPOOL.API_URL_PREFIX + 'assets/icons', routes.getAllLiquidIcon)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'asset/:assetId/icon', routes.getLiquidIcon)
       ;
     }
 

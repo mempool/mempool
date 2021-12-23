@@ -1,7 +1,10 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
-# production config
-mempool-config.json
+# production config and external assets
+*.json
+!mempool-config.sample.json
+
+icons.json
 
 # compiled output
 /dist
