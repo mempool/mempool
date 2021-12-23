@@ -704,23 +704,10 @@ export class ApiDocsComponent implements OnInit {
         },
       },
       assetIcon: {
+        noWrap: true,
         codeTemplate: {
           curl: `/api/v1/asset/%{1}/icon`,
-          commonJS: `
-        const { %{0}: { assets } } = mempoolJS();
-
-        const asset_id = '%{1}';
-        const assetIcon = await assets.getAssetIcon({ asset_id });
-
-        document.getElementById("result").textContent = JSON.stringify(assetIcon, undefined, 2);
-        `,
-          esModule: `
-  const { %{0}: { assets } } = mempoolJS();
-
-  const asset_id = '%{1}';
-  const assetIcon = await assets.getAssetIcon({ asset_id });
-  console.log(assetIcon);
-          `,
+          commonJS: `<img src="https://liquid.place/api/v1/asset/%{1}/icon">`,
         },
         codeSampleLiquid: {
           esModule: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
