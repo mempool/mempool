@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnInit } from '@
 import { WebsocketService } from '../../services/websocket.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { StateService } from 'src/app/services/state.service';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { IBackendInfo } from 'src/app/interfaces/websocket.interface';
@@ -17,6 +18,7 @@ import { map } from 'rxjs/operators';
 export class AboutComponent implements OnInit {
   backendInfo$: Observable<IBackendInfo>;
   sponsors$: Observable<any>;
+  thirdPartyLicenses$: Observable<string>;
   allContributors$: Observable<any>;
   frontendGitCommitHash = this.stateService.env.GIT_COMMIT_HASH;
   packetJsonVersion = this.stateService.env.PACKAGE_JSON_VERSION;
@@ -27,6 +29,7 @@ export class AboutComponent implements OnInit {
     private websocketService: WebsocketService,
     private seoService: SeoService,
     public stateService: StateService,
+    private httpClient: HttpClient,
     private apiService: ApiService,
     private router: Router,
     @Inject(LOCALE_ID) public locale: string,
@@ -38,6 +41,7 @@ export class AboutComponent implements OnInit {
     this.websocketService.want(['blocks']);
 
     this.sponsors$ = this.apiService.getDonation$();
+    this.thirdPartyLicenses$ = this.getThirdPartyLicenses$();
     this.allContributors$ = this.apiService.getContributor$().pipe(
       map((contributors) => {
         return {
@@ -46,6 +50,10 @@ export class AboutComponent implements OnInit {
         };
       })
     );
+  }
+
+  getThirdPartyLicenses$(): Observable<string> {
+    return this.httpClient.get<string>('/3rdpartylicenses.txt', { responseType: 'text' as 'json' });
   }
 
   sponsor() {

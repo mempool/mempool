@@ -204,10 +204,10 @@
     </div>
   </div>
 
-  <div class="copyright">
+  <div class="legal">
     <div class="title">
-      Copyright &copy; 2019-2021<br>
-      The Mempool Open Source Project
+      The Mempool Open Source Project<br>
+      Copyright &copy; 2019-2021
     </div>
     <p>
       <a href="https://github.com/mempool/mempool">The Mempool Open Source Project</a> is free software; you can redistribute it and/or modify it under the terms of (at your option) either:<br>
@@ -223,22 +223,30 @@
     <p>
       This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the full license terms for more details.<br>
     </p>
-    <div class="title">
-      Trademark Notice<br>
-    </div>
+
+    <div class="title">Trademark Notice</div>
+
     <p>
       The Mempool Open Source Project&trade;, mempool.space&trade;, the mempool logo&trade;, the mempool.space logos&trade;, the mempool square logo&trade;, and the mempool blocks logo&trade; are either registered trademarks or trademarks of Mempool Space K.K in Japan, the United States, and/or other countries.
     </p>
     <p>
       While our software is available under an open source software license, the copyright license does not include an implied right or license to use our trademarks. See our <a href="https://mempool.space/trademark-policy">Trademark Policy and Guidelines</a> for more details, published on &lt;https://mempool.space/trademark-policy&gt;.
     </p>
+
+    <div class="title">Third Party Software</div>
+
+    <p>This software incorporates materials from third parties, with permission of the respective licensors and/or copyright holders on the terms provided by such parties as identified below.</p>
+    <textarea class="thirdPartyLicenses">{{ thirdPartyLicenses$ | async }}</textarea>
   </div>
 
+  <br><br>
+
   <div class="footer-links">
-    <a href="/3rdpartylicenses.txt">Third-party Licenses</a>
-    <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a>
+    <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a> | <a [routerLink]="['/privacy-policy']" i18n="shared.privacy-policy|Privacy Policy">Privacy Policy</a>
   </div>
   
+  <br>
+
   <div class="footer-version" *ngIf="officialMempoolSpace">
     {{ (backendInfo$ | async)?.hostname }} (v{{ (backendInfo$ | async )?.version }}) [{{ (backendInfo$ | async )?.gitCommit | slice:0:8 }}]
   </div>
