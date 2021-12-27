@@ -31,7 +31,7 @@
   top: 75px;
 }
 
-.position-container.liquid {
+.position-container.liquid, .position-container.liquidtestnet {
   left: 420px;
 }
 
@@ -39,7 +39,7 @@
   .position-container {
     left: 95%;
   }
-  .position-container.liquid {
+  .position-container.liquid, .position-container.liquidtestnet {
     left: 50%;
   }
   .position-container.loading {

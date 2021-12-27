@@ -55,7 +55,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    if (this.stateService.network === 'liquid') {
+    if (this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet') {
       this.feeRounding = '1.0-1';
     }
     this.mempoolEmptyBlocks.forEach((b) => {

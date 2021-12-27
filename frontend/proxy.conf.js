@@ -24,6 +24,7 @@ PROXY_CONFIG = [
         '/api/**', '!/api/v1/ws', 
         '!/bisq', '!/bisq/**', '!/bisq/',
         '!/liquid', '!/liquid/**', '!/liquid/',
+        '!/liquidtestnet', '!/liquidtestnet/**', '!/liquidtestnet/',
         '/testnet/api/**', '/signet/api/**'
         ],
         target: "https://mempool.space",
@@ -53,6 +54,16 @@ PROXY_CONFIG = [
         target: "https://liquid.network",
         pathRewrite: {
             "^/api/liquid/": "/liquid/api"
+        },
+        ws: true,
+        secure: false,
+        changeOrigin: true
+    },
+    {
+        context: ['/api/liquidtestnet**', '/liquidtestnet/api/**'],
+        target: "https://liquid.network/testnet",
+        pathRewrite: {
+            "^/api/liquidtestnet/": "/liquidtestnet/api"
         },
         ws: true,
         secure: false,

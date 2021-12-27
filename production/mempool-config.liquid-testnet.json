@@ -1,0 +1,39 @@
+{
+  "MEMPOOL": {
+    "NETWORK": "liquid",
+    "BACKEND": "esplora",
+    "HTTP_PORT": 8998,
+    "MINED_BLOCKS_CACHE": 144,
+    "SPAWN_CLUSTER_PROCS": 0,
+    "API_URL_PREFIX": "/api/v1/",
+    "WEBSOCKET_REFRESH_RATE_MS": 2000
+  },
+  "SYSLOG" : {
+    "MIN_PRIORITY": "debug"
+  },
+  "CORE_RPC": {
+    "PORT": 7041,
+    "USERNAME": "foo",
+    "PASSWORD": "bar"
+  },
+  "SECOND_CORE_RPC": {
+    "PORT": 8332,
+    "USERNAME": "foo",
+    "PASSWORD": "bar"
+  },
+  "ESPLORA": {
+    "REST_API_URL": "http://127.0.0.1:4001"
+  },
+  "DATABASE": {
+    "ENABLED": true,
+    "HOST": "127.0.0.1",
+    "PORT": 3306,
+    "USERNAME": "lmempool",
+    "PASSWORD": "lmempool",
+    "DATABASE": "lmempool"
+  },
+  "STATISTICS": {
+    "ENABLED": true,
+    "TX_PER_SECOND_SAMPLE_PERIOD": 150
+  }
+}

@@ -106,6 +106,91 @@ let routes: Routes = [
     ],
   },
   {
+    path: 'liquidtestnet',
+    children: [
+      {
+        path: '',
+        component: MasterPageComponent,
+        children: [
+          {
+            path: 'tx/push',
+            component: PushTransactionComponent,
+          },
+          {
+            path: '',
+            component: StartComponent,
+            children: [
+              {
+                path: '',
+                component: DashboardComponent
+              },
+              {
+                path: 'tx/:id',
+                component: TransactionComponent
+              },
+              {
+                path: 'block/:id',
+                component: BlockComponent
+              },
+              {
+                path: 'mempool-block/:id',
+                component: MempoolBlockComponent
+              },
+            ],
+          },
+          {
+            path: 'blocks',
+            component: LatestBlocksComponent,
+          },
+          {
+            path: 'graphs',
+            component: StatisticsComponent,
+          },
+          {
+            path: 'address/:id',
+            component: AddressComponent
+          },
+          {
+            path: 'asset/:id',
+            component: AssetComponent
+          },
+          {
+            path: 'assets',
+            component: AssetsComponent,
+          },
+          {
+            path: 'docs/api/:type',
+            component: DocsComponent
+          },
+          {
+            path: 'docs/api',
+            redirectTo: 'docs/api/rest'
+          },
+          {
+            path: 'docs',
+            redirectTo: 'docs/api/rest'
+          },
+          {
+            path: 'api',
+            redirectTo: 'docs/api/rest'
+          },
+        ],
+      },
+      {
+        path: 'tv',
+        component: TelevisionComponent
+      },
+      {
+        path: 'status',
+        component: StatusViewComponent
+      },
+      {
+        path: '**',
+        redirectTo: ''
+      },
+    ]
+  },
+  {
     path: 'liquid',
     children: [
       {
@@ -380,6 +465,94 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'bisq') {
 if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
   routes = [{
     path: '',
+    component: LiquidMasterPageComponent,
+    children: [
+      {
+        path: '',
+        component: StartComponent,
+        children: [
+          {
+            path: '',
+            component: DashboardComponent
+          },
+          {
+            path: 'tx/push',
+            component: PushTransactionComponent,
+          },
+          {
+            path: 'tx/:id',
+            component: TransactionComponent
+          },
+          {
+            path: 'block/:id',
+            component: BlockComponent
+          },
+          {
+            path: 'mempool-block/:id',
+            component: MempoolBlockComponent
+          },
+        ],
+      },
+      {
+        path: 'blocks',
+        component: LatestBlocksComponent,
+      },
+      {
+        path: 'graphs',
+        component: StatisticsComponent,
+      },
+      {
+        path: 'address/:id',
+        component: AddressComponent
+      },
+      {
+        path: 'asset/:id',
+        component: AssetComponent
+      },
+      {
+        path: 'assets',
+        component: AssetsComponent,
+      },
+      {
+        path: 'docs/api/:type',
+        component: DocsComponent
+      },
+      {
+        path: 'docs/api',
+        redirectTo: 'docs/api/rest'
+      },
+      {
+        path: 'docs',
+        redirectTo: 'docs/api/rest'
+      },
+      {
+        path: 'api',
+        redirectTo: 'docs/api/rest'
+      },
+      {
+        path: 'about',
+        component: AboutComponent,
+      },
+      {
+        path: 'terms-of-service',
+        component: TermsOfServiceComponent
+      },
+      {
+        path: 'privacy-policy',
+        component: PrivacyPolicyComponent
+      },
+      {
+        path: 'trademark-policy',
+        component: TrademarkPolicyComponent
+      },
+      {
+        path: 'sponsor',
+        component: SponsorComponent,
+      },
+    ],
+  },
+  {
+    path: 'testnet',
     component: LiquidMasterPageComponent,
     children: [
       {

@@ -11,10 +11,13 @@ export class RelativeUrlPipe implements PipeTransform {
   ) { }
 
   transform(value: string): string {
-    if (this.stateService.env.BASE_MODULE !== 'mempool') {
-      return '/' + value;
+    let network = this.stateService.network;
+    if (this.stateService.env.BASE_MODULE === 'liquid' && network === 'liquidtestnet') {
+      network = 'testnet';
+    } else if (this.stateService.env.BASE_MODULE !== 'mempool') {
+      network = '';
     }
-    return (this.stateService.network ? '/' + this.stateService.network : '') + value;
+    return (network ? '/' + network : '') + value;
   }
 
 }

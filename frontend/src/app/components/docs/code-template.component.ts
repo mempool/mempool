@@ -26,7 +26,7 @@ export class CodeTemplateComponent implements OnInit {
     if (this.network === 'bisq') {
       npmLink = `https://github.com/mempool/mempool.js/tree/main/npm-bisq-js`;
     }
-    if (this.network === 'liquid') {
+    if (this.network === 'liquid' || this.network === 'liquidtestnet') {
       npmLink = `https://github.com/mempool/mempool.js/tree/main/npm-liquid-js`;
     }
     return npmLink;
@@ -37,7 +37,7 @@ export class CodeTemplateComponent implements OnInit {
     if (this.network === 'bisq') {
       npmLink = `https://www.npmjs.org/package/@mempool/bisq.js`;
     }
-    if (this.network === 'liquid') {
+    if (this.network === 'liquid' || this.network === 'liquidtestnet') {
       npmLink = `https://www.npmjs.org/package/@mempool/liquid.js`;
     }
     return npmLink;
@@ -50,7 +50,7 @@ export class CodeTemplateComponent implements OnInit {
       } else {
         codeText = codeText.replace('%{0}', 'bitcoin');
       }
-      if(['', 'main', 'liquid', 'bisq'].includes(this.network)) {
+      if(['', 'main', 'liquid', 'bisq', 'liquidtestnet'].includes(this.network)) {
         codeText = codeText.replace('mempoolJS();', `mempoolJS({
     hostname: '${document.location.hostname}'
   });`);
@@ -119,7 +119,7 @@ export class CodeTemplateComponent implements OnInit {
       if (this.network === 'signet') {
         codeText = this.replaceJSPlaceholder(codeText, code.codeSampleSignet.esModule);
       }
-      if (this.network === 'liquid') {
+      if (this.network === 'liquid' || this.network === 'liquidtestnet') {
         codeText = this.replaceJSPlaceholder(codeText, code.codeSampleLiquid.esModule);
       }
       if (this.network === 'bisq') {
@@ -157,7 +157,7 @@ init();`;
       if (this.network === 'signet') {
         codeText = this.replaceJSPlaceholder(codeText, code.codeSampleSignet.esModule);
       }
-      if (this.network === 'liquid') {
+      if (this.network === 'liquid' || this.network === 'liquidtestnet') {
         codeText = this.replaceJSPlaceholder(codeText, code.codeSampleLiquid.esModule);
       }
       if (this.network === 'bisq') {
@@ -237,7 +237,7 @@ yarn add @mempool/liquid.js`;
       if (this.network === 'signet') {
         return this.replaceCurlPlaceholder(code.codeTemplate.curl, code.codeSampleSignet);
       }
-      if (this.network === 'liquid') {
+      if (this.network === 'liquid' || this.network === 'liquidtestnet') {
         return this.replaceCurlPlaceholder(code.codeTemplate.curl, code.codeSampleLiquid);
       }
       if (this.network === 'bisq') {
@@ -259,7 +259,7 @@ yarn add @mempool/liquid.js`;
     if (this.network === 'signet') {
       return code.codeSampleSignet.response;
     }
-    if (this.network === 'liquid') {
+    if (this.network === 'liquid' || this.network === 'liquidtestnet') {
       return code.codeSampleLiquid.response;
     }
     if (this.network === 'bisq') {
