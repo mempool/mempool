@@ -26,7 +26,7 @@ export class FeesBoxComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.defaultFee = this.stateService.network === 'liquid' ? 0.1 : 1;
+    this.defaultFee = this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet' ? 0.1 : 1;
 
     this.isLoadingWebSocket$ = this.stateService.isLoadingWebSocket$;
     this.feeEstimations$ = this.stateService.mempoolBlocks$

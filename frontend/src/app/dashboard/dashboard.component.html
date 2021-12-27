@@ -2,7 +2,7 @@
 <div class="container-xl dashboard-container">
   <div class="row row-cols-1 row-cols-md-2" *ngIf="{ value: (mempoolInfoData$ | async) } as mempoolInfoData">
     <ng-template [ngIf]="collapseLevel === 'three'" [ngIfElse]="expanded">
-      <div class="col card-wrapper" *ngIf="(network$ | async) !== 'liquid'">
+      <div class="col card-wrapper" *ngIf="(network$ | async) !== 'liquid' && (network$ | async) !== 'liquidtestnet'">
         <div class="main-title" i18n="fees-box.transaction-fees">Transaction Fees</div>
         <div class="card">
           <div class="card-body">
@@ -10,7 +10,7 @@
           </div>
         </div>
       </div>
-      <div class="col" *ngIf="(network$ | async) !== 'liquid'">
+      <div class="col" *ngIf="(network$ | async) !== 'liquid' && (network$ | async) !== 'liquidtestnet'">
         <ng-container *ngTemplateOutlet="difficultyEpoch"></ng-container>
       </div>
       <div class="col">
@@ -23,13 +23,13 @@
       <div class="col">
         <div class="card">
           <div class="card-body">
-            <ng-container *ngTemplateOutlet="stateService.network === 'liquid' ? lbtcPegs : txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
+            <ng-container *ngTemplateOutlet="stateService.network === 'liquid' || stateService.network === 'liquidtestnet' ? lbtcPegs : txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
           </div>
         </div>
       </div>
     </ng-template>
     <ng-template #expanded>
-      <div class="col card-wrapper" *ngIf="(network$ | async) !== 'liquid'">
+      <div class="col card-wrapper" *ngIf="(network$ | async) !== 'liquid' && (network$ | async) !== 'liquidtestnet'">
         <div class="main-title" i18n="fees-box.transaction-fees">Transaction Fees</div>
         <div class="card">
           <div class="card-body">
@@ -37,7 +37,7 @@
           </div>
         </div>
       </div>
-      <div class="col" *ngIf="(network$ | async) !== 'liquid'">
+      <div class="col" *ngIf="(network$ | async) !== 'liquid' && (network$ | async) !== 'liquidtestnet'">
         <ng-container *ngTemplateOutlet="difficultyEpoch"></ng-container>
       </div>
       <div class="col">
@@ -64,9 +64,9 @@
       <div class="col">
         <div class="card graph-card">
           <div class="card-body">
-            <ng-container *ngTemplateOutlet="stateService.network === 'liquid' ? lbtcPegs : txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
+            <ng-container *ngTemplateOutlet="stateService.network === 'liquid' || stateService.network === 'liquidtestnet' ? lbtcPegs : txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
             <hr>
-            <div class="mempool-graph" *ngIf="stateService.network === 'liquid'; else mempoolGraph">
+            <div class="mempool-graph" *ngIf="stateService.network === 'liquid' || stateService.network === 'liquidtestnet'; else mempoolGraph">
               <app-lbtc-pegs-graph [data]="liquidPegsMonth$ | async"></app-lbtc-pegs-graph>
             </div>
             <ng-template #mempoolGraph>
@@ -125,7 +125,7 @@
               <tbody>
                 <tr *ngFor="let transaction of transactions$ | async; let i = index;">
                   <td class="table-cell-txid"><a [routerLink]="['/tx' | relativeUrl, transaction.txid]">{{ transaction.txid | shortenString : 10 }}</a></td>
-                  <td class="table-cell-satoshis"><app-amount *ngIf="(network$ | async) !== 'liquid'; else liquidAmount" [satoshis]="transaction.value" digitsInfo="1.2-4" [noFiat]="true"></app-amount><ng-template #liquidAmount i18n="shared.confidential">Confidential</ng-template></td>
+                  <td class="table-cell-satoshis"><app-amount *ngIf="(network$ | async) !== 'liquid' && (network$ | async) !== 'liquidtestnet'; else liquidAmount" [satoshis]="transaction.value" digitsInfo="1.2-4" [noFiat]="true"></app-amount><ng-template #liquidAmount i18n="shared.confidential">Confidential</ng-template></td>
                   <td class="table-cell-fiat" *ngIf="(network$ | async) === ''" ><app-fiat [value]="transaction.value" digitsInfo="1.0-0"></app-fiat></td>
                   <td class="table-cell-fees">{{ transaction.fee / transaction.vsize | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
                 </tr>

@@ -41,7 +41,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     this.latestBlock$ = this.stateService.blocks$.pipe(map(([block]) => block));
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
-    if (this.network === 'liquid') {
+    if (this.network === 'liquid' || this.network === 'liquidtestnet') {
       this.assetsService.getAssetsMinimalJson$.subscribe((assets) => {
         this.assetsMinimal = assets;
       });
@@ -99,7 +99,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   }
 
   switchCurrency() {
-    if (this.network === 'liquid') {
+    if (this.network === 'liquid' || this.network === 'liquidtestnet') {
       return;
     }
     const oldvalue = !this.stateService.viewFiat$.value;

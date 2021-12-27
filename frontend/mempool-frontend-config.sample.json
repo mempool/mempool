@@ -2,6 +2,7 @@
   "TESTNET_ENABLED": false,
   "SIGNET_ENABLED": false,
   "LIQUID_ENABLED": false,
+  "LIQUID_TESTNET_ENABLED": false,
   "BISQ_ENABLED": false,
   "BISQ_SEPARATE_BACKEND": false,
   "ITEMS_PER_PAGE": 10,

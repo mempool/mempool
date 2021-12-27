@@ -48,7 +48,7 @@ export class SearchFormComponent implements OnInit {
       searchText: ['', Validators.required],
     });
 
-    if (this.network === 'liquid') {
+    if (this.network === 'liquid' || this.network === 'liquidtestnet') {
       this.assetsService.getAssetsMinimalJson$
         .subscribe((assets) => {
           this.assets = assets;
@@ -101,7 +101,7 @@ export class SearchFormComponent implements OnInit {
         this.navigate('/block/', searchText);
       } else if (this.regexTransaction.test(searchText)) {
         const matches = this.regexTransaction.exec(searchText);
-        if (this.network === 'liquid') {
+        if (this.network === 'liquid' || this.network === 'liquidtestnet') {
           if (this.assets[matches[1]]) {
             this.navigate('/asset/', matches[1]);
           }

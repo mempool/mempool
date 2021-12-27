@@ -371,7 +371,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         this.feeLimitIndex = i;
       }
       if (feeLevels[i] <= this.limitFee) {
-        if (this.stateService.network === 'liquid') {
+        if (this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet') {
           this.feeLevelsOrdered.push(`${(feeLevels[i] / 10).toFixed(1)} - ${(feeLevels[i + 1]  / 10).toFixed(1)}`);
         } else {
           this.feeLevelsOrdered.push(`${feeLevels[i]} - ${feeLevels[i + 1]}`);

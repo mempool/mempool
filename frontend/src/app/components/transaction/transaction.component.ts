@@ -159,7 +159,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
           );
         }),
         switchMap((tx) => {
-          if (this.network === 'liquid') {
+          if (this.network === 'liquid' || this.network === 'liquidtestnet') {
             return from(this.liquidUnblinding.checkUnblindedTx(tx))
               .pipe(
                 catchError((error) => {
