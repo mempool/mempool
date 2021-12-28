@@ -15,7 +15,7 @@ import { map } from 'rxjs/operators';
 })
 export class TransactionsListComponent implements OnInit, OnChanges {
   network = '';
-  nativeAssetId = environment.nativeAssetId;
+  nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
   displayDetails = false;
 
   @Input() transactions: Transaction[];
