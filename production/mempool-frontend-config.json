@@ -1,6 +1,7 @@
 {
   "TESTNET_ENABLED": true,
   "LIQUID_ENABLED": true,
+  "LIQUID_TESTNET_ENABLED": true,
   "BISQ_ENABLED": true,
   "BISQ_SEPARATE_BACKEND": true,
   "SIGNET_ENABLED": true,
