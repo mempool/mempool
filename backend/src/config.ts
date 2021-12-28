@@ -2,7 +2,7 @@ const configFile = require('../mempool-config.json');
 
 interface IConfig {
   MEMPOOL: {
-    NETWORK: 'mainnet' | 'testnet' | 'signet' | 'liquid';
+    NETWORK: 'mainnet' | 'testnet' | 'signet' | 'liquid' | 'liquidtestnet';
     BACKEND: 'esplora' | 'electrum' | 'none';
     HTTP_PORT: number;
     SPAWN_CLUSTER_PROCS: number;

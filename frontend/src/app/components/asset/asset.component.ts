@@ -20,7 +20,7 @@ import { moveDec } from 'src/app/bitcoin.utils';
 })
 export class AssetComponent implements OnInit, OnDestroy {
   network = '';
-  nativeAssetId = environment.nativeAssetId;
+  nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
 
   asset: Asset;
   blindedIssuance: boolean;
