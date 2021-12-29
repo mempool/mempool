@@ -24,7 +24,7 @@
 
         <div id="mobile-top-doc-nav" #mobileFixedApiNav class="hide-on-desktop"><app-api-docs-nav [network]="{ val: network$ | async }"></app-api-docs-nav></div>
 
-        <div class="api-category" *ngIf="network.val !== 'bisq' && network.val !== 'liquid'">
+        <div class="api-category" *ngIf="network.val !== 'bisq' && network.val !== 'liquid' && network.val !== 'liquidtestnet'">
 
           <div class="endpoint-container" id="get-difficulty-adjustment">
             <a class="section-header" [routerLink]="['./']" fragment="get-difficulty-adjustment">GET Difficulty Adjustment <span>General</span></a>
@@ -228,14 +228,14 @@
             </div>
             <div class="description">
               <div class="subtitle" i18n>Description</div>
-              <div i18n>Get the list of unspent transaction outputs associated with the address/scripthash. Available fields: <code>txid</code>, <code>vout</code>, <code>value</code>, and <code>status</code> (with the status of the funding tx).<ng-container *ngIf="network.val === 'liquid'">There is also a <code>valuecommitment</code> field that may appear in place of <code>value</code>, plus the following additional fields: <code>asset</code>/<code>assetcommitment</code>, <code>nonce</code>/<code>noncecommitment</code>, <code>surjection_proof</code>, and <code>range_proof</code>.</ng-container></div>
+              <div i18n>Get the list of unspent transaction outputs associated with the address/scripthash. Available fields: <code>txid</code>, <code>vout</code>, <code>value</code>, and <code>status</code> (with the status of the funding tx).<ng-container *ngIf="network.val === 'liquid' || network.val === 'liquidtestnet'">There is also a <code>valuecommitment</code> field that may appear in place of <code>value</code>, plus the following additional fields: <code>asset</code>/<code>assetcommitment</code>, <code>nonce</code>/<code>noncecommitment</code>, <code>surjection_proof</code>, and <code>range_proof</code>.</ng-container></div>
             </div>
             <app-code-template [hostname]="hostname" [code]="code.addressUTXO" [network]="network.val" ></app-code-template>
           </div>
 
         </div>
 
-        <div class="api-category" *ngIf="network.val === 'liquid'">
+        <div class="api-category" *ngIf="network.val === 'liquid' || network.val === 'liquidtestnet'">
 
           <div class="endpoint-container" id="get-assets">
             <a class="section-header" [routerLink]="['./']" fragment="get-assets">GET Assets <span>Assets</span></a>
@@ -313,7 +313,7 @@
             </div>
             <div class="description">
               <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns details about a block. Available fields: <code>id</code>, <code>height</code>, <code>version</code>, <code>timestamp</code>, <code>bits</code>, <code>nonce</code>, <code>merkle_root</code>, <code>tx_count</code>, <code>size</code>, <code>weight</code>,<ng-container *ngIf="network.val === 'liquid'"> <code>proof</code>,</ng-container> and <code>previousblockhash</code>.</div>
+              <div i18n>Returns details about a block. Available fields: <code>id</code>, <code>height</code>, <code>version</code>, <code>timestamp</code>, <code>bits</code>, <code>nonce</code>, <code>merkle_root</code>, <code>tx_count</code>, <code>size</code>, <code>weight</code>,<ng-container *ngIf="network.val === 'liquid' || network.val === 'liquidtestnet'"> <code>proof</code>,</ng-container> and <code>previousblockhash</code>.</div>
             </div>
             <app-code-template [hostname]="hostname" [code]="code.block" [network]="network.val" ></app-code-template>
           </div>
@@ -577,7 +577,7 @@
             <app-code-template [hostname]="hostname" [code]="code.transactionHex" [network]="network.val" ></app-code-template>
           </div>
 
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq' && network.val !== 'liquid'" id="get-transaction-merkleblock-proof">
+          <div class="endpoint-container" *ngIf="network.val !== 'bisq' && network.val !== 'liquid' && network.val !== 'liquidtestnet'" id="get-transaction-merkleblock-proof">
             <a class="section-header" [routerLink]="['./']" fragment="get-transaction-merkleblock-proof">GET Transaction Merkleblock Proof <span>Transactions</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>

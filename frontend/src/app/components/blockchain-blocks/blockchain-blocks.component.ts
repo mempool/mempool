@@ -36,6 +36,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
     '': ['#9339f4', '#105fb0'],
     bisq: ['#9339f4', '#105fb0'],
     liquid: ['#116761', '#183550'],
+    'liquidtestnet': ['#494a4a', '#272e46'],
     testnet: ['#1d486f', '#183550'],
     signet: ['#6f1d5d', '#471850'],
   };
@@ -47,7 +48,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    if (this.stateService.network === 'liquid') {
+    if (this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet') {
       this.feeRounding = '1.0-1';
     }
     this.emptyBlocks.forEach((b) => this.emptyBlockStyles.push(this.getStyleForEmptyBlock(b)));

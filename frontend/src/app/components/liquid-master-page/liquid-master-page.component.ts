@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Env, StateService } from '../../services/state.service';
-import { Observable} from 'rxjs';
+import { merge, Observable, of} from 'rxjs';
 
 @Component({
   selector: 'app-liquid-master-page',
@@ -13,6 +13,7 @@ export class LiquidMasterPageComponent implements OnInit {
   navCollapsed = false;
   isMobile = window.innerWidth <= 767.98;
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
+  network$: Observable<string>;
 
   constructor(
     private stateService: StateService,
@@ -21,6 +22,7 @@ export class LiquidMasterPageComponent implements OnInit {
   ngOnInit() {
     this.env = this.stateService.env;
     this.connectionState$ = this.stateService.connectionState$;
+    this.network$ = merge(of(''), this.stateService.networkChanged$);
   }
 
   collapse(): void {

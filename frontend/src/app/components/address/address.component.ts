@@ -99,7 +99,7 @@ export class AddressComponent implements OnInit, OnDestroy {
       .pipe(
         filter((address) => !!address),
         tap((address: Address) => {
-          if (this.stateService.network === 'liquid' && /^([m-zA-HJ-NP-Z1-9]{26,35}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,100}|[a-km-zA-HJ-NP-Z1-9]{80})$/.test(address.address)) {
+          if ((this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet') && /^([m-zA-HJ-NP-Z1-9]{26,35}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,100}|[a-km-zA-HJ-NP-Z1-9]{80})$/.test(address.address)) {
             this.apiService.validateAddress$(address.address)
               .subscribe((addressInfo) => {
                 this.addressInfo = addressInfo;

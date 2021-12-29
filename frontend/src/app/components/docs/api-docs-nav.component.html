@@ -27,7 +27,7 @@
 <a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-address-transactions-mempool" (click)="collapseItem.toggle()">GET Address Transactions Mempool</a>
 <a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-address-utxo" (click)="collapseItem.toggle()">GET Address UTXO</a>
 
-<ng-template [ngIf]="network.val === 'liquid'">
+<ng-template [ngIf]="network.val === 'liquid' || network.val === 'liquidtestnet'">
   <p>Assets</p>
   <a [routerLink]="['./']" fragment="get-assets" (click)="collapseItem.toggle()">GET Assets</a>
   <a [routerLink]="['./']" fragment="get-assets-icons" (click)="collapseItem.toggle()">GET Assets Icons</a>
@@ -66,7 +66,7 @@
 <a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-cpfp" (click)="collapseItem.toggle()">GET Children Pay for Parent</a>
 <a [routerLink]="['./']" fragment="get-transaction" (click)="collapseItem.toggle()">GET Transaction</a>
 <a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-transaction-hex" (click)="collapseItem.toggle()">GET Transaction Hex</a>
-<a *ngIf="network.val !== 'bisq' && network.val !== 'liquid'" [routerLink]="['./']" fragment="get-transaction-merkleblock-proof" (click)="collapseItem.toggle()">GET Transaction Merkleblock Proof</a>
+<a *ngIf="network.val !== 'bisq' && network.val !== 'liquid' && network.val !== 'liquidtestnet'" [routerLink]="['./']" fragment="get-transaction-merkleblock-proof" (click)="collapseItem.toggle()">GET Transaction Merkleblock Proof</a>
 <a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-transaction-merkle-proof" (click)="collapseItem.toggle()">GET Transaction Merkle Proof</a>
 <a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-transaction-outspend" (click)="collapseItem.toggle()">GET Transaction Outspend</a>
 <a *ngIf="network.val !== 'bisq'" [routerLink]="['./']" fragment="get-transaction-outspends" (click)="collapseItem.toggle()">GET Transaction Outspends</a>

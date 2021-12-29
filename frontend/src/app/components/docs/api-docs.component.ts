@@ -3663,7 +3663,7 @@ export class ApiDocsComponent implements OnInit {
     };
 
     this.network$.subscribe((network) => {
-      this.active = (network === 'liquid') ? 2 : 0;
+      this.active = (network === 'liquid' || network === 'liquidtestnet') ? 2 : 0;
     });
   }
 
@@ -3679,7 +3679,7 @@ export class ApiDocsComponent implements OnInit {
     if (network === 'signet') {
       curlResponse = code.codeSampleSignet.curl;
     }
-    if (network === 'liquid') {
+    if (network === 'liquid' || network === 'liquidtestnet') {
       curlResponse = code.codeSampleLiquid.curl;
     }
     if (network === 'bisq') {

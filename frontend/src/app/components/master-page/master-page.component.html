@@ -11,7 +11,7 @@
     </ng-container>
   </a>
 
-  <div (window:resize)="onResize($event)" ngbDropdown class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED">
+  <div (window:resize)="onResize($event)" ngbDropdown class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED || env.LIQUID_TESTNET_ENABLED">
     <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split" aria-haspopup="true">
       <img src="./resources/{{ network.val === '' ? 'bitcoin' : network.val }}-logo.png" style="width: 25px; height: 25px;" class="mr-1">
     </button>
@@ -24,6 +24,8 @@
       <button ngbDropdownItem *ngIf="env.BISQ_ENABLED && !env.OFFICIAL_MEMPOOL_SPACE" class="bisq" [class.active]="network.val === 'bisq'" routerLink="/bisq"><img src="./resources/bisq-logo.png" style="width: 30px;" class="mr-1"> Bisq</button>
       <a href="https://liquid.network" ngbDropdownItem *ngIf="env.LIQUID_ENABLED && env.OFFICIAL_MEMPOOL_SPACE" class="liquid" [class.active]="network.val === 'liquid'"><img src="./resources/liquid-logo.png" style="width: 30px;" class="mr-1"> Liquid</a>
       <button ngbDropdownItem *ngIf="env.LIQUID_ENABLED && !env.OFFICIAL_MEMPOOL_SPACE" class="liquid" [class.active]="network.val === 'liquid'" routerLink="/liquid"><img src="./resources/liquid-logo.png" style="width: 30px;" class="mr-1"> Liquid</button>
+      <a href="https://liquid.network/testnet" ngbDropdownItem *ngIf="env.LIQUID_TESTNET_ENABLED && env.OFFICIAL_MEMPOOL_SPACE" class="liquidtestnet" [class.active]="network.val === 'liquid'"><img src="./resources/liquidtestnet-logo.png" style="width: 30px;" class="mr-1"> Liquid Testnet</a>
+      <button ngbDropdownItem *ngIf="env.LIQUID_TESTNET_ENABLED && !env.OFFICIAL_MEMPOOL_SPACE" class="liquidtestnet" [class.active]="network.val === 'liquidtestnet'" routerLink="/liquidtestnet"><img src="./resources/liquidtestnet-logo.png" style="width: 30px;" class="mr-1"> Liquid Testnet</button>
     </div>
   </div>
 
@@ -54,8 +56,8 @@
           <a class="nav-link" [routerLink]="['/tv' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'tv']" [fixedWidth]="true" i18n-title="master-page.tvview" title="TV view"></fa-icon></a>
         </li>
       </ng-template>
-      <li *ngIf="network.val === 'liquid'" class="nav-item" routerLinkActive="active">
-        <a class="nav-link" [routerLink]="['/liquid/assets']" (click)="collapse()"><fa-icon [icon]="['fas', 'database']" [fixedWidth]="true" i18n-title="master-page.assets" title="Assets"></fa-icon></a>
+      <li *ngIf="network.val === 'liquid' || network.val === 'liquidtestnet'" class="nav-item" routerLinkActive="active">
+        <a class="nav-link" [routerLink]="['/assets' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'database']" [fixedWidth]="true" i18n-title="master-page.assets" title="Assets"></fa-icon></a>
       </li>
       <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/docs' | relativeUrl ]" (click)="collapse()"><fa-icon [icon]="['fas', 'book']" [fixedWidth]="true" i18n-title="documentation.title" title="Documentation"></fa-icon></a>
