@@ -7,11 +7,13 @@ import { Observable, of, Subject, merge } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, filter, catchError, map } from 'rxjs/operators';
 import { ElectrsApiService } from 'src/app/services/electrs-api.service';
 import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
+import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
   selector: 'app-search-form',
   templateUrl: './search-form.component.html',
   styleUrls: ['./search-form.component.scss'],
+  providers: [RelativeUrlPipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchFormComponent implements OnInit {
@@ -38,6 +40,7 @@ export class SearchFormComponent implements OnInit {
     private assetsService: AssetsService,
     private stateService: StateService,
     private electrsApiService: ElectrsApiService,
+    private relativeUrlPipe: RelativeUrlPipe,
   ) { }
 
   ngOnInit() {
@@ -125,7 +128,7 @@ export class SearchFormComponent implements OnInit {
   }
 
   navigate(url: string, searchText: string, extras?: any) {
-    this.router.navigate([(this.network && this.stateService.env.BASE_MODULE === 'mempool' ? '/' + this.network : '') + url, searchText], extras);
+    this.router.navigate([this.relativeUrlPipe.transform(url), searchText], extras);
     this.searchTriggered.emit();
     this.searchForm.setValue({
       searchText: '',
