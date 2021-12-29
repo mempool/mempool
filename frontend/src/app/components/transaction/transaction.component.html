@@ -66,7 +66,7 @@
                     <td><app-time-span [time]="tx.status.block_time - transactionTime" [fastRender]="true"></app-time-span></td>
                   </tr>
                 </ng-template>
-                <tr *ngIf="network !== 'liquid'">
+                <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
                   <td class="td-width" i18n="transaction.features|Transaction features">Features</td>
                   <td>
                     <app-tx-features [tx]="tx"></app-tx-features>
@@ -114,7 +114,7 @@
                         <span i18n="transaction.eta.in-several-hours|Transaction ETA in several hours or more">In several hours (or more)</span>
                       </ng-template>
                       <ng-template #belowBlockLimit>
-                        <ng-template [ngIf]="network === 'liquid'" [ngIfElse]="timeEstimateDefault">
+                        <ng-template [ngIf]="network === 'liquid' || network === 'liquidtestnet'" [ngIfElse]="timeEstimateDefault">
                           <app-time-until [time]="(60 * 1000 * txInBlockIndex) + now" [fastRender]="false" [fixedRender]="true"></app-time-until>
                         </ng-template>
                         <ng-template #timeEstimateDefault>
@@ -124,7 +124,7 @@
                     </ng-template>
                   </td>
                 </tr>
-                <tr *ngIf="network !== 'liquid'">
+                <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
                   <td class="td-width" i18n="transaction.features|Transaction Features">Features</td>
                   <td>
                     <app-tx-features [tx]="tx"></app-tx-features>

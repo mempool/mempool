@@ -50,6 +50,8 @@ Thumbs.db
 
 src/resources/assets.json
 src/resources/assets.minimal.json
+src/resources/assets-testnet.json
+src/resources/assets-testnet.minimal.json
 src/resources/pools.json
 
 # environment config

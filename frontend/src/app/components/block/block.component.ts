@@ -210,7 +210,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   }
 
   setBlockSubsidy() {
-    if (this.network === 'liquid') {
+    if (this.network === 'liquid' || this.network === 'liquidtestnet') {
       this.blockSubsidy = 0;
       return;
     }

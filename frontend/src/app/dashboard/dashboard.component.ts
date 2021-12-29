@@ -262,7 +262,7 @@ export class DashboardComponent implements OnInit {
         share(),
       );
 
-    if (this.stateService.network === 'liquid') {
+    if (this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet') {
       this.liquidPegsMonth$ = this.apiService.listLiquidPegsMonth$()
         .pipe(
           map((pegs) => {

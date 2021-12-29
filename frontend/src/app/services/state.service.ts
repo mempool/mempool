@@ -19,6 +19,7 @@ export interface Env {
   TESTNET_ENABLED: boolean;
   SIGNET_ENABLED: boolean;
   LIQUID_ENABLED: boolean;
+  LIQUID_TESTNET_ENABLED: boolean;
   BISQ_ENABLED: boolean;
   BISQ_SEPARATE_BACKEND: boolean;
   ITEMS_PER_PAGE: number;
@@ -38,6 +39,7 @@ const defaultEnv: Env = {
   'TESTNET_ENABLED': false,
   'SIGNET_ENABLED': false,
   'LIQUID_ENABLED': false,
+  'LIQUID_TESTNET_ENABLED': false,
   'BASE_MODULE': 'mempool',
   'BISQ_ENABLED': false,
   'BISQ_SEPARATE_BACKEND': false,
@@ -116,7 +118,7 @@ export class StateService {
 
     this.blocks$ = new ReplaySubject<[Block, boolean]>(this.env.KEEP_BLOCKS_AMOUNT);
 
-    if (this.env.BASE_MODULE !== 'mempool') {
+    if (this.env.BASE_MODULE === 'bisq') {
       this.network = this.env.BASE_MODULE;
       this.networkChanged$.next(this.env.BASE_MODULE);
     }
@@ -125,15 +127,21 @@ export class StateService {
   }
 
   setNetworkBasedonUrl(url: string) {
-    if (this.env.BASE_MODULE !== 'mempool') {
+    if (this.env.BASE_MODULE !== 'mempool' && this.env.BASE_MODULE !== 'liquid') {
       return;
     }
-    const networkMatches = url.match(/\/(bisq|testnet|liquid|signet)/);
+    const networkMatches = url.match(/\/(bisq|testnet|liquidtestnet|liquid|signet)/);
     switch (networkMatches && networkMatches[1]) {
       case 'liquid':
         if (this.network !== 'liquid') {
           this.network = 'liquid';
           this.networkChanged$.next('liquid');
+        }
+        return;
+      case 'liquidtestnet':
+        if (this.network !== 'liquidtestnet') {
+          this.network = 'liquidtestnet';
+          this.networkChanged$.next('liquidtestnet');
         }
         return;
       case 'signet':
@@ -144,8 +152,13 @@ export class StateService {
         return;
       case 'testnet':
         if (this.network !== 'testnet') {
-          this.network = 'testnet';
-          this.networkChanged$.next('testnet');
+          if (this.env.BASE_MODULE === 'liquid') {
+            this.network = 'liquidtestnet';
+            this.networkChanged$.next('liquidtestnet');
+          } else {
+            this.network = 'testnet';
+            this.networkChanged$.next('testnet');
+          }
         }
         return;
       case 'bisq':
@@ -155,7 +168,12 @@ export class StateService {
         }
         return;
       default:
-        if (this.network !== '') {
+        if (this.env.BASE_MODULE !== 'mempool') {
+          if (this.network !== this.env.BASE_MODULE) {
+            this.network = this.env.BASE_MODULE;
+            this.networkChanged$.next(this.env.BASE_MODULE);
+          }
+        } else if (this.network !== '') {
           this.network = '';
           this.networkChanged$.next('');
         }

@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { merge, combineLatest, Observable } from 'rxjs';
 import { AssetExtended } from '../interfaces/electrs.interface';
 import { SeoService } from '../services/seo.service';
+import { StateService } from '../services/state.service';
 
 @Component({
   selector: 'app-assets',
@@ -15,7 +16,8 @@ import { SeoService } from '../services/seo.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AssetsComponent implements OnInit {
-  nativeAssetId = environment.nativeAssetId;
+  nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
+
   assets: AssetExtended[];
   assetsCache: AssetExtended[];
   searchForm: FormGroup;
@@ -34,6 +36,7 @@ export class AssetsComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private seoService: SeoService,
+    private stateService: StateService,
   ) { }
 
   ngOnInit() {
@@ -52,12 +55,22 @@ export class AssetsComponent implements OnInit {
       take(1),
       mergeMap(([assets, qp]) => {
         this.assets = Object.values(assets);
-        // @ts-ignore
-        this.assets.push({
-          name: 'Liquid Bitcoin',
-          ticker: 'L-BTC',
-          asset_id: this.nativeAssetId,
-        });
+        if (this.stateService.network === 'liquid') {
+          // @ts-ignore
+          this.assets.push({
+            name: 'Liquid Bitcoin',
+            ticker: 'L-BTC',
+            asset_id: this.nativeAssetId,
+          });
+        } else if (this.stateService.network === 'liquidtestnet') {
+          // @ts-ignore
+          this.assets.push({
+            name: 'Test Liquid Bitcoin',
+            ticker: 'tL-BTC',
+            asset_id: this.nativeAssetId,
+          });
+        }
+
         this.assets = this.assets.sort((a: any, b: any) => a.name.localeCompare(b.name));
         this.assetsCache = this.assets;
         this.searchForm.get('searchText').enable();
