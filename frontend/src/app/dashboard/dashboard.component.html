@@ -23,7 +23,7 @@
       <div class="col">
         <div class="card">
           <div class="card-body">
-            <ng-container *ngTemplateOutlet="stateService.network === 'liquid' || stateService.network === 'liquidtestnet' ? lbtcPegs : txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
+            <ng-container *ngTemplateOutlet="stateService.network === 'liquid' ? lbtcPegs : txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
           </div>
         </div>
       </div>
@@ -64,9 +64,9 @@
       <div class="col">
         <div class="card graph-card">
           <div class="card-body">
-            <ng-container *ngTemplateOutlet="stateService.network === 'liquid' || stateService.network === 'liquidtestnet' ? lbtcPegs : txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
+            <ng-container *ngTemplateOutlet="stateService.network === 'liquid' ? lbtcPegs : txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
             <hr>
-            <div class="mempool-graph" *ngIf="stateService.network === 'liquid' || stateService.network === 'liquidtestnet'; else mempoolGraph">
+            <div class="mempool-graph" *ngIf="stateService.network === 'liquid'; else mempoolGraph">
               <app-lbtc-pegs-graph [data]="liquidPegsMonth$ | async"></app-lbtc-pegs-graph>
             </div>
             <ng-template #mempoolGraph>
