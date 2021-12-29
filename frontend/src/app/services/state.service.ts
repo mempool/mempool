@@ -168,14 +168,14 @@ export class StateService {
         }
         return;
       default:
-        if (this.env.BASE_MODULE !== 'mempool' && this.network !== this.env.BASE_MODULE) {
-          this.network = this.env.BASE_MODULE;
-          this.networkChanged$.next(this.env.BASE_MODULE);
-        } else {
-          if (this.network !== '') {
-            this.network = '';
-            this.networkChanged$.next('');
+        if (this.env.BASE_MODULE !== 'mempool') {
+          if (this.network !== this.env.BASE_MODULE) {
+            this.network = this.env.BASE_MODULE;
+            this.networkChanged$.next(this.env.BASE_MODULE);
           }
+        } else if (this.network !== '') {
+          this.network = '';
+          this.networkChanged$.next('');
         }
     }
   }
