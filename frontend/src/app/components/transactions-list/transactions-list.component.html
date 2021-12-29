@@ -55,6 +55,9 @@
                     <ng-container *ngSwitchCase="vin.prevout && vin.prevout.scriptpubkey_type === 'p2pk'">
                       <span>P2PK</span>
                     </ng-container>
+                    <ng-container *ngSwitchCase="!vin.prevout">
+                      <span>{{ vin.issuance ? 'Issuance' : 'UNKNOWN' }}</span>
+                    </ng-container>
                     <ng-container *ngSwitchDefault>
                       <a [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">
                         <span class="d-block d-lg-none">{{ vin.prevout.scriptpubkey_address | shortenString : 16 }}</span>
