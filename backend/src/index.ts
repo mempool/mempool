@@ -96,7 +96,7 @@ class Server {
       statistics.startStatistics();
     }
 
-    if (config.MEMPOOL.NETWORK === 'liquid') {
+    if (config.MEMPOOL.NETWORK === 'liquid' || config.MEMPOOL.NETWORK === 'liquidtestnet') {
       icons.loadIcons();
     }
 
@@ -156,7 +156,7 @@ class Server {
     if (this.wss) {
       websocketHandler.setWebsocketServer(this.wss);
     }
-    if (config.MEMPOOL.NETWORK === 'liquid' && config.DATABASE.ENABLED) {
+    if ((config.MEMPOOL.NETWORK === 'liquid' || config.MEMPOOL.NETWORK === 'liquidtestnet') && config.DATABASE.ENABLED) {
       blocks.setNewBlockCallback(async () => {
         try {
           await elementsParser.$parse();
@@ -283,14 +283,14 @@ class Server {
       ;
     }
 
-    if (config.MEMPOOL.NETWORK === 'liquid') {
+    if (config.MEMPOOL.NETWORK === 'liquid' || config.MEMPOOL.NETWORK === 'liquidtestnet') {
       this.app
         .get(config.MEMPOOL.API_URL_PREFIX + 'assets/icons', routes.getAllLiquidIcon)
         .get(config.MEMPOOL.API_URL_PREFIX + 'asset/:assetId/icon', routes.getLiquidIcon)
       ;
     }
 
-    if (config.MEMPOOL.NETWORK === 'liquid' && config.DATABASE.ENABLED) {
+    if ((config.MEMPOOL.NETWORK === 'liquid' || config.MEMPOOL.NETWORK === 'liquidtestnet') && config.DATABASE.ENABLED) {
       this.app
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/month', routes.$getElementsPegsByMonth)
       ;
