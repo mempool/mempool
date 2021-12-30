@@ -21,7 +21,7 @@ update_repo()
     cd "$HOME/${site}" || exit 1
 
     git fetch origin || exit 1
-    for remote in origin knorrium hunicus;do
+    for remote in origin knorrium emzy nymkappa hunicus;do
         git remote add "${remote}" "https://github.com/${remote}/mempool" >/dev/null 2>&1
         git fetch "${remote}" || exit 1
     done
@@ -66,8 +66,8 @@ ship_frontend()
 export NVM_DIR="${HOME}/.nvm"
 source "${NVM_DIR}/nvm.sh"
 
-for target in mainnet liquid bisq testnet signet;do update_repo "${target}";done
-for target in mainnet liquid bisq testnet signet;do build_backend "${target}";done
+for target in mainnet testnet signet liquid liquidtestnet bisq;do update_repo "${target}";done
+for target in mainnet testnet signet liquid liquidtestnet bisq;do build_backend "${target}";done
 for target in mainnet liquid bisq;do build_frontend "${target}";done
 for target in mainnet liquid bisq;do ship_frontend "${target}";done
 
