@@ -55,17 +55,19 @@
                     <ng-container *ngSwitchCase="vin.prevout && vin.prevout.scriptpubkey_type === 'p2pk'">
                       <span>P2PK</span>
                     </ng-container>
-                    <ng-container *ngSwitchCase="!vin.prevout">
-                      <span>{{ vin.issuance ? 'Issuance' : 'UNKNOWN' }}</span>
-                    </ng-container>
                     <ng-container *ngSwitchDefault>
-                      <a [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">
-                        <span class="d-block d-lg-none">{{ vin.prevout.scriptpubkey_address | shortenString : 16 }}</span>
-                        <span class="d-none d-lg-block">{{ vin.prevout.scriptpubkey_address | shortenString : 35 }}</span>
-                      </a>
-                      <div>
-                        <app-address-labels [vin]="vin"></app-address-labels>
-                      </div>
+                      <ng-template [ngIf]="!vin.prevout" [ngIfElse]="defaultAddress">
+                        <span>{{ vin.issuance ? 'Issuance' : 'UNKNOWN' }}</span>
+                      </ng-template>
+                      <ng-template #defaultAddress>
+                        <a [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">
+                          <span class="d-block d-lg-none">{{ vin.prevout.scriptpubkey_address | shortenString : 16 }}</span>
+                          <span class="d-none d-lg-block">{{ vin.prevout.scriptpubkey_address | shortenString : 35 }}</span>
+                        </a>
+                        <div>
+                          <app-address-labels [vin]="vin"></app-address-labels>
+                        </div>
+                      </ng-template>
                     </ng-container>
                   </div>
                 </td>
