@@ -31,7 +31,8 @@ class TransactionUtils {
       // @ts-ignore
       return transaction;
     }
-    const feePerVbytes = Math.max(config.MEMPOOL.NETWORK === 'liquid' ? 0.1 : 1, (transaction.fee || 0) / (transaction.weight / 4));
+    const feePerVbytes = Math.max(config.MEMPOOL.NETWORK === 'liquid' || config.MEMPOOL.NETWORK === 'liquidtestnet' ? 0.1 : 1,
+      (transaction.fee || 0) / (transaction.weight / 4));
     const transactionExtended: TransactionExtended = Object.assign({
       vsize: Math.round(transaction.weight / 4),
       feePerVsize: feePerVbytes,
