@@ -8,10 +8,12 @@ import { Observable, of, Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
+import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
   selector: 'app-block',
   templateUrl: './block.component.html',
+  providers: [RelativeUrlPipe],
   styleUrls: ['./block.component.scss']
 })
 export class BlockComponent implements OnInit, OnDestroy {
@@ -51,6 +53,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     private stateService: StateService,
     private seoService: SeoService,
     private websocketService: WebsocketService,
+    private relativeUrlPipe: RelativeUrlPipe,
   ) { }
 
   ngOnInit() {
@@ -194,7 +197,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         if (this.showNextBlocklink) {
           this.navigateToNextBlock();
         } else {
-          this.router.navigate([(this.network && this.stateService.env.BASE_MODULE === 'mempool' ? '/' + this.network : '') + '/mempool-block/', '0']);
+          this.router.navigate([this.relativeUrlPipe.transform('/mempool-block'), '0']);
         }
       }
     });
@@ -277,13 +280,13 @@ export class BlockComponent implements OnInit, OnDestroy {
       return;
     }
     const block = this.latestBlocks.find((b) => b.height === this.nextBlockHeight - 2);
-    this.router.navigate([(this.network && this.stateService.env.BASE_MODULE === 'mempool' ? '/' + this.network : '') + '/block/',
+    this.router.navigate([this.relativeUrlPipe.transform('/block/'),
       block ? block.id : this.block.previousblockhash], { state: { data: { block, blockHeight: this.nextBlockHeight - 2 } } });
   }
 
   navigateToNextBlock() {
     const block = this.latestBlocks.find((b) => b.height === this.nextBlockHeight);
-    this.router.navigate([(this.network && this.stateService.env.BASE_MODULE === 'mempool' ? '/' + this.network : '') + '/block/',
+    this.router.navigate([this.relativeUrlPipe.transform('/block/'),
       block ? block.id : this.nextBlockHeight], { state: { data: { block, blockHeight: this.nextBlockHeight } } });
   }
 

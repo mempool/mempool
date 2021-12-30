@@ -6,11 +6,13 @@ import { Router } from '@angular/router';
 import { take, map, switchMap } from 'rxjs/operators';
 import { feeLevels, mempoolFeeColors } from 'src/app/app.constants';
 import { specialBlocks } from 'src/app/app.constants';
+import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
   selector: 'app-mempool-blocks',
   templateUrl: './mempool-blocks.component.html',
   styleUrls: ['./mempool-blocks.component.scss'],
+  providers: [RelativeUrlPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MempoolBlocksComponent implements OnInit, OnDestroy {
@@ -52,6 +54,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     private router: Router,
     public stateService: StateService,
     private cd: ChangeDetectorRef,
+    private relativeUrlPipe: RelativeUrlPipe,
   ) { }
 
   ngOnInit() {
@@ -166,19 +169,19 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
       if (event.key === 'ArrowRight') {
         if (this.mempoolBlocks[this.markIndex - 1]) {
-          this.router.navigate([(this.network ? '/' + this.network : '') + '/mempool-block/', this.markIndex - 1]);
+          this.router.navigate([this.relativeUrlPipe.transform('mempool-block/'), this.markIndex - 1]);
         } else {
           this.stateService.blocks$
             .pipe(take(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT))
             .subscribe(([block]) => {
               if (this.stateService.latestBlockHeight === block.height) {
-                this.router.navigate([(this.network ? '/' + this.network : '') + '/block/', block.id], { state: { data: { block } }});
+                this.router.navigate([this.relativeUrlPipe.transform('/block/'), block.id], { state: { data: { block } }});
               }
             });
         }
       } else if (event.key === 'ArrowLeft') {
         if (this.mempoolBlocks[this.markIndex + 1]) {
-          this.router.navigate([(this.network ? '/' + this.network : '') + '/mempool-block/', this.markIndex + 1]);
+          this.router.navigate([this.relativeUrlPipe.transform('/mempool-block/'), this.markIndex + 1]);
         }
       }
     });
