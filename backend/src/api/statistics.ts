@@ -4,6 +4,7 @@ import logger from '../logger';
 
 import { Statistic, TransactionExtended, OptimizedStatistic } from '../mempool.interfaces';
 import config from '../config';
+import { Common } from './common';
 
 class Statistics {
   protected intervalTimer: NodeJS.Timer | undefined;
@@ -90,11 +91,9 @@ class Statistics {
     memPoolArray.forEach((transaction) => {
       for (let i = 0; i < logFees.length; i++) {
         if (
-          ((config.MEMPOOL.NETWORK === 'liquid' || config.MEMPOOL.NETWORK === 'liquidtestnet')
-          && (i === lastItem || transaction.effectiveFeePerVsize * 10 < logFees[i + 1]))
+          (Common.isLiquid() && (i === lastItem || transaction.effectiveFeePerVsize * 10 < logFees[i + 1]))
           ||
-          ((config.MEMPOOL.NETWORK !== 'liquid' && config.MEMPOOL.NETWORK !== 'liquidtestnet')
-          && (i === lastItem || transaction.effectiveFeePerVsize < logFees[i + 1]))
+          (!Common.isLiquid() && (i === lastItem || transaction.effectiveFeePerVsize < logFees[i + 1]))
         ) {
           if (weightVsizeFees[logFees[i]]) {
             weightVsizeFees[logFees[i]] += transaction.vsize;
