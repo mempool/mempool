@@ -127,7 +127,7 @@ class DatabaseMigration {
     const queries: string[] = [];
 
     if (version < 1) {
-      if (config.MEMPOOL.NETWORK !== 'liquid') {
+      if (config.MEMPOOL.NETWORK !== 'liquid' && config.MEMPOOL.NETWORK !== 'liquidtestnet') {
         queries.push(`UPDATE statistics SET
           vsize_1 = vsize_1 + vsize_2, vsize_2 = vsize_3,
           vsize_3 = vsize_4, vsize_4 = vsize_5,
