@@ -24,6 +24,7 @@ import elementsParser from './api/liquid/elements-parser';
 import databaseMigration from './api/database-migration';
 import syncAssets from './sync-assets';
 import icons from './api/liquid/icons';
+import { Common } from './api/common';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -96,7 +97,7 @@ class Server {
       statistics.startStatistics();
     }
 
-    if (config.MEMPOOL.NETWORK === 'liquid' || config.MEMPOOL.NETWORK === 'liquidtestnet') {
+    if (Common.isLiquid()) {
       icons.loadIcons();
     }
 
@@ -156,7 +157,7 @@ class Server {
     if (this.wss) {
       websocketHandler.setWebsocketServer(this.wss);
     }
-    if ((config.MEMPOOL.NETWORK === 'liquid' || config.MEMPOOL.NETWORK === 'liquidtestnet') && config.DATABASE.ENABLED) {
+    if (Common.isLiquid() && config.DATABASE.ENABLED) {
       blocks.setNewBlockCallback(async () => {
         try {
           await elementsParser.$parse();
@@ -283,14 +284,14 @@ class Server {
       ;
     }
 
-    if (config.MEMPOOL.NETWORK === 'liquid' || config.MEMPOOL.NETWORK === 'liquidtestnet') {
+    if (Common.isLiquid()) {
       this.app
         .get(config.MEMPOOL.API_URL_PREFIX + 'assets/icons', routes.getAllLiquidIcon)
         .get(config.MEMPOOL.API_URL_PREFIX + 'asset/:assetId/icon', routes.getLiquidIcon)
       ;
     }
 
-    if ((config.MEMPOOL.NETWORK === 'liquid' || config.MEMPOOL.NETWORK === 'liquidtestnet') && config.DATABASE.ENABLED) {
+    if (Common.isLiquid() && config.DATABASE.ENABLED) {
       this.app
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/month', routes.$getElementsPegsByMonth)
       ;
