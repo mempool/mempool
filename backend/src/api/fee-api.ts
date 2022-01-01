@@ -1,12 +1,13 @@
 import config from '../config';
 import { MempoolBlock } from '../mempool.interfaces';
+import { Common } from './common';
 import mempool from './mempool';
 import projectedBlocks from './mempool-blocks';
 
 class FeeApi {
   constructor() { }
 
-  defaultFee = config.MEMPOOL.NETWORK === 'liquid' || config.MEMPOOL.NETWORK === 'liquidtestnet' ? 0.1 : 1;
+  defaultFee = Common.isLiquid() ? 0.1 : 1;
 
   public getRecommendedFee() {
     const pBlocks = projectedBlocks.getMempoolBlocks();
