@@ -200,4 +200,8 @@ export class StateService {
   setBlockScrollingInProgress(value: boolean) {
     this.blockScrolling$.next(value);
   }
+
+  isLiquid() {
+    return this.network === 'liquid' || this.network === 'liquidtestnet';
+  }
 }
