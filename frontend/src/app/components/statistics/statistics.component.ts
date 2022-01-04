@@ -37,6 +37,7 @@ export class StatisticsComponent implements OnInit {
   radioGroupForm: FormGroup;
   graphWindowPreference: string;
   inverted: boolean;
+  feeLevelDropdownData = [];
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
@@ -51,19 +52,10 @@ export class StatisticsComponent implements OnInit {
 
   ngOnInit() {
     this.inverted = this.storageService.getValue('inverted-graph') === 'true';
-    if (!this.inverted) {
-      this.feeLevels = [...feeLevels].reverse();
-      this.chartColors = [...chartColors].reverse();
-    }
+    this.setFeeLevelDropdownData();
     this.seoService.setTitle($localize`:@@5d4f792f048fcaa6df5948575d7cb325c9393383:Graphs`);
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.graphWindowPreference = this.storageService.getValue('graphWindowPreference') ? this.storageService.getValue('graphWindowPreference').trim() : '2h';
-    const isMobile = window.innerWidth <= 767.98;
-    let labelHops = isMobile ? 48 : 24;
-
-    if (isMobile) {
-      labelHops = 96;
-    }
 
     this.radioGroupForm = this.formBuilder.group({
       dateSpan: this.graphWindowPreference
@@ -147,11 +139,27 @@ export class StatisticsComponent implements OnInit {
     document.location.reload();
   }
 
-  filterFees(index: number) {
-    this.filterFeeIndex = index;
-  }
-
-  filterClick() {
-    this.dropDownOpen = !this.dropDownOpen;
+  setFeeLevelDropdownData() {
+    let _feeLevels = feeLevels
+    let _chartColors = chartColors;
+    if (!this.inverted) {
+      _feeLevels = [...feeLevels].reverse();
+      _chartColors = [...chartColors].reverse();
+    }
+    _feeLevels.forEach((fee, i) => {
+      if (this.inverted) {
+        this.feeLevelDropdownData.push({
+          fee: fee,
+          range: this.stateService.isLiquid() ? `${(_feeLevels[i] / 10).toFixed(1)} - ${(_feeLevels[i + 1] / 10).toFixed(1)}` : `${_feeLevels[i]} - ${_feeLevels[i + 1]}`,
+          color: _chartColors[i],
+        });
+      } else {
+        this.feeLevelDropdownData.push({
+          fee: fee,
+          range: this.stateService.isLiquid() ? `${(_feeLevels[i] / 10).toFixed(1)} - ${(_feeLevels[i - 1] / 10).toFixed(1)}` : `${_feeLevels[i]} - ${_feeLevels[i - 1]}`,
+          color: _chartColors[i - 1],
+        });
+      }
+    })
   }
 }
