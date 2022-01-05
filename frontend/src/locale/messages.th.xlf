@@ -1590,6 +1590,7 @@
       </trans-unit>
       <trans-unit id="cedcc9d48ffb2714e7b2f012ab67bd21f8e96a18" datatype="html">
         <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="The number of transactions on this address exceeds the Electrum server limit&lt;/i&gt;           &lt;br&gt;&lt;br&gt;"/>The number of transactions on this address exceeds the Electrum server limit<x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> Consider viewing this address on the official Mempool website instead: </source>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="The number of transactions on this address exceeds the Electrum server limit&lt;/i&gt;           &lt;br&gt;&lt;br&gt;"/>จำนวนธุรกรรมเกินกว่าที่เซิฟเวอร์ Electrum กำหนดไว้<x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> คุณสามารถเรียกดูแอดเดรสนี้ได้ในเว็ปไซต์ mempool: </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">137,140</context>
@@ -2563,6 +2564,7 @@
       </trans-unit>
       <trans-unit id="842f6eb4d8f230db4bdf483a08d4d2a77e2d5869" datatype="html">
         <source>Provides list of available currencies for a given base currency. </source>
+        <target>แสดงรายการสกุลเงินที่ใช้ได้สำหรับสกุลเงินหลักที่กำหนด</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">54,56</context>
@@ -2570,6 +2572,7 @@
       </trans-unit>
       <trans-unit id="9c7dafb6f51e229d02a80844f6f99a01487e7cb2" datatype="html">
         <source>Provides list of open offer prices for a single market.</source>
+        <target>แสดงรายการราคาเสนอขายสำหรับตลาด</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">67,69</context>
@@ -2577,6 +2580,7 @@
       </trans-unit>
       <trans-unit id="9e95c144fcb1afd7724dc5a3aad31125a59d9d71" datatype="html">
         <source>Provides hi/low/open/close data for a given market. This can be used to generate a candlestick chart.</source>
+        <target>แสดงข้อมูล สูง/ต่ำ/เปิด/ปิด สำหรับตลาดที่กำหนด สามารถใช้เพื่อสร้างแผนภูมิแท่งเทียนได้</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">80,82</context>
@@ -2584,6 +2588,7 @@
       </trans-unit>
       <trans-unit id="9c6e8e72b7a5f4e8a0e8ede12ab5ede4e0af2484" datatype="html">
         <source>Provides list of available markets.</source>
+        <target>แสดงรายการตลาดที่มีอยู่</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">93,95</context>
@@ -2591,6 +2596,7 @@
       </trans-unit>
       <trans-unit id="a02929fcc15f8b54d2f6d602722d2c7d1d790a2a" datatype="html">
         <source>Provides list of open offer details for a single market.</source>
+        <target>แสดงรายการรายละเอียดข้อเสนอที่เปิดอยู่สำหรับตลาด</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">106,108</context>
@@ -2598,6 +2604,7 @@
       </trans-unit>
       <trans-unit id="342f8a4ceda8cda17584e920ad7459b41e86b069" datatype="html">
         <source>Provides 24 hour price ticker for single market or all markets</source>
+        <target>แสดงทิกเกอร์ราคา 24 ชั่วโมงสำหรับตลาดใดๆหรือทุกตลาด</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">119,121</context>
@@ -2605,6 +2612,7 @@
       </trans-unit>
       <trans-unit id="dd194a2109134d62cb518ba0ccfc296701de5522" datatype="html">
         <source>Provides list of completed trades for a single market.</source>
+        <target>แสดงรายการการซื้อขายที่เสร็จสมบูรณ์สำหรับตลาดใดๆ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">132,134</context>
@@ -2612,6 +2620,7 @@
       </trans-unit>
       <trans-unit id="b925fd1f3213560c0737f6016be18eaba7c28c9c" datatype="html">
         <source>Provides periodic volume data in terms of base currency for one or all markets.</source>
+        <target>แสดงข้อมูลปริมาณการซื้อขายในรูปแบบของสกุลเงินหลักสำหรับตลาดใดๆหรือทุกตลาด</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">145,147</context>
@@ -2627,6 +2636,7 @@
       </trans-unit>
       <trans-unit id="e12cd52eaa77b446ba97436c145b59741151adf3" datatype="html">
         <source>Returns details about an address. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>address<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>chain_stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool_stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>. <x id="INTERPOLATION" equiv-text="{{ '{' }}"/>chain,mempool<x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/>_stats each contain an object with <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>tx_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>funded_txo_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>funded_txo_sum<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>spent_txo_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>spent_txo_sum<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</source>
+        <target>ตอบกลับข้อมูลเกี่ยวกับแอดเดรส. ที่ใช้งานได้: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>แอดเดรส<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>สถานะ_บล็อกเชน<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, และ <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>สถานะ_mempool<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>. <x id="INTERPOLATION" equiv-text="{{ '{' }}"/>บล็อกเชน, สถานะ<x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/>_mempool โดยแต่ละอันจะมี object ที่มี <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>tx_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>funded_txo_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>funded_txo_sum<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>spent_txo_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, และ <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>spent_txo_sum<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">179,180</context>
@@ -2885,6 +2895,7 @@
       </trans-unit>
       <trans-unit id="7e784cfa5833e7b54d4dfc723fabde94f66ebde3" datatype="html">
         <source>Returns the confirmation status of a transaction. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>confirmed<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (boolean), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block_height<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (optional), and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block_hash<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (optional).</source>
+        <target>ตอบกลับสถานะการยืนยันของธุรกรรม ที่ใช้งานได้: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/> ยืนยันแล้ว <x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (บูลีน), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/> block_height <x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (ตัวเลือกเสริม) และ <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/> block_hash <x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (ตัวเลือกเสริม)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">627,628</context>
@@ -2900,6 +2911,7 @@
       </trans-unit>
       <trans-unit id="01723473ecc53cab60ef1b37dc39d8941994d56f" datatype="html">
         <source>Broadcast a raw transaction to the network. The transaction should be provided as hex in the request body. The <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> will be returned on success.</source>
+        <target>ประกาศธุรกรรมแบบ raw ลงบนโครงข่าย ธุรกรรมควรจะอยู่ในรูปแบบของ hex เมื่อทำการประกาศ <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> จะถูกตอบกลับหากสำเร็จ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">653,654</context>
@@ -2907,6 +2919,7 @@
       </trans-unit>
       <trans-unit id="a706b1ded7506620b153dbcdea8108e6691bbbd9" datatype="html">
         <source>Default push: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> action: 'want', data: ['blocks', ...] <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> to express what you want pushed. Available: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool-blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>live-2h-chart<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.<x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/><x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/>Push transactions related to address: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> 'track-address': '3PbJ...bF9B' <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>address-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> for new mempool transactions, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> for new block confirmed transactions.</source>
+        <target>ค่าตอบกลับพื้นฐาน: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> การกระทำ: 'ต้องการ', ข้อมูล: ['บล็อก', ...] <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> เพื่ออธิบายค่าที่ต้องการตอบกลับ. ที่ใช้งานได้: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>บล็อก<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>บล็อก-mempool<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>ชาตสด-2h<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, และ <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>สถิติ<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.<x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/><x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/>ส่งธุรกรรมไปยังแอดเดรส: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> 'track-address': '3PbJ...bF9B' <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> เพื่อที่จะได้รับธุรกรรมใหม่ทั้งหมดที่มี input/output ของแอดเดรสนั้น. ตอบกลับเป็นอาเรย์ของธุรกรรม. <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>แอดเดรส-ธุรกรรม<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> สำหรับธุรกรรม mempool ใหม่, และ <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>ธุรกรรม-บล็อก<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> สำหรับธุรกรรมที่ถูกยืนยันในบล็อกใหม่</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">671,672</context>
@@ -3232,6 +3245,7 @@
       </trans-unit>
       <trans-unit id="miner-identified-by-payout" datatype="html">
         <source>Identified by payout address: '<x id="PAYOUT_ADDRESS" equiv-text="vout.scriptpubkey_address"/>'</source>
+        <target>ระบุโดยแอดเดรสที่มีการจ่ายเงิน: ' <x id="PAYOUT_ADDRESS" equiv-text="vout.scriptpubkey_address"/> '</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
           <context context-type="linenumber">42</context>
@@ -3239,6 +3253,7 @@
       </trans-unit>
       <trans-unit id="miner-identified-by-coinbase" datatype="html">
         <source>Identified by coinbase tag: '<x id="TAG" equiv-text="tag"/>'</source>
+        <target>ระบุโดยแท็ก coinbase: '<x id="TAG" equiv-text="tag"/>'</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
           <context context-type="linenumber">52</context>
@@ -3353,6 +3368,7 @@
       </trans-unit>
       <trans-unit id="5ca707824ab93066c7d9b44e1b8bf216725c2c22" datatype="html">
         <source>Filter</source>
+        <target>ตัวกรอง</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">40</context>
@@ -3391,6 +3407,7 @@
       </trans-unit>
       <trans-unit id="time-since" datatype="html">
         <source><x id="DATE" equiv-text="dateStrings.i18nYear"/> ago</source>
+        <target><x id="DATE" equiv-text="dateStrings.i18nYear"/> ที่ผ่านมา</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -3450,6 +3467,7 @@
       </trans-unit>
       <trans-unit id="time-span" datatype="html">
         <source>After <x id="DATE" equiv-text="dateStrings.i18nYear"/></source>
+        <target>หลังจาก <x id="DATE" equiv-text="dateStrings.i18nYear"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -3509,6 +3527,7 @@
       </trans-unit>
       <trans-unit id="time-until" datatype="html">
         <source>In ~<x id="DATE" equiv-text="dateStrings.i18nMinute"/></source>
+        <target>ภายใน ~<x id="DATE" equiv-text="dateStrings.i18nMinute"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
           <context context-type="linenumber">66</context>
@@ -3853,6 +3872,7 @@
       </trans-unit>
       <trans-unit id="e7699861471f18a60e583512c45d84b388cfa120" datatype="html">
         <source>Previous output type</source>
+        <target>ประเภทของ output ก่อนหน้า</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">116,117</context>
@@ -3874,6 +3894,7 @@
       </trans-unit>
       <trans-unit id="9fb28e77d5963f2275397f2f9cee54f32942aeeb" datatype="html">
         <source>Peg-out to <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-contain"/></source>
+        <target>Peg-out ไปยัง <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-contain"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">146,147</context>
@@ -3921,6 +3942,7 @@
       </trans-unit>
       <trans-unit id="f85c05147b720576e50336cf26f63d3b05601699" datatype="html">
         <source>This transaction saved <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>% on fees by using native SegWit-Bech32</source>
+        <target>ธุรกรรมนี้ประหยัดค่าธรรมเนียม <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>% โดยใช้ native SegWit-Bech32</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">1</context>
@@ -3947,6 +3969,7 @@
       </trans-unit>
       <trans-unit id="975f46d122f2ca0a187308399a58b44d61ef08eb" datatype="html">
         <source>This transaction saved <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>% on fees by using SegWit and could save <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}"/>% more by fully upgrading to native SegWit-Bech32</source>
+        <target>ธุรกรรมนี้ประหยัดค่าธรรมเนียม <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>% โดยใช้ SegWit และสามารถประหยัดได้อีก <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}"/>% ถ้าเปลี่ยนไปใช้ SegWit-Bech32</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">3</context>
