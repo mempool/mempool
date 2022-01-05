@@ -27,10 +27,14 @@ export class SeoService {
   }
 
   getTitle(): string {
+    if (this.network === 'testnet')
+      return 'mempool - Bitcoin Testnet';
+    if (this.network === 'signet')
+      return 'mempool - Bitcoin Signet';
     if (this.network === 'liquid')
       return 'mempool - Liquid Network';
     if (this.network === 'liquidtestnet')
-      return 'mempool - Liquid Network Testnet';
+      return 'mempool - Liquid Testnet';
     if (this.network === 'bisq')
       return 'mempool - Bisq Markets';
     return 'mempool - ' + (this.network ? this.ucfirst(this.network) : 'Bitcoin') + ' Explorer';
