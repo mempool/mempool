@@ -1,4 +1,12 @@
+import { RowDataPacket } from 'mysql2';
 import { IEsploraApi } from './api/bitcoin/esplora-api.interface';
+
+export interface PoolTag extends RowDataPacket {
+  name: string,
+  link: string,
+  regexes: string,
+  addresses: string,
+}
 
 export interface MempoolBlock {
   blockSize: number;

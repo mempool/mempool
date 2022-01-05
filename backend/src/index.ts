@@ -25,7 +25,6 @@ import databaseMigration from './api/database-migration';
 import poolsParser from './api/pools-parser';
 import syncAssets from './sync-assets';
 import icons from './api/liquid/icons';
-import poolsParser from './api/pools-parser';
 import { Common } from './api/common';
 
 class Server {
@@ -33,6 +32,7 @@ class Server {
   private server: http.Server | undefined;
   private app: Express;
   private currentBackendRetryInterval = 5;
+  private blockIndexingStarted = false;
 
   constructor() {
     this.app = express();
@@ -90,7 +90,6 @@ class Server {
       await checkDbConnection();
       try {
         await databaseMigration.$initializeOrMigrateDatabase();
-        await poolsParser.migratePoolsJson();
       } catch (e) {
         throw new Error(e instanceof Error ? e.message : 'Error');
       }
@@ -139,6 +138,13 @@ class Server {
       }
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
+
+      if (this.blockIndexingStarted === false/* && memPool.isInSync()*/) {
+        blocks.$generateBlockDatabase();
+        this.blockIndexingStarted = true;
+        logger.info("START OLDER BLOCK INDEXING");
+      }
+
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;
     } catch (e) {
