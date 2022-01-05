@@ -189,7 +189,7 @@ You'll need 3 instances, one for each network. Build one at a time:
 
 ### MariaDB
 
-Import historical mempool fee database snapshot, or the blank mariadb structure if none:
+Import historical mempool fee database snapshot:
 ```
 mysql -u root
 create database mempool;
@@ -198,13 +198,6 @@ create database tmempool;
 grant all on tmempool.* to 'tmempool'@'localhost' identified by 'tmempool';
 create database lmempool;
 grant all on lmempool.* to 'lmempool'@'localhost' identified by 'lmempool';
-```
-
-Then import
-```
-mysql -u mempool -p mempool < /mempool/mempool/mariadb-structure.sql
-mysql -u tmempool -p tmempool < /mempool/mempool/mariadb-structure.sql
-mysql -u lmempool -p lmempool < /mempool/mempool/mariadb-structure.sql
 ```
 
 ### Mempool
