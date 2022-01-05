@@ -25,8 +25,7 @@ help:
 .PHONY: init
 init:
 	@echo ''
-	mkdir -p   $(DATA) $(DATA)/mysql $(DATA)/mysql/db-scripts $(DATA)/mysql/data 
-	install -v mariadb-structure.sql $(DATA)/mysql/db-scripts
+	mkdir -p   $(DATA) $(DATA)/mysql $(DATA)/mysql/data 
 	#REF: https://github.com/mempool/mempool/blob/master/docker/README.md
 	cat docker/docker-compose.yml > docker-compose.yml
 	cat backend/mempool-config.sample.json > backend/mempool-config.json

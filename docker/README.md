@@ -5,10 +5,8 @@
 In an empty dir create 2 sub-dirs
 
 ```bash
-mkdir -p data mysql/data mysql/db-scripts
+mkdir -p data mysql/data
 ```
-
-In the `mysql/db-scripts` sub-dir add the `mariadb-structure.sql` file from the mempool repo
 
 Your dir should now look like that:
 
@@ -23,9 +21,6 @@ data mysql
 data  db-scripts
 
 ./mysql/data:
-
-./mysql/db-scripts:
-mariadb-structure.sql
 ```
 
 In the main dir add the following `docker-compose.yml`
