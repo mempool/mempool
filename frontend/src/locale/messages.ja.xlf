@@ -3110,7 +3110,7 @@
       </trans-unit>
       <trans-unit id="1bb6965f8e1bbe40c076528ffd841da86f57f119" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;blocks&lt;/span&gt;&lt;/ng-template&gt;         &lt;ng-template #blo"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>blocks<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
-        <target> <x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;blocks&lt;/span&gt;&lt;/ng-template&gt;         &lt;ng-template #blo"/><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>ブロック<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+        <target> <x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;blocks&lt;/span&gt;&lt;/ng-template&gt;         &lt;ng-template #blo"/><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/> ブロック<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">22,23</context>
@@ -4336,7 +4336,7 @@
       </trans-unit>
       <trans-unit id="date-base.hour" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> hour</source>
-        <target> <x id="DATE" equiv-text="counter"/>時</target>
+        <target> <x id="DATE" equiv-text="counter"/>時間</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">11</context>
@@ -4344,7 +4344,7 @@
       </trans-unit>
       <trans-unit id="date-base.hours" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> hours</source>
-        <target> <x id="DATE" equiv-text="counter"/>時</target>
+        <target> <x id="DATE" equiv-text="counter"/>時間</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">12</context>

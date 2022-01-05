@@ -1,80 +1,88 @@
-# mempool.space v2 production website hosting
+# mempool enterprise production instance
 
-These instructions are for setting up a serious production mempool website for Mainnet, Testnet, and Liquid. For home users, follow the main instructions instead.
+These instructions are for setting up a serious production mempool website for Bitcoin mainnet, testnet, signet, Liquid mainnet and testnet, and Bisq. For home users, you should use one-click installation methods instead, and for advanced manual deployments of mainnet only see the top-level installation instructions.
 
 ### Server Hardware
 
-Mempool V2 is powered by electrs, which is a beast. I recommend a beefy server:
+Mempool V2 is powered by blockstream/electrs, which is a beast. I recommend a beefy server:
 
-* 16C CPU (more is better)
+* 20C CPU (more is better)
 * 64G RAM (more is better)
-* 2TB SSD (NVMe is better)
+* 4TB SSD (NVMe is better)
 
 ### HDD vs SSD vs NVMe
 
 If you don't have a fast SSD or NVMe backed disk, that's fine. What you do is, go online and buy some fast new NVMe drives and wait for them to arrive. After you install them, throw away your old HDDs and then proceed with the rest of this guide.
 
-## FreeBSD 12
+## FreeBSD 13
 
 The mempool.space site is powered by FreeBSD with ZFS root and ARC cache for maximum performance. Linux probably works fine too, but why settle?
 
 ### Filesystem
 
-For maximum performance, I use 2x 1TB NVMe SSDs in a RAID 0 using ZFS with lots of RAM for the ARC L2 cache.
+For maximum performance, I use 2x 2TB NVMe SSDs in a RAID 0 using ZFS with lots of RAM for the ARC L2 cache.
 ```
-# zpool list -v nvmraid
-NAME         SIZE  ALLOC   FREE  CKPOINT  EXPANDSZ   FRAG    CAP  DEDUP  HEALTH  ALTROOT
-nvmraid     1.81T  1.04T   787G        -         -     0%    57%  1.00x  ONLINE  -
-  nvd0       928G   535G   393G        -         -     0%    57%
-  nvd1       928G   534G   394G        -         -     0%    57%
+% zpool list -v
+NAME        SIZE  ALLOC   FREE  CKPOINT  EXPANDSZ   FRAG    CAP  DEDUP    HEALTH  ALTROOT
+nvm        3.62T  1.25T  2.38T        -         -     2%    34%  1.00x    ONLINE  -
+  nvd0p3   1.81T   629G  1.20T        -         -     2%  33.9%      -  ONLINE
+  nvd1p3   1.81T   646G  1.18T        -         -     2%  34.8%      -  ONLINE
 ```
 
-For maximum flexibility of configuration, I configure the partitions separately for each data folder:
+For maximum flexibility of configuration, I recommend partitions separately for each data folder:
 ```
 Filesystem                             Size    Used   Avail Capacity  Mounted on
-nvmraid/mempool                        732G    3.0G    729G     0%    /mempool
-nvmraid/mysql                          730G    618M    729G     0%    /mysql
-nvmraid/bisq                           729G     88K    729G     0%    /bisq
-nvmraid/elements                       731G    1.8G    729G     0%    /elements
-nvmraid/elements/liquidv1              737G    7.2G    729G     1%    /elements/liquidv1
-nvmraid/elements/electrs               730G    434M    729G     0%    /elements/electrs
-nvmraid/bitcoin                        730G    694M    729G     0%    /bitcoin
-nvmraid/bitcoin/chainstate             733G    3.9G    729G     1%    /bitcoin/chainstate
-nvmraid/bitcoin/indexes                757G     27G    729G     4%    /bitcoin/indexes
-nvmraid/bitcoin/electrs                730G    853M    729G     0%    /bitcoin/electrs
-nvmraid/bitcoin/blocks                 1.0T    306G    729G    30%    /bitcoin/blocks
-nvmraid/bitcoin/testnet3               729G     13M    729G     0%    /bitcoin/testnet3
-nvmraid/bitcoin/testnet3/blocks        756G     26G    729G     3%    /bitcoin/testnet3/blocks
-nvmraid/bitcoin/testnet3/chainstate    731G    1.3G    729G     0%    /bitcoin/testnet3/chainstate
-nvmraid/bitcoin/testnet3/indexes       733G    3.8G    729G     1%    /bitcoin/testnet3/indexes
-nvmraid/electrs/liquid/cache           729G     39M    729G     0%    /electrs/liquid/newindex/cache
-nvmraid/electrs/liquid/history         730G    737M    729G     0%    /electrs/liquid/newindex/history
-nvmraid/electrs/liquid/txstore         736G    6.2G    729G     1%    /electrs/liquid/newindex/txstore
-nvmraid/electrs/mainnet/cache          729G     44M    729G     0%    /electrs/mainnet/newindex/cache
-nvmraid/electrs/mainnet/history        964G    234G    729G    24%    /electrs/mainnet/newindex/history
-nvmraid/electrs/mainnet/txstore        1.1T    392G    729G    35%    /electrs/mainnet/newindex/txstore
-nvmraid/electrs/testnet/cache          729G     40M    729G     0%    /electrs/testnet/newindex/cache
-nvmraid/electrs/testnet/history        747G     18G    729G     2%    /electrs/testnet/newindex/history
-nvmraid/electrs/testnet/txstore        764G     34G    729G     4%    /electrs/testnet/newindex/txstore
+nvm/bisq                             766G    1.1G    765G     0%    /bisq
+nvm/bitcoin                          766G    648M    765G     0%    /bitcoin
+nvm/bitcoin/blocks                   1.1T    375G    765G    33%    /bitcoin/blocks
+nvm/bitcoin/chainstate               770G    4.5G    765G     1%    /bitcoin/chainstate
+nvm/bitcoin/electrs                  772G    7.3G    765G     1%    /bitcoin/electrs
+nvm/bitcoin/indexes                  799G     34G    765G     4%    /bitcoin/indexes
+nvm/bitcoin/testnet3                 765G    5.0M    765G     0%    /bitcoin/testnet3
+nvm/bitcoin/testnet3/blocks          786G     21G    765G     3%    /bitcoin/testnet3/blocks
+nvm/bitcoin/testnet3/chainstate      766G    1.1G    765G     0%    /bitcoin/testnet3/chainstate
+nvm/bitcoin/testnet3/indexes         768G    2.9G    765G     0%    /bitcoin/testnet3/indexes
+nvm/electrs                          765G    128K    765G     0%    /electrs
+nvm/electrs/liquid                   765G    104K    765G     0%    /electrs/liquid
+nvm/electrs/liquid/cache             765G    7.8M    765G     0%    /electrs/liquid/newindex/cache
+nvm/electrs/liquid/history           766G    886M    765G     0%    /electrs/liquid/newindex/history
+nvm/electrs/liquid/txstore           775G     10G    765G     1%    /electrs/liquid/newindex/txstore
+nvm/electrs/liquidtestnet            765G    112K    765G     0%    /electrs/liquidtestnet
+nvm/electrs/liquidtestnet/cache      765G     96K    765G     0%    /electrs/liquidtestnet/newindex/cache
+nvm/electrs/liquidtestnet/history    765G     96K    765G     0%    /electrs/liquidtestnet/newindex/history
+nvm/electrs/liquidtestnet/txstore    765G     96K    765G     0%    /electrs/liquidtestnet/newindex/txstore
+nvm/electrs/mainnet                  765G    112K    765G     0%    /electrs/mainnet
+nvm/electrs/mainnet/cache            765G    4.4M    765G     0%    /electrs/mainnet/newindex/cache
+nvm/electrs/mainnet/history          1.0T    300G    765G    28%    /electrs/mainnet/newindex/history
+nvm/electrs/mainnet/txstore          1.3T    530G    765G    41%    /electrs/mainnet/newindex/txstore
+nvm/electrs/signet                   766G    522M    765G     0%    /electrs/signet
+nvm/electrs/testnet                  765G    104K    765G     0%    /electrs/testnet
+nvm/electrs/testnet/cache            765G    1.6M    765G     0%    /electrs/testnet/newindex/cache
+nvm/electrs/testnet/history          784G     19G    765G     2%    /electrs/testnet/newindex/history
+nvm/electrs/testnet/txstore          803G     38G    765G     5%    /electrs/testnet/newindex/txstore
+nvm/elements                         766G    927M    765G     0%    /elements
+nvm/elements/electrs                 766G    716M    765G     0%    /elements/electrs
+nvm/elements/liquidv1                777G     11G    765G     1%    /elements/liquidv1
+nvm/mempool                          789G     24G    765G     3%    /mempool
+nvm/mysql                            766G    648M    765G     0%    /mysql
+tmpfs                                1.0G    1.3M    1.0G     0%    /var/cache/nginx
+tmpfs                                3.0G    1.9G    1.1G    63%    /bisq/statsnode-data/btc_mainnet/db/json
 ```
 
 ### Build Dependencies
 
 You'll probably need these:
 ```
-pkg install -y zsh sudo git screen vim-console curl wget neovim rsync
-pkg install -y openssl openssh-portable open-vm-tools-nox11 py37-pip
-pkg install -y boost-libs autoconf automake gmake gcc libevent libtool pkgconf
-pkg install -y mariadb55-server mariadb55-client nginx py37-certbot-nginx npm
+pkg install -y zsh sudo git screen curl wget neovim rsync nginx openssl openssh-portable py38-pip py38-certbot-nginx boost-libs autoconf automake gmake gcc libevent libtool pkgconf mariadb105-server mariadb105-client
 ```
 
 ### NodeJS / npm
 
 I recommend to build nodejs / npm from source using nvm:
 ```
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | zsh
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh
 source $HOME/.zshrc
-nvm install node
+nvm install v16.10.0
 nvm alias default node
 ```
 
@@ -107,10 +115,17 @@ DataDirectory /var/db/tor
 DataDirectoryGroupReadable 1
 
 HiddenServiceDir /var/db/tor/mempool
-HiddenServicePort 80 127.0.0.1:80
+HiddenServicePort 80 127.0.0.1:81
+HiddenServiceVersion 3
+
+HiddenServiceDir /var/db/tor/bisq
+HiddenServicePort 80 127.0.0.1:82
+HiddenServiceVersion 3
+
+HiddenServiceDir /var/db/tor/liquid
+HiddenServicePort 80 127.0.0.1:83
 HiddenServiceVersion 3
 ```
-
 
 ### Bitcoin
 
@@ -121,25 +136,35 @@ pkg install -y bitcoin-daemon bitcoin-utils
 
 Configure your bitcoin.conf like this:
 ```
+datadir=/bitcoin
 server=1
-daemon=1
+txindex=1
 listen=1
 discover=1
-txindex=1
-dbcache=3700
-maxconnections=1337
+par=16
+dbcache=4096
+maxmempool=1337
+mempoolexpiry=999999
+maxconnections=42
 onion=127.0.0.1:9050
 rpcallowip=127.0.0.1
-rpcuser=0cd862dce678b830bd2aa36f10b9b6b2
-rpcpassword=2d89d36cac4a13c87b5d19ef8f577e37
+rpcuser=foo
+rpcpassword=bar
 
 [main]
 bind=127.0.0.1:8333
 rpcbind=127.0.0.1:8332
+whitelist=bloomfilter@127.0.0.1
 
 [test]
+daemon=1
 bind=127.0.0.1:18333
 rpcbind=127.0.0.1:18332
+
+[signet]
+daemon=1
+bind=127.0.0.1:38333
+rpcbind=127.0.0.1:38332
 ```
 
 ### Elements
@@ -158,15 +183,39 @@ Configure your elements.conf like this:
 server=1
 daemon=1
 listen=1
-chain=liquidv1
-rpcuser=liquiduser
-rpcpassword=liquidpass
-validatepegin=1
+rpcuser=foo
+rpcpassword=bar
 mainchainrpchost=127.0.0.1
-mainchainrpcport=8332
-mainchainrpcuser=user
-mainchainrpcpassword=pass
+mainchainrpcuser=foo
+mainchainrpcpassword=bar
 txindex=1
+
+[liquidv1]
+validatepegin=1
+mainchainrpcport=8332
+
+[liquidtestnet]
+validatepegin=0
+anyonecanspendaremine=0
+initialfreecoins=2100000000000000
+con_dyna_deploy_start=0
+con_max_block_sig_size=150
+checkblockindex=0
+fallbackfee=0.00000100
+con_has_parent_chain=0
+parentgenesisblockhash=NULL
+pubkeyprefix=36
+scriptprefix=19
+blindedprefix=23
+bech32_hrp=tex
+blech32_hrp=tlq
+pchmessagestart=410edd62
+dynamic_epoch_length=1000
+signblockscript=51210217e403ddb181872c32a0cd468c710040b2f53d8cac69f18dad07985ee37e9a7151ae
+evbparams=dynafed:0:::
+addnode=liquid-testnet.blockstream.com:18892
+addnode=liquidtestnet.com:18891
+addnode=liquid.network:18444
 ```
 
 Start elementsd and wait for it to sync the Liquid blockchain.
@@ -180,11 +229,13 @@ cd electrs
 git checkout new-index
 ```
 
-You'll need 3 instances, one for each network. Build one at a time:
+You'll need one instance per network. Build and run them one at a time:
 ```
 ./electrs-start-mainnet
 ./electrs-start-testnet
+./electrs-start-signet
 ./electrs-start-liquid
+./electrs-start-liquidtestnet
 ```
 
 ### MariaDB
@@ -194,11 +245,25 @@ Import historical mempool fee database snapshot:
 mysql -u root
 create database mempool;
 grant all on mempool.* to 'mempool'@'localhost' identified by 'mempool';
-create database tmempool;
-grant all on tmempool.* to 'tmempool'@'localhost' identified by 'tmempool';
-create database lmempool;
-grant all on lmempool.* to 'lmempool'@'localhost' identified by 'lmempool';
+create database mempool_testnet;
+grant all on mempool_testnet.* to 'mempool_testnet'@'localhost' identified by 'mempool_testnet';
+create database mempool_signet;
+grant all on mempool_signet.* to 'mempool_signet'@'localhost' identified by 'mempool_signet';
+create database mempool_liquid;
+grant all on mempool_liquid.* to 'mempool_liquid'@'localhost' identified by 'mempool_liquid';
+create database mempool_liquidtestnet;
+grant all on mempool_liquidtestnet.* to 'mempool_liquidtestnet'@'localhost' identified by 'mempool_liquidtestnet';
 ```
+
+
+### Bisq
+
+Build bisq-statsnode normally and run using options like this:
+```
+./bisq-statsnode --dumpBlockchainData=true --dumpStatistics=true
+```
+
+If bisq is happy, it should dump JSON files for Bisq Markets and BSQ data into /bisq that the mempool backend will use.
 
 ### Mempool
 
@@ -217,13 +282,15 @@ Finally, start your 3 mempool backends:
 
 Get SSL certificate using certbot:
 ```
-certbot --nginx -d mempool.space
+certbot --nginx -d mempool.ninja
 ```
 
-Install nginx.conf from this repo, edit as necessary:
+Make a symlink from /usr/local/etc/nginx/mempool to /mempool/mempool, and copy the nginx.conf and edit as necessary.  You probably only need to edit the top-level nginx.conf file.
 ```
-cp nginx.conf /usr/local/etc/nginx/nginx.conf
-vi /usr/local/etc/nginx/nginx.conf
+cd /usr/local/etc/nginx
+ln -s /mempool/mempool
+cp /mempool/mempool/nginx.conf .
+vi nginx.conf
 ```
 
 Restart nginx
@@ -234,4 +301,3 @@ service nginx restart
 ### Done
 
 Your site should look like https://mempool.space/
-If it doesn't ask wiz on Keybase DM or Twitter for help.

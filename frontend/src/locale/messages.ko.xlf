@@ -147,6 +147,7 @@
       </trans-unit>
       <trans-unit id="ngb.progressbar.value" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="; }    /**    *"/></source>
+        <target><x id="INTERPOLATION" equiv-text="; }    /**    *"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/src/progressbar/progressbar.ts</context>
           <context context-type="linenumber">32,38</context>
@@ -250,6 +251,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.AM" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="NgbTime;    pr"/></source>
+        <target><x id="INTERPOLATION" equiv-text="NgbTime;    pr"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/src/timepicker/timepicker.ts</context>
           <context context-type="linenumber">115,121</context>
@@ -257,6 +259,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.PM" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="t() meridian: b"/></source>
+        <target><x id="INTERPOLATION" equiv-text="t() meridian: b"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/src/timepicker/timepicker.ts</context>
           <context context-type="linenumber">123,131</context>
@@ -432,6 +435,7 @@
       </trans-unit>
       <trans-unit id="27387c2af5dcaf343a548feba821515f5dc00faa" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> transaction</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> 트랜잭션</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
           <context context-type="linenumber">50</context>
@@ -456,6 +460,7 @@
       </trans-unit>
       <trans-unit id="14779b0ce4cbc4d975a35a8fe074426228a324f3" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> transactions</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> 트랜잭년</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
           <context context-type="linenumber">51</context>
@@ -480,6 +485,7 @@
       </trans-unit>
       <trans-unit id="bisq-address.component.browser-title" datatype="html">
         <source>Address: <x id="INTERPOLATION" equiv-text="this.addressString"/></source>
+        <target>주소: <x id="INTERPOLATION" equiv-text="this.addressString"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.ts</context>
           <context context-type="linenumber">43</context>
@@ -487,6 +493,7 @@
       </trans-unit>
       <trans-unit id="70572fa5fe9d93f071fbb0f3556d86de39f9e4af" datatype="html">
         <source>Block <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;blockTemplateContent&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;"/></source>
+        <target>블록 <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;blockTemplateContent&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
           <context context-type="linenumber">4</context>
@@ -552,6 +559,7 @@
       </trans-unit>
       <trans-unit id="bisq-block.component.browser-title" datatype="html">
         <source>Block <x id="BLOCK_HEIGHT" equiv-text="block.height"/>: <x id="BLOCK_HASH" equiv-text="block.hash"/></source>
+        <target>블록 <x id="BLOCK_HEIGHT" equiv-text="block.height"/>:<x id="BLOCK_HASH" equiv-text="block.hash"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.ts</context>
           <context context-type="linenumber">89</context>
@@ -852,6 +860,7 @@
       </trans-unit>
       <trans-unit id="74d80a5b284beb81e8aeb3b8efca0f78cd4b7560" datatype="html">
         <source>Amount (<x id="INTERPOLATION" equiv-text="{{ i }}"/>)</source>
+        <target>금액 (<x id="INTERPOLATION" equiv-text="{{ i }}"/>)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
           <context context-type="linenumber">112,113</context>
@@ -1082,6 +1091,7 @@
       </trans-unit>
       <trans-unit id="8e623d3cfecb7c560c114390db53c1f430ffd0de" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="confirmation&lt;/ng-template&gt;           &lt;ng-template #confirmationPlural let-i i18n=&quot;shared.confirmation-count.plural|Transaction plural confir"/> confirmation</source>
+        <target><x id="INTERPOLATION" equiv-text="confirmation&lt;/ng-template&gt;           &lt;ng-template #confirmationPlural let-i i18n=&quot;shared.confirmation-count.plural|Transaction plural confir"/> 컨펌</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
           <context context-type="linenumber">20,21</context>
@@ -1103,6 +1113,7 @@
       </trans-unit>
       <trans-unit id="bc5b0a2631f0b7bc71aaec6aa6f01af21f9a80d4" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="confirmations&lt;/ng-template&gt;         &lt;/button&gt;       &lt;/div&gt;     &lt;/div&gt;            &lt;div class=&quot;clearfix&quot;&gt;&lt;/div&gt;        &lt;div class=&quot;box tran"/> confirmations</source>
+        <target><x id="INTERPOLATION" equiv-text="confirmations&lt;/ng-template&gt;         &lt;/button&gt;       &lt;/div&gt;     &lt;/div&gt;            &lt;div class=&quot;clearfix&quot;&gt;&lt;/div&gt;        &lt;div class=&quot;box tran"/> 컨펌들</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
           <context context-type="linenumber">21,22</context>
@@ -1209,6 +1220,7 @@
       </trans-unit>
       <trans-unit id="bisq.transaction.browser-title" datatype="html">
         <source>Transaction: <x id="INTERPOLATION" equiv-text="this.txId"/></source>
+        <target>트랜잭션: <x id="INTERPOLATION" equiv-text="this.txId"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.ts</context>
           <context context-type="linenumber">50</context>
@@ -1220,7 +1232,7 @@
       </trans-unit>
       <trans-unit id="4d6066e445db90780e4b30ca93398be0b6567eda" datatype="html">
         <source>BSQ Transactions</source>
-        <target>BSQ 거래</target>
+        <target>BSQ 트랜잭션</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
           <context context-type="linenumber">2,5</context>
@@ -1477,6 +1489,7 @@
       </trans-unit>
       <trans-unit id="3d395b07b1f87656ed773adcbb3daf8e00c08779" datatype="html">
         <source>Project Members</source>
+        <target>프로젝트 멤버들</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">181,183</context>
@@ -1522,6 +1535,7 @@
       </trans-unit>
       <trans-unit id="31c09dcc0ab351767631539b208d5f7de4005473" datatype="html">
         <source>Lightning <x id="INTERPOLATION" equiv-text="{{ lightning }}"/></source>
+        <target>라이트닝 <x id="INTERPOLATION" equiv-text="{{ lightning }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1530,6 +1544,7 @@
       </trans-unit>
       <trans-unit id="696ade981a05c12e10df38ba6218c76e318813b3" datatype="html">
         <source>Liquid <x id="INTERPOLATION" equiv-text="{{ liquid }}"/></source>
+        <target>Liquid <x id="INTERPOLATION" equiv-text="{{ liquid }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
           <context context-type="linenumber">17</context>
@@ -1604,6 +1619,7 @@
       </trans-unit>
       <trans-unit id="address.component.browser-title" datatype="html">
         <source>Address: <x id="INTERPOLATION" equiv-text="this.addressString"/></source>
+        <target>주소: <x id="INTERPOLATION" equiv-text="this.addressString"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.ts</context>
           <context context-type="linenumber">78</context>
@@ -1740,6 +1756,7 @@
       </trans-unit>
       <trans-unit id="asset.component.asset-browser-title" datatype="html">
         <source>Asset: <x id="INTERPOLATION" equiv-text="this.assetString"/></source>
+        <target>자산: <x id="INTERPOLATION" equiv-text="this.assetString"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.ts</context>
           <context context-type="linenumber">73</context>
@@ -1828,6 +1845,7 @@
       </trans-unit>
       <trans-unit id="a7ecfd7757d04b019beaa2d7208c728387bfc7e8" datatype="html">
         <source>Docs</source>
+        <target>문서들</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/bisq-master-page/bisq-master-page.component.html</context>
           <context context-type="linenumber">42,45</context>
@@ -1840,6 +1858,7 @@
       </trans-unit>
       <trans-unit id="bdf0e930eb22431140a2eaeacd809cc5f8ebd38c" datatype="html">
         <source>Next Block</source>
+        <target>다음 블록</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">7,8</context>
@@ -1852,6 +1871,7 @@
       </trans-unit>
       <trans-unit id="a0e07a711d171f4d40dd388d70ed32f9b8101e0a" datatype="html">
         <source>Previous Block</source>
+        <target>이전 블록</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">26,27</context>
@@ -2124,6 +2144,7 @@
       </trans-unit>
       <trans-unit id="block.component.browser-title" datatype="html">
         <source>Block <x id="BLOCK_HEIGHT" equiv-text="block.height"/>: <x id="BLOCK_ID" equiv-text="block.id"/></source>
+        <target>블록 <x id="BLOCK_HEIGHT" equiv-text="block.height"/>:<x id="BLOCK_ID" equiv-text="block.id"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.ts</context>
           <context context-type="linenumber">141</context>
@@ -2139,6 +2160,7 @@
       </trans-unit>
       <trans-unit id="6e70e73ac050983df55b277deb27955b5a33c606" datatype="html">
         <source>API service</source>
+        <target>API 서비스</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">12,14</context>
@@ -2645,7 +2667,7 @@
       </trans-unit>
       <trans-unit id="4a0bf20cf26a4f4a387bed5c3d47c23294cb606e" datatype="html">
         <source>Returns transactions associated with the specified Liquid asset. For the network's native asset, returns a list of peg in, peg out, and burn transactions. For user-issued assets, returns a list of issuance, reissuance, and burn transactions. Does not include regular transactions transferring this asset.</source>
-        <target>지정된 유동 자산과 관련된 거래를 반환합니다. 네트워크의 기본 자산을 위해 페그 인, 페그 아웃 및 소각 트랜잭션 목록을 반환합니다. 사용자 발행 자산의 경우 발행, 재발행 및 소각 트랜잭션 목록을 반환합니다. 이 자산을 양도하는 일반 거래는 포함되지 않습니다.</target>
+        <target>지정된 Liquid 자산과 관련된 거래를 반환합니다. 네트워크의 기본 자산을 위해 페그 인, 페그 아웃 및 소각 트랜잭션 목록을 반환합니다. 사용자 발행 자산의 경우 발행, 재발행 및 소각 트랜잭션 목록을 반환합니다. 이 자산을 양도하는 일반 거래는 포함되지 않습니다.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">260,262</context>
@@ -2937,6 +2959,7 @@
       </trans-unit>
       <trans-unit id="fcfd4675b4c90f08d18d3abede9a9a4dff4cfdc7" datatype="html">
         <source>Documentation</source>
+        <target>문서</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/docs.component.html</context>
           <context context-type="linenumber">4</context>
@@ -3823,6 +3846,7 @@
       </trans-unit>
       <trans-unit id="e7699861471f18a60e583512c45d84b388cfa120" datatype="html">
         <source>Previous output type</source>
+        <target>이전 아웃풋 유형</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">116,117</context>
@@ -3933,6 +3957,7 @@
       </trans-unit>
       <trans-unit id="e6da407140d70e08b6fba731455f8e0d72f900b5" datatype="html">
         <source>This transaction uses Taproot</source>
+        <target>이 거래는 탭루트를 사용하고 있습니다</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">8</context>
@@ -3941,6 +3966,7 @@
       </trans-unit>
       <trans-unit id="71ed5c65589f49a732b8e93a780200191b2b6596" datatype="html">
         <source>Taproot</source>
+        <target>탭루트</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">8</context>
@@ -4126,6 +4152,7 @@
       </trans-unit>
       <trans-unit id="eb7a000cd340b44291d790f7b56f7b926edc275b" datatype="html">
         <source>L-BTC in circulation</source>
+        <target>유통 중인 L-BTC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">209,211</context>
@@ -4200,6 +4227,7 @@
       </trans-unit>
       <trans-unit id="date-base.year" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> year</source>
+        <target><x id="DATE" equiv-text="counter"/> 년</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">3</context>
@@ -4207,6 +4235,7 @@
       </trans-unit>
       <trans-unit id="date-base.years" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> years</source>
+        <target><x id="DATE" equiv-text="counter"/> 년</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">4</context>
@@ -4214,6 +4243,7 @@
       </trans-unit>
       <trans-unit id="date-base.month" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> month</source>
+        <target><x id="DATE" equiv-text="counter"/> 달</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">5</context>
@@ -4221,6 +4251,7 @@
       </trans-unit>
       <trans-unit id="date-base.months" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> months</source>
+        <target><x id="DATE" equiv-text="counter"/> 달</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">6</context>
@@ -4228,6 +4259,7 @@
       </trans-unit>
       <trans-unit id="date-base.week" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> week</source>
+        <target><x id="DATE" equiv-text="counter"/> 주</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">7</context>
@@ -4235,6 +4267,7 @@
       </trans-unit>
       <trans-unit id="date-base.weeks" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> weeks</source>
+        <target><x id="DATE" equiv-text="counter"/> 주</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">8</context>
@@ -4242,6 +4275,7 @@
       </trans-unit>
       <trans-unit id="date-base.day" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> day</source>
+        <target><x id="DATE" equiv-text="counter"/> 일</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">9</context>
@@ -4249,6 +4283,7 @@
       </trans-unit>
       <trans-unit id="date-base.days" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> days</source>
+        <target><x id="DATE" equiv-text="counter"/> 일</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">10</context>
@@ -4256,6 +4291,7 @@
       </trans-unit>
       <trans-unit id="date-base.hour" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> hour</source>
+        <target><x id="DATE" equiv-text="counter"/> 시간</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">11</context>
@@ -4263,6 +4299,7 @@
       </trans-unit>
       <trans-unit id="date-base.hours" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> hours</source>
+        <target><x id="DATE" equiv-text="counter"/> 시간</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">12</context>
@@ -4270,6 +4307,7 @@
       </trans-unit>
       <trans-unit id="date-base.minute" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> minute</source>
+        <target><x id="DATE" equiv-text="counter"/> 분</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">13</context>
@@ -4277,6 +4315,7 @@
       </trans-unit>
       <trans-unit id="date-base.minutes" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> minutes</source>
+        <target><x id="DATE" equiv-text="counter"/> 분</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">14</context>
@@ -4284,6 +4323,7 @@
       </trans-unit>
       <trans-unit id="date-base.second" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> second</source>
+        <target><x id="DATE" equiv-text="counter"/> 초</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">15</context>
@@ -4291,6 +4331,7 @@
       </trans-unit>
       <trans-unit id="date-base.seconds" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> seconds</source>
+        <target><x id="DATE" equiv-text="counter"/> 초</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">16</context>
