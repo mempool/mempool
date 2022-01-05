@@ -488,10 +488,14 @@
             "name" : "Binance Pool",
             "link" : "https://pool.binance.com/"
         },
-        "/Minerium.com/" : {
+        "/Mined in the USA by: /Minerium.com/" : {
             "name" : "Minerium",
             "link" : "https://www.minerium.com/"
         },
+        "/Minerium.com/" : {
+            "name" : "Minerium",
+            "link" : "https://www.minerium.com/"
+        },        
         "/Buffett/": {
             "name" : "Lubian.com",
             "link" : ""
@@ -504,15 +508,15 @@
             "name" : "OKKONG",
             "link" : "https://hash.okkong.com"
         },
-        "/TMSPOOL/" : {
-            "name" : "TMSPool",
+        "/AAOPOOL/" : {
+            "name" : "AAO Pool",
             "link" : "https://btc.tmspool.top"
         },
         "/one_more_mcd/" : {
             "name" : "EMCDPool",
             "link" : "https://pool.emcd.io"
         },
-        "/Foundry USA Pool #dropgold/" : {
+        "Foundry USA Pool" : {
             "name" : "Foundry USA",
             "link" : "https://foundrydigital.com/"
         },
@@ -539,9 +543,29 @@
         "/PureBTC.COM/": {
             "name": "PureBTC.COM",
             "link": "https://purebtc.com"
+        },
+        "MARA Pool": {
+            "name": "MARA Pool",
+            "link": "https://marapool.com"
+        },
+        "KuCoinPool": {
+            "name": "KuCoinPool",
+            "link": "https://www.kucoin.com/mining-pool/"
+        },
+        "Entrustus" : {
+            "name": "Entrust Charity Pool",
+            "link": "pool.entustus.org"
         }
     },
     "payout_addresses" : {
+        "1MkCDCzHpBsYQivp8MxjY5AkTGG1f2baoe": {
+            "name": "Luxor",
+            "link": "https://mining.luxor.tech"
+        },
+        "1ArTPjj6pV3aNRhLPjJVPYoxB98VLBzUmb": {
+            "name" : "KuCoinPool",
+            "link" : "https://www.kucoin.com/mining-pool/"
+         },
         "3Bmb9Jig8A5kHdDSxvDZ6eryj3AXd3swuJ": {
             "name" : "NovaBlock",
             "link" : "https://novablock.com"
@@ -606,7 +630,7 @@
             "name" : "BitMinter",
             "link" : "http://bitminter.com/"
         },
-        "15xiShqUqerfjFdyfgBH1K7Gwp6cbYmsTW " : {
+        "15xiShqUqerfjFdyfgBH1K7Gwp6cbYmsTW" : {
             "name" : "EclipseMC",
             "link" : "https://eclipsemc.com/"
         },
@@ -633,6 +657,14 @@
         "1MvYASoHjqynMaMnP7SBmenyEWiLsTqoU6" : {
             "name" : "Huobi.pool",
             "link" : "https://www.hpt.com/"
+        },
+        "1BDbsWi3Mrcjp1wdop3PWFNCNZtu4R7Hjy" : {
+            "name" : "EMCDPool",
+            "link" : "https://pool.emcd.io"
+        },
+        "12QVFmJH2b4455YUHkMpEnWLeRY3eJ4Jb5" : {
+            "name" : "AAO Pool",
+            "link" : "https://btc.tmspool.top "
         },
         "1ALA5v7h49QT7WYLcRsxcXqXUqEqaWmkvw" : {
             "name" : "CloudHashing",
@@ -934,6 +966,22 @@
             "name" : "Poolin",
             "link" : "https://www.poolin.com/"
         },
+        "1E8CZo2S3CqWg1VZSJNFCTbtT8hZPuQ2kB" : {
+            "name" : "Poolin",
+            "link" : "https://www.poolin.com/"
+        },
+        "14sA8jqYQgMRQV9zUtGFvpeMEw7YDn77SK" : {
+            "name" : "Poolin",
+            "link" : "https://www.poolin.com/"
+        },
+        "1GNgwA8JfG7Kc8akJ8opdNWJUihqUztfPe" : {
+            "name" : "Poolin",
+            "link" : "https://www.poolin.com/"
+        },
+        "17tUZLvy3X2557JGhceXRiij2TNYuhRr4r" : {
+            "name" : "Poolin",
+            "link" : "https://www.poolin.com/"
+        },
         "12Taz8FFXQ3E2AGn3ZW1SZM5bLnYGX4xR6" : {
             "name" : "Tangpool",
             "link" : "http://www.tangpool.com/"
@@ -1126,6 +1174,10 @@
             "name" : "Binance Pool",
             "link" : "https://pool.binance.com/"
         },
+        "1JvXhnHCi6XqcanvrZJ5s2Qiv4tsmm2UMy": {
+            "name" : "Binance Pool",
+            "link" : "https://pool.binance.com/"
+        },
         "34Jpa4Eu3ApoPVUKNTN2WeuXVVq1jzxgPi": {
             "name" : "Lubian.com",
             "link" : "http://www.lubian.com/"
@@ -1173,6 +1225,14 @@
         "3CLigLYNkrtoNgNcUwTaKoUSHCwr9W851W": {
             "name": "Rawpool",
             "link": "https://www.rawpool.com"
+        },
+        "bc1qf274x7penhcd8hsv3jcmwa5xxzjl2a6pa9pxwm": {
+            "name" : "F2Pool",
+            "link" : "https://www.f2pool.com/"
+        },
+        "1A32KFEX7JNPmU1PVjrtiXRrTQcesT3Nf1": {
+            "name": "MARA Pool",
+            "link": "https://marapool.com"
         }
     }
 }
