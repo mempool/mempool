@@ -11,6 +11,7 @@
       </trans-unit>
       <trans-unit id="ngb.carousel.slide-number" datatype="html">
         <source> Slide <x id="INTERPOLATION" equiv-text="OnHover$ = new"/> of <x id="INTERPOLATION_1" equiv-text=";   private _pa"/> </source>
+        <target>الشريحة <x id="INTERPOLATION" equiv-text="OnHover$ = new"/>من <x id="INTERPOLATION_1" equiv-text=";   private _pa"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/src/carousel/carousel.ts</context>
           <context context-type="linenumber">114,118</context>
@@ -147,6 +148,7 @@
       </trans-unit>
       <trans-unit id="ngb.progressbar.value" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="; }    /**    *"/></source>
+        <target><x id="INTERPOLATION" equiv-text="; }    /**    *"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/src/progressbar/progressbar.ts</context>
           <context context-type="linenumber">32,38</context>
@@ -250,6 +252,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.AM" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="NgbTime;    pr"/></source>
+        <target><x id="INTERPOLATION" equiv-text="NgbTime;    pr"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/src/timepicker/timepicker.ts</context>
           <context context-type="linenumber">115,121</context>
@@ -257,6 +260,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.PM" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="t() meridian: b"/></source>
+        <target><x id="INTERPOLATION" equiv-text="t() meridian: b"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/src/timepicker/timepicker.ts</context>
           <context context-type="linenumber">123,131</context>
@@ -432,6 +436,7 @@
       </trans-unit>
       <trans-unit id="27387c2af5dcaf343a548feba821515f5dc00faa" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> transaction</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> حوالة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
           <context context-type="linenumber">50</context>
@@ -456,6 +461,7 @@
       </trans-unit>
       <trans-unit id="14779b0ce4cbc4d975a35a8fe074426228a324f3" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> transactions</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> معاملات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
           <context context-type="linenumber">51</context>
@@ -480,6 +486,7 @@
       </trans-unit>
       <trans-unit id="bisq-address.component.browser-title" datatype="html">
         <source>Address: <x id="INTERPOLATION" equiv-text="this.addressString"/></source>
+        <target>العنوان: <x id="INTERPOLATION" equiv-text="this.addressString"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.ts</context>
           <context context-type="linenumber">43</context>
@@ -487,6 +494,7 @@
       </trans-unit>
       <trans-unit id="70572fa5fe9d93f071fbb0f3556d86de39f9e4af" datatype="html">
         <source>Block <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;blockTemplateContent&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;"/></source>
+        <target>كتله <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;blockTemplateContent&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
           <context context-type="linenumber">4</context>
@@ -552,6 +560,7 @@
       </trans-unit>
       <trans-unit id="bisq-block.component.browser-title" datatype="html">
         <source>Block <x id="BLOCK_HEIGHT" equiv-text="block.height"/>: <x id="BLOCK_HASH" equiv-text="block.hash"/></source>
+        <target>كتلة <x id="BLOCK_HEIGHT" equiv-text="block.height"/>:<x id="BLOCK_HASH" equiv-text="block.hash"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.ts</context>
           <context context-type="linenumber">89</context>
@@ -852,6 +861,7 @@
       </trans-unit>
       <trans-unit id="74d80a5b284beb81e8aeb3b8efca0f78cd4b7560" datatype="html">
         <source>Amount (<x id="INTERPOLATION" equiv-text="{{ i }}"/>)</source>
+        <target>كمية (<x id="INTERPOLATION" equiv-text="{{ i }}"/>)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
           <context context-type="linenumber">112,113</context>
@@ -1082,6 +1092,7 @@
       </trans-unit>
       <trans-unit id="8e623d3cfecb7c560c114390db53c1f430ffd0de" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="confirmation&lt;/ng-template&gt;           &lt;ng-template #confirmationPlural let-i i18n=&quot;shared.confirmation-count.plural|Transaction plural confir"/> confirmation</source>
+        <target><x id="INTERPOLATION" equiv-text="confirmation&lt;/ng-template&gt;           &lt;ng-template #confirmationPlural let-i i18n=&quot;shared.confirmation-count.plural|Transaction plural confir"/>تأكيدة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
           <context context-type="linenumber">20,21</context>
@@ -1103,6 +1114,7 @@
       </trans-unit>
       <trans-unit id="bc5b0a2631f0b7bc71aaec6aa6f01af21f9a80d4" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="confirmations&lt;/ng-template&gt;         &lt;/button&gt;       &lt;/div&gt;     &lt;/div&gt;            &lt;div class=&quot;clearfix&quot;&gt;&lt;/div&gt;        &lt;div class=&quot;box tran"/> confirmations</source>
+        <target><x id="INTERPOLATION" equiv-text="confirmations&lt;/ng-template&gt;         &lt;/button&gt;       &lt;/div&gt;     &lt;/div&gt;            &lt;div class=&quot;clearfix&quot;&gt;&lt;/div&gt;        &lt;div class=&quot;box tran"/>تأكيدات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
           <context context-type="linenumber">21,22</context>
@@ -1209,6 +1221,7 @@
       </trans-unit>
       <trans-unit id="bisq.transaction.browser-title" datatype="html">
         <source>Transaction: <x id="INTERPOLATION" equiv-text="this.txId"/></source>
+        <target>الحوالة: <x id="INTERPOLATION" equiv-text="this.txId"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.ts</context>
           <context context-type="linenumber">50</context>
@@ -1436,6 +1449,7 @@
       </trans-unit>
       <trans-unit id="1abb54fd13f529707c73db97625cd18c7c8cbb09" datatype="html">
         <source>Navigate to <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/sponsor&quot; target=&quot;_blank&quot;&gt;"/>https://mempool.space/sponsor<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> to sponsor</source>
+        <target>انتقل الى <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/sponsor&quot; target=&quot;_blank&quot;&gt;"/> https://mempool.space/sponsor <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> للرعاية</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">78</context>
@@ -1475,6 +1489,7 @@
       </trans-unit>
       <trans-unit id="3d395b07b1f87656ed773adcbb3daf8e00c08779" datatype="html">
         <source>Project Members</source>
+        <target>أعضاء المشروع</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">181,183</context>
@@ -1512,6 +1527,7 @@
       </trans-unit>
       <trans-unit id="9f10a0577222a7d6c35a889453fa3a794750d9c4" datatype="html">
         <source>multisig <x id="INTERPOLATION" equiv-text="{{ multisigM }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ multisigN }}"/></source>
+        <target>مولتيسيج <x id="INTERPOLATION" equiv-text="{{ multisigM }}"/> من <x id="INTERPOLATION_1" equiv-text="{{ multisigN }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
           <context context-type="linenumber">5</context>
@@ -1520,6 +1536,7 @@
       </trans-unit>
       <trans-unit id="31c09dcc0ab351767631539b208d5f7de4005473" datatype="html">
         <source>Lightning <x id="INTERPOLATION" equiv-text="{{ lightning }}"/></source>
+        <target>البرق <x id="INTERPOLATION" equiv-text="{{ lightning }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1528,6 +1545,7 @@
       </trans-unit>
       <trans-unit id="696ade981a05c12e10df38ba6218c76e318813b3" datatype="html">
         <source>Liquid <x id="INTERPOLATION" equiv-text="{{ liquid }}"/></source>
+        <target>ليكويد <x id="INTERPOLATION" equiv-text="{{ liquid }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
           <context context-type="linenumber">17</context>
@@ -1536,6 +1554,7 @@
       </trans-unit>
       <trans-unit id="04ffd930e7a2dc086c952a3a51b42c836bf21cc1" datatype="html">
         <source>Unconfidential</source>
+        <target>غير سري</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">23,24</context>
@@ -1544,6 +1563,7 @@
       </trans-unit>
       <trans-unit id="714e34125b3343df73f19ec800b43be95217d5d4" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="of {{ txCount | number }} transaction&lt;/ng-template&gt;"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transaction</source>
+        <target><x id="INTERPOLATION" equiv-text="of {{ txCount | number }} transaction&lt;/ng-template&gt;"/> من <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> تحويلة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">60,61</context>
@@ -1552,6 +1572,7 @@
       </trans-unit>
       <trans-unit id="0f6ada0cfb60aefd8f77f8a22349850ce186d666" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="of {{ txCount | number }} transactions&lt;/ng-template&gt;       &lt;/h2&gt;"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transactions</source>
+        <target><x id="INTERPOLATION" equiv-text="of {{ txCount | number }} transactions&lt;/ng-template&gt;       &lt;/h2&gt;"/> من <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> تحويلات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">61,62</context>
@@ -1569,6 +1590,7 @@
       </trans-unit>
       <trans-unit id="cedcc9d48ffb2714e7b2f012ab67bd21f8e96a18" datatype="html">
         <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="The number of transactions on this address exceeds the Electrum server limit&lt;/i&gt;           &lt;br&gt;&lt;br&gt;"/>The number of transactions on this address exceeds the Electrum server limit<x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> Consider viewing this address on the official Mempool website instead: </source>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="The number of transactions on this address exceeds the Electrum server limit&lt;/i&gt;           &lt;br&gt;&lt;br&gt;"/> يتجاوز عدد المعاملات على هذا العنوان حد خادم Electrum <x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/>، ففكر في عرض هذا العنوان على موقع Mempool الرسمي بدلاً من ذلك:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">137,140</context>
@@ -1602,6 +1624,7 @@
       </trans-unit>
       <trans-unit id="address.component.browser-title" datatype="html">
         <source>Address: <x id="INTERPOLATION" equiv-text="this.addressString"/></source>
+        <target>العنوان: <x id="INTERPOLATION" equiv-text="this.addressString"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.ts</context>
           <context context-type="linenumber">78</context>
@@ -1703,6 +1726,7 @@
       </trans-unit>
       <trans-unit id="c3360a933cb312b395d276a2b865214cf832df58" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> </source>
+        <target><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> من <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/>  </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">80</context>
@@ -1738,6 +1762,7 @@
       </trans-unit>
       <trans-unit id="asset.component.asset-browser-title" datatype="html">
         <source>Asset: <x id="INTERPOLATION" equiv-text="this.assetString"/></source>
+        <target>الأصل: <x id="INTERPOLATION" equiv-text="this.assetString"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.ts</context>
           <context context-type="linenumber">73</context>
@@ -1826,6 +1851,7 @@
       </trans-unit>
       <trans-unit id="a7ecfd7757d04b019beaa2d7208c728387bfc7e8" datatype="html">
         <source>Docs</source>
+        <target>المستندات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/bisq-master-page/bisq-master-page.component.html</context>
           <context context-type="linenumber">42,45</context>
@@ -2124,6 +2150,7 @@
       </trans-unit>
       <trans-unit id="block.component.browser-title" datatype="html">
         <source>Block <x id="BLOCK_HEIGHT" equiv-text="block.height"/>: <x id="BLOCK_ID" equiv-text="block.id"/></source>
+        <target>الكتلة <x id="BLOCK_HEIGHT" equiv-text="block.height"/>: <x id="BLOCK_ID" equiv-text="block.id"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.ts</context>
           <context context-type="linenumber">141</context>
@@ -2139,6 +2166,7 @@
       </trans-unit>
       <trans-unit id="6e70e73ac050983df55b277deb27955b5a33c606" datatype="html">
         <source>API service</source>
+        <target>خدمة API</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">12,14</context>
@@ -2536,6 +2564,7 @@
       </trans-unit>
       <trans-unit id="842f6eb4d8f230db4bdf483a08d4d2a77e2d5869" datatype="html">
         <source>Provides list of available currencies for a given base currency. </source>
+        <target>يوفر قائمة بالعملات المتاحة لعملة أساسية معينة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">54,56</context>
@@ -2543,6 +2572,7 @@
       </trans-unit>
       <trans-unit id="9c7dafb6f51e229d02a80844f6f99a01487e7cb2" datatype="html">
         <source>Provides list of open offer prices for a single market.</source>
+        <target>يوفر قائمة أسعار العروض المفتوحة لسوق واحد.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">67,69</context>
@@ -2550,6 +2580,7 @@
       </trans-unit>
       <trans-unit id="9e95c144fcb1afd7724dc5a3aad31125a59d9d71" datatype="html">
         <source>Provides hi/low/open/close data for a given market. This can be used to generate a candlestick chart.</source>
+        <target>يوفر بيانات عالية / منخفضة / مفتوحة / قريبة لسوق معين. يمكن استخدام هذا لإنشاء مخطط شارت.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">80,82</context>
@@ -2557,6 +2588,7 @@
       </trans-unit>
       <trans-unit id="9c6e8e72b7a5f4e8a0e8ede12ab5ede4e0af2484" datatype="html">
         <source>Provides list of available markets.</source>
+        <target>يقدم قائمة بالأسواق المتاحة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">93,95</context>
@@ -2564,6 +2596,7 @@
       </trans-unit>
       <trans-unit id="a02929fcc15f8b54d2f6d602722d2c7d1d790a2a" datatype="html">
         <source>Provides list of open offer details for a single market.</source>
+        <target>يوفر قائمة بتفاصيل العروض المفتوحة لسوق واحد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">106,108</context>
@@ -2571,6 +2604,7 @@
       </trans-unit>
       <trans-unit id="342f8a4ceda8cda17584e920ad7459b41e86b069" datatype="html">
         <source>Provides 24 hour price ticker for single market or all markets</source>
+        <target>يوفر مؤشر سعر على مدار 24 ساعة لسوق واحد أو لجميع الأسواق</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">119,121</context>
@@ -2578,6 +2612,7 @@
       </trans-unit>
       <trans-unit id="dd194a2109134d62cb518ba0ccfc296701de5522" datatype="html">
         <source>Provides list of completed trades for a single market.</source>
+        <target>يوفر قائمة بالصفقات المنجزة لسوق واحد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">132,134</context>
@@ -2585,6 +2620,7 @@
       </trans-unit>
       <trans-unit id="b925fd1f3213560c0737f6016be18eaba7c28c9c" datatype="html">
         <source>Provides periodic volume data in terms of base currency for one or all markets.</source>
+        <target>يوفر بيانات حجم التداول من حيث العملة الأساسية لواحد أو جميع الأسواق.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">145,147</context>
@@ -2600,6 +2636,7 @@
       </trans-unit>
       <trans-unit id="e12cd52eaa77b446ba97436c145b59741151adf3" datatype="html">
         <source>Returns details about an address. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>address<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>chain_stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool_stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>. <x id="INTERPOLATION" equiv-text="{{ '{' }}"/>chain,mempool<x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/>_stats each contain an object with <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>tx_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>funded_txo_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>funded_txo_sum<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>spent_txo_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>spent_txo_sum<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</source>
+        <target>تفاصيل عوائد المعاملات. الحقول المتوقرة:<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>المعاملات الكاملة في عقود العملات الرقمية لتخزين المعلومات عن العمليات غير المعلنة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>الإصدار <x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>وقت الاغلاق<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="INTERPOLATION" equiv-text="{{ '{' }}"/>الحجم <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/>,<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>قياس حجم الكتلة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>الرسم<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>الأرباح الشاملة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>ناتج جميع المعاملات<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,و<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>الحالة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">179,180</context>
@@ -2607,6 +2644,7 @@
       </trans-unit>
       <trans-unit id="c9f5914dbba46a8dc4ab4e81b40b1582eea7c5e2" datatype="html">
         <source>Get transaction history for the specified address/scripthash, sorted with newest first. Returns up to 50 mempool transactions plus the first 25 confirmed transactions. You can request more confirmed transactions using <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>:last_seen_txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (see below).</source>
+        <target>احصل على سجل المعاملات للعنوان المحدد / scripthash ، مرتبة بالأحدث أولاً. إرجاع ما يصل إلى 50 معاملة من معاملات mempool بالإضافة إلى أول 25 معاملة مؤكدة. يمكنك طلب المزيد من المعاملات المؤكدة باستخدام <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/> اخر ظهور للحواله عن طريق عنوان الحواله <x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>( شاهد بالاسفل )</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">192,193</context>
@@ -2630,6 +2668,7 @@
       </trans-unit>
       <trans-unit id="4eb50557085c85bfca995b6ee0de56ec3f5e97eb" datatype="html">
         <source>Get the list of unspent transaction outputs associated with the address/scripthash. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>vout<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>value<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>status<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (with the status of the funding tx).<x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;"/>There is also a <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>valuecommitment<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> field that may appear in place of <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>value<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, plus the following additional fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>asset<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>/<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>assetcommitment<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>nonce<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>/<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>noncecommitment<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>surjection_proof<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>range_proof<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.<x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;"/></source>
+        <target>الحصول على قائمة الحوالات غير المدفوعة مرفقة بالعنوان/ تجزئة البرنامج النصي. الحقول المتوفرة: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>رقم تعريف المعاملة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>رقم انتاجية المعاملات<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>القيمة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,و<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>الحالة <x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(مع حالة تمويل الحوالة).<x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;"/>يوجد ايضاً <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>القيمة الالزامية<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>حقل يمكن ان يظهر مكان :<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>القيمة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,الإضافة الى الحقول التالية:<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>الأصول<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>/<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>الأصول الملزمة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>رمز الإستخدام لمرة واحدة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>/<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>رمز الزامي للإستخدام مرة واحدة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>دليل شامل<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,و<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>نطاق الإثبات<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.<x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;"/> </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">231,233</context>
@@ -2661,6 +2700,7 @@
       </trans-unit>
       <trans-unit id="194d480219559b855b01ea58459066e3c63acdb2" datatype="html">
         <source>Returns details about a block. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>id<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>height<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>version<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>timestamp<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>bits<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>nonce<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>merkle_root<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>tx_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>size<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>weight<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;"/><x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>proof<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;"/> and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>previousblockhash<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</source>
+        <target>الحصول على قائمة الحوالات غير المدفوعة مرفقة بالعنوان/ تجزئة البرنامج النصي. الحقول المتوفرة: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>رقم تعريف المعاملة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>رقم انتاجية المعاملات<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>القيمة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,و<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>الحالة <x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(مع حالة تمويل الحوالة).<x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;"/>يوجد ايضاً <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>القيمة الالزامية<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>حقل يمكن ان يظهر مكان :<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>القيمة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,الإضافة الى الحقول التالية:<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>الأصول<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>/<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>الأصول الملزمة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>رمز الإستخدام لمرة واحدة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>/<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>رمز الزامي للإستخدام مرة واحدة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>دليل شامل<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;"/>و<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>نطاق الإثبات<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">290,291</context>
@@ -2676,6 +2716,7 @@
       </trans-unit>
       <trans-unit id="36df9865e9099d98537ea69c9cfdc035d1b64116" datatype="html">
         <source>Returns the hash of the block currently at <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>:height<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</source>
+        <target>عوائد تجزئة الكتلة الحالية <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>: الإرتفاع<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">316,317</context>
@@ -2691,6 +2732,7 @@
       </trans-unit>
       <trans-unit id="a2c00fbdcce9d6291c3b04c67979f9694be23f28" datatype="html">
         <source>Returns the confirmation status of a block. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>in_best_chain<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (boolean, false for orphaned blocks), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>next_best<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (the hash of the next block, only available for blocks in the best chain).</source>
+        <target>عوائد الحالة المؤكدة في الكتلة. الحقول المتوفرة:<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>في السلسلة الأفضل<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(الجبر المنطقيboolean, خطأ اذا كانت الكتل المهملة),<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>الخيار الأفضل التالي <x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(التجزئة النصية للكتلة التالية ,متوفرة فقط للكتل في السلسة الأفضل).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">342,343</context>
@@ -2714,6 +2756,7 @@
       </trans-unit>
       <trans-unit id="3e08815110b2e5ce8aa7256ed05a2faf6dbb7077" datatype="html">
         <source>Returns the transaction at index <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>:index<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> within the specified block.</source>
+        <target>عوائد المعاملات عند المؤشر <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>: المؤشر <x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>ضمن سلسلة محددة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">381,382</context>
@@ -2729,6 +2772,7 @@
       </trans-unit>
       <trans-unit id="1126cb2e03d0371d03b57047052d4ff1b6556753" datatype="html">
         <source>Returns a list of transactions in the block (up to 25 transactions beginning at <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>start_index<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>). Transactions returned here do not have the <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>status<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> field, since all the transactions share the same block and confirmation status.</source>
+        <target>عوائد لائحة المعاملات في الكتلة (ما يقارب 25 تبدأ عند <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>مؤشر البداية<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>).المعاملات العائدة لا تملك<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>,حالة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,ميدان, بما ان تتشارك جميع المعاملات الكتلة و حالة التأكيد ذاتها. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">407,408</context>
@@ -2736,6 +2780,7 @@
       </trans-unit>
       <trans-unit id="f8380186899495340cbfe7fb836ba664fb4b52af" datatype="html">
         <source>Returns the 10 newest blocks starting at the tip or at <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>:start_height<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> if specified.</source>
+        <target>عوائد أجدد 10 كتل عند بداية القمة او عند<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>:بداية حجم الكتلة و موقعها بالنسبة للكتل المؤكدة التي سبقتها<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>اذا كانت معرفة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">420,421</context>
@@ -2787,6 +2832,7 @@
       </trans-unit>
       <trans-unit id="af1a465e50097fabbe55bf5dbcf5d0702bdbc98b" datatype="html">
         <source>Get a list of the last 10 transactions to enter the mempool. Each transaction object contains simplified overview data, with the following fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>fee<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>vsize<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>value<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</source>
+        <target>الحصول على لائحة المعاملات ال10 الأخيرة لتدخل  عقود العملات الرقمية لتخزين معلومات العمليات غير المعلنة. كل قاعدة لعملية المعاملات تحتوي على بيانات شاملة وملخصة مع الخانات  التالية: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>تجزئة بيانات المعاملات<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>الرسوم<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>وحدة قياس إفتراضية بديلة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,و<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>القيمة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">506,507</context>
@@ -2806,6 +2852,7 @@
       </trans-unit>
       <trans-unit id="a8ea1ec66e7bb9f92e87ae5482e50748baafffd2" datatype="html">
         <source>Returns details about a transaction. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>version<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>locktime<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>size<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>weight<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>fee<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>vin<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>vout<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>status<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</source>
+        <target>تفاصيل عوائد المعاملات. الحقول المتوقرة:<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>المعاملات الكاملة في عقود العملات الرقمية لتخزين المعلومات عن العمليات غير المعلنة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>الإصدار <x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>وقت الاغلاق<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>الحجم <x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>قياس حجم الكتلة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>الرسم<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>الأرباح الشاملة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>ناتج جميع المعاملات<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,و<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>الحالة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">536,537</context>
@@ -2821,6 +2868,7 @@
       </trans-unit>
       <trans-unit id="d51106cc898981e9862d35a4db40796f0cf464f8" datatype="html">
         <source>Returns a merkle inclusion proof for the transaction using <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://bitcoin.org/en/glossary/merkle-block&quot;&gt;"/>bitcoind's merkleblock<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> format.</source>
+        <target>عوائد دليل تضمين إستخدام المعاملة المحوسبة <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://bitcoin.org/en/glossary/merkle-block&quot;&gt;"/>برنامج بتكوين الخفي الأساسي <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>صيغة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">562,563</context>
@@ -2828,6 +2876,7 @@
       </trans-unit>
       <trans-unit id="a57953199686e9980df838cb25edb51691941ac5" datatype="html">
         <source>Returns a merkle inclusion proof for the transaction using <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle&quot;&gt;"/>Electrum's blockchain.transaction.get_merkle format.<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
+        <target>عوائد دليل تضمين إستخدام المعاملة المحوسبة<x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle&quot;&gt;"/>سلسلة كتل الكهرمان المعدني. المعاملة. احصل_صيغة الحوسبة.<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">575,576</context>
@@ -2835,6 +2884,7 @@
       </trans-unit>
       <trans-unit id="fe9a40b2ff9674b4ab7d82624ffed340c9ee5b89" datatype="html">
         <source>Returns the spending status of a transaction output. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>spent<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (boolean), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (optional), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>vin<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (optional), and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>status<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (optional, the status of the spending tx).</source>
+        <target>عوائد حالة الإنفاق لناتج المعاملة. الحقول المتوفرة:<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>الإنفاق<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(الجبر المنطقي boolean ),<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>أرقام المعاملات في الكتلة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(إختياري),و<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/> الأرباح الشاملة <x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(إختياري),و<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>الحالة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(إختياري, حالة إنفاق المعاملة).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">588,589</context>
@@ -2858,6 +2908,7 @@
       </trans-unit>
       <trans-unit id="7e784cfa5833e7b54d4dfc723fabde94f66ebde3" datatype="html">
         <source>Returns the confirmation status of a transaction. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>confirmed<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (boolean), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block_height<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (optional), and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block_hash<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (optional).</source>
+        <target>يُرجع حالة تأكيد المعاملة. الحقول المتوفرة: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/> مؤكد <x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(boolean)، <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/> حجم الكتلة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (اختياري)، و <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/> هاش الكتلة <x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(اختياري).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">627,628</context>
@@ -2873,6 +2924,7 @@
       </trans-unit>
       <trans-unit id="01723473ecc53cab60ef1b37dc39d8941994d56f" datatype="html">
         <source>Broadcast a raw transaction to the network. The transaction should be provided as hex in the request body. The <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> will be returned on success.</source>
+        <target>بث معاملة أصلية الى الشبكة.المعاملة يجب أن تُقَدم كأرقام سداسية عشرية في نص الطلب.أرقام المعاملات في الكتلة<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>معرف الحوالة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>يتم إسترجاعها عند نجاح العملية.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">653,654</context>
@@ -2880,6 +2932,7 @@
       </trans-unit>
       <trans-unit id="a706b1ded7506620b153dbcdea8108e6691bbbd9" datatype="html">
         <source>Default push: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> action: 'want', data: ['blocks', ...] <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> to express what you want pushed. Available: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool-blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>live-2h-chart<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.<x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/><x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/>Push transactions related to address: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> 'track-address': '3PbJ...bF9B' <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>address-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> for new mempool transactions, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> for new block confirmed transactions.</source>
+        <target>الدفع الإعتيادي:<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/>إجراء:أريد, بيانات:[’الكتل’،...]<x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>لتحدديد ما تريد دفعه.متوفر:<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>كتل<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>،<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>;كتل عقود للعمليات غير المعلنة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>،<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>جدول-2h-مباشر<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>،و<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>إحصاءات <x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.<x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/><x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/>دفع المعاملات المرتبطة بالعنوان:<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/>’إتبع-عنوان’: ’3PbJ...bF98’<x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>للحصول على معاملة جديدة تحتوي ذلك العنوان كإدخال و إخراج. إرجاع مصفوف المعاملات.<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>عنوان المعاملات<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>لكتل العقود غير المعلنة الجديدة، و <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>معاملات الكتللالمعاملات المؤكدة في الكتل الجديدة<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">671,672</context>
@@ -2931,6 +2984,7 @@
       </trans-unit>
       <trans-unit id="fcfd4675b4c90f08d18d3abede9a9a4dff4cfdc7" datatype="html">
         <source>Documentation</source>
+        <target>توثيق</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/docs.component.html</context>
           <context context-type="linenumber">4</context>
@@ -3056,6 +3110,7 @@
       </trans-unit>
       <trans-unit id="1bb6965f8e1bbe40c076528ffd841da86f57f119" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;blocks&lt;/span&gt;&lt;/ng-template&gt;         &lt;ng-template #blo"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>blocks<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;blocks&lt;/span&gt;&lt;/ng-template&gt;         &lt;ng-template #blo"/><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/> كتل <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">22,23</context>
@@ -3072,6 +3127,7 @@
       </trans-unit>
       <trans-unit id="b7ef3894d9b6f157c400ddc937c70c9881ecd896" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;block&lt;/span&gt;&lt;/ng-template&gt;       &lt;/div&gt;     &lt;/div&gt;"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>block<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;block&lt;/span&gt;&lt;/ng-template&gt;       &lt;/div&gt;     &lt;/div&gt;"/><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>كتلة<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">23,24</context>
@@ -3161,6 +3217,7 @@
       </trans-unit>
       <trans-unit id="mempool-block.stack.of.blocks" datatype="html">
         <source>Stack of <x id="INTERPOLATION" equiv-text="blocksInBlock"/> mempool blocks</source>
+        <target>كومة من <x id="INTERPOLATION" equiv-text="blocksInBlock"/> كتل mempool</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">73</context>
@@ -3168,6 +3225,7 @@
       </trans-unit>
       <trans-unit id="mempool-block.block.no" datatype="html">
         <source>Mempool block <x id="INTERPOLATION" equiv-text="this.mempoolBlockIndex + 1"/></source>
+        <target>كتلة ميم بول <x id="INTERPOLATION" equiv-text="this.mempoolBlockIndex + 1"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">75</context>
@@ -3175,6 +3233,7 @@
       </trans-unit>
       <trans-unit id="2348971518300945764" datatype="html">
         <source>Range</source>
+        <target>ُبعد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-graph/mempool-graph.component.ts</context>
           <context context-type="linenumber">256</context>
@@ -3182,6 +3241,7 @@
       </trans-unit>
       <trans-unit id="1033261550402895380" datatype="html">
         <source>Sum</source>
+        <target>المجموع</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-graph/mempool-graph.component.ts</context>
           <context context-type="linenumber">258</context>
@@ -3198,6 +3258,7 @@
       </trans-unit>
       <trans-unit id="miner-identified-by-payout" datatype="html">
         <source>Identified by payout address: '<x id="PAYOUT_ADDRESS" equiv-text="vout.scriptpubkey_address"/>'</source>
+        <target>تم تحديده من خلال عنوان الدفع: '<x id="PAYOUT_ADDRESS" equiv-text="vout.scriptpubkey_address"/>'</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
           <context context-type="linenumber">42</context>
@@ -3205,6 +3266,7 @@
       </trans-unit>
       <trans-unit id="miner-identified-by-coinbase" datatype="html">
         <source>Identified by coinbase tag: '<x id="TAG" equiv-text="tag"/>'</source>
+        <target>تم تحديده بواسطة علامة كوين بيس :  '<x id="TAG" equiv-text="tag"/>'</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
           <context context-type="linenumber">52</context>
@@ -3319,6 +3381,7 @@
       </trans-unit>
       <trans-unit id="5ca707824ab93066c7d9b44e1b8bf216725c2c22" datatype="html">
         <source>Filter</source>
+        <target>تنقيه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">40</context>
@@ -3357,6 +3420,7 @@
       </trans-unit>
       <trans-unit id="time-since" datatype="html">
         <source><x id="DATE" equiv-text="dateStrings.i18nYear"/> ago</source>
+        <target> منذ <x id="DATE" equiv-text="dateStrings.i18nYear"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -3416,6 +3480,7 @@
       </trans-unit>
       <trans-unit id="time-span" datatype="html">
         <source>After <x id="DATE" equiv-text="dateStrings.i18nYear"/></source>
+        <target>بعد <x id="DATE" equiv-text="dateStrings.i18nYear"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -3475,6 +3540,7 @@
       </trans-unit>
       <trans-unit id="time-until" datatype="html">
         <source>In ~<x id="DATE" equiv-text="dateStrings.i18nMinute"/></source>
+        <target>في ~ <x id="DATE" equiv-text="dateStrings.i18nMinute"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
           <context context-type="linenumber">66</context>
@@ -3670,6 +3736,7 @@
       </trans-unit>
       <trans-unit id="516a786e59a57efaf80e11370b4bade400f19445" datatype="html">
         <source>Locktime</source>
+        <target>وقت القفل</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">234,236</context>
@@ -3840,6 +3907,7 @@
       </trans-unit>
       <trans-unit id="9fb28e77d5963f2275397f2f9cee54f32942aeeb" datatype="html">
         <source>Peg-out to <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-contain"/></source>
+        <target>إخراج المعاملات الى <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-contain"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">146,147</context>
@@ -3887,6 +3955,7 @@
       </trans-unit>
       <trans-unit id="f85c05147b720576e50336cf26f63d3b05601699" datatype="html">
         <source>This transaction saved <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>% on fees by using native SegWit-Bech32</source>
+        <target>هذه المعاملة وفرة <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>٪ من الرسوم لاستخدام النيتف سيقويت Bech32</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">1</context>
@@ -3913,6 +3982,7 @@
       </trans-unit>
       <trans-unit id="975f46d122f2ca0a187308399a58b44d61ef08eb" datatype="html">
         <source>This transaction saved <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>% on fees by using SegWit and could save <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}"/>% more by fully upgrading to native SegWit-Bech32</source>
+        <target>هذه المعاملة وفرت <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>٪ من رسوم التحويل باستخدام سيقويت وممكن ان توفر <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}"/>٪ اكثر عن طريق التطور الى نيتف سيقويت Bech32</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">3</context>
@@ -3921,6 +3991,7 @@
       </trans-unit>
       <trans-unit id="1be04d5407059059b596f72696a3d1704ce9c0ef" datatype="html">
         <source>This transaction could save <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}"/>% on fees by upgrading to native SegWit-Bech32 or <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialP2shGains * 100 | number:  '1.0-0' }}"/>% by upgrading to SegWit-P2SH</source>
+        <target>كان من الممكن أن توفر هذه المعاملة <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}"/>٪ من الرسوم عن طريق الترقية إلى سيقويت Bech32  أو <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialP2shGains * 100 | number:  '1.0-0' }}"/>٪ عن طريق الترقية إلى سيقويت-P2SH</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">5</context>
@@ -3989,6 +4060,7 @@
       </trans-unit>
       <trans-unit id="60601e02e7c1f6c4dbabd0ef0bb8946003db8dec" datatype="html">
         <source>Only ~<x id="INTERPOLATION" equiv-text="{{ medianFeeNeeded | feeRounding }}"/> sat/vB was needed to get into this block</source>
+        <target>فقط <x id="INTERPOLATION" equiv-text="{{ medianFeeNeeded | feeRounding }}"/> سات/vB كان مطلوبب لاضافة هذه المعاملة لهذه الكتله</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
@@ -4001,6 +4073,7 @@
       </trans-unit>
       <trans-unit id="0fa66b0c410bef320d3f370d7c98c51754b5f28f" datatype="html">
         <source>Overpaid <x id="INTERPOLATION" equiv-text="{{ overpaidTimes }}"/>x</source>
+        <target>رسوم زائده <x id="INTERPOLATION" equiv-text="{{ overpaidTimes }}"/>x </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
@@ -4124,6 +4197,7 @@
       </trans-unit>
       <trans-unit id="eb7a000cd340b44291d790f7b56f7b926edc275b" datatype="html">
         <source>L-BTC in circulation</source>
+        <target>L-BTC المتداول</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">209,211</context>
@@ -4198,6 +4272,7 @@
       </trans-unit>
       <trans-unit id="date-base.year" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> year</source>
+        <target><x id="DATE" equiv-text="counter"/>سنه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">3</context>
@@ -4205,6 +4280,7 @@
       </trans-unit>
       <trans-unit id="date-base.years" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> years</source>
+        <target><x id="DATE" equiv-text="counter"/> سنوات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">4</context>
@@ -4212,6 +4288,7 @@
       </trans-unit>
       <trans-unit id="date-base.month" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> month</source>
+        <target><x id="DATE" equiv-text="counter"/>شهر</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">5</context>
@@ -4219,6 +4296,7 @@
       </trans-unit>
       <trans-unit id="date-base.months" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> months</source>
+        <target><x id="DATE" equiv-text="counter"/>اشهر</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">6</context>
@@ -4226,6 +4304,7 @@
       </trans-unit>
       <trans-unit id="date-base.week" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> week</source>
+        <target><x id="DATE" equiv-text="counter"/>اسبوع</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">7</context>
@@ -4233,6 +4312,7 @@
       </trans-unit>
       <trans-unit id="date-base.weeks" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> weeks</source>
+        <target><x id="DATE" equiv-text="counter"/> اسابيع</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">8</context>
@@ -4240,6 +4320,7 @@
       </trans-unit>
       <trans-unit id="date-base.day" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> day</source>
+        <target><x id="DATE" equiv-text="counter"/> يوم</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">9</context>
@@ -4247,6 +4328,7 @@
       </trans-unit>
       <trans-unit id="date-base.days" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> days</source>
+        <target><x id="DATE" equiv-text="counter"/> ايام</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">10</context>
@@ -4254,6 +4336,7 @@
       </trans-unit>
       <trans-unit id="date-base.hour" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> hour</source>
+        <target><x id="DATE" equiv-text="counter"/> ساعه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">11</context>
@@ -4261,6 +4344,7 @@
       </trans-unit>
       <trans-unit id="date-base.hours" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> hours</source>
+        <target><x id="DATE" equiv-text="counter"/> ساعات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">12</context>
@@ -4268,6 +4352,7 @@
       </trans-unit>
       <trans-unit id="date-base.minute" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> minute</source>
+        <target><x id="DATE" equiv-text="counter"/> دقيقه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">13</context>
@@ -4275,6 +4360,7 @@
       </trans-unit>
       <trans-unit id="date-base.minutes" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> minutes</source>
+        <target><x id="DATE" equiv-text="counter"/> دقائق</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">14</context>
@@ -4282,6 +4368,7 @@
       </trans-unit>
       <trans-unit id="date-base.second" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> second</source>
+        <target><x id="DATE" equiv-text="counter"/> ثانيه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">15</context>
@@ -4289,6 +4376,7 @@
       </trans-unit>
       <trans-unit id="date-base.seconds" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> seconds</source>
+        <target><x id="DATE" equiv-text="counter"/> ثوان</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">16</context>

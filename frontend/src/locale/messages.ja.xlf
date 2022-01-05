@@ -11,6 +11,7 @@
       </trans-unit>
       <trans-unit id="ngb.carousel.slide-number" datatype="html">
         <source> Slide <x id="INTERPOLATION" equiv-text="OnHover$ = new"/> of <x id="INTERPOLATION_1" equiv-text=";   private _pa"/> </source>
+        <target><x id="INTERPOLATION_1" equiv-text=";   private _pa"/>枚のスライドのうちの<x id="INTERPOLATION" equiv-text="OnHover$ = new"/>枚目</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/src/carousel/carousel.ts</context>
           <context context-type="linenumber">114,118</context>
@@ -860,6 +861,7 @@
       </trans-unit>
       <trans-unit id="74d80a5b284beb81e8aeb3b8efca0f78cd4b7560" datatype="html">
         <source>Amount (<x id="INTERPOLATION" equiv-text="{{ i }}"/>)</source>
+        <target>量 (<x id="INTERPOLATION" equiv-text="{{ i }}"/>)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
           <context context-type="linenumber">112,113</context>
@@ -1525,6 +1527,7 @@
       </trans-unit>
       <trans-unit id="9f10a0577222a7d6c35a889453fa3a794750d9c4" datatype="html">
         <source>multisig <x id="INTERPOLATION" equiv-text="{{ multisigM }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ multisigN }}"/></source>
+        <target>multisig <x id="INTERPOLATION" equiv-text="{{ multisigM }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ multisigN }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
           <context context-type="linenumber">5</context>
@@ -1533,6 +1536,7 @@
       </trans-unit>
       <trans-unit id="31c09dcc0ab351767631539b208d5f7de4005473" datatype="html">
         <source>Lightning <x id="INTERPOLATION" equiv-text="{{ lightning }}"/></source>
+        <target>ライトニング <x id="INTERPOLATION" equiv-text="{{ lightning }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1541,6 +1545,7 @@
       </trans-unit>
       <trans-unit id="696ade981a05c12e10df38ba6218c76e318813b3" datatype="html">
         <source>Liquid <x id="INTERPOLATION" equiv-text="{{ liquid }}"/></source>
+        <target>リキッド <x id="INTERPOLATION" equiv-text="{{ liquid }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
           <context context-type="linenumber">17</context>
@@ -1549,6 +1554,7 @@
       </trans-unit>
       <trans-unit id="04ffd930e7a2dc086c952a3a51b42c836bf21cc1" datatype="html">
         <source>Unconfidential</source>
+        <target>機密なし</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">23,24</context>
@@ -1557,6 +1563,7 @@
       </trans-unit>
       <trans-unit id="714e34125b3343df73f19ec800b43be95217d5d4" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="of {{ txCount | number }} transaction&lt;/ng-template&gt;"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transaction</source>
+        <target><x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/>件のトランザクションのうちの<x id="INTERPOLATION" equiv-text="of {{ txCount | number }} transaction&lt;/ng-template&gt;"/>件</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">60,61</context>
@@ -1565,6 +1572,7 @@
       </trans-unit>
       <trans-unit id="0f6ada0cfb60aefd8f77f8a22349850ce186d666" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="of {{ txCount | number }} transactions&lt;/ng-template&gt;       &lt;/h2&gt;"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transactions</source>
+        <target><x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/>件のトランザクションのうちの<x id="INTERPOLATION" equiv-text="of {{ txCount | number }} transactions&lt;/ng-template&gt;       &lt;/h2&gt;"/>件</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">61,62</context>
@@ -1718,6 +1726,7 @@
       </trans-unit>
       <trans-unit id="c3360a933cb312b395d276a2b865214cf832df58" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> </source>
+        <target><x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/>の<x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">80</context>
@@ -2555,6 +2564,7 @@
       </trans-unit>
       <trans-unit id="842f6eb4d8f230db4bdf483a08d4d2a77e2d5869" datatype="html">
         <source>Provides list of available currencies for a given base currency. </source>
+        <target>ベース通貨に対して利用可能な通貨のリストを提供します。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">54,56</context>
@@ -2562,6 +2572,7 @@
       </trans-unit>
       <trans-unit id="9c7dafb6f51e229d02a80844f6f99a01487e7cb2" datatype="html">
         <source>Provides list of open offer prices for a single market.</source>
+        <target>特定市場に対するオープン・オファー価格のリストを提供します。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">67,69</context>
@@ -2569,6 +2580,7 @@
       </trans-unit>
       <trans-unit id="9e95c144fcb1afd7724dc5a3aad31125a59d9d71" datatype="html">
         <source>Provides hi/low/open/close data for a given market. This can be used to generate a candlestick chart.</source>
+        <target>特定市場に対するhi/low/open/closeデータを提供します。ローソク足チャートの作成に利用できます。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">80,82</context>
@@ -2576,6 +2588,7 @@
       </trans-unit>
       <trans-unit id="9c6e8e72b7a5f4e8a0e8ede12ab5ede4e0af2484" datatype="html">
         <source>Provides list of available markets.</source>
+        <target>利用可能な市場のリストを提供します。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">93,95</context>
@@ -2583,6 +2596,7 @@
       </trans-unit>
       <trans-unit id="a02929fcc15f8b54d2f6d602722d2c7d1d790a2a" datatype="html">
         <source>Provides list of open offer details for a single market.</source>
+        <target>特定市場に対するオープン・オファー詳細のリストを提供します。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">106,108</context>
@@ -2590,6 +2604,7 @@
       </trans-unit>
       <trans-unit id="342f8a4ceda8cda17584e920ad7459b41e86b069" datatype="html">
         <source>Provides 24 hour price ticker for single market or all markets</source>
+        <target>特定市場の、それとも全市場の24時間価格ティッカーを提供します</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">119,121</context>
@@ -2597,6 +2612,7 @@
       </trans-unit>
       <trans-unit id="dd194a2109134d62cb518ba0ccfc296701de5522" datatype="html">
         <source>Provides list of completed trades for a single market.</source>
+        <target>特定市場で済まされたトレードのリストを提供します。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">132,134</context>
@@ -2604,6 +2620,7 @@
       </trans-unit>
       <trans-unit id="b925fd1f3213560c0737f6016be18eaba7c28c9c" datatype="html">
         <source>Provides periodic volume data in terms of base currency for one or all markets.</source>
+        <target>ベース通貨に対して特定市場の、それとも全市場の定期的貿易量データを提供します。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">145,147</context>
@@ -2619,6 +2636,7 @@
       </trans-unit>
       <trans-unit id="e12cd52eaa77b446ba97436c145b59741151adf3" datatype="html">
         <source>Returns details about an address. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>address<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>chain_stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool_stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>. <x id="INTERPOLATION" equiv-text="{{ '{' }}"/>chain,mempool<x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/>_stats each contain an object with <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>tx_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>funded_txo_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>funded_txo_sum<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>spent_txo_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>spent_txo_sum<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</source>
+        <target>あるアドレスに関する詳細を返す。入手可能フィールド: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>address<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>、<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>chain_stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>、そして <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool_stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>。各<x id="INTERPOLATION" equiv-text="{{ '{' }}"/>chain,mempool<x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/>_statsには<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>tx_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>、<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>funded_txo_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>、<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>funded_txo_sum<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>、<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>spent_txo_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>、そして<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>spent_txo_sum<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>を含めるオブジェクトがあります。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">179,180</context>
@@ -2626,6 +2644,7 @@
       </trans-unit>
       <trans-unit id="c9f5914dbba46a8dc4ab4e81b40b1582eea7c5e2" datatype="html">
         <source>Get transaction history for the specified address/scripthash, sorted with newest first. Returns up to 50 mempool transactions plus the first 25 confirmed transactions. You can request more confirmed transactions using <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>:last_seen_txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (see below).</source>
+        <target>最新から順にソートされ特定したアドレス/スクリプトハッシュのトランザクション歴史を得る。50つのmempoolトランザクションまで、そして最初の25つの確認されたトランザクションは返されます。追加の確認されたトランザクションを求めたい場合は<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>:last_seen_txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>を利用できます（下記参照）。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">192,193</context>
@@ -2649,6 +2668,7 @@
       </trans-unit>
       <trans-unit id="4eb50557085c85bfca995b6ee0de56ec3f5e97eb" datatype="html">
         <source>Get the list of unspent transaction outputs associated with the address/scripthash. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>vout<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>value<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>status<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (with the status of the funding tx).<x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;"/>There is also a <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>valuecommitment<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> field that may appear in place of <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>value<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, plus the following additional fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>asset<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>/<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>assetcommitment<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>nonce<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>/<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>noncecommitment<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>surjection_proof<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>range_proof<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.<x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;"/></source>
+        <target>あるアドレス/スクリプトハッシュと関係している未使用のトランザクションアウトプットのリストを得る。入手可能フィールド: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>、<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>vout<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>、<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>value<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>、そして <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>status<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (ファンディングtxの状態を含め)。<x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;"/><x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>value<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>フィールドの代わりに<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>valuecommitment<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>が表示される可能性があり、以下の追加フィールドも表示される可能性があります: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>asset<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>/<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>assetcommitment<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>、<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>nonce<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>/<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>noncecommitment<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>、 <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>surjection_proof<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>、そして <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>range_proof<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>。<x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">231,233</context>
@@ -2680,6 +2700,7 @@
       </trans-unit>
       <trans-unit id="194d480219559b855b01ea58459066e3c63acdb2" datatype="html">
         <source>Returns details about a block. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>id<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>height<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>version<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>timestamp<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>bits<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>nonce<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>merkle_root<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>tx_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>size<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>weight<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;"/><x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>proof<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;"/> and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>previousblockhash<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</source>
+        <target>あるブロックに関する詳細を返す。入手可能フィールド: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>id<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>height<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>version<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>timestamp<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>bits<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>nonce<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>merkle_root<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>tx_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>size<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>weight<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngIf=&quot;network.val === 'liquid'&quot;&gt;"/><x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>proof<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>,<x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;"/>そして <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>previousblockhash<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">290,291</context>
@@ -2695,6 +2716,7 @@
       </trans-unit>
       <trans-unit id="36df9865e9099d98537ea69c9cfdc035d1b64116" datatype="html">
         <source>Returns the hash of the block currently at <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>:height<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</source>
+        <target><x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>:height<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>高さにあるブロックのハッシュを返す。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">316,317</context>
@@ -2710,6 +2732,7 @@
       </trans-unit>
       <trans-unit id="a2c00fbdcce9d6291c3b04c67979f9694be23f28" datatype="html">
         <source>Returns the confirmation status of a block. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>in_best_chain<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (boolean, false for orphaned blocks), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>next_best<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (the hash of the next block, only available for blocks in the best chain).</source>
+        <target>ブロックの確認状態を返す。入手可能フィールド：<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>in_best_chain<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (ブール値、孤立ブロックの場合は偽), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>next_best<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(次のブロックのハッシュ、ベストチェーンに入ってるブロックのみの場合に入手可能)。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">342,343</context>
@@ -2733,6 +2756,7 @@
       </trans-unit>
       <trans-unit id="3e08815110b2e5ce8aa7256ed05a2faf6dbb7077" datatype="html">
         <source>Returns the transaction at index <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>:index<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> within the specified block.</source>
+        <target>特定されたブロックに入ってる、<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>:index<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>というインデックスにあるトランザクションを返す。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">381,382</context>
@@ -2748,6 +2772,7 @@
       </trans-unit>
       <trans-unit id="1126cb2e03d0371d03b57047052d4ff1b6556753" datatype="html">
         <source>Returns a list of transactions in the block (up to 25 transactions beginning at <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>start_index<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>). Transactions returned here do not have the <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>status<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> field, since all the transactions share the same block and confirmation status.</source>
+        <target>ブロックに入ってるトランザクションのリストを返す(<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>start_index<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>からはじめる25つまでのトランザクション)。ここに返されるトランザクションは共通ブロックに入ってる、そして同じ確認状態を持っているため、<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>status<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>のフィールドを含みません。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">407,408</context>
@@ -2755,6 +2780,7 @@
       </trans-unit>
       <trans-unit id="f8380186899495340cbfe7fb836ba664fb4b52af" datatype="html">
         <source>Returns the 10 newest blocks starting at the tip or at <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>:start_height<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> if specified.</source>
+        <target>てっぺんから、それとも指定した高さ<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>:start_height<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>からの最新10つのブロックを返す。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">420,421</context>
@@ -2806,6 +2832,7 @@
       </trans-unit>
       <trans-unit id="af1a465e50097fabbe55bf5dbcf5d0702bdbc98b" datatype="html">
         <source>Get a list of the last 10 transactions to enter the mempool. Each transaction object contains simplified overview data, with the following fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>fee<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>vsize<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>value<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</source>
+        <target>最後の10つメモリプールに入ったトランザクションのリストを得る。各トランザクションオブジェクトは以下のフィールドを盛り込む簡単化概観データを含みます：<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>、<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>fee<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>、<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>vsize<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>、そして<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>value<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">506,507</context>
@@ -2825,6 +2852,7 @@
       </trans-unit>
       <trans-unit id="a8ea1ec66e7bb9f92e87ae5482e50748baafffd2" datatype="html">
         <source>Returns details about a transaction. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>version<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>locktime<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>size<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>weight<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>fee<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>vin<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>vout<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>status<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</source>
+        <target>あるトランザクションに関する詳細を返す。入手可能フィールド: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>version<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>locktime<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>size<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>weight<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>fee<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>vin<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>vout<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, そして <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>status<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">536,537</context>
@@ -2840,6 +2868,7 @@
       </trans-unit>
       <trans-unit id="d51106cc898981e9862d35a4db40796f0cf464f8" datatype="html">
         <source>Returns a merkle inclusion proof for the transaction using <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://bitcoin.org/en/glossary/merkle-block&quot;&gt;"/>bitcoind's merkleblock<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> format.</source>
+        <target><x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://bitcoin.org/en/glossary/merkle-block&quot;&gt;"/>bitcoindのmerkelblock<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>フォーマットを利用して、トランザクションのマーケルinclusion proofを返す。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">562,563</context>
@@ -2847,6 +2876,7 @@
       </trans-unit>
       <trans-unit id="a57953199686e9980df838cb25edb51691941ac5" datatype="html">
         <source>Returns a merkle inclusion proof for the transaction using <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle&quot;&gt;"/>Electrum's blockchain.transaction.get_merkle format.<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
+        <target><x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle&quot;&gt;"/>Electrumのblockchain.transaction.get_merkleフォーマット<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>を利用して、トランザクションのマーケルinclusion proofを返す。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">575,576</context>
@@ -2854,6 +2884,7 @@
       </trans-unit>
       <trans-unit id="fe9a40b2ff9674b4ab7d82624ffed340c9ee5b89" datatype="html">
         <source>Returns the spending status of a transaction output. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>spent<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (boolean), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (optional), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>vin<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (optional), and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>status<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (optional, the status of the spending tx).</source>
+        <target>トランザクション・アウトプットの使用状態を返す。入手可能フィールド: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>spent<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (ブール値), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(任意), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>vin<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(任意), そして <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>status<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(任意, 支払いtxの状態)。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">588,589</context>
@@ -2877,6 +2908,7 @@
       </trans-unit>
       <trans-unit id="7e784cfa5833e7b54d4dfc723fabde94f66ebde3" datatype="html">
         <source>Returns the confirmation status of a transaction. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>confirmed<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (boolean), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block_height<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (optional), and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block_hash<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (optional).</source>
+        <target>ブロックの確認状態を返す。入手可能フィールド：<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>confirmed<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (ブール値), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block_height<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(任意)、そして<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block_hash<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(任意)。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">627,628</context>
@@ -2892,6 +2924,7 @@
       </trans-unit>
       <trans-unit id="01723473ecc53cab60ef1b37dc39d8941994d56f" datatype="html">
         <source>Broadcast a raw transaction to the network. The transaction should be provided as hex in the request body. The <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> will be returned on success.</source>
+        <target>ネットワークに生トランザクションを送信する。リクエスト本文に、トランザクションを16進形式で提供するはずです。成功の場合は<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>が返されます。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">653,654</context>
@@ -2899,6 +2932,7 @@
       </trans-unit>
       <trans-unit id="a706b1ded7506620b153dbcdea8108e6691bbbd9" datatype="html">
         <source>Default push: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> action: 'want', data: ['blocks', ...] <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> to express what you want pushed. Available: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool-blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>live-2h-chart<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.<x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/><x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/>Push transactions related to address: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> 'track-address': '3PbJ...bF9B' <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>address-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> for new mempool transactions, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> for new block confirmed transactions.</source>
+        <target>デフォルト・プッシュ: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> 行動: 'want', データ: ['ブロック', ...] プッシュしたいことを表現するために<x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>. 利用可能: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>、 <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool-blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>、<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>live-2h-chart<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>と<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>。<x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/><x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/>このアドレスと関係するプッシュトランザクション: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> 'track-address': '3PbJ...bF9B'<x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> インプットまたはアウトプットとしてそのアドレスを含む新トランザクションを得るために。トランザクションの配列を返す。 新しいメモリプールトランザクションの場合は<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>address-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, そして新しいブロック確認済みトランザクションの場合は<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">671,672</context>
@@ -3076,6 +3110,7 @@
       </trans-unit>
       <trans-unit id="1bb6965f8e1bbe40c076528ffd841da86f57f119" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;blocks&lt;/span&gt;&lt;/ng-template&gt;         &lt;ng-template #blo"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>blocks<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> <x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;blocks&lt;/span&gt;&lt;/ng-template&gt;         &lt;ng-template #blo"/><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>ブロック<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">22,23</context>
@@ -3092,6 +3127,7 @@
       </trans-unit>
       <trans-unit id="b7ef3894d9b6f157c400ddc937c70c9881ecd896" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;block&lt;/span&gt;&lt;/ng-template&gt;       &lt;/div&gt;     &lt;/div&gt;"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>block<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> <x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;block&lt;/span&gt;&lt;/ng-template&gt;       &lt;/div&gt;     &lt;/div&gt;"/><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>ブロック<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">23,24</context>
@@ -3181,6 +3217,7 @@
       </trans-unit>
       <trans-unit id="mempool-block.stack.of.blocks" datatype="html">
         <source>Stack of <x id="INTERPOLATION" equiv-text="blocksInBlock"/> mempool blocks</source>
+        <target><x id="INTERPOLATION" equiv-text="blocksInBlock"/>つmempoolブロックのスタック</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">73</context>
@@ -3188,6 +3225,7 @@
       </trans-unit>
       <trans-unit id="mempool-block.block.no" datatype="html">
         <source>Mempool block <x id="INTERPOLATION" equiv-text="this.mempoolBlockIndex + 1"/></source>
+        <target>Mempoolブロック<x id="INTERPOLATION" equiv-text="this.mempoolBlockIndex + 1"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">75</context>
@@ -3195,6 +3233,7 @@
       </trans-unit>
       <trans-unit id="2348971518300945764" datatype="html">
         <source>Range</source>
+        <target>範囲</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-graph/mempool-graph.component.ts</context>
           <context context-type="linenumber">256</context>
@@ -3202,6 +3241,7 @@
       </trans-unit>
       <trans-unit id="1033261550402895380" datatype="html">
         <source>Sum</source>
+        <target>額</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-graph/mempool-graph.component.ts</context>
           <context context-type="linenumber">258</context>
@@ -3218,6 +3258,7 @@
       </trans-unit>
       <trans-unit id="miner-identified-by-payout" datatype="html">
         <source>Identified by payout address: '<x id="PAYOUT_ADDRESS" equiv-text="vout.scriptpubkey_address"/>'</source>
+        <target>支払いアドレスで識別された： '<x id="PAYOUT_ADDRESS" equiv-text="vout.scriptpubkey_address"/>'</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
           <context context-type="linenumber">42</context>
@@ -3225,6 +3266,7 @@
       </trans-unit>
       <trans-unit id="miner-identified-by-coinbase" datatype="html">
         <source>Identified by coinbase tag: '<x id="TAG" equiv-text="tag"/>'</source>
+        <target>coinbaseタグで識別された： '<x id="TAG" equiv-text="tag"/>'</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
           <context context-type="linenumber">52</context>
@@ -3378,6 +3420,7 @@
       </trans-unit>
       <trans-unit id="time-since" datatype="html">
         <source><x id="DATE" equiv-text="dateStrings.i18nYear"/> ago</source>
+        <target> <x id="DATE" equiv-text="dateStrings.i18nYear"/>前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -3437,6 +3480,7 @@
       </trans-unit>
       <trans-unit id="time-span" datatype="html">
         <source>After <x id="DATE" equiv-text="dateStrings.i18nYear"/></source>
+        <target><x id="DATE" equiv-text="dateStrings.i18nYear"/>の後</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -3496,6 +3540,7 @@
       </trans-unit>
       <trans-unit id="time-until" datatype="html">
         <source>In ~<x id="DATE" equiv-text="dateStrings.i18nMinute"/></source>
+        <target>あと〜<x id="DATE" equiv-text="dateStrings.i18nMinute"/>で</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
           <context context-type="linenumber">66</context>
@@ -3862,6 +3907,7 @@
       </trans-unit>
       <trans-unit id="9fb28e77d5963f2275397f2f9cee54f32942aeeb" datatype="html">
         <source>Peg-out to <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-contain"/></source>
+        <target><x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-contain"/>へのペグアウト</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">146,147</context>
@@ -3909,6 +3955,7 @@
       </trans-unit>
       <trans-unit id="f85c05147b720576e50336cf26f63d3b05601699" datatype="html">
         <source>This transaction saved <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>% on fees by using native SegWit-Bech32</source>
+        <target>このトランザクションでは、ネイティブのSegWit-Bech32を使用することで、手数料を<x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>％節約できました。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">1</context>
@@ -3935,6 +3982,7 @@
       </trans-unit>
       <trans-unit id="975f46d122f2ca0a187308399a58b44d61ef08eb" datatype="html">
         <source>This transaction saved <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>% on fees by using SegWit and could save <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}"/>% more by fully upgrading to native SegWit-Bech32</source>
+        <target>このトランザクションでは、SegWitを使用することで料金を<x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>％節約し、ネイティブSegWit-Bech32に完全にアップグレードすることで<x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}"/>％をさらに節約できました。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">3</context>
@@ -3943,6 +3991,7 @@
       </trans-unit>
       <trans-unit id="1be04d5407059059b596f72696a3d1704ce9c0ef" datatype="html">
         <source>This transaction could save <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}"/>% on fees by upgrading to native SegWit-Bech32 or <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialP2shGains * 100 | number:  '1.0-0' }}"/>% by upgrading to SegWit-P2SH</source>
+        <target>このトランザクションでは、ネイティブSegWit-Bech32にアップグレードすることで料金を<x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}"/>％節約でき、SegWit-P2SHにアップグレードすることで<x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialP2shGains * 100 | number:  '1.0-0' }}"/>％を節約できます。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">5</context>
@@ -4011,6 +4060,7 @@
       </trans-unit>
       <trans-unit id="60601e02e7c1f6c4dbabd0ef0bb8946003db8dec" datatype="html">
         <source>Only ~<x id="INTERPOLATION" equiv-text="{{ medianFeeNeeded | feeRounding }}"/> sat/vB was needed to get into this block</source>
+        <target>このブロックに入るのに必要なのは〜<x id="INTERPOLATION" equiv-text="{{ medianFeeNeeded | feeRounding }}"/> sat / vBだけでした</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
@@ -4023,6 +4073,7 @@
       </trans-unit>
       <trans-unit id="0fa66b0c410bef320d3f370d7c98c51754b5f28f" datatype="html">
         <source>Overpaid <x id="INTERPOLATION" equiv-text="{{ overpaidTimes }}"/>x</source>
+        <target> 過払い  <x id="INTERPOLATION" equiv-text="{{ overpaidTimes }}"/>x</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
