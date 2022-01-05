@@ -2929,6 +2929,7 @@
       </trans-unit>
       <trans-unit id="fcfd4675b4c90f08d18d3abede9a9a4dff4cfdc7" datatype="html">
         <source>Documentation</source>
+        <target>Dokumentáció</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/docs.component.html</context>
           <context context-type="linenumber">4</context>
@@ -3180,6 +3181,7 @@
       </trans-unit>
       <trans-unit id="1033261550402895380" datatype="html">
         <source>Sum</source>
+        <target>Összesen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-graph/mempool-graph.component.ts</context>
           <context context-type="linenumber">258</context>
@@ -3316,6 +3318,7 @@
       </trans-unit>
       <trans-unit id="5ca707824ab93066c7d9b44e1b8bf216725c2c22" datatype="html">
         <source>Filter</source>
+        <target>Filter</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">40</context>
@@ -3354,6 +3357,7 @@
       </trans-unit>
       <trans-unit id="time-since" datatype="html">
         <source><x id="DATE" equiv-text="dateStrings.i18nYear"/> ago</source>
+        <target><x id="DATE" equiv-text="dateStrings.i18nYear"/> perce</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -3413,6 +3417,7 @@
       </trans-unit>
       <trans-unit id="time-span" datatype="html">
         <source>After <x id="DATE" equiv-text="dateStrings.i18nYear"/></source>
+        <target><x id="DATE" equiv-text="dateStrings.i18nYear"/> után</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -3472,6 +3477,7 @@
       </trans-unit>
       <trans-unit id="time-until" datatype="html">
         <source>In ~<x id="DATE" equiv-text="dateStrings.i18nMinute"/></source>
+        <target>~<x id="DATE" equiv-text="dateStrings.i18nMinute"/> percen belül</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
           <context context-type="linenumber">66</context>
@@ -3667,6 +3673,7 @@
       </trans-unit>
       <trans-unit id="516a786e59a57efaf80e11370b4bade400f19445" datatype="html">
         <source>Locktime</source>
+        <target>Zárolási idő</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">234,236</context>
@@ -3933,6 +3940,7 @@
       </trans-unit>
       <trans-unit id="71ed5c65589f49a732b8e93a780200191b2b6596" datatype="html">
         <source>Taproot</source>
+        <target>Taproot</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">8</context>
@@ -4118,6 +4126,7 @@
       </trans-unit>
       <trans-unit id="eb7a000cd340b44291d790f7b56f7b926edc275b" datatype="html">
         <source>L-BTC in circulation</source>
+        <target>L-BTC forgalomban</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">209,211</context>
@@ -4192,6 +4201,7 @@
       </trans-unit>
       <trans-unit id="date-base.year" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> year</source>
+        <target><x id="DATE" equiv-text="counter"/> év</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">3</context>
@@ -4199,6 +4209,7 @@
       </trans-unit>
       <trans-unit id="date-base.years" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> years</source>
+        <target><x id="DATE" equiv-text="counter"/> éve</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">4</context>
@@ -4206,6 +4217,7 @@
       </trans-unit>
       <trans-unit id="date-base.month" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> month</source>
+        <target><x id="DATE" equiv-text="counter"/> hónap</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">5</context>
@@ -4213,6 +4225,7 @@
       </trans-unit>
       <trans-unit id="date-base.months" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> months</source>
+        <target><x id="DATE" equiv-text="counter"/> hónapja</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">6</context>
