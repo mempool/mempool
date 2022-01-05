@@ -2644,7 +2644,7 @@
       </trans-unit>
       <trans-unit id="c9f5914dbba46a8dc4ab4e81b40b1582eea7c5e2" datatype="html">
         <source>Get transaction history for the specified address/scripthash, sorted with newest first. Returns up to 50 mempool transactions plus the first 25 confirmed transactions. You can request more confirmed transactions using <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>:last_seen_txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (see below).</source>
-        <target>Obtén el histoial de transacciones para una determinada dirección/scripthash determinada, ordenada desde la más nueva primero. Devuelve hasta 50 transacciones de mempool más las primeras 25 transacciones confirmadas. Puede solicitar más transacciones confirmadas usando <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>:last_seen_txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (ver abajo).</target>
+        <target>Obtén el historial de transacciones para una determinada dirección/scripthash determinada, ordenada desde la más nueva primero. Devuelve hasta 50 transacciones de mempool más las primeras 25 transacciones confirmadas. Puede solicitar más transacciones confirmadas usando <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>:last_seen_txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (ver abajo).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">192,193</context>
