@@ -25,7 +25,8 @@
     "build": "npm run tsc",
     "start": "node --max-old-space-size=2048 dist/index.js",
     "start-production": "node --max-old-space-size=4096 dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "migrate-pools": "npm run tsc ; node dist/api/pools-parser.js"
   },
   "dependencies": {
     "@mempool/bitcoin": "^3.0.3",

@@ -25,6 +25,7 @@ import databaseMigration from './api/database-migration';
 import poolsParser from './api/pools-parser';
 import syncAssets from './sync-assets';
 import icons from './api/liquid/icons';
+import poolsParser from './api/pools-parser';
 import { Common } from './api/common';
 
 class Server {
