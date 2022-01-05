@@ -118,11 +118,11 @@ class Mempool {
             });
           }
           hasChange = true;
-          if (diff > 0) {
-            logger.debug('Fetched transaction ' + txCount + ' / ' + diff);
-          } else {
-            logger.debug('Fetched transaction ' + txCount);
-          }
+          // if (diff > 0) {
+          //   logger.debug('Fetched transaction ' + txCount + ' / ' + diff);
+          // } else {
+          //   logger.debug('Fetched transaction ' + txCount);
+          // }
           newTransactions.push(transaction);
         } catch (e) {
           logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
