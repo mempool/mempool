@@ -240,7 +240,7 @@ You'll need one instance per network. Build and run them one at a time:
 
 ### MariaDB
 
-Import historical mempool fee database snapshot, or the blank mariadb structure if none:
+Import historical mempool fee database snapshot:
 ```
 mysql -u root
 create database mempool;
@@ -254,6 +254,7 @@ grant all on mempool_liquid.* to 'mempool_liquid'@'localhost' identified by 'mem
 create database mempool_liquidtestnet;
 grant all on mempool_liquidtestnet.* to 'mempool_liquidtestnet'@'localhost' identified by 'mempool_liquidtestnet';
 ```
+
 
 ### Bisq
 

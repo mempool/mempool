@@ -69,11 +69,6 @@ Create database and grant privileges:
   Query OK, 0 rows affected (0.00 sec)
 ```
 
-From the mempool repo's top-level folder, import the database structure:
-```bash
-  mysql -u mempool -p mempool < mariadb-structure.sql
-```
-
 ## Mempool Backend
 Install mempool dependencies from npm and build the backend:
 
