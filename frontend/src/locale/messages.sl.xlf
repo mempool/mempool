@@ -147,6 +147,7 @@
       </trans-unit>
       <trans-unit id="ngb.progressbar.value" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="; }    /**    *"/></source>
+        <target><x id="INTERPOLATION" equiv-text="; }    /**    *"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/src/progressbar/progressbar.ts</context>
           <context context-type="linenumber">32,38</context>
@@ -250,6 +251,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.AM" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="NgbTime;    pr"/></source>
+        <target><x id="INTERPOLATION" equiv-text="NgbTime;    pr"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/src/timepicker/timepicker.ts</context>
           <context context-type="linenumber">115,121</context>
@@ -257,6 +259,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.PM" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="t() meridian: b"/></source>
+        <target><x id="INTERPOLATION" equiv-text="t() meridian: b"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/@ng-bootstrap/src/timepicker/timepicker.ts</context>
           <context context-type="linenumber">123,131</context>
@@ -432,6 +435,7 @@
       </trans-unit>
       <trans-unit id="27387c2af5dcaf343a548feba821515f5dc00faa" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> transaction</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> transakcija</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
           <context context-type="linenumber">50</context>
@@ -456,6 +460,7 @@
       </trans-unit>
       <trans-unit id="14779b0ce4cbc4d975a35a8fe074426228a324f3" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> transactions</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> transakcij</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
           <context context-type="linenumber">51</context>
@@ -480,6 +485,7 @@
       </trans-unit>
       <trans-unit id="bisq-address.component.browser-title" datatype="html">
         <source>Address: <x id="INTERPOLATION" equiv-text="this.addressString"/></source>
+        <target>Naslov: <x id="INTERPOLATION" equiv-text="this.addressString"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.ts</context>
           <context context-type="linenumber">43</context>
@@ -487,6 +493,7 @@
       </trans-unit>
       <trans-unit id="70572fa5fe9d93f071fbb0f3556d86de39f9e4af" datatype="html">
         <source>Block <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;blockTemplateContent&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;"/></source>
+        <target>Blok <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;blockTemplateContent&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
           <context context-type="linenumber">4</context>
@@ -552,6 +559,7 @@
       </trans-unit>
       <trans-unit id="bisq-block.component.browser-title" datatype="html">
         <source>Block <x id="BLOCK_HEIGHT" equiv-text="block.height"/>: <x id="BLOCK_HASH" equiv-text="block.hash"/></source>
+        <target>Blok <x id="BLOCK_HEIGHT" equiv-text="block.height"/>: <x id="BLOCK_HASH" equiv-text="block.hash"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.ts</context>
           <context context-type="linenumber">89</context>
@@ -852,6 +860,7 @@
       </trans-unit>
       <trans-unit id="74d80a5b284beb81e8aeb3b8efca0f78cd4b7560" datatype="html">
         <source>Amount (<x id="INTERPOLATION" equiv-text="{{ i }}"/>)</source>
+        <target>Znesek (<x id="INTERPOLATION" equiv-text="{{ i }}"/>)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
           <context context-type="linenumber">112,113</context>
@@ -1082,6 +1091,7 @@
       </trans-unit>
       <trans-unit id="8e623d3cfecb7c560c114390db53c1f430ffd0de" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="confirmation&lt;/ng-template&gt;           &lt;ng-template #confirmationPlural let-i i18n=&quot;shared.confirmation-count.plural|Transaction plural confir"/> confirmation</source>
+        <target><x id="INTERPOLATION" equiv-text="confirmation&lt;/ng-template&gt;           &lt;ng-template #confirmationPlural let-i i18n=&quot;shared.confirmation-count.plural|Transaction plural confir"/> potrditev</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
           <context context-type="linenumber">20,21</context>
@@ -1103,6 +1113,7 @@
       </trans-unit>
       <trans-unit id="bc5b0a2631f0b7bc71aaec6aa6f01af21f9a80d4" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="confirmations&lt;/ng-template&gt;         &lt;/button&gt;       &lt;/div&gt;     &lt;/div&gt;            &lt;div class=&quot;clearfix&quot;&gt;&lt;/div&gt;        &lt;div class=&quot;box tran"/> confirmations</source>
+        <target><x id="INTERPOLATION" equiv-text="confirmations&lt;/ng-template&gt;         &lt;/button&gt;       &lt;/div&gt;     &lt;/div&gt;            &lt;div class=&quot;clearfix&quot;&gt;&lt;/div&gt;        &lt;div class=&quot;box tran"/> potrditev</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
           <context context-type="linenumber">21,22</context>
@@ -1209,6 +1220,7 @@
       </trans-unit>
       <trans-unit id="bisq.transaction.browser-title" datatype="html">
         <source>Transaction: <x id="INTERPOLATION" equiv-text="this.txId"/></source>
+        <target>Transakcija: <x id="INTERPOLATION" equiv-text="this.txId"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.ts</context>
           <context context-type="linenumber">50</context>
@@ -1436,6 +1448,7 @@
       </trans-unit>
       <trans-unit id="1abb54fd13f529707c73db97625cd18c7c8cbb09" datatype="html">
         <source>Navigate to <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/sponsor&quot; target=&quot;_blank&quot;&gt;"/>https://mempool.space/sponsor<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> to sponsor</source>
+        <target>Pojdite na <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://mempool.space/sponsor&quot; target=&quot;_blank&quot;&gt;"/>https://mempool.space/sponsor<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> za sponzorstvo.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">78</context>
@@ -1512,6 +1525,7 @@
       </trans-unit>
       <trans-unit id="9f10a0577222a7d6c35a889453fa3a794750d9c4" datatype="html">
         <source>multisig <x id="INTERPOLATION" equiv-text="{{ multisigM }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ multisigN }}"/></source>
+        <target>multisig <x id="INTERPOLATION" equiv-text="{{ multisigM }}"/> od <x id="INTERPOLATION_1" equiv-text="{{ multisigN }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
           <context context-type="linenumber">5</context>
@@ -1520,6 +1534,7 @@
       </trans-unit>
       <trans-unit id="31c09dcc0ab351767631539b208d5f7de4005473" datatype="html">
         <source>Lightning <x id="INTERPOLATION" equiv-text="{{ lightning }}"/></source>
+        <target>Lightning <x id="INTERPOLATION" equiv-text="{{ lightning }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1528,6 +1543,7 @@
       </trans-unit>
       <trans-unit id="696ade981a05c12e10df38ba6218c76e318813b3" datatype="html">
         <source>Liquid <x id="INTERPOLATION" equiv-text="{{ liquid }}"/></source>
+        <target>Liquid <x id="INTERPOLATION" equiv-text="{{ liquid }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
           <context context-type="linenumber">17</context>
@@ -1545,6 +1561,7 @@
       </trans-unit>
       <trans-unit id="714e34125b3343df73f19ec800b43be95217d5d4" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="of {{ txCount | number }} transaction&lt;/ng-template&gt;"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transaction</source>
+        <target><x id="INTERPOLATION" equiv-text="of {{ txCount | number }} transaction&lt;/ng-template&gt;"/> od <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transakcij</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">60,61</context>
@@ -1553,6 +1570,7 @@
       </trans-unit>
       <trans-unit id="0f6ada0cfb60aefd8f77f8a22349850ce186d666" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="of {{ txCount | number }} transactions&lt;/ng-template&gt;       &lt;/h2&gt;"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transactions</source>
+        <target><x id="INTERPOLATION" equiv-text="of {{ txCount | number }} transactions&lt;/ng-template&gt;       &lt;/h2&gt;"/> od <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transakcij</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">61,62</context>
@@ -1603,6 +1621,7 @@
       </trans-unit>
       <trans-unit id="address.component.browser-title" datatype="html">
         <source>Address: <x id="INTERPOLATION" equiv-text="this.addressString"/></source>
+        <target>Naslov: <x id="INTERPOLATION" equiv-text="this.addressString"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.ts</context>
           <context context-type="linenumber">78</context>
@@ -1704,6 +1723,7 @@
       </trans-unit>
       <trans-unit id="c3360a933cb312b395d276a2b865214cf832df58" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> </source>
+        <target><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> od <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">80</context>
@@ -1739,6 +1759,7 @@
       </trans-unit>
       <trans-unit id="asset.component.asset-browser-title" datatype="html">
         <source>Asset: <x id="INTERPOLATION" equiv-text="this.assetString"/></source>
+        <target>Sredstvo: <x id="INTERPOLATION" equiv-text="this.assetString"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.ts</context>
           <context context-type="linenumber">73</context>
@@ -1827,6 +1848,7 @@
       </trans-unit>
       <trans-unit id="a7ecfd7757d04b019beaa2d7208c728387bfc7e8" datatype="html">
         <source>Docs</source>
+        <target>Dokumentacija</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/bisq-master-page/bisq-master-page.component.html</context>
           <context context-type="linenumber">42,45</context>
@@ -2125,6 +2147,7 @@
       </trans-unit>
       <trans-unit id="block.component.browser-title" datatype="html">
         <source>Block <x id="BLOCK_HEIGHT" equiv-text="block.height"/>: <x id="BLOCK_ID" equiv-text="block.id"/></source>
+        <target>Blok <x id="BLOCK_HEIGHT" equiv-text="block.height"/>: <x id="BLOCK_ID" equiv-text="block.id"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.ts</context>
           <context context-type="linenumber">141</context>
@@ -2140,6 +2163,7 @@
       </trans-unit>
       <trans-unit id="6e70e73ac050983df55b277deb27955b5a33c606" datatype="html">
         <source>API service</source>
+        <target>API storitev</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">12,14</context>
@@ -2609,6 +2633,7 @@
       </trans-unit>
       <trans-unit id="e12cd52eaa77b446ba97436c145b59741151adf3" datatype="html">
         <source>Returns details about an address. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>address<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>chain_stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool_stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>. <x id="INTERPOLATION" equiv-text="{{ '{' }}"/>chain,mempool<x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/>_stats each contain an object with <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>tx_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>funded_txo_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>funded_txo_sum<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>spent_txo_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>spent_txo_sum<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</source>
+        <target>Vrne podatke o naslovu. Razpoložljiva polja: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>address<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>chain_stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, in <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool_stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>. <x id="INTERPOLATION" equiv-text="{{ '{' }}"/>chain,mempool<x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/>_stats vsebujeta objekt z <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>tx_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>funded_txo_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>funded_txo_sum<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>spent_txo_count<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, in <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>spent_txo_sum<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">179,180</context>
@@ -2940,6 +2965,7 @@
       </trans-unit>
       <trans-unit id="fcfd4675b4c90f08d18d3abede9a9a4dff4cfdc7" datatype="html">
         <source>Documentation</source>
+        <target>Dokumentacija</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/docs.component.html</context>
           <context context-type="linenumber">4</context>
@@ -3065,6 +3091,7 @@
       </trans-unit>
       <trans-unit id="1bb6965f8e1bbe40c076528ffd841da86f57f119" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;blocks&lt;/span&gt;&lt;/ng-template&gt;         &lt;ng-template #blo"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>blocks<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;blocks&lt;/span&gt;&lt;/ng-template&gt;         &lt;ng-template #blo"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>blokov<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">22,23</context>
@@ -3081,6 +3108,7 @@
       </trans-unit>
       <trans-unit id="b7ef3894d9b6f157c400ddc937c70c9881ecd896" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;block&lt;/span&gt;&lt;/ng-template&gt;       &lt;/div&gt;     &lt;/div&gt;"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>block<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;block&lt;/span&gt;&lt;/ng-template&gt;       &lt;/div&gt;     &lt;/div&gt;"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>blok<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">23,24</context>
@@ -3170,6 +3198,7 @@
       </trans-unit>
       <trans-unit id="mempool-block.stack.of.blocks" datatype="html">
         <source>Stack of <x id="INTERPOLATION" equiv-text="blocksInBlock"/> mempool blocks</source>
+        <target>Sklad <x id="INTERPOLATION" equiv-text="blocksInBlock"/> mempool blokov</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">73</context>
@@ -3177,6 +3206,7 @@
       </trans-unit>
       <trans-unit id="mempool-block.block.no" datatype="html">
         <source>Mempool block <x id="INTERPOLATION" equiv-text="this.mempoolBlockIndex + 1"/></source>
+        <target>Mempool blok <x id="INTERPOLATION" equiv-text="this.mempoolBlockIndex + 1"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">75</context>
@@ -3209,6 +3239,7 @@
       </trans-unit>
       <trans-unit id="miner-identified-by-payout" datatype="html">
         <source>Identified by payout address: '<x id="PAYOUT_ADDRESS" equiv-text="vout.scriptpubkey_address"/>'</source>
+        <target>Prepoznano po naslovu za izplačilo: '<x id="PAYOUT_ADDRESS" equiv-text="vout.scriptpubkey_address"/>'</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
           <context context-type="linenumber">42</context>
@@ -3216,6 +3247,7 @@
       </trans-unit>
       <trans-unit id="miner-identified-by-coinbase" datatype="html">
         <source>Identified by coinbase tag: '<x id="TAG" equiv-text="tag"/>'</source>
+        <target>Prepoznano po coinbase oznaki: '<x id="TAG" equiv-text="tag"/>'</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
           <context context-type="linenumber">52</context>
@@ -3369,6 +3401,7 @@
       </trans-unit>
       <trans-unit id="time-since" datatype="html">
         <source><x id="DATE" equiv-text="dateStrings.i18nYear"/> ago</source>
+        <target><x id="DATE" equiv-text="dateStrings.i18nYear"/> nazaj</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -3428,6 +3461,7 @@
       </trans-unit>
       <trans-unit id="time-span" datatype="html">
         <source>After <x id="DATE" equiv-text="dateStrings.i18nYear"/></source>
+        <target>Po <x id="DATE" equiv-text="dateStrings.i18nYear"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -3487,6 +3521,7 @@
       </trans-unit>
       <trans-unit id="time-until" datatype="html">
         <source>In ~<x id="DATE" equiv-text="dateStrings.i18nMinute"/></source>
+        <target>Čez ~<x id="DATE" equiv-text="dateStrings.i18nMinute"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
           <context context-type="linenumber">66</context>
@@ -3853,6 +3888,7 @@
       </trans-unit>
       <trans-unit id="9fb28e77d5963f2275397f2f9cee54f32942aeeb" datatype="html">
         <source>Peg-out to <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-contain"/></source>
+        <target>Peg-out v <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-contain"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">146,147</context>
@@ -3900,6 +3936,7 @@
       </trans-unit>
       <trans-unit id="f85c05147b720576e50336cf26f63d3b05601699" datatype="html">
         <source>This transaction saved <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>% on fees by using native SegWit-Bech32</source>
+        <target>Ta transakcija je prihranila <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>% omrežnine z uporabo native SegWit-Bech32.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">1</context>
@@ -3926,6 +3963,7 @@
       </trans-unit>
       <trans-unit id="975f46d122f2ca0a187308399a58b44d61ef08eb" datatype="html">
         <source>This transaction saved <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>% on fees by using SegWit and could save <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}"/>% more by fully upgrading to native SegWit-Bech32</source>
+        <target>Ta transakcija je prihranila <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>% omrežnine z uporabo SegWit in bi lahko dodatnih <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}"/>% s popolno nadgradnjo na native SegWit-Bech32.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">3</context>
@@ -4002,6 +4040,7 @@
       </trans-unit>
       <trans-unit id="60601e02e7c1f6c4dbabd0ef0bb8946003db8dec" datatype="html">
         <source>Only ~<x id="INTERPOLATION" equiv-text="{{ medianFeeNeeded | feeRounding }}"/> sat/vB was needed to get into this block</source>
+        <target>Samo ~<x id="INTERPOLATION" equiv-text="{{ medianFeeNeeded | feeRounding }}"/> sat/vB je bilo potrebno za vključitev v ta blok.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
@@ -4014,6 +4053,7 @@
       </trans-unit>
       <trans-unit id="0fa66b0c410bef320d3f370d7c98c51754b5f28f" datatype="html">
         <source>Overpaid <x id="INTERPOLATION" equiv-text="{{ overpaidTimes }}"/>x</source>
+        <target>Preplačano <x id="INTERPOLATION" equiv-text="{{ overpaidTimes }}"/>x</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
