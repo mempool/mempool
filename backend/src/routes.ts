@@ -20,6 +20,7 @@ import { Common } from './api/common';
 import bitcoinClient from './api/bitcoin/bitcoin-client';
 import elementsParser from './api/liquid/elements-parser';
 import icons from './api/liquid/icons';
+import miningStats from './api/mining';
 
 class Routes {
   constructor() {}
@@ -528,6 +529,15 @@ class Routes {
         statusCode = 404;
       }
       res.status(statusCode).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  public async getPools(req: Request, res: Response) {
+    try {
+      let stats = await miningStats.$getPoolsStats(req.query.interval as string);
+      res.json(stats);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 

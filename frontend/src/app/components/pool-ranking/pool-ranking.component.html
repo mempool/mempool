@@ -1,0 +1,68 @@
+<div class="container-xl">
+  <div class="card-header">
+    <i class="fa fa-area-chart"></i> <span i18n="mining.pools-by-vBytes">Pools</span>
+    <form [formGroup]="radioGroupForm" class="formRadioGroup" (click)="savePoolsPreference()">
+      <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'1d'" [routerLink]="['/pools' | relativeUrl]" fragment="1d"> 1D
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'3d'" [routerLink]="['/pools' | relativeUrl]" fragment="3d"> 3D
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'1w'" [routerLink]="['/pools' | relativeUrl]" fragment="1w"> 1W
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'1m'" [routerLink]="['/pools' | relativeUrl]" fragment="1m"> 1M
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'3m'" [routerLink]="['/pools' | relativeUrl]" fragment="3m"> 3M
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'6m'" [routerLink]="['/pools' | relativeUrl]" fragment="6m"> 6M
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'1y'" [routerLink]="['/pools' | relativeUrl]" fragment="1y"> 1Y
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'2y'" [routerLink]="['/pools' | relativeUrl]" fragment="2y"> 2Y
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'3y'" [routerLink]="['/pools' | relativeUrl]" fragment="3y"> 3Y
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'all'" [routerLink]="['/pools' | relativeUrl]" fragment="all"> ALL
+        </label>
+      </div>
+    </form>
+  </div>
+
+  <table class="table table-borderless" [alwaysCallback]="true" infiniteScroll [infiniteScrollDistance]="1.5" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50">
+    <thead>
+      <th i18n="latest-blocks.height">Rank</th>
+      <th class="d-none d-md-block"i18n="latest-blocks.timestamp">Name</th>
+      <th i18n="latest-blocks.timestamp">Hashrate</th>
+      <th class="d-none d-md-block" i18n="latest-blocks.mined">Block Count (share)</th>
+      <th i18n="latest-blocks.transactions">Empty Blocks (ratio)</th>
+    </thead>
+    <tbody *ngIf="pools$ | async as pools">
+      <tr>
+        <td>-</td>
+        <td>All miners</td>
+        <td>{{ pools["lastEstimatedHashrate"]}} PH/s</td>
+        <td>{{ pools["blockCount"] }}</td>
+        <td>{{ pools["totalEmptyBlock"] }} ({{ pools["totalEmptyBlockRatio"] }}%)</td>
+      </tr>
+      <ng-template ngFor let-pool [ngForOf]="pools['poolsStats']">
+        <tr>
+          <td>{{ pool.rank }}</td>
+          <td><a href="{{ pool.link }}">{{ pool.name }}</a></td>
+          <td>{{ pool.lastEstimatedHashrate }} PH/s</td>
+          <td>{{ pool.blockCount }} ({{ pool.share }}%)</td>
+          <td>{{ pool.emptyBlocks }} ({{ pool.emptyBlockRatio }}%)</td>
+        </tr>
+      </ng-template>
+    </tbody>
+  </table>
+
+</div>

@@ -1,16 +1,15 @@
-import { IEsploraApi } from "../api/bitcoin/esplora-api.interface";
 import { BlockExtended, PoolTag } from "../mempool.interfaces";
 import { DB } from "../database";
 import logger from "../logger";
-import bitcoinApi from '../api/bitcoin/bitcoin-api-factory';
+
+export interface EmptyBlocks {
+  emptyBlocks: number,
+  poolId: number,
+}
 
 class BlocksRepository {
   /**
    * Save indexed block data in the database
-   * @param block 
-   * @param blockHash 
-   * @param coinbaseTxid 
-   * @param poolTag 
    */
   public async $saveBlockInDatabase(
     block: BlockExtended,
@@ -26,7 +25,7 @@ class BlocksRepository {
         weight,  tx_count, coinbase_raw, difficulty,
         pool_id, fees,     fee_span,     median_fee
       ) VALUE (
-        ?, ?, ?, ?,
+        ?, ?, FROM_UNIXTIME(?), ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?
       )`;
@@ -49,24 +48,48 @@ class BlocksRepository {
   /**
    * Check if a block has already been indexed in the database. Query the databse directly.
    * This can be cached/optimized if required later on to avoid too many db queries.
-   * @param blockHeight
-   * @returns
    */
   public async $isBlockAlreadyIndexed(blockHeight: number) {
     const connection = await DB.pool.getConnection();
     let exists = false;
 
-    try {
-      const query = `SELECT height from blocks where blocks.height = ${blockHeight}`;
-      const [rows]: any[] = await connection.query(query);
-      exists = rows.length === 1;
-    } catch (e) {
-      console.log(e);
-      logger.err('$isBlockAlreadyIndexed() error' + (e instanceof Error ? e.message : e));
-    }
+    const query = `SELECT height from blocks where blocks.height = ${blockHeight}`;
+    const [rows]: any[] = await connection.query(query);
+    exists = rows.length === 1;
     connection.release();
 
     return exists;
+  }
+
+  /**
+   * Count empty blocks for all pools
+   */
+  public async $countEmptyBlocks(interval: string = "100 YEAR") : Promise<EmptyBlocks[]> {
+    const connection = await DB.pool.getConnection();
+    const [rows] = await connection.query(`
+      SELECT pool_id as poolId
+      FROM blocks
+      WHERE timestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()
+      AND tx_count = 1;
+    `);
+    connection.release();
+
+    return <EmptyBlocks[]>rows;
+  }
+
+  /**
+   * Get blocks count for a period
+   */
+   public async $blockCount(interval: string = "100 YEAR") : Promise<number> {
+    const connection = await DB.pool.getConnection();
+    const [rows] = await connection.query(`
+      SELECT count(height) as blockCount
+      FROM blocks
+      WHERE timestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW();
+    `);
+    connection.release();
+
+    return <number>rows[0].blockCount;
   }
 }
 
