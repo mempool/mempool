@@ -18,7 +18,7 @@ data mysql
 ./data:
 
 ./mysql:
-data  db-scripts
+data
 
 ./mysql/data:
 ```
