@@ -37,6 +37,7 @@ import { IncomingTransactionsGraphComponent } from './components/incoming-transa
 import { TimeSpanComponent } from './components/time-span/time-span.component';
 import { SeoService } from './services/seo.service';
 import { MempoolGraphComponent } from './components/mempool-graph/mempool-graph.component';
+import { PoolRankingComponent } from './components/pool-ranking/pool-ranking.component';
 import { LbtcPegsGraphComponent } from './components/lbtc-pegs-graph/lbtc-pegs-graph.component';
 import { AssetComponent } from './components/asset/asset.component';
 import { AssetsComponent } from './assets/assets.component';
@@ -91,6 +92,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     FeeDistributionGraphComponent,
     IncomingTransactionsGraphComponent,
     MempoolGraphComponent,
+    PoolRankingComponent,
     LbtcPegsGraphComponent,
     AssetComponent,
     AssetsComponent,

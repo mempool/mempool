@@ -115,6 +115,11 @@ class BitcoinApi implements AbstractBitcoinApi {
     return outSpends;
   }
 
+  $getEstimatedHashrate(blockHeight: number): Promise<number> {
+    // 120 is the default block span in Core
+    return this.bitcoindClient.getNetworkHashPs(120, blockHeight);
+  }
+
   protected async $convertTransaction(transaction: IBitcoinApi.Transaction, addPrevout: boolean): Promise<IEsploraApi.Transaction> {
     let esploraTransaction: IEsploraApi.Transaction = {
       txid: transaction.txid,

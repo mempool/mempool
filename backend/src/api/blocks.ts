@@ -115,7 +115,7 @@ class Blocks {
    */
   private async $findBlockMiner(txMinerInfo: TransactionMinerInfo | undefined) : Promise<PoolTag> {
     if (txMinerInfo === undefined) {
-      return poolsRepository.getUnknownPool();
+      return await poolsRepository.$getUnknownPool();
     }
 
     const asciiScriptSig = transactionUtils.hex2ascii(txMinerInfo.vin[0].scriptsig);
@@ -139,7 +139,7 @@ class Blocks {
       }
     }
 
-    return poolsRepository.getUnknownPool();
+    return await poolsRepository.$getUnknownPool();
   }
 
   /**
@@ -147,7 +147,7 @@ class Blocks {
    */
   public async $generateBlockDatabase() {
     let currentBlockHeight = await bitcoinApi.$getBlockHeightTip();
-    let maxBlocks = 100; // tmp
+    let maxBlocks = 1008*2; // tmp
 
     while (currentBlockHeight-- > 0 && maxBlocks-- > 0) {
       if (await blocksRepository.$isBlockAlreadyIndexed(currentBlockHeight)) {

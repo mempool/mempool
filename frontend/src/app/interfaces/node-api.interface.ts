@@ -51,3 +51,16 @@ export interface LiquidPegs {
 }
 
 export interface ITranslators { [language: string]: string; }
+
+export interface PoolsStats {
+  poolsStats: {
+    pooldId: number,
+    name: string,
+    link: string,
+    blockCount: number,
+    emptyBlocks: number,
+    rank: number,
+  }[],
+  blockCount: number,
+  lastEstimatedHashrate: number,
+}

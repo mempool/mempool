@@ -6,7 +6,6 @@ import * as express from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as domino from 'domino';
-import { createProxyMiddleware } from 'http-proxy-middleware';
 
 import { join } from 'path';
 import { AppServerModule } from './src/main.server';
@@ -66,6 +65,7 @@ export function app(locale: string): express.Express {
   server.get('/mempool-block/*', getLocalizedSSR(indexHtml));
   server.get('/address/*', getLocalizedSSR(indexHtml));
   server.get('/blocks', getLocalizedSSR(indexHtml));
+  server.get('/pools', getLocalizedSSR(indexHtml));
   server.get('/graphs', getLocalizedSSR(indexHtml));
   server.get('/liquid', getLocalizedSSR(indexHtml));
   server.get('/liquid/tx/*', getLocalizedSSR(indexHtml));
