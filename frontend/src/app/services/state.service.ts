@@ -33,6 +33,9 @@ export interface Env {
   MEMPOOL_BLOCKS_AMOUNT: number;
   GIT_COMMIT_HASH: string;
   PACKAGE_JSON_VERSION: string;
+  MEMPOOL_WEBSITE_URL: string;
+  LIQUID_WEBSITE_URL: string;
+  BISQ_WEBSITE_URL: string;
 }
 
 const defaultEnv: Env = {
@@ -53,6 +56,9 @@ const defaultEnv: Env = {
   'MEMPOOL_BLOCKS_AMOUNT': 8,
   'GIT_COMMIT_HASH': '',
   'PACKAGE_JSON_VERSION': '',
+  'MEMPOOL_WEBSITE_URL': 'https://mempool.space',
+  'LIQUID_WEBSITE_URL': 'https://liquid.network',
+  'BISQ_WEBSITE_URL': 'https://bisq.markets',
 };
 
 @Injectable({
