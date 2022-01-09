@@ -1,6 +1,6 @@
 describe('Liquid', () => {
     const baseModule = Cypress.env("BASE_MODULE");
-    const basePath = (baseModule === 'liquid') ? '' : '/liquid';
+    const basePath = '';
 
     beforeEach(() => {
         cy.intercept('/liquid/api/block/**').as('block');
@@ -16,7 +16,7 @@ describe('Liquid', () => {
           });
     });
 
-    if (baseModule === 'mempool' || baseModule === 'liquid') {
+    if (baseModule === 'liquid') {
 
         it('check first mempool block after skeleton loads', () => {
             cy.visit(`${basePath}`);

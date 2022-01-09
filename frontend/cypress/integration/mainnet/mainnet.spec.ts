@@ -296,9 +296,7 @@ describe('Mainnet', () => {
 
             cy.changeNetwork("testnet");
             cy.changeNetwork("signet");
-            cy.changeNetwork("liquid");
             cy.changeNetwork("mainnet");
-            cy.changeNetwork("bisq");
         });
 
         it.skip('loads the dashboard with the skeleton blocks', () => {
