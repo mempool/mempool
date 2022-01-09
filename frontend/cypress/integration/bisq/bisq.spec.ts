@@ -1,6 +1,6 @@
 describe('Bisq', () => {
     const baseModule = Cypress.env("BASE_MODULE");
-    const basePath = (baseModule === 'bisq') ? '' : '/bisq';
+    const basePath = '';
     
     beforeEach(() => {
         cy.intercept('/sockjs-node/info*').as('socket');
@@ -23,7 +23,7 @@ describe('Bisq', () => {
           });
     });
 
-    if (baseModule === 'mempool' || baseModule === 'bisq') {
+    if (baseModule === 'bisq') {
 
         it('loads the dashboard', () => {
             cy.visit(`${basePath}`);
