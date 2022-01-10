@@ -1,8 +1,7 @@
-import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Language, languages } from 'src/app/app.constants';
-import { StateService } from 'src/app/services/state.service';
+import { languages } from 'src/app/app.constants';
+import { LanguageService } from 'src/app/services/language.service';
 
 @Component({
   selector: 'app-language-selector',
@@ -12,42 +11,21 @@ import { StateService } from 'src/app/services/state.service';
 })
 export class LanguageSelectorComponent implements OnInit {
   languageForm: FormGroup;
-  languages: Language[];
+  languages = languages;
 
   constructor(
     private formBuilder: FormBuilder,
-    private stateService: StateService,
-    @Inject(DOCUMENT) private document: Document
+    private languageService: LanguageService,
   ) { }
 
   ngOnInit() {
-    this.languages = languages;
-
     this.languageForm = this.formBuilder.group({
-      language: ['']
+      language: ['en']
     });
-    this.setLanguageFromUrl();
-  }
-
-  setLanguageFromUrl() {
-    const urlLanguage = this.document.location.pathname.split('/')[1];
-    if (this.languages.map((lang) => lang.code).indexOf(urlLanguage) > -1) {
-      this.languageForm.get('language').setValue(urlLanguage);
-    } else {
-      this.languageForm.get('language').setValue('en');
-    }
+    this.languageForm.get('language').setValue(this.languageService.getLanguage());
   }
 
   changeLanguage() {
-    const language = this.languageForm.get('language').value;
-    try {
-      document.cookie = `lang=${language}; expires=Thu, 18 Dec 2050 12:00:00 UTC; path=/`;
-    } catch (e) { }
-    
-    if (this.stateService.env.BASE_MODULE === 'mempool') {
-      this.document.location.href = `/${language}/${this.stateService.network}`;
-    } else {
-      this.document.location.href = `/${language}`;
-    }
+    this.languageService.setLanguage(this.languageForm.get('language').value);
   }
 }

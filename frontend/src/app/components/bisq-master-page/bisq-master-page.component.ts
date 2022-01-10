@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Env, StateService } from '../../services/state.service';
 import { Observable } from 'rxjs';
+import { LanguageService } from 'src/app/services/language.service';
 
 @Component({
   selector: 'app-bisq-master-page',
@@ -12,14 +13,17 @@ export class BisqMasterPageComponent implements OnInit {
   navCollapsed = false;
   env: Env;
   isMobile = window.innerWidth <= 767.98;
-  
+  urlLanguage: string;
+
   constructor(
     private stateService: StateService,
+    private languageService: LanguageService,
   ) { }
 
   ngOnInit() {
     this.env = this.stateService.env;
     this.connectionState$ = this.stateService.connectionState$;
+    this.urlLanguage = this.languageService.getLanguageForUrl();
   }
 
   collapse(): void {

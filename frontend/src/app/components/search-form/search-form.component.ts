@@ -13,7 +13,6 @@ import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.
   selector: 'app-search-form',
   templateUrl: './search-form.component.html',
   styleUrls: ['./search-form.component.scss'],
-  providers: [RelativeUrlPipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchFormComponent implements OnInit {
