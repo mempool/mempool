@@ -13,7 +13,6 @@ import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.
 @Component({
   selector: 'app-block',
   templateUrl: './block.component.html',
-  providers: [RelativeUrlPipe],
   styleUrls: ['./block.component.scss']
 })
 export class BlockComponent implements OnInit, OnDestroy {
