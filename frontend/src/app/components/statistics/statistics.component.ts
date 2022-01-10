@@ -124,6 +124,8 @@ export class StatisticsComponent implements OnInit {
     mempoolStats.reverse();
     const labels = mempoolStats.map(stats => stats.added);
 
+    this.capExtremeVbytesValues();
+
     this.mempoolTransactionsWeightPerSecondData = {
       labels: labels,
       series: [mempoolStats.map((stats) => [stats.added * 1000, stats.vbytes_per_second])],
@@ -161,5 +163,32 @@ export class StatisticsComponent implements OnInit {
         });
       }
     })
+  }
+
+  /**
+   * All value higher that "median * capRatio" are capped
+   */
+  capExtremeVbytesValues() {
+    let capRatio = 10;
+    if (['1m', '3m',  '6m', '1y', '2y', '3y'].includes(this.graphWindowPreference)) {
+      capRatio = 4;
+    }
+
+    // Find median value
+    let vBytes : number[] = [];
+    for (let i = 0; i < this.mempoolStats.length; ++i) {
+      vBytes.push(this.mempoolStats[i].vbytes_per_second);
+    }
+    const sorted = vBytes.slice().sort((a, b) => a - b);
+    const middle = Math.floor(sorted.length / 2);
+    let median = sorted[middle];
+    if (sorted.length % 2 === 0) {
+      median = (sorted[middle - 1] + sorted[middle]) / 2;
+    }
+
+    // Cap
+    for (let i = 0; i < this.mempoolStats.length; ++i) {
+      this.mempoolStats[i].vbytes_per_second = Math.min(median * capRatio, this.mempoolStats[i].vbytes_per_second);
+    }
   }
 }
