@@ -1092,7 +1092,7 @@
       </trans-unit>
       <trans-unit id="8e623d3cfecb7c560c114390db53c1f430ffd0de" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="confirmation&lt;/ng-template&gt;           &lt;ng-template #confirmationPlural let-i i18n=&quot;shared.confirmation-count.plural|Transaction plural confir"/> confirmation</source>
-        <target> <x id="INTERPOLATION" equiv-text="confirmation&lt;/ng-template&gt;           &lt;ng-template #confirmationPlural let-i i18n=&quot;shared.confirmation-count.plural|Transaction plural confir"/>確認</target>
+        <target> <x id="INTERPOLATION" equiv-text="confirmation&lt;/ng-template&gt;           &lt;ng-template #confirmationPlural let-i i18n=&quot;shared.confirmation-count.plural|Transaction plural confir"/> 承認</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
           <context context-type="linenumber">20,21</context>
@@ -1114,7 +1114,7 @@
       </trans-unit>
       <trans-unit id="bc5b0a2631f0b7bc71aaec6aa6f01af21f9a80d4" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="confirmations&lt;/ng-template&gt;         &lt;/button&gt;       &lt;/div&gt;     &lt;/div&gt;            &lt;div class=&quot;clearfix&quot;&gt;&lt;/div&gt;        &lt;div class=&quot;box tran"/> confirmations</source>
-        <target> <x id="INTERPOLATION" equiv-text="confirmations&lt;/ng-template&gt;         &lt;/button&gt;       &lt;/div&gt;     &lt;/div&gt;            &lt;div class=&quot;clearfix&quot;&gt;&lt;/div&gt;        &lt;div class=&quot;box tran"/>確認</target>
+        <target> <x id="INTERPOLATION" equiv-text="confirmations&lt;/ng-template&gt;         &lt;/button&gt;       &lt;/div&gt;     &lt;/div&gt;            &lt;div class=&quot;clearfix&quot;&gt;&lt;/div&gt;        &lt;div class=&quot;box tran"/> 承認</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
           <context context-type="linenumber">21,22</context>
@@ -1462,7 +1462,7 @@
       </trans-unit>
       <trans-unit id="1405c5f1a9834338ff13442c550927ab7144fdc8" datatype="html">
         <source>Community Integrations</source>
-        <target>コミュニティーの結合</target>
+        <target>コミュニティーの統合</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">82,85</context>
@@ -2644,7 +2644,7 @@
       </trans-unit>
       <trans-unit id="c9f5914dbba46a8dc4ab4e81b40b1582eea7c5e2" datatype="html">
         <source>Get transaction history for the specified address/scripthash, sorted with newest first. Returns up to 50 mempool transactions plus the first 25 confirmed transactions. You can request more confirmed transactions using <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>:last_seen_txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (see below).</source>
-        <target>最新から順にソートされ特定したアドレス/スクリプトハッシュのトランザクション歴史を得る。50つのmempoolトランザクションまで、そして最初の25つの確認されたトランザクションは返されます。追加の確認されたトランザクションを求めたい場合は<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>:last_seen_txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>を利用できます（下記参照）。</target>
+        <target>最新から順にソートされ特定したアドレス/スクリプトハッシュのトランザクション歴史を得る。50つのmempoolトランザクションまで、そして最初の25つの承認されたトランザクションは返されます。追加の承認されたトランザクションを求めたい場合は<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>:last_seen_txid<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>を利用できます（下記参照）。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">192,193</context>
@@ -2652,7 +2652,7 @@
       </trans-unit>
       <trans-unit id="5676910aa3ffb568079a7499b366744fe3fd87ea" datatype="html">
         <source>Get confirmed transaction history for the specified address/scripthash, sorted with newest first. Returns 25 transactions per page. More can be requested by specifying the last txid seen by the previous query.</source>
-        <target>最新から順にソートされ特定したアドレス/スクリプトハッシュの確認されたトランザクション歴史を得る。ページ当たり25つのトランザクションは返されます。追加のトランザクション歴史を求めたい場合は先行クエリーの最後のtxidを特定できます。</target>
+        <target>最新から順にソートされ特定したアドレス/スクリプトハッシュの承認されたトランザクション歴史を得る。ページ当たり25つのトランザクションは返されます。追加のトランザクション歴史を求めたい場合は先行クエリーの最後のtxidを特定できます。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">205,207</context>
@@ -2660,7 +2660,7 @@
       </trans-unit>
       <trans-unit id="f10009779c64e19e20414fae506f27118420aa33" datatype="html">
         <source>Get unconfirmed transaction history for the specified address/scripthash. Returns up to 50 transactions (no paging).</source>
-        <target>特定したアドレス/スクリプトハッシュの未確認トランザクション歴史を得る。50つのトランザクションは返されます（ページングはありません）。</target>
+        <target>特定したアドレス/スクリプトハッシュの未承認トランザクション歴史を得る。50つのトランザクションは返されます（ページングはありません）。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">218,220</context>
@@ -2732,7 +2732,7 @@
       </trans-unit>
       <trans-unit id="a2c00fbdcce9d6291c3b04c67979f9694be23f28" datatype="html">
         <source>Returns the confirmation status of a block. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>in_best_chain<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (boolean, false for orphaned blocks), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>next_best<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (the hash of the next block, only available for blocks in the best chain).</source>
-        <target>ブロックの確認状態を返す。入手可能フィールド：<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>in_best_chain<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (ブール値、孤立ブロックの場合は偽), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>next_best<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(次のブロックのハッシュ、ベストチェーンに入ってるブロックのみの場合に入手可能)。</target>
+        <target>ブロックの承認状態を返す。入手可能フィールド：<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>in_best_chain<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (ブール値、孤立ブロックの場合は偽), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>next_best<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(次のブロックのハッシュ、ベストチェーンに入ってるブロックのみの場合に入手可能)。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">342,343</context>
@@ -2772,7 +2772,7 @@
       </trans-unit>
       <trans-unit id="1126cb2e03d0371d03b57047052d4ff1b6556753" datatype="html">
         <source>Returns a list of transactions in the block (up to 25 transactions beginning at <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>start_index<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>). Transactions returned here do not have the <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>status<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> field, since all the transactions share the same block and confirmation status.</source>
-        <target>ブロックに入ってるトランザクションのリストを返す(<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>start_index<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>からはじめる25つまでのトランザクション)。ここに返されるトランザクションは共通ブロックに入ってる、そして同じ確認状態を持っているため、<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>status<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>のフィールドを含みません。</target>
+        <target>ブロックに入ってるトランザクションのリストを返す(<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>start_index<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>からはじめる25つまでのトランザクション)。ここに返されるトランザクションは共通ブロックに入ってる、そして同じ承認状態を持っているため、<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>status<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>のフィールドを含みません。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">407,408</context>
@@ -2908,7 +2908,7 @@
       </trans-unit>
       <trans-unit id="7e784cfa5833e7b54d4dfc723fabde94f66ebde3" datatype="html">
         <source>Returns the confirmation status of a transaction. Available fields: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>confirmed<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (boolean), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block_height<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (optional), and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block_hash<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (optional).</source>
-        <target>ブロックの確認状態を返す。入手可能フィールド：<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>confirmed<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (ブール値), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block_height<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(任意)、そして<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block_hash<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(任意)。</target>
+        <target>ブロックの承認状態を返す。入手可能フィールド：<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>confirmed<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> (ブール値), <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block_height<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(任意)、そして<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block_hash<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>(任意)。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">627,628</context>
@@ -2932,7 +2932,7 @@
       </trans-unit>
       <trans-unit id="a706b1ded7506620b153dbcdea8108e6691bbbd9" datatype="html">
         <source>Default push: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> action: 'want', data: ['blocks', ...] <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> to express what you want pushed. Available: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool-blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>live-2h-chart<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.<x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/><x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/>Push transactions related to address: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> 'track-address': '3PbJ...bF9B' <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>address-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> for new mempool transactions, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> for new block confirmed transactions.</source>
-        <target>デフォルト・プッシュ: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> 行動: 'want', データ: ['ブロック', ...] プッシュしたいことを表現するために<x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>. 利用可能: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>、 <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool-blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>、<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>live-2h-chart<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>と<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>。<x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/><x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/>このアドレスと関係するプッシュトランザクション: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> 'track-address': '3PbJ...bF9B'<x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> インプットまたはアウトプットとしてそのアドレスを含む新トランザクションを得るために。トランザクションの配列を返す。 新しいメモリプールトランザクションの場合は<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>address-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, そして新しいブロック確認済みトランザクションの場合は<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>。</target>
+        <target>デフォルト・プッシュ: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> 行動: 'want', データ: ['ブロック', ...] プッシュしたいことを表現するために<x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>. 利用可能: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>、 <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool-blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>、<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>live-2h-chart<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>と<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>。<x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/><x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/>このアドレスと関係するプッシュトランザクション: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> 'track-address': '3PbJ...bF9B'<x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> インプットまたはアウトプットとしてそのアドレスを含む新トランザクションを得るために。トランザクションの配列を返す。 新しいメモリプールトランザクションの場合は<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>address-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, そして新しいブロック承認済みトランザクションの場合は<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/docs/api-docs.component.html</context>
           <context context-type="linenumber">671,672</context>
@@ -3050,7 +3050,7 @@
       </trans-unit>
       <trans-unit id="0ae5beecbbfc96bcdf4f9a637aa72687e81ef5e1" datatype="html">
         <source>Tx vBytes per second:</source>
-        <target>Tx vバイト毎秒:</target>
+        <target>Tx vByte毎秒:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">5,7</context>
@@ -3086,7 +3086,7 @@
       </trans-unit>
       <trans-unit id="60cd6fa18f925b42065d8cfb1a791efdc228b4c3" datatype="html">
         <source>Unconfirmed</source>
-        <target>未確認</target>
+        <target>未承認</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">16,18</context>
@@ -3372,7 +3372,7 @@
       </trans-unit>
       <trans-unit id="75c20c8a9cd9723d45bee0230dd582d7c2e4ecbc" datatype="html">
         <source>Mempool by vBytes (sat/vByte)</source>
-        <target>vバイト単位のMempool（サトシ/vバイト）</target>
+        <target>vByte単位のMempool（ｻﾄｼ/vByte）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">6</context>
@@ -3399,7 +3399,7 @@
       </trans-unit>
       <trans-unit id="dc15ec15e6206b40133f2c1b06095ce75aaee1ef" datatype="html">
         <source>Transaction vBytes per second (vB/s)</source>
-        <target>トランザクションvバイト毎秒（vB/s）</target>
+        <target>トランザクションvByte毎秒（vB/s）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">87</context>
@@ -3614,7 +3614,7 @@
       </trans-unit>
       <trans-unit id="ef772ce5cf98a47b29175e3d46b8a9816c7990a2" datatype="html">
         <source>Unconfirmed</source>
-        <target>未確認</target>
+        <target>未承認</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">32,39</context>
@@ -3628,7 +3628,7 @@
       </trans-unit>
       <trans-unit id="bfa87f9724434e4245b30f2bdd11d97477048cd1" datatype="html">
         <source>Confirmed</source>
-        <target>確認済み</target>
+        <target>承認済み</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">65,66</context>
