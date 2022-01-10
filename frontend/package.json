@@ -73,7 +73,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@juggle/resize-observer": "^3.3.1",
-    "@mempool/mempool.js": "2.3.0-dev1",
+    "@mempool/mempool.js": "2.3.0",
     "@ng-bootstrap/ng-bootstrap": "^10.0.0",
     "@nguniversal/express-engine": "11.2.1",
     "@types/qrcode": "1.4.1",
