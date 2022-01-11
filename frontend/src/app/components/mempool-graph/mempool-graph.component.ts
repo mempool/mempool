@@ -285,7 +285,9 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       dataZoom: [{
         type: 'inside',
         realtime: true,
+        zoomLock: (this.template === 'widget') ? true : false,
         zoomOnMouseWheel: (this.template === 'advanced') ? true : false,
+        moveOnMouseMove: (this.template === 'widget') ? true : false,
         maxSpan: 100,
         minSpan: 10,
       }, {
