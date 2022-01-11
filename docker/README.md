@@ -2,7 +2,7 @@
 
 This directory contains the Dockerfiles used to build and release the official images and a `docker-compose.yml` file that is intended for end users to run a Mempool instance with minimal effort.
 
-## Basic setup
+## bitcoind only configuration
 
 To run an instance with the default settings, use the following command:
 
@@ -10,13 +10,32 @@ To run an instance with the default settings, use the following command:
 $ docker-compose up
 ```
 
-The default configuration will allow you to run Mempool using `bitcoind` as the backend, so address lookups will be disabled.
+The default configuration will allow you to run Mempool using `bitcoind` as the backend, so address lookups will be disabled. It assumes you have added RPC credentials for the `mempool` user with a `mempool` password in your `bitcoin.conf` file:
+
+```
+rpcuser=mempool
+rpcpassword=mempool
+```
+
+If you want to use your current credentials, update them in the `docker-compose.yml` file:
+
+```
+  api:
+    environment:
+      MEMPOOL_BACKEND: "none"
+      RPC_HOST: "172.27.0.1"
+      RPC_PORT: "8332"
+      RPC_USER: "mempool"
+      RPC_PASS: "mempool"
+```
+
+Note: the IP in the example above refers to Docker's default gateway IP address so the container can hit the `bitcoind` instance running on the host machine. If your setup is different, update it accordingly.
 
 You can check if the instance is running by visiting http://localhost - the graphs will be populated as new transactions are detected.
 
-## Advanced setup
+## bitcoind+romanz/electrs configuration
 
-In order to run with electrum/electrs as the backend you will need to make the following changes to the `docker-compose.yml` file:
+In order to run with `romanz/electrs` as the backend , in addition to the settings required for `bitcoind`  above, you will need to make the following changes to the `docker-compose.yml` file:
 
 - Under the `api` service, change the value of `MEMPOOL_BACKEND` key from `none` to `electrum`:
 
