@@ -320,7 +320,7 @@ class Statistics {
   private getQueryForDays(div: number, interval: string) {
     return `SELECT id, UNIX_TIMESTAMP(added) as added, unconfirmed_transactions,
       tx_per_second,
-      vbytes_per_second,
+      CAST(avg(vbytes_per_second) as FLOAT) as vbytes_per_second,
       vsize_1,
       vsize_2,
       vsize_3,
