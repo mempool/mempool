@@ -172,8 +172,7 @@ class DatabaseMigration {
     }
 
     if (version < 2) {
-      queries.push(`ALTER TABLE statistics
-        ADD INDEX added (added);`);
+      queries.push(`CREATE INDEX IF NOT EXISTS added ON statistics (added);`);
     }
 
     return queries;
