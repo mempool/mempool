@@ -17,6 +17,8 @@ services:
       MEMPOOL_BACKEND: "none"
       RPC_HOST: "172.27.0.1"
       RPC_PORT: "8332"
+      RPC_USER: "mempool"
+      RPC_PASS: "mempool"
       MYSQL_ENABLED: "true"
       MYSQL_HOST: "db"
       STATISTICS_ENABLED: "true"
