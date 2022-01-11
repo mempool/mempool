@@ -461,7 +461,7 @@
       </trans-unit>
       <trans-unit id="14779b0ce4cbc4d975a35a8fe074426228a324f3" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> transactions</source>
-        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> 트랜잭년</target>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> 트랜잭션</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
           <context context-type="linenumber">51</context>
@@ -1527,7 +1527,7 @@
       </trans-unit>
       <trans-unit id="9f10a0577222a7d6c35a889453fa3a794750d9c4" datatype="html">
         <source>multisig <x id="INTERPOLATION" equiv-text="{{ multisigM }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ multisigN }}"/></source>
-        <target><x id="INTERPOLATION" equiv-text="{{ multisigM }}"/>/<x id="INTERPOLATION_1" equiv-text="{{ multisigN }}"/> 다중서명</target>
+        <target>다중서명 <x id="INTERPOLATION" equiv-text="{{ multisigM }}"/>/<x id="INTERPOLATION_1" equiv-text="{{ multisigN }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
           <context context-type="linenumber">5</context>
