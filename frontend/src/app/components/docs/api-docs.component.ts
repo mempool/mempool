@@ -159,6 +159,24 @@ export class ApiDocsComponent implements OnInit {
   }
 }`
         },
+        codeSampleLiquidTestnet: {
+          esModule: [`vjTwFjtVE7Fy9gjwQSxas9FkrqcnK1SeobPkdD9tghdNmCvxoXhSeCjpgD3ponKJukkD2BNPX25dZL48`],
+          commonJS: [`vjTwFjtVE7Fy9gjwQSxas9FkrqcnK1SeobPkdD9tghdNmCvxoXhSeCjpgD3ponKJukkD2BNPX25dZL48`],
+          curl: [`vjTwFjtVE7Fy9gjwQSxas9FkrqcnK1SeobPkdD9tghdNmCvxoXhSeCjpgD3ponKJukkD2BNPX25dZL48`],
+          response: `{
+  address: "vjTwFjtVE7Fy9gjwQSxas9FkrqcnK1SeobPkdD9tghdNmCvxoXhSeCjpgD3ponKJukkD2BNPX25dZL48",
+  chain_stats: {
+    funded_txo_count: 1,
+    spent_txo_count: 0,
+    tx_count: 1
+  },
+  mempool_stats: {
+    funded_txo_count: 0,
+    spent_txo_count: 0,
+    tx_count: 0
+  }
+}`
+        },
         codeSampleBisq: {
           esModule: [`B1DgwRN92rdQ9xpEVCdXRfgeqGw9X4YtrZz`],
           commonJS: [`B1DgwRN92rdQ9xpEVCdXRfgeqGw9X4YtrZz`],
@@ -290,6 +308,30 @@ export class ApiDocsComponent implements OnInit {
       block_height: 1438078,
       block_hash: "1625ce898d2058f4e609af2e81908ce52eba77dde099667bea68360b5679d5df",
       block_time: 1628564158
+    }
+  },
+  ...
+]`
+        },
+        codeSampleLiquidTestnet: {
+          esModule: [`vjTwFjtVE7Fy9gjwQSxas9FkrqcnK1SeobPkdD9tghdNmCvxoXhSeCjpgD3ponKJukkD2BNPX25dZL48`],
+          commonJS: [`vjTwFjtVE7Fy9gjwQSxas9FkrqcnK1SeobPkdD9tghdNmCvxoXhSeCjpgD3ponKJukkD2BNPX25dZL48`],
+          curl: [`vjTwFjtVE7Fy9gjwQSxas9FkrqcnK1SeobPkdD9tghdNmCvxoXhSeCjpgD3ponKJukkD2BNPX25dZL48`],
+          response: `[
+  {
+    txid: "67108f445ae3a363452cf7f382f1b71e06126ab958673debbeaad6dab4831434",
+    version: 2,
+    locktime: 0,
+    vin: [Object],
+    vout: [Object],
+    size: 8968,
+    weight: 10063,
+    fee: 260,
+    status: {
+      confirmed: true,
+      block_height: 165253,
+      block_hash: "c8b6233c3bc53b76cf3a629328c3e7826a749171a8b39b482daf73e0be266e09",
+      block_time: 1641788900
     }
   },
   ...
