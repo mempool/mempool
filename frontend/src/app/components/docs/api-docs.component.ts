@@ -457,6 +457,30 @@ export class ApiDocsComponent implements OnInit {
   ...
 ]`
         },
+        codeSampleLiquidTestnet: {
+          esModule: [`vjTwFjtVE7Fy9gjwQSxas9FkrqcnK1SeobPkdD9tghdNmCvxoXhSeCjpgD3ponKJukkD2BNPX25dZL48`],
+          commonJS: [`vjTwFjtVE7Fy9gjwQSxas9FkrqcnK1SeobPkdD9tghdNmCvxoXhSeCjpgD3ponKJukkD2BNPX25dZL48`],
+          curl: [`vjTwFjtVE7Fy9gjwQSxas9FkrqcnK1SeobPkdD9tghdNmCvxoXhSeCjpgD3ponKJukkD2BNPX25dZL48`],
+          response: `[
+  {
+    txid: "67108f445ae3a363452cf7f382f1b71e06126ab958673debbeaad6dab4831434",
+    version: 2,
+    locktime: 0,
+    vin: [],
+    vout: [],
+    size: 8968,
+    weight: 10063,
+    fee: 260,
+    status: {
+      confirmed: true,
+      block_height: 165253,
+      block_hash: "c8b6233c3bc53b76cf3a629328c3e7826a749171a8b39b482daf73e0be266e09",
+      block_time: 1641788900
+    }
+  },
+  ...
+]`
+        },
         codeSampleBisq: {
           esModule: [],
           commonJS: [],
@@ -551,6 +575,24 @@ export class ApiDocsComponent implements OnInit {
     size: 226,
     weight: 904,
     fee: 6720,
+    status: { confirmed: false }
+  }
+]`
+        },
+        codeSampleLiquidTestnet: {
+          esModule: [`928jXZPDqQAt5vzGvBXKWMKCS9vfCa9Rfu`],
+          commonJS: [`928jXZPDqQAt5vzGvBXKWMKCS9vfCa9Rfu`],
+          curl: [`928jXZPDqQAt5vzGvBXKWMKCS9vfCa9Rfu`],
+          response: `[
+  {
+    txid: "3ab8bc068ee05c1114647dc5196b3b954b00e5af3b03d470d1ef8a8953737357",
+    version: 2,
+    locktime: 0,
+    vin: [ [Object] ],
+    vout: [ [Object], [Object] ],
+    size: 14720,
+    weight: 58880,
+    fee: 1496,
     status: { confirmed: false }
   }
 ]`
