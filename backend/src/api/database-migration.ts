@@ -3,7 +3,7 @@ import { DB } from '../database';
 import logger from '../logger';
 
 class DatabaseMigration {
-  private static currentVersion = 1;
+  private static currentVersion = 2;
   private queryTimeout = 120000;
 
   constructor() { }
@@ -169,6 +169,10 @@ class DatabaseMigration {
 
       queries.push(`INSERT INTO state VALUES('schema_version', 0, NULL);`);
       queries.push(`INSERT INTO state VALUES('last_elements_block', 0, NULL);`);
+    }
+
+    if (version < 2) {
+      queries.push(`CREATE INDEX IF NOT EXISTS added ON statistics (added);`);
     }
 
     return queries;
