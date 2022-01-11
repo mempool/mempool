@@ -314,7 +314,7 @@ class Statistics {
       FROM statistics \
       WHERE added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW() \
       GROUP BY UNIX_TIMESTAMP(added) DIV ${div} \
-      ORDER BY id DESC;`;
+      ORDER BY added DESC;`;
   }
 
   private getQueryForDays(div: number, interval: string) {
@@ -362,7 +362,7 @@ class Statistics {
       FROM statistics \
       WHERE added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW() \
       GROUP BY UNIX_TIMESTAMP(added) DIV ${div} \
-      ORDER BY id DESC;`;
+      ORDER BY added DESC;`;
   }
 
   public async $get(id: number): Promise<OptimizedStatistic | undefined> {
@@ -382,7 +382,7 @@ class Statistics {
   public async $list2H(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = `SELECT *, UNIX_TIMESTAMP(added) as added FROM statistics ORDER BY id DESC LIMIT 120`;
+      const query = `SELECT *, UNIX_TIMESTAMP(added) as added FROM statistics ORDER BY added DESC LIMIT 120`;
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
@@ -395,7 +395,7 @@ class Statistics {
   public async $list24H(): Promise<OptimizedStatistic[]> {
     try {
       const connection = await DB.pool.getConnection();
-      const query = `SELECT *, UNIX_TIMESTAMP(added) as added FROM statistics ORDER BY id DESC LIMIT 1440`;
+      const query = `SELECT *, UNIX_TIMESTAMP(added) as added FROM statistics ORDER BY added DESC LIMIT 1440`;
       const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
       connection.release();
       return this.mapStatisticToOptimizedStatistic(rows);
