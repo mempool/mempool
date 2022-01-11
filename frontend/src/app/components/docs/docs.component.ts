@@ -22,6 +22,6 @@ export class DocsComponent implements OnInit {
     const url = this.route.snapshot.url;
     this.activeTab = ( url[2].path === "rest" ) ? 0 : 1;
     this.env = this.stateService.env;
-    this.showWebSocketTab = ( ! ( ( this.env.BASE_MODULE === "bisq" ) || ( this.stateService.network === "bisq" ) ) );
+    this.showWebSocketTab = ( ! ( ( this.env.BASE_MODULE === "bisq" ) || ( this.stateService.network === "bisq" ) || ( this.stateService.network === "liquidtestnet" ) ) );
   }
 }
