@@ -1,23 +1,10 @@
 version: "3.7"
 
 services:
-
-  electrum:
-    build:
-      context: .
-      dockerfile: docker/electrum/Dockerfile
-    user: "1000:1000"
-    restart: on-failure
-    command: ""
-    ports:
-      - 50001:50001
-      - 50002:50002
-      - 4224:4224
-      - 8332:8332
-    environment:
-      ELECTRUM: "electrum"
-      # add electrs configs
   web:
+    environment:
+      FRONTEND_HTTP_PORT: "8080"
+      BACKEND_MAINNET_HTTP_HOST: "api"
     image: mempool/frontend:latest
     user: "1000:1000"
     restart: on-failure
@@ -25,10 +12,14 @@ services:
     command: "./wait-for db:3306 --timeout=720 -- nginx -g 'daemon off;'"
     ports:
       - 80:8080
-    environment:
-      FRONTEND_HTTP_PORT: "8080"
-      BACKEND_MAINNET_HTTP_HOST: "api"
   api:
+    environment:
+      MEMPOOL_BACKEND: "none"
+      RPC_HOST: "172.27.0.1"
+      RPC_PORT: "8332"
+      MYSQL_ENABLED: "true"
+      MYSQL_HOST: "db"
+      STATISTICS_ENABLED: "true"
     image: mempool/backend:latest
     user: "1000:1000"
     restart: on-failure
@@ -36,32 +27,15 @@ services:
     command: "./wait-for-it.sh db:3306 --timeout=720 --strict -- ./start.sh"
     volumes:
       - ./data:/backend/cache
+  db:
     environment:
-      RPC_HOST: "127.0.0.1"
-      RPC_PORT: "8332"
-      RPC_USER: "mempool"
-      RPC_PASS: "mempool"
-      ELECTRUM_HOST: "127.0.0.1"
-      ELECTRUM_PORT: "50002"
-      ELECTRUM_TLS: "false"
-      MYSQL_HOST: "db"
-      MYSQL_PORT: "3306"
       MYSQL_DATABASE: "mempool"
       MYSQL_USER: "mempool"
-      MYSQL_PASS: "mempool"
-      BACKEND_MAINNET_HTTP_PORT: "8999"
-      CACHE_DIR: "/backend/cache"
-      MEMPOOL_CLEAR_PROTECTION_MINUTES: "20"
-  db:
+      MYSQL_PASSWORD: "mempool"
+      MYSQL_ROOT_PASSWORD: "admin"
     image: mariadb:10.5.8
     user: "1000:1000"
     restart: on-failure
     stop_grace_period: 1m
     volumes:
       - ./mysql/data:/var/lib/mysql
-      - ./mysql/db-scripts:/docker-entrypoint-initdb.d
-    environment:
-      MYSQL_DATABASE: "mempool"
-      MYSQL_USER: "mempool"
-      MYSQL_PASSWORD: "mempool"
-      MYSQL_ROOT_PASSWORD: "admin"
