@@ -1,4 +1,4 @@
-<ng-template [ngIf]="network.val !== 'bisq' && network.val !== 'liquid'">
+<ng-template [ngIf]="network.val !== 'bisq' && network.val !== 'liquid' && network.val !== 'liquidtestnet'">
   <p>General</p>
   <a [routerLink]="['./']" fragment="get-difficulty-adjustment" (click)="collapseItem.toggle()">GET Difficulty Adjustment</a>
 </ng-template>
