@@ -11,10 +11,12 @@ export class LanguageService {
   constructor(
     @Inject(DOCUMENT) private document: Document,
     @Inject(LOCALE_ID) private locale: string,
-  ) { }
+  ) {
+    this.language = getLocaleId(this.locale).substring(0, 2);
+  }
 
   getLanguage(): string {
-    return getLocaleId(this.locale).substring(0, 2);
+    return this.language;
   }
 
   stripLanguageFromUrl(urlPath: string) {
@@ -27,12 +29,10 @@ export class LanguageService {
   }
 
   getLanguageForUrl(): string {
-    let lang = this.getLanguage();
-    return lang === 'en' ? '' : '/' + lang;
+    return this.language === 'en' ? '' : '/' + this.language;
   }
 
   setLanguage(language: string): void {
-    this.language = language;
     try {
       document.cookie = `lang=${language}; expires=Thu, 18 Dec 2050 12:00:00 UTC; path=/`;
     } catch (e) { }
