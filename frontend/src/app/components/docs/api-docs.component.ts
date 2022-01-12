@@ -776,29 +776,39 @@ export class ApiDocsComponent implements OnInit {
 }`,
         },
         codeSampleLiquidTestnet: {
-          esModule: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
-          commonJS: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
-          curl: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          esModule: [`ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`],
+          commonJS: [`ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`],
+          curl: [`ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`],
           response: `{
-  asset_id: "6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d",
-  chain_stats: {
-    tx_count: 3887,
-    peg_in_count: 2557,
-    peg_in_amount: 328822657766,
-    peg_out_count: 1131,
-    peg_out_amount: 7427922560,
-    burn_count: 199,
-    burned_amount: 516003151
+  "asset_id": "ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926",
+  "issuance_txin": {...},
+  "issuance_prevout": {...},
+  "reissuance_token": "55fdb86a988b07242a7edbddb53f40b3742c0e863a769937018b31621708b14b",
+  "contract_hash": "b3619fb6ebd502ba57c4c026e73d7ae430c32431ffe833a4867faa9dd89abd5b",
+  "status": {...},
+  "chain_stats": {
+    "tx_count": 2,
+    "issuance_count": 2,
+    "issued_amount": 0,
+    "burned_amount": 0,
+    "has_blinded_issuances": true,
+    "reissuance_tokens": null,
+    "burned_reissuance_tokens": 0
   },
-  mempool_stats: {
-    tx_count: 0,
-    peg_in_count: 0,
-    peg_in_amount: 0,
-    peg_out_count: 0,
-    peg_out_amount: 0,
-    burn_count: 0,
-    burned_amount: 0
-  }
+  "mempool_stats": {
+    "tx_count": 0,
+    "issuance_count": 0,
+    "issued_amount": 0,
+    "burned_amount": 0,
+    "has_blinded_issuances": false,
+    "reissuance_tokens": null,
+    "burned_reissuance_tokens": 0
+  },
+  "contract": {...},
+  "entity": {...},
+  "precision": 8,
+  "name": "Liquid CAD",
+  "ticker": "LCAD"
 }`,
         },
         codeSampleBisq: {
@@ -836,14 +846,10 @@ export class ApiDocsComponent implements OnInit {
 ]`,
         },
         codeSampleLiquidTestnet: {
-          esModule: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
-          commonJS: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
-          curl: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
-          response: `[
-  "6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d",
-  "ce091c998b83c78bb71a632313ba3760f1763d9cfcffae02258ffa9865a37bd2"
-  ...
-]`,
+          esModule: [``],
+          commonJS: [``],
+          curl: [``],
+          response: `[]`,
         },
       },
       assetIcon: {
@@ -859,9 +865,9 @@ export class ApiDocsComponent implements OnInit {
           response: `PNG`,
         },
         codeSampleLiquidTestnet: {
-          esModule: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
-          commonJS: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
-          curl: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          esModule: [`ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`],
+          commonJS: [`ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`],
+          curl: [`ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`],
           response: `PNG`,
         },
       },
@@ -927,24 +933,24 @@ export class ApiDocsComponent implements OnInit {
 ]`,
         },
         codeSampleLiquidTestnet: {
-          esModule: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
-          commonJS: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
-          curl: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          esModule: [`ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`],
+          commonJS: [`ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`],
+          curl: [`ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`],
           response: `[
   {
-    txid: "93fedcc996df43c94f9f12e24b4040b60d47d84ef7a9a66ef05c2e6f4059b685",
+    txid: "34b9cd013ddf4d4b5e9d09502ca953034fd52a0679845ac8b9d54c63d857a488",
     version: 2,
-    locktime: 0,
+    locktime: 140139,
     vin: [],
     vout: [],
-    size: 998,
-    weight: 1484,
-    fee: 42,
+    size: 17918,
+    weight: 19721,
+    fee: 493,
     status: {
       confirmed: true,
-      block_height: 1471854,
-      block_hash: "f113b64f6bc937fda6891fd9f1833d207312f986767aff91aea9649d87533250",
-      block_time: 1630618498
+      block_height: 140140,
+      block_hash: "c3a08178acf2bbafabda120930a0b270e762550d8a46e3e093de779ef459d29d",
+      block_time: 1640279893
     }
   },
   ...
@@ -1001,10 +1007,10 @@ export class ApiDocsComponent implements OnInit {
           response: `320878732055`,
         },
         codeSampleLiquidTestnet: {
-          esModule: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
-          commonJS: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
-          curl: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
-          response: `320878732055`,
+          esModule: [`05aa9f02a06da37f2a0a572c49ac381499a16a643ad7c70c51ac94560778c92e`],
+          commonJS: [`05aa9f02a06da37f2a0a572c49ac381499a16a643ad7c70c51ac94560778c92e`],
+          curl: [`05aa9f02a06da37f2a0a572c49ac381499a16a643ad7c70c51ac94560778c92e`],
+          response: `1000`,
         },
         codeSampleBisq: {
           esModule: [],
