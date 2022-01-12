@@ -2283,10 +2283,15 @@ export class ApiDocsComponent implements OnInit {
           commonJS: [],
           curl: [],
           response: `{
-  count: 0,
-  vsize: 0,
-  total_fee: 0,
-  fee_histogram: [ ]
+  count: 3,
+  vsize: 20457,
+  total_fee: 2089,
+  fee_histogram: [
+    [
+      0.09981343,
+      20457
+    ]
+  ]
 }`
         },
         codeSampleBisq: {
@@ -2361,7 +2366,9 @@ export class ApiDocsComponent implements OnInit {
           commonJS: [],
           curl: [],
           response: `[
-  "f3f3acdaa6a823efcbbbbcc607ec4d1c2c40d618135ec09d8ed96e4d9b37db38"
+  "b644716cb1aeb3e6e9fb4258b0b95dfad8b8e4cd1ec8649bf1116a500cc870e5",
+  "3ab8bc068ee05c1114647dc5196b3b954b00e5af3b03d470d1ef8a8953737357",
+  "dfbe66e6e71e775c9529a822c14286de0ee1066c2760a53552615d05e17006f3"
 ]`
         },
         codeSampleBisq: {
@@ -2449,9 +2456,14 @@ export class ApiDocsComponent implements OnInit {
           curl: [],
           response: `[
   {
-    txid: "06428bf0f6dc6a55e1d800afcd4697d1cdee4debbfaa7fd782d747a80d051c25",
-    fee: 251,
-    vsize: 2515
+    txid: "814d9d285970dd55ea5b2f06f5d11fb895a2b78d61defbcd489477441e544f95",
+    fee: 376,
+    vsize: 3767
+  },
+  {
+    txid: "e09a8b6bc950458bc77183acf4fd566d1cfd8e7373c4869f877b52e3b02ad9b1",
+    fee: 138,
+    vsize: 1379
   },
   ...
 ]`
