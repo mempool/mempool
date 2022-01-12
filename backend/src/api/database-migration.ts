@@ -16,23 +16,25 @@ class DatabaseMigration {
   public async $initializeOrMigrateDatabase(): Promise<void> {
     logger.info('MIGRATIONS: Running migrations');
 
+    await this.$printDatabaseVersion();
+
     // First of all, if the `state` database does not exist, create it so we can track migration version
     if (!await this.$checkIfTableExists('state')) {
-      logger.info('MIGRATIONS: `state` table does not exist. Creating it.')
+      logger.info('MIGRATIONS: `state` table does not exist. Creating it.');
       try {
         await this.$createMigrationStateTable();
       } catch (e) {
-        logger.err('Unable to create `state` table. Aborting migration. Error: ' + e);
+        logger.err('Unable to create `state` table. Aborting migration. ' + e);
         process.exit(-1);
       }
-      logger.info('MIGRATIONS: `state` table initialized.')
+      logger.info('MIGRATIONS: `state` table initialized.');
     }
 
     let databaseSchemaVersion = 0;
     try {
       databaseSchemaVersion = await this.$getSchemaVersionFromDatabase();
     } catch (e) {
-      logger.err('Unable to get current database migration version, aborting. Error: ' + e);
+      logger.err('Unable to get current database migration version, aborting. ' + e);
       process.exit(-1);
     }
 
@@ -76,7 +78,7 @@ class DatabaseMigration {
     try {
       const query = `SELECT COUNT(1) hasIndex FROM INFORMATION_SCHEMA.STATISTICS
         WHERE table_schema=DATABASE() AND table_name='statistics' AND index_name='added';`;
-      const [rows] = await this.$executeQuery(connection, query);
+      const [rows] = await this.$executeQuery(connection, query, true);
       if (rows[0].hasIndex === 0) {
         logger.info('MIGRATIONS: `statistics.added` is not indexed');
         this.statisticsAddedIndexed = false;
@@ -97,8 +99,10 @@ class DatabaseMigration {
   /**
    * Small query execution wrapper to log all executed queries
    */
-  private async $executeQuery(connection: PoolConnection, query: string): Promise<any> {
-    logger.info('MIGRATIONS: Execute query:\n' + query);
+  private async $executeQuery(connection: PoolConnection, query: string, silent: boolean = false): Promise<any> {
+    if (!silent) {
+      logger.info('MIGRATIONS: Execute query:\n' + query);
+    }
     return connection.query<any>({ sql: query, timeout: this.queryTimeout });
   }
 
@@ -119,7 +123,7 @@ class DatabaseMigration {
   private async $getSchemaVersionFromDatabase(): Promise<number> {
     const connection = await DB.pool.getConnection();
     const query = `SELECT number FROM state WHERE name = 'schema_version';`;
-    const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
+    const [rows] = await this.$executeQuery(connection, query, true);
     connection.release();
     return rows[0]['number'];
   }
@@ -210,6 +214,20 @@ class DatabaseMigration {
     return `UPDATE state SET number = ${DatabaseMigration.currentVersion} WHERE name = 'schema_version';`;
   }
 
+  /**
+   * Print current database version
+   */
+  private async $printDatabaseVersion() {
+    const connection = await DB.pool.getConnection();
+    try {
+      const [rows] = await this.$executeQuery(connection, 'SELECT VERSION() as version;', true);
+      logger.info(`MIGRATIONS: Database engine version '${rows[0].version}'`);
+    } catch (e) {
+      logger.info(`MIGRATIONS: Could not fetch database engine version. Error ` + e);
+    }
+    connection.release();
+  }
+
   // Couple of wrappers to clean the main logic
   private getCreateStatisticsQuery(): string {
     return `CREATE TABLE IF NOT EXISTS statistics (
@@ -260,7 +278,7 @@ class DatabaseMigration {
       vsize_1800 int(11) NOT NULL,
       vsize_2000 int(11) NOT NULL,
       CONSTRAINT PRIMARY KEY (id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
   private getShiftStatisticsQuery(): string {
     return `UPDATE statistics SET
@@ -294,7 +312,7 @@ class DatabaseMigration {
       bitcointxid varchar(65) NOT NULL,
       bitcoinindex int(11) NOT NULL,
       final_tx int(11) NOT NULL
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 }
 
