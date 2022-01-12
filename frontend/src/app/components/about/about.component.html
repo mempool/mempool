@@ -4,7 +4,7 @@
     <span style="margin-left: auto; margin-right: -20px; margin-bottom: -20px">&trade;</span>
     <img class="logo" src="./resources/mempool-logo-bigger.png" />
     <div class="version">
-      v{{ packetJsonVersion }} [{{ frontendGitCommitHash }}]
+      v{{ packetJsonVersion }} [<a href="https://github.com/mempool/mempool/commit/{{ frontendGitCommitHash }}">{{ frontendGitCommitHash }}</a>]
     </div>
   </div>
 
@@ -240,7 +240,7 @@
   </div>
   
   <div class="footer-version" *ngIf="officialMempoolSpace">
-    {{ (backendInfo$ | async)?.hostname }} (v{{ (backendInfo$ | async )?.version }}) [{{ (backendInfo$ | async )?.gitCommit | slice:0:8 }}]
+    {{ (backendInfo$ | async)?.hostname }} (v{{ (backendInfo$ | async )?.version }}) [<a href="https://github.com/mempool/mempool/commit/{{ (backendInfo$ | async )?.gitCommit | slice:0:8 }}">{{ (backendInfo$ | async )?.gitCommit | slice:0:8 }}</a>]
   </div>
 
 </div>
