@@ -237,8 +237,11 @@ yarn add @mempool/liquid.js`;
       if (this.network === 'signet') {
         return this.replaceCurlPlaceholder(code.codeTemplate.curl, code.codeSampleSignet);
       }
-      if (this.network === 'liquid' || this.network === 'liquidtestnet') {
+      if (this.network === 'liquid') {
         return this.replaceCurlPlaceholder(code.codeTemplate.curl, code.codeSampleLiquid);
+      }
+      if (this.network === 'liquidtestnet') {
+        return this.replaceCurlPlaceholder(code.codeTemplate.curl, code.codeSampleLiquidTestnet);
       }
       if (this.network === 'bisq') {
         return this.replaceCurlPlaceholder(code.codeTemplate.curl, code.codeSampleBisq);
@@ -259,8 +262,11 @@ yarn add @mempool/liquid.js`;
     if (this.network === 'signet') {
       return code.codeSampleSignet.response;
     }
-    if (this.network === 'liquid' || this.network === 'liquidtestnet') {
+    if (this.network === 'liquid') {
       return code.codeSampleLiquid.response;
+    }
+    if (this.network === 'liquidtestnet') {
+      return code.codeSampleLiquidTestnet.response;
     }
     if (this.network === 'bisq') {
       return code.codeSampleBisq.response;
