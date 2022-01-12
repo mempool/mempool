@@ -237,8 +237,8 @@
 
         <div class="api-category" *ngIf="network.val === 'liquid' || network.val === 'liquidtestnet'">
 
-          <div class="endpoint-container" id="get-assets">
-            <a class="section-header" [routerLink]="['./']" fragment="get-assets">GET Assets <span>Assets</span></a>
+          <div class="endpoint-container" id="get-asset">
+            <a class="section-header" [routerLink]="['./']" fragment="get-assets">GET Asset <span>Assets</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <a [href]="wrapUrl(network.val, code.assets)" target="_blank">GET {{ baseNetworkUrl }}/api/asset/:asset_id</a>
