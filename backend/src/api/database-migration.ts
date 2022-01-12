@@ -25,7 +25,7 @@ class DatabaseMigration {
       try {
         await this.$createMigrationStateTable();
       } catch (e) {
-        logger.err('Unable to create `state` table, aborting in 10 seconds. ' + e);
+        logger.err('MIGRATIONS: Unable to create `state` table, aborting in 10 seconds. ' + e);
         await sleep(10000);
         process.exit(-1);
       }
@@ -36,7 +36,7 @@ class DatabaseMigration {
     try {
       databaseSchemaVersion = await this.$getSchemaVersionFromDatabase();
     } catch (e) {
-      logger.err('Unable to get current database migration version, aborting in 10 seconds. ' + e);
+      logger.err('MIGRATIONS: Unable to get current database migration version, aborting in 10 seconds. ' + e);
       await sleep(10000);
       process.exit(-1);
     }
@@ -52,7 +52,7 @@ class DatabaseMigration {
     try {
       await this.$createMissingTablesAndIndexes(databaseSchemaVersion);
     } catch (e) {
-      logger.err('Unable to create required tables, aborting in 10 seconds. ' + e);
+      logger.err('MIGRATIONS: Unable to create required tables, aborting in 10 seconds. ' + e);
       await sleep(10000);
       process.exit(-1);
     }
@@ -61,9 +61,9 @@ class DatabaseMigration {
       logger.info('MIGRATIONS: Upgrading datababse schema');
       try {
         await this.$migrateTableSchemaFromVersion(databaseSchemaVersion);
-        logger.info(`OK. Database schema have been migrated from version ${databaseSchemaVersion} to ${DatabaseMigration.currentVersion} (latest version)`);
+        logger.info(`MIGRATIONS: OK. Database schema have been migrated from version ${databaseSchemaVersion} to ${DatabaseMigration.currentVersion} (latest version)`);
       } catch (e) {
-        logger.err('Unable to migrate database, aborting. ' + e);
+        logger.err('MIGRATIONS: Unable to migrate database, aborting. ' + e);
       }
     }
 
