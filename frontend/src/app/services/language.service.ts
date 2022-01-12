@@ -1,7 +1,6 @@
-import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+import { DOCUMENT, getLocaleId } from '@angular/common';
+import { LOCALE_ID, Inject, Injectable } from '@angular/core';
 import { languages } from 'src/app/app.constants';
-import { RelativeUrlPipe } from '../shared/pipes/relative-url/relative-url.pipe';
 
 @Injectable({
   providedIn: 'root'
@@ -11,31 +10,31 @@ export class LanguageService {
   private languages = languages;
   constructor(
     @Inject(DOCUMENT) private document: Document,
-    private relativeUrlPipe: RelativeUrlPipe,
+    @Inject(LOCALE_ID) private locale: string,
   ) { }
 
   getLanguage(): string {
-    return this.language;
+    return getLocaleId(this.locale).substring(0, 2);
   }
 
-  getLanguageForUrl() {
-    return this.language === 'en' ? '' : '/' + this.language;
-  }
-
-  setLocalLanguage() {
+  stripLanguageFromUrl(urlPath: string) {
+    let rawUrlPath = urlPath ? urlPath : document.location.pathname;
     const urlLanguage = this.document.location.pathname.split('/')[1];
-    if (this.languages.map((lang) => lang.code).indexOf(urlLanguage) > -1) {
-      this.language = urlLanguage;
-    } else {
-      this.language = 'en';
+    if (this.languages.map((lang) => lang.code).indexOf(urlLanguage) != -1) {
+      rawUrlPath = rawUrlPath.substring(3);
     }
+    return rawUrlPath;
+  }
+
+  getLanguageForUrl(): string {
+    let lang = this.getLanguage();
+    return lang === 'en' ? '' : '/' + lang;
   }
 
   setLanguage(language: string): void {
+    this.language = language;
     try {
       document.cookie = `lang=${language}; expires=Thu, 18 Dec 2050 12:00:00 UTC; path=/`;
     } catch (e) { }
-
-    this.document.location.href = this.relativeUrlPipe.transform(`/${language}/`);
   }
 }
