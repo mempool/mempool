@@ -6,6 +6,7 @@ import logger from '../logger';
 class DatabaseMigration {
   private static currentVersion = 2;
   private queryTimeout = 120000;
+  private statisticsAddedIndexed = false;
 
   constructor() { }
 
@@ -13,42 +14,45 @@ class DatabaseMigration {
    * Entry point
    */
   public async $initializeOrMigrateDatabase(): Promise<void> {
-    logger.info("MIGRATIONS: Running migrations");
+    logger.info('MIGRATIONS: Running migrations');
 
     // First of all, if the `state` database does not exist, create it so we can track migration version
     if (!await this.$checkIfTableExists('state')) {
-      logger.info("MIGRATIONS: `state` table does not exist. Creating it.")
+      logger.info('MIGRATIONS: `state` table does not exist. Creating it.')
       try {
         await this.$createMigrationStateTable();
       } catch (e) {
-        logger.err("Unable to create `state` table. Aborting migration. Error: " + e);
+        logger.err('Unable to create `state` table. Aborting migration. Error: ' + e);
         process.exit(-1);
       }
-      logger.info("MIGRATIONS: `state` table initialized.")
+      logger.info('MIGRATIONS: `state` table initialized.')
     }
 
     let databaseSchemaVersion = 0;
     try {
       databaseSchemaVersion = await this.$getSchemaVersionFromDatabase();
     } catch (e) {
-      logger.err("Unable to get current database migration version, aborting. Error: " + e);
+      logger.err('Unable to get current database migration version, aborting. Error: ' + e);
       process.exit(-1);
     }
 
-    logger.info("MIGRATIONS: Current state.schema_version " + databaseSchemaVersion.toString());
-    logger.info("MIGRATIONS: Latest DatabaseMigration.version is " + DatabaseMigration.currentVersion.toString());
-    if (databaseSchemaVersion.toString() === DatabaseMigration.currentVersion.toString()) {
-      logger.info("MIGRATIONS: Nothing to do.");
+    logger.info('MIGRATIONS: Current state.schema_version ' + databaseSchemaVersion);
+    logger.info('MIGRATIONS: Latest DatabaseMigration.version is ' + DatabaseMigration.currentVersion);
+    if (databaseSchemaVersion >= DatabaseMigration.currentVersion) {
+      logger.info('MIGRATIONS: Nothing to do.');
       return;
     }
 
+    // Will create `statistics.added` INDEX if needed for databaseSchemaVersion <= 2
+    await this.$setStatisticsAddedIndexedFlag(databaseSchemaVersion);
+
     if (DatabaseMigration.currentVersion > databaseSchemaVersion) {
-      logger.info("MIGRATIONS: Upgrading datababse schema");
+      logger.info('MIGRATIONS: Upgrading datababse schema');
       try {
         await this.$migrateTableSchemaFromVersion(databaseSchemaVersion);
         logger.info(`OK. Database schema have been migrated from version ${databaseSchemaVersion} to ${DatabaseMigration.currentVersion} (latest version)`);
       } catch (e) {
-        logger.err("Unable to migrate database, aborting. Error: " + e);
+        logger.err('Unable to migrate database, aborting. Error: ' + e);
       }
     }
 
@@ -56,10 +60,45 @@ class DatabaseMigration {
   }
 
   /**
+   * Special case here for the `statistics` table - It appeared that somehow some dbs already had the `added` field indexed
+   * while it does not appear in previous schemas. The mariadb command "CREATE INDEX IF NOT EXISTS" is not supported on
+   * older mariadb version. Therefore we set a flag here in order to know if the index needs to be created or not before
+   * running the migration process
+   */
+  private async $setStatisticsAddedIndexedFlag(databaseSchemaVersion: number) {
+    if (databaseSchemaVersion >= 2) {
+      this.statisticsAddedIndexed = true;
+      return;
+    }
+
+    const connection = await DB.pool.getConnection();
+
+    try {
+      const query = `SELECT COUNT(1) hasIndex FROM INFORMATION_SCHEMA.STATISTICS
+        WHERE table_schema=DATABASE() AND table_name='statistics' AND index_name='added';`;
+      const [rows] = await this.$executeQuery(connection, query);
+      if (rows[0].hasIndex === 0) {
+        logger.info('MIGRATIONS: `statistics.added` is not indexed');
+        this.statisticsAddedIndexed = false;
+      } else if (rows[0].hasIndex === 1) {
+        logger.info('MIGRATIONS: `statistics.added` is already indexed');
+        this.statisticsAddedIndexed = true;
+      }
+    } catch (e) {
+      // Should really never happen but just in case it fails, we just don't execute
+      // any query related to this indexing so it won't fail if the index actually already exists
+      logger.err('MIGRATIONS: Unable to check if `statistics.added` INDEX exist or not.');
+      this.statisticsAddedIndexed = true;
+    }
+
+    connection.release();
+  }
+
+  /**
    * Small query execution wrapper to log all executed queries
    */
   private async $executeQuery(connection: PoolConnection, query: string): Promise<any> {
-    logger.info("MIGRATIONS: Execute query:\n" + query);
+    logger.info('MIGRATIONS: Execute query:\n' + query);
     return connection.query<any>({ sql: query, timeout: this.queryTimeout });
   }
 
@@ -90,10 +129,11 @@ class DatabaseMigration {
    */
   private async $createMigrationStateTable(): Promise<void> {
     const connection = await DB.pool.getConnection();
-    await this.$executeQuery(connection, `START TRANSACTION;`);
-    await this.$executeQuery(connection, "SET autocommit = 0;");
 
     try {
+      await this.$executeQuery(connection, `START TRANSACTION;`);
+      await this.$executeQuery(connection, 'SET autocommit = 0;');
+
       const query = `CREATE TABLE IF NOT EXISTS state (
         name varchar(25) NOT NULL,
         number int(11) NULL,
@@ -105,20 +145,21 @@ class DatabaseMigration {
       // Set initial values
       await this.$executeQuery(connection, `INSERT INTO state VALUES('schema_version', 0, NULL);`);
       await this.$executeQuery(connection, `INSERT INTO state VALUES('last_elements_block', 0, NULL);`);
+      await this.$executeQuery(connection, `COMMIT;`);
+
+      connection.release();
     } catch (e) {
       await this.$executeQuery(connection, `ROLLBACK;`);
       connection.release();
       throw e;
     }
-
-    await this.$executeQuery(connection, `COMMIT;`);
   }
 
   /**
    * We actually run the migrations queries here
    */
   private async $migrateTableSchemaFromVersion(version: number): Promise<void> {
-    let transactionQueries: string[] = [];
+    const transactionQueries: string[] = [];
     for (const query of this.getMigrationQueriesFromVersion(version)) {
       transactionQueries.push(query);
     }
@@ -126,18 +167,19 @@ class DatabaseMigration {
 
     const connection = await DB.pool.getConnection();
     try {
-      await this.$executeQuery(connection, "START TRANSACTION;");
-      await this.$executeQuery(connection, "SET autocommit = 0;");
+      await this.$executeQuery(connection, 'START TRANSACTION;');
+      await this.$executeQuery(connection, 'SET autocommit = 0;');
       for (const query of transactionQueries) {
         await this.$executeQuery(connection, query);
       }
+      await this.$executeQuery(connection, 'COMMIT;');
+
+      connection.release();
     } catch (e) {
-      await this.$executeQuery(connection, "ROLLBACK;");
+      await this.$executeQuery(connection, 'ROLLBACK;');
       connection.release();
       throw e;
     }
-
-    await this.$executeQuery(connection, "COMMIT;");
   }
 
   /**
@@ -150,12 +192,12 @@ class DatabaseMigration {
       queries.push(this.getCreateElementsTableQuery());
       queries.push(this.getCreateStatisticsQuery());
       if (config.MEMPOOL.NETWORK !== 'liquid' && config.MEMPOOL.NETWORK !== 'liquidtestnet') {
-        queries.push(this.getUpdateStatisticsQuery());
+        queries.push(this.getShiftStatisticsQuery());
       }
     }
 
-    if (version < 2) {
-      queries.push(`CREATE INDEX IF NOT EXISTS added ON statistics (added);`);
+    if (version < 2 && this.statisticsAddedIndexed === false) {
+      queries.push(`CREATE INDEX added ON statistics (added);`);
     }
 
     return queries;
@@ -164,7 +206,7 @@ class DatabaseMigration {
   /**
    * Save the schema version in the database
    */
-   private getUpdateToLatestSchemaVersionQuery(): string {
+  private getUpdateToLatestSchemaVersionQuery(): string {
     return `UPDATE state SET number = ${DatabaseMigration.currentVersion} WHERE name = 'schema_version';`;
   }
 
@@ -220,7 +262,7 @@ class DatabaseMigration {
       CONSTRAINT PRIMARY KEY (id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`
   }
-  private getUpdateStatisticsQuery(): string {
+  private getShiftStatisticsQuery(): string {
     return `UPDATE statistics SET
       vsize_1 = vsize_1 + vsize_2, vsize_2 = vsize_3,
       vsize_3 = vsize_4, vsize_4 = vsize_5,
