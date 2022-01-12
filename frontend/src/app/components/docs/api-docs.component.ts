@@ -4248,6 +4248,10 @@ export class ApiDocsComponent implements OnInit {
       if (!['', 'mainnet'].includes(network)) {
         curlNetwork = `/${network}`;
       }
+    } else if (this.env.BASE_MODULE === 'liquid') {
+      if (!['', 'liquid'].includes(network)) {
+        curlNetwork = `/${network}`;
+      }
     }
 
     let text = code.codeTemplate.curl;
