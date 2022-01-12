@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { CpfpInfo, OptimizedMempoolStats, DifficultyAdjustment, AddressInformation, LiquidPegs } from '../interfaces/node-api.interface';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { CpfpInfo, OptimizedMempoolStats, DifficultyAdjustment, AddressInformation, LiquidPegs, ITranslators } from '../interfaces/node-api.interface';
 import { Observable } from 'rxjs';
 import { StateService } from './state.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
@@ -83,6 +83,10 @@ export class ApiService {
 
   getDonation$(): Observable<any[]> {
     return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/donations');
+  }
+
+  getTranslators$(): Observable<ITranslators> {
+    return this.httpClient.get<ITranslators>(this.apiBaseUrl + this.apiBasePath + '/api/v1/translators');
   }
 
   getContributor$(): Observable<any[]> {
