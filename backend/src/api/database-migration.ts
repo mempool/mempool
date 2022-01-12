@@ -3,13 +3,14 @@ import config from '../config';
 import { DB } from '../database';
 import logger from '../logger';
 
+const sleep = (ms: number) => new Promise( res => setTimeout(res, ms));
+
 class DatabaseMigration {
   private static currentVersion = 2;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
 
   constructor() { }
-
   /**
    * Entry point
    */
@@ -24,7 +25,8 @@ class DatabaseMigration {
       try {
         await this.$createMigrationStateTable();
       } catch (e) {
-        logger.err('Unable to create `state` table. Aborting migration. ' + e);
+        logger.err('Unable to create `state` table, aborting in 10 seconds. ' + e);
+        await sleep(10000);
         process.exit(-1);
       }
       logger.info('MIGRATIONS: `state` table initialized.');
@@ -34,7 +36,8 @@ class DatabaseMigration {
     try {
       databaseSchemaVersion = await this.$getSchemaVersionFromDatabase();
     } catch (e) {
-      logger.err('Unable to get current database migration version, aborting. ' + e);
+      logger.err('Unable to get current database migration version, aborting in 10 seconds. ' + e);
+      await sleep(10000);
       process.exit(-1);
     }
 
@@ -49,7 +52,8 @@ class DatabaseMigration {
     try {
       await this.$createMissingTablesAndIndexes(databaseSchemaVersion);
     } catch (e) {
-      logger.err('Unable to create required tables, aborting. ' + e);
+      logger.err('Unable to create required tables, aborting in 10 seconds. ' + e);
+      await sleep(10000);
       process.exit(-1);
     }
 
