@@ -60,6 +60,7 @@ import { ColoredPriceDirective } from './directives/colored-price.directive';
   ],
   providers: [
     VbytesPipe,
+    RelativeUrlPipe,
   ],
   exports: [
     NgbAccordionModule,

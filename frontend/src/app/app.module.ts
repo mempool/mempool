@@ -58,6 +58,7 @@ import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-poli
 import { TrademarkPolicyComponent } from './components/trademark-policy/trademark-policy.component';
 import { StorageService } from './services/storage.service';
 import { HttpCacheInterceptor } from './services/http-cache.interceptor';
+import { LanguageService } from './services/language.service';
 import { SponsorComponent } from './components/sponsor/sponsor.component';
 import { PushTransactionComponent } from './components/push-transaction/push-transaction.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -128,6 +129,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     AudioService,
     SeoService,
     StorageService,
+    LanguageService,
     { provide: HTTP_INTERCEPTORS, useClass: HttpCacheInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
