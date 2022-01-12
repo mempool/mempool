@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/usr/local/bin/zsh
 PROTO=https
 HOSTNAME=mempool.ninja
 URL_BASE=${PROTO}://${HOSTNAME}
@@ -20,17 +20,23 @@ echo "Starting tests to ${URL_BASE}"
 echo "Test locale for / with no header or cookie"
 curl -s ${URL_BASE}/ | grep '<html lang' | tr -d '\r\n' | curltest '<html lang="en-US">'
 
-echo "Test locale for / with 'ja' lang header and no cookie"
-curl -s -H 'Accept-Language: ja' ${URL_BASE}/ | grep '<html lang' | tr -d '\r\n' | curltest '<html lang="ja">'
+echo "Test locale for /ja with no header or cookie"
+curl -s ${URL_BASE}/ja | grep '<html lang' | tr -d '\r\n' | curltest '<html lang="ja">'
+
+#echo "Test locale for /ja with 'ja' lang header and 'en' lang cookie"
+#curl -s -H 'Accept-Language: ja' --cookie 'lang=en' ${URL_BASE}/ja | grep '<html lang' | tr -d '\r\n' | curltest '<html lang="en-US">'
+
+echo "Test redirect for / with 'ja' lang header and no cookie"
+curl -i -s -H 'Accept-Language: ja' ${URL_BASE}/ | grep '^location:' | tr -d '\r\n' | curltest "location: ${URL_BASE}/ja/"
 
 echo "Test locale for / with 'ja' lang header and 'en' lang cookie"
 curl -s -H 'Accept-Language: ja' --cookie 'lang=en' ${URL_BASE}/ | grep '<html lang' | tr -d '\r\n' | curltest '<html lang="en-US">'
 
-echo "Test locale for / with 'ja' lang header and 'sv' lang cookie"
-curl -s -H 'Accept-Language: ja' --cookie 'lang=sv' ${URL_BASE}/ | grep '<html lang' | tr -d '\r\n' | curltest '<html lang="sv">'
+echo "Test redirect for / with 'ja' lang header and 'sv' lang cookie"
+curl -i -s -H 'Accept-Language: ja' --cookie 'lang=sv' ${URL_BASE}/ | grep '^location:' | tr -d '\r\n' | curltest "location: ${URL_BASE}/sv/"
 
-echo "Test locale for / with 'ja' lang header and 'foo' lang cookie"
-curl -s -H 'Accept-Language: ja' --cookie 'lang=foo' ${URL_BASE}/ | grep '<html lang' | tr -d '\r\n' | curltest '<html lang="ja">'
+echo "Test redirect for / with 'ja' lang header and 'foo' lang cookie"
+curl -i -s -H 'Accept-Language: ja' --cookie 'lang=foo' ${URL_BASE}/ | grep '^location:' | tr -d '\r\n' | curltest "location: ${URL_BASE}/ja/"
 
 echo "Test rewrite for /resources/pools.json with no header and no cookie"
 curl -s -i ${URL_BASE}/resources/pools.json | grep -i content-type | tr -d '\r\n' | curltest 'content-type: application/json'
