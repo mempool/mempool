@@ -24,41 +24,50 @@ import icons from './api/liquid/icons';
 class Routes {
   constructor() {}
 
-  public async get2HStatistics(req: Request, res: Response) {
-    const result = await statistics.$list2H();
-    res.json(result);
-  }
+  public async $getStatisticsByTime(time: '2h' | '24h' | '1w' | '1m' | '3m' | '6m' | '1y' | '2y' | '3y', req: Request, res: Response) {
+    res.header('Pragma', 'public');
+    res.header('Cache-control', 'public');
+    res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
 
-  public get24HStatistics(req: Request, res: Response) {
-    res.json(statistics.getCache()['24h']);
-  }
-
-  public get1WHStatistics(req: Request, res: Response) {
-    res.json(statistics.getCache()['1w']);
-  }
-
-  public get1MStatistics(req: Request, res: Response) {
-    res.json(statistics.getCache()['1m']);
-  }
-
-  public get3MStatistics(req: Request, res: Response) {
-    res.json(statistics.getCache()['3m']);
-  }
-
-  public get6MStatistics(req: Request, res: Response) {
-    res.json(statistics.getCache()['6m']);
-  }
-
-  public get1YStatistics(req: Request, res: Response) {
-    res.json(statistics.getCache()['1y']);
-  }
-
-  public get2YStatistics(req: Request, res: Response) {
-    res.json(statistics.getCache()['2y']);
-  }
-  
-  public get3YStatistics(req: Request, res: Response) {
-    res.json(statistics.getCache()['3y']);
+    try {
+      let result;
+      switch (time as string) {
+        case '2h':
+          result = await statistics.$list2H();
+          res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+          break;
+        case '24h':
+          result = await statistics.$list24H();
+          res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+          break;
+        case '1w':
+          result = await statistics.$list1W();
+          break;
+        case '1m':
+          result = await statistics.$list1M();
+          break;
+        case '3m':
+          result = await statistics.$list3M();
+          break;
+        case '6m':
+          result = await statistics.$list6M();
+          break;
+        case '1y':
+          result = await statistics.$list1Y();
+          break;
+        case '2y':
+          result = await statistics.$list2Y();
+          break;
+        case '3y':
+          result = await statistics.$list3Y();
+          break;
+        default:
+          result = await statistics.$list2H();
+      }
+      res.json(result);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
   }
 
   public getInitData(req: Request, res: Response) {
@@ -70,7 +79,7 @@ class Routes {
     }
   }
 
-  public async getRecommendedFees(req: Request, res: Response) {
+  public getRecommendedFees(req: Request, res: Response) {
     if (!mempool.isInSync()) {
       res.statusCode = 503;
       res.send('Service Unavailable');
