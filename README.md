@@ -158,7 +158,7 @@ Install mempool dependencies from npm and build the frontend static HTML/CSS/JS:
 Install the output into nginx webroot folder:
 
 ```bash
-  sudo rsync -av --delete dist/mempool/ /var/www/
+  sudo rsync -av --delete dist/ /var/www/
 ```
 
 ## nginx + certbot
