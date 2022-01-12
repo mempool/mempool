@@ -12,7 +12,6 @@ import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.
   selector: 'app-mempool-blocks',
   templateUrl: './mempool-blocks.component.html',
   styleUrls: ['./mempool-blocks.component.scss'],
-  providers: [RelativeUrlPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MempoolBlocksComponent implements OnInit, OnDestroy {
