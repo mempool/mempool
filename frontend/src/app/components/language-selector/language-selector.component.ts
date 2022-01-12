@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { languages } from 'src/app/app.constants';
@@ -14,6 +15,7 @@ export class LanguageSelectorComponent implements OnInit {
   languages = languages;
 
   constructor(
+    @Inject(DOCUMENT) private document: Document,
     private formBuilder: FormBuilder,
     private languageService: LanguageService,
   ) { }
@@ -26,6 +28,9 @@ export class LanguageSelectorComponent implements OnInit {
   }
 
   changeLanguage() {
-    this.languageService.setLanguage(this.languageForm.get('language').value);
+    const newLang = this.languageForm.get('language').value;
+    this.languageService.setLanguage(newLang);
+    const rawUrlPath = this.languageService.stripLanguageFromUrl(null);
+    this.document.location.href = (newLang !== 'en' ? `/${newLang}` : '') + rawUrlPath;
   }
 }
