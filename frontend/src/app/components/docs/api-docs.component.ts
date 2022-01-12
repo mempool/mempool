@@ -44,6 +44,10 @@ export class ApiDocsComponent implements OnInit {
       tap((network: string) => {
         if (this.env.BASE_MODULE === 'mempool' && network !== '') {
           this.baseNetworkUrl = `/${network}`;
+        } else if (this.env.BASE_MODULE === 'liquid') {
+          if (!['', 'liquid'].includes(network)) {
+            this.baseNetworkUrl = `/${network}`;
+          }
         }
         return network;
       })
