@@ -45,8 +45,13 @@ class DatabaseMigration {
       return;
     }
 
-    // Will create `statistics.added` INDEX if needed for databaseSchemaVersion <= 2
-    await this.$setStatisticsAddedIndexedFlag(databaseSchemaVersion);
+    // Now, create missing tables. Those queries cannot be wrapped into a transaction unfortunately
+    try {
+      await this.$createMissingTablesAndIndexes(databaseSchemaVersion);
+    } catch (e) {
+      logger.err('Unable to create required tables, aborting. ' + e);
+      process.exit(-1);
+    }
 
     if (DatabaseMigration.currentVersion > databaseSchemaVersion) {
       logger.info('MIGRATIONS: Upgrading datababse schema');
@@ -54,11 +59,31 @@ class DatabaseMigration {
         await this.$migrateTableSchemaFromVersion(databaseSchemaVersion);
         logger.info(`OK. Database schema have been migrated from version ${databaseSchemaVersion} to ${DatabaseMigration.currentVersion} (latest version)`);
       } catch (e) {
-        logger.err('Unable to migrate database, aborting. Error: ' + e);
+        logger.err('Unable to migrate database, aborting. ' + e);
       }
     }
 
     return;
+  }
+
+  /**
+   * Create all missing tables
+   */
+  private async $createMissingTablesAndIndexes(databaseSchemaVersion: number) {
+    await this.$setStatisticsAddedIndexedFlag(databaseSchemaVersion);
+
+    const connection = await DB.pool.getConnection();
+    try {
+      await this.$executeQuery(connection, this.getCreateElementsTableQuery(), await this.$checkIfTableExists('elements_pegs'));
+      await this.$executeQuery(connection, this.getCreateStatisticsQuery(), await this.$checkIfTableExists('statistics'));
+      if (databaseSchemaVersion < 2 && this.statisticsAddedIndexed === false) {
+        await this.$executeQuery(connection, `CREATE INDEX added ON statistics (added);`);
+      }
+      connection.release();
+    } catch (e) {
+      connection.release();
+      throw e;
+    }
   }
 
   /**
@@ -76,6 +101,7 @@ class DatabaseMigration {
     const connection = await DB.pool.getConnection();
 
     try {
+      // We don't use "CREATE INDEX IF NOT EXISTS" because it is not supported on old mariadb version 5.X
       const query = `SELECT COUNT(1) hasIndex FROM INFORMATION_SCHEMA.STATISTICS
         WHERE table_schema=DATABASE() AND table_name='statistics' AND index_name='added';`;
       const [rows] = await this.$executeQuery(connection, query, true);
@@ -135,9 +161,6 @@ class DatabaseMigration {
     const connection = await DB.pool.getConnection();
 
     try {
-      await this.$executeQuery(connection, `START TRANSACTION;`);
-      await this.$executeQuery(connection, 'SET autocommit = 0;');
-
       const query = `CREATE TABLE IF NOT EXISTS state (
         name varchar(25) NOT NULL,
         number int(11) NULL,
@@ -149,18 +172,16 @@ class DatabaseMigration {
       // Set initial values
       await this.$executeQuery(connection, `INSERT INTO state VALUES('schema_version', 0, NULL);`);
       await this.$executeQuery(connection, `INSERT INTO state VALUES('last_elements_block', 0, NULL);`);
-      await this.$executeQuery(connection, `COMMIT;`);
 
       connection.release();
     } catch (e) {
-      await this.$executeQuery(connection, `ROLLBACK;`);
       connection.release();
       throw e;
     }
   }
 
   /**
-   * We actually run the migrations queries here
+   * We actually execute the migrations queries here
    */
   private async $migrateTableSchemaFromVersion(version: number): Promise<void> {
     const transactionQueries: string[] = [];
@@ -193,15 +214,9 @@ class DatabaseMigration {
     const queries: string[] = [];
 
     if (version < 1) {
-      queries.push(this.getCreateElementsTableQuery());
-      queries.push(this.getCreateStatisticsQuery());
       if (config.MEMPOOL.NETWORK !== 'liquid' && config.MEMPOOL.NETWORK !== 'liquidtestnet') {
         queries.push(this.getShiftStatisticsQuery());
       }
-    }
-
-    if (version < 2 && this.statisticsAddedIndexed === false) {
-      queries.push(`CREATE INDEX added ON statistics (added);`);
     }
 
     return queries;
@@ -223,12 +238,34 @@ class DatabaseMigration {
       const [rows] = await this.$executeQuery(connection, 'SELECT VERSION() as version;', true);
       logger.info(`MIGRATIONS: Database engine version '${rows[0].version}'`);
     } catch (e) {
-      logger.info(`MIGRATIONS: Could not fetch database engine version. Error ` + e);
+      logger.info(`MIGRATIONS: Could not fetch database engine version. ` + e);
     }
     connection.release();
   }
 
   // Couple of wrappers to clean the main logic
+  private getShiftStatisticsQuery(): string {
+    return `UPDATE statistics SET
+      vsize_1 = vsize_1 + vsize_2, vsize_2 = vsize_3,
+      vsize_3 = vsize_4, vsize_4 = vsize_5,
+      vsize_5 = vsize_6, vsize_6 = vsize_8,
+      vsize_8 = vsize_10, vsize_10 = vsize_12,
+      vsize_12 = vsize_15, vsize_15 = vsize_20,
+      vsize_20 = vsize_30, vsize_30 = vsize_40,
+      vsize_40 = vsize_50, vsize_50 = vsize_60,
+      vsize_60 = vsize_70, vsize_70 = vsize_80,
+      vsize_80 = vsize_90, vsize_90 = vsize_100,
+      vsize_100 = vsize_125, vsize_125 = vsize_150,
+      vsize_150 = vsize_175, vsize_175 = vsize_200,
+      vsize_200 = vsize_250, vsize_250 = vsize_300,
+      vsize_300 = vsize_350, vsize_350 = vsize_400,
+      vsize_400 = vsize_500, vsize_500 = vsize_600,
+      vsize_600 = vsize_700, vsize_700 = vsize_800,
+      vsize_800 = vsize_900, vsize_900 = vsize_1000,
+      vsize_1000 = vsize_1200, vsize_1200 = vsize_1400,
+      vsize_1400 = vsize_1800, vsize_1800 = vsize_2000, vsize_2000 = 0;`;
+  }
+
   private getCreateStatisticsQuery(): string {
     return `CREATE TABLE IF NOT EXISTS statistics (
       id int(11) NOT NULL AUTO_INCREMENT,
@@ -280,27 +317,7 @@ class DatabaseMigration {
       CONSTRAINT PRIMARY KEY (id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
-  private getShiftStatisticsQuery(): string {
-    return `UPDATE statistics SET
-      vsize_1 = vsize_1 + vsize_2, vsize_2 = vsize_3,
-      vsize_3 = vsize_4, vsize_4 = vsize_5,
-      vsize_5 = vsize_6, vsize_6 = vsize_8,
-      vsize_8 = vsize_10, vsize_10 = vsize_12,
-      vsize_12 = vsize_15, vsize_15 = vsize_20,
-      vsize_20 = vsize_30, vsize_30 = vsize_40,
-      vsize_40 = vsize_50, vsize_50 = vsize_60,
-      vsize_60 = vsize_70, vsize_70 = vsize_80,
-      vsize_80 = vsize_90, vsize_90 = vsize_100,
-      vsize_100 = vsize_125, vsize_125 = vsize_150,
-      vsize_150 = vsize_175, vsize_175 = vsize_200,
-      vsize_200 = vsize_250, vsize_250 = vsize_300,
-      vsize_300 = vsize_350, vsize_350 = vsize_400,
-      vsize_400 = vsize_500, vsize_500 = vsize_600,
-      vsize_600 = vsize_700, vsize_700 = vsize_800,
-      vsize_800 = vsize_900, vsize_900 = vsize_1000,
-      vsize_1000 = vsize_1200, vsize_1200 = vsize_1400,
-      vsize_1400 = vsize_1800, vsize_1800 = vsize_2000, vsize_2000 = 0;`;
-  }
+
   private getCreateElementsTableQuery(): string {
     return `CREATE TABLE IF NOT EXISTS elements_pegs (
       block int(11) NOT NULL,
