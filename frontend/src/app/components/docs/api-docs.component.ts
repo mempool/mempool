@@ -700,6 +700,25 @@ export class ApiDocsComponent implements OnInit {
   }
 ]`,
         },
+        codeSampleLiquidTestnet: {
+          esModule: [`tex1q9f8nat57n93e8q0p6vddw9phew6u348uff8hqz`],
+          commonJS: [`tex1q9f8nat57n93e8q0p6vddw9phew6u348uff8hqz`],
+          curl: [`tex1q9f8nat57n93e8q0p6vddw9phew6u348uff8hqz`],
+          response: `[
+  {
+    "txid": "b010ce1accf781234e9736243a33c5367ce76e3a12609cf70a80ad15679c57dd",
+    "vout": 0,
+    "status": {
+      "confirmed": false
+    },
+    "valuecommitment": "087851b6faa9b97d3c87dba24d69456b4084c36529ca0bda8aebea3fca787ec298",
+    "assetcommitment": "0b16b09f9987d7f7aaa8b6bd61f00e50b448ecb8b4ecf3623338b80e2533637848",
+    "noncecommitment": "03ba8cf651bd77791ea6a208a9f7ab8482b1ea207e4e4b2e6e964ebd163f81afb7",
+    "surjection_proof": "010001398a7d5ac645e45b27898ee4548b111c64cdf1850cf283dbdea89c3163d168d8...",
+    "range_proof": "6033000000000000000116898801858209e1386655e803472959b95e706d47fca2bfad..."
+  }
+]`,
+        },
         codeSampleBisq: {
           esModule: [],
           commonJS: [],
