@@ -15,12 +15,15 @@ services:
   api:
     environment:
       MEMPOOL_BACKEND: "none"
-      RPC_HOST: "172.27.0.1"
-      RPC_PORT: "8332"
-      RPC_USER: "mempool"
-      RPC_PASS: "mempool"
-      MYSQL_ENABLED: "true"
-      MYSQL_HOST: "db"
+      CORE_RPC_HOST: "172.27.0.1"
+      CORE_RPC_PORT: "8332"
+      CORE_RPC_USERNAME: "mempool"
+      CORE_RPC_PASSWORD: "mempool"
+      DATABASE_ENABLED: "true"
+      DATABASE_HOST: "db"
+      DATABASE_DATABASE: "mempool"
+      DATABASE_USERNAME: "mempool"
+      DATABASE_PASSWORD: "mempool"
       STATISTICS_ENABLED: "true"
     image: mempool/backend:latest
     user: "1000:1000"

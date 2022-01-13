@@ -1,32 +1,32 @@
 #!/bin/sh
 
 # MEMPOOL
-__MEMPOOL_BACKEND_NETWORK__=${MEMPOOL_BACKEND_NETWORK:=mainnet}
+__MEMPOOL_NETWORK__=${MEMPOOL_NETWORK:=mainnet}
 __MEMPOOL_BACKEND__=${MEMPOOL_BACKEND:=electrum}
-__MEMPOOL_BACKEND_MAINNET_HTTP_PORT__=${BACKEND_MAINNET_HTTP_PORT:=8999}
+__MEMPOOL_HTTP_PORT__=${BACKEND_HTTP_PORT:=8999}
 __MEMPOOL_SPAWN_CLUSTER_PROCS__=${MEMPOOL_SPAWN_CLUSTER_PROCS:=0}
 __MEMPOOL_API_URL_PREFIX__=${MEMPOOL_API_URL_PREFIX:=/api/v1/}
 __MEMPOOL_POLL_RATE_MS__=${MEMPOOL_POLL_RATE_MS:=2000}
-__MEMPOOL_BACKEND_MAINNET_CACHE_DIR__=${CACHE_DIR:=./cache}
-__MEMPOOL_BACKEND_CLEAR_PROTECTION_MINUTES__=${MEMPOOL_CLEAR_PROTECTION_MINUTES:=20}
+__MEMPOOL_CACHE_DIR__=${MEMPOOL_CACHE_DIR:=./cache}
+__MEMPOOL_CLEAR_PROTECTION_MINUTES__=${MEMPOOL_CLEAR_PROTECTION_MINUTES:=20}
 __MEMPOOL_RECOMMENDED_FEE_PERCENTILE__=${MEMPOOL_RECOMMENDED_FEE_PERCENTILE:=50}
 __MEMPOOL_BLOCK_WEIGHT_UNITS__=${MEMPOOL_BLOCK_WEIGHT_UNITS:=4000000}
 __MEMPOOL_INITIAL_BLOCKS_AMOUNT__=${MEMPOOL_INITIAL_BLOCKS_AMOUNT:=8}
-__MEMPOOL_BLOCKS_AMOUNT__=${MEMPOOL_BLOCKS_AMOUNT:=8}
+__MEMPOOL_MEMPOOL_BLOCKS_AMOUNT__=${MEMPOOL_MEMPOOL_BLOCKS_AMOUNT:=8}
 __MEMPOOL_PRICE_FEED_UPDATE_INTERVAL__=${MEMPOOL_PRICE_FEED_UPDATE_INTERVAL:=3600}
 __MEMPOOL_USE_SECOND_NODE_FOR_MINFEE__=${MEMPOOL_USE_SECOND_NODE_FOR_MINFEE:=false}
 __MEMPOOL_EXTERNAL_ASSETS__=${MEMPOOL_EXTERNAL_ASSETS:=[]}
 
 # CORE_RPC
-__BITCOIN_MAINNET_RPC_HOST__=${RPC_HOST:=127.0.0.1}
-__BITCOIN_MAINNET_RPC_PORT__=${RPC_PORT:=8332}
-__BITCOIN_MAINNET_RPC_USER__=${RPC_USER:=mempool}
-__BITCOIN_MAINNET_RPC_PASS__=${RPC_PASS:=mempool}
+__CORE_RPC_HOST__=${CORE_RPC_HOST:=127.0.0.1}
+__CORE_RPC_PORT__=${CORE_RPC_PORT:=8332}
+__CORE_RPC_USERNAME__=${CORE_RPC_USER:=mempool}
+__CORE_RPC_PASSWORD__=${CORE_RPC_PASS:=mempool}
 
 # ELECTRUM
-__ELECTRUM_MAINNET_HTTP_HOST__=${ELECTRUM_HOST:=127.0.0.1}
-__ELECTRUM_MAINNET_HTTP_PORT__=${ELECTRUM_PORT:=50002}
-__ELECTRUM_MAINNET_TLS_ENABLED__=${ELECTRUM_TLS:=false}
+__ELECTRUM_HOST__=${ELECTRUM_HOST:=127.0.0.1}
+__ELECTRUM_PORT__=${ELECTRUM_PORT:=50002}
+__ELECTRUM_TLS_ENABLED__=${ELECTRUM_TLS:=false}
 
 # ESPLORA
 __ESPLORA_REST_API_URL__=${ESPLORA_REST_API_URL:=http://127.0.0.1:3000}
@@ -34,16 +34,16 @@ __ESPLORA_REST_API_URL__=${ESPLORA_REST_API_URL:=http://127.0.0.1:3000}
 # SECOND_CORE_RPC
 __SECOND_RPC_HOST__=${SECOND_RPC_HOST:=127.0.0.1}
 __SECOND_RPC_PORT__=${SECOND_RPC_PORT:=8332}
-__SECOND_RPC_USER__=${SECOND_RPC_USER:=mempool}
-__SECOND_RPC_PASS__=${SECOND_RPC_PASS:=mempool}
+__SECOND_RPC_USERNAME__=${SECOND_RPC_USERNAME:=mempool}
+__SECOND_RPC_PASSWORD__=${SECOND_RPC_PASSWORD:=mempool}
 
 # DATABASE
-__MYSQL_ENABLED__=${MYSQL_ENABLED:=true}
-__MYSQL_HOST__=${MYSQL_HOST:=127.0.0.1}
-__MYSQL_PORT__=${MYSQL_PORT:=3306}
-__MYSQL_DATABASE__=${MYSQL_DATABASE:=mempool}
-__MYSQL_USERNAME__=${MYSQL_USER:=mempool}
-__MYSQL_PASSWORD__=${MYSQL_PASS:=mempool}
+__DATABASE_ENABLED__=${DATABASE_ENABLED:=true}
+__DATABASE_HOST__=${DATABASE_HOST:=127.0.0.1}
+__DATABASE_PORT__=${DATABASE_PORT:=3306}
+__DATABASE_DATABASE__=${DATABASE_DATABASE:=mempool}
+__DATABASE_USERNAME__=${DATABASE_USERNAME:=mempool}
+__DATABASE_PASSWORD__=${DATABASE_PASSWORD:=mempool}
 
 # SYSLOG
 __SYSLOG_ENABLED__=${SYSLOG_ENABLED:=false}
@@ -60,48 +60,56 @@ __STATISTICS_TX_PER_SECOND_SAMPLE_PERIOD__=${STATISTICS_TX_PER_SECOND_SAMPLE_PER
 __BISQ_ENABLED__=${BISQ_ENABLED:=false}
 __BISQ_DATA_PATH__=${BISQ_DATA_PATH:=/bisq/statsnode-data/btc_mainnet/db}
 
-mkdir -p "${__MEMPOOL_BACKEND_MAINNET_CACHE_DIR__}"
+mkdir -p "${__MEMPOOL_CACHE_DIR__}"
 
-sed -i "s/__MEMPOOL_BACKEND_NETWORK__/${__MEMPOOL_BACKEND_NETWORK__}/g" mempool-config.json
+sed -i "s/__MEMPOOL_NETWORK__/${__MEMPOOL_NETWORK__}/g" mempool-config.json
 sed -i "s/__MEMPOOL_BACKEND__/${__MEMPOOL_BACKEND__}/g" mempool-config.json
-sed -i "s/__MEMPOOL_BACKEND_MAINNET_HTTP_PORT__/${__MEMPOOL_BACKEND_MAINNET_HTTP_PORT__}/g" mempool-config.json
+sed -i "s/__MEMPOOL_HTTP_PORT__/${__MEMPOOL_HTTP_PORT__}/g" mempool-config.json
 sed -i "s/__MEMPOOL_SPAWN_CLUSTER_PROCS__/${__MEMPOOL_SPAWN_CLUSTER_PROCS__}/g" mempool-config.json
 sed -i "s!__MEMPOOL_API_URL_PREFIX__!${__MEMPOOL_API_URL_PREFIX__}!g" mempool-config.json
 sed -i "s/__MEMPOOL_POLL_RATE_MS__/${__MEMPOOL_POLL_RATE_MS__}/g" mempool-config.json
-sed -i "s!__MEMPOOL_BACKEND_MAINNET_CACHE_DIR__!${__MEMPOOL_BACKEND_MAINNET_CACHE_DIR__}!g" mempool-config.json
-sed -i "s/__MEMPOOL_BACKEND_CLEAR_PROTECTION_MINUTES__/${__MEMPOOL_BACKEND_CLEAR_PROTECTION_MINUTES__}/g" mempool-config.json
+sed -i "s!__MEMPOOL_CACHE_DIR__!${__MEMPOOL_CACHE_DIR__}!g" mempool-config.json
+sed -i "s/__MEMPOOL_CLEAR_PROTECTION_MINUTES__/${__MEMPOOL_CLEAR_PROTECTION_MINUTES__}/g" mempool-config.json
 sed -i "s/__MEMPOOL_RECOMMENDED_FEE_PERCENTILE__/${__MEMPOOL_RECOMMENDED_FEE_PERCENTILE__}/g" mempool-config.json
 sed -i "s/__MEMPOOL_BLOCK_WEIGHT_UNITS__/${__MEMPOOL_BLOCK_WEIGHT_UNITS__}/g" mempool-config.json
 sed -i "s/__MEMPOOL_INITIAL_BLOCKS_AMOUNT__/${__MEMPOOL_INITIAL_BLOCKS_AMOUNT__}/g" mempool-config.json
-sed -i "s/__MEMPOOL_BLOCKS_AMOUNT__/${__MEMPOOL_BLOCKS_AMOUNT__}/g" mempool-config.json
+sed -i "s/__MEMPOOL_MEMPOOL_BLOCKS_AMOUNT__/${__MEMPOOL_MEMPOOL_BLOCKS_AMOUNT__}/g" mempool-config.json
 sed -i "s/__MEMPOOL_PRICE_FEED_UPDATE_INTERVAL__/${__MEMPOOL_PRICE_FEED_UPDATE_INTERVAL__}/g" mempool-config.json
 sed -i "s/__MEMPOOL_USE_SECOND_NODE_FOR_MINFEE__/${__MEMPOOL_USE_SECOND_NODE_FOR_MINFEE__}/g" mempool-config.json
 sed -i "s/__MEMPOOL_EXTERNAL_ASSETS__/${__MEMPOOL_EXTERNAL_ASSETS__}/g" mempool-config.json
-sed -i "s/__BITCOIN_MAINNET_RPC_HOST__/${__BITCOIN_MAINNET_RPC_HOST__}/g" mempool-config.json
-sed -i "s/__BITCOIN_MAINNET_RPC_PORT__/${__BITCOIN_MAINNET_RPC_PORT__}/g" mempool-config.json
-sed -i "s/__BITCOIN_MAINNET_RPC_USER__/${__BITCOIN_MAINNET_RPC_USER__}/g" mempool-config.json
-sed -i "s/__BITCOIN_MAINNET_RPC_PASS__/${__BITCOIN_MAINNET_RPC_PASS__}/g" mempool-config.json
-sed -i "s/__ELECTRUM_MAINNET_HTTP_HOST__/${__ELECTRUM_MAINNET_HTTP_HOST__}/g" mempool-config.json
-sed -i "s/__ELECTRUM_MAINNET_HTTP_PORT__/${__ELECTRUM_MAINNET_HTTP_PORT__}/g" mempool-config.json
-sed -i "s/__ELECTRUM_MAINNET_TLS_ENABLED__/${__ELECTRUM_MAINNET_TLS_ENABLED__}/g" mempool-config.json
+
+sed -i "s/__CORE_RPC_HOST__/${__CORE_RPC_HOST__}/g" mempool-config.json
+sed -i "s/__CORE_RPC_PORT__/${__CORE_RPC_PORT__}/g" mempool-config.json
+sed -i "s/__CORE_RPC_USERNAME__/${__CORE_RPC_USER__}/g" mempool-config.json
+sed -i "s/__CORE_RPC_PASSWORD__/${__CORE_RPC_PASS__}/g" mempool-config.json
+
+sed -i "s/__ELECTRUM_HTTP_HOST__/${__ELECTRUM_HTTP_HOST__}/g" mempool-config.json
+sed -i "s/__ELECTRUM_HTTP_PORT__/${__ELECTRUM_HTTP_PORT__}/g" mempool-config.json
+sed -i "s/__ELECTRUM_TLS_ENABLED__/${__ELECTRUM_TLS_ENABLED__}/g" mempool-config.json
+
 sed -i "s!__ESPLORA_REST_API_URL__!${__ESPLORA_REST_API_URL__}!g" mempool-config.json
+
 sed -i "s/__SECOND_RPC_HOST__/${__SECOND_RPC_HOST__}/g" mempool-config.json
 sed -i "s/__SECOND_RPC_PORT__/${__SECOND_RPC_PORT__}/g" mempool-config.json
-sed -i "s/__SECOND_RPC_USER__/${__SECOND_RPC_USER__}/g" mempool-config.json
-sed -i "s/__SECOND_RPC_PASS__/${__SECOND_RPC_PASS__}/g" mempool-config.json
-sed -i "s/__MYSQL_ENABLED__/${__MYSQL_ENABLED__}/g" mempool-config.json
-sed -i "s/__MYSQL_HOST__/${__MYSQL_HOST__}/g" mempool-config.json
-sed -i "s/__MYSQL_PORT__/${__MYSQL_PORT__}/g" mempool-config.json
-sed -i "s/__MYSQL_DATABASE__/${__MYSQL_DATABASE__}/g" mempool-config.json
-sed -i "s/__MYSQL_USERNAME__/${__MYSQL_USERNAME__}/g" mempool-config.json
-sed -i "s/__MYSQL_PASSWORD__/${__MYSQL_PASSWORD__}/g" mempool-config.json
+sed -i "s/__SECOND_RPC_USERNAME__/${__SECOND_RPC_USERNAME__}/g" mempool-config.json
+sed -i "s/__SECOND_RPC_PASSWORD__/${__SECOND_RPC_PASSWORD__}/g" mempool-config.json
+
+sed -i "s/__DATABASE_ENABLED__/${__DATABASE_ENABLED__}/g" mempool-config.json
+sed -i "s/__DATABASE_HOST__/${__DATABASE_HOST__}/g" mempool-config.json
+sed -i "s/__DATABASE_PORT__/${__DATABASE_PORT__}/g" mempool-config.json
+sed -i "s/__DATABASE_DATABASE__/${__DATABASE_DATABASE__}/g" mempool-config.json
+sed -i "s/__DATABASE_USERNAME__/${__DATABASE_USERNAME__}/g" mempool-config.json
+sed -i "s/__DATABASE_PASSWORD__/${__DATABASE_PASSWORD__}/g" mempool-config.json
+
 sed -i "s/__SYSLOG_ENABLED__/${__SYSLOG_ENABLED__}/g" mempool-config.json
 sed -i "s/__SYSLOG_HOST__/${__SYSLOG_HOST__}/g" mempool-config.json
 sed -i "s/__SYSLOG_PORT__/${__SYSLOG_PORT__}/g" mempool-config.json
 sed -i "s/__SYSLOG_MIN_PRIORITY__/${__SYSLOG_MIN_PRIORITY__}/g" mempool-config.json
 sed -i "s/__SYSLOG_FACILITY__/${__SYSLOG_FACILITY__}/g" mempool-config.json
+
 sed -i "s/__STATISTICS_ENABLED__/${__STATISTICS_ENABLED__}/g" mempool-config.json
 sed -i "s/__STATISTICS_TX_PER_SECOND_SAMPLE_PERIOD__/${__STATISTICS_TX_PER_SECOND_SAMPLE_PERIOD__}/g" mempool-config.json
+
 sed -i "s/__BISQ_ENABLED__/${__BISQ_ENABLED__}/g" mempool-config.json
 sed -i "s!__BISQ_DATA_PATH__!${__BISQ_DATA_PATH__}!g" mempool-config.json
 
