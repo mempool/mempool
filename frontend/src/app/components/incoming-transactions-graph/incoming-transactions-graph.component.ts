@@ -67,7 +67,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         left: this.left,
       },
       animation: false,
-      dataZoom: [{
+      dataZoom: (this.template === 'widget' && this.isMobile()) ? null : [{
         type: 'inside',
         realtime: true,
         zoomLock: (this.template === 'widget') ? true : false,
@@ -93,6 +93,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         },
       }],
       tooltip: {
+        show: !this.isMobile(),
         trigger: 'axis',
         position: (pos, params, el, elRect, size) => {
           const obj = { top: -20 };
@@ -218,5 +219,9 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         }
       },
     };
+  }
+
+  isMobile() {
+    return window.innerWidth <= 767.98;
   }
 }
