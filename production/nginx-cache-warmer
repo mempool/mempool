@@ -1,15 +1,15 @@
 #!/usr/bin/env zsh
 hostname=$(hostname)
 while true
-do for url in	/url/v1/statistics/2h \
-		/url/v1/statistics/24h \
-		/url/v1/statistics/1w \
-		/url/v1/statistics/1m \
-		/url/v1/statistics/3m \
-		/url/v1/statistics/6m \
-		/url/v1/statistics/1y \
-		/url/v1/statistics/2y \
-		/url/v1/statistics/3y \
+do for url in	/api/v1/statistics/2h \
+		/api/v1/statistics/24h \
+		/api/v1/statistics/1w \
+		/api/v1/statistics/1m \
+		/api/v1/statistics/3m \
+		/api/v1/statistics/6m \
+		/api/v1/statistics/1y \
+		/api/v1/statistics/2y \
+		/api/v1/statistics/3y \
 		/
 	do
 		curl -s "https://${hostname}${url}" >/dev/null
