@@ -96,18 +96,18 @@ JSON:
 
 docker-compose overrides::
 ```
-      MEMPOOL_BACKEND_NETWORK: ""
+      MEMPOOL_NETWORK: ""
       MEMPOOL_BACKEND: ""
-      BACKEND_MAINNET_HTTP_PORT: ""
+      MEMPOOL_HTTP_PORT: ""
       MEMPOOL_SPAWN_CLUSTER_PROCS: ""
       MEMPOOL_API_URL_PREFIX: ""
       MEMPOOL_POLL_RATE_MS: ""
-      CACHE_DIR: ""
+      MEMPOOL_CACHE_DIR: ""
       MEMPOOL_CLEAR_PROTECTION_MINUTES: ""
       MEMPOOL_RECOMMENDED_FEE_PERCENTILE: ""
       MEMPOOL_BLOCK_WEIGHT_UNITS: ""
       MEMPOOL_INITIAL_BLOCKS_AMOUNT: ""
-      MEMPOOL_BLOCKS_AMOUNT: ""
+      MEMPOOL_MEMPOOL_BLOCKS_AMOUNT: ""
       MEMPOOL_PRICE_FEED_UPDATE_INTERVAL: ""
       MEMPOOL_USE_SECOND_NODE_FOR_MINFEE: ""
       MEMPOOL_EXTERNAL_ASSETS: ""
@@ -124,10 +124,10 @@ JSON:
 ```
 docker-compose overrides:
 ```
-      RPC_HOST: ""
-      RPC_PORT: ""
-      RPC_USER: ""
-      RPC_PASS: ""
+      CORE_RPC_HOST: ""
+      CORE_RPC_PORT: ""
+      CORE_RPC_USERNAME: ""
+      CORE_RPC_PASSWORD: ""
 ```
 
 JSON:
@@ -171,8 +171,8 @@ docker-compose overrides:
 ```
       SECOND_RPC_HOST: ""
       SECOND_RPC_PORT: ""
-      SECOND_RPC_USER: ""
-      SECOND_RPC_PASS: ""
+      SECOND_RPC_USERNAME: ""
+      SECOND_RPC_PASSWORD: ""
 ```
 
 JSON:
@@ -189,12 +189,12 @@ JSON:
 
 docker-compose overrides:
 ```
-      MYSQL_ENABLED: ""
-      MYSQL_HOST: ""
-      MYSQL_PORT: ""
-      MYSQL_DATABASE: ""
-      MYSQL_USER: ""
-      MYSQL_PASS: ""
+      DATABASE_ENABLED: ""
+      DATABASE_HOST: ""
+      DATABASE_PORT: ""
+      DATABASE_DATABASE: ""
+      DATABASE_USERAME: ""
+      DATABASE_PASSWORD: ""
 ```
 
 JSON:
