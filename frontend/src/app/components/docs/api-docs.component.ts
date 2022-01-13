@@ -44,6 +44,10 @@ export class ApiDocsComponent implements OnInit {
       tap((network: string) => {
         if (this.env.BASE_MODULE === 'mempool' && network !== '') {
           this.baseNetworkUrl = `/${network}`;
+        } else if (this.env.BASE_MODULE === 'liquid') {
+          if (!['', 'liquid'].includes(network)) {
+            this.baseNetworkUrl = `/${network}`;
+          }
         }
         return network;
       })
@@ -151,6 +155,24 @@ export class ApiDocsComponent implements OnInit {
     funded_txo_count: 1,
     spent_txo_count: 1,
     tx_count: 2
+  },
+  mempool_stats: {
+    funded_txo_count: 0,
+    spent_txo_count: 0,
+    tx_count: 0
+  }
+}`
+        },
+        codeSampleLiquidTestnet: {
+          esModule: [`vjTwFjtVE7Fy9gjwQSxas9FkrqcnK1SeobPkdD9tghdNmCvxoXhSeCjpgD3ponKJukkD2BNPX25dZL48`],
+          commonJS: [`vjTwFjtVE7Fy9gjwQSxas9FkrqcnK1SeobPkdD9tghdNmCvxoXhSeCjpgD3ponKJukkD2BNPX25dZL48`],
+          curl: [`vjTwFjtVE7Fy9gjwQSxas9FkrqcnK1SeobPkdD9tghdNmCvxoXhSeCjpgD3ponKJukkD2BNPX25dZL48`],
+          response: `{
+  address: "vjTwFjtVE7Fy9gjwQSxas9FkrqcnK1SeobPkdD9tghdNmCvxoXhSeCjpgD3ponKJukkD2BNPX25dZL48",
+  chain_stats: {
+    funded_txo_count: 1,
+    spent_txo_count: 0,
+    tx_count: 1
   },
   mempool_stats: {
     funded_txo_count: 0,
@@ -295,6 +317,30 @@ export class ApiDocsComponent implements OnInit {
   ...
 ]`
         },
+        codeSampleLiquidTestnet: {
+          esModule: [`vjTwFjtVE7Fy9gjwQSxas9FkrqcnK1SeobPkdD9tghdNmCvxoXhSeCjpgD3ponKJukkD2BNPX25dZL48`],
+          commonJS: [`vjTwFjtVE7Fy9gjwQSxas9FkrqcnK1SeobPkdD9tghdNmCvxoXhSeCjpgD3ponKJukkD2BNPX25dZL48`],
+          curl: [`vjTwFjtVE7Fy9gjwQSxas9FkrqcnK1SeobPkdD9tghdNmCvxoXhSeCjpgD3ponKJukkD2BNPX25dZL48`],
+          response: `[
+  {
+    txid: "67108f445ae3a363452cf7f382f1b71e06126ab958673debbeaad6dab4831434",
+    version: 2,
+    locktime: 0,
+    vin: [Object],
+    vout: [Object],
+    size: 8968,
+    weight: 10063,
+    fee: 260,
+    status: {
+      confirmed: true,
+      block_height: 165253,
+      block_hash: "c8b6233c3bc53b76cf3a629328c3e7826a749171a8b39b482daf73e0be266e09",
+      block_time: 1641788900
+    }
+  },
+  ...
+]`
+        },
         codeSampleBisq: {
           esModule: [],
           commonJS: [],
@@ -415,6 +461,30 @@ export class ApiDocsComponent implements OnInit {
   ...
 ]`
         },
+        codeSampleLiquidTestnet: {
+          esModule: [`vjTwFjtVE7Fy9gjwQSxas9FkrqcnK1SeobPkdD9tghdNmCvxoXhSeCjpgD3ponKJukkD2BNPX25dZL48`],
+          commonJS: [`vjTwFjtVE7Fy9gjwQSxas9FkrqcnK1SeobPkdD9tghdNmCvxoXhSeCjpgD3ponKJukkD2BNPX25dZL48`],
+          curl: [`vjTwFjtVE7Fy9gjwQSxas9FkrqcnK1SeobPkdD9tghdNmCvxoXhSeCjpgD3ponKJukkD2BNPX25dZL48`],
+          response: `[
+  {
+    txid: "67108f445ae3a363452cf7f382f1b71e06126ab958673debbeaad6dab4831434",
+    version: 2,
+    locktime: 0,
+    vin: [],
+    vout: [],
+    size: 8968,
+    weight: 10063,
+    fee: 260,
+    status: {
+      confirmed: true,
+      block_height: 165253,
+      block_hash: "c8b6233c3bc53b76cf3a629328c3e7826a749171a8b39b482daf73e0be266e09",
+      block_time: 1641788900
+    }
+  },
+  ...
+]`
+        },
         codeSampleBisq: {
           esModule: [],
           commonJS: [],
@@ -509,6 +579,24 @@ export class ApiDocsComponent implements OnInit {
     size: 226,
     weight: 904,
     fee: 6720,
+    status: { confirmed: false }
+  }
+]`
+        },
+        codeSampleLiquidTestnet: {
+          esModule: [`928jXZPDqQAt5vzGvBXKWMKCS9vfCa9Rfu`],
+          commonJS: [`928jXZPDqQAt5vzGvBXKWMKCS9vfCa9Rfu`],
+          curl: [`928jXZPDqQAt5vzGvBXKWMKCS9vfCa9Rfu`],
+          response: `[
+  {
+    txid: "3ab8bc068ee05c1114647dc5196b3b954b00e5af3b03d470d1ef8a8953737357",
+    version: 2,
+    locktime: 0,
+    vin: [ [Object] ],
+    vout: [ [Object], [Object] ],
+    size: 14720,
+    weight: 58880,
+    fee: 1496,
     status: { confirmed: false }
   }
 ]`
@@ -616,6 +704,25 @@ export class ApiDocsComponent implements OnInit {
   }
 ]`,
         },
+        codeSampleLiquidTestnet: {
+          esModule: [`tex1q9f8nat57n93e8q0p6vddw9phew6u348uff8hqz`],
+          commonJS: [`tex1q9f8nat57n93e8q0p6vddw9phew6u348uff8hqz`],
+          curl: [`tex1q9f8nat57n93e8q0p6vddw9phew6u348uff8hqz`],
+          response: `[
+  {
+    "txid": "b010ce1accf781234e9736243a33c5367ce76e3a12609cf70a80ad15679c57dd",
+    "vout": 0,
+    "status": {
+      "confirmed": false
+    },
+    "valuecommitment": "087851b6faa9b97d3c87dba24d69456b4084c36529ca0bda8aebea3fca787ec298",
+    "assetcommitment": "0b16b09f9987d7f7aaa8b6bd61f00e50b448ecb8b4ecf3623338b80e2533637848",
+    "noncecommitment": "03ba8cf651bd77791ea6a208a9f7ab8482b1ea207e4e4b2e6e964ebd163f81afb7",
+    "surjection_proof": "010001398a7d5ac645e45b27898ee4548b111c64cdf1850cf283dbdea89c3163d168d8...",
+    "range_proof": "6033000000000000000116898801858209e1386655e803472959b95e706d47fca2bfad..."
+  }
+]`,
+        },
         codeSampleBisq: {
           esModule: [],
           commonJS: [],
@@ -668,6 +775,42 @@ export class ApiDocsComponent implements OnInit {
   }
 }`,
         },
+        codeSampleLiquidTestnet: {
+          esModule: [`ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`],
+          commonJS: [`ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`],
+          curl: [`ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`],
+          response: `{
+  "asset_id": "ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926",
+  "issuance_txin": {...},
+  "issuance_prevout": {...},
+  "reissuance_token": "55fdb86a988b07242a7edbddb53f40b3742c0e863a769937018b31621708b14b",
+  "contract_hash": "b3619fb6ebd502ba57c4c026e73d7ae430c32431ffe833a4867faa9dd89abd5b",
+  "status": {...},
+  "chain_stats": {
+    "tx_count": 2,
+    "issuance_count": 2,
+    "issued_amount": 0,
+    "burned_amount": 0,
+    "has_blinded_issuances": true,
+    "reissuance_tokens": null,
+    "burned_reissuance_tokens": 0
+  },
+  "mempool_stats": {
+    "tx_count": 0,
+    "issuance_count": 0,
+    "issued_amount": 0,
+    "burned_amount": 0,
+    "has_blinded_issuances": false,
+    "reissuance_tokens": null,
+    "burned_reissuance_tokens": 0
+  },
+  "contract": {...},
+  "entity": {...},
+  "precision": 8,
+  "name": "Liquid CAD",
+  "ticker": "LCAD"
+}`,
+        },
         codeSampleBisq: {
           esModule: [],
           commonJS: [],
@@ -702,6 +845,12 @@ export class ApiDocsComponent implements OnInit {
   ...
 ]`,
         },
+        codeSampleLiquidTestnet: {
+          esModule: [``],
+          commonJS: [``],
+          curl: [``],
+          response: `[]`,
+        },
       },
       assetIcon: {
         noWrap: true,
@@ -713,6 +862,12 @@ export class ApiDocsComponent implements OnInit {
           esModule: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
           commonJS: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
           curl: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          response: `PNG`,
+        },
+        codeSampleLiquidTestnet: {
+          esModule: [`ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`],
+          commonJS: [`ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`],
+          curl: [`ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`],
           response: `PNG`,
         },
       },
@@ -777,6 +932,30 @@ export class ApiDocsComponent implements OnInit {
   ...
 ]`,
         },
+        codeSampleLiquidTestnet: {
+          esModule: [`ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`],
+          commonJS: [`ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`],
+          curl: [`ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`],
+          response: `[
+  {
+    txid: "34b9cd013ddf4d4b5e9d09502ca953034fd52a0679845ac8b9d54c63d857a488",
+    version: 2,
+    locktime: 140139,
+    vin: [],
+    vout: [],
+    size: 17918,
+    weight: 19721,
+    fee: 493,
+    status: {
+      confirmed: true,
+      block_height: 140140,
+      block_hash: "c3a08178acf2bbafabda120930a0b270e762550d8a46e3e093de779ef459d29d",
+      block_time: 1640279893
+    }
+  },
+  ...
+]`,
+        },
         codeSampleBisq: {
           esModule: [],
           commonJS: [],
@@ -826,6 +1005,12 @@ export class ApiDocsComponent implements OnInit {
           commonJS: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
           curl: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
           response: `320878732055`,
+        },
+        codeSampleLiquidTestnet: {
+          esModule: [`05aa9f02a06da37f2a0a572c49ac381499a16a643ad7c70c51ac94560778c92e`],
+          commonJS: [`05aa9f02a06da37f2a0a572c49ac381499a16a643ad7c70c51ac94560778c92e`],
+          curl: [`05aa9f02a06da37f2a0a572c49ac381499a16a643ad7c70c51ac94560778c92e`],
+          response: `1000`,
         },
         codeSampleBisq: {
           esModule: [],
@@ -934,6 +1119,24 @@ export class ApiDocsComponent implements OnInit {
   }
 }`,
         },
+        codeSampleLiquidTestnet: {
+          esModule: [`8f7cb70f32e2069724212c986f34462fc40180eabf189b44486faf6989824f9a`],
+          commonJS: [`8f7cb70f32e2069724212c986f34462fc40180eabf189b44486faf6989824f9a`],
+          curl: [`8f7cb70f32e2069724212c986f34462fc40180eabf189b44486faf6989824f9a`],
+          response: `{
+  id: "8f7cb70f32e2069724212c986f34462fc40180eabf189b44486faf6989824f9a",
+  height: 154705,
+  version: 536870912,
+  timestamp: 1641154264,
+  tx_count: 2,
+  size: 5137,
+  weight: 7348,
+  merkle_root: "e7cc1145b3b074be73a84119485a504de77967aabe415240caca0e2c41a8b9b4",
+  previousblockhash: "2745fd72a5bd2b256c9d2044631032d2cd872f1f0001c3db52e26604a6423526",
+  mediantime: 1641153964,
+  ext: {...}
+}`,
+        },
         codeSampleBisq: {
           esModule: ['0000000000000000000b24f70ed27da8b282b050f38e20831923211a1f7266d5'],
           commonJS: ['0000000000000000000b24f70ed27da8b282b050f38e20831923211a1f7266d5'],
@@ -990,6 +1193,12 @@ export class ApiDocsComponent implements OnInit {
           curl: [`86aefdd3cf7be8e5781f783fe5d80513e8b3f52f2f1ef61e8e056b7faffc4b78`],
           response: `000000222434084f3891352cef8d3c7c65600beffd2d059b3d5ff91a53b306d9ffa84f9448cf0cf8aa684d1b8b11a89cdf260a8c4935b5095d280dc915603d105e73407eee5e3161e3751600fd01025b21026a2a106ec32c8a1e8052e5d02a7b0a150423dbd9b116fc48d46630ff6e6a05b92102791646a8b49c2740352b4495c118d876347bf47d0551c01c4332fdc2df526f1a2102888bda53a424466b0451627df22090143bbf7c060e9eacb1e38426f6b07f2ae12102aee8967150dee220f613de3b239320355a498808084a93eaf39a34dcd62024852102d46e9259d0a0bb2bcbc461a3e68f34adca27b8d08fbe985853992b4b104e27412102e9944e35e5750ab621e098145b8e6cf373c273b7c04747d1aa020be0af40ccd62102f9a9d4b10a6d6c56d8c955c547330c589bb45e774551d46d415e51cd9ad5116321033b421566c124dfde4db9defe4084b7aa4e7f36744758d92806b8f72c2e943309210353dcc6b4cf6ad28aceb7f7b2db92a4bf07ac42d357adf756f3eca790664314b621037f55980af0455e4fb55aad9b85a55068bb6dc4740ea87276dc693f4598db45fa210384001daa88dabd23db878dbb1ce5b4c2a5fa72c3113e3514bf602325d0c37b8e21039056d089f2fe72dbc0a14780b4635b0dc8a1b40b7a59106325dd1bc45cc70493210397ab8ea7b0bf85bc7fc56bb27bf85e75502e94e76a6781c409f3f2ec3d1122192103b00e3b5b77884bf3cae204c4b4eac003601da75f96982ffcb3dcb29c5ee419b92103c1f3c0874cfe34b8131af34699589aacec4093399739ae352e8a46f80a6f68375faefd160300473045022100b572ef7e8a1c5a795d4ca46ab0221f0296ae081870ec25b3eb3f7db4a9e48d6102207863cfcae9776d3fee8fb2f05f06c879cf16c319b633f09cfac9bf041e662f31463044022056e41068e5448c897f80ef864fbbd71690af375afc33d9a52a12efd399a75c0202203f61333e193e0ff3da1ef15fa5c84c3852bd3b4f701e4bf4ebc0dcb68138d227473045022100af50aae198402aa45764a771d3ec23cf86037ea1e3bd682d09f262d057de1a2c02202f46b42ff1062117001af9689fce666bc50cfd479f63969e28670e26b747610f46304402201bb90d72cd58e5198b135828354e8fcc3e73238e412c6e2474f9d67676b12ceb022053f3a6cbeb85abc5e0bc18a83eeffe7785c382746f50c98a29743eb00d474f9e473045022100954d79ddb28c5682a3600cb4f76433f31606064717c700e5ea626807cfb169cf0220365e42d1d07bd8a65b5cb6e449a6bbd3684bf31f0f31ffe9aa13a1f145f28de2473045022100e8a6566fbd8e2829ac24c02ff78794f0122d828e9c1989ed8c077013a2834c6d022016b6833665bbe9ca930247600694f90d40aeb9880fdf95ef62b553efb516997f473045022100c0dca22bfc3a3f64f1ac221796ecd052c153e03732e696ce891be4998c6ae34a0220650ff2e1af0cf3318e249e358738d69de91ebdc81535234a30bdbc4361edc08246304402205f0db67365c3667b93cbcfaa2e5a26a4dbab15a5e39196008fd84b61de358f89022035d5bca676b62028e17f962ef7a33b9f34534f02f3d1ac57b65a666f6d33b3fa473045022100ae711c250c7e4a9d7795e96a4209d05f2b4866473aa2a35b8478b9e3eec883800220514db41ba950cf089cce8fd71cfc41454c80005c2c57401da0e2fb3ce96097bc473045022100bfc416e16fb246cc21a3729359bcf9a752643f4c57190493418dab5df33ff8190220289600af6dc32bffb000f984c8c37f137841e1738c701e05c0a08be53e5eb62b473045022100accf30feb32423e20ddaae3c12584b33ad4eb6492deed1393175a0443832faa0022045b17184460ece57857fe74143166c3692348758054d3d7852fee833cb66e9c4`,
         },
+        codeSampleLiquidTestnet: {
+          esModule: [`8f7cb70f32e2069724212c986f34462fc40180eabf189b44486faf6989824f9a`],
+          commonJS: [`8f7cb70f32e2069724212c986f34462fc40180eabf189b44486faf6989824f9a`],
+          curl: [`8f7cb70f32e2069724212c986f34462fc40180eabf189b44486faf6989824f9a`],
+          response: `000000a0263542a60466e252dbc301001f2f87cdd232106344209d6c252bbda572fd4527b4b9a8412c0ecaca405241beaa6779e74d505a481941a873be74b0b34511cce7d806d261515c020001220020e9e4117540f7f23b3edd7c2cad660a17fb33c7959b8c37cf61d92b189133929a96000000fbee9cea00d8efdc49cfbec328537e0d7032194de6ebf3cf42e5c05bb89a08b10003004730440220303a6fc365e016422bd5d714e403db237964c9e53c244310a4a03f432583290202206951e82c2ffa028f88d64d9bb4ec7789ced137046bb38a02816617b554efd42b012551210217e403ddb181872c32a0cd468c710040b2f53d8cac69f18dad07985ee37e9a7151ae`,
+        },
         codeSampleBisq: {
           esModule: [],
           commonJS: [],
@@ -999,7 +1208,7 @@ export class ApiDocsComponent implements OnInit {
       },
       blockHeight: {
         codeTemplate: {
-          curl: `/api/block/%{1}/header`,
+          curl: `/api/block-height/%{1}`,
           commonJS: `
         const { %{0}: { blocks } } = mempoolJS();
 
@@ -1017,28 +1226,34 @@ export class ApiDocsComponent implements OnInit {
           `,
         },
         codeSampleMainnet: {
-          esModule: ['0000000000000000000065bda8f8a88f2e1e00d9a6887a43d640e52a4c7660f2'],
-          commonJS: ['0000000000000000000065bda8f8a88f2e1e00d9a6887a43d640e52a4c7660f2'],
-          curl: ['0000000000000000000065bda8f8a88f2e1e00d9a6887a43d640e52a4c7660f2'],
-          response: `040000202c04d4c450187d1da9b1bc23ba47d67fe028d22486fd0c00000000000000000059a3a33d4642c799af9f54a4dd351fff9130e6a89d4e251130c60064878616e906b5ea60ce9813173a25caf3`
+          esModule: ['615615'],
+          commonJS: ['615615'],
+          curl: ['615615'],
+          response: `000000000000000000067bea442af50a91377ac796e63b8d284354feff4042b3`
         },
         codeSampleTestnet: {
-          esModule: ['000000000000009c08dc77c3f224d9f5bbe335a78b996ec1e0701e065537ca81'],
-          commonJS: ['000000000000009c08dc77c3f224d9f5bbe335a78b996ec1e0701e065537ca81'],
-          curl: ['000000000000009c08dc77c3f224d9f5bbe335a78b996ec1e0701e065537ca81'],
-          response: `040060201e74d5c4c7c64e26465e630c4154a7829f443da9c01f5df97300000000000000c91ca536f5cce0bfc23d913a0428a0ed10bd35c4ec1fd017b28ebb58d1d8105d7e5d3161ffff001a705b6a5f`
+          esModule: ['2100100'],
+          commonJS: ['2100100'],
+          curl: ['2100100'],
+          response: `000000000000001be62f15637e813e1d8ecdf26ee95d1820ef16db9bd8685985`
         },
         codeSampleSignet: {
-          esModule: ['000000ca66fab8083d4f0370d499c3d602e78af5fa69b2427cda15a3f0d96152'],
-          commonJS: ['000000ca66fab8083d4f0370d499c3d602e78af5fa69b2427cda15a3f0d96152'],
-          curl: ['000000ca66fab8083d4f0370d499c3d602e78af5fa69b2427cda15a3f0d96152'],
-          response: `000000204aaab6791d8a5b335992841a44ee0efc3a347f644768654723dcff7b490100006213115ade384da4e958f08c77de4a7deb2bb21240277082f9b941281384192c865a31619356011ea5b62b01`
+          esModule: ['48000'],
+          commonJS: ['48000'],
+          curl: ['48000'],
+          response: `00000009e8322d4b8f74c8bbd04df1dd5a4abce236ae5907cc87f8364fa5e645`
         },
         codeSampleLiquid: {
-          esModule: [`86aefdd3cf7be8e5781f783fe5d80513e8b3f52f2f1ef61e8e056b7faffc4b78`],
-          commonJS: [`86aefdd3cf7be8e5781f783fe5d80513e8b3f52f2f1ef61e8e056b7faffc4b78`],
-          curl: [`86aefdd3cf7be8e5781f783fe5d80513e8b3f52f2f1ef61e8e056b7faffc4b78`],
-          response: `000000222434084f3891352cef8d3c7c65600beffd2d059b3d5ff91a53b306d9ffa84f9448cf0cf8aa684d1b8b11a89cdf260a8c4935b5095d280dc915603d105e73407eee5e3161e3751600fd01025b21026a2a106ec32c8a1e8052e5d02a7b0a150423dbd9b116fc48d46630ff6e6a05b92102791646a8b49c2740352b4495c118d876347bf47d0551c01c4332fdc2df526f1a2102888bda53a424466b0451627df22090143bbf7c060e9eacb1e38426f6b07f2ae12102aee8967150dee220f613de3b239320355a498808084a93eaf39a34dcd62024852102d46e9259d0a0bb2bcbc461a3e68f34adca27b8d08fbe985853992b4b104e27412102e9944e35e5750ab621e098145b8e6cf373c273b7c04747d1aa020be0af40ccd62102f9a9d4b10a6d6c56d8c955c547330c589bb45e774551d46d415e51cd9ad5116321033b421566c124dfde4db9defe4084b7aa4e7f36744758d92806b8f72c2e943309210353dcc6b4cf6ad28aceb7f7b2db92a4bf07ac42d357adf756f3eca790664314b621037f55980af0455e4fb55aad9b85a55068bb6dc4740ea87276dc693f4598db45fa210384001daa88dabd23db878dbb1ce5b4c2a5fa72c3113e3514bf602325d0c37b8e21039056d089f2fe72dbc0a14780b4635b0dc8a1b40b7a59106325dd1bc45cc70493210397ab8ea7b0bf85bc7fc56bb27bf85e75502e94e76a6781c409f3f2ec3d1122192103b00e3b5b77884bf3cae204c4b4eac003601da75f96982ffcb3dcb29c5ee419b92103c1f3c0874cfe34b8131af34699589aacec4093399739ae352e8a46f80a6f68375faefd160300473045022100b572ef7e8a1c5a795d4ca46ab0221f0296ae081870ec25b3eb3f7db4a9e48d6102207863cfcae9776d3fee8fb2f05f06c879cf16c319b633f09cfac9bf041e662f31463044022056e41068e5448c897f80ef864fbbd71690af375afc33d9a52a12efd399a75c0202203f61333e193e0ff3da1ef15fa5c84c3852bd3b4f701e4bf4ebc0dcb68138d227473045022100af50aae198402aa45764a771d3ec23cf86037ea1e3bd682d09f262d057de1a2c02202f46b42ff1062117001af9689fce666bc50cfd479f63969e28670e26b747610f46304402201bb90d72cd58e5198b135828354e8fcc3e73238e412c6e2474f9d67676b12ceb022053f3a6cbeb85abc5e0bc18a83eeffe7785c382746f50c98a29743eb00d474f9e473045022100954d79ddb28c5682a3600cb4f76433f31606064717c700e5ea626807cfb169cf0220365e42d1d07bd8a65b5cb6e449a6bbd3684bf31f0f31ffe9aa13a1f145f28de2473045022100e8a6566fbd8e2829ac24c02ff78794f0122d828e9c1989ed8c077013a2834c6d022016b6833665bbe9ca930247600694f90d40aeb9880fdf95ef62b553efb516997f473045022100c0dca22bfc3a3f64f1ac221796ecd052c153e03732e696ce891be4998c6ae34a0220650ff2e1af0cf3318e249e358738d69de91ebdc81535234a30bdbc4361edc08246304402205f0db67365c3667b93cbcfaa2e5a26a4dbab15a5e39196008fd84b61de358f89022035d5bca676b62028e17f962ef7a33b9f34534f02f3d1ac57b65a666f6d33b3fa473045022100ae711c250c7e4a9d7795e96a4209d05f2b4866473aa2a35b8478b9e3eec883800220514db41ba950cf089cce8fd71cfc41454c80005c2c57401da0e2fb3ce96097bc473045022100bfc416e16fb246cc21a3729359bcf9a752643f4c57190493418dab5df33ff8190220289600af6dc32bffb000f984c8c37f137841e1738c701e05c0a08be53e5eb62b473045022100accf30feb32423e20ddaae3c12584b33ad4eb6492deed1393175a0443832faa0022045b17184460ece57857fe74143166c3692348758054d3d7852fee833cb66e9c4`,
+          esModule: [`1234567`],
+          commonJS: [`1234567`],
+          curl: [`1234567`],
+          response: `ec2e2bf982bca68c4b09634ba2e48fbe9de3d14744a8e8382971991ff8c6cfd1`,
+        },
+        codeSampleLiquidTestnet: {
+          esModule: [`150000`],
+          commonJS: [`150000`],
+          curl: [`150000`],
+          response: `67d5eb1aee63c6c2058a088985503ff0626fd3f7f8022bdc74fab36a359164db`,
         },
         codeSampleBisq: {
           esModule: [],
@@ -1088,6 +1303,12 @@ export class ApiDocsComponent implements OnInit {
           esModule: [`86aefdd3cf7be8e5781f783fe5d80513e8b3f52f2f1ef61e8e056b7faffc4b78`],
           commonJS: [`86aefdd3cf7be8e5781f783fe5d80513e8b3f52f2f1ef61e8e056b7faffc4b78`],
           curl: [`86aefdd3cf7be8e5781f783fe5d80513e8b3f52f2f1ef61e8e056b7faffc4b78`],
+          response: '',
+        },
+        codeSampleLiquidTestnet: {
+          esModule: [`67d5eb1aee63c6c2058a088985503ff0626fd3f7f8022bdc74fab36a359164db`],
+          commonJS: [`67d5eb1aee63c6c2058a088985503ff0626fd3f7f8022bdc74fab36a359164db`],
+          curl: [`67d5eb1aee63c6c2058a088985503ff0626fd3f7f8022bdc74fab36a359164db`],
           response: '',
         },
         codeSampleBisq: {
@@ -1156,6 +1377,16 @@ export class ApiDocsComponent implements OnInit {
   next_best: "1ce5b14c5fbc05be73d8833839e049fd34212da902a78118cd8502a95bf9c134"
 }`,
         },
+        codeSampleLiquidTestnet: {
+          esModule: [`67d5eb1aee63c6c2058a088985503ff0626fd3f7f8022bdc74fab36a359164db`],
+          commonJS: [`67d5eb1aee63c6c2058a088985503ff0626fd3f7f8022bdc74fab36a359164db`],
+          curl: [`67d5eb1aee63c6c2058a088985503ff0626fd3f7f8022bdc74fab36a359164db`],
+          response: `{
+  in_best_chain: true,
+  height: 150000,
+  next_best: "2f24f3d94c006971b86fe2c9cdc92a7ed0aa7ec3b0643a836b8d8b5a54103bab"
+}`,
+        },
         codeSampleBisq: {
           esModule: [],
           commonJS: [],
@@ -1204,6 +1435,12 @@ export class ApiDocsComponent implements OnInit {
           curl: [''],
           response: `1472119`,
         },
+        codeSampleLiquidTestnet: {
+          esModule: [''],
+          commonJS: [''],
+          curl: [''],
+          response: `162495`,
+        },
         codeSampleBisq: {
           esModule: [''],
           commonJS: [''],
@@ -1251,6 +1488,12 @@ export class ApiDocsComponent implements OnInit {
           commonJS: [''],
           curl: [''],
           response: `ec8fed6f33cba86f99b39ae65af948bfc2fdb95cceaa7331bbfd88f5daa823a2`,
+        },
+        codeSampleLiquidTestnet: {
+          esModule: [''],
+          commonJS: [''],
+          curl: [''],
+          response: `ff643a1e102b555103d8feb20b296ee5cf3b4a202fa284e5d6ce82945b738ae7`,
         },
         codeSampleBisq: {
           esModule: [''],
@@ -1301,6 +1544,12 @@ export class ApiDocsComponent implements OnInit {
           commonJS: ['dbbf73007879859f2c55b8605751498ad0d2848db0fdedeadcbdc0cf4f02ee13', '1'],
           curl: ['dbbf73007879859f2c55b8605751498ad0d2848db0fdedeadcbdc0cf4f02ee13', '1'],
           response: `36e47770c306ae5d4ddcc2ce50f6ce6e23d6bdc692b9a9a347fb68d19255f598`
+        },
+        codeSampleLiquidTestnet: {
+          esModule: ['b6b4aeefa220c6a17da116bda666e869b3146967d2479656448a8bce1e799b8f', '1'],
+          commonJS: ['b6b4aeefa220c6a17da116bda666e869b3146967d2479656448a8bce1e799b8f', '1'],
+          curl: ['b6b4aeefa220c6a17da116bda666e869b3146967d2479656448a8bce1e799b8f', '1'],
+          response: `41493aa0eec8b6d359c2defc90e2fafb42fb5b8633456648553467a4d3a16c4a`
         },
         codeSampleBisq: {
           esModule: [''],
@@ -1375,6 +1624,16 @@ export class ApiDocsComponent implements OnInit {
           response: `[
   "45abcc4572f519155cd65686c3be9cc744d79d6f36c928b0aa3c989f8ee094be",
   "36e47770c306ae5d4ddcc2ce50f6ce6e23d6bdc692b9a9a347fb68d19255f598"
+]`
+        },
+        codeSampleLiquidTestnet: {
+          esModule: ['b6b4aeefa220c6a17da116bda666e869b3146967d2479656448a8bce1e799b8f', '1'],
+          commonJS: ['b6b4aeefa220c6a17da116bda666e869b3146967d2479656448a8bce1e799b8f', '1'],
+          curl: ['b6b4aeefa220c6a17da116bda666e869b3146967d2479656448a8bce1e799b8f', '1'],
+          response: `[
+  "95422f140e3d88e6ddaf0625ee523dbf9d38934d67ce32baf6c162d83a08f89f",
+  "41493aa0eec8b6d359c2defc90e2fafb42fb5b8633456648553467a4d3a16c4a",
+  "fa6b8dda9037f8284a659627005ad32dbb81e22b102c1d3d8a9bab0893ce2ab7"
 ]`
         },
         codeSampleBisq: {
@@ -1499,6 +1758,30 @@ export class ApiDocsComponent implements OnInit {
   ...
 ]`
         },
+        codeSampleLiquidTestnet: {
+          esModule: ['b6b4aeefa220c6a17da116bda666e869b3146967d2479656448a8bce1e799b8f', '1'],
+          commonJS: ['b6b4aeefa220c6a17da116bda666e869b3146967d2479656448a8bce1e799b8f', '1'],
+          curl: ['b6b4aeefa220c6a17da116bda666e869b3146967d2479656448a8bce1e799b8f', '1'],
+          response: `[
+  {
+    txid: "95422f140e3d88e6ddaf0625ee523dbf9d38934d67ce32baf6c162d83a08f89f",
+    version: 2,
+    locktime: 0,
+    vin: [],
+    vout: [],
+    size: 226,
+    weight: 781,
+    fee: 0,
+    status: {
+      confirmed: true,
+      block_height: 142834,
+      block_hash: "b6b4aeefa220c6a17da116bda666e869b3146967d2479656448a8bce1e799b8f",
+      block_time: 1640441533
+    }
+  },
+  ...
+]`
+        },
         codeSampleBisq: {
           esModule: [''],
           commonJS: [''],
@@ -1612,6 +1895,26 @@ export class ApiDocsComponent implements OnInit {
   ...
 ]`
         },
+        codeSampleLiquidTestnet: {
+          esModule: ['150000'],
+          commonJS: ['150000'],
+          curl: ['150000'],
+          response: `[
+  {
+    id: "67d5eb1aee63c6c2058a088985503ff0626fd3f7f8022bdc74fab36a359164db",
+    height: 150000,
+    version: 536870912,
+    timestamp: 1640871913,
+    tx_count: 2,
+    size: 3527,
+    weight: 7430,
+    merkle_root: "40538ff1fcac07c65e36fcc230fc60f58e3a885ce9898e41bc27bcf28227e5ff",
+    previousblockhash: "2d8c28042b03219e7e9bc6853cc3ae536e36be5639869c545a0f3dbd1309e2a5",
+    mediantime: 1640871614
+  },
+  ...
+]`
+        },
         codeSampleBisq: {
           esModule: [''],
           commonJS: [''],
@@ -1655,6 +1958,12 @@ export class ApiDocsComponent implements OnInit {
           response: ``
         },
         codeSampleLiquid: {
+          esModule: [''],
+          commonJS: [''],
+          curl: [''],
+          response: ``
+        },
+        codeSampleLiquidTestnet: {
           esModule: [''],
           commonJS: [''],
           curl: [''],
@@ -1788,6 +2097,30 @@ export class ApiDocsComponent implements OnInit {
   }
 ]`
         },
+        codeSampleLiquidTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+    blockSize: 23782,
+    blockVSize: 20457.25,
+    nTx: 3,
+    totalFees: 2089,
+    medianFee: 0.10163043478260869,
+    feeRange: [
+      0.1,
+      0.1,
+      0.1,
+      0.10163043478260869,
+      0.10163043478260869,
+      0.11385199240986717,
+      0.11385199240986717,
+      0.11385199240986717
+    ]
+  }
+]`
+        },
         codeSampleBisq: {
           esModule: [],
           commonJS: [],
@@ -1846,6 +2179,17 @@ export class ApiDocsComponent implements OnInit {
 }`
         },
         codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  fastestFee: 0.1,
+  halfHourFee: 0.1,
+  hourFee: 0.1,
+  minimumFee: 1
+}`
+        },
+        codeSampleLiquidTestnet: {
           esModule: [],
           commonJS: [],
           curl: [],
@@ -1934,6 +2278,22 @@ export class ApiDocsComponent implements OnInit {
   fee_histogram: [ ]
 }`
         },
+        codeSampleLiquidTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  count: 3,
+  vsize: 20457,
+  total_fee: 2089,
+  fee_histogram: [
+    [
+      0.09981343,
+      20457
+    ]
+  ]
+}`
+        },
         codeSampleBisq: {
           esModule: [],
           commonJS: [],
@@ -1999,6 +2359,16 @@ export class ApiDocsComponent implements OnInit {
           curl: [],
           response: `[
   "f3f3acdaa6a823efcbbbbcc607ec4d1c2c40d618135ec09d8ed96e4d9b37db38"
+]`
+        },
+        codeSampleLiquidTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  "b644716cb1aeb3e6e9fb4258b0b95dfad8b8e4cd1ec8649bf1116a500cc870e5",
+  "3ab8bc068ee05c1114647dc5196b3b954b00e5af3b03d470d1ef8a8953737357",
+  "dfbe66e6e71e775c9529a822c14286de0ee1066c2760a53552615d05e17006f3"
 ]`
         },
         codeSampleBisq: {
@@ -2080,6 +2450,24 @@ export class ApiDocsComponent implements OnInit {
   ...
 ]`
         },
+        codeSampleLiquidTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+    txid: "814d9d285970dd55ea5b2f06f5d11fb895a2b78d61defbcd489477441e544f95",
+    fee: 376,
+    vsize: 3767
+  },
+  {
+    txid: "e09a8b6bc950458bc77183acf4fd566d1cfd8e7373c4869f877b52e3b02ad9b1",
+    fee: 138,
+    vsize: 1379
+  },
+  ...
+]`
+        },
         codeSampleBisq: {
           esModule: [],
           commonJS: [],
@@ -2125,6 +2513,12 @@ export class ApiDocsComponent implements OnInit {
           response: ``
         },
         codeSampleLiquid: {
+          esModule: ['txid'],
+          commonJS: ['txid'],
+          curl: ['txid'],
+          response: ``
+        },
+        codeSampleLiquidTestnet: {
           esModule: ['txid'],
           commonJS: ['txid'],
           curl: ['txid'],
@@ -2240,6 +2634,27 @@ export class ApiDocsComponent implements OnInit {
   }
 }`,
         },
+        codeSampleLiquidTestnet: {
+          esModule: [`59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4`],
+          commonJS: [`59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4`],
+          curl: [`59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4`],
+          response: `{
+  txid: "59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4",
+  version: 2,
+  locktime: 168763,
+  vin: [],
+  vout: [],
+  size: 13557,
+  weight: 15069,
+  fee: 376,
+  status: {
+    confirmed: true,
+    block_height: 168765,
+    block_hash: "05a51089255650a16c17b4b3f3977376bc7ebe90a35584578f12916c3eaba59e",
+    block_time: 1642000444
+  }
+}`,
+        },
         codeSampleBisq: {
           esModule: [`98a598aeea121ea061dc713d1547363358974191c257d3b563bbf2a1706ff44e`],
           commonJS: [`98a598aeea121ea061dc713d1547363358974191c257d3b563bbf2a1706ff44e`],
@@ -2305,6 +2720,12 @@ export class ApiDocsComponent implements OnInit {
           curl: [`801c8cccdfb1cac41f97d290e00e3e608753bb5b8fbc5ba39f3ab6feef13dd4a`],
           response: `020000000101730fb6b65e115f4ec15690b3539311becd3ef8d1ed4c2b7e53ec3934b4254f65010000001716001436b178e63ed841263f7b82a97d2e783791394432feffffff020b5ff1f5c8059fc270bdeb196c5f38e3da2de8fd9034c34427b70fa66d2f388efe083745b65e4c6e029b020d74df709c5842737c4d50873ef4ec8e0579a3c41f09130274bf768af8b1c462b1e5b7ffb1bb496a019a0ed090e4ce26283a946542280c6f17a...`,
         },
+        codeSampleLiquidTestnet: {
+          esModule: [`59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4`],
+          commonJS: [`59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4`],
+          curl: [`59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4`],
+          response: `020000000102fa567669f73a314138aa6dbe74e3935612895df273d20ccbbedbecd44a04d3ce0000000000fdffffff8412fed07b8316dd4304df90af6f20292d3b2950133711c0ee43eb94fe12cc4f0100000000fdffffff040b801035010192095b8d9316f28450e98a85c915994c3f80ecc493adf505d73e9609a51e48bc0f35e34f88c482654d659fa779dcbf0457dc71053f3edcf76bd3667f03821ffcc4fc4ae5c2668685fec678e4...`,
+        },
         codeSampleBisq: {
           esModule: [`98a598aeea121ea061dc713d1547363358974191c257d3b563bbf2a1706ff44e`],
           commonJS: [`98a598aeea121ea061dc713d1547363358974191c257d3b563bbf2a1706ff44e`],
@@ -2350,6 +2771,12 @@ export class ApiDocsComponent implements OnInit {
           response: `00000020d356e0a14120d45653120a7bd53280ffce2aa2ced301682a1f2867687f000000298ef149a1675866dbdde315b22c24c63fd7670fdc5b86b588007fa187fa85089cba31619356011eaedd8800180000000656e9b938241cb350316cd9155167f3bce7370aa1095143c304ef7a44da4984e02550c48f3e01648dd65f5e3e290432c...`
         },
         codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: ``,
+        },
+        codeSampleLiquidTestnet: {
           esModule: [],
           commonJS: [],
           curl: [],
@@ -2447,6 +2874,18 @@ export class ApiDocsComponent implements OnInit {
   merkle: [
     "ce1903e0a8a5e17c6267cf3397d42011611eb26aa7b65fd73b9851b71da3fc66",
     "377158243ad98ae874cc624e39f7da10d7072e2cbb5229c33cc0bee0bfb6eb4e"
+  ],
+  pos: 1
+}`,
+        },
+        codeSampleLiquidTestnet: {
+          esModule: ['59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4'],
+          commonJS: ['59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4'],
+          curl: ['59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4'],
+          response: `{
+  block_height: 168765,
+  merkle: [
+    "1dbe7041197b78f73c0d4a3810c47080c252bc928f041b787acaad3fa76ba7a0"
   ],
   pos: 1
 }`,
@@ -2563,6 +3002,22 @@ export class ApiDocsComponent implements OnInit {
   }
 }`,
         },
+        codeSampleLiquidTestnet: {
+          esModule: ['59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4', '0'],
+          commonJS: ['59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4', '0'],
+          curl: ['59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4', '0'],
+          response: `{
+  spent: true,
+  txid: "814d9d285970dd55ea5b2f06f5d11fb895a2b78d61defbcd489477441e544f95",
+  vin: 0,
+  status: {
+    confirmed: true,
+    block_height: 168793,
+    block_hash: "3b10cdce761c4a2ec3e1239648c7d034922b34608a66f894e2f707307dae6b18",
+    block_time: 1642002136
+  }
+}`,
+        },
         codeSampleBisq: {
           esModule: [`98a598aeea121ea061dc713d1547363358974191c257d3b563bbf2a1706ff44e`, '1'],
           commonJS: [`98a598aeea121ea061dc713d1547363358974191c257d3b563bbf2a1706ff44e`, '1'],
@@ -2661,17 +3116,49 @@ export class ApiDocsComponent implements OnInit {
           esModule: ['801c8cccdfb1cac41f97d290e00e3e608753bb5b8fbc5ba39f3ab6feef13dd4a'],
           commonJS: ['801c8cccdfb1cac41f97d290e00e3e608753bb5b8fbc5ba39f3ab6feef13dd4a'],
           curl: ['801c8cccdfb1cac41f97d290e00e3e608753bb5b8fbc5ba39f3ab6feef13dd4a'],
-          response: `{
-  spent: true,
-  txid: "c02e132181dfc5f65ea16eadf53b346915b9f3937179c49e209b995e57c319c2",
-  vin: 0,
-  status: {
-    confirmed: true,
-    block_height: 1472368,
-    block_hash: "a07de4ccbb212ea203c455dde477069fb6ed6120fc96c78402fa9d129efa31ff",
-    block_time: 1630649338
+          response: `[
+  {
+    spent: true,
+    txid: "c02e132181dfc5f65ea16eadf53b346915b9f3937179c49e209b995e57c319c2",
+    vin: 0,
+    status: {
+      confirmed: true,
+      block_height: 1472368,
+      block_hash: "a07de4ccbb212ea203c455dde477069fb6ed6120fc96c78402fa9d129efa31ff",
+      block_time: 1630649338
+    }
+  },
+  {
+    spent: false
   }
-}`,
+]`,
+        },
+        codeSampleLiquidTestnet: {
+          esModule: ['59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4'],
+          commonJS: ['59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4'],
+          curl: ['59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4'],
+          response: `[
+  {
+    spent: false
+  },
+  {
+    spent: true,
+    txid: "814d9d285970dd55ea5b2f06f5d11fb895a2b78d61defbcd489477441e544f95",
+    vin: 0,
+    status: {
+      confirmed: true,
+      block_height: 168793,
+      block_hash: "3b10cdce761c4a2ec3e1239648c7d034922b34608a66f894e2f707307dae6b18",
+      block_time: 1642002136
+    }
+  },
+  {
+    spent: false
+  },
+  {
+    spent: false
+  }
+]`,
         },
         codeSampleBisq: {
           esModule: [`98a598aeea121ea061dc713d1547363358974191c257d3b563bbf2a1706ff44e`],
@@ -2741,6 +3228,12 @@ export class ApiDocsComponent implements OnInit {
           curl: ['801c8cccdfb1cac41f97d290e00e3e608753bb5b8fbc5ba39f3ab6feef13dd4a'],
           response: ``,
         },
+        codeSampleLiquidTestnet: {
+          esModule: ['59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4'],
+          commonJS: ['59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4'],
+          curl: ['59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4'],
+          response: ``,
+        },
         codeSampleBisq: {
           esModule: [`98a598aeea121ea061dc713d1547363358974191c257d3b563bbf2a1706ff44e`],
           commonJS: [`98a598aeea121ea061dc713d1547363358974191c257d3b563bbf2a1706ff44e`],
@@ -2808,6 +3301,17 @@ export class ApiDocsComponent implements OnInit {
   block_time: 1630649218
 }`,
         },
+        codeSampleLiquidTestnet: {
+          esModule: ['59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4'],
+          commonJS: ['59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4'],
+          curl: ['59dd7a0bce4f3310272ff352402291bc555f141149812d8f573f62e7fdc19cc4'],
+          response: `{
+  confirmed: true,
+  block_height: 168765,
+  block_hash: "05a51089255650a16c17b4b3f3977376bc7ebe90a35584578f12916c3eaba59e",
+  block_time: 1642000444
+}`,
+        },
         codeSampleBisq: {
           esModule: [`98a598aeea121ea061dc713d1547363358974191c257d3b563bbf2a1706ff44e`],
           commonJS: [`98a598aeea121ea061dc713d1547363358974191c257d3b563bbf2a1706ff44e`],
@@ -2856,6 +3360,12 @@ export class ApiDocsComponent implements OnInit {
           response: ``
         },
         codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: ``,
+        },
+        codeSampleLiquidTestnet: {
           esModule: [],
           commonJS: [],
           curl: [],
@@ -2928,6 +3438,12 @@ export class ApiDocsComponent implements OnInit {
           curl: [`0200000001fd5b5fcd1cb066c27cfc9fda5428b9be850b81ac440ea51f1ddba2f987189ac1010000008a4730440220686a40e9d2dbffeab4ca1ff66341d06a17806767f12a1fc4f55740a7af24c6b5022049dd3c9a85ac6c51fecd5f4baff7782a518781bbdd94453c8383755e24ba755c01410436d554adf4a3eb03a317c77aa4020a7bba62999df633bba0ea8f83f48b9e01b0861d3b3c796840f982ee6b14c3c4b7ad04fcfcc3774f81bff9aaf52a15751fedfdffffff02416c00000000000017a914bc791b2afdfe1e1b5650864a9297b20d74c61f4787d71d0000000000001976a9140a59837ccd4df25adc31cdad39be6a8d97557ed688ac00000000`],
           response: ``,
         },
+        codeSampleLiquidTestnet: {
+          esModule: [`0200000001fd5b5fcd1cb066c27cfc9fda5428b9be850b81ac440ea51f1ddba2f987189ac1010000008a4730440220686a40e9d2dbffeab4ca1ff66341d06a17806767f12a1fc4f55740a7af24c6b5022049dd3c9a85ac6c51fecd5f4baff7782a518781bbdd94453c8383755e24ba755c01410436d554adf4a3eb03a317c77aa4020a7bba62999df633bba0ea8f83f48b9e01b0861d3b3c796840f982ee6b14c3c4b7ad04fcfcc3774f81bff9aaf52a15751fedfdffffff02416c00000000000017a914bc791b2afdfe1e1b5650864a9297b20d74c61f4787d71d0000000000001976a9140a59837ccd4df25adc31cdad39be6a8d97557ed688ac00000000`],
+          commonJS: [`0200000001fd5b5fcd1cb066c27cfc9fda5428b9be850b81ac440ea51f1ddba2f987189ac1010000008a4730440220686a40e9d2dbffeab4ca1ff66341d06a17806767f12a1fc4f55740a7af24c6b5022049dd3c9a85ac6c51fecd5f4baff7782a518781bbdd94453c8383755e24ba755c01410436d554adf4a3eb03a317c77aa4020a7bba62999df633bba0ea8f83f48b9e01b0861d3b3c796840f982ee6b14c3c4b7ad04fcfcc3774f81bff9aaf52a15751fedfdffffff02416c00000000000017a914bc791b2afdfe1e1b5650864a9297b20d74c61f4787d71d0000000000001976a9140a59837ccd4df25adc31cdad39be6a8d97557ed688ac00000000`],
+          curl: [`0200000001fd5b5fcd1cb066c27cfc9fda5428b9be850b81ac440ea51f1ddba2f987189ac1010000008a4730440220686a40e9d2dbffeab4ca1ff66341d06a17806767f12a1fc4f55740a7af24c6b5022049dd3c9a85ac6c51fecd5f4baff7782a518781bbdd94453c8383755e24ba755c01410436d554adf4a3eb03a317c77aa4020a7bba62999df633bba0ea8f83f48b9e01b0861d3b3c796840f982ee6b14c3c4b7ad04fcfcc3774f81bff9aaf52a15751fedfdffffff02416c00000000000017a914bc791b2afdfe1e1b5650864a9297b20d74c61f4787d71d0000000000001976a9140a59837ccd4df25adc31cdad39be6a8d97557ed688ac00000000`],
+          response: ``,
+        },
         codeSampleBisq: {
           esModule: [],
           commonJS: [],
@@ -2971,6 +3487,12 @@ export class ApiDocsComponent implements OnInit {
           response: ``
         },
         codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: ``,
+        },
+        codeSampleLiquidTestnet: {
           esModule: [],
           commonJS: [],
           curl: [],
@@ -3031,6 +3553,12 @@ export class ApiDocsComponent implements OnInit {
           response: ``
         },
         codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: ``,
+        },
+        codeSampleLiquidTestnet: {
           esModule: [],
           commonJS: [],
           curl: [],
@@ -3099,6 +3627,12 @@ export class ApiDocsComponent implements OnInit {
           curl: [],
           response: ``,
         },
+        codeSampleLiquidTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: ``,
+        },
         codeSampleBisq: {
           esModule: ['BTC_USD'],
           commonJS: ['BTC_USD'],
@@ -3154,6 +3688,12 @@ export class ApiDocsComponent implements OnInit {
           response: ``
         },
         codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: ``,
+        },
+        codeSampleLiquidTestnet: {
           esModule: [],
           commonJS: [],
           curl: [],
@@ -3220,6 +3760,12 @@ export class ApiDocsComponent implements OnInit {
           response: ``
         },
         codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: ``,
+        },
+        codeSampleLiquidTestnet: {
           esModule: [],
           commonJS: [],
           curl: [],
@@ -3308,6 +3854,12 @@ export class ApiDocsComponent implements OnInit {
           curl: [],
           response: ``,
         },
+        codeSampleLiquidTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: ``,
+        },
         codeSampleBisq: {
           esModule: ['BTC_USD'],
           commonJS: ['BTC_USD'],
@@ -3368,6 +3920,12 @@ export class ApiDocsComponent implements OnInit {
           curl: [],
           response: ``,
         },
+        codeSampleLiquidTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: ``,
+        },
         codeSampleBisq: {
           esModule: ['BTC_USD', '1'],
           commonJS: ['BTC_USD', '1'],
@@ -3423,6 +3981,12 @@ export class ApiDocsComponent implements OnInit {
           response: ``
         },
         codeSampleLiquid: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: ``,
+        },
+        codeSampleLiquidTestnet: {
           esModule: [],
           commonJS: [],
           curl: [],
@@ -3516,6 +4080,12 @@ export class ApiDocsComponent implements OnInit {
           curl: [],
           response: ``,
         },
+        codeSampleLiquidTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: ``,
+        },
         codeSampleBisq: {
           esModule: [],
           commonJS: [],
@@ -3592,6 +4162,19 @@ export class ApiDocsComponent implements OnInit {
   previousRetarget: -4.807005268478962
 }`
         },
+        codeSampleLiquidTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  progressPercent: 44.397234501112074,
+  difficultyChange: 0.9845932018381687,
+  estimatedRetargetDate: 1627762478.9111245,
+  remainingBlocks: 1121,
+  remainingTime: 665977.6261244365,
+  previousRetarget: -4.807005268478962
+}`
+        },
         codeSampleBisq: {
           esModule: [],
           commonJS: [],
@@ -3647,6 +4230,12 @@ export class ApiDocsComponent implements OnInit {
           curl: [],
           response: ``
         },
+        codeSampleLiquidTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: ``
+        },
         codeSampleBisq: {
           esModule: [],
           commonJS: [],
@@ -3679,8 +4268,11 @@ export class ApiDocsComponent implements OnInit {
     if (network === 'signet') {
       curlResponse = code.codeSampleSignet.curl;
     }
-    if (network === 'liquid' || network === 'liquidtestnet') {
+    if (network === 'liquid') {
       curlResponse = code.codeSampleLiquid.curl;
+    }
+    if (network === 'liquidtestnet') {
+      curlResponse = code.codeSampleLiquidTestnet.curl;
     }
     if (network === 'bisq') {
       curlResponse = code.codeSampleBisq.curl;
@@ -3689,6 +4281,10 @@ export class ApiDocsComponent implements OnInit {
     let curlNetwork = '';
     if (this.env.BASE_MODULE === 'mempool') {
       if (!['', 'mainnet'].includes(network)) {
+        curlNetwork = `/${network}`;
+      }
+    } else if (this.env.BASE_MODULE === 'liquid') {
+      if (!['', 'liquid'].includes(network)) {
         curlNetwork = `/${network}`;
       }
     }

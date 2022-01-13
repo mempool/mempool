@@ -237,8 +237,11 @@ yarn add @mempool/liquid.js`;
       if (this.network === 'signet') {
         return this.replaceCurlPlaceholder(code.codeTemplate.curl, code.codeSampleSignet);
       }
-      if (this.network === 'liquid' || this.network === 'liquidtestnet') {
+      if (this.network === 'liquid') {
         return this.replaceCurlPlaceholder(code.codeTemplate.curl, code.codeSampleLiquid);
+      }
+      if (this.network === 'liquidtestnet') {
+        return this.replaceCurlPlaceholder(code.codeTemplate.curl, code.codeSampleLiquidTestnet);
       }
       if (this.network === 'bisq') {
         return this.replaceCurlPlaceholder(code.codeTemplate.curl, code.codeSampleBisq);
@@ -259,8 +262,11 @@ yarn add @mempool/liquid.js`;
     if (this.network === 'signet') {
       return code.codeSampleSignet.response;
     }
-    if (this.network === 'liquid' || this.network === 'liquidtestnet') {
+    if (this.network === 'liquid') {
       return code.codeSampleLiquid.response;
+    }
+    if (this.network === 'liquidtestnet') {
+      return code.codeSampleLiquidTestnet.response;
     }
     if (this.network === 'bisq') {
       return code.codeSampleBisq.response;
@@ -297,10 +303,18 @@ yarn add @mempool/liquid.js`;
         return `curl -X POST -sSLd "${text}"`;
       }
       return `curl -sSL "${this.hostname}/${this.network}${text}"`;
+    } else if (this.env.BASE_MODULE === 'liquid') {
+      if (this.method === 'post') {
+        if (this.network !== 'liquid') {
+          text = text.replace('/api', `/${this.network}/api`);
+        }
+        return `curl -X POST -sSLd "${text}"`;
+      }
+      return ( this.network === 'liquid' ? `curl -sSL "${this.hostname}${text}"` : `curl -sSL "${this.hostname}/${this.network}${text}"` );
+    } else {
+        return `curl -sSL "${this.hostname}${text}"`;
     }
-    if (this.env.BASE_MODULE !== 'mempool') {
-      return `curl -sSL "${this.hostname}${text}"`;
-    }
+
   }
 
 }
