@@ -1,0 +1,19 @@
+#!/usr/bin/env zsh
+hostname=$(hostname)
+while true
+do for url in	/url/v1/statistics/2h \
+		/url/v1/statistics/24h \
+		/url/v1/statistics/1w \
+		/url/v1/statistics/1m \
+		/url/v1/statistics/3m \
+		/url/v1/statistics/6m \
+		/url/v1/statistics/1y \
+		/url/v1/statistics/2y \
+		/url/v1/statistics/3y \
+		/
+	do
+		curl -s "https://${hostname}${url}" >/dev/null
+	done
+
+	sleep 10
+done
