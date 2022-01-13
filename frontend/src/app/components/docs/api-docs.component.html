@@ -237,11 +237,11 @@
 
         <div class="api-category" *ngIf="network.val === 'liquid' || network.val === 'liquidtestnet'">
 
-          <div class="endpoint-container" id="get-assets">
-            <a class="section-header" [routerLink]="['./']" fragment="get-assets">GET Assets <span>Assets</span></a>
+          <div class="endpoint-container" id="get-asset">
+            <a class="section-header" [routerLink]="['./']" fragment="get-assets">GET Asset <span>Assets</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.assets)" target="_blank">GET /liquid/api/asset/:asset_id</a>
+              <a [href]="wrapUrl(network.val, code.assets)" target="_blank">GET {{ baseNetworkUrl }}/api/asset/:asset_id</a>
             </div>
             <div class="description">
               <div class="subtitle" i18n>Description</div>
@@ -253,7 +253,7 @@
           <div class="endpoint-container" id="get-asset-transactions">
             <a class="section-header" [routerLink]="['./']" fragment="get-asset-transactions">GET Asset Transactions <span>Assets</span></a>
             <div class="endpoint">
-              <a [href]="wrapUrl(network.val, code.assetTransactions)" target="_blank">GET /liquid/api/asset/:asset_id/txs[/mempool|/chain]</a>
+              <a [href]="wrapUrl(network.val, code.assetTransactions)" target="_blank">GET {{ baseNetworkUrl }}/api/asset/:asset_id/txs[/mempool|/chain]</a>
             </div>
             <div class="description">
               <div class="subtitle" i18n>Description</div>
@@ -266,7 +266,7 @@
             <a class="section-header" [routerLink]="['./']" fragment="get-asset-supply">GET Asset Supply <span>Assets</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.assetSupply)" target="_blank">GET /liquid/api/asset/:asset_id/supply[/decimal]</a>
+              <a [href]="wrapUrl(network.val, code.assetSupply)" target="_blank">GET {{ baseNetworkUrl }}/api/asset/:asset_id/supply[/decimal]</a>
             </div>
             <div class="description">
               <div class="subtitle" i18n>Description</div>
@@ -275,15 +275,15 @@
             <app-code-template [hostname]="hostname" [code]="code.assetSupply" [network]="network.val" ></app-code-template>
           </div>
 
-          <div class="endpoint-container" id="get-assets-icons">
+          <div class="endpoint-container" id="get-asset-icons">
             <a class="section-header" [routerLink]="['./']" fragment="get-assets-icons">GET Asset Icons <span>Assets</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.assetIcons)" target="_blank">GET /liquid/api/v1/assets/icons</a>
+              <a [href]="wrapUrl(network.val, code.assetIcons)" target="_blank">GET {{ baseNetworkUrl }}/api/v1/assets/icons</a>
             </div>
             <div class="description">
               <div class="subtitle" i18n>Description</div>
-              <div>Get all the Asset IDs that has icons.</div>
+              <div>Get all the Asset IDs that have icons.</div>
             </div>
             <app-code-template [hostname]="hostname" [code]="code.assetIcons" [network]="network.val" ></app-code-template>
           </div>
@@ -292,7 +292,7 @@
             <a class="section-header" [routerLink]="['./']" fragment="get-asset-icon">GET Asset Icon <span>Assets</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.assetIcon)" target="_blank">GET /liquid/api/v1/asset/:asset_id/icon</a>
+              <a [href]="wrapUrl(network.val, code.assetIcon)" target="_blank">GET {{ baseNetworkUrl }}/api/v1/asset/:asset_id/icon</a>
             </div>
             <div class="description">
               <div class="subtitle" i18n>Description</div>
@@ -335,7 +335,7 @@
             <a class="section-header" [routerLink]="['./']" fragment="get-block-height">GET Block Height <span>Blocks</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.blockHeader)" target="_blank">GET {{ baseNetworkUrl }}/api/block-height/:height</a>
+              <a [href]="wrapUrl(network.val, code.blockHeight)" target="_blank">GET {{ baseNetworkUrl }}/api/block-height/:height</a>
             </div>
             <div class="description">
               <div class="subtitle" i18n>Description</div>
@@ -672,7 +672,7 @@
             <a class="section-header" [routerLink]="['./']" fragment="post-transaction">POST Transaction <span>Transactions</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <div>POST /api/tx</div>
+              <div>POST {{ baseNetworkUrl }}/api/tx</div>
             </div>
             <div class="description">
               <div class="subtitle" i18n>Description</div>
