@@ -85,6 +85,7 @@ class DatabaseMigration {
       }
       if (databaseSchemaVersion < 3) {
         await this.$executeQuery(connection, this.getCreatePoolsTableQuery(), await this.$checkIfTableExists('pools'));
+        await this.$executeQuery(connection, this.getCreateBlocksTableQuery(), await this.$checkIfTableExists('blocks'));
       }
       connection.release();
     } catch (e) {
@@ -347,6 +348,37 @@ class DatabaseMigration {
       regexes text NOT NULL,
       PRIMARY KEY (id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`;
+  }
+
+  private getCreatePoolsTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS pools (
+      id int(11) NOT NULL AUTO_INCREMENT,
+      name varchar(50) NOT NULL,
+      link varchar(255) NOT NULL,
+      addresses text NOT NULL,
+      regexes text NOT NULL,
+      PRIMARY KEY (id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`;
+  }
+
+  private getCreateBlocksTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS blocks (
+      height int(11) unsigned NOT NULL,
+      hash varchar(65) NOT NULL,
+      blockTimestamp timestamp NOT NULL,
+      size int(11) unsigned NOT NULL,
+      weight int(11) unsigned NOT NULL,
+      tx_count int(11) unsigned NOT NULL,
+      coinbase_raw text,
+      difficulty bigint(20) unsigned NOT NULL,
+      pool_id int(11) DEFAULT -1,
+      fees double unsigned NOT NULL,
+      fee_span json NOT NULL,
+      median_fee double unsigned NOT NULL,
+      PRIMARY KEY (height),
+      INDEX (pool_id),
+      FOREIGN KEY (pool_id) REFERENCES pools (id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 }
 
