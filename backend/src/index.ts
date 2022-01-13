@@ -225,15 +225,15 @@ class Server {
 
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
       this.app
-        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/2h', routes.get2HStatistics)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/24h', routes.get24HStatistics.bind(routes))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/1w', routes.get1WHStatistics.bind(routes))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/1m', routes.get1MStatistics.bind(routes))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/3m', routes.get3MStatistics.bind(routes))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/6m', routes.get6MStatistics.bind(routes))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/1y', routes.get1YStatistics.bind(routes))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/2y', routes.get2YStatistics.bind(routes))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/3y', routes.get3YStatistics.bind(routes))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/2h', routes.$getStatisticsByTime.bind(routes, '2h'))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/24h', routes.$getStatisticsByTime.bind(routes, '24h'))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/1w', routes.$getStatisticsByTime.bind(routes, '1w'))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/1m', routes.$getStatisticsByTime.bind(routes, '1m'))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/3m', routes.$getStatisticsByTime.bind(routes, '3m'))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/6m', routes.$getStatisticsByTime.bind(routes, '6m'))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/1y', routes.$getStatisticsByTime.bind(routes, '1y'))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/2y', routes.$getStatisticsByTime.bind(routes, '2y'))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/3y', routes.$getStatisticsByTime.bind(routes, '3y'))
         ;
     }
 
