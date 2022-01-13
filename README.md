@@ -49,9 +49,9 @@ Note: the IP in the example above refers to Docker's default gateway IP address 
 
 You can check if the instance is running by visiting http://localhost - the graphs will be populated as new transactions are detected.
 
-## bitcoind+romanz/electrs configuration
+## bitcoind+electrum configuration
 
-In order to run with `romanz/electrs` as the backend, in addition to the settings required for running with `bitcoind` above, you will need to make the following changes to the `docker-compose.yml` file:
+In order to run with a `electrum` compatible server as the backend, in addition to the settings required for running with `bitcoind` above, you will need to make the following changes to the `docker-compose.yml` file:
 
 - Under the `api` service, change the value of the `MEMPOOL_BACKEND` key from `none` to `electrum`:
 
@@ -68,10 +68,10 @@ In order to run with `romanz/electrs` as the backend, in addition to the setting
     environment:
       ELECTRUM_HOST: "172.27.0.1"
       ELECTRUM_PORT: "50002"
-      ELECTRUM_TLS: "false"
+      ELECTRUM_TLS_ENABLED: "false"
 ```
 
-You can update any of the backend settings in the `mempool-config.json` file using the following environment variables to override them.
+You can update any of the backend settings in the `mempool-config.json` file using the following environment variables to override them under the same `api` `environment` section.
 
 JSON:
 ```
