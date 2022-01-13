@@ -170,7 +170,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       hover: true,
       color: this.inverted ? [...newColors].reverse() : newColors,
       tooltip: {
-        show: (window.innerWidth >= 768) ? true : false,
+        show: !this.isMobile(),
         trigger: 'axis',
         alwaysShowContent: false,
         position: (pos, params, el, elRect, size) => {
@@ -282,7 +282,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           </div>`;
         }
       },
-      dataZoom: [{
+      dataZoom: (this.template === 'widget' && this.isMobile()) ? null : [{
         type: 'inside',
         realtime: true,
         zoomLock: (this.template === 'widget') ? true : false,
@@ -381,6 +381,10 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       }
     }
     this.chartColorsOrdered =  chartColors.slice(0, this.feeLevelsOrdered.length);
+  }
+
+  isMobile() {
+    return window.innerWidth <= 767.98;
   }
 }
 
