@@ -169,10 +169,10 @@ JSON:
 
 docker-compose overrides:
 ```
-      SECOND_RPC_HOST: ""
-      SECOND_RPC_PORT: ""
-      SECOND_RPC_USERNAME: ""
-      SECOND_RPC_PASSWORD: ""
+      SECOND_CORE_RPC_HOST: ""
+      SECOND_CORE_RPC_PORT: ""
+      SECOND_CORE_RPC_USERNAME: ""
+      SECOND_CORE_RPC_PASSWORD: ""
 ```
 
 JSON:
