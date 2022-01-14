@@ -1,8 +1,5 @@
 export interface OptimizedMempoolStats {
-  id: number;
   added: number;
-  unconfirmed_transactions: number;
-  tx_per_second: number;
   vbytes_per_second: number;
   total_fee: number;
   mempool_byte_weight: number;

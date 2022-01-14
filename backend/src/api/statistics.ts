@@ -247,9 +247,8 @@ class Statistics {
   }
 
   private getQueryForDaysAvg(div: number, interval: string) {
-    return `SELECT id, UNIX_TIMESTAMP(added) as added,
-      CAST(avg(unconfirmed_transactions) as DOUBLE) as unconfirmed_transactions,
-      CAST(avg(tx_per_second) as DOUBLE) as tx_per_second,
+    return `SELECT
+      UNIX_TIMESTAMP(added) as added,
       CAST(avg(vbytes_per_second) as DOUBLE) as vbytes_per_second,
       CAST(avg(vsize_1) as DOUBLE) as vsize_1,
       CAST(avg(vsize_2) as DOUBLE) as vsize_2,
@@ -296,8 +295,8 @@ class Statistics {
   }
 
   private getQueryForDays(div: number, interval: string) {
-    return `SELECT id, UNIX_TIMESTAMP(added) as added, unconfirmed_transactions,
-      tx_per_second,
+    return `SELECT
+      UNIX_TIMESTAMP(added) as added,
       CAST(avg(vbytes_per_second) as DOUBLE) as vbytes_per_second,
       vsize_1,
       vsize_2,
@@ -477,10 +476,7 @@ class Statistics {
   private mapStatisticToOptimizedStatistic(statistic: Statistic[]): OptimizedStatistic[] {
     return statistic.map((s) => {
       return {
-        id: s.id || 0,
         added: s.added,
-        unconfirmed_transactions: s.unconfirmed_transactions,
-        tx_per_second: s.tx_per_second,
         vbytes_per_second: s.vbytes_per_second,
         mempool_byte_weight: s.mempool_byte_weight,
         total_fee: s.total_fee,
