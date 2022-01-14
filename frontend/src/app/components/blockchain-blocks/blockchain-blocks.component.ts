@@ -157,8 +157,8 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
     return {
       left: addLeft + 155 * this.blocks.indexOf(block) + 'px',
       background: `repeating-linear-gradient(
-        #2d3348,
-        #2d3348 ${greenBackgroundHeight}%,
+        #414042,
+        #414042 ${greenBackgroundHeight}%,
         ${this.gradientColors[this.network][0]} ${Math.max(greenBackgroundHeight, 0)}%,
         ${this.gradientColors[this.network][1]} 100%
       )`,
@@ -175,7 +175,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
 
     return {
       left: addLeft + 155 * this.emptyBlocks.indexOf(block) + 'px',
-      background: "#2d3348",
+      background: "#414042",
     };
   }
 

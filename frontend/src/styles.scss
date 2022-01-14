@@ -8,7 +8,7 @@ $gray-700: #fff;
 $nav-tabs-link-active-bg: #11131f;
 
 $primary: #105fb0;
-$secondary: #2d3348;
+$secondary: #414042;
 $success: #1a9436;
 $info: #1bd8f4;
 
@@ -109,8 +109,8 @@ body {
 
 .form-control.form-control-secondary {
   color: #fff;
-  background-color: #2d3348;
-  border: 1px solid #2d3348;
+  background-color: #414042;
+  border: 1px solid #414042;
 }
 .form-control.form-control-secondary:focus {
   color: #fff;
@@ -468,19 +468,19 @@ h1, h2, h3 {
 }
 
 .progress-mempool {
-  background: repeating-linear-gradient(to right, #2d3348, #2d3348 0%, #105fb0 0%, #9339f4 100%);
+  background: repeating-linear-gradient(to right, #414042, #414042 0%, #105fb0 0%, #9339f4 100%);
 }
 
 .progress-mempool.testnet {
-  background: repeating-linear-gradient(to right, #2d3348, #2d3348 0%, #1d486f 0%, #183550 100%);
+  background: repeating-linear-gradient(to right, #414042, #414042 0%, #1d486f 0%, #183550 100%);
 }
 
 .progress-mempool.signet {
-  background: repeating-linear-gradient(to right, #2d3348, #2d3348 0%, #6f1d5d 0%, #471850 100%);
+  background: repeating-linear-gradient(to right, #414042, #414042 0%, #6f1d5d 0%, #471850 100%);
 }
 
 .progress-mempool.liquid {
-  background: repeating-linear-gradient(to right, #2d3348, #2d3348 0%, #116761 0%, #183550 100%);
+  background: repeating-linear-gradient(to right, #414042, #414042 0%, #116761 0%, #183550 100%);
 }
 
 .progress-dark {
@@ -659,7 +659,7 @@ th {
     }
   
     .collapsed{
-      background-color: #2d3348;
+      background-color: #414042;
       color: #1bd8f4;
     }
   }
