@@ -1,103 +1,169 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { merge, Observable, ObservableInput, of } from 'rxjs';
-import { map, share, switchMap, tap } from 'rxjs/operators';
-import { PoolsStats } from 'src/app/interfaces/node-api.interface';
+import { Component, OnInit, ChangeDetectionStrategy, OnChanges } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { EChartsOption } from 'echarts';
+import { BehaviorSubject, merge, of } from 'rxjs';
+import { skip } from 'rxjs/operators';
+import { MiningStats } from 'src/app/interfaces/node-api.interface';
 import { StorageService } from 'src/app/services/storage.service';
-import { ApiService } from '../../services/api.service';
+import { MiningService } from '../../services/mining.service';
 
 @Component({
   selector: 'app-pool-ranking',
   templateUrl: './pool-ranking.component.html',
+  styles: [`
+    .loadingGraphs {
+      position: absolute;
+      top: 52%;
+      left: calc(50% - 16px);
+      z-index: 100;
+    }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PoolRankingComponent implements OnInit {
-  pools$: Observable<object>
-
-  radioGroupForm: FormGroup;
+export class PoolRankingComponent implements OnInit, OnChanges {
   poolsWindowPreference: string;
+  radioGroupForm: FormGroup;
+
+  miningStats!: MiningStats;
+  miningStatsEmitter$ = new BehaviorSubject<MiningStats>(this.miningStats);
+
+  isLoading = true;
+  chartOptions: EChartsOption = {};
+  chartInitOptions = {
+    renderer: 'svg'
+  };
 
   constructor(
-    private formBuilder: FormBuilder,
-    private route: ActivatedRoute,
-    private apiService: ApiService,
     private storageService: StorageService,
-  ) { }
-
-  ngOnInit(): void {
+    private formBuilder: FormBuilder,
+    private miningService: MiningService,
+  ) {
     this.poolsWindowPreference = this.storageService.getValue('poolsWindowPreference') ? this.storageService.getValue('poolsWindowPreference').trim() : '2h';
-    this.radioGroupForm = this.formBuilder.group({
-      dateSpan: this.poolsWindowPreference
-    });
 
-    // Setup datespan triggers
-    this.route.fragment.subscribe((fragment) => {
-      if (['1d', '3d', '1w', '1m', '3m', '6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
-        this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
-      }
-    });
-    merge(of(''), this.radioGroupForm.controls.dateSpan.valueChanges)
-      .pipe(switchMap(() => this.onDateSpanChanged()))
-      .subscribe((pools: any) => {
-        console.log(pools);
+    this.radioGroupForm = this.formBuilder.group({ dateSpan: this.poolsWindowPreference });
+    this.radioGroupForm.controls.dateSpan.setValue(this.poolsWindowPreference);
+
+    this.refreshMiningStats();
+}
+
+  ngOnInit() {
+  }
+
+  sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+  refreshMiningStats() {
+    return this.miningService.getMiningStats(this.getSQLInterval(this.poolsWindowPreference))
+      .subscribe(async data => {
+        this.miningStats = data;
+        this.miningStatsEmitter$.next(this.miningStats);
+        this.prepareChartOptions();
+        this.isLoading = false;
       });
-
-    // Fetch initial mining pool data
-    this.onDateSpanChanged();
   }
 
   ngOnChanges() {
   }
 
-  rendered() {
+  onChangeWindowPreference(e) {
+    this.poolsWindowPreference = e.target.value;
+    this.isLoading = true;
+    this.refreshMiningStats();
   }
 
-  savePoolsPreference() {
-    this.storageService.setValue('poolsWindowPreference', this.radioGroupForm.controls.dateSpan.value);
-    this.poolsWindowPreference = this.radioGroupForm.controls.dateSpan.value;
-  }
+  generatePoolsChartSerieData() {
+    const poolShareThreshold = 0.5; // Do not draw pools which hashrate share is lower than that
+    const data: object[] = [];
 
-  onDateSpanChanged(): ObservableInput<any> {
-    let interval: string;
-    console.log(this.poolsWindowPreference);
-    switch (this.poolsWindowPreference) {
-      case '1d': interval = '1 DAY'; break;
-      case '3d': interval = '3 DAY'; break;
-      case '1w': interval = '1 WEEK'; break;
-      case '1m': interval = '1 MONTH'; break;
-      case '3m': interval = '3 MONTH'; break;
-      case '6m': interval = '6 MONTH'; break;
-      case '1y': interval = '1 YEAR'; break;
-      case '2y': interval = '2 YEAR'; break;
-      case '3y': interval = '3 YEAR'; break;
-      case 'all': interval = '1000 YEAR'; break;
-    }
-    this.pools$ = this.apiService.listPools$(interval).pipe(map(res => this.computeMiningStats(res)));
-    return this.pools$;
-  }
-
-  computeMiningStats(stats: PoolsStats) {
-    const totalEmptyBlock = Object.values(stats.poolsStats).reduce((prev, cur) => {
-      return prev + cur.emptyBlocks;
-    }, 0);
-    const totalEmptyBlockRatio = (totalEmptyBlock / stats.blockCount * 100).toFixed(2);
-    const poolsStats = stats.poolsStats.map((poolStat) => {
-      return {
-        share: (poolStat.blockCount / stats.blockCount * 100).toFixed(2),
-        lastEstimatedHashrate: (poolStat.blockCount / stats.blockCount * stats.lastEstimatedHashrate / Math.pow(10, 15)).toFixed(2),
-        emptyBlockRatio: (poolStat.emptyBlocks / poolStat.blockCount * 100).toFixed(2),
-        ...poolStat
+    this.miningStats.pools.forEach((pool) => {
+      if (parseFloat(pool.share) < poolShareThreshold) {
+        return;
       }
+      data.push({
+        value: pool.lastEstimatedHashrate,
+        name: pool.name,
+        label: { color: '#FFFFFF' },
+        tooltip: {
+          formatter: () => {
+            return `<u><b>${pool.name}</b></u><br>` +
+              pool.lastEstimatedHashrate.toString() + ' PH/s (' + pool.share + `%)
+              <br>(` + pool.blockCount.toString() + ` blocks)`;
+          }
+        }
+      });
     });
+    return data;
+  }
 
-    return {
-      lastEstimatedHashrate: (stats.lastEstimatedHashrate / Math.pow(10, 15)).toFixed(2),
-      blockCount: stats.blockCount,
-      totalEmptyBlock: totalEmptyBlock,
-      totalEmptyBlockRatio: totalEmptyBlockRatio,
-      poolsStats: poolsStats,
+  prepareChartOptions() {
+    this.chartOptions = {
+      title: {
+        text: 'Hashrate distribution',
+        subtext: 'Estimated from the # of blocks mined',
+        left: 'center',
+        textStyle: {
+          color: '#FFFFFF',
+        },
+        subtextStyle: {
+          color: '#CCCCCC',
+          fontStyle: 'italic',
+        }
+      },
+      tooltip: {
+        trigger: 'item'
+      },
+      series: [
+        {
+          name: 'Mining pool',
+          type: 'pie',
+          radius: ['30%', '70%'],
+          data: this.generatePoolsChartSerieData(),
+          labelLine: {
+            lineStyle: {
+              width: 2,
+            },
+          },
+          label: {
+            fontSize: 14,
+          },
+          itemStyle: {
+            borderRadius: 5,
+            borderWidth: 2,
+            borderColor: '#000',
+          },
+          emphasis: {
+            itemStyle: {
+              borderWidth: 5,
+              borderColor: '#000',
+              borderRadius: 20,
+              shadowBlur: 40,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.75)'
+            },
+            labelLine: {
+              lineStyle: {
+                width: 3,
+              }
+            }
+          }
+        }
+      ]
+    };
+  }
+
+  getSQLInterval(uiInterval: string) {
+    switch (uiInterval) {
+      case '1d': return '1 DAY';
+      case '3d': return '3 DAY';
+      case '1w': return '1 WEEK';
+      case '1m': return '1 MONTH';
+      case '3m': return '3 MONTH';
+      case '6m': return '6 MONTH';
+      case '1y': return '1 YEAR';
+      case '2y': return '2 YEAR';
+      case '3y': return '3 YEAR';
+      default: return '1000 YEAR';
     }
   }
+
 }
 
