@@ -49,7 +49,7 @@ import { FeesBoxComponent } from './components/fees-box/fees-box.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DifficultyComponent } from './components/difficulty/difficulty.component';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faDatabase, faExchangeAlt, faInfoCircle,
+import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown, faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl } from '@fortawesome/free-solid-svg-icons';
 import { ApiDocsComponent } from './components/docs/api-docs.component';
 import { DocsComponent } from './components/docs/docs.component';
@@ -145,6 +145,7 @@ export class AppModule {
     library.addIcons(faTv);
     library.addIcons(faTachometerAlt);
     library.addIcons(faCubes);
+    library.addIcons(faHammer);
     library.addIcons(faCogs);
     library.addIcons(faThList);
     library.addIcons(faList);

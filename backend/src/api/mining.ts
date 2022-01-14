@@ -43,8 +43,8 @@ class Mining {
     })
 
     poolsStatistics["blockCount"] = blockCount;
-    poolsStatistics["poolsStats"] = poolsStats;
     poolsStatistics["lastEstimatedHashrate"] = lastBlockHashrate;
+    poolsStatistics["pools"] = poolsStats;
 
     return poolsStatistics;
   }
