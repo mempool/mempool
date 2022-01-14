@@ -29,7 +29,7 @@ class FiatConversion {
     try {
       const response = await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin-cash&vs_currencies=usd', { timeout: 10000 });
       //response = {"bitcoin-cash":{"usd":388.24}}
-      const usd = response.bitcoin-cash.usd;
+      const usd = response["bitcoin-cash"]["usd"];
       this.conversionRates = {
         'USD': usd,
       };
