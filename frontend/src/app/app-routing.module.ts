@@ -378,91 +378,104 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
   },
   {
     path: 'testnet',
-    component: LiquidMasterPageComponent,
     children: [
       {
         path: '',
-        component: StartComponent,
+        component: LiquidMasterPageComponent,
         children: [
           {
             path: '',
-            component: DashboardComponent
+            component: StartComponent,
+            children: [
+              {
+                path: '',
+                component: DashboardComponent
+              },
+              {
+                path: 'tx/push',
+                component: PushTransactionComponent,
+              },
+              {
+                path: 'tx/:id',
+                component: TransactionComponent
+              },
+              {
+                path: 'block/:id',
+                component: BlockComponent
+              },
+              {
+                path: 'mempool-block/:id',
+                component: MempoolBlockComponent
+              },
+            ],
           },
           {
-            path: 'tx/push',
-            component: PushTransactionComponent,
+            path: 'blocks',
+            component: LatestBlocksComponent,
           },
           {
-            path: 'tx/:id',
-            component: TransactionComponent
+            path: 'graphs',
+            component: StatisticsComponent,
           },
           {
-            path: 'block/:id',
-            component: BlockComponent
+            path: 'address/:id',
+            component: AddressComponent
           },
           {
-            path: 'mempool-block/:id',
-            component: MempoolBlockComponent
+            path: 'asset/:id',
+            component: AssetComponent
+          },
+          {
+            path: 'assets',
+            component: AssetsComponent,
+          },
+          {
+            path: 'docs/api/:type',
+            component: DocsComponent
+          },
+          {
+            path: 'docs/api',
+            redirectTo: 'docs/api/rest'
+          },
+          {
+            path: 'docs',
+            redirectTo: 'docs/api/rest'
+          },
+          {
+            path: 'api',
+            redirectTo: 'docs/api/rest'
+          },
+          {
+            path: 'about',
+            component: AboutComponent,
+          },
+          {
+            path: 'terms-of-service',
+            component: TermsOfServiceComponent
+          },
+          {
+            path: 'privacy-policy',
+            component: PrivacyPolicyComponent
+          },
+          {
+            path: 'trademark-policy',
+            component: TrademarkPolicyComponent
+          },
+          {
+            path: 'sponsor',
+            component: SponsorComponent,
           },
         ],
       },
       {
-        path: 'blocks',
-        component: LatestBlocksComponent,
+        path: 'tv',
+        component: TelevisionComponent
       },
       {
-        path: 'graphs',
-        component: StatisticsComponent,
+        path: 'status',
+        component: StatusViewComponent
       },
-      {
-        path: 'address/:id',
-        component: AddressComponent
-      },
-      {
-        path: 'asset/:id',
-        component: AssetComponent
-      },
-      {
-        path: 'assets',
-        component: AssetsComponent,
-      },
-      {
-        path: 'docs/api/:type',
-        component: DocsComponent
-      },
-      {
-        path: 'docs/api',
-        redirectTo: 'docs/api/rest'
-      },
-      {
-        path: 'docs',
-        redirectTo: 'docs/api/rest'
-      },
-      {
-        path: 'api',
-        redirectTo: 'docs/api/rest'
-      },
-      {
-        path: 'about',
-        component: AboutComponent,
-      },
-      {
-        path: 'terms-of-service',
-        component: TermsOfServiceComponent
-      },
-      {
-        path: 'privacy-policy',
-        component: PrivacyPolicyComponent
-      },
-      {
-        path: 'trademark-policy',
-        component: TrademarkPolicyComponent
-      },
-      {
-        path: 'sponsor',
-        component: SponsorComponent,
-      },
-    ],
+    ]
   },
   {
     path: 'tv',
