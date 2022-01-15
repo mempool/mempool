@@ -7,6 +7,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { IBackendInfo } from 'src/app/interfaces/websocket.interface';
 import { Router } from '@angular/router';
 import { map } from 'rxjs/operators';
+import { ITranslators } from 'src/app/interfaces/node-api.interface';
 
 @Component({
   selector: 'app-about',
@@ -17,6 +18,7 @@ import { map } from 'rxjs/operators';
 export class AboutComponent implements OnInit {
   backendInfo$: Observable<IBackendInfo>;
   sponsors$: Observable<any>;
+  translators$: Observable<ITranslators>;
   allContributors$: Observable<any>;
   frontendGitCommitHash = this.stateService.env.GIT_COMMIT_HASH;
   packetJsonVersion = this.stateService.env.PACKAGE_JSON_VERSION;
@@ -38,6 +40,17 @@ export class AboutComponent implements OnInit {
     this.websocketService.want(['blocks']);
 
     this.sponsors$ = this.apiService.getDonation$();
+    this.translators$ = this.apiService.getTranslators$()
+      .pipe(
+        map((translators) => {
+          for (const t in translators) {
+            if (translators[t] === '') {
+              delete translators[t]
+            }
+          }
+          return translators;
+        })
+      );
     this.allContributors$ = this.apiService.getContributor$().pipe(
       map((contributors) => {
         return {
