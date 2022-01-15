@@ -166,7 +166,7 @@
 
   <ng-container *ngIf="translators$ | async | keyvalue as translators else loadingSponsors">
     <div class="community-sponsor">
-      <h3 i18n="about.translators">Translators</h3>
+      <h3 i18n="about.translators">Project Translators</h3>
       <div class="wrapper">
         <ng-template ngFor let-translator [ngForOf]="translators">
           <a [href]="'https://twitter.com/' + translator.value" target="_blank" [title]="translator.key">
