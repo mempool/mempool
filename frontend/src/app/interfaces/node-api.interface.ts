@@ -49,3 +49,5 @@ export interface LiquidPegs {
   amount: string;
   date: string;
 }
+
+export interface ITranslators { [language: string]: string; }
