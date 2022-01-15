@@ -165,16 +165,17 @@
   </div>
 
   <ng-container *ngIf="translators$ | async | keyvalue as translators else loadingSponsors">
-    <div class="maintainers">
+    <div class="community-sponsor">
       <h3 i18n="about.translators">Translators</h3>
       <div class="wrapper">
         <ng-template ngFor let-translator [ngForOf]="translators">
           <a [href]="'https://twitter.com/' + translator.value" target="_blank" [title]="translator.key">
-            <span>{{ translator.value }}</span>
-          </a>,
+            <img class="image" [src]="'/api/v1/translators/images/' + translator.value" />
+          </a>
         </ng-template>
       </div>
     </div>
+    <br>
   </ng-container>
   
   <ng-container *ngIf="allContributors$ | async as contributors else loadingSponsors">

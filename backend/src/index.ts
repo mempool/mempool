@@ -229,6 +229,16 @@ class Server {
           res.status(500).end();
         }
       })
+      .get(config.MEMPOOL.API_URL_PREFIX + 'translators/images/:id', async (req, res) => {
+        try {
+          const response = await axios.get('https://mempool.space/api/v1/translators/images/' + req.params.id, {
+            responseType: 'stream', timeout: 10000
+          });
+          response.data.pipe(res);
+        } catch (e) {
+          res.status(500).end();
+        }
+      })
     ;
 
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
