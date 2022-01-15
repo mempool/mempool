@@ -102,6 +102,18 @@ class BitcoinApi implements AbstractBitcoinApi {
     return this.bitcoindClient.sendRawTransaction(rawTransaction);
   }
 
+  async $getOutspends(txId: string): Promise<IEsploraApi.Outspend[]> {
+    const outSpends: IEsploraApi.Outspend[] = [];
+    const tx = await this.$getRawTransaction(txId, true, false);
+    for (let i = 0; i < tx.vout.length; i++) {
+      const txOut = await this.bitcoindClient.getTxOut(txId, i);
+      outSpends.push({
+        spent: txOut === null,
+      });
+    }
+    return outSpends;
+  }
+
   protected async $convertTransaction(transaction: IBitcoinApi.Transaction, addPrevout: boolean): Promise<IEsploraApi.Transaction> {
     let esploraTransaction: IEsploraApi.Transaction = {
       txid: transaction.txid,
