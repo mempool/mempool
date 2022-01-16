@@ -60,6 +60,10 @@ class ElectrsApi implements AbstractBitcoinApi {
   $sendRawTransaction(rawTransaction: string): Promise<string> {
     throw new Error('Method not implemented.');
   }
+
+  $getOutspends(): Promise<IEsploraApi.Outspend[]> {
+    throw new Error('Method not implemented.');
+  }
 }
 
 export default ElectrsApi;

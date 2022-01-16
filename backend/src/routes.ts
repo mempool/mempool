@@ -716,8 +716,13 @@ class Routes {
     }
   }
 
-  public getTransactionOutspends(req: Request, res: Response) {
-    res.status(501).send('Not implemented');
+  public async getTransactionOutspends(req: Request, res: Response) {
+    try {
+      const result = await bitcoinApi.$getOutspends(req.params.txId);
+      res.json(result);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
   }
 
   public getDifficultyChange(req: Request, res: Response) {
