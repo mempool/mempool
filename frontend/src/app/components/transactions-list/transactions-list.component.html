@@ -189,9 +189,14 @@
                       <fa-icon [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
                     </span>
                     <ng-template #spent>
-                      <a [routerLink]="['/tx/' | relativeUrl, outspends[i][vindex].txid]" class="red">
+                      <a *ngIf="outspends[i][vindex].txid else outputNoTxId" [routerLink]="['/tx/' | relativeUrl, outspends[i][vindex].txid]" class="red">
                         <fa-icon [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
                       </a>
+                      <ng-template #outputNoTxId>
+                        <span class="red">
+                          <fa-icon [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
+                        </span>
+                      </ng-template>
                     </ng-template>
                   </ng-template>
                 </td>
