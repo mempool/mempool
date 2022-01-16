@@ -393,7 +393,7 @@
       </trans-unit>
       <trans-unit id="a9b87c3aa4731edee661c8287ef3aab71799c0b8" datatype="html">
         <source>Total received</source>
-        <target>مجموع الواردات</target>
+        <target>مجموع الوارد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
           <context context-type="linenumber">22</context>
@@ -461,7 +461,7 @@
       </trans-unit>
       <trans-unit id="14779b0ce4cbc4d975a35a8fe074426228a324f3" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> transactions</source>
-        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> معاملات</target>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> معاملة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
           <context context-type="linenumber">51</context>
@@ -494,7 +494,7 @@
       </trans-unit>
       <trans-unit id="70572fa5fe9d93f071fbb0f3556d86de39f9e4af" datatype="html">
         <source>Block <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;blockTemplateContent&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;"/></source>
-        <target>كتله <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;blockTemplateContent&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;"/></target>
+        <target>الكتلة <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;blockTemplateContent&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-container&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.html</context>
           <context context-type="linenumber">4</context>
@@ -611,7 +611,7 @@
       </trans-unit>
       <trans-unit id="add4cd82e3e38a3110fe67b3c7df56e9602644ee" datatype="html">
         <source>Transactions</source>
-        <target>التحويلات</target>
+        <target>المعاملات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
           <context context-type="linenumber">15,18</context>
@@ -1092,7 +1092,7 @@
       </trans-unit>
       <trans-unit id="8e623d3cfecb7c560c114390db53c1f430ffd0de" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="confirmation&lt;/ng-template&gt;           &lt;ng-template #confirmationPlural let-i i18n=&quot;shared.confirmation-count.plural|Transaction plural confir"/> confirmation</source>
-        <target><x id="INTERPOLATION" equiv-text="confirmation&lt;/ng-template&gt;           &lt;ng-template #confirmationPlural let-i i18n=&quot;shared.confirmation-count.plural|Transaction plural confir"/>تأكيدة</target>
+        <target><x id="INTERPOLATION" equiv-text="confirmation&lt;/ng-template&gt;           &lt;ng-template #confirmationPlural let-i i18n=&quot;shared.confirmation-count.plural|Transaction plural confir"/>تأكيد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
           <context context-type="linenumber">20,21</context>
@@ -1114,7 +1114,7 @@
       </trans-unit>
       <trans-unit id="bc5b0a2631f0b7bc71aaec6aa6f01af21f9a80d4" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="confirmations&lt;/ng-template&gt;         &lt;/button&gt;       &lt;/div&gt;     &lt;/div&gt;            &lt;div class=&quot;clearfix&quot;&gt;&lt;/div&gt;        &lt;div class=&quot;box tran"/> confirmations</source>
-        <target><x id="INTERPOLATION" equiv-text="confirmations&lt;/ng-template&gt;         &lt;/button&gt;       &lt;/div&gt;     &lt;/div&gt;            &lt;div class=&quot;clearfix&quot;&gt;&lt;/div&gt;        &lt;div class=&quot;box tran"/>تأكيدات</target>
+        <target><x id="INTERPOLATION" equiv-text="confirmations&lt;/ng-template&gt;         &lt;/button&gt;       &lt;/div&gt;     &lt;/div&gt;            &lt;div class=&quot;clearfix&quot;&gt;&lt;/div&gt;        &lt;div class=&quot;box tran"/> تأكيدات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
           <context context-type="linenumber">21,22</context>
@@ -1233,7 +1233,7 @@
       </trans-unit>
       <trans-unit id="4d6066e445db90780e4b30ca93398be0b6567eda" datatype="html">
         <source>BSQ Transactions</source>
-        <target>تحويلات BSQ</target>
+        <target>معاملات BSQ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
           <context context-type="linenumber">2,5</context>
@@ -1241,7 +1241,7 @@
       </trans-unit>
       <trans-unit id="94c248797dd2b6af49068cb49c3b4bc26bec6a16" datatype="html">
         <source>TXID</source>
-        <target>رقم الحواله</target>
+        <target>معرّف الحوالة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
           <context context-type="linenumber">18,19</context>
@@ -1527,7 +1527,7 @@
       </trans-unit>
       <trans-unit id="9f10a0577222a7d6c35a889453fa3a794750d9c4" datatype="html">
         <source>multisig <x id="INTERPOLATION" equiv-text="{{ multisigM }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ multisigN }}"/></source>
-        <target>مولتيسيج <x id="INTERPOLATION" equiv-text="{{ multisigM }}"/> من <x id="INTERPOLATION_1" equiv-text="{{ multisigN }}"/></target>
+        <target>متعدد التواقيع <x id="INTERPOLATION" equiv-text="{{ multisigM }}"/> من <x id="INTERPOLATION_1" equiv-text="{{ multisigN }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.html</context>
           <context context-type="linenumber">5</context>
@@ -1572,7 +1572,7 @@
       </trans-unit>
       <trans-unit id="0f6ada0cfb60aefd8f77f8a22349850ce186d666" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="of {{ txCount | number }} transactions&lt;/ng-template&gt;       &lt;/h2&gt;"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transactions</source>
-        <target><x id="INTERPOLATION" equiv-text="of {{ txCount | number }} transactions&lt;/ng-template&gt;       &lt;/h2&gt;"/> من <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> تحويلات</target>
+        <target><x id="INTERPOLATION" equiv-text="of {{ txCount | number }} transactions&lt;/ng-template&gt;       &lt;/h2&gt;"/> من <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> معاملة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">61,62</context>
@@ -1735,7 +1735,7 @@
       </trans-unit>
       <trans-unit id="d2a84740e76b7220516a9f10644e4b3bdabdb833" datatype="html">
         <source>Peg In/Out and Burn Transactions</source>
-        <target>ربط التحويلات وإخراجها  و المعاملات المحروقه</target>
+        <target>ربط التحويلات وإخراجها و المعاملات المحروقة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">81</context>
@@ -1946,7 +1946,7 @@
       </trans-unit>
       <trans-unit id="d2eb45d1cd8cd146b7cb0223ab97a4b03b614060" datatype="html">
         <source>sat/vB</source>
-        <target>sat/vB</target>
+        <target>ساتوشي/بايت</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">79</context>
@@ -2020,7 +2020,7 @@
       </trans-unit>
       <trans-unit id="855f852e5642a1279605465df0cbbe78c2622648" datatype="html">
         <source>Based on average native segwit transaction of 140 vBytes</source>
-        <target>بناءً على متوسط معاملة segwit الأصلية التي يبلغ 140 ف بايت</target>
+        <target>بناءً على متوسط معاملة native segwit التي يبلغ حجمها 140 ف بايت</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">79,81</context>
@@ -3274,7 +3274,7 @@
       </trans-unit>
       <trans-unit id="f13cbfe8cfc955918e9f64466d2cafddb4760d9a" datatype="html">
         <source>Broadcast Transaction</source>
-        <target>نشر التحويلات</target>
+        <target>بث معاملة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/push-transaction/push-transaction.component.html</context>
           <context context-type="linenumber">2</context>
@@ -3305,7 +3305,7 @@
       </trans-unit>
       <trans-unit id="78fe1342aab9e91cb7cbd1becbaacf3b719546b3" datatype="html">
         <source>TXID, block height, hash or address</source>
-        <target>ابحث عن معرف الحوالة، عنوان، رقم كتلة او هاش</target>
+        <target>البحث باستخدام معرّف الحوالة، العنوان، رقم الكتلة او الهاش</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-form.component.html</context>
           <context context-type="linenumber">4</context>
@@ -3372,7 +3372,7 @@
       </trans-unit>
       <trans-unit id="75c20c8a9cd9723d45bee0230dd582d7c2e4ecbc" datatype="html">
         <source>Mempool by vBytes (sat/vByte)</source>
-        <target>عوائد عقود العملات الرقمية الحالية لتخزين المعلومات عن العمليات غير المعلنة في وحدة تخزين العناوين الإفتراضية(رسوم العاملة سات\وحدة العناوين الإفتراضية) </target>
+        <target>المعاملات الغير مؤكدة بالبايتات الافتراضية (ساتوشي/بايت افتراضي)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">6</context>
@@ -3773,7 +3773,7 @@
       </trans-unit>
       <trans-unit id="071dc2ed21e40ad2199ea5dda884f48c0414a42a" datatype="html">
         <source>sat</source>
-        <target>سات</target>
+        <target>ساتوشي</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">386,389</context>
@@ -3945,7 +3945,7 @@
       </trans-unit>
       <trans-unit id="83b8b9dd1ed416447cf8438460a37b0ddeb2677c" datatype="html">
         <source>sat</source>
-        <target>سات</target>
+        <target>ساتوشي</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">231,232</context>
@@ -3955,7 +3955,7 @@
       </trans-unit>
       <trans-unit id="f85c05147b720576e50336cf26f63d3b05601699" datatype="html">
         <source>This transaction saved <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>% on fees by using native SegWit-Bech32</source>
-        <target>هذه المعاملة وفرة <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>٪ من الرسوم لاستخدام النيتف سيقويت Bech32</target>
+        <target>هذه المعاملة وفرت <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>% من الرسوم بسبب استخدام SegWit-Bech32</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">1</context>
@@ -3964,7 +3964,7 @@
       </trans-unit>
       <trans-unit id="0ca27703757bf9a636a0b9b61e6a0cf248781cb4" datatype="html">
         <source>SegWit</source>
-        <target>سيقويت</target>
+        <target>SegWit</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">1</context>
@@ -3982,7 +3982,7 @@
       </trans-unit>
       <trans-unit id="975f46d122f2ca0a187308399a58b44d61ef08eb" datatype="html">
         <source>This transaction saved <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>% on fees by using SegWit and could save <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}"/>% more by fully upgrading to native SegWit-Bech32</source>
-        <target>هذه المعاملة وفرت <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>٪ من رسوم التحويل باستخدام سيقويت وممكن ان توفر <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}"/>٪ اكثر عن طريق التطور الى نيتف سيقويت Bech32</target>
+        <target>هذه المعاملة وفرت <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>% من الرسوم بسبب استخدام SegWit وممكن ان توفر <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}"/>% اكثر عن طريق الترقية الى native SegWit-Bech32</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">3</context>
@@ -3991,7 +3991,7 @@
       </trans-unit>
       <trans-unit id="1be04d5407059059b596f72696a3d1704ce9c0ef" datatype="html">
         <source>This transaction could save <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}"/>% on fees by upgrading to native SegWit-Bech32 or <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialP2shGains * 100 | number:  '1.0-0' }}"/>% by upgrading to SegWit-P2SH</source>
-        <target>كان من الممكن أن توفر هذه المعاملة <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}"/>٪ من الرسوم عن طريق الترقية إلى سيقويت Bech32  أو <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialP2shGains * 100 | number:  '1.0-0' }}"/>٪ عن طريق الترقية إلى سيقويت-P2SH</target>
+        <target>كان من الممكن أن توفر هذه المعاملة <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}"/>% من الرسوم عن طريق الترقية إلى native SegWit-Bech32 أو <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialP2shGains * 100 | number:  '1.0-0' }}"/>% عن طريق الترقية إلى SegWit-P2SH</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">5</context>
@@ -4060,7 +4060,7 @@
       </trans-unit>
       <trans-unit id="60601e02e7c1f6c4dbabd0ef0bb8946003db8dec" datatype="html">
         <source>Only ~<x id="INTERPOLATION" equiv-text="{{ medianFeeNeeded | feeRounding }}"/> sat/vB was needed to get into this block</source>
-        <target>فقط <x id="INTERPOLATION" equiv-text="{{ medianFeeNeeded | feeRounding }}"/> سات/vB كان مطلوبب لاضافة هذه المعاملة لهذه الكتله</target>
+        <target>كان مطلوب حوالي <x id="INTERPOLATION" equiv-text="{{ medianFeeNeeded | feeRounding }}"/> ساتوشي/بايت فقط لاضافة هذه المعاملة الى هذه الكتلة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
@@ -4140,7 +4140,7 @@
       </trans-unit>
       <trans-unit id="160f1ffbd26df073d0fbd02cf8ce0d8cea7603b0" datatype="html">
         <source>Fee</source>
-        <target>رسوم</target>
+        <target>الرسوم</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">124,126</context>
@@ -4296,7 +4296,7 @@
       </trans-unit>
       <trans-unit id="date-base.months" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> months</source>
-        <target><x id="DATE" equiv-text="counter"/>اشهر</target>
+        <target><x id="DATE" equiv-text="counter"/> أشهر</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">6</context>
@@ -4304,7 +4304,7 @@
       </trans-unit>
       <trans-unit id="date-base.week" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> week</source>
-        <target><x id="DATE" equiv-text="counter"/>اسبوع</target>
+        <target><x id="DATE" equiv-text="counter"/> اسبوع</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">7</context>
@@ -4352,7 +4352,7 @@
       </trans-unit>
       <trans-unit id="date-base.minute" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> minute</source>
-        <target><x id="DATE" equiv-text="counter"/> دقيقه</target>
+        <target><x id="DATE" equiv-text="counter"/> دقيقة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">13</context>
