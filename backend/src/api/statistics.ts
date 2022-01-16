@@ -53,6 +53,13 @@ class Statistics {
     memPoolArray = memPoolArray.filter((tx) => tx.effectiveFeePerVsize);
 
     if (!memPoolArray.length) {
+      const insertIdZeroed = await this.$createZeroedStatistic();
+      if (this.newStatisticsEntryCallback && insertIdZeroed) {
+        const newStats = await this.$get(insertIdZeroed);
+        if (newStats) {
+          this.newStatisticsEntryCallback(newStats);
+        }
+      }
       return;
     }
 
@@ -139,9 +146,70 @@ class Statistics {
     }
   }
 
-  private async $create(statistics: Statistic): Promise<number | undefined> {
+  private async $createZeroedStatistic(): Promise<number | undefined> {
+    const connection = await DB.pool.getConnection();
     try {
-      const connection = await DB.pool.getConnection();
+      const query = `INSERT INTO statistics(
+              added,
+              unconfirmed_transactions,
+              tx_per_second,
+              vbytes_per_second,
+              mempool_byte_weight,
+              fee_data,
+              total_fee,
+              vsize_1,
+              vsize_2,
+              vsize_3,
+              vsize_4,
+              vsize_5,
+              vsize_6,
+              vsize_8,
+              vsize_10,
+              vsize_12,
+              vsize_15,
+              vsize_20,
+              vsize_30,
+              vsize_40,
+              vsize_50,
+              vsize_60,
+              vsize_70,
+              vsize_80,
+              vsize_90,
+              vsize_100,
+              vsize_125,
+              vsize_150,
+              vsize_175,
+              vsize_200,
+              vsize_250,
+              vsize_300,
+              vsize_350,
+              vsize_400,
+              vsize_500,
+              vsize_600,
+              vsize_700,
+              vsize_800,
+              vsize_900,
+              vsize_1000,
+              vsize_1200,
+              vsize_1400,
+              vsize_1600,
+              vsize_1800,
+              vsize_2000
+            )
+            VALUES (NOW(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)`;
+      const [result]: any = await connection.query(query);
+      connection.release();
+      return result.insertId;
+    } catch (e) {
+      connection.release();
+      logger.err('$create() error' + (e instanceof Error ? e.message : e));
+    }
+  }
+
+  private async $create(statistics: Statistic): Promise<number | undefined> {
+    const connection = await DB.pool.getConnection();
+    try {
       const query = `INSERT INTO statistics(
               added,
               unconfirmed_transactions,
@@ -242,6 +310,7 @@ class Statistics {
       connection.release();
       return result.insertId;
     } catch (e) {
+      connection.release();
       logger.err('$create() error' + (e instanceof Error ? e.message : e));
     }
   }
