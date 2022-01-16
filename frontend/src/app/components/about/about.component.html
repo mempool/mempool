@@ -10,7 +10,7 @@
 
   <div class="about-text" *ngIf="stateService.env.BASE_MODULE === 'mempool'; else marginBox">
     <h5><ng-container i18n="about.about-the-project">The Mempool Open Source Project</ng-container><ng-template [ngIf]="locale.substr(0, 2) === 'en'"> &trade;</ng-template></h5>
-    <p i18n>Building a mempool and blockchain explorer for the Bitcoin Cash community, focusing on the transaction fee market and multi-layer ecosystem, without any advertising, altcoins, or third-party trackers.</p>
+    <p i18n>Building a mempool and blockchain explorer for the Bitcoin Cash community, focusing on scaling peer-to-peer electronic cash on the blockchain layer.</p>
   </div>
   <ng-template #marginBox>
     <div class="no-about-margin"></div>
