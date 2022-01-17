@@ -76,7 +76,7 @@ export class BlockComponent implements OnInit, OnDestroy {
 
         if (block.id === this.blockHash) {
           this.block = block;
-          this.fees = block.reward / 100000000 - this.blockSubsidy;
+          this.fees = Math.max(0, block.reward / 100000000 - this.blockSubsidy);
         }
       });
 
@@ -147,7 +147,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         }
         this.setBlockSubsidy();
         if (block.reward !== undefined) {
-          this.fees = block.reward / 100000000 - this.blockSubsidy;
+          this.fees = Math.max(0, block.reward / 100000000 - this.blockSubsidy);
         }
         this.stateService.markBlock$.next({ blockHeight: this.blockHeight });
         this.isLoadingTransactions = true;
@@ -164,7 +164,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     )
     .subscribe((transactions: Transaction[]) => {
       if (this.fees === undefined && transactions[0]) {
-        this.fees = transactions[0].vout.reduce((acc: number, curr: Vout) => acc + curr.value, 0) / 100000000 - this.blockSubsidy;
+        this.fees = Math.max(0, transactions[0].vout.reduce((acc: number, curr: Vout) => acc + curr.value, 0) / 100000000 - this.blockSubsidy);
       }
       if (!this.coinbaseTx && transactions[0]) {
         this.coinbaseTx = transactions[0];
