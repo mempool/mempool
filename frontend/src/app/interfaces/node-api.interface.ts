@@ -62,6 +62,7 @@ export interface SinglePoolStats {
   share: string,
   lastEstimatedHashrate: string,
   emptyBlockRatio: string,
+  logo: string,
 }
 
 export interface PoolsStats {

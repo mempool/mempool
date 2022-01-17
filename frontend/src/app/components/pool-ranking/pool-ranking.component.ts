@@ -93,7 +93,7 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
         return;
       }
       data.push({
-        value: pool.lastEstimatedHashrate,
+        value: pool.share,
         name: pool.name,
         label: { color: '#FFFFFF' },
         tooltip: {
@@ -125,8 +125,16 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
       tooltip: {
         trigger: 'item'
       },
+      legend: (window.innerWidth <= 767.98) ? {
+        bottom: '0%',
+        left: 'center',
+        textStyle: {
+          color: '#FFF'
+        }
+      } : null,
       series: [
         {
+          top: '5%',
           name: 'Mining pool',
           type: 'pie',
           radius: ['30%', '70%'],
@@ -137,6 +145,7 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
             },
           },
           label: {
+            show: (window.innerWidth > 767.98),
             fontSize: 14,
           },
           itemStyle: {

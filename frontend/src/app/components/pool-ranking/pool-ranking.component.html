@@ -1,6 +1,13 @@
 <div class="container-xl">
+
+  <app-difficulty [showProgress]=false [showHalving]=true></app-difficulty>
+
+  <div style="height: 500px; margin-top: 30px;" echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
+  <div class="text-center loadingGraphs" *ngIf="isLoading">
+    <div class="spinner-border text-light"></div>
+  </div>
+
   <div class="card-header">
-    <!-- <i class="fa fa-area-chart"></i> <span i18n="mining.pools-by-vBytes">Pools</span> -->
     <form [formGroup]="radioGroupForm" class="formRadioGroup">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan"
         (change)="onChangeWindowPreference($event)">
@@ -38,33 +45,31 @@
     </form>
   </div>
 
-  <div style="height: 500px;" echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
-  <div class="text-center loadingGraphs" *ngIf="isLoading">
-    <div class="spinner-border text-light"></div>
-  </div>
-
   <table class="table table-borderless" [alwaysCallback]="true" infiniteScroll [infiniteScrollDistance]="1.5" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50">
     <thead>
-      <th i18n="latest-blocks.height">Rank</th>
-      <th class="d-none d-md-block"i18n="latest-blocks.timestamp">Name</th>
+      <th class="d-none d-md-block" i18n="latest-blocks.height">Rank</th>
+      <th><!-- LOGO --></th>
+      <th i18n="latest-blocks.timestamp">Name</th>
       <th i18n="latest-blocks.timestamp">Hashrate</th>
-      <th class="d-none d-md-block" i18n="latest-blocks.mined">Block Count (share)</th>
-      <th i18n="latest-blocks.transactions">Empty Blocks (ratio)</th>
+      <th i18n="latest-blocks.mined">Block Count (%)</th>
+      <th class="d-none d-md-block" i18n="latest-blocks.transactions">Empty Blocks (%)</th>
     </thead>
     <tbody *ngIf="(miningStatsEmitter$ | async) as miningStats">
       <tr>
-        <td>-</td>
+        <td class="d-none d-md-block">-</td>
+        <td><!-- LOGO --></td>
         <td>All miners</td>
         <td>{{ miningStats.lastEstimatedHashrate}} PH/s</td>
         <td>{{ miningStats.blockCount }}</td>
-        <td>{{ miningStats.totalEmptyBlock }} ({{ miningStats.totalEmptyBlockRatio }}%)</td>
+        <td class="d-none d-md-block">{{ miningStats.totalEmptyBlock }} ({{ miningStats.totalEmptyBlockRatio }}%)</td>
       </tr>
       <tr *ngFor="let pool of miningStats.pools">
-        <td>{{ pool.rank }}</td>
-        <td><a href="{{ pool.link }}">{{ pool.name }}</a></td>
+        <td class="d-none d-md-block">{{ pool.rank }}</td>
+        <td><img width="25" height="25" src="{{ pool.logo }}"></td>
+        <td><a target="#" href="{{ pool.link }}">{{ pool.name }}</a></td>
         <td>{{ pool.lastEstimatedHashrate }} PH/s</td>
         <td>{{ pool.blockCount }} ({{ pool.share }}%)</td>
-        <td>{{ pool.emptyBlocks }} ({{ pool.emptyBlockRatio }}%)</td>
+        <td class="d-none d-md-block">{{ pool.emptyBlocks }} ({{ pool.emptyBlockRatio }}%)</td>
       </tr>
     </tbody>
   </table>
