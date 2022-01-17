@@ -1,9 +1,9 @@
-import { Component, OnInit, ChangeDetectionStrategy, OnChanges } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { EChartsOption } from 'echarts';
-import { BehaviorSubject, merge, of } from 'rxjs';
-import { skip } from 'rxjs/operators';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { MiningStats } from 'src/app/interfaces/node-api.interface';
+import { StateService } from 'src/app/services/state.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { MiningService } from '../../services/mining.service';
 
@@ -18,14 +18,15 @@ import { MiningService } from '../../services/mining.service';
       z-index: 100;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PoolRankingComponent implements OnInit, OnChanges {
+export class PoolRankingComponent implements OnInit, OnDestroy {
   poolsWindowPreference: string;
   radioGroupForm: FormGroup;
 
   miningStats!: MiningStats;
   miningStatsEmitter$ = new BehaviorSubject<MiningStats>(this.miningStats);
+  blocksSubscription: Subscription;
+  miningSubscription: Subscription;
 
   isLoading = true;
   chartOptions: EChartsOption = {};
@@ -34,6 +35,7 @@ export class PoolRankingComponent implements OnInit, OnChanges {
   };
 
   constructor(
+    private stateService: StateService,
     private storageService: StorageService,
     private formBuilder: FormBuilder,
     private miningService: MiningService,
@@ -42,26 +44,38 @@ export class PoolRankingComponent implements OnInit, OnChanges {
 
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.poolsWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.poolsWindowPreference);
-
-    this.refreshMiningStats();
-}
-
-  ngOnInit() {
   }
 
-  sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
+  ngOnInit(): void {
+    this.refreshMiningStats();
+    this.watchBlocks();
+  }
+
+  ngOnDestroy(): void {
+    this.blocksSubscription.unsubscribe();
+    this.miningSubscription.unsubscribe();      
+  }
 
   refreshMiningStats() {
-    return this.miningService.getMiningStats(this.getSQLInterval(this.poolsWindowPreference))
-      .subscribe(async data => {
-        this.miningStats = data;
-        this.miningStatsEmitter$.next(this.miningStats);
-        this.prepareChartOptions();
-        this.isLoading = false;
-      });
+    this.miningSubscription = this.miningService.getMiningStats(this.getSQLInterval(this.poolsWindowPreference))
+    .subscribe(async data => {
+      this.miningStats = data;
+      this.miningStatsEmitter$.next(this.miningStats);
+      this.prepareChartOptions();
+      this.isLoading = false;
+    });
+
+    return this.miningSubscription;
   }
 
-  ngOnChanges() {
+  watchBlocks() {
+    this.blocksSubscription = this.stateService.blocks$
+      .subscribe(([block]) => {
+        if (!this.miningStats) {
+          return;
+        }
+        this.refreshMiningStats();
+      });
   }
 
   onChangeWindowPreference(e) {
