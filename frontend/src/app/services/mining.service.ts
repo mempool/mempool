@@ -29,6 +29,7 @@ export class MiningService {
         share: (poolStat.blockCount / stats.blockCount * 100).toFixed(2),
         lastEstimatedHashrate: (poolStat.blockCount / stats.blockCount * stats.lastEstimatedHashrate / Math.pow(10, 15)).toFixed(2),
         emptyBlockRatio: (poolStat.emptyBlocks / poolStat.blockCount * 100).toFixed(2),
+        logo: `./resources/mining-pools/` + poolStat.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg',
         ...poolStat
       }
     });

@@ -17,7 +17,8 @@ class Mining {
   public async $getPoolsStats(interval: string = "100 YEAR") : Promise<object> {
     let poolsStatistics = {};
 
-    const lastBlockHashrate = await this.bitcoinApi.$getEstimatedHashrate(717960);
+    const blockHeightTip = await this.bitcoinApi.$getBlockHeightTip();
+    const lastBlockHashrate = await this.bitcoinApi.$getEstimatedHashrate(blockHeightTip);
     const poolsInfo: PoolInfo[] = await PoolsRepository.$getPoolsInfo(interval);
     const blockCount: number = await BlocksRepository.$blockCount(interval);
     const emptyBlocks: EmptyBlocks[] = await BlocksRepository.$countEmptyBlocks(interval);
