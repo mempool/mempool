@@ -169,15 +169,19 @@ export class StatisticsComponent implements OnInit {
    * All value higher that "median * capRatio" are capped
    */
   capExtremeVbytesValues() {
+    if (this.stateService.network.length !== 0) {
+      return; // Only cap on Bitcoin mainnet
+    }
+
     let capRatio = 10;
     if (['1m', '3m',  '6m', '1y', '2y', '3y'].includes(this.graphWindowPreference)) {
       capRatio = 4;
     }
 
     // Find median value
-    let vBytes : number[] = [];
-    for (let i = 0; i < this.mempoolStats.length; ++i) {
-      vBytes.push(this.mempoolStats[i].vbytes_per_second);
+    const vBytes : number[] = [];
+    for (const stat of this.mempoolStats) {
+      vBytes.push(stat.vbytes_per_second);
     }
     const sorted = vBytes.slice().sort((a, b) => a - b);
     const middle = Math.floor(sorted.length / 2);
@@ -187,8 +191,8 @@ export class StatisticsComponent implements OnInit {
     }
 
     // Cap
-    for (let i = 0; i < this.mempoolStats.length; ++i) {
-      this.mempoolStats[i].vbytes_per_second = Math.min(median * capRatio, this.mempoolStats[i].vbytes_per_second);
+    for (const stat of this.mempoolStats) {
+      stat.vbytes_per_second = Math.min(median * capRatio, stat.vbytes_per_second);
     }
   }
 }
