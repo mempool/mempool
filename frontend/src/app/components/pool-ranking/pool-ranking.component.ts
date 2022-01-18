@@ -2,10 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { EChartsOption } from 'echarts';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { MiningStats } from 'src/app/interfaces/node-api.interface';
 import { StateService } from 'src/app/services/state.service';
 import { StorageService } from 'src/app/services/storage.service';
-import { MiningService } from '../../services/mining.service';
+import { MiningService, MiningStats } from '../../services/mining.service';
 
 @Component({
   selector: 'app-pool-ranking',
@@ -70,7 +69,7 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
 
   watchBlocks() {
     this.blocksSubscription = this.stateService.blocks$
-      .subscribe(([block]) => {
+      .subscribe(() => {
         if (!this.miningStats) {
           return;
         }
@@ -98,9 +97,14 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
         label: { color: '#FFFFFF' },
         tooltip: {
           formatter: () => {
-            return `<u><b>${pool.name}</b></u><br>` +
-              pool.lastEstimatedHashrate.toString() + ' PH/s (' + pool.share + `%)
-              <br>(` + pool.blockCount.toString() + ` blocks)`;
+            if (this.poolsWindowPreference === '1d') {
+              return `<u><b>${pool.name}</b></u><br>` +
+                pool.lastEstimatedHashrate.toString() + ' PH/s (' + pool.share + `%)
+                <br>(` + pool.blockCount.toString() + ` blocks)`;
+            } else {
+              return `<u><b>${pool.name}</b></u><br>` +
+                pool.blockCount.toString() + ` blocks`;
+            }
           }
         }
       });
@@ -111,8 +115,8 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
   prepareChartOptions() {
     this.chartOptions = {
       title: {
-        text: 'Hashrate distribution',
-        subtext: 'Estimated from the # of blocks mined',
+        text: (this.poolsWindowPreference === '1d') ? 'Hashrate distribution' : 'Block distribution',
+        subtext: (this.poolsWindowPreference === '1d') ? 'Estimated from the # of blocks mined' : null,
         left: 'center',
         textStyle: {
           color: '#FFFFFF',

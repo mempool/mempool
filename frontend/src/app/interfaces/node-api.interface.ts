@@ -71,6 +71,8 @@ export interface PoolsStats {
   pools: SinglePoolStats[],
 }
 
+export interface ITranslators { [language: string]: string; }
+
 export interface MiningStats {
   lastEstimatedHashrate: string,
   blockCount: number,

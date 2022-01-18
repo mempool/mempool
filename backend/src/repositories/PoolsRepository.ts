@@ -31,7 +31,7 @@ class PoolsRepository {
       SELECT COUNT(height) as blockCount, pool_id as poolId, pools.name as name, pools.link as link
       FROM blocks
       JOIN pools on pools.id = pool_id
-      WHERE timestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()
+      WHERE blocks.blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()
       GROUP BY pool_id
       ORDER BY COUNT(height) DESC;
     `);
