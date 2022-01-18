@@ -26,6 +26,7 @@ import poolsParser from './api/pools-parser';
 import syncAssets from './sync-assets';
 import icons from './api/liquid/icons';
 import { Common } from './api/common';
+import bitcoinClient from './api/bitcoin/bitcoin-client';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -139,10 +140,13 @@ class Server {
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
 
-      if (this.blockIndexingStarted === false/* && memPool.isInSync()*/) {
+      const blockchainInfo = await bitcoinClient.getBlockchainInfo();
+      if (this.blockIndexingStarted === false
+        && memPool.isInSync()
+        && blockchainInfo.blocks === blockchainInfo.headers
+      ) {
         blocks.$generateBlockDatabase();
         this.blockIndexingStarted = true;
-        logger.info("START OLDER BLOCK INDEXING");
       }
 
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);

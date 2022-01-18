@@ -1,10 +1,10 @@
-import { BlockExtended, PoolTag } from "../mempool.interfaces";
-import { DB } from "../database";
-import logger from "../logger";
+import { BlockExtended, PoolTag } from '../mempool.interfaces';
+import { DB } from '../database';
+import logger from '../logger';
 
 export interface EmptyBlocks {
-  emptyBlocks: number,
-  poolId: number,
+  emptyBlocks: number;
+  poolId: number;
 }
 
 class BlocksRepository {
@@ -21,9 +21,9 @@ class BlocksRepository {
 
     try {
       const query = `INSERT INTO blocks(
-        height,  hash,     timestamp,    size,
-        weight,  tx_count, coinbase_raw, difficulty,
-        pool_id, fees,     fee_span,     median_fee
+        height,  hash,     blockTimestamp, size,
+        weight,  tx_count, coinbase_raw,   difficulty,
+        pool_id, fees,     fee_span,       median_fee
       ) VALUE (
         ?, ?, FROM_UNIXTIME(?), ?,
         ?, ?, ?, ?,
@@ -32,8 +32,8 @@ class BlocksRepository {
 
       const params: any[] = [
         block.height, blockHash, block.timestamp, block.size,
-        block.weight, block.tx_count, coinbaseHex ? coinbaseHex : "", block.difficulty,
-        poolTag.id, 0, "[]", block.medianFee,
+        block.weight, block.tx_count, coinbaseHex ? coinbaseHex : '', block.difficulty,
+        poolTag.id, 0, '[]', block.medianFee,
       ];
 
       await connection.query(query, params);
@@ -62,14 +62,35 @@ class BlocksRepository {
   }
 
   /**
+   * Get all block height that have not been indexed between [startHeight, endHeight]
+   */
+  public async $getMissingBlocksBetweenHeights(startHeight: number, endHeight: number): Promise<number[]> {
+    const connection = await DB.pool.getConnection();
+    const [rows] : any[] = await connection.query(`
+      SELECT height
+      FROM blocks
+      WHERE height <= ${startHeight} AND height >= ${endHeight}
+      ORDER BY height DESC;
+    `);
+    connection.release();
+
+    const indexedBlockHeights: number[] = [];
+    rows.forEach((row: any) => { indexedBlockHeights.push(row.height); });
+    const seekedBlocks: number[] = Array.from(Array(startHeight - endHeight + 1).keys(), n => n + endHeight).reverse();
+    const missingBlocksHeights =  seekedBlocks.filter(x => indexedBlockHeights.indexOf(x) === -1);
+
+    return missingBlocksHeights;
+  }
+
+  /**
    * Count empty blocks for all pools
    */
-  public async $countEmptyBlocks(interval: string = "100 YEAR") : Promise<EmptyBlocks[]> {
+  public async $countEmptyBlocks(interval: string = '100 YEAR'): Promise<EmptyBlocks[]> {
     const connection = await DB.pool.getConnection();
     const [rows] = await connection.query(`
       SELECT pool_id as poolId
       FROM blocks
-      WHERE timestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()
+      WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()
       AND tx_count = 1;
     `);
     connection.release();
@@ -80,12 +101,12 @@ class BlocksRepository {
   /**
    * Get blocks count for a period
    */
-   public async $blockCount(interval: string = "100 YEAR") : Promise<number> {
+   public async $blockCount(interval: string = '100 YEAR'): Promise<number> {
     const connection = await DB.pool.getConnection();
     const [rows] = await connection.query(`
       SELECT count(height) as blockCount
       FROM blocks
-      WHERE timestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW();
+      WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW();
     `);
     connection.release();
 

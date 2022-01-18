@@ -1,33 +1,30 @@
-import { PoolInfo, PoolStats } from "../mempool.interfaces";
-import BlocksRepository, { EmptyBlocks } from "../repositories/BlocksRepository";
-import PoolsRepository from "../repositories/PoolsRepository";
-import bitcoinClient from "./bitcoin/bitcoin-client";
-import BitcoinApi from "./bitcoin/bitcoin-api";
+import { PoolInfo, PoolStats } from '../mempool.interfaces';
+import BlocksRepository, { EmptyBlocks } from '../repositories/BlocksRepository';
+import PoolsRepository from '../repositories/PoolsRepository';
+import bitcoinClient from './bitcoin/bitcoin-client';
+import BitcoinApi from './bitcoin/bitcoin-api';
 
 class Mining {
-  private bitcoinApi: BitcoinApi;
-
   constructor() {
-    this.bitcoinApi = new BitcoinApi(bitcoinClient);
   }
 
   /**
    * Generate high level overview of the pool ranks and general stats
    */
-  public async $getPoolsStats(interval: string = "100 YEAR") : Promise<object> {
-    let poolsStatistics = {};
+  public async $getPoolsStats(interval: string = '100 YEAR') : Promise<object> {
+    const poolsStatistics = {};
 
-    const blockHeightTip = await this.bitcoinApi.$getBlockHeightTip();
-    const lastBlockHashrate = await this.bitcoinApi.$getEstimatedHashrate(blockHeightTip);
+    const blockHeightTip = await bitcoinClient.getBlockCount();
+    const lastBlockHashrate = await bitcoinClient.getNetworkHashPs(120, blockHeightTip);
     const poolsInfo: PoolInfo[] = await PoolsRepository.$getPoolsInfo(interval);
     const blockCount: number = await BlocksRepository.$blockCount(interval);
     const emptyBlocks: EmptyBlocks[] = await BlocksRepository.$countEmptyBlocks(interval);
 
-    let poolsStats: PoolStats[] = [];
+    const poolsStats: PoolStats[] = [];
     let rank = 1;
 
     poolsInfo.forEach((poolInfo: PoolInfo) => {
-      let poolStat: PoolStats = {
+      const poolStat: PoolStats = {
         poolId: poolInfo.poolId, // mysql row id
         name: poolInfo.name,
         link: poolInfo.link,
@@ -41,11 +38,11 @@ class Mining {
         }
       }
       poolsStats.push(poolStat);
-    })
+    });
 
-    poolsStatistics["blockCount"] = blockCount;
-    poolsStatistics["lastEstimatedHashrate"] = lastBlockHashrate;
-    poolsStatistics["pools"] = poolsStats;
+    poolsStatistics['blockCount'] = blockCount;
+    poolsStatistics['lastEstimatedHashrate'] = lastBlockHashrate;
+    poolsStatistics['pools'] = poolsStats;
 
     return poolsStatistics;
   }

@@ -6,7 +6,7 @@ import logger from '../logger';
 const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 class DatabaseMigration {
-  private static currentVersion = 3;
+  private static currentVersion = 4;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
 
@@ -85,6 +85,8 @@ class DatabaseMigration {
       }
       if (databaseSchemaVersion < 3) {
         await this.$executeQuery(connection, this.getCreatePoolsTableQuery(), await this.$checkIfTableExists('pools'));
+      }
+      if (databaseSchemaVersion < 4) {
         await this.$executeQuery(connection, this.getCreateBlocksTableQuery(), await this.$checkIfTableExists('blocks'));
       }
       connection.release();

@@ -50,7 +50,7 @@
       <th class="d-none d-md-block" i18n="latest-blocks.height">Rank</th>
       <th><!-- LOGO --></th>
       <th i18n="latest-blocks.timestamp">Name</th>
-      <th i18n="latest-blocks.timestamp">Hashrate</th>
+      <th *ngIf="this.poolsWindowPreference === '1d'" i18n="latest-blocks.timestamp">Hashrate</th>
       <th i18n="latest-blocks.mined">Block Count (%)</th>
       <th class="d-none d-md-block" i18n="latest-blocks.transactions">Empty Blocks (%)</th>
     </thead>
@@ -59,15 +59,15 @@
         <td class="d-none d-md-block">-</td>
         <td><!-- LOGO --></td>
         <td>All miners</td>
-        <td>{{ miningStats.lastEstimatedHashrate}} PH/s</td>
+        <td *ngIf="this.poolsWindowPreference === '1d'">{{ miningStats.lastEstimatedHashrate}} {{ miningStats.miningUnits.hashrateUnit }}</td>
         <td>{{ miningStats.blockCount }}</td>
         <td class="d-none d-md-block">{{ miningStats.totalEmptyBlock }} ({{ miningStats.totalEmptyBlockRatio }}%)</td>
       </tr>
       <tr *ngFor="let pool of miningStats.pools">
         <td class="d-none d-md-block">{{ pool.rank }}</td>
-        <td><img width="25" height="25" src="{{ pool.logo }}"></td>
+        <td><img width="25" height="25" src="{{ pool.logo }}" onError="this.src = './resources/mining-pools/default.svg'"></td>
         <td><a target="#" href="{{ pool.link }}">{{ pool.name }}</a></td>
-        <td>{{ pool.lastEstimatedHashrate }} PH/s</td>
+        <td *ngIf="this.poolsWindowPreference === '1d'">{{ pool.lastEstimatedHashrate }} {{ miningStats.miningUnits.hashrateUnit }}</td>
         <td>{{ pool.blockCount }} ({{ pool.share }}%)</td>
         <td class="d-none d-md-block">{{ pool.emptyBlocks }} ({{ pool.emptyBlockRatio }}%)</td>
       </tr>
