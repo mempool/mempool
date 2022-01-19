@@ -38,27 +38,10 @@ class BlocksRepository {
 
       await connection.query(query, params);
     } catch (e) {
-      console.log(e);
       logger.err('$updateBlocksDatabase() error' + (e instanceof Error ? e.message : e));
     }
 
     connection.release();
-  }
-
-  /**
-   * Check if a block has already been indexed in the database. Query the databse directly.
-   * This can be cached/optimized if required later on to avoid too many db queries.
-   */
-  public async $isBlockAlreadyIndexed(blockHeight: number) {
-    const connection = await DB.pool.getConnection();
-    let exists = false;
-
-    const query = `SELECT height from blocks where blocks.height = ${blockHeight}`;
-    const [rows]: any[] = await connection.query(query);
-    exists = rows.length === 1;
-    connection.release();
-
-    return exists;
   }
 
   /**

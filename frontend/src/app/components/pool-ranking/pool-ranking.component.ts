@@ -78,6 +78,7 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
   }
 
   onChangeWindowPreference(e) {
+    this.storageService.setValue('poolsWindowPreference', e.target.value);
     this.poolsWindowPreference = e.target.value;
     this.isLoading = true;
     this.refreshMiningStats();
