@@ -35,6 +35,7 @@ class BitcoinApi implements AbstractBitcoinApi {
         if (e.message.startsWith('The genesis block coinbase')) {
           return this.$returnCoinbaseTransaction();
         }
+        throw e;
       });
   }
 
