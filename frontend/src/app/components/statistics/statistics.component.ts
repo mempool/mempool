@@ -1,8 +1,8 @@
 import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { of, merge} from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { of, merge, throwError} from 'rxjs';
+import { switchMap, catchError } from 'rxjs/operators';
 
 import { OptimizedMempoolStats } from '../../interfaces/node-api.interface';
 import { WebsocketService } from '../../services/websocket.service';
@@ -28,7 +28,7 @@ export class StatisticsComponent implements OnInit {
   filterFeeIndex = 1;
   dropDownOpen = false;
 
-  mempoolStats: OptimizedMempoolStats[] = [];
+  mempoolStats: OptimizedMempoolStats[] = null;
 
   mempoolVsizeFeesData: any;
   mempoolUnconfirmedTransactionsData: any;
@@ -103,6 +103,14 @@ export class StatisticsComponent implements OnInit {
           return this.apiService.list2YStatistics$();
         }
         return this.apiService.list3YStatistics$();
+      }),
+      catchError((err) => {
+        // handle 404 and return a safe value or re-throw
+        if (err.status !== 404) {
+         return throwError(err);
+        }
+        this.mempoolStats = [];
+        return of([]);
       })
     )
     .subscribe((mempoolStats: any) => {

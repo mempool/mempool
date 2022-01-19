@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
-import { combineLatest, merge, Observable, of, timer } from 'rxjs';
-import { filter, map, scan, share, switchMap, tap } from 'rxjs/operators';
+import { combineLatest, merge, Observable, of, timer, throwError } from 'rxjs';
+import { filter, map, scan, share, switchMap, tap, catchError } from 'rxjs/operators';
 import { Block } from '../interfaces/electrs.interface';
 import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
@@ -252,6 +252,13 @@ export class DashboardComponent implements OnInit {
               ),
             of(mempoolStats)
           );
+        }),
+        catchError((err) => {
+           // handle 404 and return a safe value or re-throw
+           if (err.status !== 404) {
+             return throwError(err);
+           }
+           return of([]);
         }),
         map((mempoolStats) => {
           return {

@@ -13,7 +13,7 @@ import { Observable } from 'rxjs';
 })
 export class TelevisionComponent implements OnInit {
 
-  mempoolStats: OptimizedMempoolStats[] = [];
+  mempoolStats: OptimizedMempoolStats[] = null;
   mempoolVsizeFeesData: any;
 
   constructor(
@@ -28,9 +28,12 @@ export class TelevisionComponent implements OnInit {
     this.websocketService.want(['blocks', 'live-2h-chart', 'mempool-blocks']);
 
     this.apiService.list2HStatistics$()
-      .subscribe((mempoolStats) => {
-        this.mempoolStats = mempoolStats;
-      });
+      .subscribe(
+        mempoolStats => this.mempoolStats = mempoolStats,
+        error => {
+          if (error.status === 404) this.mempoolStats = [];
+        }
+      );
 
     this.stateService.live2Chart$
       .subscribe((mempoolStats) => {
