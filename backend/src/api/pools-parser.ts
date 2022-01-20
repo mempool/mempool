@@ -1,6 +1,7 @@
-import {readFileSync} from 'fs';
+import { readFileSync } from 'fs';
 import { DB } from '../database';
 import logger from '../logger';
+import config from '../config';
 
 interface Pool {
   name: string;
@@ -14,20 +15,26 @@ class PoolsParser {
    * Parse the pools.json file, consolidate the data and dump it into the database
    */
   public async migratePoolsJson() {
-    const connection = await DB.pool.getConnection();
-    logger.info('Importing pools.json to the database');
+    if (config.MEMPOOL.NETWORK !== 'mainnet') {
+      return;
+    }
 
-    // Get existing pools from the db
-    const [existingPools] = await connection.query<any>({ sql: 'SELECT * FROM pools;', timeout: 120000 });
+    logger.debug('Importing pools.json to the database, open ./pools.json');
 
-    logger.info('Open ./pools.json');
-    const fileContent: string = readFileSync('./pools.json', 'utf8');
-    const poolsJson: object = JSON.parse(fileContent);
+    let poolsJson: object = {};
+    try {
+      const fileContent: string = readFileSync('./pools.json', 'utf8');
+      poolsJson = JSON.parse(fileContent);
+    } catch (e) {
+      logger.err('Unable to open ./pools.json, does the file exist?');
+      await this.insertUnknownPool();
+      return;
+    }
 
     // First we save every entries without paying attention to pool duplication
     const poolsDuplicated: Pool[] = [];
 
-    logger.info('Parse coinbase_tags');
+    logger.debug('Parse coinbase_tags');
     const coinbaseTags = Object.entries(poolsJson['coinbase_tags']);
     for (let i = 0; i < coinbaseTags.length; ++i) {
       poolsDuplicated.push({
@@ -37,7 +44,7 @@ class PoolsParser {
         'addresses': [],
       });
     }
-    logger.info('Parse payout_addresses');
+    logger.debug('Parse payout_addresses');
     const addressesTags = Object.entries(poolsJson['payout_addresses']);
     for (let i = 0; i < addressesTags.length; ++i) {
       poolsDuplicated.push({
@@ -49,14 +56,18 @@ class PoolsParser {
     }
 
     // Then, we find unique mining pool names
-    logger.info('Identify unique mining pools');
+    logger.debug('Identify unique mining pools');
     const poolNames: string[] = [];
     for (let i = 0; i < poolsDuplicated.length; ++i) {
       if (poolNames.indexOf(poolsDuplicated[i].name) === -1) {
         poolNames.push(poolsDuplicated[i].name);
       }
     }
-    logger.info(`Found ${poolNames.length} unique mining pools`);
+    logger.debug(`Found ${poolNames.length} unique mining pools`);
+
+    // Get existing pools from the db
+    const connection = await DB.pool.getConnection();
+    const [existingPools] = await connection.query<any>({ sql: 'SELECT * FROM pools;', timeout: 120000 });
 
     // Finally, we generate the final consolidated pools data
     const finalPoolDataAdd: Pool[] = [];
@@ -92,23 +103,13 @@ class PoolsParser {
       }
     }
 
-    // Manually add the 'unknown pool'
-    if (existingPools.find((pool) => pool.name === 'Unknown') === undefined) {
-      finalPoolDataAdd.push({
-        'name': 'Unknown',
-        'link': 'https://learnmeabitcoin.com/technical/coinbase-transaction',
-        regexes: [],
-        addresses: [],
-      });
-    }
-
-    logger.info(`Update pools table now`);
+    logger.debug(`Update pools table now`);
 
     // Add new mining pools into the database
     let queryAdd: string = 'INSERT INTO pools(name, link, regexes, addresses) VALUES ';
     for (let i = 0; i < finalPoolDataAdd.length; ++i) {
       queryAdd += `('${finalPoolDataAdd[i].name}', '${finalPoolDataAdd[i].link}',
-        '${JSON.stringify(finalPoolDataAdd[i].regexes)}', '${JSON.stringify(finalPoolDataAdd[i].addresses)}'),`;
+      '${JSON.stringify(finalPoolDataAdd[i].regexes)}', '${JSON.stringify(finalPoolDataAdd[i].addresses)}'),`;
     }
     queryAdd = queryAdd.slice(0, -1) + ';';
 
@@ -116,11 +117,11 @@ class PoolsParser {
     const updateQueries: string[] = [];
     for (let i = 0; i < finalPoolDataUpdate.length; ++i) {
       updateQueries.push(`
-        UPDATE pools
-        SET name='${finalPoolDataUpdate[i].name}', link='${finalPoolDataUpdate[i].link}',
-        regexes='${JSON.stringify(finalPoolDataUpdate[i].regexes)}', addresses='${JSON.stringify(finalPoolDataUpdate[i].addresses)}'
-        WHERE name='${finalPoolDataUpdate[i].name}'
-      ;`);
+      UPDATE pools
+      SET name='${finalPoolDataUpdate[i].name}', link='${finalPoolDataUpdate[i].link}',
+      regexes='${JSON.stringify(finalPoolDataUpdate[i].regexes)}', addresses='${JSON.stringify(finalPoolDataUpdate[i].addresses)}'
+      WHERE name='${finalPoolDataUpdate[i].name}'
+    ;`);
     }
 
     try {
@@ -130,15 +131,34 @@ class PoolsParser {
       updateQueries.forEach(async query => {
         await connection.query<any>({ sql: query, timeout: 120000 });
       });
+      await this.insertUnknownPool();
       connection.release();
-      logger.info('Import completed');
+      logger.info('Mining pools.json import completed');
     } catch (e) {
       connection.release();
-      logger.info(`Unable to import pools in the database!`);
+      logger.err(`Unable to import pools in the database!`);
       throw e;
     }
   }
 
+  /**
+   * Manually add the 'unknown pool'
+   */
+  private async insertUnknownPool() {
+    const connection = await DB.pool.getConnection();
+    try {
+      const [rows]: any[] = await connection.query({ sql: 'SELECT name from pools where name="Unknown"', timeout: 120000 });
+      if (rows.length === 0) {
+        logger.debug('Manually inserting "Unknown" mining pool into the databse');
+        await connection.query({
+          sql: `INSERT INTO pools(name, link, regexes, addresses)
+          VALUES("Unknown", "https://learnmeabitcoin.com/technical/coinbase-transaction", "[]", "[]");
+        `});
+      }
+    } catch (e) {
+      logger.err('Unable to insert "Unknown" mining pool');
+    }
+  }
 }
 
 export default new PoolsParser();
