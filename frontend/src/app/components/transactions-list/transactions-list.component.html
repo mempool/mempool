@@ -270,7 +270,7 @@
 </ng-container>
 
 <ng-template #assetBox let-item>
-  {{ item.value / 100000000 | number: '1.0-' + assetsMinimal[item.asset][3] }} {{ assetsMinimal[item.asset][1] }}
+  {{ item.value / pow(10, assetsMinimal[item.asset][3]) | number: '1.' + assetsMinimal[item.asset][3] + '-' + assetsMinimal[item.asset][3] }} {{ assetsMinimal[item.asset][1] }}
   <br />
   {{ assetsMinimal[item.asset][0] }}
   <br />
