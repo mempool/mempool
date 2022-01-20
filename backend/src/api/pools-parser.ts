@@ -67,9 +67,9 @@ class PoolsParser {
 
     // Get existing pools from the db
     const connection = await DB.pool.getConnection();
-    let existingPools: any[] = [];
+    let existingPools;
     try {
-      existingPools = await connection.query<any>({ sql: 'SELECT * FROM pools;', timeout: 120000 });
+      [existingPools] = await connection.query<any>({ sql: 'SELECT * FROM pools;', timeout: 120000 });
     } catch (e) {
       logger.err('Unable to get existing pools from the database, skipping pools.json import');
       connection.release();
