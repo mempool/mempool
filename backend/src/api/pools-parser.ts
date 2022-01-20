@@ -93,7 +93,7 @@ class PoolsParser {
     }
 
     // Manually add the 'unknown pool'
-    if (existingPools.find((pool) => pool.name === 'Unknown') !== undefined) {
+    if (existingPools.find((pool) => pool.name === 'Unknown') === undefined) {
       finalPoolDataAdd.push({
         'name': 'Unknown',
         'link': 'https://learnmeabitcoin.com/technical/coinbase-transaction',
