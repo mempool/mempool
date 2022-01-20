@@ -38,7 +38,7 @@ class BlocksRepository {
 
       await connection.query(query, params);
     } catch (e) {
-      logger.err('$updateBlocksDatabase() error' + (e instanceof Error ? e.message : e));
+      logger.err('$saveBlockInDatabase() error' + (e instanceof Error ? e.message : e));
     }
 
     connection.release();

@@ -1,5 +1,5 @@
-import { DB } from "../database";
-import { PoolInfo, PoolTag } from "../mempool.interfaces"
+import { DB } from '../database';
+import { PoolInfo, PoolTag } from '../mempool.interfaces';
 
 class PoolsRepository {
   /**
@@ -7,7 +7,7 @@ class PoolsRepository {
    */
   public async $getPools(): Promise<PoolTag[]> {
     const connection = await DB.pool.getConnection();
-    const [rows] = await connection.query("SELECT * FROM pools;");
+    const [rows] = await connection.query('SELECT * FROM pools;');
     connection.release();
     return <PoolTag[]>rows;
   }
@@ -17,7 +17,7 @@ class PoolsRepository {
    */
   public async $getUnknownPool(): Promise<PoolTag> {
     const connection = await DB.pool.getConnection();
-    const [rows] = await connection.query("SELECT * FROM pools where name = 'Unknown'");
+    const [rows] = await connection.query('SELECT * FROM pools where name = "Unknown"');
     connection.release();
     return <PoolTag>rows[0];
   }
@@ -25,7 +25,7 @@ class PoolsRepository {
   /**
    * Get basic pool info and block count
    */
-  public async $getPoolsInfo(interval: string = "100 YEARS"): Promise<PoolInfo[]> {
+  public async $getPoolsInfo(interval: string = '100 YEARS'): Promise<PoolInfo[]> {
     const connection = await DB.pool.getConnection();
     const [rows] = await connection.query(`
       SELECT COUNT(height) as blockCount, pool_id as poolId, pools.name as name, pools.link as link
