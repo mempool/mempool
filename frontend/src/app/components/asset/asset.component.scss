@@ -51,10 +51,10 @@ h1 {
 }
 
 .assetIcon {
-  max-height: 150px;
+  height: 150px;
   margin: 25px;
   @media (min-width: 768px) {
-    max-height: 300px;
+    height: 250px;
     margin: 0;
   }
 }
@@ -63,4 +63,13 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.defaultIcon {
+  margin: 25px;
+  height: 150px;
+}
+
+.defaultIcon.skeleton {
+  opacity: 0.5;
 }
