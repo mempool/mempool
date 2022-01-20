@@ -79,7 +79,9 @@ const defaults: IConfig = {
     'MEMPOOL_BLOCKS_AMOUNT': 8,
     'PRICE_FEED_UPDATE_INTERVAL': 3600,
     'USE_SECOND_NODE_FOR_MINFEE': false,
-    'EXTERNAL_ASSETS': [],
+    'EXTERNAL_ASSETS': [
+      'https://mempool.space/resources/pools.json'
+    ]
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
