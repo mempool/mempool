@@ -14,20 +14,14 @@ class PoolsParser {
    * Parse the pools.json file, consolidate the data and dump it into the database
    */
   public async migratePoolsJson() {
+    const connection = await DB.pool.getConnection();
     logger.info('Importing pools.json to the database');
-    let connection = await DB.pool.getConnection();
 
-    // Check if the pools table does not have data already, for now we do not support updating it
-    // but that will come in a later version
-    let [rows] = await connection.query<any>({ sql: 'SELECT count(id) as count from pools;', timeout: 120000 });
-    if (rows[0].count !== 0) {
-      logger.info('Pools table already contain data, updating it is not yet supported, skipping.');
-      connection.release();
-      return;
-    }
+    // Get existing pools from the db
+    const [existingPools] = await connection.query<any>({ sql: 'SELECT * FROM pools;', timeout: 120000 }); // We clear the table before insertion    
 
-    logger.info('Open ../frontend/cypress/fixtures/pools.json');
-    const fileContent: string = readFileSync('../frontend/cypress/fixtures/pools.json','utf8');
+    logger.info('Open ./pools.json');
+    const fileContent: string = readFileSync('./pools.json','utf8');
     const poolsJson: object = JSON.parse(fileContent);
 
     // First we save every entries without paying attention to pool duplication
@@ -65,7 +59,8 @@ class PoolsParser {
     logger.info(`Found ${poolNames.length} unique mining pools`);
 
     // Finally, we generate the final consolidated pools data
-    let finalPoolData: Pool[] = [];
+    let finalPoolDataAdd: Pool[] = [];
+    let finalPoolDataUpdate: Pool[] = [];
     for (let i = 0; i < poolNames.length; ++i) {
       let allAddresses: string[] = [];
       let allRegexes: string[] = [];
@@ -76,34 +71,65 @@ class PoolsParser {
         allRegexes = allRegexes.concat(match[y].regexes);
       }
 
-      finalPoolData.push({
-        'name': poolNames[i].replace("'", "''"),
-        'link': match[0].link,
-        'regexes': allRegexes,
-        'addresses': allAddresses,
-      })
+      const finalPoolName = poolNames[i].replace("'", "''"); // To support single quote in names when doing db queries
+
+      if (existingPools.find((pool) => { return pool.name === poolNames[i]}) !== undefined) {
+        logger.debug(`Update '${finalPoolName} mining pool`);
+        finalPoolDataUpdate.push({
+          'name': finalPoolName,
+          'link': match[0].link,
+          'regexes': allRegexes,
+          'addresses': allAddresses,
+        })
+      } else {
+        logger.debug(`Add '${finalPoolName} mining pool`);
+        finalPoolDataAdd.push({
+          'name': finalPoolName,
+          'link': match[0].link,
+          'regexes': allRegexes,
+          'addresses': allAddresses,
+        })
+      }
     }
 
     // Manually add the 'unknown pool'
-    finalPoolData.push({
-      'name': 'Unknown',
-      'link': 'https://learnmeabitcoin.com/technical/coinbase-transaction',
-      regexes: [],
-      addresses: [],
-    })
-
-    // Dump everything into the database
-    logger.info(`Insert mining pool info into the database`);
-    let query: string = 'INSERT INTO pools(name, link, regexes, addresses) VALUES ';
-    for (let i = 0; i < finalPoolData.length; ++i) {
-      query += `('${finalPoolData[i].name}', '${finalPoolData[i].link}',
-        '${JSON.stringify(finalPoolData[i].regexes)}', '${JSON.stringify(finalPoolData[i].addresses)}'),`;
+    if (existingPools.find((pool) => { return pool.name === "Uknown"}) !== undefined) {
+      finalPoolDataAdd.push({
+        'name': 'Unknown',
+        'link': 'https://learnmeabitcoin.com/technical/coinbase-transaction',
+        regexes: [],
+        addresses: [],
+      })
     }
-    query = query.slice(0, -1) + ';';
+
+    logger.info(`Update pools table now`);
+
+    // Add new mining pools into the database
+    let queryAdd: string = 'INSERT INTO pools(name, link, regexes, addresses) VALUES ';
+    for (let i = 0; i < finalPoolDataAdd.length; ++i) {
+      queryAdd += `('${finalPoolDataAdd[i].name}', '${finalPoolDataAdd[i].link}',
+        '${JSON.stringify(finalPoolDataAdd[i].regexes)}', '${JSON.stringify(finalPoolDataAdd[i].addresses)}'),`;
+    }
+    queryAdd = queryAdd.slice(0, -1) + ';';
+
+    // Add new mining pools into the database
+    let updateQueries: string[] = [];
+    for (let i = 0; i < finalPoolDataUpdate.length; ++i) {
+      updateQueries.push(`
+        UPDATE pools
+        SET name='${finalPoolDataUpdate[i].name}', link='${finalPoolDataUpdate[i].link}',
+        regexes='${JSON.stringify(finalPoolDataUpdate[i].regexes)}', addresses='${JSON.stringify(finalPoolDataUpdate[i].addresses)}'
+        WHERE name='${finalPoolDataUpdate[i].name}'
+      ;`);
+    }
 
     try {
-      await connection.query<any>({ sql: 'DELETE FROM pools;', timeout: 120000 }); // We clear the table before insertion
-      await connection.query<any>({ sql: query, timeout: 120000 });
+      if (finalPoolDataAdd.length > 0) {
+        await connection.query<any>({ sql: queryAdd, timeout: 120000 });
+      }
+      updateQueries.forEach(async query => {
+        await connection.query<any>({ sql: query, timeout: 120000 });
+      });
       connection.release();
       logger.info('Import completed');
     } catch (e) {
