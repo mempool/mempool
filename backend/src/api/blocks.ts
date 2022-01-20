@@ -146,6 +146,10 @@ class Blocks {
    * Index all blocks metadata for the mining dashboard
    */
   public async $generateBlockDatabase() {
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
+      return;
+    }
+
     let currentBlockHeight = await bitcoinClient.getBlockCount();
     const indexedBlockCount = await blocksRepository.$blockCount();
 
@@ -231,7 +235,10 @@ class Blocks {
       const blockExtended: BlockExtended = this.getBlockExtended(block, transactions);
       const miner = await this.$findBlockMiner(blockExtended.coinbaseTx);
       const coinbase: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(transactions[0].txid, true);
-      await blocksRepository.$saveBlockInDatabase(blockExtended, blockHash, coinbase.hex, miner);
+
+      if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === true) {
+        await blocksRepository.$saveBlockInDatabase(blockExtended, blockHash, coinbase.hex, miner);
+      }
 
       if (block.height % 2016 === 0) {
         this.previousDifficultyRetarget = (block.difficulty - this.currentDifficulty) / this.currentDifficulty * 100;
