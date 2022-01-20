@@ -67,7 +67,14 @@ class PoolsParser {
 
     // Get existing pools from the db
     const connection = await DB.pool.getConnection();
-    const [existingPools] = await connection.query<any>({ sql: 'SELECT * FROM pools;', timeout: 120000 });
+    let existingPools: any[] = [];
+    try {
+      existingPools = await connection.query<any>({ sql: 'SELECT * FROM pools;', timeout: 120000 });
+    } catch (e) {
+      logger.err('Unable to get existing pools from the database, skipping pools.json import');
+      connection.release();
+      return;
+    }
 
     // Finally, we generate the final consolidated pools data
     const finalPoolDataAdd: Pool[] = [];
@@ -117,11 +124,11 @@ class PoolsParser {
     const updateQueries: string[] = [];
     for (let i = 0; i < finalPoolDataUpdate.length; ++i) {
       updateQueries.push(`
-      UPDATE pools
-      SET name='${finalPoolDataUpdate[i].name}', link='${finalPoolDataUpdate[i].link}',
-      regexes='${JSON.stringify(finalPoolDataUpdate[i].regexes)}', addresses='${JSON.stringify(finalPoolDataUpdate[i].addresses)}'
-      WHERE name='${finalPoolDataUpdate[i].name}'
-    ;`);
+        UPDATE pools
+        SET name='${finalPoolDataUpdate[i].name}', link='${finalPoolDataUpdate[i].link}',
+        regexes='${JSON.stringify(finalPoolDataUpdate[i].regexes)}', addresses='${JSON.stringify(finalPoolDataUpdate[i].addresses)}'
+        WHERE name='${finalPoolDataUpdate[i].name}'
+      ;`);
     }
 
     try {
@@ -158,6 +165,8 @@ class PoolsParser {
     } catch (e) {
       logger.err('Unable to insert "Unknown" mining pool');
     }
+
+    connection.release();
   }
 }
 
