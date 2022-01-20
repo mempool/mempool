@@ -87,7 +87,7 @@ class DatabaseMigration {
         await this.$executeQuery(connection, this.getCreatePoolsTableQuery(), await this.$checkIfTableExists('pools'));
       }
       if (databaseSchemaVersion < 4) {
-        await this.$executeQuery(connection, 'DROP table blocks;');
+        await this.$executeQuery(connection, 'DROP table IF EXISTS blocks;');
         await this.$executeQuery(connection, this.getCreateBlocksTableQuery(), await this.$checkIfTableExists('blocks'));
       }
       connection.release();
