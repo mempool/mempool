@@ -3,10 +3,10 @@ import { DB } from '../database';
 import logger from '../logger';
 
 interface Pool {
-  name: string,
-  link: string,
-  regexes: string[],
-  addresses: string[],
+  name: string;
+  link: string;
+  regexes: string[];
+  addresses: string[];
 }
 
 class PoolsParser {
@@ -18,14 +18,14 @@ class PoolsParser {
     logger.info('Importing pools.json to the database');
 
     // Get existing pools from the db
-    const [existingPools] = await connection.query<any>({ sql: 'SELECT * FROM pools;', timeout: 120000 }); // We clear the table before insertion    
+    const [existingPools] = await connection.query<any>({ sql: 'SELECT * FROM pools;', timeout: 120000 });
 
     logger.info('Open ./pools.json');
-    const fileContent: string = readFileSync('./pools.json','utf8');
+    const fileContent: string = readFileSync('./pools.json', 'utf8');
     const poolsJson: object = JSON.parse(fileContent);
 
     // First we save every entries without paying attention to pool duplication
-    let poolsDuplicated: Pool[] = [];
+    const poolsDuplicated: Pool[] = [];
 
     logger.info('Parse coinbase_tags');
     const coinbaseTags = Object.entries(poolsJson['coinbase_tags']);
@@ -50,7 +50,7 @@ class PoolsParser {
 
     // Then, we find unique mining pool names
     logger.info('Identify unique mining pools');
-    let poolNames : string[] = [];
+    const poolNames: string[] = [];
     for (let i = 0; i < poolsDuplicated.length; ++i) {
       if (poolNames.indexOf(poolsDuplicated[i].name) === -1) {
         poolNames.push(poolsDuplicated[i].name);
@@ -59,47 +59,47 @@ class PoolsParser {
     logger.info(`Found ${poolNames.length} unique mining pools`);
 
     // Finally, we generate the final consolidated pools data
-    let finalPoolDataAdd: Pool[] = [];
-    let finalPoolDataUpdate: Pool[] = [];
+    const finalPoolDataAdd: Pool[] = [];
+    const finalPoolDataUpdate: Pool[] = [];
     for (let i = 0; i < poolNames.length; ++i) {
       let allAddresses: string[] = [];
       let allRegexes: string[] = [];
-      let match = poolsDuplicated.filter((pool: Pool) => pool.name === poolNames[i]);
+      const match = poolsDuplicated.filter((pool: Pool) => pool.name === poolNames[i]);
 
       for (let y = 0; y < match.length; ++y) {
         allAddresses = allAddresses.concat(match[y].addresses);
         allRegexes = allRegexes.concat(match[y].regexes);
       }
 
-      const finalPoolName = poolNames[i].replace("'", "''"); // To support single quote in names when doing db queries
+      const finalPoolName = poolNames[i].replace(`'`, `''`); // To support single quote in names when doing db queries
 
-      if (existingPools.find((pool) => { return pool.name === poolNames[i]}) !== undefined) {
-        logger.debug(`Update '${finalPoolName} mining pool`);
+      if (existingPools.find((pool) => pool.name === poolNames[i]) !== undefined) {
+        logger.debug(`Update '${finalPoolName}' mining pool`);
         finalPoolDataUpdate.push({
           'name': finalPoolName,
           'link': match[0].link,
           'regexes': allRegexes,
           'addresses': allAddresses,
-        })
+        });
       } else {
-        logger.debug(`Add '${finalPoolName} mining pool`);
+        logger.debug(`Add '${finalPoolName}' mining pool`);
         finalPoolDataAdd.push({
           'name': finalPoolName,
           'link': match[0].link,
           'regexes': allRegexes,
           'addresses': allAddresses,
-        })
+        });
       }
     }
 
     // Manually add the 'unknown pool'
-    if (existingPools.find((pool) => { return pool.name === "Uknown"}) !== undefined) {
+    if (existingPools.find((pool) => pool.name === 'Unknown') !== undefined) {
       finalPoolDataAdd.push({
         'name': 'Unknown',
         'link': 'https://learnmeabitcoin.com/technical/coinbase-transaction',
         regexes: [],
         addresses: [],
-      })
+      });
     }
 
     logger.info(`Update pools table now`);
@@ -113,7 +113,7 @@ class PoolsParser {
     queryAdd = queryAdd.slice(0, -1) + ';';
 
     // Add new mining pools into the database
-    let updateQueries: string[] = [];
+    const updateQueries: string[] = [];
     for (let i = 0; i < finalPoolDataUpdate.length; ++i) {
       updateQueries.push(`
         UPDATE pools
