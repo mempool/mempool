@@ -17,6 +17,6 @@ sudo npm install -g ts-node nodemon
 > Note: You can find your npm global binary folder using `npm -g bin`, where nodemon will be installed.
 
 ```
-nodemon src/index.ts --ignore cache/
+nodemon src/index.ts --ignore cache/ --ignore pools.json
 ```
 

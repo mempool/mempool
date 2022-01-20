@@ -41,7 +41,7 @@ class Blocks {
    * @param onlyCoinbase - Set to true if you only need the coinbase transaction
    * @returns Promise<TransactionExtended[]>
    */
-  private async $getTransactionsExtended(blockHash: string, blockHeight: number, onlyCoinbase: boolean) : Promise<TransactionExtended[]> {
+  private async $getTransactionsExtended(blockHash: string, blockHeight: number, onlyCoinbase: boolean): Promise<TransactionExtended[]> {
     const transactions: TransactionExtended[] = [];
     const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
 
@@ -94,7 +94,7 @@ class Blocks {
    * @param transactions
    * @returns BlockExtended
    */
-  private getBlockExtended(block: IEsploraApi.Block, transactions: TransactionExtended[]) : BlockExtended {
+  private getBlockExtended(block: IEsploraApi.Block, transactions: TransactionExtended[]): BlockExtended {
     const blockExtended: BlockExtended = Object.assign({}, block);
     blockExtended.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
     blockExtended.coinbaseTx = transactionUtils.stripCoinbaseTransaction(transactions[0]);
@@ -113,7 +113,7 @@ class Blocks {
    * @param txMinerInfo
    * @returns
    */
-  private async $findBlockMiner(txMinerInfo: TransactionMinerInfo | undefined) : Promise<PoolTag> {
+  private async $findBlockMiner(txMinerInfo: TransactionMinerInfo | undefined): Promise<PoolTag> {
     if (txMinerInfo === undefined) {
       return await poolsRepository.$getUnknownPool();
     }
@@ -124,15 +124,15 @@ class Blocks {
     const pools: PoolTag[] = await poolsRepository.$getPools();
     for (let i = 0; i < pools.length; ++i) {
       if (address !== undefined) {
-        let addresses: string[] = JSON.parse(pools[i].addresses);
+        const addresses: string[] = JSON.parse(pools[i].addresses);
         if (addresses.indexOf(address) !== -1) {
           return pools[i];
         }
       }
 
-      let regexes: string[] = JSON.parse(pools[i].regexes);
+      const regexes: string[] = JSON.parse(pools[i].regexes);
       for (let y = 0; y < regexes.length; ++y) {
-        let match = asciiScriptSig.match(regexes[y]);
+        const match = asciiScriptSig.match(regexes[y]);
         if (match !== null) {
           return pools[i];
         }
