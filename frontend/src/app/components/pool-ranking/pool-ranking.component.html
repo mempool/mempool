@@ -1,6 +1,6 @@
 <div class="container-xl">
 
-  <app-difficulty [showProgress]=false [showHalving]=true></app-difficulty>
+  <app-difficulty style="display: none;" [showProgress]=false [showHalving]=true></app-difficulty>
 
   <div style="height: 500px; margin-top: 30px;" echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
   <div class="text-center loadingGraphs" *ngIf="isLoading">

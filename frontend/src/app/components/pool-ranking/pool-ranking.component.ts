@@ -12,7 +12,7 @@ import { MiningService, MiningStats } from '../../services/mining.service';
   styles: [`
     .loadingGraphs {
       position: absolute;
-      top: 52%;
+      top: 50%;
       left: calc(50% - 16px);
       z-index: 100;
     }
