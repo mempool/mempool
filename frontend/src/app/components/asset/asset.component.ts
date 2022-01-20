@@ -32,6 +32,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   isNativeAsset = false;
   error: any;
   mainSubscription: Subscription;
+  imageError = false;
 
   totalConfirmedTxCount = 0;
   loadedConfirmedTxCount = 0;
