@@ -50,3 +50,17 @@ h1 {
   }
 }
 
+.assetIcon {
+  max-height: 150px;
+  margin: 25px;
+  @media (min-width: 768px) {
+    max-height: 300px;
+    margin: 0;
+  }
+}
+
+.icon-holder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
