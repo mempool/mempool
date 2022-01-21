@@ -61,10 +61,7 @@ PROXY_CONFIG = [
     },
     {
         context: ['/api/liquidtestnet**', '/liquidtestnet/api/**'],
-        target: "https://liquid.network/testnet",
-        pathRewrite: {
-            "^/api/liquidtestnet/": "/liquidtestnet/api"
-        },
+        target: "https://liquid.network",
         ws: true,
         secure: false,
         changeOrigin: true
@@ -73,7 +70,9 @@ PROXY_CONFIG = [
 
 if (configContent && configContent.BASE_MODULE == "liquid") {
     PROXY_CONFIG.push({
-        context: ['/resources/pools.json', '/resources/assets.json', '/resources/assets.minimal.json'],
+        context: ['/resources/pools.json',
+            '/resources/assets.json', '/resources/assets.minimal.json',
+            '/resources/assets-testnet.json', '/resources/assets-testnet.minimal.json'],
         target: "https://liquid.network",
         secure: false,
         changeOrigin: true,
