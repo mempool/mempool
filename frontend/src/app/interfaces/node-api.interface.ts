@@ -53,22 +53,22 @@ export interface LiquidPegs {
 export interface ITranslators { [language: string]: string; }
 
 export interface SinglePoolStats {
-  pooldId: number,
-  name: string,
-  link: string,
-  blockCount: number,
-  emptyBlocks: number,
-  rank: number,
-  share: string,
-  lastEstimatedHashrate: string,
-  emptyBlockRatio: string,
-  logo: string,
+  pooldId: number;
+  name: string;
+  link: string;
+  blockCount: number;
+  emptyBlocks: number;
+  rank: number;
+  share: string;
+  lastEstimatedHashrate: string;
+  emptyBlockRatio: string;
+  logo: string;
 }
 
 export interface PoolsStats {
-  blockCount: number,
-  lastEstimatedHashrate: number,
-  pools: SinglePoolStats[],
+  blockCount: number;
+  lastEstimatedHashrate: number;
+  pools: SinglePoolStats[];
 }
 
 export interface ITranslators { [language: string]: string; }

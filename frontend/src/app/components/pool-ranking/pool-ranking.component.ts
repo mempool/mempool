@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { EChartsOption } from 'echarts';
-import { BehaviorSubject, Subscription } from 'rxjs';
-import { StateService } from 'src/app/services/state.service';
-import { StorageService } from 'src/app/services/storage.service';
+import { combineLatest, Observable, of } from 'rxjs';
+import { catchError, skip, startWith, switchMap, tap } from 'rxjs/operators';
+import { StorageService } from '../..//services/storage.service';
 import { MiningService, MiningStats } from '../../services/mining.service';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-pool-ranking',
@@ -22,16 +23,13 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
   poolsWindowPreference: string;
   radioGroupForm: FormGroup;
 
-  miningStats!: MiningStats;
-  miningStatsEmitter$ = new BehaviorSubject<MiningStats>(this.miningStats);
-  blocksSubscription: Subscription;
-  miningSubscription: Subscription;
-
   isLoading = true;
   chartOptions: EChartsOption = {};
   chartInitOptions = {
     renderer: 'svg'
   };
+
+  miningStatsObservable$: Observable<MiningStats>;
 
   constructor(
     private stateService: StateService,
@@ -39,62 +37,60 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private miningService: MiningService,
   ) {
-    this.poolsWindowPreference = this.storageService.getValue('poolsWindowPreference') ? this.storageService.getValue('poolsWindowPreference').trim() : '2h';
-
+    this.poolsWindowPreference = this.storageService.getValue('poolsWindowPreference') ? this.storageService.getValue('poolsWindowPreference') : '1d';
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.poolsWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.poolsWindowPreference);
   }
 
   ngOnInit(): void {
-    this.refreshMiningStats();
-    this.watchBlocks();
+    // When...
+    this.miningStatsObservable$ = combineLatest([
+      // ...a new block is mined
+      this.stateService.blocks$
+        .pipe(
+          // (we always receives some blocks at start so only trigger for the last one)
+          skip(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT - 1),
+        ),
+      // ...or we change the timespan
+      this.radioGroupForm.get('dateSpan').valueChanges
+        .pipe(
+          startWith(this.poolsWindowPreference), // (trigger when the page loads)
+          tap((value) => {
+            this.storageService.setValue('poolsWindowPreference', value);
+            this.poolsWindowPreference = value;
+          })
+        )
+    ])
+      // ...then refresh the mining stats
+      .pipe(
+        switchMap(() => {
+          this.isLoading = true;
+          return this.miningService.getMiningStats(this.getSQLInterval(this.poolsWindowPreference))
+            .pipe(
+              catchError((e) => of(this.getEmptyMiningStat()))
+            );
+        }),
+        tap(data => {
+          this.isLoading = false;
+          this.prepareChartOptions(data);
+        })
+      );
   }
 
   ngOnDestroy(): void {
-    this.blocksSubscription.unsubscribe();
-    this.miningSubscription.unsubscribe();      
   }
 
-  refreshMiningStats() {
-    this.miningSubscription = this.miningService.getMiningStats(this.getSQLInterval(this.poolsWindowPreference))
-    .subscribe(async data => {
-      this.miningStats = data;
-      this.miningStatsEmitter$.next(this.miningStats);
-      this.prepareChartOptions();
-      this.isLoading = false;
-    });
-
-    return this.miningSubscription;
-  }
-
-  watchBlocks() {
-    this.blocksSubscription = this.stateService.blocks$
-      .subscribe(() => {
-        if (!this.miningStats) {
-          return;
-        }
-        this.refreshMiningStats();
-      });
-  }
-
-  onChangeWindowPreference(e) {
-    this.storageService.setValue('poolsWindowPreference', e.target.value);
-    this.poolsWindowPreference = e.target.value;
-    this.isLoading = true;
-    this.refreshMiningStats();
-  }
-
-  generatePoolsChartSerieData() {
+  generatePoolsChartSerieData(miningStats) {
     const poolShareThreshold = 0.5; // Do not draw pools which hashrate share is lower than that
     const data: object[] = [];
 
-    this.miningStats.pools.forEach((pool) => {
+    miningStats.pools.forEach((pool) => {
       if (parseFloat(pool.share) < poolShareThreshold) {
         return;
       }
       data.push({
         value: pool.share,
-        name: pool.name,
+        name: pool.name + ` (${pool.share}%)`,
         label: { color: '#FFFFFF' },
         tooltip: {
           formatter: () => {
@@ -113,7 +109,7 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
     return data;
   }
 
-  prepareChartOptions() {
+  prepareChartOptions(miningStats) {
     this.chartOptions = {
       title: {
         text: (this.poolsWindowPreference === '1d') ? 'Hashrate distribution' : 'Block distribution',
@@ -143,7 +139,7 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
           name: 'Mining pool',
           type: 'pie',
           radius: ['30%', '70%'],
-          data: this.generatePoolsChartSerieData(),
+          data: this.generatePoolsChartSerieData(miningStats),
           labelLine: {
             lineStyle: {
               width: 2,
@@ -193,5 +189,21 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Default mining stats if something goes wrong
+   */
+  getEmptyMiningStat() {
+    return {
+      lastEstimatedHashrate: 'Error',
+      blockCount: 0,
+      totalEmptyBlock: 0,
+      totalEmptyBlockRatio: '',
+      pools: [],
+      miningUnits: {
+        hashrateDivider: 1,
+        hashrateUnit: '',
+      },
+    };
+  }
 }
 
