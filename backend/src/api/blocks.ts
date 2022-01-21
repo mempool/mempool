@@ -233,10 +233,10 @@ class Blocks {
       const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
       const transactions = await this.$getTransactionsExtended(blockHash, block.height, false);
       const blockExtended: BlockExtended = this.getBlockExtended(block, transactions);
-      const miner = await this.$findBlockMiner(blockExtended.coinbaseTx);
       const coinbase: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(transactions[0].txid, true);
 
       if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === true) {
+        const miner = await this.$findBlockMiner(blockExtended.coinbaseTx);
         await blocksRepository.$saveBlockInDatabase(blockExtended, blockHash, coinbase.hex, miner);
       }
 
