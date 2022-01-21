@@ -9,8 +9,7 @@
 
   <div class="card-header">
     <form [formGroup]="radioGroupForm" class="formRadioGroup">
-      <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan"
-        (change)="onChangeWindowPreference($event)">
+      <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
         <label ngbButtonLabel class="btn-primary btn-sm">
           <input ngbButton type="radio" [value]="'1d'" [routerLink]="['/pools' | relativeUrl]" fragment="1d"> 1D
         </label>
@@ -54,7 +53,7 @@
       <th i18n="latest-blocks.mined">Block Count (%)</th>
       <th class="d-none d-md-block" i18n="latest-blocks.transactions">Empty Blocks (%)</th>
     </thead>
-    <tbody *ngIf="(miningStatsEmitter$ | async) as miningStats">
+    <tbody *ngIf="(miningStatsObservable$ | async) as miningStats">
       <tr>
         <td class="d-none d-md-block">-</td>
         <td><!-- LOGO --></td>

@@ -6,17 +6,17 @@ import { ApiService } from '../services/api.service';
 import { StateService } from './state.service';
 
 export interface MiningUnits {
-  hashrateDivider: number,
-  hashrateUnit: string,
+  hashrateDivider: number;
+  hashrateUnit: string;
 }
 
 export interface MiningStats {
-  lastEstimatedHashrate: string,
-  blockCount: number,
-  totalEmptyBlock: number,
-  totalEmptyBlockRatio: string,
-  pools: SinglePoolStats[],
-  miningUnits: MiningUnits,
+  lastEstimatedHashrate: string;
+  blockCount: number;
+  totalEmptyBlock: number;
+  totalEmptyBlockRatio: string;
+  pools: SinglePoolStats[];
+  miningUnits: MiningUnits;
 }
 
 @Injectable({
@@ -38,15 +38,15 @@ export class MiningService {
   /**
    * Set the hashrate power of ten we want to display
    */
-  public getMiningUnits() : MiningUnits {
+  public getMiningUnits(): MiningUnits {
     const powerTable = {
-      0: "H/s",
-      3: "kH/s",
-      6: "MH/s",
-      9: "GH/s",
-      12: "TH/s",
-      15: "PH/s",
-      18: "EH/s",
+      0: 'H/s',
+      3: 'kH/s',
+      6: 'MH/s',
+      9: 'GH/s',
+      12: 'TH/s',
+      15: 'PH/s',
+      18: 'EH/s',
     };
 
     // I think it's fine to hardcode this since we don't have x1000 hashrate jump everyday
@@ -62,7 +62,7 @@ export class MiningService {
     };
   }
 
-  private generateMiningStats(stats: PoolsStats) : MiningStats {
+  private generateMiningStats(stats: PoolsStats): MiningStats {
     const miningUnits = this.getMiningUnits();
     const hashrateDivider = miningUnits.hashrateDivider;
 
@@ -77,7 +77,7 @@ export class MiningService {
         emptyBlockRatio: (poolStat.emptyBlocks / poolStat.blockCount * 100).toFixed(2),
         logo: `./resources/mining-pools/` + poolStat.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg',
         ...poolStat
-      }
+      };
     });
 
     return {
