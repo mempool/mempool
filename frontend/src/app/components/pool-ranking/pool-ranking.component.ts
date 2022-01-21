@@ -2,7 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { EChartsOption } from 'echarts';
 import { combineLatest, Observable, of } from 'rxjs';
-import { catchError, skip, startWith, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, skip, startWith, switchMap, tap } from 'rxjs/operators';
+import { SinglePoolStats } from 'src/app/interfaces/node-api.interface';
 import { StorageService } from '../..//services/storage.service';
 import { MiningService, MiningStats } from '../../services/mining.service';
 import { StateService } from '../../services/state.service';
@@ -10,11 +11,12 @@ import { StateService } from '../../services/state.service';
 @Component({
   selector: 'app-pool-ranking',
   templateUrl: './pool-ranking.component.html',
+  styleUrls: ['./pool-ranking.component.scss'],
   styles: [`
     .loadingGraphs {
       position: absolute;
-      top: 50%;
-      left: calc(50% - 16px);
+      top: 38%;
+      left: calc(50% - 15px);
       z-index: 100;
     }
   `],
@@ -70,6 +72,10 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
               catchError((e) => of(this.getEmptyMiningStat()))
             );
         }),
+        map(data => {
+          data.pools = data.pools.map((pool: SinglePoolStats) => this.formatPoolUI(pool));
+          return data;
+        }),
         tap(data => {
           this.isLoading = false;
           this.prepareChartOptions(data);
@@ -80,8 +86,17 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
   }
 
+  formatPoolUI(pool: SinglePoolStats) {
+    pool['blockText'] = pool.blockCount.toString() + ` (${pool.share}%)`;
+    return pool;
+  }
+
+  isMobile() {
+    return (window.innerWidth <= 767.98);
+  }
+
   generatePoolsChartSerieData(miningStats) {
-    const poolShareThreshold = 0.5; // Do not draw pools which hashrate share is lower than that
+    const poolShareThreshold = this.isMobile() ? 1 : 0.5; // Do not draw pools which hashrate share is lower than that
     const data: object[] = [];
 
     miningStats.pools.forEach((pool) => {
@@ -90,16 +105,23 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
       }
       data.push({
         value: pool.share,
-        name: pool.name + ` (${pool.share}%)`,
-        label: { color: '#FFFFFF' },
+        name: pool.name + (this.isMobile() ? `` : ` (${pool.share}%)`),
+        label: {
+          color: '#FFFFFF',
+          overflow: 'break',
+        },
         tooltip: {
+          backgroundColor: "#282d47",
+          textStyle: {
+            color: "#FFFFFF",
+          },
           formatter: () => {
             if (this.poolsWindowPreference === '1d') {
-              return `<u><b>${pool.name}</b></u><br>` +
-                pool.lastEstimatedHashrate.toString() + ' PH/s (' + pool.share + `%)
-                <br>(` + pool.blockCount.toString() + ` blocks)`;
+              return `<u><b>${pool.name} (${pool.share}%)</b></u><br>` +
+                pool.lastEstimatedHashrate.toString() + ' PH/s' +
+                `<br>` + pool.blockCount.toString() + ` blocks`;
             } else {
-              return `<u><b>${pool.name}</b></u><br>` +
+              return `<u><b>${pool.name} (${pool.share}%)</b></u><br>` +
                 pool.blockCount.toString() + ` blocks`;
             }
           }
@@ -116,29 +138,22 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
         subtext: (this.poolsWindowPreference === '1d') ? 'Estimated from the # of blocks mined' : null,
         left: 'center',
         textStyle: {
-          color: '#FFFFFF',
+          color: '#FFF',
         },
         subtextStyle: {
-          color: '#CCCCCC',
+          color: '#CCC',
           fontStyle: 'italic',
         }
       },
       tooltip: {
         trigger: 'item'
       },
-      legend: (window.innerWidth <= 767.98) ? {
-        bottom: '0%',
-        left: 'center',
-        textStyle: {
-          color: '#FFF'
-        }
-      } : null,
       series: [
         {
-          top: '5%',
+          top: this.isMobile() ? '5%' : '20%',
           name: 'Mining pool',
           type: 'pie',
-          radius: ['30%', '70%'],
+          radius: this.isMobile() ? ['10%', '50%'] : ['20%', '80%'],
           data: this.generatePoolsChartSerieData(miningStats),
           labelLine: {
             lineStyle: {
@@ -146,22 +161,20 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
             },
           },
           label: {
-            show: (window.innerWidth > 767.98),
             fontSize: 14,
           },
           itemStyle: {
-            borderRadius: 5,
+            borderRadius: 2,
             borderWidth: 2,
             borderColor: '#000',
           },
           emphasis: {
             itemStyle: {
-              borderWidth: 5,
-              borderColor: '#000',
-              borderRadius: 20,
-              shadowBlur: 40,
-              shadowOffsetX: 0,
-              shadowColor: 'rgba(0, 0, 0, 0.75)'
+              borderWidth: 2,
+              borderColor: '#FFF',
+              borderRadius: 2,
+              shadowBlur: 80,
+              shadowColor: 'rgba(255, 255, 255, 0.75)',
             },
             labelLine: {
               lineStyle: {
