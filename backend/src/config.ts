@@ -17,6 +17,7 @@ interface IConfig {
     PRICE_FEED_UPDATE_INTERVAL: number;
     USE_SECOND_NODE_FOR_MINFEE: boolean;
     EXTERNAL_ASSETS: string[];
+    STDOUT_LOG_MIN_PRIORITY: 'emerg' | 'alert' | 'crit' | 'err' | 'warn' | 'notice' | 'info' | 'debug';
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -50,7 +51,7 @@ interface IConfig {
     ENABLED: boolean;
     HOST: string;
     PORT: number;
-    MIN_PRIORITY: 'emerg' | 'alert' | 'crit' | 'err' |'warn' | 'notice' | 'info' | 'debug';
+    MIN_PRIORITY: 'emerg' | 'alert' | 'crit' | 'err' | 'warn' | 'notice' | 'info' | 'debug';
     FACILITY: string;
   };
   STATISTICS: {
@@ -80,6 +81,7 @@ const defaults: IConfig = {
     'PRICE_FEED_UPDATE_INTERVAL': 3600,
     'USE_SECOND_NODE_FOR_MINFEE': false,
     'EXTERNAL_ASSETS': [],
+    'STDOUT_LOG_MIN_PRIORITY': 'debug',
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
