@@ -143,6 +143,9 @@ export class DashboardComponent implements OnInit {
     this.transactions$ = this.stateService.transactions$
       .pipe(
         scan((acc, tx) => {
+          if (acc.find((t) => t.txid == tx.txid)) {
+            return acc;
+          }
           acc.unshift(tx);
           acc = acc.slice(0, 6);
           return acc;
