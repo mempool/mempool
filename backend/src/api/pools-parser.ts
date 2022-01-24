@@ -135,9 +135,9 @@ class PoolsParser {
       if (finalPoolDataAdd.length > 0) {
         await connection.query<any>({ sql: queryAdd, timeout: 120000 });
       }
-      updateQueries.forEach(async query => {
+      for (const query of updateQueries) {
         await connection.query<any>({ sql: query, timeout: 120000 });
-      });
+      }
       await this.insertUnknownPool();
       connection.release();
       logger.info('Mining pools.json import completed');
