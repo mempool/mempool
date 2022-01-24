@@ -26,14 +26,12 @@ import poolsParser from './api/pools-parser';
 import syncAssets from './sync-assets';
 import icons from './api/liquid/icons';
 import { Common } from './api/common';
-import bitcoinClient from './api/bitcoin/bitcoin-client';
 
 class Server {
   private wss: WebSocket.Server | undefined;
   private server: http.Server | undefined;
   private app: Express;
   private currentBackendRetryInterval = 5;
-  private blockIndexingStarted = false;
 
   constructor() {
     this.app = express();
@@ -139,15 +137,7 @@ class Server {
       }
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
-
-      const blockchainInfo = await bitcoinClient.getBlockchainInfo();
-      if (this.blockIndexingStarted === false
-        && memPool.isInSync()
-        && blockchainInfo.blocks === blockchainInfo.headers
-      ) {
-        blocks.$generateBlockDatabase();
-        this.blockIndexingStarted = true;
-      }
+      blocks.$generateBlockDatabase();
 
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;
