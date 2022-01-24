@@ -14,6 +14,7 @@ interface IConfig {
     BLOCK_WEIGHT_UNITS: number;
     INITIAL_BLOCKS_AMOUNT: number;
     MEMPOOL_BLOCKS_AMOUNT: number;
+    INDEXING_BLOCKS_AMOUNT: number;
     PRICE_FEED_UPDATE_INTERVAL: number;
     USE_SECOND_NODE_FOR_MINFEE: boolean;
     EXTERNAL_ASSETS: string[];
@@ -77,6 +78,7 @@ const defaults: IConfig = {
     'BLOCK_WEIGHT_UNITS': 4000000,
     'INITIAL_BLOCKS_AMOUNT': 8,
     'MEMPOOL_BLOCKS_AMOUNT': 8,
+    'INDEXING_BLOCKS_AMOUNT': 432, // ~3 days at 10 minutes / block. Set to 0 to disable indexing
     'PRICE_FEED_UPDATE_INTERVAL': 3600,
     'USE_SECOND_NODE_FOR_MINFEE': false,
     'EXTERNAL_ASSETS': [
