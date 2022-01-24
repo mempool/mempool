@@ -10,7 +10,6 @@ import bitcoinClient from './bitcoin/bitcoin-client';
 import { IEsploraApi } from './bitcoin/esplora-api.interface';
 import poolsRepository from '../repositories/PoolsRepository';
 import blocksRepository from '../repositories/BlocksRepository';
-import BitcoinApi from './bitcoin/bitcoin-api';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -19,6 +18,7 @@ class Blocks {
   private lastDifficultyAdjustmentTime = 0;
   private previousDifficultyRetarget = 0;
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
+  private blockIndexingStarted = false;
 
   constructor() { }
 
@@ -146,14 +146,24 @@ class Blocks {
    * Index all blocks metadata for the mining dashboard
    */
   public async $generateBlockDatabase() {
-    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false ||
-      config.MEMPOOL.INDEXING_BLOCKS_AMOUNT <= 0) {
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false || // Bitcoin only
+      config.MEMPOOL.INDEXING_BLOCKS_AMOUNT <= 0 || // Indexing must be enabled
+      this.blockIndexingStarted === true ||  // Indexing must not already be in progress
+      !memPool.isInSync() // We sync the mempool first
+    ) {
       return;
     }
 
+    const blockchainInfo = await bitcoinClient.getBlockchainInfo();
+    if (blockchainInfo.blocks !== blockchainInfo.headers) {
+      return;
+    }
+
+    this.blockIndexingStarted = true;
+
     try {
-      let currentBlockHeight = await bitcoinClient.getBlockCount();
-      const lastBlockToIndex = currentBlockHeight - config.MEMPOOL.INDEXING_BLOCKS_AMOUNT + 1;
+      let currentBlockHeight = blockchainInfo.blocks;
+      const lastBlockToIndex = Math.max(0, currentBlockHeight - config.MEMPOOL.INDEXING_BLOCKS_AMOUNT + 1);
 
       logger.info(`Indexing blocks from #${currentBlockHeight} to #${lastBlockToIndex}`);
 
