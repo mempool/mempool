@@ -146,31 +146,35 @@ class Blocks {
    * Index all blocks metadata for the mining dashboard
    */
   public async $generateBlockDatabase() {
-    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false ||
+      config.MEMPOOL.INDEXING_BLOCKS_AMOUNT <= 0) {
       return;
     }
 
     try {
       let currentBlockHeight = await bitcoinClient.getBlockCount();
-      const indexedBlockCount = await blocksRepository.$blockCount();
+      const lastBlockToIndex = currentBlockHeight - config.MEMPOOL.INDEXING_BLOCKS_AMOUNT + 1;
 
-      logger.info(`Starting block indexing. Current tip at block #${currentBlockHeight}`);
-      logger.info(`Need to index ${currentBlockHeight - indexedBlockCount} blocks. Working on it!`);
+      logger.info(`Indexing blocks from #${currentBlockHeight} to #${lastBlockToIndex}`);
 
       const chunkSize = 10000;
-      while (currentBlockHeight >= 0) {
-        const endBlock = Math.max(0, currentBlockHeight - chunkSize + 1);
+      while (currentBlockHeight >= lastBlockToIndex) {
+        const endBlock = Math.max(0, lastBlockToIndex, currentBlockHeight - chunkSize + 1);
+
         const missingBlockHeights: number[] = await blocksRepository.$getMissingBlocksBetweenHeights(
           currentBlockHeight, endBlock);
         if (missingBlockHeights.length <= 0) {
-          logger.debug(`No missing blocks between #${currentBlockHeight} to #${endBlock}, moving on`);
+          logger.debug(`No missing blocks between #${currentBlockHeight} to #${endBlock}`);
           currentBlockHeight -= chunkSize;
           continue;
         }
 
-        logger.info(`Indexing ${chunkSize} blocks from #${currentBlockHeight} to #${endBlock}`);
+        logger.debug(`Indexing ${missingBlockHeights.length} blocks from #${currentBlockHeight} to #${endBlock}`);
 
         for (const blockHeight of missingBlockHeights) {
+          if (blockHeight < lastBlockToIndex) {
+            break;
+          }
           try {
             logger.debug(`Indexing block #${blockHeight}`);
             const blockHash = await bitcoinApi.$getBlockHash(blockHeight);
@@ -187,8 +191,10 @@ class Blocks {
 
         currentBlockHeight -= chunkSize;
       }
+      logger.info('Block indexing completed');
     } catch (e) {
       logger.err('An error occured in $generateBlockDatabase(). Skipping block indexing. ' + e);
+      console.log(e);
     }
   }
 

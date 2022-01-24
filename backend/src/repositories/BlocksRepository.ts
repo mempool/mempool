@@ -48,6 +48,10 @@ class BlocksRepository {
    * Get all block height that have not been indexed between [startHeight, endHeight]
    */
   public async $getMissingBlocksBetweenHeights(startHeight: number, endHeight: number): Promise<number[]> {
+    if (startHeight < endHeight) {
+      return [];
+    }
+
     const connection = await DB.pool.getConnection();
     const [rows] : any[] = await connection.query(`
       SELECT height
