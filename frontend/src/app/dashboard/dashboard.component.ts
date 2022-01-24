@@ -131,6 +131,9 @@ export class DashboardComponent implements OnInit {
           this.latestBlockHeight = block.height;
         }),
         scan((acc, [block]) => {
+          if (acc.find((b) => b.height == block.height)) {
+            return acc;
+          }
           acc.unshift(block);
           acc = acc.slice(0, 6);
           return acc;
