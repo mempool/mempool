@@ -7,7 +7,7 @@
       </div>
 
       <span class="tx-link float-left">
-        <a [routerLink]="['/bisq-tx' | relativeUrl, bisqTx.id]">
+        <a [routerLink]="['/tx' | relativeUrl, bisqTx.id]">
           <span class="d-inline d-lg-none">{{ bisqTx.id | shortenString : 24 }}</span>
           <span class="d-none d-lg-inline">{{ bisqTx.id }}</span>
         </a>
