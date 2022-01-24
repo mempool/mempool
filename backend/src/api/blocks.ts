@@ -150,41 +150,45 @@ class Blocks {
       return;
     }
 
-    let currentBlockHeight = await bitcoinClient.getBlockCount();
-    const indexedBlockCount = await blocksRepository.$blockCount();
+    try {
+      let currentBlockHeight = await bitcoinClient.getBlockCount();
+      const indexedBlockCount = await blocksRepository.$blockCount();
 
-    logger.info(`Starting block indexing. Current tip at block #${currentBlockHeight}`);
-    logger.info(`Need to index ${currentBlockHeight - indexedBlockCount} blocks. Working on it!`);
+      logger.info(`Starting block indexing. Current tip at block #${currentBlockHeight}`);
+      logger.info(`Need to index ${currentBlockHeight - indexedBlockCount} blocks. Working on it!`);
 
-    const chunkSize = 10000;
-    while (currentBlockHeight >= 0) {
-      const endBlock = Math.max(0, currentBlockHeight - chunkSize + 1);
-      const missingBlockHeights: number[] = await blocksRepository.$getMissingBlocksBetweenHeights(
-        currentBlockHeight, endBlock);
-      if (missingBlockHeights.length <= 0) {
-        logger.debug(`No missing blocks between #${currentBlockHeight} to #${endBlock}, moving on`);
-        currentBlockHeight -= chunkSize;
-        continue;
-      }
-
-      logger.info(`Indexing ${chunkSize} blocks from #${currentBlockHeight} to #${endBlock}`);
-
-      for (const blockHeight of missingBlockHeights) {
-        try {
-          logger.debug(`Indexing block #${blockHeight}`);
-          const blockHash = await bitcoinApi.$getBlockHash(blockHeight);
-          const block = await bitcoinApi.$getBlock(blockHash);
-          const transactions = await this.$getTransactionsExtended(blockHash, block.height, true);
-          const blockExtended = this.getBlockExtended(block, transactions);
-          const miner = await this.$findBlockMiner(blockExtended.coinbaseTx);
-          const coinbase: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(transactions[0].txid, true);
-          await blocksRepository.$saveBlockInDatabase(blockExtended, blockHash, coinbase.hex, miner);
-        } catch (e) {
-          logger.err(`Something went wrong while indexing blocks.` + e);
+      const chunkSize = 10000;
+      while (currentBlockHeight >= 0) {
+        const endBlock = Math.max(0, currentBlockHeight - chunkSize + 1);
+        const missingBlockHeights: number[] = await blocksRepository.$getMissingBlocksBetweenHeights(
+          currentBlockHeight, endBlock);
+        if (missingBlockHeights.length <= 0) {
+          logger.debug(`No missing blocks between #${currentBlockHeight} to #${endBlock}, moving on`);
+          currentBlockHeight -= chunkSize;
+          continue;
         }
-      }
 
-      currentBlockHeight -= chunkSize;
+        logger.info(`Indexing ${chunkSize} blocks from #${currentBlockHeight} to #${endBlock}`);
+
+        for (const blockHeight of missingBlockHeights) {
+          try {
+            logger.debug(`Indexing block #${blockHeight}`);
+            const blockHash = await bitcoinApi.$getBlockHash(blockHeight);
+            const block = await bitcoinApi.$getBlock(blockHash);
+            const transactions = await this.$getTransactionsExtended(blockHash, block.height, true);
+            const blockExtended = this.getBlockExtended(block, transactions);
+            const miner = await this.$findBlockMiner(blockExtended.coinbaseTx);
+            const coinbase: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(transactions[0].txid, true);
+            await blocksRepository.$saveBlockInDatabase(blockExtended, blockHash, coinbase.hex, miner);
+          } catch (e) {
+            logger.err(`Something went wrong while indexing blocks.` + e);
+          }
+        }
+
+        currentBlockHeight -= chunkSize;
+      }
+    } catch (e) {
+      logger.err('An error occured in $generateBlockDatabase(). Skipping block indexing. ' + e);
     }
   }
 
