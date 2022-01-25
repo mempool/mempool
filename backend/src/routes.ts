@@ -535,9 +535,9 @@ class Routes {
   public async $getPools(req: Request, res: Response) {
     try {
       let stats = await miningStats.$getPoolsStats(req.query.interval as string);
-      // res.header('Pragma', 'public');
-      // res.header('Cache-control', 'public');
-      // res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(stats);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);

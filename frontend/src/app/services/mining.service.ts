@@ -17,6 +17,7 @@ export interface MiningStats {
   totalEmptyBlockRatio: string;
   pools: SinglePoolStats[];
   miningUnits: MiningUnits;
+  availableTimespanDay: number;
 }
 
 @Injectable({
@@ -80,6 +81,10 @@ export class MiningService {
       };
     });
 
+    const availableTimespanDay = (
+      (new Date().getTime() / 1000) - (stats.oldestIndexedBlockTimestamp / 1000)
+    ) / 3600 / 24;
+
     return {
       lastEstimatedHashrate: (stats.lastEstimatedHashrate / hashrateDivider).toFixed(2),
       blockCount: stats.blockCount,
@@ -87,6 +92,7 @@ export class MiningService {
       totalEmptyBlockRatio: totalEmptyBlockRatio,
       pools: poolsStats,
       miningUnits: miningUnits,
+      availableTimespanDay: availableTimespanDay,
     };
   }
 }

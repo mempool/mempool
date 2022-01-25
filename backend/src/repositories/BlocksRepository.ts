@@ -72,14 +72,16 @@ class BlocksRepository {
   /**
    * Count empty blocks for all pools
    */
-  public async $countEmptyBlocks(interval: string = '100 YEAR'): Promise<EmptyBlocks[]> {
-    const connection = await DB.pool.getConnection();
-    const [rows] = await connection.query(`
+  public async $countEmptyBlocks(interval: string | null): Promise<EmptyBlocks[]> {
+    const query = `
       SELECT pool_id as poolId
       FROM blocks
-      WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()
-      AND tx_count = 1;
-    `);
+      WHERE tx_count = 1` +
+      (interval != null ? ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()` : ``)
+    ;
+
+    const connection = await DB.pool.getConnection();
+    const [rows] = await connection.query(query);
     connection.release();
 
     return <EmptyBlocks[]>rows;
@@ -88,16 +90,38 @@ class BlocksRepository {
   /**
    * Get blocks count for a period
    */
-   public async $blockCount(interval: string = '100 YEAR'): Promise<number> {
-    const connection = await DB.pool.getConnection();
-    const [rows] = await connection.query(`
+   public async $blockCount(interval: string | null): Promise<number> {
+    const query = `
       SELECT count(height) as blockCount
-      FROM blocks
-      WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW();
-    `);
+      FROM blocks` +
+      (interval != null ? ` WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()` : ``)
+    ;
+
+    const connection = await DB.pool.getConnection();
+    const [rows] = await connection.query(query);
     connection.release();
 
     return <number>rows[0].blockCount;
+  }
+
+  /**
+   * Get the oldest indexed block
+   */
+  public async $oldestBlockTimestamp(): Promise<number> {
+    const connection = await DB.pool.getConnection();
+    const [rows]: any[] = await connection.query(`
+      SELECT blockTimestamp
+      FROM blocks
+      ORDER BY height
+      LIMIT 1;
+    `);
+    connection.release();
+
+    if (rows.length <= 0) {
+      return -1;
+    }
+
+    return <number>rows[0].blockTimestamp;
   }
 }
 

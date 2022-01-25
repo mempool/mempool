@@ -7,7 +7,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class StorageService {
   constructor(private router: Router, private route: ActivatedRoute) {
     this.setDefaultValueIfNeeded('graphWindowPreference', '2h');
-    this.setDefaultValueIfNeeded('poolsWindowPreference', '1d');
+    this.setDefaultValueIfNeeded('poolsWindowPreference', '1w');
   }
 
   setDefaultValueIfNeeded(key: string, defaultValue: string) {

@@ -2,7 +2,6 @@ import { PoolInfo, PoolStats } from '../mempool.interfaces';
 import BlocksRepository, { EmptyBlocks } from '../repositories/BlocksRepository';
 import PoolsRepository from '../repositories/PoolsRepository';
 import bitcoinClient from './bitcoin/bitcoin-client';
-import BitcoinApi from './bitcoin/bitcoin-api';
 
 class Mining {
   constructor() {
@@ -11,14 +10,25 @@ class Mining {
   /**
    * Generate high level overview of the pool ranks and general stats
    */
-  public async $getPoolsStats(interval: string = '100 YEAR') : Promise<object> {
+  public async $getPoolsStats(interval: string | null) : Promise<object> {
+    let sqlInterval: string | null = null;
+    switch (interval) {
+      case '24h': sqlInterval = '1 DAY'; break;
+      case '3d': sqlInterval = '3 DAY'; break;
+      case '1w': sqlInterval = '1 WEEK'; break;
+      case '1m': sqlInterval = '1 MONTH'; break;
+      case '3m': sqlInterval = '3 MONTH'; break;
+      case '6m': sqlInterval = '6 MONTH'; break;
+      case '1y': sqlInterval = '1 YEAR'; break;
+      case '2y': sqlInterval = '2 YEAR'; break;
+      case '3y': sqlInterval = '3 YEAR'; break;
+      default: sqlInterval = null; break;
+    }
+
     const poolsStatistics = {};
 
-    const blockHeightTip = await bitcoinClient.getBlockCount();
-    const lastBlockHashrate = await bitcoinClient.getNetworkHashPs(120, blockHeightTip);
-    const poolsInfo: PoolInfo[] = await PoolsRepository.$getPoolsInfo(interval);
-    const blockCount: number = await BlocksRepository.$blockCount(interval);
-    const emptyBlocks: EmptyBlocks[] = await BlocksRepository.$countEmptyBlocks(interval);
+    const poolsInfo: PoolInfo[] = await PoolsRepository.$getPoolsInfo(sqlInterval);
+    const emptyBlocks: EmptyBlocks[] = await BlocksRepository.$countEmptyBlocks(sqlInterval);
 
     const poolsStats: PoolStats[] = [];
     let rank = 1;
@@ -40,9 +50,17 @@ class Mining {
       poolsStats.push(poolStat);
     });
 
-    poolsStatistics['blockCount'] = blockCount;
-    poolsStatistics['lastEstimatedHashrate'] = lastBlockHashrate;
     poolsStatistics['pools'] = poolsStats;
+
+    const oldestBlock = new Date(await BlocksRepository.$oldestBlockTimestamp());
+    poolsStatistics['oldestIndexedBlockTimestamp'] = oldestBlock.getTime();
+
+    const blockCount: number = await BlocksRepository.$blockCount(sqlInterval);
+    poolsStatistics['blockCount'] = blockCount;
+
+    const blockHeightTip = await bitcoinClient.getBlockCount();
+    const lastBlockHashrate = await bitcoinClient.getNetworkHashPs(120, blockHeightTip);
+    poolsStatistics['lastEstimatedHashrate'] = lastBlockHashrate;
 
     return poolsStatistics;
   }

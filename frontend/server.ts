@@ -65,7 +65,7 @@ export function app(locale: string): express.Express {
   server.get('/mempool-block/*', getLocalizedSSR(indexHtml));
   server.get('/address/*', getLocalizedSSR(indexHtml));
   server.get('/blocks', getLocalizedSSR(indexHtml));
-  server.get('/pools', getLocalizedSSR(indexHtml));
+  server.get('/mining/pools', getLocalizedSSR(indexHtml));
   server.get('/graphs', getLocalizedSSR(indexHtml));
   server.get('/liquid', getLocalizedSSR(indexHtml));
   server.get('/liquid/tx/*', getLocalizedSSR(indexHtml));
@@ -86,7 +86,7 @@ export function app(locale: string): express.Express {
   server.get('/testnet/mempool-block/*', getLocalizedSSR(indexHtml));
   server.get('/testnet/address/*', getLocalizedSSR(indexHtml));
   server.get('/testnet/blocks', getLocalizedSSR(indexHtml));
-  server.get('/testnet/pools', getLocalizedSSR(indexHtml));
+  server.get('/testnet/mining/pools', getLocalizedSSR(indexHtml));
   server.get('/testnet/graphs', getLocalizedSSR(indexHtml));
   server.get('/testnet/api', getLocalizedSSR(indexHtml));
   server.get('/testnet/tv', getLocalizedSSR(indexHtml));
@@ -98,7 +98,7 @@ export function app(locale: string): express.Express {
   server.get('/signet/mempool-block/*', getLocalizedSSR(indexHtml));
   server.get('/signet/address/*', getLocalizedSSR(indexHtml));
   server.get('/signet/blocks', getLocalizedSSR(indexHtml));
-  server.get('/signet/pools', getLocalizedSSR(indexHtml));
+  server.get('/signet/mining/pools', getLocalizedSSR(indexHtml));
   server.get('/signet/graphs', getLocalizedSSR(indexHtml));
   server.get('/signet/api', getLocalizedSSR(indexHtml));
   server.get('/signet/tv', getLocalizedSSR(indexHtml));
