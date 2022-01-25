@@ -60,7 +60,7 @@ let routes: Routes = [
         component: LatestBlocksComponent,
       },
       {
-        path: 'pools',
+        path: 'mining/pools',
         component: PoolRankingComponent,
       },
       {
@@ -148,6 +148,10 @@ let routes: Routes = [
             component: LatestBlocksComponent,
           },
           {
+            path: 'mining/pools',
+            component: PoolRankingComponent,
+          },
+          {
             path: 'graphs',
             component: StatisticsComponent,
           },
@@ -224,6 +228,10 @@ let routes: Routes = [
           {
             path: 'blocks',
             component: LatestBlocksComponent,
+          },
+          {
+            path: 'mining/pools',
+            component: PoolRankingComponent,
           },
           {
             path: 'graphs',

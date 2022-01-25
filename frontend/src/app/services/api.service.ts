@@ -121,8 +121,11 @@ export class ApiService {
     return this.httpClient.post<any>(this.apiBaseUrl + this.apiBasePath + '/api/tx', hexPayload, { responseType: 'text' as 'json'});
   }
 
-  listPools$(interval: string) : Observable<PoolsStats> {
-    const params = new HttpParams().set('interval', interval);
-    return this.httpClient.get<PoolsStats>(this.apiBaseUrl + this.apiBasePath + '/api/v1/pools', {params});
+  listPools$(interval: string | null) : Observable<PoolsStats> {
+    let params = {};
+    if (interval) {
+      params = new HttpParams().set('interval', interval);
+    }
+    return this.httpClient.get<PoolsStats>(this.apiBaseUrl + this.apiBasePath + '/api/v1/mining/pools', {params});
   }
 }

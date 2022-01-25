@@ -68,6 +68,7 @@ export interface SinglePoolStats {
 export interface PoolsStats {
   blockCount: number;
   lastEstimatedHashrate: number;
+  oldestIndexedBlockTimestamp: number;
   pools: SinglePoolStats[];
 }
 

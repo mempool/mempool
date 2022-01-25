@@ -11,7 +11,6 @@
   "NGINX_HOSTNAME": "127.0.0.1",
   "NGINX_PORT": "80",
   "MEMPOOL_BLOCKS_AMOUNT": 8,
-  "INDEXING_BLOCKS_AMOUNT": 432,
   "BASE_MODULE": "mempool",
   "MEMPOOL_WEBSITE_URL": "https://mempool.space",
   "LIQUID_WEBSITE_URL": "https://liquid.network",

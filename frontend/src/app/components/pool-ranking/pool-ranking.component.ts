@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { EChartsOption } from 'echarts';
 import { combineLatest, Observable, of } from 'rxjs';
-import { catchError, map, skip, startWith, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, share, skip, startWith, switchMap, tap } from 'rxjs/operators';
 import { SinglePoolStats } from 'src/app/interfaces/node-api.interface';
 import { StorageService } from '../..//services/storage.service';
 import { MiningService, MiningStats } from '../../services/mining.service';
@@ -39,7 +39,7 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private miningService: MiningService,
   ) {
-    this.poolsWindowPreference = this.storageService.getValue('poolsWindowPreference') ? this.storageService.getValue('poolsWindowPreference') : '1d';
+    this.poolsWindowPreference = this.storageService.getValue('poolsWindowPreference') ? this.storageService.getValue('poolsWindowPreference') : '24h';
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.poolsWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.poolsWindowPreference);
   }
@@ -67,7 +67,7 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
       .pipe(
         switchMap(() => {
           this.isLoading = true;
-          return this.miningService.getMiningStats(this.getSQLInterval(this.poolsWindowPreference))
+          return this.miningService.getMiningStats(this.poolsWindowPreference)
             .pipe(
               catchError((e) => of(this.getEmptyMiningStat()))
             );
@@ -79,7 +79,8 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
         tap(data => {
           this.isLoading = false;
           this.prepareChartOptions(data);
-        })
+        }),
+        share()
       );
   }
 
@@ -116,7 +117,7 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
             color: "#FFFFFF",
           },
           formatter: () => {
-            if (this.poolsWindowPreference === '1d') {
+            if (this.poolsWindowPreference === '24h') {
               return `<u><b>${pool.name} (${pool.share}%)</b></u><br>` +
                 pool.lastEstimatedHashrate.toString() + ' PH/s' +
                 `<br>` + pool.blockCount.toString() + ` blocks`;
@@ -132,10 +133,16 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
   }
 
   prepareChartOptions(miningStats) {
+    let network = this.stateService.network;
+    if (network === '') {
+      network = 'bitcoin';
+    }
+    network = network.charAt(0).toUpperCase() + network.slice(1);
+
     this.chartOptions = {
       title: {
-        text: (this.poolsWindowPreference === '1d') ? 'Hashrate distribution' : 'Block distribution',
-        subtext: (this.poolsWindowPreference === '1d') ? 'Estimated from the # of blocks mined' : null,
+        text: $localize`:@@mining.pool-chart-title:${network}:NETWORK: mining pools share`,
+        subtext: $localize`:@@mining.pool-chart-sub-title:Estimated from the # of blocks mined`,
         left: 'center',
         textStyle: {
           color: '#FFF',
@@ -187,21 +194,6 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
     };
   }
 
-  getSQLInterval(uiInterval: string) {
-    switch (uiInterval) {
-      case '1d': return '1 DAY';
-      case '3d': return '3 DAY';
-      case '1w': return '1 WEEK';
-      case '1m': return '1 MONTH';
-      case '3m': return '3 MONTH';
-      case '6m': return '6 MONTH';
-      case '1y': return '1 YEAR';
-      case '2y': return '2 YEAR';
-      case '3y': return '3 YEAR';
-      default: return '1000 YEAR';
-    }
-  }
-
   /**
    * Default mining stats if something goes wrong
    */
@@ -212,6 +204,7 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
       totalEmptyBlock: 0,
       totalEmptyBlockRatio: '',
       pools: [],
+      availableTimespanDay: 0,
       miningUnits: {
         hashrateDivider: 1,
         hashrateUnit: '',

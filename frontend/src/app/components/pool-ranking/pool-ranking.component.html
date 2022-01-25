@@ -7,37 +7,37 @@
   </div>
 
   <div class="card-header mb-0 mb-lg-4">
-    <form [formGroup]="radioGroupForm" class="formRadioGroup">
+    <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(miningStatsObservable$ | async) as miningStats">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
-        <label ngbButtonLabel class="btn-primary btn-sm">
-          <input ngbButton type="radio" [value]="'1d'" [routerLink]="['/pools' | relativeUrl]" fragment="1d"> 1D
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="miningStats.availableTimespanDay >= 1">
+          <input ngbButton type="radio" [value]="'24h'" [routerLink]="['/mining/pools' | relativeUrl]" fragment="24h"> 24h
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="miningStats.availableTimespanDay >= 3">
+          <input ngbButton type="radio" [value]="'3d'" [routerLink]="['/mining/pools' | relativeUrl]" fragment="3d"> 3D
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="miningStats.availableTimespanDay >= 7">
+          <input ngbButton type="radio" [value]="'1w'" [routerLink]="['/mining/pools' | relativeUrl]" fragment="1w"> 1W
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="miningStats.availableTimespanDay >= 30">
+          <input ngbButton type="radio" [value]="'1m'" [routerLink]="['/mining/pools' | relativeUrl]" fragment="1m"> 1M
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="miningStats.availableTimespanDay >= 90">
+          <input ngbButton type="radio" [value]="'3m'" [routerLink]="['/mining/pools' | relativeUrl]" fragment="3m"> 3M
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="miningStats.availableTimespanDay >= 180">
+          <input ngbButton type="radio" [value]="'6m'" [routerLink]="['/mining/pools' | relativeUrl]" fragment="6m"> 6M
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="miningStats.availableTimespanDay >= 365">
+          <input ngbButton type="radio" [value]="'1y'" [routerLink]="['/mining/pools' | relativeUrl]" fragment="1y"> 1Y
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="miningStats.availableTimespanDay >= 730">
+          <input ngbButton type="radio" [value]="'2y'" [routerLink]="['/mining/pools' | relativeUrl]" fragment="2y"> 2Y
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="miningStats.availableTimespanDay >= 1095">
+          <input ngbButton type="radio" [value]="'3y'" [routerLink]="['/mining/pools' | relativeUrl]" fragment="3y"> 3Y
         </label>
         <label ngbButtonLabel class="btn-primary btn-sm">
-          <input ngbButton type="radio" [value]="'3d'" [routerLink]="['/pools' | relativeUrl]" fragment="3d"> 3D
-        </label>
-        <label ngbButtonLabel class="btn-primary btn-sm">
-          <input ngbButton type="radio" [value]="'1w'" [routerLink]="['/pools' | relativeUrl]" fragment="1w"> 1W
-        </label>
-        <label ngbButtonLabel class="btn-primary btn-sm">
-          <input ngbButton type="radio" [value]="'1m'" [routerLink]="['/pools' | relativeUrl]" fragment="1m"> 1M
-        </label>
-        <label ngbButtonLabel class="btn-primary btn-sm">
-          <input ngbButton type="radio" [value]="'3m'" [routerLink]="['/pools' | relativeUrl]" fragment="3m"> 3M
-        </label>
-        <label ngbButtonLabel class="btn-primary btn-sm">
-          <input ngbButton type="radio" [value]="'6m'" [routerLink]="['/pools' | relativeUrl]" fragment="6m"> 6M
-        </label>
-        <label ngbButtonLabel class="btn-primary btn-sm">
-          <input ngbButton type="radio" [value]="'1y'" [routerLink]="['/pools' | relativeUrl]" fragment="1y"> 1Y
-        </label>
-        <label ngbButtonLabel class="btn-primary btn-sm">
-          <input ngbButton type="radio" [value]="'2y'" [routerLink]="['/pools' | relativeUrl]" fragment="2y"> 2Y
-        </label>
-        <label ngbButtonLabel class="btn-primary btn-sm">
-          <input ngbButton type="radio" [value]="'3y'" [routerLink]="['/pools' | relativeUrl]" fragment="3y"> 3Y
-        </label>
-        <label ngbButtonLabel class="btn-primary btn-sm">
-          <input ngbButton type="radio" [value]="'all'" [routerLink]="['/pools' | relativeUrl]" fragment="all"> ALL
+          <input ngbButton type="radio" [value]="'all'" [routerLink]="['/mining/pools' | relativeUrl]" fragment="all"> ALL
         </label>
       </div>
     </form>
@@ -46,30 +46,30 @@
   <table class="table table-borderless text-center pools-table" [alwaysCallback]="true" infiniteScroll [infiniteScrollDistance]="1.5" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50">
     <thead>
       <tr>
-        <th class="d-none d-md-block" i18n="latest-blocks.height">Rank</th>
+        <th class="d-none d-md-block" i18n="mining.rank">Rank</th>
         <th class=""></th>
-        <th class="" i18n="latest-blocks.poolName">Name</th>
-        <th class="" *ngIf="this.poolsWindowPreference === '1d'" i18n="latest-blocks.timestamp">Hashrate</th>
-        <th class="" i18n="latest-blocks.mined">Blocks</th>
-        <th class="d-none d-md-block" i18n="latest-blocks.transactions">Empty Blocks</th>
+        <th class="" i18n="mining.pool-name">Name</th>
+        <th class="" *ngIf="this.poolsWindowPreference === '24h'" i18n="mining.hashrate">Hashrate</th>
+        <th class="" i18n="master-page.blocks">Blocks</th>
+        <th class="d-none d-md-block" i18n="mining.empty-blocks">Empty Blocks</th>
       </tr>
     </thead>
     <tbody *ngIf="(miningStatsObservable$ | async) as miningStats">
-      <tr>
-        <td class="d-none d-md-block">-</td>
-        <td class="text-right"><img width="25" height="25" src="./resources/mining-pools/default.svg"></td>
-        <td class="">All miners</td>
-        <td class="" *ngIf="this.poolsWindowPreference === '1d'">{{ miningStats.lastEstimatedHashrate}} {{ miningStats.miningUnits.hashrateUnit }}</td>
-        <td class="">{{ miningStats.blockCount }}</td>
-        <td class="d-none d-md-block">{{ miningStats.totalEmptyBlock }} ({{ miningStats.totalEmptyBlockRatio }}%)</td>
-      </tr>
       <tr *ngFor="let pool of miningStats.pools">
         <td class="d-none d-md-block">{{ pool.rank }}</td>
         <td class="text-right"><img width="25" height="25" src="{{ pool.logo }}" onError="this.src = './resources/mining-pools/default.svg'"></td>
-        <td class=""><a target="#" href="{{ pool.link }}">{{ pool.name }}</a></td>
-        <td class="" *ngIf="this.poolsWindowPreference === '1d'">{{ pool.lastEstimatedHashrate }} {{ miningStats.miningUnits.hashrateUnit }}</td>
+        <td class="">{{ pool.name }}</td>
+        <td class="" *ngIf="this.poolsWindowPreference === '24h'">{{ pool.lastEstimatedHashrate }} {{ miningStats.miningUnits.hashrateUnit }}</td>
         <td class="">{{ pool['blockText'] }}</td>
         <td class="d-none d-md-block">{{ pool.emptyBlocks }} ({{ pool.emptyBlockRatio }}%)</td>
+      </tr>
+      <tr style="border-top: 1px solid #555">
+        <td class="d-none d-md-block">-</td>
+        <td class="text-right"><img width="25" height="25" src="./resources/mining-pools/default.svg"></td>
+        <td class="" i18n="mining.all-miners"><b>All miners</b></td>
+        <td class="" *ngIf="this.poolsWindowPreference === '24h'"><b>{{ miningStats.lastEstimatedHashrate}} {{ miningStats.miningUnits.hashrateUnit }}</b></td>
+        <td class=""><b>{{ miningStats.blockCount }}</b></td>
+        <td class="d-none d-md-block"><b>{{ miningStats.totalEmptyBlock }} ({{ miningStats.totalEmptyBlockRatio }}%)</b></td>
       </tr>
     </tbody>
   </table>

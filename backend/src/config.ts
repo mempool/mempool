@@ -78,7 +78,7 @@ const defaults: IConfig = {
     'BLOCK_WEIGHT_UNITS': 4000000,
     'INITIAL_BLOCKS_AMOUNT': 8,
     'MEMPOOL_BLOCKS_AMOUNT': 8,
-    'INDEXING_BLOCKS_AMOUNT': 432, // ~3 days at 10 minutes / block. Set to 0 to disable indexing
+    'INDEXING_BLOCKS_AMOUNT': 1100, // 0 = disable indexing, -1 = index all blocks
     'PRICE_FEED_UPDATE_INTERVAL': 3600,
     'USE_SECOND_NODE_FOR_MINFEE': false,
     'EXTERNAL_ASSETS': [

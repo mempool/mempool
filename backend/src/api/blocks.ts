@@ -114,7 +114,7 @@ class Blocks {
    * @returns
    */
   private async $findBlockMiner(txMinerInfo: TransactionMinerInfo | undefined): Promise<PoolTag> {
-    if (txMinerInfo === undefined) {
+    if (txMinerInfo === undefined || txMinerInfo.vout.length < 1) {
       return await poolsRepository.$getUnknownPool();
     }
 
@@ -147,9 +147,9 @@ class Blocks {
    */
   public async $generateBlockDatabase() {
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false || // Bitcoin only
-      config.MEMPOOL.INDEXING_BLOCKS_AMOUNT <= 0 || // Indexing must be enabled
-      this.blockIndexingStarted === true ||  // Indexing must not already be in progress
-      !memPool.isInSync() // We sync the mempool first
+      config.MEMPOOL.INDEXING_BLOCKS_AMOUNT === 0 || // Indexing must be enabled
+      !memPool.isInSync() || // We sync the mempool first
+      this.blockIndexingStarted === true // Indexing must not already be in progress
     ) {
       return;
     }
@@ -163,7 +163,13 @@ class Blocks {
 
     try {
       let currentBlockHeight = blockchainInfo.blocks;
-      const lastBlockToIndex = Math.max(0, currentBlockHeight - config.MEMPOOL.INDEXING_BLOCKS_AMOUNT + 1);
+
+      let indexingBlockAmount = config.MEMPOOL.INDEXING_BLOCKS_AMOUNT;
+      if (indexingBlockAmount <= -1) {
+        indexingBlockAmount = currentBlockHeight + 1;
+      }
+
+      const lastBlockToIndex = Math.max(0, currentBlockHeight - indexingBlockAmount + 1);
 
       logger.info(`Indexing blocks from #${currentBlockHeight} to #${lastBlockToIndex}`);
 
