@@ -3,10 +3,10 @@ import config from '../config';
 import { DB } from '../database';
 import logger from '../logger';
 
-const sleep = (ms: number) => new Promise( res => setTimeout(res, ms));
+const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 class DatabaseMigration {
-  private static currentVersion = 2;
+  private static currentVersion = 3;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
 
@@ -82,6 +82,9 @@ class DatabaseMigration {
       await this.$executeQuery(connection, this.getCreateStatisticsQuery(), await this.$checkIfTableExists('statistics'));
       if (databaseSchemaVersion < 2 && this.statisticsAddedIndexed === false) {
         await this.$executeQuery(connection, `CREATE INDEX added ON statistics (added);`);
+      }
+      if (databaseSchemaVersion < 3) {
+        await this.$executeQuery(connection, this.getCreatePoolsTableQuery(), await this.$checkIfTableExists('pools'));
       }
       connection.release();
     } catch (e) {
@@ -334,6 +337,17 @@ class DatabaseMigration {
       bitcoinindex int(11) NOT NULL,
       final_tx int(11) NOT NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreatePoolsTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS pools (
+      id int(11) NOT NULL AUTO_INCREMENT,
+      name varchar(50) NOT NULL,
+      link varchar(255) NOT NULL,
+      addresses text NOT NULL,
+      regexes text NOT NULL,
+      PRIMARY KEY (id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`;
   }
 }
 

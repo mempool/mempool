@@ -22,6 +22,7 @@ import loadingIndicators from './api/loading-indicators';
 import mempool from './api/mempool';
 import elementsParser from './api/liquid/elements-parser';
 import databaseMigration from './api/database-migration';
+import poolsParser from './api/pools-parser';
 import syncAssets from './sync-assets';
 import icons from './api/liquid/icons';
 import { Common } from './api/common';
@@ -88,6 +89,7 @@ class Server {
       await checkDbConnection();
       try {
         await databaseMigration.$initializeOrMigrateDatabase();
+        await poolsParser.migratePoolsJson();
       } catch (e) {
         throw new Error(e instanceof Error ? e.message : 'Error');
       }
