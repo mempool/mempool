@@ -200,7 +200,6 @@ class DatabaseMigration {
     const connection = await DB.pool.getConnection();
     try {
       await this.$executeQuery(connection, 'START TRANSACTION;');
-      await this.$executeQuery(connection, 'SET autocommit = 0;');
       for (const query of transactionQueries) {
         await this.$executeQuery(connection, query);
       }
