@@ -370,18 +370,10 @@ describe('Mainnet', () => {
       cy.waitForSkeletonGone();
       cy.get('#btn-tv').click().then(() => {
         cy.viewport('macbook-16');
-        cy.get('.chart-holder');
-        cy.get('.blockchain-wrapper').should('be.visible');
+        cy.get('.chart');
+        cy.get('.blocks').should('be.visible');
         cy.get('#mempool-block-0').should('be.visible');
       });
-    });
-
-    it('loads the tv screen - mobile', () => {
-      cy.viewport('iphone-6');
-      cy.visit('/tv');
-      cy.waitForSkeletonGone();
-      cy.get('.chart-holder');
-      cy.get('.blockchain-wrapper').should('not.visible');
     });
 
     it('loads the api screen', () => {
