@@ -1,22 +1,16 @@
-<div id="tv-wrapper">
-  <div class="tv-container">
-    <div class="chart-holder">
-      <app-mempool-graph
-        [template]="'advanced'"
-        [limitFee]="500"
-        [height]="600"
-        [left]="60"
-        [right]="10"
-        [data]="mempoolStats && mempoolStats.length ? mempoolStats : null"
-        [showZoom]="false"
-      ></app-mempool-graph>
-    </div>
-    <div class="blockchain-wrapper">
-      <div class="position-container">
-        <app-mempool-blocks></app-mempool-blocks>
-        <app-blockchain-blocks></app-blockchain-blocks>
-        <div id="divider"></div>
-      </div>
-    </div>
+<div id="tv-wrapper" class="d-flex flex-column tv-wrapper">  
+  <div class="p-2 blocks">
+    <app-blockchain></app-blockchain>
+  </div>
+  <div class="p-2 chart">
+    <app-mempool-graph
+      [template]="'advanced'"
+      [limitFee]="500"
+      [height]="0.55"
+      [left]="60"
+      [right]="10"
+      [data]="mempoolStats && mempoolStats.length ? mempoolStats : null"
+      [showZoom]="false"
+    ></app-mempool-graph>
   </div>
 </div>

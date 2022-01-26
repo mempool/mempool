@@ -37,6 +37,16 @@ export class TelevisionComponent implements OnInit {
         this.mempoolStats.unshift(mempoolStats);
         this.mempoolStats = this.mempoolStats.slice(0, this.mempoolStats.length - 1);
       });
+
+    // Hide the scrollbar manually
+    var style = document.createElement("style");
+    style.innerHTML = `
+      body::-webkit-scrollbar {display: none;}
+      body {-ms-overflow-style: none}
+      html {scrollbar-width: none;}
+    `;
+    document.head.appendChild(style);
+
   }
 
 }
