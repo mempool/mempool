@@ -54,13 +54,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    if (typeof this.height === 'string') {
-      this.height = parseFloat(this.height);
-    }
-    if (this.height < 1) { // Consider it a ratio of the window height
-      this.height = this.height * window.innerHeight;
-    }
-
     this.isLoading = true;
     this.inverted = this.storageService.getValue('inverted-graph') === 'true';
   }

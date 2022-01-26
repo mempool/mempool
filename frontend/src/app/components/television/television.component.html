@@ -1,16 +1,17 @@
 <div id="tv-wrapper" class="d-flex flex-column tv-wrapper">  
-  <div class="p-2 blocks">
-    <app-blockchain></app-blockchain>
-  </div>
-  <div class="p-2 chart">
+  <div class="p-2 chart" [ngClass]="showBlocks ? '' : 'full'">
     <app-mempool-graph
       [template]="'advanced'"
       [limitFee]="500"
-      [height]="0.55"
+      [height]="'85%'"
       [left]="60"
       [right]="10"
+      [top]="15"
       [data]="mempoolStats && mempoolStats.length ? mempoolStats : null"
       [showZoom]="false"
     ></app-mempool-graph>
+  </div>
+  <div class="p-2 blocks" *ngIf="showBlocks">
+    <app-blockchain></app-blockchain>
   </div>
 </div>

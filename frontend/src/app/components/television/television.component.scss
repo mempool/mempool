@@ -14,9 +14,14 @@
 }
 
 .chart {
-  height: 70%;
+  height: 65%;
+}
+.chart.full {
+  height: 100%;
 }
 
 .blocks {
-  height: 30%;
+  position: absolute;
+  top: calc(100vh * 0.75 - 60px);
+  left: 50%;
 }

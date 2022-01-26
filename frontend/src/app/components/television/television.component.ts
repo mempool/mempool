@@ -16,6 +16,8 @@ export class TelevisionComponent implements OnInit {
   mempoolStats: OptimizedMempoolStats[] = [];
   mempoolVsizeFeesData: any;
 
+  showBlocks = window.innerHeight > 650;
+
   constructor(
     private websocketService: WebsocketService,
     private apiService: ApiService,
