@@ -370,9 +370,10 @@ describe('Mainnet', () => {
       cy.waitForSkeletonGone();
       cy.get('#btn-tv').click().then(() => {
         cy.viewport('macbook-16');
-        cy.get('.chart');
-        cy.get('.blocks').should('be.visible');
-        cy.get('#mempool-block-0').should('be.visible');
+        cy.get('.chart').should('be.visible');
+        // Blocks are using aboslute positioning so we need custom visibility check
+        cy.get('.blocks').isVisible();
+        cy.get('#mempool-block-0').isVisible();
       });
     });
 

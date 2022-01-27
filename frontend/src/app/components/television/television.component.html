@@ -1,5 +1,5 @@
-<div id="tv-wrapper" class="d-flex flex-column tv-wrapper">  
-  <div class="p-2 chart" [ngClass]="showBlocks ? '' : 'full'">
+<div id="tv-wrapper" class="tv-wrapper">  
+  <div class="chart" [ngClass]="showBlocks ? '' : 'full'">
     <app-mempool-graph
       [template]="'advanced'"
       [limitFee]="500"
@@ -11,7 +11,7 @@
       [showZoom]="false"
     ></app-mempool-graph>
   </div>
-  <div class="p-2 blocks" *ngIf="showBlocks">
+  <div class="blocks" *ngIf="showBlocks">
     <app-blockchain></app-blockchain>
   </div>
 </div>

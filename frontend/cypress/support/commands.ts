@@ -86,6 +86,18 @@ Cypress.Commands.add('changeNetwork', (network: "testnet"|"signet"|"liquid"|"bis
     });
 });
 
+// Access element whose parent is hidden
+Cypress.Commands.add('isVisible', {
+  prevSubject: true
+}, (subject) => {
+  const isVisible = (elem) => !!(
+    elem.offsetWidth ||
+    elem.offsetHeight ||
+    elem.getClientRects().length
+  )
+  expect(isVisible(subject[0])).to.be.true
+})
+
 // https://github.com/bahmutov/cypress-arrows/blob/8f0303842a343550fbeaf01528d01d1ff213b70c/src/index.js
 function keydownCommand ($el, key) {
     const message = `sending the "${key}" keydown event`
