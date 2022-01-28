@@ -55,7 +55,6 @@ html, body {
 body {
   background-color: #11131f;
   min-width: 375px;
-  padding-bottom: 60px;
 }
 
 .container {
@@ -282,7 +281,7 @@ html:lang(ru) .card-title {
 
 .echarts {
   height: 100%;
-  min-height: 180px;
+  min-height: 100%;
 }
 
 .tx-wrapper-tooltip-chart,

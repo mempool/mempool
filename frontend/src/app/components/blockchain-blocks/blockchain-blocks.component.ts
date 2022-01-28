@@ -125,14 +125,14 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
       }
       this.arrowVisible = true;
       if (newBlockFromLeft) {
-        this.arrowLeftPx = blockindex * 155 + 30 - 205;
+        this.arrowLeftPx = blockindex * 155 + 45 - 205;
         setTimeout(() => {
           this.transition = '2s';
-          this.arrowLeftPx = blockindex * 155 + 30;
+          this.arrowLeftPx = blockindex * 155 + 45;
           this.cd.markForCheck();
         }, 50);
       } else {
-        this.arrowLeftPx = blockindex * 155 + 30;
+        this.arrowLeftPx = blockindex * 155 + 45;
         if (!animate) {
           setTimeout(() => {
             this.transition = '2s';
@@ -180,7 +180,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
       background: "#2d3348",
     };
   }
-
+  
   mountEmptyBlocks() {
     const emptyBlocks = [];
     for (let i = 0; i < this.stateService.env.KEEP_BLOCKS_AMOUNT; i++) {

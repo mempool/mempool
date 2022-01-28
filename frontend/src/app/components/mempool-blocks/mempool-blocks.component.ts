@@ -252,7 +252,6 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     });
 
     return {
-      'right': 40 + index * 155 + 'px',
       'background': backgroundGradients.join(',') + ')'
     };
   }
@@ -263,7 +262,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
       'background': '#554b45',
     };
   }
-
+  
   calculateTransactionPosition() {
     if ((!this.txFeePerVSize && (this.markIndex === undefined || this.markIndex === -1)) || !this.mempoolBlocks) {
       this.arrowVisible = false;

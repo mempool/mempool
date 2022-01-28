@@ -4,7 +4,6 @@ import { OptimizedMempoolStats } from '../../interfaces/node-api.interface';
 import { StateService } from 'src/app/services/state.service';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-television',
@@ -37,6 +36,14 @@ export class TelevisionComponent implements OnInit {
         this.mempoolStats.unshift(mempoolStats);
         this.mempoolStats = this.mempoolStats.slice(0, this.mempoolStats.length - 1);
       });
-  }
 
+    // Hide the scrollbar manually
+    var style = document.createElement("style");
+    style.innerHTML = `
+      body::-webkit-scrollbar {display: none;}
+      body {-ms-overflow-style: none}
+      html {scrollbar-width: none;}
+    `;
+    document.head.appendChild(style);
+  }
 }

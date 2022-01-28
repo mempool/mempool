@@ -60,30 +60,43 @@ describe('Testnet', () => {
       });
     });
 
-    describe('tv mode', () => {
-      it('loads the tv screen - desktop', () => {
-        cy.viewport('macbook-16');
-        cy.visit('/testnet');
+    describe('tv view page', () => {
+      it('loads the tv screen - desktop > 700px height', () => {
+        cy.viewport(1280, 720);
+        cy.visit('/');
         cy.waitForSkeletonGone();
         cy.get('#btn-tv').click().then(() => {
-          cy.wait(1000);
-          cy.get('.tv-only').should('not.exist');
-          //TODO: Remove comment when the bug is fixed
-          //cy.get('#mempool-block-0').should('be.visible');
+          cy.viewport(1280, 720);
+          cy.get('.chart');
+          cy.get('.blocks').should('be.visible');
+          cy.get('#mempool-block-0').should('be.visible');
         });
       });
 
-      it('loads the tv screen - mobile', () => {
-        cy.visit('/testnet');
+      it('loads the tv screen - desktop > 500px height', () => {
+        cy.viewport(800, 600);
+        cy.visit('/');
         cy.waitForSkeletonGone();
-        cy.get('#btn-tv').click().then(() => {
-          cy.viewport('iphone-6');
-          cy.wait(1000);
-          cy.get('.tv-only').should('not.exist');
+        cy.visit('/tv').then(() => {
+          cy.viewport(800, 600);
+          cy.get('.chart');
+          cy.get('.blocks').should('be.visible');
+          cy.get('#mempool-block-0').should('be.visible');
+        });
+      });
+
+      it('loads the tv screen - desktop < 500px height', () => {
+        cy.viewport(320, 480);
+        cy.visit('/');
+        cy.waitForSkeletonGone();
+        cy.visit('/tv').then(() => {
+          cy.viewport(320, 480);
+          cy.get('.chart');
+          cy.get('.blocks').should('not.visible');
+          cy.get('#mempool-block-0').should('not.visible');
         });
       });
     });
-
 
     it('loads the api screen', () => {
       cy.visit('/testnet');

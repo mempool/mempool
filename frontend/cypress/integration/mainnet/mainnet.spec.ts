@@ -178,7 +178,7 @@ describe('Mainnet', () => {
           cy.viewport('macbook-16');
           cy.visit('/');
           cy.waitForSkeletonGone();
-          cy.get('.blockchain-blocks-0 > a').click().then(() => {
+          cy.get('.blockchain-blocks-0 > a').click({force: true}).then(() => {
             cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
             cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
             cy.waitForPageIdle();
@@ -192,7 +192,7 @@ describe('Mainnet', () => {
           cy.viewport('macbook-16');
           cy.visit('/');
           cy.waitForSkeletonGone();
-          cy.get('.blockchain-blocks-0 > a').click().then(() => {
+          cy.get('.blockchain-blocks-0 > a').click({force: true}).then(() => {
             cy.waitForPageIdle();
             cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
             cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
@@ -205,7 +205,7 @@ describe('Mainnet', () => {
           cy.viewport('macbook-16');
           cy.visit('/');
           cy.waitForSkeletonGone();
-          cy.get('.blockchain-blocks-4 > a').click().then(() => {
+          cy.get('.blockchain-blocks-4 > a').click({force: true}).then(() => {
             cy.waitForPageIdle();
 
             // block 6
@@ -264,7 +264,7 @@ describe('Mainnet', () => {
           cy.viewport('macbook-16');
           cy.visit('/');
           cy.waitForSkeletonGone();
-          cy.get('.blockchain-blocks-0 > a').click().then(() => {
+          cy.get('.blockchain-blocks-0 > a').click({force: true}).then(() => {
             cy.waitForPageIdle();
             cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
             cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
@@ -324,6 +324,44 @@ describe('Mainnet', () => {
       });
     });
 
+    describe('tv view page', () => {
+      it('loads the tv screen - desktop > 700px height', () => {
+        cy.viewport(1280, 720);
+        cy.visit('/');
+        cy.waitForSkeletonGone();
+        cy.get('#btn-tv').click().then(() => {
+          cy.viewport(1280, 720);
+          cy.get('.chart');
+          cy.get('.blocks').should('be.visible');
+          cy.get('#mempool-block-0').should('be.visible');
+        });
+      });
+
+      it('loads the tv screen - desktop > 500px height', () => {
+        cy.viewport(800, 600);
+        cy.visit('/');
+        cy.waitForSkeletonGone();
+        cy.visit('/tv').then(() => {
+          cy.viewport(800, 600);
+          cy.get('.chart');
+          cy.get('.blocks').should('be.visible');
+          cy.get('#mempool-block-0').should('be.visible');
+        });
+      });
+
+      it('loads the tv screen - desktop < 500px height', () => {
+        cy.viewport(320, 480);
+        cy.visit('/');
+        cy.waitForSkeletonGone();
+        cy.visit('/tv').then(() => {
+          cy.viewport(320, 480);
+          cy.get('.chart');
+          cy.get('.blocks').should('not.visible');
+          cy.get('#mempool-block-0').should('not.visible');
+        });
+      });
+    });
+
     describe('graphs page', () => {
       it('check buttons - mobile', () => {
         cy.viewport('iphone-6');
@@ -349,26 +387,6 @@ describe('Mainnet', () => {
         cy.get('#dropdownFees').should('be.visible');
         cy.get('.btn-group').should('be.visible');
       });
-    });
-
-    it('loads the tv screen - desktop', () => {
-      cy.viewport('macbook-16');
-      cy.visit('/');
-      cy.waitForSkeletonGone();
-      cy.get('#btn-tv').click().then(() => {
-        cy.viewport('macbook-16');
-        cy.get('.chart-holder');
-        cy.get('.blockchain-wrapper').should('be.visible');
-        cy.get('#mempool-block-0').should('be.visible');
-      });
-    });
-
-    it('loads the tv screen - mobile', () => {
-      cy.viewport('iphone-6');
-      cy.visit('/tv');
-      cy.waitForSkeletonGone();
-      cy.get('.chart-holder');
-      cy.get('.blockchain-wrapper').should('not.visible');
     });
 
     it('loads genesis block and click on the arrow left', () => {
@@ -455,26 +473,6 @@ describe('Mainnet', () => {
         cy.get('#dropdownFees').should('be.visible');
         cy.get('.btn-group').should('be.visible');
       });
-    });
-
-    it('loads the tv screen - desktop', () => {
-      cy.viewport('macbook-16');
-      cy.visit('/');
-      cy.waitForSkeletonGone();
-      cy.get('#btn-tv').click().then(() => {
-        cy.viewport('macbook-16');
-        cy.get('.chart-holder');
-        cy.get('.blockchain-wrapper').should('be.visible');
-        cy.get('#mempool-block-0').should('be.visible');
-      });
-    });
-
-    it('loads the tv screen - mobile', () => {
-      cy.viewport('iphone-6');
-      cy.visit('/tv');
-      cy.waitForSkeletonGone();
-      cy.get('.chart-holder');
-      cy.get('.blockchain-wrapper').should('not.visible');
     });
 
     it('loads the api screen', () => {
