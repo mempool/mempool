@@ -353,17 +353,6 @@ class DatabaseMigration {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`;
   }
 
-  private getCreatePoolsTableQuery(): string {
-    return `CREATE TABLE IF NOT EXISTS pools (
-      id int(11) NOT NULL AUTO_INCREMENT,
-      name varchar(50) NOT NULL,
-      link varchar(255) NOT NULL,
-      addresses text NOT NULL,
-      regexes text NOT NULL,
-      PRIMARY KEY (id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`;
-  }
-
   private getCreateBlocksTableQuery(): string {
     return `CREATE TABLE IF NOT EXISTS blocks (
       height int(11) unsigned NOT NULL,

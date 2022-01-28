@@ -89,6 +89,7 @@ class Server {
       await checkDbConnection();
       try {
         await databaseMigration.$initializeOrMigrateDatabase();
+        await poolsParser.migratePoolsJson();
       } catch (e) {
         throw new Error(e instanceof Error ? e.message : 'Error');
       }
