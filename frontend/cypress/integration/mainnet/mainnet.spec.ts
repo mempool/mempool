@@ -371,21 +371,18 @@ describe('Mainnet', () => {
       cy.get('.blockchain-wrapper').should('not.visible');
     });
 
-        it('loads genesis block and click on the arrow left', () => {
-          cy.viewport('macbook-16');
-          cy.visit('/block/0');
-          cy.waitForSkeletonGone();
-          cy.waitForPageIdle();
-          cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
-          cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
-          cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').click().then(() => {
-            cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
-            cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
-          });
-        });
+    it('loads genesis block and click on the arrow left', () => {
+      cy.viewport('macbook-16');
+      cy.visit('/block/0');
+      cy.waitForSkeletonGone();
+      cy.waitForPageIdle();
+      cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+      cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
+      cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').click().then(() => {
+        cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+        cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
       });
     });
-
 
     it('loads skeleton when changes between networks', () => {
       cy.visit('/');
@@ -417,11 +414,11 @@ describe('Mainnet', () => {
       cy.get(':nth-child(3) > #bitcoin-block-0').should('not.exist');
     });
 
-    it('loads the blocks screen', () => {
+    it('loads the pools screen', () => {
       cy.visit('/');
       cy.waitForSkeletonGone();
-      cy.get('#btn-blocks').click().then(() => {
-        cy.waitForPageIdle();
+      cy.get('#btn-pools').click().then(() => {
+        cy.wait(1000);
       });
     });
 
