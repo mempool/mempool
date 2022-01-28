@@ -39,7 +39,7 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private miningService: MiningService,
   ) {
-    this.poolsWindowPreference = this.storageService.getValue('poolsWindowPreference') ? this.storageService.getValue('poolsWindowPreference') : '24h';
+    this.poolsWindowPreference = this.storageService.getValue('poolsWindowPreference') ? this.storageService.getValue('poolsWindowPreference') : '1w';
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.poolsWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.poolsWindowPreference);
   }
