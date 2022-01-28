@@ -1,9 +1,7 @@
 <div class="text-center" class="blockchain-wrapper">
-  <div class="position-container {{ network }}">
-    <span>
-      <app-mempool-blocks></app-mempool-blocks>
-      <app-blockchain-blocks></app-blockchain-blocks>
-      <div id="divider"></div>
-    </span>
+  <div class="d-flex flex-row position-container {{ network }}">
+    <app-mempool-blocks></app-mempool-blocks>
+    <div id="divider"></div>
+    <app-blockchain-blocks></app-blockchain-blocks>
   </div>
 </div>

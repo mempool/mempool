@@ -1,43 +1,46 @@
 <ng-container *ngIf="(loadingBlocks$ | async) === false; else loadingBlocks">
-  <div class="mempool-blocks-container" *ngIf="(timeAvg$ | async) as timeAvg;">
-    <div class="flashing">
+  <div class="d-flex flex-column mempool-blocks-container">
+    <div class="d-flex flex-row flashing flex-row-reverse" *ngIf="(timeAvg$ | async) as timeAvg;">
       <ng-template ngFor let-projectedBlock [ngForOf]="mempoolBlocks$ | async" let-i="index" [ngForTrackBy]="trackByFn">
-        <div class="bitcoin-block text-center mempool-block" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]" [class.blink-bg]="projectedBlock.blink">
+        <div class="bitcoin-block text-center mempool-block block-background" id="mempool-block-{{ i }}" [class.blink-bg]="projectedBlock.blink">
           <a draggable="false" [routerLink]="['/mempool-block/' | relativeUrl, i]"
-            class="blockLink" [ngClass]="{'disabled': (this.stateService.blockScrolling$ | async)}">&nbsp;</a>
-          <div class="block-body">
-            <div class="fees">
-              ~{{ projectedBlock.medianFee | number:feeRounding }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
-            </div>
-            <div class="fee-span">
-              {{ projectedBlock.feeRange[0] | number:feeRounding }} - {{ projectedBlock.feeRange[projectedBlock.feeRange.length - 1] | number:feeRounding }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
-            </div>
-            <div class="block-size" [innerHTML]="'&lrm;' + (projectedBlock.blockSize | bytes: 2)"></div>
-            <div class="transaction-count">
-              <ng-container *ngTemplateOutlet="projectedBlock.nTx === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: projectedBlock.nTx | number}"></ng-container>
-              <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
-              <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
-            </div>
-            <div class="time-difference" *ngIf="projectedBlock.blockVSize <= stateService.blockVSize; else mergedBlock">
-              <ng-template [ngIf]="network === 'liquid' || network === 'liquidtestnet'" [ngIfElse]="timeDiffMainnet">
-                <app-time-until [time]="(1 * i) + now + 61000" [fastRender]="false" [fixedRender]="true"></app-time-until>
-              </ng-template>
-              <ng-template #timeDiffMainnet>
-                <app-time-until [time]="(timeAvg * i) + now + timeAvg" [fastRender]="false" [fixedRender]="true" [forceFloorOnTimeIntervals]="['hour']"></app-time-until>
-              </ng-template>
-            </div>
-            <ng-template #mergedBlock>
-              <div class="time-difference">
-                <b>(<ng-container *ngTemplateOutlet="blocksPlural; context: {$implicit: projectedBlock.blockVSize / stateService.blockVSize | ceil }"></ng-container>)</b>
-                <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
+            class="blockLink" [ngClass]="{'disabled': (this.stateService.blockScrolling$ | async)}">
+            <div class="block-body" [ngStyle]="mempoolBlockStyles[i]">
+              <div class="fees">
+                ~{{ projectedBlock.medianFee | number:feeRounding }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
               </div>
-            </ng-template>
-          </div>
+              <div class="fee-span">
+                {{ projectedBlock.feeRange[0] | number:feeRounding }} - {{ projectedBlock.feeRange[projectedBlock.feeRange.length - 1] | number:feeRounding }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+              </div>
+              <div class="block-size" [innerHTML]="'&lrm;' + (projectedBlock.blockSize | bytes: 2)"></div>
+              <div class="transaction-count">
+                <ng-container *ngTemplateOutlet="projectedBlock.nTx === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: projectedBlock.nTx | number}"></ng-container>
+                <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
+                <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
+              </div>
+              <div class="time-difference" *ngIf="projectedBlock.blockVSize <= stateService.blockVSize; else mergedBlock">
+                <ng-template [ngIf]="network === 'liquid' || network === 'liquidtestnet'" [ngIfElse]="timeDiffMainnet">
+                  <app-time-until [time]="(1 * i) + now + 61000" [fastRender]="false" [fixedRender]="true"></app-time-until>
+                </ng-template>
+                <ng-template #timeDiffMainnet>
+                  <app-time-until [time]="(timeAvg * i) + now + timeAvg" [fastRender]="false" [fixedRender]="true" [forceFloorOnTimeIntervals]="['hour']"></app-time-until>
+                </ng-template>
+              </div>
+              <ng-template #mergedBlock>
+                <div class="time-difference">
+                  <b>(<ng-container *ngTemplateOutlet="blocksPlural; context: {$implicit: projectedBlock.blockVSize / stateService.blockVSize | ceil }"></ng-container>)</b>
+                  <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
+                </div>
+              </ng-template>
+            </div>
+          </a>
           <span class="animated-border"></span>
         </div>
       </ng-template>
     </div>
-    <div *ngIf="arrowVisible" id="arrow-up" [ngStyle]="{'right': rightPosition + 75 + 'px', transition: transition }"></div>
+    <div class="d-flex justify-content-end">
+      <div [hidden]="!arrowVisible" id="arrow-up" [ngStyle]="{'right': rightPosition - 30 + 'px', transition: transition }"></div>
+    </div>
   </div>
 </ng-container>
 

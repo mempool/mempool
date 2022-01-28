@@ -125,14 +125,14 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
       }
       this.arrowVisible = true;
       if (newBlockFromLeft) {
-        this.arrowLeftPx = blockindex * 155 + 30 - 205;
+        this.arrowLeftPx = blockindex * 155 + 50 - 205;
         setTimeout(() => {
           this.transition = '2s';
-          this.arrowLeftPx = blockindex * 155 + 30;
+          this.arrowLeftPx = blockindex * 155 + 50;
           this.cd.markForCheck();
         }, 50);
       } else {
-        this.arrowLeftPx = blockindex * 155 + 30;
+        this.arrowLeftPx = blockindex * 155 + 50;
         if (!animate) {
           setTimeout(() => {
             this.transition = '2s';
