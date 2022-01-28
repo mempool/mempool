@@ -15,7 +15,7 @@ class PoolsParser {
    * Parse the pools.json file, consolidate the data and dump it into the database
    */
   public async migratePoolsJson() {
-    if (config.MEMPOOL.NETWORK !== 'mainnet') {
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
       return;
     }
 

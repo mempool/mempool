@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { CpfpInfo, OptimizedMempoolStats, DifficultyAdjustment, AddressInformation, LiquidPegs, ITranslators } from '../interfaces/node-api.interface';
+import { CpfpInfo, OptimizedMempoolStats, DifficultyAdjustment, AddressInformation, LiquidPegs, ITranslators, PoolsStats } from '../interfaces/node-api.interface';
 import { Observable } from 'rxjs';
 import { StateService } from './state.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
@@ -119,5 +119,13 @@ export class ApiService {
 
   postTransaction$(hexPayload: string): Observable<any> {
     return this.httpClient.post<any>(this.apiBaseUrl + this.apiBasePath + '/api/tx', hexPayload, { responseType: 'text' as 'json'});
+  }
+
+  listPools$(interval: string | null) : Observable<PoolsStats> {
+    let params = {};
+    if (interval) {
+      params = new HttpParams().set('interval', interval);
+    }
+    return this.httpClient.get<PoolsStats>(this.apiBaseUrl + this.apiBasePath + '/api/v1/mining/pools', {params});
   }
 }

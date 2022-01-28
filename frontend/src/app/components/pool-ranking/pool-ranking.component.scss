@@ -1,0 +1,32 @@
+.hashrate-pie {
+  height: 100%;
+  min-height: 400px;
+  @media (max-width: 767.98px) {
+    min-height: 300px;
+  }
+}
+
+.formRadioGroup {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  @media (min-width: 830px) {
+    margin-left: 2%;
+    flex-direction: row;
+    float: left;
+    margin-top: 0px;
+  }
+  .btn-sm {
+    font-size: 9px;
+    @media (min-width: 830px) {
+      font-size: 14px;
+    }
+  }
+}
+
+@media (max-width: 767.98px) { 
+  .pools-table th,
+  .pools-table td {
+      padding: .3em !important;
+   }
+ }
