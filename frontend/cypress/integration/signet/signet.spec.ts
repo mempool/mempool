@@ -44,10 +44,10 @@ describe('Signet', () => {
       cy.get(':nth-child(3) > #bitcoin-block-0').should('not.exist');
     });
 
-    it('loads the blocks screen', () => {
+    it('loads the pools screen', () => {
       cy.visit('/signet');
       cy.waitForSkeletonGone();
-      cy.get('#btn-blocks').click().then(() => {
+      cy.get('#btn-pools').click().then(() => {
         cy.wait(1000);
       });
     });

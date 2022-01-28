@@ -138,6 +138,8 @@ class Server {
       }
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
+      blocks.$generateBlockDatabase();
+
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;
     } catch (e) {
@@ -254,6 +256,7 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/1y', routes.$getStatisticsByTime.bind(routes, '1y'))
         .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/2y', routes.$getStatisticsByTime.bind(routes, '2y'))
         .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/3y', routes.$getStatisticsByTime.bind(routes, '3y'))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools', routes.$getPools)
         ;
     }
 
