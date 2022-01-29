@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Page Title</title>
+    <script src="./../../../../dist/mempool.js"></script>
+    <script>
+      const init = async () => {
+        try {
+          const {
+            liquid: { fees },
+          } = mempoolJS();
+          
+          const feesRecommended = await fees.getFeesRecommended();
+          console.log(feesRecommended);
+          
+          const feesMempoolBlocks = await fees.getFeesMempoolBlocks();
+          console.log(feesMempoolBlocks);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      init();
+    </script>
+  </head>
+  <body></body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Page Title</title>
+    <script src="./../../../../dist/mempool.js"></script>
+    <script>
+      const init = async () => {
+        try {
+          const {
+            bisq: { transactions },
+          } = mempoolJS();
+          
+          const txid = 'e5a42c5eff51822eb0ab503cac0e0eadf2141089c83c9f8363210a004c6e66a7';
+          
+          const tx = await transactions.getTx({ txid });
+          console.log(tx);
+          
+          const txs = await transactions.getTxs({ index: 0, length: 1 });
+          console.log(txs);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      init();
+    </script>
+  </head>
+  <body></body>
+</html>

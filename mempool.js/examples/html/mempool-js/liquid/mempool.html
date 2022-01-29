@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Page Title</title>
+    <script src="./../../../../dist/mempool.js"></script>
+    <script>
+      const init = async () => {
+        try {
+          const {
+            liquid: { mempool },
+          } = mempoolJS();
+          
+          const getMempool = await mempool.getMempool();
+          console.log(getMempool);
+          
+          const getMempoolRecent = await mempool.getMempoolRecent();
+          console.log(getMempoolRecent);
+          
+          const getMempoolTxids = await mempool.getMempoolTxids();
+          console.log(getMempoolTxids);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      init();
+    </script>
+  </head>
+  <body></body>
+</html>

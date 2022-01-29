@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Page Title</title>
+    <script src="./../../../../dist/mempool.js"></script>
+    <script>
+      const init = async () => {
+        try {
+          const {
+            liquid: { assets },
+          } = mempoolJS();
+          
+          const asset_id = 'a0c358a0f6947864af3a06f3f6a2aeb304df7fd95c922f2f22d7412399ce7691';
+          
+          const asset = await assets.getAsset({ asset_id });
+          console.log(asset);
+          
+          const assetTxs = await assets.getAssetTxs({
+            asset_id,
+            is_mempool: false,
+          });
+          console.log(assetTxs);
+          
+          const assetSupply = await assets.getAssetSupply({
+            asset_id,
+            decimal: false,
+          });
+          console.log(assetSupply);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      init();
+    </script>
+  </head>
+  <body></body>
+</html>

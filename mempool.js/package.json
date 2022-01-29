@@ -1,0 +1,62 @@
+{
+  "name": "@mempool/mempool.js",
+  "version": "2.3.0",
+  "description": "NPM package module for Mempool APIs.",
+  "main": "lib/index.js",
+  "keywords": [
+    "axios",
+    "bitcoin",
+    "bisq",
+    "liquid",
+    "mainet",
+    "testnet",
+    "signet",
+    "blockchain",
+    "html",
+    "mempool.space",
+    "mempool.js",
+    "mempool",
+    "websocket",
+    "nodejs",
+    "typescript"
+  ],
+  "author": "Miguel Medeiros <contact@miguelmedeiros.com.br> (miguelmedeiros.com.br)",
+  "url": "https://mempool.space/",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mempool/mempool.js.git"
+  },
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "dev": "nodemon src/index.ts",
+    "build": "tsc",
+    "export-mempool-js": "tsc | browserify lib/index.js --standalone mempoolJS > dist/mempool.js | browserify -p tinyify lib/index.js --standalone mempoolJS > dist/mempool.min.js",
+    "export-bisq-js": "tsc | browserify lib/index-bisq.js --standalone bisqJS > dist/bisq.js | browserify -p tinyify lib/index-bisq.js --standalone bisqJS > dist/bisq.min.js",
+    "export-liquid-js": "tsc | browserify lib/index-liquid.js --standalone liquidJS > dist/liquid.js | browserify -p tinyify lib/index-liquid.js --standalone liquidJS > dist/liquid.min.js",
+    "prepare": "npm run build",
+    "postversion": "git push && git push --tags"
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "dependencies": {
+    "axios": "0.24.0",
+    "ws": "8.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.25",
+    "@types/websocket": "^1.0.2",
+    "@types/ws": "^7.4.1",
+    "@typescript-eslint/eslint-plugin": "^4.14.2",
+    "@typescript-eslint/parser": "^4.14.2",
+    "browserify": "^17.0.0",
+    "eslint": "^7.19.0",
+    "nodemon": "^2.0.7",
+    "tinyify": "^3.0.0",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.3"
+  },
+  "license": "MIT"
+}

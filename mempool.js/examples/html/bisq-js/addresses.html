@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Page Title</title>
+    <script src="./../../../dist/bisq.js"></script>
+    <script>
+      const init = async () => {
+        try {
+          const { addresses } = bisqJS();
+          
+          const address = 'B1DgwRN92rdQ9xpEVCdXRfgeqGw9X4YtrZz';
+          
+          const myAddress = await addresses.getAddress({ address });
+          console.log(myAddress);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      init();
+    </script>
+  </head>
+  <body></body>
+</html>
