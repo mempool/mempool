@@ -2,6 +2,8 @@ import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { StateService } from 'src/app/services/state.service';
 import { specialBlocks } from 'src/app/app.constants';
+import { Observable} from 'rxjs';
+import { gsap } from 'gsap';
 
 @Component({
   selector: 'app-start',
@@ -11,6 +13,8 @@ import { specialBlocks } from 'src/app/app.constants';
 export class StartComponent implements OnInit {
   interval = 60;
   colors = ['#5E35B1', '#ffffff'];
+
+  mempoolLoadingStatus$: Observable<number>;
 
   countdown = 0;
   specialEvent = false;
@@ -23,6 +27,12 @@ export class StartComponent implements OnInit {
     private websocketService: WebsocketService,
     private stateService: StateService,
   ) { }
+
+  ngAfterViewInit() {
+    const timeline = gsap.timeline({ defaults: { duration: 0.75, ease: 'power1.out' } })
+    timeline.fromTo('.bitcoin', { opacity: 0, x: -500, rotation: '-360deg' }, { opacity: 1, x: 0, rotation: '0deg', duration: '2' })
+    timeline.fromTo('.bitcoin', {y: 0, rotation: '0deg'}, {y: -20, rotation: '-20deg', yoyo: true, repeat: -1})
+  }
 
   ngOnInit() {
     this.websocketService.want(['blocks', 'stats', 'mempool-blocks']);
