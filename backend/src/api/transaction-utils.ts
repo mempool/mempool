@@ -17,7 +17,8 @@ class TransactionUtils {
           scriptpubkey_address: vout.scriptpubkey_address,
           value: vout.value
         }))
-        .filter((vout) => vout.value)
+        .filter((vout) => vout.value),
+      hex: tx.hex
     };
   }
 

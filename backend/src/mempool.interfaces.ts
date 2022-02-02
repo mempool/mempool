@@ -82,11 +82,13 @@ export interface BlockExtended extends IEsploraApi.Block {
   reward?: number;
   coinbaseTx?: TransactionMinerInfo;
   matchRate?: number;
+  miner: PoolTag | undefined;
 }
 
 export interface TransactionMinerInfo {
   vin: VinStrippedToScriptsig[];
   vout: VoutStrippedToScriptPubkey[];
+  hex: string | undefined;
 }
 
 export interface MempoolStats {

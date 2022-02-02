@@ -1,7 +1,7 @@
 import logger from '../logger';
 import * as WebSocket from 'ws';
 import { BlockExtended, TransactionExtended, WebsocketResponse, MempoolBlock,
-  OptimizedStatistic, ILoadingIndicators, IConversionRates } from '../mempool.interfaces';
+  OptimizedStatistic, ILoadingIndicators, IConversionRates, PoolTag } from '../mempool.interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
 import backendInfo from './backend-info';
