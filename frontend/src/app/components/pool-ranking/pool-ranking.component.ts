@@ -4,6 +4,7 @@ import { EChartsOption } from 'echarts';
 import { combineLatest, Observable, of } from 'rxjs';
 import { catchError, map, share, skip, startWith, switchMap, tap } from 'rxjs/operators';
 import { SinglePoolStats } from 'src/app/interfaces/node-api.interface';
+import { SeoService } from 'src/app/services/seo.service';
 import { StorageService } from '../..//services/storage.service';
 import { MiningService, MiningStats } from '../../services/mining.service';
 import { StateService } from '../../services/state.service';
@@ -38,7 +39,9 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
     private storageService: StorageService,
     private formBuilder: FormBuilder,
     private miningService: MiningService,
+    private seoService: SeoService,
   ) {
+    this.seoService.setTitle($localize`:@@mining.mining-pools:Mining Pools`);
     this.poolsWindowPreference = this.storageService.getValue('poolsWindowPreference') ? this.storageService.getValue('poolsWindowPreference') : '1w';
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.poolsWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.poolsWindowPreference);
