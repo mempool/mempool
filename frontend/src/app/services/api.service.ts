@@ -122,10 +122,6 @@ export class ApiService {
   }
 
   listPools$(interval: string | null) : Observable<PoolsStats> {
-    let params = {};
-    if (interval) {
-      params = new HttpParams().set('interval', interval);
-    }
-    return this.httpClient.get<PoolsStats>(this.apiBaseUrl + this.apiBasePath + '/api/v1/mining/pools', {params});
+    return this.httpClient.get<PoolsStats>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pools/${interval}`);
   }
 }
