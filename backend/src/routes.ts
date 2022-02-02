@@ -532,9 +532,9 @@ class Routes {
     }
   }
 
-  public async $getPools(req: Request, res: Response) {
+  public async $getPools(interval: string, req: Request, res: Response) {
     try {
-      let stats = await miningStats.$getPoolsStats(req.query.interval as string);
+      let stats = await miningStats.$getPoolsStats(interval);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
