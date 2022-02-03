@@ -22,6 +22,7 @@ import loadingIndicators from './api/loading-indicators';
 import mempool from './api/mempool';
 import elementsParser from './api/liquid/elements-parser';
 import databaseMigration from './api/database-migration';
+import poolsParser from './api/pools-parser';
 import syncAssets from './sync-assets';
 import icons from './api/liquid/icons';
 import { Common } from './api/common';
@@ -88,6 +89,7 @@ class Server {
       await checkDbConnection();
       try {
         await databaseMigration.$initializeOrMigrateDatabase();
+        await poolsParser.migratePoolsJson();
       } catch (e) {
         throw new Error(e instanceof Error ? e.message : 'Error');
       }
@@ -136,6 +138,8 @@ class Server {
       }
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
+      blocks.$generateBlockDatabase();
+
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;
     } catch (e) {
@@ -252,6 +256,16 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/1y', routes.$getStatisticsByTime.bind(routes, '1y'))
         .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/2y', routes.$getStatisticsByTime.bind(routes, '2y'))
         .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/3y', routes.$getStatisticsByTime.bind(routes, '3y'))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/24h', routes.$getPools.bind(routes, '24h'))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/3d', routes.$getPools.bind(routes, '3d'))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/1w', routes.$getPools.bind(routes, '1w'))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/1m', routes.$getPools.bind(routes, '1m'))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/3m', routes.$getPools.bind(routes, '3m'))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/6m', routes.$getPools.bind(routes, '6m'))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/1y', routes.$getPools.bind(routes, '1y'))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/2y', routes.$getPools.bind(routes, '2y'))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/3y', routes.$getPools.bind(routes, '3y'))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/all', routes.$getPools.bind(routes, 'all'))
         ;
     }
 

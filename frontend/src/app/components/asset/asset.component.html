@@ -21,7 +21,7 @@
             <tbody>
               <tr>
                 <td i18n="asset.name|Liquid Asset name">Name</td>
-                <td>{{ assetContract[2] }} ({{ assetContract[1] }})</td>
+                <td class="assetName">{{ assetContract[2] }} ({{ assetContract[1] }})</td>
               </tr>
               <tr>
                 <td i18n="asset.precision|Liquid Asset precision">Precision</td>
@@ -35,13 +35,6 @@
                 <td i18n="asset.issuance-tx|Liquid Asset issuance TX">Issuance TX</td>
                 <td><a [routerLink]="['/tx/' | relativeUrl, asset.issuance_txin.txid]">{{ asset.issuance_txin.txid | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="asset.issuance_txin.txid"></app-clipboard></td>
               </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="w-100 d-block d-md-none"></div>
-        <div class="col">
-          <table class="table table-borderless table-striped">
-            <tbody>
               <tr *ngIf="isNativeAsset && asset.chain_stats.peg_in_amount">
                 <td i18n="asset.pegged-in|Liquid Asset pegged-in amount">Pegged in</td>
                 <td>{{ formatAmount(asset.chain_stats.peg_in_amount, assetContract[3]) | number: '1.0-' + assetContract[3] }} {{ assetContract[1] }}</td>
@@ -68,6 +61,13 @@
               </tr>
             </tbody>
           </table>
+        </div>
+        <div class="w-100 d-block d-md-none"></div>
+        <div class="col icon-holder">
+          <img *ngIf="!imageError; else defaultIcon" class="assetIcon" [src]="'https://liquid.network/api/v1/asset/' + asset.asset_id + '/icon'" (error)="imageError = true">
+          <ng-template #defaultIcon>
+            <fa-icon class="defaultIcon" [icon]="['fas', 'database']" [fixedWidth]="true" size="8x"></fa-icon>
+          </ng-template>
         </div>
       </div>
 
@@ -109,28 +109,39 @@
 
   <ng-template [ngIf]="isLoadingAsset && !error">
 
-    <ng-template #loadingTmpl>
-      <div class="col">
-        <table class="table table-borderless table-striped">
-          <tbody>
-            <tr>
-              <td colspan="2"><span class="skeleton-loader"></span></td>
-            </tr>
-            <tr>
-              <td colspan="2"><span class="skeleton-loader"></span></td>
-            </tr>
-            <tr>
-              <td colspan="2"><span class="skeleton-loader"></span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </ng-template>
-
     <div class="box">
       <div class="row">
-        <ng-container *ngTemplateOutlet="loadingTmpl"></ng-container>
-        <ng-container *ngTemplateOutlet="loadingTmpl"></ng-container>
+        <div class="col">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td colspan="2"><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td colspan="2"><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td colspan="2"><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td colspan="2"><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td colspan="2"><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td colspan="2"><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td colspan="2"><span class="skeleton-loader"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="w-100 d-block d-md-none"></div>
+        <div class="col icon-holder">
+          <fa-icon class="defaultIcon skeleton" [icon]="['fas', 'database']" [fixedWidth]="true" size="8x"></fa-icon>
+        </div>
       </div>
     </div>
 

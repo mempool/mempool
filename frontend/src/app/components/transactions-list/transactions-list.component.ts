@@ -119,6 +119,10 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     return '0x' + (str.length % 2 ? '0' : '') + str;
   }
 
+  pow(base: number, exponent: number): number {
+    return Math.pow(base, exponent);
+  }
+
   toggleDetails() {
     this.displayDetails = !this.displayDetails;
     this.ref.markForCheck();

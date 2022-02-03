@@ -21,11 +21,6 @@ class BitcoinApi implements AbstractBitcoinApi {
       return this.$addPrevouts(txInMempool);
     }
 
-    // Special case to fetch the Coinbase transaction
-    if (txId === '4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b') {
-      return this.$returnCoinbaseTransaction();
-    }
-
     return this.bitcoindClient.getRawTransaction(txId, true)
       .then((transaction: IBitcoinApi.Transaction) => {
         if (skipConversion) {
@@ -35,6 +30,12 @@ class BitcoinApi implements AbstractBitcoinApi {
           return transaction;
         }
         return this.$convertTransaction(transaction, addPrevout);
+      })
+      .catch((e: Error) => {
+        if (e.message.startsWith('The genesis block coinbase')) {
+          return this.$returnCoinbaseTransaction();
+        }
+        throw e;
       });
   }
 
@@ -118,6 +119,11 @@ class BitcoinApi implements AbstractBitcoinApi {
       }
     }
     return outSpends;
+  }
+
+  $getEstimatedHashrate(blockHeight: number): Promise<number> {
+    // 120 is the default block span in Core
+    return this.bitcoindClient.getNetworkHashPs(120, blockHeight);
   }
 
   protected async $convertTransaction(transaction: IBitcoinApi.Transaction, addPrevout: boolean): Promise<IEsploraApi.Transaction> {
@@ -244,12 +250,14 @@ class BitcoinApi implements AbstractBitcoinApi {
   }
 
   protected $returnCoinbaseTransaction(): Promise<IEsploraApi.Transaction> {
-    return this.bitcoindClient.getBlock('000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f', 2)
-      .then((block: IBitcoinApi.Block) => {
-        return this.$convertTransaction(Object.assign(block.tx[0], {
-          confirmations: blocks.getCurrentBlockHeight() + 1,
-          blocktime: 1231006505 }), false);
-      });
+    return this.bitcoindClient.getBlockHash(0).then((hash: string) =>
+      this.bitcoindClient.getBlock(hash, 2)
+        .then((block: IBitcoinApi.Block) => {
+          return this.$convertTransaction(Object.assign(block.tx[0], {
+            confirmations: blocks.getCurrentBlockHeight() + 1,
+            blocktime: block.time }), false);
+        })
+    );
   }
 
   private $getMempoolEntry(txid: string): Promise<IBitcoinApi.MempoolEntry> {
