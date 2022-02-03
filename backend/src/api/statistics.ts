@@ -53,12 +53,16 @@ class Statistics {
     memPoolArray = memPoolArray.filter((tx) => tx.effectiveFeePerVsize);
 
     if (!memPoolArray.length) {
-      const insertIdZeroed = await this.$createZeroedStatistic();
-      if (this.newStatisticsEntryCallback && insertIdZeroed) {
-        const newStats = await this.$get(insertIdZeroed);
-        if (newStats) {
-          this.newStatisticsEntryCallback(newStats);
+      try {
+        const insertIdZeroed = await this.$createZeroedStatistic();
+        if (this.newStatisticsEntryCallback && insertIdZeroed) {
+          const newStats = await this.$get(insertIdZeroed);
+          if (newStats) {
+            this.newStatisticsEntryCallback(newStats);
+          }
         }
+      } catch (e) {
+        logger.err('Unable to insert zeroed statistics. ' + e);
       }
       return;
     }
@@ -90,59 +94,63 @@ class Statistics {
       }
     });
 
-    const insertId = await this.$create({
-      added: 'NOW()',
-      unconfirmed_transactions: memPoolArray.length,
-      tx_per_second: txPerSecond,
-      vbytes_per_second: Math.round(vBytesPerSecond),
-      mempool_byte_weight: totalWeight,
-      total_fee: totalFee,
-      fee_data: '',
-      vsize_1: weightVsizeFees['1'] || 0,
-      vsize_2: weightVsizeFees['2'] || 0,
-      vsize_3: weightVsizeFees['3'] || 0,
-      vsize_4: weightVsizeFees['4'] || 0,
-      vsize_5: weightVsizeFees['5'] || 0,
-      vsize_6: weightVsizeFees['6'] || 0,
-      vsize_8: weightVsizeFees['8'] || 0,
-      vsize_10: weightVsizeFees['10'] || 0,
-      vsize_12: weightVsizeFees['12'] || 0,
-      vsize_15: weightVsizeFees['15'] || 0,
-      vsize_20: weightVsizeFees['20'] || 0,
-      vsize_30: weightVsizeFees['30'] || 0,
-      vsize_40: weightVsizeFees['40'] || 0,
-      vsize_50: weightVsizeFees['50'] || 0,
-      vsize_60: weightVsizeFees['60'] || 0,
-      vsize_70: weightVsizeFees['70'] || 0,
-      vsize_80: weightVsizeFees['80'] || 0,
-      vsize_90: weightVsizeFees['90'] || 0,
-      vsize_100: weightVsizeFees['100'] || 0,
-      vsize_125: weightVsizeFees['125'] || 0,
-      vsize_150: weightVsizeFees['150'] || 0,
-      vsize_175: weightVsizeFees['175'] || 0,
-      vsize_200: weightVsizeFees['200'] || 0,
-      vsize_250: weightVsizeFees['250'] || 0,
-      vsize_300: weightVsizeFees['300'] || 0,
-      vsize_350: weightVsizeFees['350'] || 0,
-      vsize_400: weightVsizeFees['400'] || 0,
-      vsize_500: weightVsizeFees['500'] || 0,
-      vsize_600: weightVsizeFees['600'] || 0,
-      vsize_700: weightVsizeFees['700'] || 0,
-      vsize_800: weightVsizeFees['800'] || 0,
-      vsize_900: weightVsizeFees['900'] || 0,
-      vsize_1000: weightVsizeFees['1000'] || 0,
-      vsize_1200: weightVsizeFees['1200'] || 0,
-      vsize_1400: weightVsizeFees['1400'] || 0,
-      vsize_1600: weightVsizeFees['1600'] || 0,
-      vsize_1800: weightVsizeFees['1800'] || 0,
-      vsize_2000: weightVsizeFees['2000'] || 0,
-    });
+    try {
+      const insertId = await this.$create({
+        added: 'NOW()',
+        unconfirmed_transactions: memPoolArray.length,
+        tx_per_second: txPerSecond,
+        vbytes_per_second: Math.round(vBytesPerSecond),
+        mempool_byte_weight: totalWeight,
+        total_fee: totalFee,
+        fee_data: '',
+        vsize_1: weightVsizeFees['1'] || 0,
+        vsize_2: weightVsizeFees['2'] || 0,
+        vsize_3: weightVsizeFees['3'] || 0,
+        vsize_4: weightVsizeFees['4'] || 0,
+        vsize_5: weightVsizeFees['5'] || 0,
+        vsize_6: weightVsizeFees['6'] || 0,
+        vsize_8: weightVsizeFees['8'] || 0,
+        vsize_10: weightVsizeFees['10'] || 0,
+        vsize_12: weightVsizeFees['12'] || 0,
+        vsize_15: weightVsizeFees['15'] || 0,
+        vsize_20: weightVsizeFees['20'] || 0,
+        vsize_30: weightVsizeFees['30'] || 0,
+        vsize_40: weightVsizeFees['40'] || 0,
+        vsize_50: weightVsizeFees['50'] || 0,
+        vsize_60: weightVsizeFees['60'] || 0,
+        vsize_70: weightVsizeFees['70'] || 0,
+        vsize_80: weightVsizeFees['80'] || 0,
+        vsize_90: weightVsizeFees['90'] || 0,
+        vsize_100: weightVsizeFees['100'] || 0,
+        vsize_125: weightVsizeFees['125'] || 0,
+        vsize_150: weightVsizeFees['150'] || 0,
+        vsize_175: weightVsizeFees['175'] || 0,
+        vsize_200: weightVsizeFees['200'] || 0,
+        vsize_250: weightVsizeFees['250'] || 0,
+        vsize_300: weightVsizeFees['300'] || 0,
+        vsize_350: weightVsizeFees['350'] || 0,
+        vsize_400: weightVsizeFees['400'] || 0,
+        vsize_500: weightVsizeFees['500'] || 0,
+        vsize_600: weightVsizeFees['600'] || 0,
+        vsize_700: weightVsizeFees['700'] || 0,
+        vsize_800: weightVsizeFees['800'] || 0,
+        vsize_900: weightVsizeFees['900'] || 0,
+        vsize_1000: weightVsizeFees['1000'] || 0,
+        vsize_1200: weightVsizeFees['1200'] || 0,
+        vsize_1400: weightVsizeFees['1400'] || 0,
+        vsize_1600: weightVsizeFees['1600'] || 0,
+        vsize_1800: weightVsizeFees['1800'] || 0,
+        vsize_2000: weightVsizeFees['2000'] || 0,
+      });
 
-    if (this.newStatisticsEntryCallback && insertId) {
-      const newStats = await this.$get(insertId);
-      if (newStats) {
-        this.newStatisticsEntryCallback(newStats);
+      if (this.newStatisticsEntryCallback && insertId) {
+        const newStats = await this.$get(insertId);
+        if (newStats) {
+          this.newStatisticsEntryCallback(newStats);
+        }
       }
+    } catch (e) {
+      logger.err('Unable to insert statistics. ' + e);
     }
   }
 
