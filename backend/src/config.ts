@@ -51,7 +51,7 @@ interface IConfig {
     ENABLED: boolean;
     HOST: string;
     PORT: number;
-    MIN_PRIORITY: 'emerg' | 'alert' | 'crit' | 'err' |'warn' | 'notice' | 'info' | 'debug';
+    MIN_PRIORITY: 'emerg' | 'alert' | 'crit' | 'err' | 'warn' | 'notice' | 'info' | 'debug';
     FACILITY: string;
   };
   STATISTICS: {
@@ -61,6 +61,13 @@ interface IConfig {
   BISQ: {
     ENABLED: boolean;
     DATA_PATH: string;
+  };
+  SOCKS5PROXY: {
+    ENABLED: boolean;
+    HOST: string;
+    PORT: number;
+    USERNAME: string;
+    PASSWORD: string;
   };
 }
 
@@ -128,6 +135,13 @@ const defaults: IConfig = {
     'ENABLED': false,
     'DATA_PATH': '/bisq/statsnode-data/btc_mainnet/db'
   },
+  'SOCKS5PROXY': {
+    'ENABLED': false,
+    'HOST': '127.0.0.1',
+    'PORT': 9050,
+    'USERNAME': '',
+    'PASSWORD': ''
+  }
 };
 
 class Config implements IConfig {
@@ -140,6 +154,7 @@ class Config implements IConfig {
   SYSLOG: IConfig['SYSLOG'];
   STATISTICS: IConfig['STATISTICS'];
   BISQ: IConfig['BISQ'];
+  SOCKS5PROXY: IConfig['SOCKS5PROXY'];
 
   constructor() {
     const configs = this.merge(configFile, defaults);
@@ -152,6 +167,7 @@ class Config implements IConfig {
     this.SYSLOG = configs.SYSLOG;
     this.STATISTICS = configs.STATISTICS;
     this.BISQ = configs.BISQ;
+    this.SOCKS5PROXY = configs.SOCKS5PROXY;
   }
 
   merge = (...objects: object[]): IConfig => {
