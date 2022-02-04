@@ -107,12 +107,23 @@ class BitcoinApi implements AbstractBitcoinApi {
     const outSpends: IEsploraApi.Outspend[] = [];
     const tx = await this.$getRawTransaction(txId, true, false);
     for (let i = 0; i < tx.vout.length; i++) {
-      const txOut = await this.bitcoindClient.getTxOut(txId, i);
-      outSpends.push({
-        spent: txOut === null,
-      });
+      if (tx.status && tx.status.block_height == 0) {
+        outSpends.push({
+          spent: false
+        });
+      } else {
+        const txOut = await this.bitcoindClient.getTxOut(txId, i);
+        outSpends.push({
+          spent: txOut === null,
+        });
+      }
     }
     return outSpends;
+  }
+
+  $getEstimatedHashrate(blockHeight: number): Promise<number> {
+    // 120 is the default block span in Core
+    return this.bitcoindClient.getNetworkHashPs(120, blockHeight);
   }
 
   protected async $convertTransaction(transaction: IBitcoinApi.Transaction, addPrevout: boolean): Promise<IEsploraApi.Transaction> {
