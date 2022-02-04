@@ -31,9 +31,18 @@ class BlocksRepository {
       )`;
 
       const params: any[] = [
-        block.height, blockHash, block.timestamp, block.size,
-        block.weight, block.tx_count, coinbaseHex ? coinbaseHex : '', block.difficulty,
-        poolTag.id, 0, '[]', block.medianFee,
+        block.height,
+        blockHash,
+        block.timestamp,
+        block.size,
+        block.weight,
+        block.tx_count,
+        coinbaseHex ? coinbaseHex : '',
+        block.difficulty,
+        poolTag.id,
+        0,
+        '[]',
+        block.extra ? block.extra.medianFee : 0,
       ];
 
       await connection.query(query, params);
