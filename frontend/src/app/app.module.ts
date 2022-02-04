@@ -37,6 +37,7 @@ import { IncomingTransactionsGraphComponent } from './components/incoming-transa
 import { TimeSpanComponent } from './components/time-span/time-span.component';
 import { SeoService } from './services/seo.service';
 import { MempoolGraphComponent } from './components/mempool-graph/mempool-graph.component';
+import { PoolRankingComponent } from './components/pool-ranking/pool-ranking.component';
 import { LbtcPegsGraphComponent } from './components/lbtc-pegs-graph/lbtc-pegs-graph.component';
 import { AssetComponent } from './components/asset/asset.component';
 import { AssetsComponent } from './assets/assets.component';
@@ -48,7 +49,7 @@ import { FeesBoxComponent } from './components/fees-box/fees-box.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DifficultyComponent } from './components/difficulty/difficulty.component';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faDatabase, faExchangeAlt, faInfoCircle,
+import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown, faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl } from '@fortawesome/free-solid-svg-icons';
 import { ApiDocsComponent } from './components/docs/api-docs.component';
 import { DocsComponent } from './components/docs/docs.component';
@@ -91,6 +92,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     FeeDistributionGraphComponent,
     IncomingTransactionsGraphComponent,
     MempoolGraphComponent,
+    PoolRankingComponent,
     LbtcPegsGraphComponent,
     AssetComponent,
     AssetsComponent,
@@ -143,6 +145,7 @@ export class AppModule {
     library.addIcons(faTv);
     library.addIcons(faTachometerAlt);
     library.addIcons(faCubes);
+    library.addIcons(faHammer);
     library.addIcons(faCogs);
     library.addIcons(faThList);
     library.addIcons(faList);

@@ -50,3 +50,31 @@ h1 {
   }
 }
 
+.assetIcon {
+  height: 150px;
+  margin: 25px;
+  @media (min-width: 768px) {
+    height: 250px;
+    margin: 0;
+  }
+}
+
+.icon-holder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.defaultIcon {
+  margin: 25px;
+  height: 150px;
+}
+
+.defaultIcon.skeleton {
+  opacity: 0.5;
+}
+
+.assetName {
+  word-break: break-word;
+  white-space: normal;
+}

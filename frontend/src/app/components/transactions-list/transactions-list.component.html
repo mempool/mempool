@@ -71,7 +71,7 @@
                     </ng-container>
                   </div>
                 </td>
-                <td class="text-right nowrap">
+                <td class="text-right nowrap amount">
                   <ng-template [ngIf]="vin.prevout && vin.prevout.asset && vin.prevout.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
                     <div *ngIf="assetsMinimal && assetsMinimal[vin.prevout.asset]">
                       <ng-container *ngTemplateOutlet="assetBox; context:{ $implicit: vin.prevout }"></ng-container>
@@ -170,7 +170,7 @@
                     </ng-template>
                   </ng-template>
                 </td>
-                <td class="text-right nowrap">
+                <td class="text-right nowrap amount">
                   <ng-template [ngIf]="vout.asset && vout.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
                     <div *ngIf="assetsMinimal && assetsMinimal[vout.asset]">
                       <ng-container *ngTemplateOutlet="assetBox; context:{ $implicit: vout }"></ng-container>
@@ -270,7 +270,7 @@
 </ng-container>
 
 <ng-template #assetBox let-item>
-  {{ item.value / 100000000 | number: '1.0-' + assetsMinimal[item.asset][3] }} {{ assetsMinimal[item.asset][1] }}
+  {{ item.value / pow(10, assetsMinimal[item.asset][3]) | number: '1.' + assetsMinimal[item.asset][3] + '-' + assetsMinimal[item.asset][3] }} {{ assetsMinimal[item.asset][1] }}
   <br />
   {{ assetsMinimal[item.asset][0] }}
   <br />

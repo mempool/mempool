@@ -1,7 +1,7 @@
 <div class="container-xl" (window:resize)="onResize($event)">
   <h1 style="float: left;" i18n>BSQ Transactions</h1>
 
-  <div class="d-block float-right">
+  <div class="d-block float-right" id="filter">
     <form [formGroup]="radioGroupForm">
       <ngx-bootrap-multiselect [options]="txTypeOptions" [settings]="txTypeDropdownSettings" [texts]="txTypeDropdownTexts" formControlName="txTypes"></ngx-bootrap-multiselect>
     </form>
@@ -39,7 +39,7 @@
         </td>
         <td><app-time-since [time]="tx.time / 1000" [fastRender]="true"></app-time-since></td>
         <td class="d-none d-md-block"><a [routerLink]="['/block/' | relativeUrl, tx.blockHash]" [state]="{ data: { blockHeight: tx.blockHeight } }">{{ tx.blockHeight }}</a></td>
-      </tr> 
+      </tr>
     </tbody>
   </table>
 

@@ -31,6 +31,10 @@ jobs:
           wait-on-timeout: 120
           record: true
           parallel: true
+          spec: |
+            cypress/integration/mainnet/*.spec.ts
+            cypress/integration/signet/*.spec.ts
+            cypress/integration/testnet/*.spec.ts
           group: Tests on ${{ matrix.browser }} (Mempool)
           browser: ${{ matrix.browser }}
           ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
@@ -50,7 +54,9 @@ jobs:
           wait-on-timeout: 120
           record: true
           parallel: true
-          spec: cypress/integration/liquid/liquid.spec.ts
+          spec: |
+            cypress/integration/liquid/liquid.spec.ts
+            cypress/integration/liquidtestnet/liquidtestnet.spec.ts
           group: Tests on ${{ matrix.browser }} (Liquid)
           browser: ${{ matrix.browser }}
           ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
