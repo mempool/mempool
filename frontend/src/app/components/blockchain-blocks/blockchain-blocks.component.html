@@ -8,10 +8,10 @@
       </div>
       <div class="block-body">
         <div class="fees">
-          ~{{ block.medianFee | number:feeRounding }} <ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
+          ~{{ block?.extra?.medianFee | number:feeRounding }} <ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
         </div>
         <div class="fee-span">
-          {{ block.feeRange[1] | number:feeRounding }} - {{ block.feeRange[block.feeRange.length - 1] | number:feeRounding }} <ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
+          {{ block?.extra?.feeRange[1] | number:feeRounding }} - {{ block?.extra?.feeRange[block?.extra?.feeRange.length - 1] | number:feeRounding }} <ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
         </div>
         <div class="block-size" [innerHTML]="'&lrm;' + (block.size | bytes: 2)"></div>
         <div class="transaction-count">

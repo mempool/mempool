@@ -76,12 +76,17 @@ export interface TransactionStripped {
   vsize: number;
   value: number;
 }
-export interface BlockExtended extends IEsploraApi.Block {
+
+export interface BlockExtension {
   medianFee?: number;
   feeRange?: number[];
   reward?: number;
   coinbaseTx?: TransactionMinerInfo;
   matchRate?: number;
+}
+
+export interface BlockExtended extends IEsploraApi.Block {
+  extra?: BlockExtension;
 }
 
 export interface TransactionMinerInfo {
