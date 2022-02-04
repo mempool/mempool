@@ -93,6 +93,6 @@ export interface BlockExtension {
 }
 
 export interface BlockExtended extends Block {
-  extra?: BlockExtension;
+  extras?: BlockExtension;
 }
 

@@ -42,7 +42,7 @@ class BlocksRepository {
         poolTag.id,
         0,
         '[]',
-        block.extra ? block.extra.medianFee : 0,
+        block.extras ? block.extras.medianFee : 0,
       ];
 
       await connection.query(query, params);

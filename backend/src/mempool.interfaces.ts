@@ -86,7 +86,7 @@ export interface BlockExtension {
 }
 
 export interface BlockExtended extends IEsploraApi.Block {
-  extra?: BlockExtension;
+  extras?: BlockExtension;
 }
 
 export interface TransactionMinerInfo {

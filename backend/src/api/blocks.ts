@@ -97,7 +97,7 @@ class Blocks {
   private getBlockExtended(block: IEsploraApi.Block, transactions: TransactionExtended[]): BlockExtended {
     const blockExtended: BlockExtended = Object.assign({}, block);
 
-    blockExtended.extra = {
+    blockExtended.extras = {
       reward: transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0),
       coinbaseTx: transactionUtils.stripCoinbaseTransaction(transactions[0]),
     };
@@ -106,9 +106,9 @@ class Blocks {
     transactionsTmp.shift();
     transactionsTmp.sort((a, b) => b.effectiveFeePerVsize - a.effectiveFeePerVsize);
 
-    blockExtended.extra.medianFee = transactionsTmp.length > 0 ?
+    blockExtended.extras.medianFee = transactionsTmp.length > 0 ?
       Common.median(transactionsTmp.map((tx) => tx.effectiveFeePerVsize)) : 0;
-    blockExtended.extra.feeRange = transactionsTmp.length > 0 ?
+    blockExtended.extras.feeRange = transactionsTmp.length > 0 ?
       Common.getFeesInRange(transactionsTmp, 8) : [0, 0];
 
     return blockExtended;
@@ -205,8 +205,8 @@ class Blocks {
             const blockExtended = this.getBlockExtended(block, transactions);
 
             let miner: PoolTag;
-            if (blockExtended?.extra?.coinbaseTx) {
-              miner = await this.$findBlockMiner(blockExtended.extra.coinbaseTx);
+            if (blockExtended?.extras?.coinbaseTx) {
+              miner = await this.$findBlockMiner(blockExtended.extras.coinbaseTx);
             } else {
               miner = await poolsRepository.$getUnknownPool();
             }
@@ -276,8 +276,8 @@ class Blocks {
 
       if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === true) {
         let miner: PoolTag;
-        if (blockExtended?.extra?.coinbaseTx) {
-          miner = await this.$findBlockMiner(blockExtended.extra.coinbaseTx);
+        if (blockExtended?.extras?.coinbaseTx) {
+          miner = await this.$findBlockMiner(blockExtended.extras.coinbaseTx);
         } else {
           miner = await poolsRepository.$getUnknownPool();
         }
