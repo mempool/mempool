@@ -107,14 +107,6 @@ export interface Block {
   size: number;
   weight: number;
   previousblockhash: string;
-
-  // Custom properties
-  medianFee?: number;
-  feeRange?: number[];
-  reward?: number;
-  coinbaseTx?: Transaction;
-  matchRate: number;
-  stage: number;
 }
 
 export interface Address {

@@ -1,9 +1,10 @@
 import { ILoadingIndicators } from '../services/state.service';
-import { Block, Transaction } from './electrs.interface';
+import { Transaction } from './electrs.interface';
+import { BlockExtended } from './node-api.interface';
 
 export interface WebsocketResponse {
-  block?: Block;
-  blocks?: Block[];
+  block?: BlockExtended;
+  blocks?: BlockExtended[];
   conversions?: any;
   txConfirmed?: boolean;
   historicalDate?: string;

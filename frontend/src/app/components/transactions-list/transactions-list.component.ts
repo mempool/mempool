@@ -1,11 +1,12 @@
 import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
 import { StateService } from '../../services/state.service';
 import { Observable, forkJoin } from 'rxjs';
-import { Block, Outspend, Transaction } from '../../interfaces/electrs.interface';
+import { Outspend, Transaction } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { environment } from 'src/environments/environment';
 import { AssetsService } from 'src/app/services/assets.service';
 import { map } from 'rxjs/operators';
+import { BlockExtended } from 'src/app/interfaces/node-api.interface';
 
 @Component({
   selector: 'app-transactions-list',
@@ -26,7 +27,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
   @Output() loadMore = new EventEmitter();
 
-  latestBlock$: Observable<Block>;
+  latestBlock$: Observable<BlockExtended>;
   outspends: Outspend[] = [];
   assetsMinimal: any;
 

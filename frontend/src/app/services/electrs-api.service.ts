@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Block, Transaction, Address, Outspend, Recent, Asset } from '../interfaces/electrs.interface';
+import { Transaction, Address, Outspend, Recent, Asset } from '../interfaces/electrs.interface';
 import { StateService } from './state.service';
+import { BlockExtended } from '../interfaces/node-api.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -28,12 +29,12 @@ export class ElectrsApiService {
     });
   }
 
-  getBlock$(hash: string): Observable<Block> {
-    return this.httpClient.get<Block>(this.apiBaseUrl + this.apiBasePath + '/api/block/' + hash);
+  getBlock$(hash: string): Observable<BlockExtended> {
+    return this.httpClient.get<BlockExtended>(this.apiBaseUrl + this.apiBasePath + '/api/block/' + hash);
   }
 
-  listBlocks$(height?: number): Observable<Block[]> {
-    return this.httpClient.get<Block[]>(this.apiBaseUrl + this.apiBasePath + '/api/blocks/' + (height || ''));
+  listBlocks$(height?: number): Observable<BlockExtended[]> {
+    return this.httpClient.get<BlockExtended[]>(this.apiBaseUrl + this.apiBasePath + '/api/blocks/' + (height || ''));
   }
 
   getTransaction$(txId: string): Observable<Transaction> {
