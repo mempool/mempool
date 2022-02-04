@@ -69,8 +69,8 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
         this.blocks.unshift(block);
         this.blocks = this.blocks.slice(0, this.stateService.env.KEEP_BLOCKS_AMOUNT);
 
-        if (this.blocksFilled && !this.tabHidden && block.extra) {
-          block.extra.stage = block.extra.matchRate >= 66 ? 1 : 2;
+        if (this.blocksFilled && !this.tabHidden && block.extras) {
+          block.extras.stage = block.extras.matchRate >= 66 ? 1 : 2;
         }
 
         if (txConfirmed) {
@@ -151,8 +151,8 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
     const greenBackgroundHeight = 100 - (block.weight / this.stateService.env.BLOCK_WEIGHT_UNITS) * 100;
     let addLeft = 0;
 
-    if (block?.extra?.stage === 1) {
-      block.extra.stage = 2;
+    if (block?.extras?.stage === 1) {
+      block.extras.stage = 2;
       addLeft = -205;
     }
 
@@ -170,8 +170,8 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   getStyleForEmptyBlock(block: BlockExtended) {
     let addLeft = 0;
 
-    if (block?.extra?.stage === 1) {
-      block.extra.stage = 2;
+    if (block?.extras?.stage === 1) {
+      block.extras.stage = 2;
       addLeft = -205;
     }
 

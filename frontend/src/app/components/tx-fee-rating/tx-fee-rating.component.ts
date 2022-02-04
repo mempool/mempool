@@ -29,7 +29,7 @@ export class TxFeeRatingComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     this.blocksSubscription = this.stateService.blocks$.subscribe(([block]) => {
       this.blocks.push(block);
-      if (this.tx.status.confirmed && this.tx.status.block_height === block.height && block?.extra?.medianFee > 0) {
+      if (this.tx.status.confirmed && this.tx.status.block_height === block.height && block?.extras?.medianFee > 0) {
         this.calculateRatings(block);
         this.cd.markForCheck();
       }
@@ -43,7 +43,7 @@ export class TxFeeRatingComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     const foundBlock = this.blocks.find((b) => b.height === this.tx.status.block_height);
-    if (foundBlock && foundBlock?.extra?.medianFee > 0) {
+    if (foundBlock && foundBlock?.extras?.medianFee > 0) {
       this.calculateRatings(foundBlock);
     }
   }
@@ -54,7 +54,7 @@ export class TxFeeRatingComponent implements OnInit, OnChanges, OnDestroy {
 
   calculateRatings(block: BlockExtended) {
     const feePervByte = this.tx.effectiveFeePerVsize || this.tx.fee / (this.tx.weight / 4);
-    this.medianFeeNeeded = block?.extra?.medianFee;
+    this.medianFeeNeeded = block?.extras?.medianFee;
 
     // Block not filled
     if (block.weight < this.stateService.env.BLOCK_WEIGHT_UNITS * 0.95) {
