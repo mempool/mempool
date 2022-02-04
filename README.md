@@ -245,6 +245,25 @@ docker-compose overrides:
       BISQ_DATA_PATH: ""
 ```
 
+JSON:
+```
+  "SOCKS5PROXY": {
+    "ENABLED": false,
+    "HOST": "127.0.0.1",
+    "PORT": "9050",
+    "USERNAME": "",
+    "PASSWORD": ""
+  }
+```
+
+docker-compose overrides:
+```
+      SOCKS5PROXY_ENABLED: ""
+      SOCKS5PROXY_HOST: ""
+      SOCKS5PROXY_PORT: ""
+      SOCKS5PROXY_USERNAME: ""
+      SOCKS5PROXY_PASSWORD: ""
+```
 
 # Manual Installation
 

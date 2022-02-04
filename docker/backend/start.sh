@@ -61,6 +61,13 @@ __STATISTICS_TX_PER_SECOND_SAMPLE_PERIOD__=${STATISTICS_TX_PER_SECOND_SAMPLE_PER
 __BISQ_ENABLED__=${BISQ_ENABLED:=false}
 __BISQ_DATA_PATH__=${BISQ_DATA_PATH:=/bisq/statsnode-data/btc_mainnet/db}
 
+# SOCKS5PROXY
+__SOCKS5PROXY_ENABLED__=${SOCKS5PROXY_ENABLED:=false}
+__SOCKS5PROXY_HOST__=${SOCKS5PROXY_HOST:=localhost}
+__SOCKS5PROXY_PORT__=${SOCKS5PROXY_PORT:=9050}
+__SOCKS5PROXY_USERNAME__=${SOCKS5PROXY_USERNAME:=""}
+__SOCKS5PROXY_PASSWORD__=${SOCKS5PROXY_PASSWORD:=""}
+
 mkdir -p "${__MEMPOOL_CACHE_DIR__}"
 
 sed -i "s/__MEMPOOL_NETWORK__/${__MEMPOOL_NETWORK__}/g" mempool-config.json
@@ -114,5 +121,11 @@ sed -i "s/__STATISTICS_TX_PER_SECOND_SAMPLE_PERIOD__/${__STATISTICS_TX_PER_SECON
 
 sed -i "s/__BISQ_ENABLED__/${__BISQ_ENABLED__}/g" mempool-config.json
 sed -i "s!__BISQ_DATA_PATH__!${__BISQ_DATA_PATH__}!g" mempool-config.json
+
+sed -i "s/__SOCKS5PROXY_ENABLED__/${__SOCKS5PROXY_ENABLED__}/g" mempool-config.json
+sed -i "s/__SOCKS5PROXY_HOST__/${__SOCKS5PROXY_HOST__}/g" mempool-config.json
+sed -i "s/__SOCKS5PROXY_PORT__/${__SOCKS5PROXY_PORT__}/g" mempool-config.json
+sed -i "s/__SOCKS5PROXY_USERNAME__/${__SOCKS5PROXY_USERNAME__}/g" mempool-config.json
+sed -i "s/__SOCKS5PROXY_PASSWORD__/${__SOCKS5PROXY_PASSWORD__}/g" mempool-config.json
 
 node /backend/dist/index.js

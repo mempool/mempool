@@ -61,5 +61,12 @@
   "BISQ": {
     "ENABLED": false,
     "DATA_PATH": "/bisq/statsnode-data/btc_mainnet/db"
+  },
+  "SOCKS5PROXY": {
+    "ENABLED": false,
+    "HOST": "127.0.0.1",
+    "PORT": 9050,
+    "USERNAME": "",
+    "PASSWORD": ""
   }
 }
