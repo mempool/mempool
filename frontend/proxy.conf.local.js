@@ -49,7 +49,14 @@ PROXY_CONFIG.map(conf => conf.target = "http://localhost:8999");
 // Add rules for local backend
 if (backendConfigContent) {
     PROXY_CONFIG.push({
-        context: ['/api/address/**', '/api/tx/**', '/api/block/**', '/api/blocks/**'],
+        context: ['/api/v1/**'],
+        target: `http://localhost:8999`,
+        secure: false,
+        changeOrigin: true,
+        proxyTimeout: 30000
+    });
+    PROXY_CONFIG.push({
+        context: ['/api/**'],
         target: `http://localhost:8999`,
         secure: false,
         changeOrigin: true,
@@ -57,15 +64,7 @@ if (backendConfigContent) {
         pathRewrite: {
             "^/api/": "/api/v1/"
         },
-    });    
-    PROXY_CONFIG.push({
-        context: ['/api/v1/**'],
-        target: `http://localhost:8999`,
-        secure: false,
-        changeOrigin: true,
-        proxyTimeout: 30000
     });
-
 }
 
 console.log(PROXY_CONFIG);
