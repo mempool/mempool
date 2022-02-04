@@ -28,38 +28,22 @@
 
   <div class="navbar-collapse" id="navbarCollapse">
     <ul class="navbar-nav {{ network.val }}">
-      <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+      <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" id="btn-home">
         <a class="nav-link" [routerLink]="['/' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'tachometer-alt']" [fixedWidth]="true" i18n-title="master-page.dashboard" title="Dashboard"></fa-icon></a>
       </li>
-      <ng-template [ngIf]="network.val === 'bisq'" [ngIfElse]="notBisq">
-        <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-          <a class="nav-link" [routerLink]="['/bisq/transactions']" (click)="collapse()"><fa-icon [icon]="['fas', 'list']" [fixedWidth]="true" i18n-title="master-page.transactions" title="Transactions"></fa-icon></a>
-        </li>
-        <li class="nav-item" routerLinkActive="active">
-          <a class="nav-link" [routerLink]="['/bisq/blocks']" (click)="collapse()"><fa-icon [icon]="['fas', 'cubes']" [fixedWidth]="true" i18n-title="master-page.blocks" title="Blocks"></fa-icon></a>
-        </li>
-        <li class="nav-item" routerLinkActive="active">
-          <a class="nav-link" [routerLink]="['/bisq/stats']" (click)="collapse()"><fa-icon [icon]="['fas', 'file-alt']" [fixedWidth]="true"  i18n-title="master-page.stats" title="Stats"></fa-icon></a>
-        </li>
-      </ng-template>
-      <ng-template #notBisq>
-        <li class="nav-item" routerLinkActive="active">
-          <a class="nav-link" [routerLink]="['/blocks' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'cubes']" [fixedWidth]="true" i18n-title="master-page.blocks" title="Blocks"></fa-icon></a>
-        </li>
-        <li class="nav-item" routerLinkActive="active">
-          <a class="nav-link" [routerLink]="['/graphs' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'chart-area']" [fixedWidth]="true" i18n-title="master-page.graphs" title="Graphs"></fa-icon></a>
-        </li>
-        <li class="nav-item d-none d-lg-block" routerLinkActive="active">
-          <a class="nav-link" [routerLink]="['/tv' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'tv']" [fixedWidth]="true" i18n-title="master-page.tvview" title="TV view"></fa-icon></a>
-        </li>
-      </ng-template>
-      <li *ngIf="network.val === 'liquid' || network.val === 'liquidtestnet'" class="nav-item" routerLinkActive="active">
-        <a class="nav-link" [routerLink]="['/assets' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'database']" [fixedWidth]="true" i18n-title="master-page.assets" title="Assets"></fa-icon></a>
+      <li class="nav-item" routerLinkActive="active" id="btn-pools">
+        <a class="nav-link" [routerLink]="['/mining/pools' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'hammer']" [fixedWidth]="true" i18n-title="master-page.mining-pools" title="Mining Pools"></fa-icon></a>
       </li>
-      <li class="nav-item" routerLinkActive="active">
+      <li class="nav-item" routerLinkActive="active" id="btn-graphs">
+        <a class="nav-link" [routerLink]="['/graphs' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'chart-area']" [fixedWidth]="true" i18n-title="master-page.graphs" title="Graphs"></fa-icon></a>
+      </li>
+      <li class="nav-item d-none d-lg-block" routerLinkActive="active" id="btn-tv">
+        <a class="nav-link" [routerLink]="['/tv' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'tv']" [fixedWidth]="true" i18n-title="master-page.tvview" title="TV view"></fa-icon></a>
+      </li>
+      <li class="nav-item" routerLinkActive="active" id="btn-docs">
         <a class="nav-link" [routerLink]="['/docs' | relativeUrl ]" (click)="collapse()"><fa-icon [icon]="['fas', 'book']" [fixedWidth]="true" i18n-title="documentation.title" title="Documentation"></fa-icon></a>
       </li>
-      <li class="nav-item" routerLinkActive="active">
+      <li class="nav-item" routerLinkActive="active" id="btn-about">
         <a class="nav-link" [routerLink]="['/about']" (click)="collapse()"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true" i18n-title="master-page.about" title="About"></fa-icon></a>
       </li>
     </ul>
