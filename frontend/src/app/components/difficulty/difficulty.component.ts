@@ -14,6 +14,8 @@ interface EpochProgress {
   timeAvg: string;
   remainingTime: number;
   previousRetarget: number;
+  blocksUntilHalving: number;
+  timeUntilHalving: number;
 }
 
 @Component({
@@ -25,6 +27,9 @@ interface EpochProgress {
 export class DifficultyComponent implements OnInit {
   isLoadingWebSocket$: Observable<boolean>;
   difficultyEpoch$: Observable<EpochProgress>;
+
+  @Input() showProgress: boolean = true;
+  @Input() showHalving: boolean = false;
 
   constructor(
     public stateService: StateService,
@@ -92,6 +97,9 @@ export class DifficultyComponent implements OnInit {
             colorPreviousAdjustments = '#ffffff66';
           }
 
+          const blocksUntilHalving = block.height % 210000;
+          const timeUntilHalving = (blocksUntilHalving * timeAvgMins * 60 * 1000) + (now * 1000);
+
           return {
             base: `${progress}%`,
             change,
@@ -104,6 +112,8 @@ export class DifficultyComponent implements OnInit {
             newDifficultyHeight,
             remainingTime,
             previousRetarget,
+            blocksUntilHalving,
+            timeUntilHalving,
           };
         })
       );

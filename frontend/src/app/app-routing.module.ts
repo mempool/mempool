@@ -22,6 +22,7 @@ import { BisqMasterPageComponent } from './components/bisq-master-page/bisq-mast
 import { SponsorComponent } from './components/sponsor/sponsor.component';
 import { LiquidMasterPageComponent } from './components/liquid-master-page/liquid-master-page.component';
 import { PushTransactionComponent } from './components/push-transaction/push-transaction.component';
+import { PoolRankingComponent } from './components/pool-ranking/pool-ranking.component';
 
 let routes: Routes = [
   {
@@ -57,6 +58,10 @@ let routes: Routes = [
       {
         path: 'blocks',
         component: LatestBlocksComponent,
+      },
+      {
+        path: 'mining/pools',
+        component: PoolRankingComponent,
       },
       {
         path: 'graphs',
@@ -143,6 +148,10 @@ let routes: Routes = [
             component: LatestBlocksComponent,
           },
           {
+            path: 'mining/pools',
+            component: PoolRankingComponent,
+          },
+          {
             path: 'graphs',
             component: StatisticsComponent,
           },
@@ -219,6 +228,10 @@ let routes: Routes = [
           {
             path: 'blocks',
             component: LatestBlocksComponent,
+          },
+          {
+            path: 'mining/pools',
+            component: PoolRankingComponent,
           },
           {
             path: 'graphs',
