@@ -199,20 +199,7 @@ class Blocks {
           }
           try {
             logger.debug(`Indexing block #${blockHeight}`);
-            const blockHash = await bitcoinApi.$getBlockHash(blockHeight);
-            const block = await bitcoinApi.$getBlock(blockHash);
-            const transactions = await this.$getTransactionsExtended(blockHash, block.height, true);
-            const blockExtended = this.getBlockExtended(block, transactions);
-
-            let miner: PoolTag;
-            if (blockExtended?.extras?.coinbaseTx) {
-              miner = await this.$findBlockMiner(blockExtended.extras.coinbaseTx);
-            } else {
-              miner = await poolsRepository.$getUnknownPool();
-            }
-
-            const coinbase: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(transactions[0].txid, true);
-            await blocksRepository.$saveBlockInDatabase(blockExtended, blockHash, coinbase.hex, miner);
+            await this.$indexBlock(blockHeight);
           } catch (e) {
             logger.err(`Something went wrong while indexing blocks.` + e);
           }
@@ -225,6 +212,68 @@ class Blocks {
       logger.err('An error occured in $generateBlockDatabase(). Skipping block indexing. ' + e);
       console.log(e);
     }
+  }
+
+  private convertToExtendedBlock(dbBlock: object): BlockExtended {
+    return {
+      id: dbBlock['hash'],
+      height: dbBlock['height'],
+      version: dbBlock['version'],
+      timestamp: dbBlock['blockTimestamp'],
+      bits: dbBlock['bits'],
+      nonce: dbBlock['nonce'],
+      difficulty: dbBlock['difficulty'],
+      merkle_root: dbBlock['merkle_root'],
+      tx_count: dbBlock['tx_count'],
+      size: dbBlock['size'],
+      weight: dbBlock['weight'],
+      previousblockhash: dbBlock['previousblockhash'],
+      extras: {
+        medianFee: 0,
+        feeRange: [],
+        reward: dbBlock['reward'],
+        coinbaseHex: dbBlock['coinbase_raw'],
+        pool: {
+          id: dbBlock['pool_id'],
+          name: dbBlock['pool_name'],
+          link: dbBlock['pool_link'],
+          regexes: dbBlock['pool_regexes'],
+          addresses: dbBlock['pool_addresses'],
+        },
+      }
+    }
+  }
+
+  /**
+   * Index a block if it's missing from the database. Returns the block after indexing
+   */
+  public async $indexBlock(height: number): Promise<BlockExtended> {
+    const dbBlock = await blocksRepository.$getBlockByHeight(height);
+    if (dbBlock != null) {
+      return this.convertToExtendedBlock(dbBlock);
+    }
+
+    const blockHash = await bitcoinApi.$getBlockHash(height);
+    const block = await bitcoinApi.$getBlock(blockHash);
+    const transactions = await this.$getTransactionsExtended(blockHash, block.height, true);
+    const blockExtended = this.getBlockExtended(block, transactions);
+    const coinbase: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(transactions[0].txid, true);
+
+    let pool: PoolTag;
+    if (blockExtended?.extras?.coinbaseTx != undefined) {
+      pool = await this.$findBlockMiner(blockExtended.extras.coinbaseTx);
+    } else {
+      pool = await poolsRepository.$getUnknownPool();
+    }
+
+    if (blockExtended?.extras != undefined) {
+      blockExtended.extras.pool = pool;
+      blockExtended.extras.coinbaseHex = coinbase.hex;
+    }
+
+    await blocksRepository.$saveBlockInDatabase(blockExtended);
+
+    return blockExtended;
   }
 
   public async $updateBlocks() {
@@ -275,13 +324,19 @@ class Blocks {
       const coinbase: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(transactions[0].txid, true);
 
       if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === true) {
-        let miner: PoolTag;
+        let pool: PoolTag;
         if (blockExtended?.extras?.coinbaseTx) {
-          miner = await this.$findBlockMiner(blockExtended.extras.coinbaseTx);
+          pool = await this.$findBlockMiner(blockExtended.extras.coinbaseTx);
         } else {
-          miner = await poolsRepository.$getUnknownPool();
+          pool = await poolsRepository.$getUnknownPool();
         }
-        await blocksRepository.$saveBlockInDatabase(blockExtended, blockHash, coinbase.hex, miner);
+
+        if (blockExtended?.extras != undefined) {
+          blockExtended.extras.pool = pool;
+          blockExtended.extras.coinbaseHex = coinbase.hex;
+        }
+    
+        await blocksRepository.$saveBlockInDatabase(blockExtended);
       }
 
       if (block.height % 2016 === 0) {

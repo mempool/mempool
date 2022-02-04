@@ -568,29 +568,36 @@ class Routes {
       loadingIndicators.setProgress('blocks', 0);
 
       const returnBlocks: IEsploraApi.Block[] = [];
-      const fromHeight = parseInt(req.params.height, 10) || blocks.getCurrentBlockHeight();
+      let currentHeight = parseInt(req.params.height, 10) || blocks.getCurrentBlockHeight();
+
+      if (currentHeight < 0) {
+        return res.json(returnBlocks);
+      }
 
       // Check if block height exist in local cache to skip the hash lookup
-      const blockByHeight = blocks.getBlocks().find((b) => b.height === fromHeight);
+      const blockByHeight = blocks.getBlocks().find((b) => b.height === currentHeight);
       let startFromHash: string | null = null;
       if (blockByHeight) {
         startFromHash = blockByHeight.id;
       } else {
-        startFromHash = await bitcoinApi.$getBlockHash(fromHeight);
+        startFromHash = await bitcoinApi.$getBlockHash(currentHeight);
       }
 
       let nextHash = startFromHash;
-      for (let i = 0; i < 10; i++) {
-        const localBlock = blocks.getBlocks().find((b) => b.id === nextHash);
+      for (let i = 0; i < 10 && currentHeight >= 0; i++) {
+        const localBlock = blocks.getBlocks().find((b) => b.height === currentHeight);
         if (localBlock) {
           returnBlocks.push(localBlock);
-          nextHash = localBlock.previousblockhash;
+        } else if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === true) {
+          const block = await blocks.$indexBlock(currentHeight);
+          returnBlocks.push(block);
         } else {
           const block = await bitcoinApi.$getBlock(nextHash);
           returnBlocks.push(block);
           nextHash = block.previousblockhash;
         }
         loadingIndicators.setProgress('blocks', i / 10 * 100);
+        currentHeight--;
       }
 
       res.json(returnBlocks);

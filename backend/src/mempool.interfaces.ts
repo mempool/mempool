@@ -83,6 +83,8 @@ export interface BlockExtension {
   reward?: number;
   coinbaseTx?: TransactionMinerInfo;
   matchRate?: number;
+  pool?: PoolTag;
+  coinbaseHex?: string;
 }
 
 export interface BlockExtended extends IEsploraApi.Block {
