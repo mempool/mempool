@@ -1,0 +1,26 @@
+<div *ngIf="group$ | async as group">
+  
+  <div class="main-title">
+    <h2>{{ group.group.name }}</h2>
+
+    <div class="sub-title">Group of {{ group.group.assets.length | number }} assets</div>
+  </div>
+
+
+  <div class="clearfix"></div>
+
+  <br>
+
+  <div class="featuredBox">
+    <div *ngFor="let asset of group.assets">
+      <div class="card">
+        <img class="assetIcon" [src]="'https://liquid.network/api/v1/asset/' + asset.asset_id + '/icon'">
+        <div class="title">
+          <a [routerLink]="['/assets/asset/', group.asset_id]">{{ asset.name }}</a>
+        </div>
+        <div class="ticker">{{ asset.ticker }}</div>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -1,13 +1,13 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { AssetsService } from '../services/assets.service';
+import { AssetsService } from 'src/app/services/assets.service';
 import { environment } from 'src/environments/environment';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { distinctUntilChanged, map, filter, mergeMap, tap, take } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { merge, combineLatest, Observable } from 'rxjs';
-import { AssetExtended } from '../interfaces/electrs.interface';
-import { SeoService } from '../services/seo.service';
-import { StateService } from '../services/state.service';
+import { AssetExtended } from 'src/app/interfaces/electrs.interface';
+import { SeoService } from 'src/app/services/seo.service';
+import { StateService } from 'src/app/services/state.service';
 
 @Component({
   selector: 'app-assets',
@@ -23,9 +23,9 @@ export class AssetsComponent implements OnInit {
   searchForm: FormGroup;
   assets$: Observable<AssetExtended[]>;
 
+  page = 1;
   error: any;
 
-  page = 1;
   itemsPerPage: number;
   contentSpace = window.innerHeight - (250 + 200);
   fiveItemsPxSize = 250;
@@ -49,7 +49,7 @@ export class AssetsComponent implements OnInit {
 
     this.assets$ = combineLatest([
       this.assetsService.getAssetsJson$,
-      this.route.queryParams
+      this.route.queryParams,
     ])
     .pipe(
       take(1),
