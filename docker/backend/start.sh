@@ -68,9 +68,9 @@ __SOCKS5PROXY_PORT__=${SOCKS5PROXY_PORT:=9050}
 __SOCKS5PROXY_USERNAME__=${SOCKS5PROXY_USERNAME:=""}
 __SOCKS5PROXY_PASSWORD__=${SOCKS5PROXY_PASSWORD:=""}
 
-# PRICENODE
-__PRICENODE_TOR_URL__=${PRICENODE_TOR_URL:=http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices}
-__PRICENODE_CLEARNET_URL__=${PRICENODE_CLEARNET_URL:=https://price.bisq.wiz.biz/getAllMarketPrices}
+# PRICE_DATA_SERVER
+__PRICE_DATA_SERVER_TOR_URL__=${PRICE_DATA_SERVER_TOR_URL:=http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices}
+__PRICE_DATA_SERVER_CLEARNET_URL__=${PRICE_DATA_SERVER_CLEARNET_URL:=https://price.bisq.wiz.biz/getAllMarketPrices}
 
 mkdir -p "${__MEMPOOL_CACHE_DIR__}"
 
@@ -132,7 +132,7 @@ sed -i "s/__SOCKS5PROXY_PORT__/${__SOCKS5PROXY_PORT__}/g" mempool-config.json
 sed -i "s/__SOCKS5PROXY_USERNAME__/${__SOCKS5PROXY_USERNAME__}/g" mempool-config.json
 sed -i "s/__SOCKS5PROXY_PASSWORD__/${__SOCKS5PROXY_PASSWORD__}/g" mempool-config.json
 
-sed -i "s!__PRICENODE_TOR_URL__!${__PRICENODE_TOR_URL__}!g" mempool-config.json
-sed -i "s!__PRICENODE_CLEARNET_URL__!${__PRICENODE_CLEARNET_URL__}!g" mempool-config.json
+sed -i "s!__PRICE_DATA_SERVER_TOR_URL__!${__PRICE_DATA_SERVER_TOR_URL__}!g" mempool-config.json
+sed -i "s!__PRICE_DATA_SERVER_CLEARNET_URL__!${__PRICE_DATA_SERVER_CLEARNET_URL__}!g" mempool-config.json
 
 node /backend/dist/index.js

@@ -20,9 +20,9 @@ class FiatConversion {
   public startService() {
     logger.info('Starting currency rates service');
     if (config.SOCKS5PROXY.ENABLED) {
-      logger.info(`Currency rates service will be queried over the Tor network using ${config.PRICENODE.TOR_URL}`);
+      logger.info(`Currency rates service will be queried over the Tor network using ${config.PRICE_DATA_SERVER.TOR_URL}`);
     } else {
-      logger.info(`Currency rates service will be queried over clearnet using ${config.PRICENODE.CLEARNET_URL}`);
+      logger.info(`Currency rates service will be queried over clearnet using ${config.PRICE_DATA_SERVER.CLEARNET_URL}`);
     }
     setInterval(this.updateCurrency.bind(this), 1000 * config.MEMPOOL.PRICE_FEED_UPDATE_INTERVAL);
     this.updateCurrency();
@@ -53,11 +53,11 @@ class FiatConversion {
         }
 
         const agent = new SocksProxyAgent(socksOptions);
-        fiatConversionUrl = config.PRICENODE.TOR_URL;
+        fiatConversionUrl = config.PRICE_DATA_SERVER.TOR_URL;
         logger.info('Querying currency rates service...');
         response = await axios.get(fiatConversionUrl, { httpAgent: agent, headers: headers, timeout: 30000 });
       } else {
-        fiatConversionUrl = config.PRICENODE.CLEARNET_URL;
+        fiatConversionUrl = config.PRICE_DATA_SERVER.CLEARNET_URL;
         logger.info('Querying currency rates service...');
         response = await axios.get(fiatConversionUrl, { headers: headers, timeout: 10000 });
       }
