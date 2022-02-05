@@ -265,6 +265,20 @@ docker-compose overrides:
       SOCKS5PROXY_PASSWORD: ""
 ```
 
+JSON:
+```
+  "PRICENODE": {
+    "TOR_URL": "http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices",
+    "CLEARNET_URL": "https://price.bisq.wiz.biz/getAllMarketPrices"
+  }
+```
+
+docker-compose overrides:
+```
+      PRICENODE_TOR_URL: ""
+      PRICENODE_CLEARNET_URL: ""
+```
+
 # Manual Installation
 
 The following instructions are for a manual installation on Linux or FreeBSD. The file and directory paths may need to be changed to match your OS.

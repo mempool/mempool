@@ -69,6 +69,10 @@ interface IConfig {
     USERNAME: string;
     PASSWORD: string;
   };
+  PRICENODE: {
+    TOR_URL: string;
+    CLEARNET_URL: string;
+  };
 }
 
 const defaults: IConfig = {
@@ -141,6 +145,10 @@ const defaults: IConfig = {
     'PORT': 9050,
     'USERNAME': '',
     'PASSWORD': ''
+  },
+  "PRICENODE": {
+    'TOR_URL': 'http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices',
+    'CLEARNET_URL': 'https://price.bisq.wiz.biz/getAllMarketPrices'
   }
 };
 
@@ -155,6 +163,7 @@ class Config implements IConfig {
   STATISTICS: IConfig['STATISTICS'];
   BISQ: IConfig['BISQ'];
   SOCKS5PROXY: IConfig['SOCKS5PROXY'];
+  PRICENODE: IConfig['PRICENODE'];
 
   constructor() {
     const configs = this.merge(configFile, defaults);
@@ -168,6 +177,7 @@ class Config implements IConfig {
     this.STATISTICS = configs.STATISTICS;
     this.BISQ = configs.BISQ;
     this.SOCKS5PROXY = configs.SOCKS5PROXY;
+    this.PRICENODE = configs.PRICENODE;
   }
 
   merge = (...objects: object[]): IConfig => {
