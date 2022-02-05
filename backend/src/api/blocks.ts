@@ -122,8 +122,6 @@ class Blocks {
 
       const coinbase: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(transactions[0].txid, true);
       blockExtended.extras.coinbaseHex = coinbase.hex;
-  
-      await blocksRepository.$saveBlockInDatabase(blockExtended);
     }
 
     return blockExtended;
@@ -256,7 +254,7 @@ class Blocks {
           addresses: dbBlock['pool_addresses'],
         },
       }
-    }
+    };
   }
 
   /**
@@ -323,6 +321,7 @@ class Blocks {
       const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
       const transactions = await this.$getTransactionsExtended(blockHash, block.height, false);
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, transactions);
+      await blocksRepository.$saveBlockInDatabase(blockExtended);
 
       if (block.height % 2016 === 0) {
         this.previousDifficultyRetarget = (block.difficulty - this.currentDifficulty) / this.currentDifficulty * 100;
