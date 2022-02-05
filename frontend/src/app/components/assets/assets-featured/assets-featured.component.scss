@@ -1,0 +1,46 @@
+
+.featuredBox {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  gap: 27px;
+}
+
+.card {
+  background-color: #1d1f31;
+  width: 200px;
+  height: 200px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.sub-title {
+  color: grey;
+  font-size: 12px;
+}
+
+.assetIcon {
+  width: 100px;
+  height: 100px;
+}
+
+.image {
+  width: 100px;
+  height: 100px;
+  align-self: center;
+}
+
+.view-link {
+  margin-top: 30px;
+}
+
+.ticker {
+  color: grey;
+}

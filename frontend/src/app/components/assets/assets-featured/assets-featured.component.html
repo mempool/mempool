@@ -1,0 +1,27 @@
+<div *ngIf="featuredAssets$ | async as featured; else loading" class="featuredBox">
+    
+  <div *ngFor="let group of featured.featured">
+    <div class="card">
+      <ng-template [ngIf]="group.assets" [ngIfElse]="singleAsset">
+        <img class="assetIcon" [src]="'https://liquid.network/api/v1/asset/' + group.assets[0] + '/icon'">
+        <div class="title"><a [routerLink]="['/assets/asset-group', group.id]">{{ group.name }}</a></div>
+        <div class="sub-title">Group of {{ group.assets.length | number }} assets</div>
+      </ng-template>
+      <ng-template #singleAsset>
+        <img class="assetIcon" [src]="'https://liquid.network/api/v1/asset/' + group.asset + '/icon'">
+        <div class="title">
+          <a [routerLink]="['/assets/asset/', group.asset]">{{ group.name }}</a>
+        </div>
+        <div class="ticker">{{ group.ticker }}</div>
+      </ng-template>
+    </div>
+  </div>
+
+</div>
+
+<ng-template #loading>
+  <br>
+  <div class="text-center loadingGraphs">
+    <div class="spinner-border text-light"></div>
+  </div>
+</ng-template>
