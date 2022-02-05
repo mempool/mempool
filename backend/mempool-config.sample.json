@@ -68,5 +68,9 @@
     "PORT": 9050,
     "USERNAME": "",
     "PASSWORD": ""
+  },
+  "PRICENODE": {
+    "TOR_URL": "http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices",
+    "CLEARNET_URL": "https://price.bisq.wiz.biz/getAllMarketPrices"
   }
 }
