@@ -95,7 +95,7 @@ export class AddressLabelsComponent implements OnInit {
     if (!opM.startsWith('OP_PUSHNUM_')) {
       return;
     }
-    const m = parseInt(opN.match(/[0-9]+/)[0]);
+    const m = parseInt(opM.match(/[0-9]+/)[0]);
 
     this.multisig = true;
     this.multisigM = m;
