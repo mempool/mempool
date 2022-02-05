@@ -46,15 +46,21 @@ export class AddressLabelsComponent implements OnInit {
         return;
       }
 
-      [
-        // {regexp: /^OP_DUP OP_HASH160/, label: 'HTLC'},
-        {regexp: /^OP_IF OP_PUSHBYTES_33 \w{33} OP_ELSE OP_PUSHBYTES_2 \w{2} OP_CSV OP_DROP/, label: 'Force Close'}
-      ].forEach((item) => {
-          if (item.regexp.test(this.vin.inner_witnessscript_asm)) {
-            this.lightning = item.label;
-          }
-        }
-      );
+      // https://github.com/lightning/bolts/blob/master/03-transactions.md#commitment-transaction-outputs
+      if (/^OP_IF OP_PUSHBYTES_33 \w{66} OP_ELSE OP_PUSHBYTES_(1 \w{2}|2 \w{4}) OP_CSV OP_DROP OP_PUSHBYTES_33 \w{66} OP_ENDIF OP_CHECKSIG$/.test(this.vin.inner_witnessscript_asm)) {
+		  if (this.vin.witness[this.vin.witness.length - 2] == '01') {
+			  this.lightning = 'Revoked Force Close';
+		  } else {
+			  this.lightning = 'Force Close';
+		  }
+      // https://github.com/lightning/bolts/blob/master/03-transactions.md#offered-htlc-outputs
+	  } else if (/^OP_DUP OP_HASH160 OP_PUSHBYTES_20 \w{40} OP_EQUAL OP_IF OP_CHECKSIG OP_ELSE OP_PUSHBYTES_33 \w{66} OP_SWAP OP_SIZE OP_PUSHBYTES_1 20 OP_EQUAL OP_NOTIF OP_DROP OP_PUSHNUM_2 OP_SWAP OP_PUSHBYTES_33 \w{66} OP_PUSHNUM_2 OP_CHECKMULTISIG OP_ELSE OP_HASH160 OP_PUSHBYTES_20 \w{40} OP_EQUALVERIFY OP_CHECKSIG OP_ENDIF OP_ENDIF$/) {
+		  if (this.vin.witness[this.vin.witness.length - 2].length == 66) {
+			  this.lightning = 'Revoked HTLC';
+		  } else {
+			  this.lightning = 'HTLC';
+		  }
+	  }
 
       if (this.lightning) {
         return;
