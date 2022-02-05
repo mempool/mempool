@@ -3,12 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map, shareReplay, switchMap } from 'rxjs/operators';
 import { StateService } from './state.service';
+import { environment } from 'src/environments/environment';
+import { AssetExtended } from '../interfaces/electrs.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AssetsService {
-  getAssetsJson$: Observable<any>;
+  nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
+
+  getAssetsJson$: Observable<AssetExtended[]>;
   getAssetsMinimalJson$: Observable<any>;
   getMiningPools$: Observable<any>;
 
@@ -24,6 +28,27 @@ export class AssetsService {
     this.getAssetsJson$ = this.stateService.networkChanged$
       .pipe(
         switchMap(() => this.httpClient.get(`${apiBaseUrl}/resources/assets${this.stateService.network === 'liquidtestnet' ? '-testnet' : ''}.json`)),
+        map((rawAssets) => {
+          const assets: AssetExtended[] = Object.values(rawAssets);
+  
+          if (this.stateService.network === 'liquid') {
+            // @ts-ignore
+            assets.push({
+              name: 'Liquid Bitcoin',
+              ticker: 'L-BTC',
+              asset_id: this.nativeAssetId,
+            });
+          } else if (this.stateService.network === 'liquidtestnet') {
+            // @ts-ignore
+            assets.push({
+              name: 'Test Liquid Bitcoin',
+              ticker: 'tL-BTC',
+              asset_id: this.nativeAssetId,
+            });
+          }
+  
+          return assets.sort((a: any, b: any) => a.name.localeCompare(b.name));
+        }),
         shareReplay(1),
       );
     this.getAssetsMinimalJson$ = this.stateService.networkChanged$
