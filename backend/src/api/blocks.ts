@@ -94,7 +94,7 @@ class Blocks {
    * @param transactions
    * @returns BlockExtended
    */
-  private getBlockExtended(block: IEsploraApi.Block, transactions: TransactionExtended[]): BlockExtended {
+  private async $getBlockExtended(block: IEsploraApi.Block, transactions: TransactionExtended[]): Promise<BlockExtended> {
     const blockExtended: BlockExtended = Object.assign({}, block);
 
     blockExtended.extras = {
@@ -110,6 +110,21 @@ class Blocks {
       Common.median(transactionsTmp.map((tx) => tx.effectiveFeePerVsize)) : 0;
     blockExtended.extras.feeRange = transactionsTmp.length > 0 ?
       Common.getFeesInRange(transactionsTmp, 8) : [0, 0];
+
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === true) {
+      let pool: PoolTag;
+      if (blockExtended.extras?.coinbaseTx != undefined) {
+        pool = await this.$findBlockMiner(blockExtended.extras.coinbaseTx);
+      } else {
+        pool = await poolsRepository.$getUnknownPool();
+      }
+      blockExtended.extras.pool = pool;
+
+      const coinbase: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(transactions[0].txid, true);
+      blockExtended.extras.coinbaseHex = coinbase.hex;
+  
+      await blocksRepository.$saveBlockInDatabase(blockExtended);
+    }
 
     return blockExtended;
   }
@@ -256,20 +271,7 @@ class Blocks {
     const blockHash = await bitcoinApi.$getBlockHash(height);
     const block = await bitcoinApi.$getBlock(blockHash);
     const transactions = await this.$getTransactionsExtended(blockHash, block.height, true);
-    const blockExtended = this.getBlockExtended(block, transactions);
-    const coinbase: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(transactions[0].txid, true);
-
-    let pool: PoolTag;
-    if (blockExtended?.extras?.coinbaseTx != undefined) {
-      pool = await this.$findBlockMiner(blockExtended.extras.coinbaseTx);
-    } else {
-      pool = await poolsRepository.$getUnknownPool();
-    }
-
-    if (blockExtended?.extras != undefined) {
-      blockExtended.extras.pool = pool;
-      blockExtended.extras.coinbaseHex = coinbase.hex;
-    }
+    const blockExtended = await this.$getBlockExtended(block, transactions);
 
     await blocksRepository.$saveBlockInDatabase(blockExtended);
 
@@ -320,24 +322,7 @@ class Blocks {
       const block = await bitcoinApi.$getBlock(blockHash);
       const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
       const transactions = await this.$getTransactionsExtended(blockHash, block.height, false);
-      const blockExtended: BlockExtended = this.getBlockExtended(block, transactions);
-      const coinbase: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(transactions[0].txid, true);
-
-      if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === true) {
-        let pool: PoolTag;
-        if (blockExtended?.extras?.coinbaseTx) {
-          pool = await this.$findBlockMiner(blockExtended.extras.coinbaseTx);
-        } else {
-          pool = await poolsRepository.$getUnknownPool();
-        }
-
-        if (blockExtended?.extras != undefined) {
-          blockExtended.extras.pool = pool;
-          blockExtended.extras.coinbaseHex = coinbase.hex;
-        }
-    
-        await blocksRepository.$saveBlockInDatabase(blockExtended);
-      }
+      const blockExtended: BlockExtended = await this.$getBlockExtended(block, transactions);
 
       if (block.height % 2016 === 0) {
         this.previousDifficultyRetarget = (block.difficulty - this.currentDifficulty) / this.currentDifficulty * 100;

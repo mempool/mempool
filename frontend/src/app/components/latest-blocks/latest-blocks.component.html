@@ -35,11 +35,13 @@
       </tr>
       <ng-template [ngIf]="isLoading">
         <tr *ngFor="let item of [1,2,3,4,5,6,7,8,9,10]">
-          <td><span class="skeleton-loader"></span></td>
-          <td class="d-none d-md-block"><span class="skeleton-loader"></span></td>
-          <td><span class="skeleton-loader"></span></td>
-          <td class="d-none d-lg-block"><span class="skeleton-loader"></span></td>
-          <td><span class="skeleton-loader"></span></td>
+          <td><span class="skeleton-loader"></span></td> <!-- height -->
+          <td class="d-none d-md-block"><span class="skeleton-loader"></span></td> <!-- timestamp -->
+          <td><span class="skeleton-loader"></span></td> <!-- mined -->
+          <td class="d-none d-md-block"><span class="skeleton-loader"></span></td> <!-- pool -->
+          <td class="d-none d-lg-block"><span class="skeleton-loader"></span></td> <!-- reward -->
+          <td class="d-none d-lg-block"><span class="skeleton-loader"></span></td> <!-- tx count -->
+          <td><span class="skeleton-loader"></span></td> <!-- size -->
         </tr>
       <ng-container *ngIf="(blocksLoadingStatus$ | async) as blocksLoadingStatus">
       <tr>
