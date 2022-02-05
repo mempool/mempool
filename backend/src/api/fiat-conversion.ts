@@ -54,11 +54,11 @@ class FiatConversion {
 
         const agent = new SocksProxyAgent(socksOptions);
         fiatConversionUrl = config.PRICE_DATA_SERVER.TOR_URL;
-        logger.info('Querying currency rates service...');
+        logger.debug('Querying currency rates service...');
         response = await axios.get(fiatConversionUrl, { httpAgent: agent, headers: headers, timeout: 30000 });
       } else {
         fiatConversionUrl = config.PRICE_DATA_SERVER.CLEARNET_URL;
-        logger.info('Querying currency rates service...');
+        logger.debug('Querying currency rates service...');
         response = await axios.get(fiatConversionUrl, { headers: headers, timeout: 10000 });
       }
 
@@ -68,7 +68,7 @@ class FiatConversion {
         'USD': usd.price,
       };
 
-      logger.info(`USD Conversion Rate: ${usd.price}`);
+      logger.debug(`USD Conversion Rate: ${usd.price}`);
 
       if (this.ratesChangedCallback) {
         this.ratesChangedCallback(this.conversionRates);
