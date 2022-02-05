@@ -90,7 +90,7 @@ const defaults: IConfig = {
     'INITIAL_BLOCKS_AMOUNT': 8,
     'MEMPOOL_BLOCKS_AMOUNT': 8,
     'INDEXING_BLOCKS_AMOUNT': 1100, // 0 = disable indexing, -1 = index all blocks
-    'PRICE_FEED_UPDATE_INTERVAL': 3600,
+    'PRICE_FEED_UPDATE_INTERVAL': 600,
     'USE_SECOND_NODE_FOR_MINFEE': false,
     'EXTERNAL_ASSETS': [
       'https://mempool.space/resources/pools.json'
