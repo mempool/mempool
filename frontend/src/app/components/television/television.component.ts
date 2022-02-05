@@ -31,8 +31,8 @@ export class TelevisionComponent implements OnInit {
 
     this.route.fragment
       .pipe(
-        switchMap(() => {
-          switch (this.route.snapshot.fragment) {
+        switchMap((fragment) => {
+          switch (fragment) {
             case '2h': return this.apiService.list2HStatistics$();
             case '24h': return this.apiService.list24HStatistics$();
             case '1w': return this.apiService.list1WStatistics$();
