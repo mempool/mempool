@@ -267,7 +267,7 @@ docker-compose overrides:
 
 JSON:
 ```
-  "PRICENODE": {
+  "PRICE_DATA_SERVER": {
     "TOR_URL": "http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices",
     "CLEARNET_URL": "https://price.bisq.wiz.biz/getAllMarketPrices"
   }
@@ -275,8 +275,8 @@ JSON:
 
 docker-compose overrides:
 ```
-      PRICENODE_TOR_URL: ""
-      PRICENODE_CLEARNET_URL: ""
+      PRICE_DATA_SERVER_TOR_URL: ""
+      PRICE_DATA_SERVER_CLEARNET_URL: ""
 ```
 
 # Manual Installation
