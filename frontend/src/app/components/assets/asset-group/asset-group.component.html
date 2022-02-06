@@ -16,7 +16,7 @@
       <div class="card">
         <img class="assetIcon" [src]="'https://liquid.network/api/v1/asset/' + asset.asset_id + '/icon'">
         <div class="title">
-          <a [routerLink]="['/assets/asset/', group.asset_id]">{{ asset.name }}</a>
+          <a [routerLink]="['/assets/asset/', asset.asset_id]">{{ asset.name }}</a>
         </div>
         <div class="ticker">{{ asset.ticker }}</div>
       </div>

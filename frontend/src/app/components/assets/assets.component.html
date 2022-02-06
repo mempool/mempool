@@ -18,7 +18,7 @@
 
   <br>
 
-  <ngb-pagination [collectionSize]="assets.length" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="5" [boundaryLinks]="true"></ngb-pagination>
+  <ngb-pagination [collectionSize]="assets.length" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="ellipses"></ngb-pagination>
 
 </ng-container>
 
