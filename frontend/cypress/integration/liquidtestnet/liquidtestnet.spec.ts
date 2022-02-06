@@ -83,7 +83,7 @@ describe('Liquid Testnet', () => {
         cy.visit(`${basePath}/assets`);
         cy.waitForSkeletonGone();
         cy.get('.container-xl input').click().type('Liquid Bitcoin').then(() => {
-          cy.get('table tr').should('have.length', 1);
+          cy.get('ngb-typeahead-window').should('have.length', 1);
         });
       });
 
@@ -91,7 +91,7 @@ describe('Liquid Testnet', () => {
         cy.visit(`${basePath}/assets`);
         cy.waitForSkeletonGone();
         cy.get('.container-xl input').click().type('Liquid CAD').then(() => {
-          cy.get('table tr td:nth-of-type(1) a').click();
+          cy.get('ngb-typeahead-window:nth-of-type(1) button').click();
         });
       });
     });
@@ -162,7 +162,7 @@ describe('Liquid Testnet', () => {
       });
 
       it('shows asset peg in/out and burn transactions', () => {
-        cy.visit(`${basePath}/asset/ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`);
+        cy.visit(`${basePath}/assets/asset/ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`);
         cy.waitForSkeletonGone();
         cy.get('#table-tx-vout tr').not('.assetBox');
         cy.get('#table-tx-vin tr').not('.assetBox');

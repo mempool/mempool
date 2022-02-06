@@ -7,7 +7,7 @@
           <img class="assetIcon" [src]="'https://liquid.network/api/v1/asset/' + group.assets[0] + '/icon'">
         </a>
         <div class="title"><a [routerLink]="['/assets/asset-group', group.id]">{{ group.name }}</a></div>
-        <div class="sub-title">Group of {{ group.assets.length | number }} assets</div>
+        <div class="sub-title" i18n>Group of {{ group.assets.length | number }} assets</div>
       </ng-template>
       <ng-template #singleAsset>
         <a [routerLink]="['/assets/asset/', group.asset]">
