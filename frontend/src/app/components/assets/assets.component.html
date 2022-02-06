@@ -3,15 +3,15 @@
     <thead>
       <th class="td-name" i18n="Asset name header">Name</th>
       <th i18n="Asset ticker header">Ticker</th>
-      <th class="d-none d-md-block" i18n="Asset Issuer Domain header">Issuer domain</th>
-      <th i18n="Asset ID header">Asset ID</th>
+      <th class="d-none d-md-table-cell" i18n="Asset Issuer Domain header">Issuer domain</th>
+      <th class="d-none d-lg-table-cell" i18n="Asset ID header">Asset ID</th>
     </thead>
     <tbody>
       <tr *ngFor="let asset of filteredAssets; trackBy: trackByAsset">
         <td class="td-name"><a [routerLink]="['/assets/asset/' | relativeUrl, asset.asset_id]">{{ asset.name }}</a></td>
         <td>{{ asset.ticker }}</td>
-        <td class="d-none d-md-block">{{ asset.entity && asset.entity.domain }}</td>
-        <td><a [routerLink]="['/assets/asset/' | relativeUrl, asset.asset_id]">{{ asset.asset_id | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="asset.asset_id"></app-clipboard></td>
+        <td class="d-none d-md-table-cell">{{ asset.entity && asset.entity.domain }}</td>
+        <td class="d-none d-lg-table-cell"><a [routerLink]="['/assets/asset/' | relativeUrl, asset.asset_id]">{{ asset.asset_id | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="asset.asset_id"></app-clipboard></td>
       </tr>
     </tbody>
   </table>
@@ -28,15 +28,15 @@
     <thead>
       <th i18n="Asset name header">Name</th>
       <th i18n="Asset ticker header">Ticker</th>
-      <th class="d-none d-md-block" i18n="Asset Issuer Domain header">Issuer domain</th>
-      <th i18n="Asset ID header">Asset ID</th>
+      <th class="d-none d-md-table-cell" i18n="Asset Issuer Domain header">Issuer domain</th>
+      <th class="d-none d-lg-table-cell" i18n="Asset ID header">Asset ID</th>
     </thead>
     <tbody>
       <tr *ngFor="let dummy of [0,0,0,0,0,0,0,0,0,0]">
         <td><span class="skeleton-loader"></span></td>
         <td><span class="skeleton-loader"></span></td>
-        <td class="d-none d-md-block"><span class="skeleton-loader"></span></td>
-        <td><span class="skeleton-loader"></span></td>
+        <td class="d-none d-md-table-cell"><span class="skeleton-loader"></span></td>
+        <td class="d-none d-lg-table-cell"><span class="skeleton-loader"></span></td>
       </tr>
     </tbody>
   </table>
