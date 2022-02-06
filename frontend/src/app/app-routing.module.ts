@@ -456,12 +456,30 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
             component: AddressComponent
           },
           {
-            path: 'asset/:id',
-            component: AssetComponent
-          },
-          {
             path: 'assets',
             component: AssetsNavComponent,
+            children: [
+              {
+                path: 'featured',
+                component: AssetsFeaturedComponent,
+              },
+              {
+                path: 'all',
+                component: AssetsComponent,
+              },
+              {
+                path: 'asset/:id',
+                component: AssetComponent
+              },
+              {
+                path: 'asset-group/:id',
+                component: AssetGroupComponent
+              },
+              {
+                path: '**',
+                redirectTo: 'featured'
+              }
+            ]
           },
           {
             path: 'docs/api/:type',
