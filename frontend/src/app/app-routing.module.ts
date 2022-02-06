@@ -363,7 +363,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
             component: AssetComponent
           },
           {
-            path: 'asset-group/:id',
+            path: 'group/:id',
             component: AssetGroupComponent
           },
           {
@@ -472,7 +472,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
                 component: AssetComponent
               },
               {
-                path: 'asset-group/:id',
+                path: 'group/:id',
                 component: AssetGroupComponent
               },
               {

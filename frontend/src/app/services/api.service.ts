@@ -122,7 +122,7 @@ export class ApiService {
   }
 
   getAssetGroup$(id: string): Observable<any> {
-    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/asset-group/' + id);
+    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/assets/group/' + id);
   }
 
   postTransaction$(hexPayload: string): Observable<any> {

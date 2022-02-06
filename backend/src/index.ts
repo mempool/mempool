@@ -321,7 +321,7 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'assets/icons', routes.getAllLiquidIcon)
         .get(config.MEMPOOL.API_URL_PREFIX + 'assets/featured', routes.$getAllFeaturedLiquidAssets)
         .get(config.MEMPOOL.API_URL_PREFIX + 'asset/:assetId/icon', routes.getLiquidIcon)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'asset-group/:id', routes.$getAssetGroup)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'assets/group/:id', routes.$getAssetGroup)
       ;
     }
 

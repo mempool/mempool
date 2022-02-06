@@ -868,7 +868,7 @@ class Routes {
 
   public async $getAssetGroup(req: Request, res: Response) {
     try {
-      const response = await axios.get('https://mempool.space/api/v1/asset-group/' + parseInt(req.params.id, 10),
+      const response = await axios.get('https://mempool.space/api/v1/assets/group/' + parseInt(req.params.id, 10),
         { responseType: 'stream', timeout: 10000 });
       response.data.pipe(res);
     } catch (e) {
