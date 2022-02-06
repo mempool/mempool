@@ -115,10 +115,9 @@ describe('Liquid', () => {
 
     describe('assets', () => {
       it('shows the assets screen', () => {
-        cy.visit(`${basePath}`);
-        cy.get('#btn-assets');
+        cy.visit(`${basePath}/assets`);
         cy.waitForSkeletonGone();
-        cy.get('table tr').should('have.length.at.least', 5);
+        cy.get('.featuredBox .card').should('have.length.at.least', 5);
       });
 
       it('allows searching assets', () => {
