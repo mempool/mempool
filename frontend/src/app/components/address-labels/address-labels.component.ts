@@ -73,8 +73,11 @@ export class AddressLabelsComponent implements OnInit {
   }
 
   detectMultisig(script: string) {
+    if (!script) {
+      return;
+    }
     const ops = script.split(' ');
-    if (ops.pop() != 'OP_CHECKMULTISIG') {
+    if (ops.length < 3 || ops.pop() != 'OP_CHECKMULTISIG') {
       return;
     }
     const opN = ops.pop();
@@ -82,12 +85,15 @@ export class AddressLabelsComponent implements OnInit {
       return;
     }
     const n = parseInt(opN.match(/[0-9]+/)[0]);
+    if (ops.length < n * 2 + 1) {
+      return;
+    }
     // pop n public keys
     for (var i = 0; i < n; i++) {
-      if (ops.pop().length != 66) {
+      if (!/^0((2|3)\w{64}|4\w{128})$/.test(ops.pop())) {
         return;
       }
-      if (ops.pop() != 'OP_PUSHBYTES_33') {
+      if (!/^OP_PUSHBYTES_(33|65)$/.test(ops.pop())) {
         return;
       }
     }
