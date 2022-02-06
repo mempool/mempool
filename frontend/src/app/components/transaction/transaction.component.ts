@@ -9,14 +9,14 @@ import {
   delay,
   map
 } from 'rxjs/operators';
-import { Transaction, Block } from '../../interfaces/electrs.interface';
+import { Transaction } from '../../interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject, timer, combineLatest, from } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from 'src/app/services/audio.service';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
-import { CpfpInfo } from 'src/app/interfaces/node-api.interface';
+import { BlockExtended, CpfpInfo } from 'src/app/interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
 
 @Component({
@@ -33,7 +33,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
   error: any = undefined;
   errorUnblinded: any = undefined;
   waitingForTransaction = false;
-  latestBlock: Block;
+  latestBlock: BlockExtended;
   transactionTime = -1;
   subscription: Subscription;
   fetchCpfpSubscription: Subscription;

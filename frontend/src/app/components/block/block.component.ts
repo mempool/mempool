@@ -3,12 +3,13 @@ import { Location } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { switchMap, tap, debounceTime, catchError, map } from 'rxjs/operators';
-import { Block, Transaction, Vout } from '../../interfaces/electrs.interface';
+import { Transaction, Vout } from '../../interfaces/electrs.interface';
 import { Observable, of, Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
+import { BlockExtended } from 'src/app/interfaces/node-api.interface';
 
 @Component({
   selector: 'app-block',
@@ -17,13 +18,13 @@ import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.
 })
 export class BlockComponent implements OnInit, OnDestroy {
   network = '';
-  block: Block;
+  block: BlockExtended;
   blockHeight: number;
   nextBlockHeight: number;
   blockHash: string;
   isLoadingBlock = true;
-  latestBlock: Block;
-  latestBlocks: Block[] = [];
+  latestBlock: BlockExtended;
+  latestBlocks: BlockExtended[] = [];
   transactions: Transaction[];
   isLoadingTransactions = true;
   error: any;
@@ -76,7 +77,9 @@ export class BlockComponent implements OnInit, OnDestroy {
 
         if (block.id === this.blockHash) {
           this.block = block;
-          this.fees = block.reward / 100000000 - this.blockSubsidy;
+          if (block?.extras?.reward != undefined) {
+            this.fees = block.extras.reward / 100000000 - this.blockSubsidy;
+          }
         }
       });
 
@@ -108,7 +111,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         } else {
           this.isLoadingBlock = true;
 
-          let blockInCache: Block;
+          let blockInCache: BlockExtended;
           if (isBlockHeight) {
             blockInCache = this.latestBlocks.find((block) => block.height === parseInt(blockHash, 10));
             if (blockInCache) {
@@ -134,7 +137,7 @@ export class BlockComponent implements OnInit, OnDestroy {
           return this.electrsApiService.getBlock$(blockHash);
         }
       }),
-      tap((block: Block) => {
+      tap((block: BlockExtended) => {
         this.block = block;
         this.blockHeight = block.height;
         this.nextBlockHeight = block.height + 1;
@@ -142,12 +145,10 @@ export class BlockComponent implements OnInit, OnDestroy {
 
         this.seoService.setTitle($localize`:@@block.component.browser-title:Block ${block.height}:BLOCK_HEIGHT:: ${block.id}:BLOCK_ID:`);
         this.isLoadingBlock = false;
-        if (block.coinbaseTx) {
-          this.coinbaseTx = block.coinbaseTx;
-        }
+        this.coinbaseTx = block?.extras?.coinbaseTx;
         this.setBlockSubsidy();
-        if (block.reward !== undefined) {
-          this.fees = block.reward / 100000000 - this.blockSubsidy;
+        if (block?.extras?.reward !== undefined) {
+          this.fees = block.extras.reward / 100000000 - this.blockSubsidy;
         }
         this.stateService.markBlock$.next({ blockHeight: this.blockHeight });
         this.isLoadingTransactions = true;
