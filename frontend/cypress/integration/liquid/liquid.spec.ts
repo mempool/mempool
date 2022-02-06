@@ -125,7 +125,7 @@ describe('Liquid', () => {
         cy.visit(`${basePath}/assets`);
         cy.waitForSkeletonGone();
         cy.get('.container-xl input').click().type('Liquid Bitcoin').then(() => {
-          cy.get('table tr').should('have.length', 1);
+          cy.get('ngb-typeahead-window').should('have.length', 1);
         });
       });
 
@@ -133,7 +133,7 @@ describe('Liquid', () => {
         cy.visit(`${basePath}/assets`);
         cy.waitForSkeletonGone();
         cy.get('.container-xl input').click().type('Liquid AUD').then(() => {
-          cy.get('table tr td:nth-of-type(1) a').click();
+          cy.get('ngb-typeahead-window:nth-of-type(1) button').click();
         });
       });
     });
@@ -197,7 +197,7 @@ describe('Liquid', () => {
       });
 
       it('shows asset peg in/out and burn transactions', () => {
-        cy.visit(`${basePath}/asset/6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`);
+        cy.visit(`${basePath}/assets/asset/6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`);
         cy.waitForSkeletonGone();
         cy.get('#table-tx-vout tr').not('.assetBox');
         cy.get('#table-tx-vin tr').not('.assetBox');
