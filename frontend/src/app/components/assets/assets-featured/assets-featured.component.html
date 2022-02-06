@@ -3,12 +3,16 @@
   <div *ngFor="let group of featured">
     <div class="card">
       <ng-template [ngIf]="group.assets" [ngIfElse]="singleAsset">
-        <img class="assetIcon" [src]="'https://liquid.network/api/v1/asset/' + group.assets[0] + '/icon'">
+        <a [routerLink]="['/assets/asset-group', group.id]">
+          <img class="assetIcon" [src]="'https://liquid.network/api/v1/asset/' + group.assets[0] + '/icon'">
+        </a>
         <div class="title"><a [routerLink]="['/assets/asset-group', group.id]">{{ group.name }}</a></div>
         <div class="sub-title">Group of {{ group.assets.length | number }} assets</div>
       </ng-template>
       <ng-template #singleAsset>
-        <img class="assetIcon" [src]="'https://liquid.network/api/v1/asset/' + group.asset + '/icon'">
+        <a [routerLink]="['/assets/asset/', group.asset]">
+          <img class="assetIcon" [src]="'https://liquid.network/api/v1/asset/' + group.asset + '/icon'">
+        </a>
         <div class="title">
           <a [routerLink]="['/assets/asset/', group.asset]">{{ group.name }}</a>
         </div>

@@ -17,6 +17,8 @@ import { StateService } from 'src/app/services/state.service';
 })
 export class AssetsComponent implements OnInit {
   nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
+  paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 4 : 6;
+  ellipses = window.matchMedia('(max-width: 670px)').matches ? false : true;
 
   assets: AssetExtended[];
   assetsCache: AssetExtended[];
