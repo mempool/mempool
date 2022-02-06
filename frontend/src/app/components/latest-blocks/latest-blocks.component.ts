@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { ElectrsApiService } from '../../services/electrs-api.service';
 import { StateService } from '../../services/state.service';
 import { Block } from '../../interfaces/electrs.interface';
 import { Subscription, Observable, merge, of } from 'rxjs';
 import { SeoService } from '../../services/seo.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { map } from 'rxjs/operators';
+import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-latest-blocks',
@@ -28,7 +28,7 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
   heightOfBlocksTableChunk = 470;
 
   constructor(
-    private electrsApiService: ElectrsApiService,
+    private apiService: ApiService,
     public stateService: StateService,
     private seoService: SeoService,
     private websocketService: WebsocketService,
@@ -82,7 +82,7 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
   }
 
   loadInitialBlocks() {
-    this.electrsApiService.listBlocks$()
+    this.apiService.listBlocks$()
       .subscribe((blocks) => {
         this.blocks = blocks;
         this.isLoading = false;
@@ -110,7 +110,7 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
       return;
     }
     this.isLoading = true;
-    this.electrsApiService.listBlocks$(this.blocks[this.blocks.length - 1].height - 1)
+    this.apiService.listBlocks$(this.blocks[this.blocks.length - 1].height - 1)
       .subscribe((blocks) => {
         this.blocks = this.blocks.concat(blocks);
         this.isLoading = false;

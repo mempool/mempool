@@ -321,7 +321,10 @@ class Blocks {
       const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
       const transactions = await this.$getTransactionsExtended(blockHash, block.height, false);
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, transactions);
-      await blocksRepository.$saveBlockInDatabase(blockExtended);
+
+      if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) { // Bitcoin only
+        await blocksRepository.$saveBlockInDatabase(blockExtended);
+      }
 
       if (block.height % 2016 === 0) {
         this.previousDifficultyRetarget = (block.difficulty - this.currentDifficulty) / this.currentDifficulty * 100;

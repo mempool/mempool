@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { CpfpInfo, OptimizedMempoolStats, DifficultyAdjustment, AddressInformation, LiquidPegs, ITranslators, PoolsStats } from '../interfaces/node-api.interface';
+import { CpfpInfo, OptimizedMempoolStats, DifficultyAdjustment, AddressInformation, LiquidPegs, ITranslators, PoolsStats, BlockExtended } from '../interfaces/node-api.interface';
 import { Observable } from 'rxjs';
 import { StateService } from './state.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
@@ -123,5 +123,9 @@ export class ApiService {
 
   listPools$(interval: string | null) : Observable<PoolsStats> {
     return this.httpClient.get<PoolsStats>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pools/${interval}`);
+  }
+
+  listBlocks$(height?: number): Observable<BlockExtended[]> {
+    return this.httpClient.get<BlockExtended[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/blocks/' + (height || ''));
   }
 }
