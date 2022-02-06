@@ -13,7 +13,7 @@
     "INITIAL_BLOCKS_AMOUNT": 8,
     "MEMPOOL_BLOCKS_AMOUNT": 8,
     "INDEXING_BLOCKS_AMOUNT": 1100,
-    "PRICE_FEED_UPDATE_INTERVAL": 3600,
+    "PRICE_FEED_UPDATE_INTERVAL": 600,
     "USE_SECOND_NODE_FOR_MINFEE": false,
     "EXTERNAL_ASSETS": [
       "https://mempool.space/resources/pools.json"
@@ -61,5 +61,16 @@
   "BISQ": {
     "ENABLED": false,
     "DATA_PATH": "/bisq/statsnode-data/btc_mainnet/db"
+  },
+  "SOCKS5PROXY": {
+    "ENABLED": false,
+    "HOST": "127.0.0.1",
+    "PORT": 9050,
+    "USERNAME": "",
+    "PASSWORD": ""
+  },
+  "PRICE_DATA_SERVER": {
+    "TOR_URL": "http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices",
+    "CLEARNET_URL": "https://price.bisq.wiz.biz/getAllMarketPrices"
   }
 }

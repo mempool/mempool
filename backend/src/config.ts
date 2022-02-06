@@ -51,7 +51,7 @@ interface IConfig {
     ENABLED: boolean;
     HOST: string;
     PORT: number;
-    MIN_PRIORITY: 'emerg' | 'alert' | 'crit' | 'err' |'warn' | 'notice' | 'info' | 'debug';
+    MIN_PRIORITY: 'emerg' | 'alert' | 'crit' | 'err' | 'warn' | 'notice' | 'info' | 'debug';
     FACILITY: string;
   };
   STATISTICS: {
@@ -61,6 +61,17 @@ interface IConfig {
   BISQ: {
     ENABLED: boolean;
     DATA_PATH: string;
+  };
+  SOCKS5PROXY: {
+    ENABLED: boolean;
+    HOST: string;
+    PORT: number;
+    USERNAME: string;
+    PASSWORD: string;
+  };
+  PRICE_DATA_SERVER: {
+    TOR_URL: string;
+    CLEARNET_URL: string;
   };
 }
 
@@ -79,7 +90,7 @@ const defaults: IConfig = {
     'INITIAL_BLOCKS_AMOUNT': 8,
     'MEMPOOL_BLOCKS_AMOUNT': 8,
     'INDEXING_BLOCKS_AMOUNT': 1100, // 0 = disable indexing, -1 = index all blocks
-    'PRICE_FEED_UPDATE_INTERVAL': 3600,
+    'PRICE_FEED_UPDATE_INTERVAL': 600,
     'USE_SECOND_NODE_FOR_MINFEE': false,
     'EXTERNAL_ASSETS': [
       'https://mempool.space/resources/pools.json'
@@ -128,6 +139,17 @@ const defaults: IConfig = {
     'ENABLED': false,
     'DATA_PATH': '/bisq/statsnode-data/btc_mainnet/db'
   },
+  'SOCKS5PROXY': {
+    'ENABLED': false,
+    'HOST': '127.0.0.1',
+    'PORT': 9050,
+    'USERNAME': '',
+    'PASSWORD': ''
+  },
+  "PRICE_DATA_SERVER": {
+    'TOR_URL': 'http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices',
+    'CLEARNET_URL': 'https://price.bisq.wiz.biz/getAllMarketPrices'
+  }
 };
 
 class Config implements IConfig {
@@ -140,6 +162,8 @@ class Config implements IConfig {
   SYSLOG: IConfig['SYSLOG'];
   STATISTICS: IConfig['STATISTICS'];
   BISQ: IConfig['BISQ'];
+  SOCKS5PROXY: IConfig['SOCKS5PROXY'];
+  PRICE_DATA_SERVER: IConfig['PRICE_DATA_SERVER'];
 
   constructor() {
     const configs = this.merge(configFile, defaults);
@@ -152,6 +176,8 @@ class Config implements IConfig {
     this.SYSLOG = configs.SYSLOG;
     this.STATISTICS = configs.STATISTICS;
     this.BISQ = configs.BISQ;
+    this.SOCKS5PROXY = configs.SOCKS5PROXY;
+    this.PRICE_DATA_SERVER = configs.PRICE_DATA_SERVER;
   }
 
   merge = (...objects: object[]): IConfig => {
