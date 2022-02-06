@@ -32,9 +32,8 @@ export class AssetGroupComponent implements OnInit {
           const items = [];
           // @ts-ignore
           for (const item of group.assets) {
-            items.push(assets[item]);
+            items.push(assets.objects[item]);
           }
-          console.log(group);
           return {
             group: group,
             assets: items

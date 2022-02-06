@@ -39,6 +39,7 @@ export class AssetsNavComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.seoService.setTitle($localize`:@@ee8f8008bae6ce3a49840c4e1d39b4af23d4c263:Assets`);
     this.typeaheadSearchFn = this.typeaheadSearch;
 
     this.searchForm = this.formBuilder.group({
@@ -62,13 +63,12 @@ export class AssetsNavComponent implements OnInit {
           return this.assetsService.getAssetsJson$.pipe(
             map((assets) => {
               if (searchText.length ) {
-                const filteredAssets = assets.filter((asset) => asset.name.toLowerCase().indexOf(searchText.toLowerCase()) > -1
+                const filteredAssets = assets.array.filter((asset) => asset.name.toLowerCase().indexOf(searchText.toLowerCase()) > -1
                   || (asset.ticker || '').toLowerCase().indexOf(searchText.toLowerCase()) > -1
                   || (asset.entity && asset.entity.domain || '').toLowerCase().indexOf(searchText.toLowerCase()) > -1);
-                assets = filteredAssets;
                 return filteredAssets.slice(0, this.itemsPerPage);
               } else {
-                return assets.slice(0, this.itemsPerPage);
+                return assets.array.slice(0, this.itemsPerPage);
               }
             })
           )

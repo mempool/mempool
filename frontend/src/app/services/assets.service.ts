@@ -12,7 +12,7 @@ import { AssetExtended } from '../interfaces/electrs.interface';
 export class AssetsService {
   nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
 
-  getAssetsJson$: Observable<AssetExtended[]>;
+  getAssetsJson$: Observable<{ array: AssetExtended[]; objects: any}>;
   getAssetsMinimalJson$: Observable<any>;
   getMiningPools$: Observable<any>;
 
@@ -47,7 +47,10 @@ export class AssetsService {
             });
           }
   
-          return assets.sort((a: any, b: any) => a.name.localeCompare(b.name));
+          return {
+            objects: rawAssets,
+            array: assets.sort((a: any, b: any) => a.name.localeCompare(b.name)),
+          };
         }),
         shareReplay(1),
       );
