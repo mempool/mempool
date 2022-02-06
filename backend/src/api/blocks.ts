@@ -322,7 +322,7 @@ class Blocks {
       const transactions = await this.$getTransactionsExtended(blockHash, block.height, false);
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, transactions);
 
-      if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) { // Bitcoin only
+      if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === true) { // Bitcoin only
         await blocksRepository.$saveBlockInDatabase(blockExtended);
       }
 
