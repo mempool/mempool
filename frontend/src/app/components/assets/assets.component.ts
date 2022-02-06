@@ -49,7 +49,7 @@ export class AssetsComponent implements OnInit {
       .pipe(
         take(1),
         switchMap(([assets, qp]) => {
-          this.assets = assets;
+          this.assets = assets.array;
 
           return this.route.queryParams
             .pipe(

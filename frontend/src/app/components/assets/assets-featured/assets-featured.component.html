@@ -1,6 +1,6 @@
 <div *ngIf="featuredAssets$ | async as featured; else loading" class="featuredBox">
     
-  <div *ngFor="let group of featured.featured">
+  <div *ngFor="let group of featured">
     <div class="card">
       <ng-template [ngIf]="group.assets" [ngIfElse]="singleAsset">
         <img class="assetIcon" [src]="'https://liquid.network/api/v1/asset/' + group.assets[0] + '/icon'">

@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
-import { AssetsService } from 'src/app/services/assets.service';
 
 @Component({
   selector: 'app-assets-featured',
@@ -14,21 +12,10 @@ export class AssetsFeaturedComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private assetsService: AssetsService,
   ) { }
 
   ngOnInit(): void {
-    this.featuredAssets$ = combineLatest([
-      this.assetsService.getAssetsJson$,
-      this.apiService.listFeaturedAssets$(),
-    ]).pipe(
-      map(([assetsJson, featured]) => {
-        return {
-          assetsJson: assetsJson,
-          featured: featured,
-        };
-      })
-    );
+    this.featuredAssets$ = this.apiService.listFeaturedAssets$();
   }
 
 }
