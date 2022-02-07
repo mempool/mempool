@@ -82,17 +82,26 @@ export interface MiningStats {
   pools: SinglePoolStats[],
 }
 
+export interface PoolTag {
+  id: number | null, // mysql row id
+  name: string,
+  link: string,
+  regexes: string, // JSON array
+  addresses: string, // JSON array
+}
+
 export interface BlockExtension {
+  pool?: PoolTag;
+  coinbaseHex?: string;
+}
+
+export interface BlockExtended extends Block {
   medianFee?: number;
   feeRange?: number[];
   reward?: number;
   coinbaseTx?: Transaction;
   matchRate?: number;
-
   stage?: number; // Frontend only
-}
-
-export interface BlockExtended extends Block {
   extras?: BlockExtension;
 }
 

@@ -77,8 +77,8 @@ export class BlockComponent implements OnInit, OnDestroy {
 
         if (block.id === this.blockHash) {
           this.block = block;
-          if (block?.extras?.reward != undefined) {
-            this.fees = block.extras.reward / 100000000 - this.blockSubsidy;
+          if (block?.reward != undefined) {
+            this.fees = block.reward / 100000000 - this.blockSubsidy;
           }
         }
       });
@@ -145,10 +145,10 @@ export class BlockComponent implements OnInit, OnDestroy {
 
         this.seoService.setTitle($localize`:@@block.component.browser-title:Block ${block.height}:BLOCK_HEIGHT:: ${block.id}:BLOCK_ID:`);
         this.isLoadingBlock = false;
-        this.coinbaseTx = block?.extras?.coinbaseTx;
+        this.coinbaseTx = block?.coinbaseTx;
         this.setBlockSubsidy();
-        if (block?.extras?.reward !== undefined) {
-          this.fees = block.extras.reward / 100000000 - this.blockSubsidy;
+        if (block?.reward !== undefined) {
+          this.fees = block.reward / 100000000 - this.blockSubsidy;
         }
         this.stateService.markBlock$.next({ blockHeight: this.blockHeight });
         this.isLoadingTransactions = true;

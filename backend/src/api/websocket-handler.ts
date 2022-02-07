@@ -380,9 +380,7 @@ class WebsocketHandler {
       mBlocks = mempoolBlocks.getMempoolBlocks();
     }
 
-    if (block.extras) {
-      block.extras.matchRate = matchRate;
-    }
+    block.matchRate = matchRate;
 
     this.wss.clients.forEach((client) => {
       if (client.readyState !== WebSocket.OPEN) {

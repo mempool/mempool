@@ -78,16 +78,16 @@ export interface TransactionStripped {
 }
 
 export interface BlockExtension {
-  medianFee?: number;
-  feeRange?: number[];
-  reward?: number;
-  coinbaseTx?: TransactionMinerInfo;
-  matchRate?: number;
   pool?: PoolTag;
   coinbaseHex?: string;
 }
 
 export interface BlockExtended extends IEsploraApi.Block {
+  medianFee?: number;
+  feeRange?: number[];
+  reward?: number;
+  coinbaseTx?: TransactionMinerInfo;
+  matchRate?: number;
   extras?: BlockExtension;
 }
 

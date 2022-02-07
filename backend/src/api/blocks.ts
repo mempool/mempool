@@ -102,24 +102,24 @@ class Blocks {
 
     const blockExtended: BlockExtended = Object.assign({}, block);
 
-    blockExtended.extras = {
-      reward: transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0),
-      coinbaseTx: transactionUtils.stripCoinbaseTransaction(transactions[0]),
-    };
+    blockExtended.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
+    blockExtended.coinbaseTx =  transactionUtils.stripCoinbaseTransaction(transactions[0]);
 
     const transactionsTmp = [...transactions];
     transactionsTmp.shift();
     transactionsTmp.sort((a, b) => b.effectiveFeePerVsize - a.effectiveFeePerVsize);
 
-    blockExtended.extras.medianFee = transactionsTmp.length > 0 ?
+    blockExtended.medianFee = transactionsTmp.length > 0 ?
       Common.median(transactionsTmp.map((tx) => tx.effectiveFeePerVsize)) : 0;
-    blockExtended.extras.feeRange = transactionsTmp.length > 0 ?
+    blockExtended.feeRange = transactionsTmp.length > 0 ?
       Common.getFeesInRange(transactionsTmp, 8) : [0, 0];
 
     if (indexingAvailable) { 
+      blockExtended.extras = {};
+
       let pool: PoolTag;
-      if (blockExtended.extras?.coinbaseTx != undefined) {
-        pool = await this.$findBlockMiner(blockExtended.extras.coinbaseTx);
+      if (blockExtended?.coinbaseTx != undefined) {
+        pool = await this.$findBlockMiner(blockExtended.coinbaseTx);
       } else {
         pool = await poolsRepository.$getUnknownPool();
       }
@@ -403,14 +403,14 @@ class Blocks {
       size: block.size,
       weight: block.weight,
       previousblockhash: block.previousblockhash,
+      medianFee: block?.medianFee,
+      feeRange: block.feeRange ?? [], // TODO
+      reward: block?.reward,
     }
 
     if (addExtras) {
       extendedBlock.extras = {
-        medianFee: block?.extras?.medianFee ?? undefined,
-        feeRange: [], // TODO
-        reward: block?.extras?.reward ?? block.reward ?? undefined,
-        coinbaseHex: block?.extras?.coinbaseHex ?? block?.extras?.coinbase_raw ?? undefined,
+        coinbaseHex: block?.extras?.coinbaseHex ?? block?.coinbase_raw,
         pool: block?.extras?.pool ?? {
           id: block.pool_id ?? undefined,
           name: block.pool_name ?? undefined,

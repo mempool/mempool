@@ -57,8 +57,8 @@ class BlocksRepository {
         block?.extras?.pool?.id,
         0,
         '[]',
-        block.extras ? block.extras.medianFee : 0,
-        block.extras ? block.extras.reward : 0,
+        block.medianFee,
+        block.reward,
       ];
 
       await connection.query(query, params);
