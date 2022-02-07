@@ -412,11 +412,11 @@ class Blocks {
       extendedBlock.extras = {
         coinbaseHex: block?.extras?.coinbaseHex ?? block?.coinbase_raw,
         pool: block?.extras?.pool ?? {
-          id: block.pool_id ?? undefined,
-          name: block.pool_name ?? undefined,
-          link: block.pool_link ?? undefined,
-          regexes: block.pool_regexes ?? undefined,
-          addresses: block.pool_addresses ?? undefined,
+          id: block?.pool_id,
+          name: block?.pool_name,
+          link: block?.pool_link,
+          regexes: block?.pool_regexes,
+          addresses: block?.pool_addresses,
         },
       };
     }
