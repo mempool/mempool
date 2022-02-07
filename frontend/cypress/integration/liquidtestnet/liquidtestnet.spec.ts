@@ -73,12 +73,6 @@ describe('Liquid Testnet', () => {
     });
 
     describe('assets', () => {
-      it('shows the assets screen', () => {
-        cy.visit(`${basePath}/assets`);
-        cy.waitForSkeletonGone();
-        cy.get('.featuredBox .card').should('have.length.at.least', 5);
-      });
-
       it('allows searching assets', () => {
         cy.visit(`${basePath}/assets`);
         cy.waitForSkeletonGone();
