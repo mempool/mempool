@@ -1751,6 +1751,84 @@ export const restApiDocsData = [
     }
   },
   {
+    type: "endpoint",
+    category: "assets",
+    httpRequestMethod: "GET",
+    fragment: "get-asset-icons",
+    title: "GET Asset Icons",
+    description: {
+      default: "Get all the Asset IDs that have icons."
+    },
+    urlString: "/v1/assets/icons",
+    showConditions: ["liquid"],
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/assets/icons`,
+          commonJS: `
+        const { %{0}: { assets } } = mempoolJS();
+        const assetsIcons = await assets.getAssetsIcons();
+        document.getElementById("result").textContent = JSON.stringify(assetsIcons, undefined, 2);
+        `,
+          esModule: `
+  const { %{0}: { assets } } = mempoolJS();
+  const assetsIcons = await assets.getAssetsIcons();
+  console.log(assetsIcons);
+          `,
+        },
+        codeSampleLiquid: {
+          esModule: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          commonJS: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          curl: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          response: `[
+  "6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d",
+  "ce091c998b83c78bb71a632313ba3760f1763d9cfcffae02258ffa9865a37bd2"
+  ...
+]`,
+        },
+        codeSampleLiquidTestnet: {
+          esModule: [``],
+          commonJS: [``],
+          curl: [``],
+          response: `[]`,
+        },
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "assets",
+    httpRequestMethod: "GET",
+    fragment: "get-asset-icon",
+    title: "GET Asset Icon",
+    description: {
+      default: "Get the icon of the specified asset."
+    },
+    urlString: "/v1/asset/:asset_id/icon",
+    showConditions: ["liquid"],
+    codeExample: {
+      default: {
+        noWrap: true,
+        codeTemplate: {
+          curl: `/api/v1/asset/%{1}/icon`,
+          commonJS: `<img src="https://liquid.place/api/v1/asset/%{1}/icon">`,
+        },
+        codeSampleLiquid: {
+          esModule: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          commonJS: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          curl: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
+          response: `PNG`,
+        },
+        codeSampleLiquidTestnet: {
+          esModule: [`ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`],
+          commonJS: [`ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`],
+          curl: [`ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`],
+          response: `PNG`,
+        },
+      }
+    }
+  },
+  {
     type: "category",
     category: "blocks",
     fragment: "blocks",
