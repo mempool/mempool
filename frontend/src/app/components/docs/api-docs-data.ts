@@ -1524,8 +1524,8 @@ export const restApiDocsData = [
     type: "endpoint",
     category: "assets",
     httpRequestMethod: "GET",
-    fragment: "get-assets",
-    title: "GET Assets",
+    fragment: "get-asset",
+    title: "GET Asset",
     description: {
       default: "Returns information about a Liquid asset."
     },
