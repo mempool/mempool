@@ -35,17 +35,13 @@ if (configContent && configContent.BASE_MODULE === 'liquid') {
     },
     {
       context: ['/liquid/api/**'],
-      target: `http://localhost:8999`,
+      target: `https://liquid.network`,
       secure: false,
       changeOrigin: true,
       proxyTimeout: 30000,
-      pathRewrite: {
-          "^/liquid/api/": "/api/v1/"
-      },
-    }
+    },
   ]);
 }
-
 
 if (configContent && configContent.BASE_MODULE === 'bisq') {
   PROXY_CONFIG.push(...[
@@ -76,7 +72,7 @@ if (configContent && configContent.BASE_MODULE === 'bisq') {
       pathRewrite: {
           "^/bisq/api/": "/api/v1/bisq/"
       },
-    }
+    },
   ]);
 }
 
@@ -91,13 +87,10 @@ PROXY_CONFIG.push(...[
   },
   {
     context: ['/api/**'],
-    target: `http://localhost:8999`,
+    target: `https://mempool.space`,
     secure: false,
     changeOrigin: true,
     proxyTimeout: 30000,
-    pathRewrite: {
-        "^/api/": "/api/v1/"
-    },
   }
 ]);
 

@@ -117,6 +117,14 @@ export class ApiService {
     return this.httpClient.get<LiquidPegs[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegs/month');
   }
 
+  listFeaturedAssets$(): Observable<any[]> {
+    return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/assets/featured');
+  }
+
+  getAssetGroup$(id: string): Observable<any> {
+    return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/assets/group/' + id);
+  }
+
   postTransaction$(hexPayload: string): Observable<any> {
     return this.httpClient.post<any>(this.apiBaseUrl + this.apiBasePath + '/api/tx', hexPayload, { responseType: 'text' as 'json'});
   }
