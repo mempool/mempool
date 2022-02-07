@@ -233,6 +233,12 @@
               "disableHostCheck": true,
               "host": "0.0.0.0",
               "verbose": false
+            },
+            "local-staging": {
+              "proxyConfig": "proxy.conf.staging.js",
+              "disableHostCheck": true,
+              "host": "0.0.0.0",
+              "verbose": false
             }
           }
         },
