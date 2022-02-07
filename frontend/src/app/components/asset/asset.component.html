@@ -2,7 +2,7 @@
   <div class="title-asset">
     <h1 i18n="asset|Liquid Asset page title">Asset</h1>
     <div class="tx-link">
-      <a [routerLink]="['/asset/' | relativeUrl, assetString]">
+      <a [routerLink]="['/assets/asset/' | relativeUrl, assetString]">
         <span class="d-inline d-lg-none">{{ assetString | shortenString : 24 }}</span>
         <span class="d-none d-lg-inline">{{ assetString }}</span>
       </a>
@@ -20,7 +20,7 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td i18n="asset.name|Liquid Asset name">Name</td>
+                <td i18n="Asset name header">Name</td>
                 <td class="assetName">{{ assetContract[2] }} ({{ assetContract[1] }})</td>
               </tr>
               <tr>
