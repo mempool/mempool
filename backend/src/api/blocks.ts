@@ -405,7 +405,7 @@ class Blocks {
       previousblockhash: block.previousblockhash,
       medianFee: block?.medianFee,
       feeRange: block.feeRange ?? [], // TODO
-      reward: block?.reward,
+      reward: addExtras ? block?.reward : undefined,
     }
 
     if (addExtras) {
