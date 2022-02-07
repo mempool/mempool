@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { WebsocketResponse, IBackendInfo } from '../interfaces/websocket.interface';
 import { StateService } from './state.service';
-import { Block, Transaction } from '../interfaces/electrs.interface';
+import { Transaction } from '../interfaces/electrs.interface';
 import { Subscription } from 'rxjs';
 import { ApiService } from './api.service';
 import { take } from 'rxjs/operators';
 import { TransferState, makeStateKey } from '@angular/platform-browser';
+import { BlockExtended } from '../interfaces/node-api.interface';
 
 const OFFLINE_RETRY_AFTER_MS = 10000;
 const OFFLINE_PING_CHECK_AFTER_MS = 30000;
@@ -207,7 +208,7 @@ export class WebsocketService {
   handleResponse(response: WebsocketResponse) {
     if (response.blocks && response.blocks.length) {
       const blocks = response.blocks;
-      blocks.forEach((block: Block) => {
+      blocks.forEach((block: BlockExtended) => {
         if (block.height > this.stateService.latestBlockHeight) {
           this.stateService.latestBlockHeight = block.height;
           this.stateService.blocks$.next([block, false]);
