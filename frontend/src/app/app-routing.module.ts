@@ -460,10 +460,6 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
             component: AssetsNavComponent,
             children: [
               {
-                path: 'featured',
-                component: AssetsFeaturedComponent,
-              },
-              {
                 path: 'all',
                 component: AssetsComponent,
               },
@@ -477,7 +473,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
               },
               {
                 path: '**',
-                redirectTo: 'featured'
+                redirectTo: 'all'
               }
             ]
           },
