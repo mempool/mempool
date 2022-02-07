@@ -10,7 +10,8 @@ export class CodeTemplateComponent implements OnInit {
   @Input() network: string;
   @Input() code: any;
   @Input() hostname: string;
-  @Input() method: 'get' | 'post' | 'websocket' = 'get';
+  @Input() baseNetworkUrl: string;
+  @Input() method: 'GET' | 'POST' | 'websocket' = 'GET';
   env: Env;
 
   constructor(
@@ -285,6 +286,8 @@ yarn add @mempool/liquid.js`;
 
   replaceCurlPlaceholder(curlText: any, code: any) {
     let text = curlText;
+    text = text.replace( "[[hostname]]", this.hostname );
+    text = text.replace( "[[baseNetworkUrl]]", this.baseNetworkUrl );
     for (let index = 0; index < code.curl.length; index++) {
       const textReplace = code.curl[index];
       const indexNumber = index + 1;
@@ -293,18 +296,18 @@ yarn add @mempool/liquid.js`;
 
     if (this.env.BASE_MODULE === 'mempool') {
       if (this.network === 'main' || this.network === '') {
-        if (this.method === 'post') {
+        if (this.method === 'POST') {
           return `curl -X POST -sSLd "${text}"`;
         }
         return `curl -sSL "${this.hostname}${text}"`;
       }
-      if (this.method === 'post') {
+      if (this.method === 'POST') {
         text = text.replace('/api', `/${this.network}/api`);
         return `curl -X POST -sSLd "${text}"`;
       }
       return `curl -sSL "${this.hostname}/${this.network}${text}"`;
     } else if (this.env.BASE_MODULE === 'liquid') {
-      if (this.method === 'post') {
+      if (this.method === 'POST') {
         if (this.network !== 'liquid') {
           text = text.replace('/api', `/${this.network}/api`);
         }
