@@ -34,7 +34,7 @@
               </ng-container>
               <ng-template #liquid_link_example>
                 <ng-container *ngIf="item.httpRequestMethod === 'GET' && network.val === 'liquid' && item.codeExample.hasOwnProperty('liquid');else default_link_example">
-                  <a [href]="wrapUrl(network.val, item.codeExample.bisq)" target="_blank">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</a>
+                  <a [href]="wrapUrl(network.val, item.codeExample.liquid)" target="_blank">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</a>
                 </ng-container>
               </ng-template>
               <ng-template #default_link_example>
