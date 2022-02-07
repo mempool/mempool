@@ -391,7 +391,7 @@ class Blocks {
 
   private prepareBlock(block: any, addExtras: boolean): BlockExtended {
     let extendedBlock: BlockExtended = {
-      id: block.id ?? block.hash,
+      id: block.hash ?? block.id,
       height: block.height,
       version: block.version,
       timestamp: block.timestamp ?? block.blockTimestamp,
