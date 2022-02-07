@@ -218,6 +218,10 @@
               "proxyConfig": "proxy.conf.local.js",
               "verbose": true
             },
+            "mixed": {
+              "proxyConfig": "proxy.conf.mixed.js",
+              "verbose": true
+            },
             "staging": {
               "proxyConfig": "proxy.conf.js",
               "disableHostCheck": true,
@@ -226,6 +230,12 @@
             },
             "local-prod": {
               "proxyConfig": "proxy.conf.js",
+              "disableHostCheck": true,
+              "host": "0.0.0.0",
+              "verbose": false
+            },
+            "local-staging": {
+              "proxyConfig": "proxy.conf.staging.js",
               "disableHostCheck": true,
               "host": "0.0.0.0",
               "verbose": false

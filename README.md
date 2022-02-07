@@ -88,9 +88,10 @@ JSON:
     "BLOCK_WEIGHT_UNITS": 4000000,
     "INITIAL_BLOCKS_AMOUNT": 8,
     "MEMPOOL_BLOCKS_AMOUNT": 8,
-    "PRICE_FEED_UPDATE_INTERVAL": 3600,
+    "PRICE_FEED_UPDATE_INTERVAL": 600,
     "USE_SECOND_NODE_FOR_MINFEE": false,
-    "EXTERNAL_ASSETS": []
+    "EXTERNAL_ASSETS": ["https://mempool.space/resources/pools.json"],
+    "STDOUT_LOG_MIN_PRIORITY": "debug"
   },
 ```
 
@@ -111,6 +112,7 @@ docker-compose overrides::
       MEMPOOL_PRICE_FEED_UPDATE_INTERVAL: ""
       MEMPOOL_USE_SECOND_NODE_FOR_MINFEE: ""
       MEMPOOL_EXTERNAL_ASSETS: ""
+      MEMPOOL_STDOUT_LOG_MIN_PRIORITY: ""
 ```
 
 JSON:
@@ -245,6 +247,39 @@ docker-compose overrides:
       BISQ_DATA_PATH: ""
 ```
 
+JSON:
+```
+  "SOCKS5PROXY": {
+    "ENABLED": false,
+    "HOST": "127.0.0.1",
+    "PORT": "9050",
+    "USERNAME": "",
+    "PASSWORD": ""
+  }
+```
+
+docker-compose overrides:
+```
+      SOCKS5PROXY_ENABLED: ""
+      SOCKS5PROXY_HOST: ""
+      SOCKS5PROXY_PORT: ""
+      SOCKS5PROXY_USERNAME: ""
+      SOCKS5PROXY_PASSWORD: ""
+```
+
+JSON:
+```
+  "PRICE_DATA_SERVER": {
+    "TOR_URL": "http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices",
+    "CLEARNET_URL": "https://price.bisq.wiz.biz/getAllMarketPrices"
+  }
+```
+
+docker-compose overrides:
+```
+      PRICE_DATA_SERVER_TOR_URL: ""
+      PRICE_DATA_SERVER_CLEARNET_URL: ""
+```
 
 # Manual Installation
 
