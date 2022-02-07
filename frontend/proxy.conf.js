@@ -20,8 +20,8 @@ try {
 
 PROXY_CONFIG = [
     {
-        context: ['*', 
-        '/api/**', '!/api/v1/ws', 
+        context: ['*',
+        '/api/**', '!/api/v1/ws',
         '!/bisq', '!/bisq/**', '!/bisq/',
         '!/liquid', '!/liquid/**', '!/liquid/',
         '!/liquidtestnet', '!/liquidtestnet/**', '!/liquidtestnet/',
@@ -65,7 +65,13 @@ PROXY_CONFIG = [
         ws: true,
         secure: false,
         changeOrigin: true
-    }
+    },
+    {
+      context: ['/resources/mining-pools/**'],
+      target: "https://mempool.space",
+      secure: false,
+      changeOrigin: true
+  }
 ];
 
 if (configContent && configContent.BASE_MODULE == "liquid") {

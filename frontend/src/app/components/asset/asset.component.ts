@@ -63,6 +63,7 @@ export class AssetComponent implements OnInit, OnDestroy {
       .pipe(
         switchMap((params: ParamMap) => {
           this.error = undefined;
+          this.imageError = false;
           this.isLoadingAsset = true;
           this.loadedConfirmedTxCount = 0;
           this.asset = null;
