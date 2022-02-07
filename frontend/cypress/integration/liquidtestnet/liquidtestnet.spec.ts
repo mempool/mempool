@@ -76,14 +76,14 @@ describe('Liquid Testnet', () => {
       it('shows the assets screen', () => {
         cy.visit(`${basePath}/assets`);
         cy.waitForSkeletonGone();
-        cy.get('table tr').should('have.length.at.least', 5);
+        cy.get('.featuredBox .card').should('have.length.at.least', 5);
       });
 
       it('allows searching assets', () => {
         cy.visit(`${basePath}/assets`);
         cy.waitForSkeletonGone();
         cy.get('.container-xl input').click().type('Liquid Bitcoin').then(() => {
-          cy.get('table tr').should('have.length', 1);
+          cy.get('ngb-typeahead-window').should('have.length', 1);
         });
       });
 
@@ -91,7 +91,7 @@ describe('Liquid Testnet', () => {
         cy.visit(`${basePath}/assets`);
         cy.waitForSkeletonGone();
         cy.get('.container-xl input').click().type('Liquid CAD').then(() => {
-          cy.get('table tr td:nth-of-type(1) a').click();
+          cy.get('ngb-typeahead-window:nth-of-type(1) button').click();
         });
       });
     });
@@ -150,7 +150,7 @@ describe('Liquid Testnet', () => {
         cy.visit(`${basePath}/tx/0877bc0c7aa5c2b8d0e4b15450425879b8783c40e341806037a605ef836fb886#blinded=5000,38fca2d939696061a8f76d4e6b5eecd54e3b4221c846f24a6b279e79952850a5,328de54e90e867a9154b4f1eb7fcab86267e880fa2ee9e53b41a91e61dab86e6,8885831e6b089eaf06889d53a24843f0da533d300a7b1527b136883a6819f3ae,5000,38fca2d939696061a8f76d4e6b5eecd54e3b4221c846f24a6b279e79952850a5,aca78b953615d69ae0ae68c4c5c3c0ee077c10bc20ad3f0c5960706004e6cb56,d2ec175afe5f761e2dbd443faf46abbb7091f341deb3387e5787d812bdb2df9f,100000,144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49,4b54a4ca809b3844f34dd88b68617c4c866d92a02211f02ba355755bac20a1c6,eddd02e92b0cfbad8cab89828570a50f2c643bb2a54d886c86e25ce47e818685,99729,144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49,8b86d565c9549eb0352bb81ee576d01d064435b64fddcc045decebeb1d9913ce,b082ce3448d40d47b5b39f15d72b285f4a1046b636b56c25f32f498ece29d062,10000,38fca2d939696061a8f76d4e6b5eecd54e3b4221c846f24a6b279e79952850a5,62b04ee86198d6b41681cdd0acb450ab366af727a010aaee8ba0b9e69ff43896,3f98429bca9b538dc943c22111f25d9c4448d45a63ff0f4e58b22fd434c0365e`);
         cy.get('#table-tx-vout tr:nth-child(2) .amount a').click().then(() => {
           cy.waitForSkeletonGone();
-          cy.url().should('contain', '/asset/38fca2d939696061a8f76d4e6b5eecd54e3b4221c846f24a6b279e79952850a5');
+          cy.url().should('contain', '/assets/asset/38fca2d939696061a8f76d4e6b5eecd54e3b4221c846f24a6b279e79952850a5');
         });
       });
 
@@ -162,7 +162,7 @@ describe('Liquid Testnet', () => {
       });
 
       it('shows asset peg in/out and burn transactions', () => {
-        cy.visit(`${basePath}/asset/ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`);
+        cy.visit(`${basePath}/assets/asset/ac3e0ff248c5051ffd61e00155b7122e5ebc04fd397a0ecbdd4f4e4a56232926`);
         cy.waitForSkeletonGone();
         cy.get('#table-tx-vout tr').not('.assetBox');
         cy.get('#table-tx-vin tr').not('.assetBox');
