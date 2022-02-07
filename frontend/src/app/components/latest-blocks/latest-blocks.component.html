@@ -9,8 +9,8 @@
       <th style="width: 10%;" i18n="latest-blocks.height">Height</th>
       <th class="d-none d-md-block" style="width: 20%;" i18n="latest-blocks.timestamp">Timestamp</th>
       <th style="width: 15%;" i18n="latest-blocks.mined">Mined</th>
-      <th class="d-none d-md-block" style="width: 15%;" i18n="mining.pool-name" *ngIf="['', 'testnet', 'signet'].includes(network$ | async)">Pool</th>
-      <th class="d-none d-lg-block" style="width: 15%;" i18n="latest-blocks.reward" *ngIf="['', 'testnet', 'signet'].includes(network$ | async)">Reward</th>
+      <th class="d-none d-md-block" style="width: 15%;" i18n="mining.pool-name" *ngIf="blocks[0].extras">Pool</th>
+      <th class="d-none d-lg-block" style="width: 15%;" i18n="latest-blocks.reward" *ngIf="blocks[0].extras">Reward</th>
       <th class="d-none d-lg-block" style="width: 10%;" i18n="latest-blocks.transactions">Transactions</th>
       <th style="width: 20%;" i18n="latest-blocks.size">Size</th>
     </thead>
@@ -19,10 +19,10 @@
         <td><a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
         <td class="d-none d-md-block">&lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}</td>
         <td><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since></td>
-        <td class="d-none d-md-block" *ngIf="['', 'testnet', 'signet'].includes(network$ | async)">
-          <a placement="bottom" class="badge badge-primary">{{ block.extras.pool.name }}</a>
+        <td class="d-none d-md-block" *ngIf="block.extras">
+          <a placement="bottom" class="badge badge-primary">{{ block?.extras?.pool?.name }}</a>
         </td>
-        <td class="d-none d-lg-block" *ngIf="['', 'testnet', 'signet'].includes(network$ | async)">
+        <td class="d-none d-lg-block" *ngIf="block.extras">
           <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
         </td>
         <td class="d-none d-lg-block">{{ block.tx_count | number }}</td>
@@ -38,8 +38,8 @@
           <td><span class="skeleton-loader"></span></td> <!-- height -->
           <td class="d-none d-md-block"><span class="skeleton-loader"></span></td> <!-- timestamp -->
           <td><span class="skeleton-loader"></span></td> <!-- mined -->
-          <td class="d-none d-md-block"><span class="skeleton-loader"></span></td> <!-- pool -->
-          <td class="d-none d-lg-block"><span class="skeleton-loader"></span></td> <!-- reward -->
+          <td class="d-none d-md-block" *ngIf="blocks[0].extras"><span class="skeleton-loader"></span></td> <!-- pool -->
+          <td class="d-none d-lg-block" *ngIf="blocks[0].extras"><span class="skeleton-loader"></span></td> <!-- reward -->
           <td class="d-none d-lg-block"><span class="skeleton-loader"></span></td> <!-- tx count -->
           <td><span class="skeleton-loader"></span></td> <!-- size -->
         </tr>

@@ -82,7 +82,7 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
   }
 
   loadInitialBlocks() {
-    this.apiService.listBlocks$()
+    this.apiService.listBlocksExtras$()
       .subscribe((blocks) => {
         this.blocks = blocks;
         this.isLoading = false;
@@ -110,7 +110,7 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
       return;
     }
     this.isLoading = true;
-    this.apiService.listBlocks$(this.blocks[this.blocks.length - 1].height - 1)
+    this.apiService.listBlocksExtras$(this.blocks[this.blocks.length - 1].height - 1)
       .subscribe((blocks) => {
         this.blocks = this.blocks.concat(blocks);
         this.isLoading = false;

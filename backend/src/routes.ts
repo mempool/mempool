@@ -563,41 +563,42 @@ class Routes {
     }
   }
 
+  public async getBlocksExtras(req: Request, res: Response) {
+    try {
+      res.json(await blocks.$getBlocksExtras(parseInt(req.params.height, 10)))
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
   public async getBlocks(req: Request, res: Response) {
     try {
       loadingIndicators.setProgress('blocks', 0);
 
       const returnBlocks: IEsploraApi.Block[] = [];
-      let currentHeight = parseInt(req.params.height, 10) || blocks.getCurrentBlockHeight();
-
-      if (currentHeight < 0) {
-        return res.json(returnBlocks);
-      }
+      const fromHeight = parseInt(req.params.height, 10) || blocks.getCurrentBlockHeight();
 
       // Check if block height exist in local cache to skip the hash lookup
-      const blockByHeight = blocks.getBlocks().find((b) => b.height === currentHeight);
+      const blockByHeight = blocks.getBlocks().find((b) => b.height === fromHeight);
       let startFromHash: string | null = null;
       if (blockByHeight) {
         startFromHash = blockByHeight.id;
       } else {
-        startFromHash = await bitcoinApi.$getBlockHash(currentHeight);
+        startFromHash = await bitcoinApi.$getBlockHash(fromHeight);
       }
 
       let nextHash = startFromHash;
-      for (let i = 0; i < 10 && currentHeight >= 0; i++) {
-        const localBlock = blocks.getBlocks().find((b) => b.height === currentHeight);
+      for (let i = 0; i < 10; i++) {
+        const localBlock = blocks.getBlocks().find((b) => b.id === nextHash);
         if (localBlock) {
           returnBlocks.push(localBlock);
-        } else if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === true) {
-          const block = await blocks.$indexBlock(currentHeight);
-          returnBlocks.push(block);
+          nextHash = localBlock.previousblockhash;
         } else {
           const block = await bitcoinApi.$getBlock(nextHash);
           returnBlocks.push(block);
           nextHash = block.previousblockhash;
         }
         loadingIndicators.setProgress('blocks', i / 10 * 100);
-        currentHeight--;
       }
 
       res.json(returnBlocks);

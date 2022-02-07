@@ -125,7 +125,8 @@ export class ApiService {
     return this.httpClient.get<PoolsStats>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pools/${interval}`);
   }
 
-  listBlocks$(height?: number): Observable<BlockExtended[]> {
-    return this.httpClient.get<BlockExtended[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/blocks/' + (height || ''));
+  listBlocksExtras$(height?: number): Observable<BlockExtended[]> {
+    return this.httpClient.get<BlockExtended[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/' +
+      ((height !== undefined) ? `blocksExtras/${height}` : `blocksExtras` ));
   }
 }
