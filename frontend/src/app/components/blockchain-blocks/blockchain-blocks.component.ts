@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
-import { Block } from 'src/app/interfaces/electrs.interface';
 import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
 import { specialBlocks } from 'src/app/app.constants';
+import { BlockExtended } from 'src/app/interfaces/node-api.interface';
 
 @Component({
   selector: 'app-blockchain-blocks',
@@ -14,8 +14,8 @@ import { specialBlocks } from 'src/app/app.constants';
 export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   specialBlocks = specialBlocks;
   network = '';
-  blocks: Block[] = [];
-  emptyBlocks: Block[] = this.mountEmptyBlocks();
+  blocks: BlockExtended[] = [];
+  emptyBlocks: BlockExtended[] = this.mountEmptyBlocks();
   markHeight: number;
   blocksSubscription: Subscription;
   networkSubscription: Subscription;
@@ -69,8 +69,8 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
         this.blocks.unshift(block);
         this.blocks = this.blocks.slice(0, this.stateService.env.KEEP_BLOCKS_AMOUNT);
 
-        if (this.blocksFilled && !this.tabHidden) {
-          block.stage = block.matchRate >= 66 ? 1 : 2;
+        if (this.blocksFilled && !this.tabHidden && block.extras) {
+          block.extras.stage = block.extras.matchRate >= 66 ? 1 : 2;
         }
 
         if (txConfirmed) {
@@ -143,16 +143,16 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
     }
   }
 
-  trackByBlocksFn(index: number, item: Block) {
+  trackByBlocksFn(index: number, item: BlockExtended) {
     return item.height;
   }
 
-  getStyleForBlock(block: Block) {
+  getStyleForBlock(block: BlockExtended) {
     const greenBackgroundHeight = 100 - (block.weight / this.stateService.env.BLOCK_WEIGHT_UNITS) * 100;
     let addLeft = 0;
 
-    if (block.stage === 1) {
-      block.stage = 2;
+    if (block?.extras?.stage === 1) {
+      block.extras.stage = 2;
       addLeft = -205;
     }
 
@@ -167,11 +167,11 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
     };
   }
 
-  getStyleForEmptyBlock(block: Block) {
+  getStyleForEmptyBlock(block: BlockExtended) {
     let addLeft = 0;
 
-    if (block.stage === 1) {
-      block.stage = 2;
+    if (block?.extras?.stage === 1) {
+      block.extras.stage = 2;
       addLeft = -205;
     }
 

@@ -1,3 +1,5 @@
+import { Block, Transaction } from "./electrs.interface";
+
 export interface OptimizedMempoolStats {
   added: number;
   vbytes_per_second: number;
@@ -78,5 +80,19 @@ export interface MiningStats {
   totalEmptyBlock: number,
   totalEmptyBlockRatio: string,
   pools: SinglePoolStats[],
+}
+
+export interface BlockExtension {
+  medianFee?: number;
+  feeRange?: number[];
+  reward?: number;
+  coinbaseTx?: Transaction;
+  matchRate?: number;
+
+  stage?: number; // Frontend only
+}
+
+export interface BlockExtended extends Block {
+  extras?: BlockExtension;
 }
 
