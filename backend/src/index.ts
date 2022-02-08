@@ -290,6 +290,10 @@ class Server {
         ;
     }
 
+    this.app
+      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-extras', routes.getBlocksExtras)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-extras/:height', routes.getBlocksExtras);
+
     if (config.MEMPOOL.BACKEND !== 'esplora') {
       this.app
         .get(config.MEMPOOL.API_URL_PREFIX + 'mempool', routes.getMempool)
