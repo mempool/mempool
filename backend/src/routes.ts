@@ -564,6 +564,14 @@ class Routes {
     }
   }
 
+  public async getBlocksExtras(req: Request, res: Response) {
+    try {
+      res.json(await blocks.$getBlocksExtras(parseInt(req.params.height, 10)))
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+  
   public async getBlocks(req: Request, res: Response) {
     try {
       loadingIndicators.setProgress('blocks', 0);
