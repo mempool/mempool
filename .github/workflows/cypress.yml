@@ -1,7 +1,10 @@
 name: Cypress Tests
 
-on: [push, pull_request]
-
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 jobs:
   cypress:
     runs-on: ${{ matrix.os }}
@@ -24,17 +27,23 @@ jobs:
       - name: ${{ matrix.browser }} browser tests (Mempool)
         uses: cypress-io/github-action@v2
         with:
+          tag: ${{ github.event_name }}
           working-directory: frontend
           build: npm run config:defaults:mempool
-          start: npm run start:local-prod
+          start: npm run start:local-staging
           wait-on: 'http://localhost:4200'
           wait-on-timeout: 120
           record: true
           parallel: true
+          spec: |
+            cypress/integration/mainnet/*.spec.ts
+            cypress/integration/signet/*.spec.ts
+            cypress/integration/testnet/*.spec.ts
           group: Tests on ${{ matrix.browser }} (Mempool)
           browser: ${{ matrix.browser }}
           ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
         env:
+          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
@@ -43,18 +52,22 @@ jobs:
         uses: cypress-io/github-action@v2
         if: always()
         with:
+          tag: ${{ github.event_name }}
           working-directory: frontend
           build: npm run config:defaults:liquid
-          start: npm run start:local-prod
+          start: npm run start:local-staging
           wait-on: 'http://localhost:4200'
           wait-on-timeout: 120
           record: true
           parallel: true
-          spec: cypress/integration/liquid/liquid.spec.ts
+          spec: |
+            cypress/integration/liquid/liquid.spec.ts
+            cypress/integration/liquidtestnet/liquidtestnet.spec.ts
           group: Tests on ${{ matrix.browser }} (Liquid)
           browser: ${{ matrix.browser }}
           ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
         env:
+          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
@@ -63,9 +76,10 @@ jobs:
         uses: cypress-io/github-action@v2
         if: always()
         with:
+          tag: ${{ github.event_name }}
           working-directory: frontend
           build: npm run config:defaults:bisq
-          start: npm run start:local-prod
+          start: npm run start:local-staging
           wait-on: 'http://localhost:4200'
           wait-on-timeout: 120
           record: true
@@ -75,6 +89,7 @@ jobs:
           browser: ${{ matrix.browser }}
           ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
         env:
+          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}

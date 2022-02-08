@@ -1,0 +1,87 @@
+<div class="main-title" i18n="dashboard.difficulty-adjustment">Difficulty Adjustment</div>
+<div class="card-wrapper">
+  <div class="card">
+    <div class="card-body more-padding">
+      <div class="difficulty-adjustment-container" *ngIf="(isLoadingWebSocket$ | async) === false && (difficultyEpoch$ | async) as epochData; else loadingDifficulty">
+        <div class="item">
+          <h5 class="card-title" i18n="difficulty-box.remaining">Remaining</h5>
+          <div class="card-text">
+            <ng-container *ngTemplateOutlet="epochData.remainingBlocks === 1 ? blocksSingular : blocksPlural; context: {$implicit: epochData.remainingBlocks }"></ng-container>
+            <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
+            <ng-template #blocksSingular let-i i18n="shared.block">{{ i }} <span class="shared-block">block</span></ng-template>
+          </div>
+          <div class="symbol"><app-time-until [time]="epochData.remainingTime" [fastRender]="true"></app-time-until></div>
+        </div>
+        <div class="item">
+          <h5 class="card-title" i18n="difficulty-box.estimate">Estimate</h5>
+          <div *ngIf="epochData.remainingBlocks < 1870; else recentlyAdjusted" class="card-text" [ngStyle]="{'color': epochData.colorAdjustments}">
+            <span *ngIf="epochData.change > 0; else arrowDownDifficulty" >
+              <fa-icon class="retarget-sign" [icon]="['fas', 'caret-up']" [fixedWidth]="true"></fa-icon>
+            </span>
+            <ng-template #arrowDownDifficulty >
+              <fa-icon class="retarget-sign" [icon]="['fas', 'caret-down']" [fixedWidth]="true"></fa-icon>
+            </ng-template>
+            {{ epochData.change | absolute | number: '1.2-2' }}
+            <span class="symbol">%</span>
+          </div>
+          <ng-template #recentlyAdjusted>
+            <div class="card-text">&#8212;</div>
+          </ng-template>
+          <div class="symbol">
+            <span i18n="difficulty-box.previous">Previous</span>:
+            <span [ngStyle]="{'color': epochData.colorPreviousAdjustments}">
+              <span *ngIf="epochData.previousRetarget > 0; else arrowDownPreviousDifficulty" >
+                <fa-icon class="previous-retarget-sign" [icon]="['fas', 'caret-up']" [fixedWidth]="true"></fa-icon>
+              </span>
+              <ng-template #arrowDownPreviousDifficulty >
+                <fa-icon class="previous-retarget-sign" [icon]="['fas', 'caret-down']" [fixedWidth]="true"></fa-icon>
+              </ng-template>
+              {{ epochData.previousRetarget | absolute | number: '1.2-2' }} </span> %
+          </div>
+        </div>
+        <div class="item" *ngIf="showProgress">
+          <h5 class="card-title" i18n="difficulty-box.current-period">Current Period</h5>
+          <div class="card-text">{{ epochData.progress | number: '1.2-2' }} <span class="symbol">%</span></div>
+          <div class="progress small-bar">
+            <div class="progress-bar" role="progressbar" style="width: 15%; background-color: #105fb0" [ngStyle]="{'width': epochData.base}">&nbsp;</div>
+          </div>
+        </div>
+        <div class="item" *ngIf="showHalving">
+          <h5 class="card-title" i18n="difficulty-box.next-halving">Next halving</h5>
+          <div class="card-text">
+            <ng-container *ngTemplateOutlet="epochData.blocksUntilHalving === 1 ? blocksSingular : blocksPlural; context: {$implicit: epochData.blocksUntilHalving }"></ng-container>
+            <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
+            <ng-template #blocksSingular let-i i18n="shared.block">{{ i }} <span class="shared-block">block</span></ng-template>
+          </div>
+          <div class="symbol"><app-time-until [time]="epochData.timeUntilHalving" [fastRender]="true"></app-time-until></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingDifficulty>
+  <div class="difficulty-skeleton loading-container">
+    <div class="item">
+      <h5 class="card-title" i18n="difficulty-box.remaining">Remaining</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="difficulty-box.estimate">Estimate</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="difficulty-box.current-period">Current Period</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+  </div>
+</ng-template>

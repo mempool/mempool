@@ -10,7 +10,7 @@ import { TelevisionComponent } from './components/television/television.componen
 import { StatisticsComponent } from './components/statistics/statistics.component';
 import { MempoolBlockComponent } from './components/mempool-block/mempool-block.component';
 import { AssetComponent } from './components/asset/asset.component';
-import { AssetsComponent } from './assets/assets.component';
+import { AssetsNavComponent } from './components/assets/assets-nav/assets-nav.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LatestBlocksComponent } from './components/latest-blocks/latest-blocks.component';
@@ -22,6 +22,10 @@ import { BisqMasterPageComponent } from './components/bisq-master-page/bisq-mast
 import { SponsorComponent } from './components/sponsor/sponsor.component';
 import { LiquidMasterPageComponent } from './components/liquid-master-page/liquid-master-page.component';
 import { PushTransactionComponent } from './components/push-transaction/push-transaction.component';
+import { PoolRankingComponent } from './components/pool-ranking/pool-ranking.component';
+import { AssetGroupComponent } from './components/assets/asset-group/asset-group.component';
+import { AssetsFeaturedComponent } from './components/assets/assets-featured/assets-featured.component';
+import { AssetsComponent } from './components/assets/assets.component';
 
 let routes: Routes = [
   {
@@ -57,6 +61,10 @@ let routes: Routes = [
       {
         path: 'blocks',
         component: LatestBlocksComponent,
+      },
+      {
+        path: 'mining/pools',
+        component: PoolRankingComponent,
       },
       {
         path: 'graphs',
@@ -143,6 +151,10 @@ let routes: Routes = [
             component: LatestBlocksComponent,
           },
           {
+            path: 'mining/pools',
+            component: PoolRankingComponent,
+          },
+          {
             path: 'graphs',
             component: StatisticsComponent,
           },
@@ -219,6 +231,10 @@ let routes: Routes = [
           {
             path: 'blocks',
             component: LatestBlocksComponent,
+          },
+          {
+            path: 'mining/pools',
+            component: PoolRankingComponent,
           },
           {
             path: 'graphs',
@@ -331,12 +347,30 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
         component: AddressComponent
       },
       {
-        path: 'asset/:id',
-        component: AssetComponent
-      },
-      {
         path: 'assets',
-        component: AssetsComponent,
+        component: AssetsNavComponent,
+        children: [
+          {
+            path: 'featured',
+            component: AssetsFeaturedComponent,
+          },
+          {
+            path: 'all',
+            component: AssetsComponent,
+          },
+          {
+            path: 'asset/:id',
+            component: AssetComponent
+          },
+          {
+            path: 'group/:id',
+            component: AssetGroupComponent
+          },
+          {
+            path: '**',
+            redirectTo: 'featured'
+          }
+        ]
       },
       {
         path: 'docs/api/:type',
@@ -422,12 +456,26 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
             component: AddressComponent
           },
           {
-            path: 'asset/:id',
-            component: AssetComponent
-          },
-          {
             path: 'assets',
-            component: AssetsComponent,
+            component: AssetsNavComponent,
+            children: [
+              {
+                path: 'all',
+                component: AssetsComponent,
+              },
+              {
+                path: 'asset/:id',
+                component: AssetComponent
+              },
+              {
+                path: 'group/:id',
+                component: AssetGroupComponent
+              },
+              {
+                path: '**',
+                redirectTo: 'all'
+              }
+            ]
           },
           {
             path: 'docs/api/:type',

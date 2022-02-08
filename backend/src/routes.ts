@@ -20,6 +20,8 @@ import { Common } from './api/common';
 import bitcoinClient from './api/bitcoin/bitcoin-client';
 import elementsParser from './api/liquid/elements-parser';
 import icons from './api/liquid/icons';
+import miningStats from './api/mining';
+import axios from 'axios';
 
 class Routes {
   constructor() {}
@@ -531,6 +533,18 @@ class Routes {
     }
   }
 
+  public async $getPools(interval: string, req: Request, res: Response) {
+    try {
+      let stats = await miningStats.$getPoolsStats(interval);
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      res.json(stats);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
   public async getBlock(req: Request, res: Response) {
     try {
       const result = await bitcoinApi.$getBlock(req.params.hash);
@@ -840,6 +854,25 @@ class Routes {
       res.json(result);
     } else {
       res.status(404).send('Asset icons not found');
+    }
+  }
+
+  public async $getAllFeaturedLiquidAssets(req: Request, res: Response) {
+    try {
+      const response = await axios.get('https://liquid.network/api/v1/assets/featured', { responseType: 'stream', timeout: 10000 });
+      response.data.pipe(res);
+    } catch (e) {
+      res.status(500).end();
+    }
+  }
+
+  public async $getAssetGroup(req: Request, res: Response) {
+    try {
+      const response = await axios.get('https://liquid.network/api/v1/assets/group/' + parseInt(req.params.id, 10),
+        { responseType: 'stream', timeout: 10000 });
+      response.data.pipe(res);
+    } catch (e) {
+      res.status(500).end();
     }
   }
 }

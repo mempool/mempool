@@ -1,3 +1,5 @@
+import { Block, Transaction } from "./electrs.interface";
+
 export interface OptimizedMempoolStats {
   added: number;
   vbytes_per_second: number;
@@ -51,3 +53,46 @@ export interface LiquidPegs {
 }
 
 export interface ITranslators { [language: string]: string; }
+
+export interface SinglePoolStats {
+  pooldId: number;
+  name: string;
+  link: string;
+  blockCount: number;
+  emptyBlocks: number;
+  rank: number;
+  share: string;
+  lastEstimatedHashrate: string;
+  emptyBlockRatio: string;
+  logo: string;
+}
+
+export interface PoolsStats {
+  blockCount: number;
+  lastEstimatedHashrate: number;
+  oldestIndexedBlockTimestamp: number;
+  pools: SinglePoolStats[];
+}
+
+export interface MiningStats {
+  lastEstimatedHashrate: string,
+  blockCount: number,
+  totalEmptyBlock: number,
+  totalEmptyBlockRatio: string,
+  pools: SinglePoolStats[],
+}
+
+export interface BlockExtension {
+  medianFee?: number;
+  feeRange?: number[];
+  reward?: number;
+  coinbaseTx?: Transaction;
+  matchRate?: number;
+
+  stage?: number; // Frontend only
+}
+
+export interface BlockExtended extends Block {
+  extras?: BlockExtension;
+}
+

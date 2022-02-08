@@ -32,6 +32,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   isNativeAsset = false;
   error: any;
   mainSubscription: Subscription;
+  imageError = false;
 
   totalConfirmedTxCount = 0;
   loadedConfirmedTxCount = 0;
@@ -62,6 +63,7 @@ export class AssetComponent implements OnInit, OnDestroy {
       .pipe(
         switchMap((params: ParamMap) => {
           this.error = undefined;
+          this.imageError = false;
           this.isLoadingAsset = true;
           this.loadedConfirmedTxCount = 0;
           this.asset = null;

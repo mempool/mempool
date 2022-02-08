@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
 import { combineLatest, merge, Observable, of, timer, throwError } from 'rxjs';
 import { filter, map, scan, share, switchMap, tap, catchError } from 'rxjs/operators';
-import { Block } from '../interfaces/electrs.interface';
-import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
+import { BlockExtended, OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
 import { ApiService } from '../services/api.service';
 import { StateService } from '../services/state.service';
@@ -13,19 +12,6 @@ import { StorageService } from '../services/storage.service';
 interface MempoolBlocksData {
   blocks: number;
   size: number;
-}
-
-interface EpochProgress {
-  base: string;
-  change: number;
-  progress: string;
-  remainingBlocks: number;
-  newDifficultyHeight: number;
-  colorAdjustments: string;
-  colorPreviousAdjustments: string;
-  timeAvg: string;
-  remainingTime: number;
-  previousRetarget: number;
 }
 
 interface MempoolInfoData {
@@ -51,10 +37,9 @@ export class DashboardComponent implements OnInit {
   network$: Observable<string>;
   mempoolBlocksData$: Observable<MempoolBlocksData>;
   mempoolInfoData$: Observable<MempoolInfoData>;
-  difficultyEpoch$: Observable<EpochProgress>;
   mempoolLoadingStatus$: Observable<number>;
   vBytesPerSecondLimit = 1667;
-  blocks$: Observable<Block[]>;
+  blocks$: Observable<BlockExtended[]>;
   transactions$: Observable<TransactionStripped[]>;
   latestBlockHeight: number;
   mempoolTransactionsWeightPerSecondData: any;
@@ -125,82 +110,6 @@ export class DashboardComponent implements OnInit {
         };
       })
     );
-
-    this.difficultyEpoch$ = timer(0, 1000)
-      .pipe(
-        switchMap(() => combineLatest([
-          this.stateService.blocks$.pipe(map(([block]) => block)),
-          this.stateService.lastDifficultyAdjustment$,
-          this.stateService.previousRetarget$
-        ])),
-        map(([block, DATime, previousRetarget]) => {
-          const now = new Date().getTime() / 1000;
-          const diff = now - DATime;
-          const blocksInEpoch = block.height % 2016;
-          const progress = (blocksInEpoch >= 0) ? (blocksInEpoch / 2016 * 100).toFixed(2) : `100`;
-          const remainingBlocks = 2016 - blocksInEpoch;
-          const newDifficultyHeight = block.height + remainingBlocks;
-
-          let change = 0;
-          if (remainingBlocks < 1870) {
-            if (blocksInEpoch > 0) {
-              change = (600 / (diff / blocksInEpoch ) - 1) * 100;
-            }
-            if (change > 300) {
-              change = 300;
-            }
-            if (change < -75) {
-              change = -75;
-            }
-          }
-
-          const timeAvgDiff = change * 0.1;
-
-          let timeAvgMins = 10;
-          if (timeAvgDiff > 0) {
-            timeAvgMins -= Math.abs(timeAvgDiff);
-          } else {
-            timeAvgMins += Math.abs(timeAvgDiff);
-          }
-
-          const timeAvg = timeAvgMins.toFixed(0);
-          const remainingTime = (remainingBlocks * timeAvgMins * 60 * 1000) + (now * 1000);
-
-          let colorAdjustments = '#ffffff66';
-          if (change > 0) {
-            colorAdjustments = '#3bcc49';
-          }
-          if (change < 0) {
-            colorAdjustments = '#dc3545';
-          }
-
-          let colorPreviousAdjustments = '#dc3545';
-          if (previousRetarget) {
-            if (previousRetarget >= 0) {
-              colorPreviousAdjustments = '#3bcc49';
-            }
-            if (previousRetarget === 0) {
-              colorPreviousAdjustments = '#ffffff66';
-            }
-          } else {
-            colorPreviousAdjustments = '#ffffff66';
-          }
-
-          return {
-            base: `${progress}%`,
-            change,
-            progress,
-            remainingBlocks,
-            timeAvg,
-            colorAdjustments,
-            colorPreviousAdjustments,
-            blocksInEpoch,
-            newDifficultyHeight,
-            remainingTime,
-            previousRetarget,
-          };
-        })
-      );
 
     this.mempoolBlocksData$ = this.stateService.mempoolBlocks$
       .pipe(
@@ -296,7 +205,7 @@ export class DashboardComponent implements OnInit {
     };
   }
 
-  trackByBlock(index: number, block: Block) {
+  trackByBlock(index: number, block: BlockExtended) {
     return block.height;
   }
 
