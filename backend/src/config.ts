@@ -18,6 +18,7 @@ interface IConfig {
     PRICE_FEED_UPDATE_INTERVAL: number;
     USE_SECOND_NODE_FOR_MINFEE: boolean;
     EXTERNAL_ASSETS: string[];
+    STDOUT_LOG_MIN_PRIORITY: 'emerg' | 'alert' | 'crit' | 'err' | 'warn' | 'notice' | 'info' | 'debug';
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -94,7 +95,8 @@ const defaults: IConfig = {
     'USE_SECOND_NODE_FOR_MINFEE': false,
     'EXTERNAL_ASSETS': [
       'https://mempool.space/resources/pools.json'
-    ]
+    ],
+    'STDOUT_LOG_MIN_PRIORITY': 'debug',
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
