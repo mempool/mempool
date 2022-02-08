@@ -256,6 +256,14 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/1y', routes.$getStatisticsByTime.bind(routes, '1y'))
         .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/2y', routes.$getStatisticsByTime.bind(routes, '2y'))
         .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/3y', routes.$getStatisticsByTime.bind(routes, '3y'))
+        ;
+    }
+
+    const indexingAvailable =
+      ['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) &&
+      config.DATABASE.ENABLED === true;
+    if (indexingAvailable) {
+      this.app
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/24h', routes.$getPools.bind(routes, '24h'))
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/3d', routes.$getPools.bind(routes, '3d'))
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/1w', routes.$getPools.bind(routes, '1w'))
@@ -266,7 +274,8 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/2y', routes.$getPools.bind(routes, '2y'))
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/3y', routes.$getPools.bind(routes, '3y'))
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/all', routes.$getPools.bind(routes, 'all'))
-        ;
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:poolId', routes.$getPool)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:poolId/:interval', routes.$getPool);
     }
 
     if (config.BISQ.ENABLED) {

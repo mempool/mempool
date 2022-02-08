@@ -7,23 +7,26 @@ class Mining {
   constructor() {
   }
 
+  private getSqlInterval(interval: string | null): string | null {
+    switch (interval) {
+      case '24h': return '1 DAY';
+      case '3d': return '3 DAY';
+      case '1w': return '1 WEEK';
+      case '1m': return '1 MONTH';
+      case '3m': return '3 MONTH';
+      case '6m': return '6 MONTH';
+      case '1y': return '1 YEAR';
+      case '2y': return '2 YEAR';
+      case '3y': return '3 YEAR';
+      default: return null;
+    }
+  }
+
   /**
    * Generate high level overview of the pool ranks and general stats
    */
   public async $getPoolsStats(interval: string | null) : Promise<object> {
-    let sqlInterval: string | null = null;
-    switch (interval) {
-      case '24h': sqlInterval = '1 DAY'; break;
-      case '3d': sqlInterval = '3 DAY'; break;
-      case '1w': sqlInterval = '1 WEEK'; break;
-      case '1m': sqlInterval = '1 MONTH'; break;
-      case '3m': sqlInterval = '3 MONTH'; break;
-      case '6m': sqlInterval = '6 MONTH'; break;
-      case '1y': sqlInterval = '1 YEAR'; break;
-      case '2y': sqlInterval = '2 YEAR'; break;
-      case '3y': sqlInterval = '3 YEAR'; break;
-      default: sqlInterval = null; break;
-    }
+    const sqlInterval = this.getSqlInterval(interval);
 
     const poolsStatistics = {};
 
@@ -63,6 +66,24 @@ class Mining {
     poolsStatistics['lastEstimatedHashrate'] = lastBlockHashrate;
 
     return poolsStatistics;
+  }
+
+  /**
+   * Get all mining pool stats for a pool
+   */
+  public async $getPoolStat(interval: string | null, poolId: number): Promise<object> {
+    const pool = await PoolsRepository.$getPool(poolId);
+    if (!pool) {
+      throw new Error("This mining pool does not exist");
+    }
+
+    const sqlInterval = this.getSqlInterval(interval);
+    const blocks = await BlocksRepository.$getBlocksByPool(sqlInterval, poolId);
+
+    return {
+      pool: pool,
+      blocks: blocks,
+    };
   }
 }
 

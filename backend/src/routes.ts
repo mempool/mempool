@@ -22,6 +22,8 @@ import elementsParser from './api/liquid/elements-parser';
 import icons from './api/liquid/icons';
 import miningStats from './api/mining';
 import axios from 'axios';
+import PoolsRepository from './repositories/PoolsRepository';
+import mining from './api/mining';
 
 class Routes {
   constructor() {}
@@ -530,6 +532,19 @@ class Routes {
         statusCode = 404;
       }
       res.status(statusCode).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  public async $getPool(req: Request, res: Response) {
+    try {
+      const poolId = parseInt(req.params.poolId);
+      const stats = await mining.$getPoolStat(req.params.interval ?? null, poolId);
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      res.json(stats);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
