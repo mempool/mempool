@@ -302,7 +302,6 @@ yarn add @mempool/liquid.js`;
         return `curl -sSL "${this.hostname}${text}"`;
       }
       if (this.method === 'POST') {
-        text = text.replace('/api', `/${this.network}/api`);
         return `curl -X POST -sSLd "${text}"`;
       }
       return `curl -sSL "${this.hostname}/${this.network}${text}"`;
