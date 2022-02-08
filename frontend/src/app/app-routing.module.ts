@@ -26,6 +26,7 @@ import { PoolRankingComponent } from './components/pool-ranking/pool-ranking.com
 import { AssetGroupComponent } from './components/assets/asset-group/asset-group.component';
 import { AssetsFeaturedComponent } from './components/assets/assets-featured/assets-featured.component';
 import { AssetsComponent } from './components/assets/assets.component';
+import { PoolComponent } from './components/pool/pool.component';
 
 let routes: Routes = [
   {
@@ -65,6 +66,10 @@ let routes: Routes = [
       {
         path: 'mining/pools',
         component: PoolRankingComponent,
+      },
+      {
+        path: 'mining/pool/:poolId',
+        component: PoolComponent,
       },
       {
         path: 'graphs',
@@ -155,6 +160,10 @@ let routes: Routes = [
             component: PoolRankingComponent,
           },
           {
+            path: 'mining/pool/:poolId',
+            component: PoolComponent,
+          },
+          {
             path: 'graphs',
             component: StatisticsComponent,
           },
@@ -235,6 +244,10 @@ let routes: Routes = [
           {
             path: 'mining/pools',
             component: PoolRankingComponent,
+          },
+          {
+            path: 'mining/pool/:poolId',
+            component: PoolComponent,
           },
           {
             path: 'graphs',
