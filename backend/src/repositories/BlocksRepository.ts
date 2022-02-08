@@ -136,6 +136,23 @@ class BlocksRepository {
   }
 
   /**
+   * Get blocks mined by a specific mining pool
+   */
+  public async $getBlocksByPool(interval: string | null, poolId: number): Promise<object> {
+    const query = `
+      SELECT *
+      FROM blocks
+      WHERE pool_id = ${poolId}`
+      + (interval != null ? ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()` : ``);
+
+    const connection = await DB.pool.getConnection();
+    const [rows] = await connection.query(query);
+    connection.release();
+
+    return rows;
+  }
+
+  /**
    * Get one block by height
    */
    public async $getBlockByHeight(height: number): Promise<object | null> {

@@ -41,6 +41,23 @@ class PoolsRepository {
 
     return <PoolInfo[]>rows;
   }
+
+  /**
+   * Get mining pool statistics for one pool
+   */
+   public async $getPool(poolId: number) : Promise<object> {
+    const query = `
+      SELECT *
+      FROM pools
+      WHERE pools.id = ${poolId}
+    `;
+
+    const connection = await DB.pool.getConnection();
+    const [rows] = await connection.query(query);
+    connection.release();
+
+    return rows[0];
+  }
 }
 
 export default new PoolsRepository();
