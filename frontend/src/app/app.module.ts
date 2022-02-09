@@ -40,7 +40,8 @@ import { MempoolGraphComponent } from './components/mempool-graph/mempool-graph.
 import { PoolRankingComponent } from './components/pool-ranking/pool-ranking.component';
 import { LbtcPegsGraphComponent } from './components/lbtc-pegs-graph/lbtc-pegs-graph.component';
 import { AssetComponent } from './components/asset/asset.component';
-import { AssetsComponent } from './assets/assets.component';
+import { AssetsComponent } from './components/assets/assets.component';
+import { AssetsNavComponent } from './components/assets/assets-nav/assets-nav.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
 import { MinerComponent } from './components/miner/miner.component';
 import { SharedModule } from './shared/shared.module';
@@ -64,6 +65,8 @@ import { LanguageService } from './services/language.service';
 import { SponsorComponent } from './components/sponsor/sponsor.component';
 import { PushTransactionComponent } from './components/push-transaction/push-transaction.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { AssetsFeaturedComponent } from './components/assets/assets-featured/assets-featured.component';
+import { AssetGroupComponent } from './components/assets/asset-group/asset-group.component';
 
 @NgModule({
   declarations: [
@@ -110,6 +113,9 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     PushTransactionComponent,
     DocsComponent,
     ApiDocsNavComponent,
+    AssetsNavComponent,
+    AssetsFeaturedComponent,
+    AssetGroupComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),

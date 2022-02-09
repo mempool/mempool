@@ -1,0 +1,52 @@
+<ng-container *ngIf="(assets$ | async) as filteredAssets; else isLoading">
+  <table class="table table-borderless table-striped">
+    <thead>
+      <th class="td-name" i18n="Asset name header">Name</th>
+      <th i18n="Asset ticker header">Ticker</th>
+      <th class="d-none d-md-table-cell" i18n="Asset Issuer Domain header">Issuer domain</th>
+      <th class="d-none d-lg-table-cell" i18n="Asset ID header">Asset ID</th>
+    </thead>
+    <tbody>
+      <tr *ngFor="let asset of filteredAssets; trackBy: trackByAsset">
+        <td class="td-name"><a [routerLink]="['/assets/asset/' | relativeUrl, asset.asset_id]">{{ asset.name }}</a></td>
+        <td>{{ asset.ticker }}</td>
+        <td class="d-none d-md-table-cell">{{ asset.entity && asset.entity.domain }}</td>
+        <td class="d-none d-lg-table-cell"><a [routerLink]="['/assets/asset/' | relativeUrl, asset.asset_id]">{{ asset.asset_id | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="asset.asset_id"></app-clipboard></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <br>
+
+  <ngb-pagination [collectionSize]="assets.length" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="ellipses"></ngb-pagination>
+
+</ng-container>
+
+<ng-template #isLoading>
+
+  <table class="table table-borderless table-striped">
+    <thead>
+      <th i18n="Asset name header">Name</th>
+      <th i18n="Asset ticker header">Ticker</th>
+      <th class="d-none d-md-table-cell" i18n="Asset Issuer Domain header">Issuer domain</th>
+      <th class="d-none d-lg-table-cell" i18n="Asset ID header">Asset ID</th>
+    </thead>
+    <tbody>
+      <tr *ngFor="let dummy of [0,0,0,0,0,0,0,0,0,0]">
+        <td><span class="skeleton-loader"></span></td>
+        <td><span class="skeleton-loader"></span></td>
+        <td class="d-none d-md-table-cell"><span class="skeleton-loader"></span></td>
+        <td class="d-none d-lg-table-cell"><span class="skeleton-loader"></span></td>
+      </tr>
+    </tbody>
+  </table>
+
+</ng-template>
+
+<ng-template [ngIf]="error">
+  <div class="text-center">
+    <ng-container i18n="Asset data load error">Error loading assets data.</ng-container>
+    <br>
+    <i>{{ error.error }}</i>
+  </div>
+</ng-template>
