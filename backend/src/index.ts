@@ -275,7 +275,9 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/3y', routes.$getPools.bind(routes, '3y'))
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/all', routes.$getPools.bind(routes, 'all'))
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:poolId', routes.$getPool)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:poolId/:interval', routes.$getPool);
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:poolId/:interval', routes.$getPool)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool-blocks/:poolId', routes.$getPoolBlocks)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool-blocks/:poolId/:height', routes.$getPoolBlocks);
     }
 
     if (config.BISQ.ENABLED) {
