@@ -2,36 +2,20 @@ import { PoolInfo, PoolStats } from '../mempool.interfaces';
 import BlocksRepository, { EmptyBlocks } from '../repositories/BlocksRepository';
 import PoolsRepository from '../repositories/PoolsRepository';
 import bitcoinClient from './bitcoin/bitcoin-client';
+import { Common } from './common';
 
 class Mining {
   constructor() {
-  }
-
-  private getSqlInterval(interval: string | null): string | null {
-    switch (interval) {
-      case '24h': return '1 DAY';
-      case '3d': return '3 DAY';
-      case '1w': return '1 WEEK';
-      case '1m': return '1 MONTH';
-      case '3m': return '3 MONTH';
-      case '6m': return '6 MONTH';
-      case '1y': return '1 YEAR';
-      case '2y': return '2 YEAR';
-      case '3y': return '3 YEAR';
-      default: return null;
-    }
   }
 
   /**
    * Generate high level overview of the pool ranks and general stats
    */
   public async $getPoolsStats(interval: string | null) : Promise<object> {
-    const sqlInterval = this.getSqlInterval(interval);
-
     const poolsStatistics = {};
 
-    const poolsInfo: PoolInfo[] = await PoolsRepository.$getPoolsInfo(sqlInterval);
-    const emptyBlocks: EmptyBlocks[] = await BlocksRepository.$countEmptyBlocks(sqlInterval);
+    const poolsInfo: PoolInfo[] = await PoolsRepository.$getPoolsInfo(interval);
+    const emptyBlocks: EmptyBlocks[] = await BlocksRepository.$getEmptyBlocks(null, interval);
 
     const poolsStats: PoolStats[] = [];
     let rank = 1;
@@ -58,7 +42,7 @@ class Mining {
     const oldestBlock = new Date(await BlocksRepository.$oldestBlockTimestamp());
     poolsStatistics['oldestIndexedBlockTimestamp'] = oldestBlock.getTime();
 
-    const blockCount: number = await BlocksRepository.$blockCount(sqlInterval);
+    const blockCount: number = await BlocksRepository.$blockCount(null, interval);
     poolsStatistics['blockCount'] = blockCount;
 
     const blockHeightTip = await bitcoinClient.getBlockCount();
@@ -74,15 +58,16 @@ class Mining {
   public async $getPoolStat(interval: string | null, poolId: number): Promise<object> {
     const pool = await PoolsRepository.$getPool(poolId);
     if (!pool) {
-      throw new Error("This mining pool does not exist");
+      throw new Error(`This mining pool does not exist`);
     }
 
-    const sqlInterval = this.getSqlInterval(interval);
-    const blocks = await BlocksRepository.$getBlocksByPool(sqlInterval, poolId);
+    const blockCount: number = await BlocksRepository.$blockCount(poolId, interval);
+    const emptyBlocks: EmptyBlocks[] = await BlocksRepository.$getEmptyBlocks(poolId, interval);
 
     return {
       pool: pool,
-      blocks: blocks,
+      blockCount: blockCount,
+      emptyBlocks: emptyBlocks,
     };
   }
 }
