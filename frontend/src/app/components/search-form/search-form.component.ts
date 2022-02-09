@@ -105,11 +105,11 @@ export class SearchFormComponent implements OnInit {
         const matches = this.regexTransaction.exec(searchText);
         if (this.network === 'liquid' || this.network === 'liquidtestnet') {
           if (this.assets[matches[1]]) {
-            this.navigate('/asset/', matches[1]);
+            this.navigate('/assets/asset/', matches[1]);
           }
           this.electrsApiService.getAsset$(matches[1])
             .subscribe(
-              () => { this.navigate('/asset/', matches[1]); },
+              () => { this.navigate('/assets/asset/', matches[1]); },
               () => {
                 this.electrsApiService.getBlock$(matches[1])
                   .subscribe(
