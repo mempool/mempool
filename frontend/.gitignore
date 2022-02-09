@@ -53,6 +53,7 @@ src/resources/assets.minimal.json
 src/resources/assets-testnet.json
 src/resources/assets-testnet.minimal.json
 src/resources/pools.json
+src/resources/mining-pools/*
 
 # environment config
 mempool-frontend-config.json
