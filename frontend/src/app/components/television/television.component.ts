@@ -5,19 +5,20 @@ import { StateService } from 'src/app/services/state.service';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { ActivatedRoute } from '@angular/router';
-import { map, startWith, switchMap, tap } from 'rxjs/operators';
+import { map, scan, startWith, switchMap, tap } from 'rxjs/operators';
 import { interval, merge, Observable } from 'rxjs';
-import { isArray } from 'src/app/shared/pipes/bytes-pipe/utils';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-television',
   templateUrl: './television.component.html',
-  styleUrls: ['./television.component.scss']
+  styleUrls: ['./television.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TelevisionComponent implements OnInit {
 
   mempoolStats: OptimizedMempoolStats[] = [];
-  statsSubscription$: Observable<any>;
+  statsSubscription$: Observable<OptimizedMempoolStats[]>;
   fragment: string;
 
   constructor(
@@ -37,14 +38,13 @@ export class TelevisionComponent implements OnInit {
     this.websocketService.want(['blocks', 'live-2h-chart', 'mempool-blocks']);
 
     this.statsSubscription$ = merge(
-      this.stateService.live2Chart$,
+      this.stateService.live2Chart$.pipe(map(stats => [stats])),
       this.route.fragment
         .pipe(
-          tap(fragment => { this.fragment = fragment; }),
+          tap(fragment => { this.fragment = fragment ?? '2h'; }),
           switchMap((fragment) => {
             const minute = 60000; const hour = 3600000;
             switch (fragment) {
-              case '2h': return this.apiService.list2HStatistics$();
               case '24h': return this.apiService.list24HStatistics$();
               case '1w': return this.refreshStats(5 * minute, this.apiService.list1WStatistics$());
               case '1m': return this.refreshStats(30 * minute, this.apiService.list1MStatistics$());
@@ -53,20 +53,20 @@ export class TelevisionComponent implements OnInit {
               case '1y': return this.refreshStats(8 * hour, this.apiService.list1YStatistics$());
               case '2y': return this.refreshStats(8 * hour, this.apiService.list2YStatistics$());
               case '3y': return this.refreshStats(12 * hour, this.apiService.list3YStatistics$());
-              default: return this.apiService.list2HStatistics$();
+              default /* 2h */: return this.apiService.list2HStatistics$();
             }
           })
         )
     )
     .pipe(
-      map(stats => {
-        if (isArray(stats)) {
-          this.mempoolStats = stats as OptimizedMempoolStats[];
+      scan((mempoolStats, newStats) => {
+        if (newStats.length > 1) {
+          mempoolStats = newStats;
         } else if (['2h', '24h'].includes(this.fragment)) {
-          this.mempoolStats.unshift(stats as OptimizedMempoolStats);
-          this.mempoolStats = this.mempoolStats.slice(0, this.mempoolStats.length - 1);
+          mempoolStats.unshift(newStats[0]);
+          mempoolStats = mempoolStats.slice(0, mempoolStats.length - 1);
         }
-        return this.mempoolStats;
+        return mempoolStats;
       })
     );
   }
