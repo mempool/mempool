@@ -33,6 +33,35 @@ function download(filename, url) {
   });
 }
 
+function downloadMiningPoolLogos() {
+  const options = {
+    host: 'api.github.com',
+    path: '/repos/mempool/mining-pools/contents/',
+    method: 'GET',
+    headers: {'user-agent': 'node.js'}
+  };
+
+  https.get(options, (response) => {
+    let chunks_of_data = [];
+
+    response.on('data', (fragments) => {
+      chunks_of_data.push(fragments);
+    });
+  
+    response.on('end', () => {
+      let response_body = Buffer.concat(chunks_of_data);
+      const poolLogos = JSON.parse(response_body.toString());
+      for (const poolLogo of poolLogos) {
+          download(`${PATH}/mining-pools/${poolLogo.name}`, poolLogo.download_url);
+      }
+    });
+  
+    response.on('error', (error) => {
+      throw new Error(error);
+    });
+  })
+}
+
 const poolsJsonUrl = 'https://raw.githubusercontent.com/btccom/Blockchain-Known-Pools/master/pools.json';
 let assetsJsonUrl = 'https://raw.githubusercontent.com/mempool/asset_registry_db/master/index.json';
 let assetsMinimalJsonUrl = 'https://raw.githubusercontent.com/mempool/asset_registry_db/master/index.minimal.json';
@@ -55,4 +84,5 @@ console.log('Downloading testnet assets');
 download(PATH + 'assets-testnet.json', testnetAssetsJsonUrl);
 console.log('Downloading testnet assets minimal');
 download(PATH + 'assets-testnet.minimal.json', testnetAssetsMinimalJsonUrl);
-
+console.log('Downloading mining pool logos');
+downloadMiningPoolLogos();
