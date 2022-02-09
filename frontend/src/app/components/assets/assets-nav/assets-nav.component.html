@@ -1,0 +1,33 @@
+<div class="container-xl">
+  <div class="title-asset">
+    <h1 i18n="Assets page header">Assets</h1>
+  </div>
+
+  <div class="nav-container">
+    <ul class="nav nav-pills">
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="['/assets/featured' | relativeUrl]" routerLinkActive="active" i18n>Featured</a>
+        
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="['/assets/all' | relativeUrl]" routerLinkActive="active" i18n>All</a>
+      </li>
+    </ul>
+
+    <form [formGroup]="searchForm">
+      <div class="input-group mb-2">
+        <input #instance="ngbTypeahead" [ngbTypeahead]="typeaheadSearchFn" [resultFormatter]="formatterFn" (selectItem)="itemSelected()" (focus)="focus$.next($any($event).target.value)" (click)="click$.next($any($event).target.value)" formControlName="searchText" type="text" class="form-control" i18n-placeholder="Search Assets Placeholder Text" placeholder="Search asset">
+        <div class="input-group-append">
+          <button [disabled]="!searchForm.get('searchText')?.value.length" class="btn btn-secondary" type="button" (click)="searchForm.get('searchText')?.setValue('');" autocomplete="off" i18n="Search Clear Button">Clear</button>
+        </div>
+      </div>
+    </form>
+</div>
+
+  <div class="clearfix"></div>
+
+  <router-outlet></router-outlet>
+
+</div>
+
+<br>
