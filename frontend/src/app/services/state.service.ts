@@ -1,8 +1,8 @@
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable } from 'rxjs';
-import { Block, Transaction } from '../interfaces/electrs.interface';
+import { Transaction } from '../interfaces/electrs.interface';
 import { IBackendInfo, MempoolBlock, MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
-import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
+import { BlockExtended, OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { map, shareReplay } from 'rxjs/operators';
@@ -74,7 +74,7 @@ export class StateService {
   latestBlockHeight = -1;
 
   networkChanged$ = new ReplaySubject<string>(1);
-  blocks$: ReplaySubject<[Block, boolean]>;
+  blocks$: ReplaySubject<[BlockExtended, boolean]>;
   transactions$ = new ReplaySubject<TransactionStripped>(6);
   conversions$ = new ReplaySubject<any>(1);
   bsqPrice$ = new ReplaySubject<number>(1);
@@ -124,7 +124,7 @@ export class StateService {
       }
     });
 
-    this.blocks$ = new ReplaySubject<[Block, boolean]>(this.env.KEEP_BLOCKS_AMOUNT);
+    this.blocks$ = new ReplaySubject<[BlockExtended, boolean]>(this.env.KEEP_BLOCKS_AMOUNT);
 
     if (this.env.BASE_MODULE === 'bisq') {
       this.network = this.env.BASE_MODULE;

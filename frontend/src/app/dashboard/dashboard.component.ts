@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
 import { combineLatest, merge, Observable, of, timer } from 'rxjs';
 import { filter, map, scan, share, switchMap, tap } from 'rxjs/operators';
-import { Block } from '../interfaces/electrs.interface';
-import { OptimizedMempoolStats } from '../interfaces/node-api.interface';
+import { BlockExtended, OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
 import { ApiService } from '../services/api.service';
 import { StateService } from '../services/state.service';
@@ -40,7 +39,7 @@ export class DashboardComponent implements OnInit {
   mempoolInfoData$: Observable<MempoolInfoData>;
   mempoolLoadingStatus$: Observable<number>;
   vBytesPerSecondLimit = 1667;
-  blocks$: Observable<Block[]>;
+  blocks$: Observable<BlockExtended[]>;
   transactions$: Observable<TransactionStripped[]>;
   latestBlockHeight: number;
   mempoolTransactionsWeightPerSecondData: any;
@@ -205,7 +204,7 @@ export class DashboardComponent implements OnInit {
     };
   }
 
-  trackByBlock(index: number, block: Block) {
+  trackByBlock(index: number, block: BlockExtended) {
     return block.height;
   }
 
