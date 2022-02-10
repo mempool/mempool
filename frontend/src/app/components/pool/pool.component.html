@@ -8,6 +8,46 @@
     <div class="box">
       <div class="row">
         <div class="col-sm">
+          <div class="card-header mb-0 mb-lg-4 pr-0">
+            <form [formGroup]="radioGroupForm" class="formRadioGroup float-right">
+              <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
+                <label ngbButtonLabel class="btn-primary btn-sm">
+                  <input ngbButton type="radio" [value]="'24h'"> 24h
+                </label>
+                <label ngbButtonLabel class="btn-primary btn-sm">
+                  <input ngbButton type="radio" [value]="'3d'"> 3D
+                </label>
+                <label ngbButtonLabel class="btn-primary btn-sm">
+                  <input ngbButton type="radio" [value]="'1w'"> 1W
+                </label>
+                <label ngbButtonLabel class="btn-primary btn-sm">
+                  <input ngbButton type="radio" [value]="'1m'"> 1M
+                </label>
+                <label ngbButtonLabel class="btn-primary btn-sm">
+                  <input ngbButton type="radio" [value]="'3m'"> 3M
+                </label>
+                <label ngbButtonLabel class="btn-primary btn-sm">
+                  <input ngbButton type="radio" [value]="'6m'"> 6M
+                </label>
+                <label ngbButtonLabel class="btn-primary btn-sm">
+                  <input ngbButton type="radio" [value]="'1y'"> 1Y
+                </label>
+                <label ngbButtonLabel class="btn-primary btn-sm">
+                  <input ngbButton type="radio" [value]="'2y'"> 2Y
+                </label>
+                <label ngbButtonLabel class="btn-primary btn-sm">
+                  <input ngbButton type="radio" [value]="'3y'"> 3Y
+                </label>
+                <label ngbButtonLabel class="btn-primary btn-sm">
+                  <input ngbButton type="radio" [value]="'all'"> ALL
+                </label>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm">
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
@@ -47,9 +87,9 @@
       <th class="d-none d-lg-block" style="width: 15%;" i18n="latest-blocks.transactions">Transactions</th>
       <th style="width: 20%;" i18n="latest-blocks.size">Size</th>
     </thead>
-    <tbody>
+    <tbody *ngIf="blocks$ | async as blocks">
       <tr *ngFor="let block of blocks">
-        <td><a [routerLink]="['/block' | relativeUrl, block.hash]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
+        <td><a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
         <td class="d-none d-md-block">&lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}</td>
         <td><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since></td>
         <td class="d-none d-lg-block">{{ block.tx_count | number }}</td>

@@ -138,6 +138,10 @@ export class ApiService {
   }
 
   getPoolBlocks$(poolId: number, fromHeight: number): Observable<BlockExtended[]> {
-    return this.httpClient.get<BlockExtended[]>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool-blocks/${poolId}/${fromHeight}`);
+    if (fromHeight !== undefined) {
+      return this.httpClient.get<BlockExtended[]>(this.apiBaseUrl + this.apiBasePath +`/api/v1/mining/pool-blocks/${poolId}/${fromHeight}`);
+    } else {
+      return this.httpClient.get<BlockExtended[]>(this.apiBaseUrl + this.apiBasePath +`/api/v1/mining/pool-blocks/${poolId}`);
+    }
   }
 }

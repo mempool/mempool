@@ -72,10 +72,6 @@ let routes: Routes = [
         component: PoolComponent,
       },
       {
-        path: 'mining/pool/:poolId/:interval',
-        component: PoolComponent,
-      },
-      {
         path: 'graphs',
         component: StatisticsComponent,
       },
@@ -168,10 +164,6 @@ let routes: Routes = [
             component: PoolComponent,
           },
           {
-            path: 'mining/pool/:poolId/:interval',
-            component: PoolComponent,
-          },
-          {
             path: 'graphs',
             component: StatisticsComponent,
           },
@@ -255,10 +247,6 @@ let routes: Routes = [
           },
           {
             path: 'mining/pool/:poolId',
-            component: PoolComponent,
-          },
-          {
-            path: 'mining/pool/:poolId/:interval',
             component: PoolComponent,
           },
           {
