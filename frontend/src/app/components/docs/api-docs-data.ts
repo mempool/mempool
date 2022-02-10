@@ -1,6 +1,13 @@
 const bitcoinNetworks = ["", "testnet", "signet"];
 const liquidNetworks = ["liquid", "liquidtestnet"];
 
+const emptyCodeSample = {
+  esModule: [],
+  commonJS: [],
+  curl: [],
+  response: ``
+};
+
 export const wsApiDocsData = {
   codeTemplate: {
     curl: `/api/v1/ws`,
@@ -51,36 +58,11 @@ console.log(res["mempool-blocks"]);
 });
     `,
   },
-  codeSampleMainnet: {
-    esModule: [],
-    commonJS: [],
-    curl: [],
-    response: ``
-  },
-  codeSampleTestnet: {
-    esModule: [],
-    commonJS: [],
-    curl: [],
-    response: ``
-  },
-  codeSampleSignet: {
-    esModule: [],
-    commonJS: [],
-    curl: [],
-    response: ``
-  },
-  codeSampleLiquid: {
-    esModule: [],
-    commonJS: [],
-    curl: [],
-    response: ``,
-  },
-  codeSampleBisq: {
-    esModule: [],
-    commonJS: [],
-    curl: [],
-    response: ''
-  },
+  codeSampleMainnet: emptyCodeSample,
+  codeSampleTestnet: emptyCodeSample,
+  codeSampleSignet: emptyCodeSample,
+  codeSampleLiquid: emptyCodeSample,
+  codeSampleBisq: emptyCodeSample,
 };
 
 export const restApiDocsData = [
@@ -204,30 +186,10 @@ export const restApiDocsData = [
           `,
           curl: `/api/stats`,
         },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleTestnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleSignet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleLiquid: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
+        codeSampleMainnet: emptyCodeSample,
+        codeSampleTestnet: emptyCodeSample,
+        codeSampleSignet: emptyCodeSample,
+        codeSampleLiquid: emptyCodeSample,
         codeSampleBisq: {
           esModule: [],
           commonJS: [],
@@ -279,30 +241,10 @@ export const restApiDocsData = [
   console.log(currencies);
           `,
         },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleTestnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleSignet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleLiquid: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``,
-        },
+        codeSampleMainnet: emptyCodeSample,
+        codeSampleTestnet: emptyCodeSample,
+        codeSampleSignet: emptyCodeSample,
+        codeSampleLiquid: emptyCodeSample,
         codeSampleBisq: {
           esModule: [],
           commonJS: [],
@@ -353,30 +295,10 @@ export const restApiDocsData = [
   console.log(depth);
           `,
         },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleTestnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleSignet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleLiquid: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``,
-        },
+        codeSampleMainnet: emptyCodeSample,
+        codeSampleTestnet: emptyCodeSample,
+        codeSampleSignet: emptyCodeSample,
+        codeSampleLiquid: emptyCodeSample,
         codeSampleBisq: {
           esModule: ['BTC_USD'],
           commonJS: ['BTC_USD'],
@@ -430,30 +352,10 @@ export const restApiDocsData = [
   console.log(hloc);
           `,
         },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleTestnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleSignet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleLiquid: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``,
-        },
+        codeSampleMainnet: emptyCodeSample,
+        codeSampleTestnet: emptyCodeSample,
+        codeSampleSignet: emptyCodeSample,
+        codeSampleLiquid: emptyCodeSample,
         codeSampleBisq: {
           esModule: ['BTC_USD'],
           commonJS: ['BTC_USD'],
@@ -504,30 +406,10 @@ export const restApiDocsData = [
   console.log(allMarkets);
           `,
         },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleTestnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleSignet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleLiquid: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``,
-        },
+        codeSampleMainnet: emptyCodeSample,
+        codeSampleTestnet: emptyCodeSample,
+        codeSampleSignet: emptyCodeSample,
+        codeSampleLiquid: emptyCodeSample,
         codeSampleBisq: {
           esModule: ['BTC_USD'],
           commonJS: ['BTC_USD'],
@@ -584,30 +466,10 @@ export const restApiDocsData = [
   console.log(offers);
           `,
         },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleTestnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleSignet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleLiquid: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``,
-        },
+        codeSampleMainnet: emptyCodeSample,
+        codeSampleTestnet: emptyCodeSample,
+        codeSampleSignet: emptyCodeSample,
+        codeSampleLiquid: emptyCodeSample,
         codeSampleBisq: {
           esModule: ['BTC_USD'],
           commonJS: ['BTC_USD'],
@@ -681,30 +543,10 @@ export const restApiDocsData = [
   console.log(ticker);
           `,
         },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleTestnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleSignet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleLiquid: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``,
-        },
+        codeSampleMainnet: emptyCodeSample,
+        codeSampleTestnet: emptyCodeSample,
+        codeSampleSignet: emptyCodeSample,
+        codeSampleLiquid: emptyCodeSample,
         codeSampleBisq: {
           esModule: ['BTC_USD'],
           commonJS: ['BTC_USD'],
@@ -755,30 +597,10 @@ export const restApiDocsData = [
   console.log(trades);
           `,
         },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleTestnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleSignet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleLiquid: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``,
-        },
+        codeSampleMainnet: emptyCodeSample,
+        codeSampleTestnet: emptyCodeSample,
+        codeSampleSignet: emptyCodeSample,
+        codeSampleLiquid: emptyCodeSample,
         codeSampleBisq: {
           esModule: ['BTC_USD', '1'],
           commonJS: ['BTC_USD', '1'],
@@ -829,30 +651,10 @@ export const restApiDocsData = [
   console.log(volumes);
           `,
         },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleTestnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleSignet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleLiquid: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``,
-        },
+        codeSampleMainnet: emptyCodeSample,
+        codeSampleTestnet: emptyCodeSample,
+        codeSampleSignet: emptyCodeSample,
+        codeSampleLiquid: emptyCodeSample,
         codeSampleBisq: {
           esModule: ['BTC_USD', 'BTC'],
           commonJS: ['BTC_USD', 'BTC'],
@@ -1183,12 +985,7 @@ export const restApiDocsData = [
   ...
 ]`
         },
-        codeSampleBisq: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -1471,12 +1268,7 @@ export const restApiDocsData = [
   }
 ]`
         },
-        codeSampleBisq: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -1608,12 +1400,7 @@ export const restApiDocsData = [
   }
 ]`,
         },
-        codeSampleBisq: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -1655,24 +1442,9 @@ export const restApiDocsData = [
   console.log(asset);
           `,
         },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
-        codeSampleTestnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
-        codeSampleSignet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
+        codeSampleMainnet: emptyCodeSample,
+        codeSampleTestnet: emptyCodeSample,
+        codeSampleSignet: emptyCodeSample,
         codeSampleLiquid: {
           esModule: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
           commonJS: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
@@ -1735,12 +1507,7 @@ export const restApiDocsData = [
   "ticker": "LCAD"
 }`,
         },
-        codeSampleBisq: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -1775,24 +1542,9 @@ export const restApiDocsData = [
   console.log(assetTxs);
           `,
         },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
-        codeSampleTestnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
-        codeSampleSignet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
+        codeSampleMainnet: emptyCodeSample,
+        codeSampleTestnet: emptyCodeSample,
+        codeSampleSignet: emptyCodeSample,
         codeSampleLiquid: {
           esModule: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
           commonJS: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
@@ -1841,12 +1593,7 @@ export const restApiDocsData = [
   ...
 ]`,
         },
-        codeSampleBisq: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -1881,24 +1628,9 @@ export const restApiDocsData = [
   console.log(assetSupply);
           `,
         },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
-        codeSampleTestnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
-        codeSampleSignet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
+        codeSampleMainnet: emptyCodeSample,
+        codeSampleTestnet: emptyCodeSample,
+        codeSampleSignet: emptyCodeSample,
         codeSampleLiquid: {
           esModule: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
           commonJS: [`6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`],
@@ -1911,12 +1643,7 @@ export const restApiDocsData = [
           curl: [`05aa9f02a06da37f2a0a572c49ac381499a16a643ad7c70c51ac94560778c92e`],
           response: `1000`,
         },
-        codeSampleBisq: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -1956,12 +1683,7 @@ export const restApiDocsData = [
   ...
 ]`,
         },
-        codeSampleLiquidTestnet: {
-          esModule: [``],
-          commonJS: [``],
-          curl: [``],
-          response: `[]`,
-        },
+        codeSampleLiquidTestnet: emptyCodeSample,
       }
     }
   },
@@ -2212,12 +1934,7 @@ export const restApiDocsData = [
           curl: [`8f7cb70f32e2069724212c986f34462fc40180eabf189b44486faf6989824f9a`],
           response: `000000a0263542a60466e252dbc301001f2f87cdd232106344209d6c252bbda572fd4527b4b9a8412c0ecaca405241beaa6779e74d505a481941a873be74b0b34511cce7d806d261515c020001220020e9e4117540f7f23b3edd7c2cad660a17fb33c7959b8c37cf61d92b189133929a96000000fbee9cea00d8efdc49cfbec328537e0d7032194de6ebf3cf42e5c05bb89a08b10003004730440220303a6fc365e016422bd5d714e403db237964c9e53c244310a4a03f432583290202206951e82c2ffa028f88d64d9bb4ec7789ced137046bb38a02816617b554efd42b012551210217e403ddb181872c32a0cd468c710040b2f53d8cac69f18dad07985ee37e9a7151ae`,
         },
-        codeSampleBisq: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -2279,12 +1996,7 @@ export const restApiDocsData = [
           curl: [`150000`],
           response: `67d5eb1aee63c6c2058a088985503ff0626fd3f7f8022bdc74fab36a359164db`,
         },
-        codeSampleBisq: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -2349,12 +2061,7 @@ export const restApiDocsData = [
           curl: [`67d5eb1aee63c6c2058a088985503ff0626fd3f7f8022bdc74fab36a359164db`],
           response: '',
         },
-        codeSampleBisq: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: '',
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -2439,12 +2146,7 @@ export const restApiDocsData = [
   next_best: "2f24f3d94c006971b86fe2c9cdc92a7ed0aa7ec3b0643a836b8d8b5a54103bab"
 }`,
         },
-        codeSampleBisq: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -2575,12 +2277,7 @@ export const restApiDocsData = [
           curl: [''],
           response: `ff643a1e102b555103d8feb20b296ee5cf3b4a202fa284e5d6ce82945b738ae7`,
         },
-        codeSampleBisq: {
-          esModule: [''],
-          commonJS: [''],
-          curl: [''],
-          response: ``
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -2645,12 +2342,7 @@ export const restApiDocsData = [
           curl: ['b6b4aeefa220c6a17da116bda666e869b3146967d2479656448a8bce1e799b8f', '1'],
           response: `41493aa0eec8b6d359c2defc90e2fafb42fb5b8633456648553467a4d3a16c4a`
         },
-        codeSampleBisq: {
-          esModule: [''],
-          commonJS: [''],
-          curl: [''],
-          response: ``
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -2744,12 +2436,7 @@ export const restApiDocsData = [
   "fa6b8dda9037f8284a659627005ad32dbb81e22b102c1d3d8a9bab0893ce2ab7"
 ]`
         },
-        codeSampleBisq: {
-          esModule: [''],
-          commonJS: [''],
-          curl: [''],
-          response: ``
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -2904,12 +2591,7 @@ export const restApiDocsData = [
   ...
 ]`
         },
-        codeSampleBisq: {
-          esModule: [''],
-          commonJS: [''],
-          curl: [''],
-          response: ``
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -2942,30 +2624,10 @@ export const restApiDocsData = [
   console.log(getBlocks);
           `,
         },
-        codeSampleMainnet: {
-          esModule: [''],
-          commonJS: [''],
-          curl: [''],
-          response: ``
-        },
-        codeSampleTestnet: {
-          esModule: [''],
-          commonJS: [''],
-          curl: [''],
-          response: ``
-        },
-        codeSampleSignet: {
-          esModule: [''],
-          commonJS: [''],
-          curl: [''],
-          response: ``
-        },
-        codeSampleLiquid: {
-          esModule: [''],
-          commonJS: [''],
-          curl: [''],
-          response: ``
-        },
+        codeSampleMainnet: emptyCodeSample,
+        codeSampleTestnet: emptyCodeSample,
+        codeSampleSignet: emptyCodeSample,
+        codeSampleLiquid: emptyCodeSample,
         codeSampleBisq: {
           esModule: ['0', '1'],
           commonJS: ['0', '1'],
@@ -3107,12 +2769,7 @@ export const restApiDocsData = [
   ...
 ]`
         },
-        codeSampleBisq: {
-          esModule: [''],
-          commonJS: [''],
-          curl: [''],
-          response: ``
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -3272,12 +2929,7 @@ export const restApiDocsData = [
   }
 ]`
         },
-        codeSampleBisq: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -3365,12 +3017,7 @@ export const restApiDocsData = [
   minimumFee: 1
 }`
         },
-        codeSampleBisq: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -3480,12 +3127,7 @@ export const restApiDocsData = [
   ]
 }`
         },
-        codeSampleBisq: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -3571,12 +3213,7 @@ export const restApiDocsData = [
   "dfbe66e6e71e775c9529a822c14286de0ee1066c2760a53552615d05e17006f3"
 ]`
         },
-        codeSampleBisq: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -3682,12 +3319,7 @@ export const restApiDocsData = [
   ...
 ]`
         },
-        codeSampleBisq: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -3759,12 +3391,7 @@ export const restApiDocsData = [
           curl: ['txid'],
           response: ``
         },
-        codeSampleBisq: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -4047,18 +3674,8 @@ export const restApiDocsData = [
           curl: ['fe80c0c2439d41d301f35570018b4239ca3204293e5e5fd68d64013e8fc45025'],
           response: `00000020d356e0a14120d45653120a7bd53280ffce2aa2ced301682a1f2867687f000000298ef149a1675866dbdde315b22c24c63fd7670fdc5b86b588007fa187fa85089cba31619356011eaedd8800180000000656e9b938241cb350316cd9155167f3bce7370aa1095143c304ef7a44da4984e02550c48f3e01648dd65f5e3e290432c...`
         },
-        codeSampleLiquid: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``,
-        },
-        codeSampleLiquidTestnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``,
-        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
         codeSampleBisq: {
           esModule: [`98a598aeea121ea061dc713d1547363358974191c257d3b563bbf2a1706ff44e`],
           commonJS: [`98a598aeea121ea061dc713d1547363358974191c257d3b563bbf2a1706ff44e`],
@@ -4697,30 +4314,10 @@ export const restApiDocsData = [
   console.log(txStatus);
           `,
         },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleTestnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleSignet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``
-        },
-        codeSampleLiquid: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ``,
-        },
+        codeSampleMainnet: emptyCodeSample,
+        codeSampleTestnet: emptyCodeSample,
+        codeSampleSignet: emptyCodeSample,
+        codeSampleLiquid: emptyCodeSample,
         codeSampleBisq: {
           esModule: [`0`, '1'],
           commonJS: [`0`, '1'],
@@ -4808,12 +4405,7 @@ export const restApiDocsData = [
           curl: [`0200000001fd5b5fcd1cb066c27cfc9fda5428b9be850b81ac440ea51f1ddba2f987189ac1010000008a4730440220686a40e9d2dbffeab4ca1ff66341d06a17806767f12a1fc4f55740a7af24c6b5022049dd3c9a85ac6c51fecd5f4baff7782a518781bbdd94453c8383755e24ba755c01410436d554adf4a3eb03a317c77aa4020a7bba62999df633bba0ea8f83f48b9e01b0861d3b3c796840f982ee6b14c3c4b7ad04fcfcc3774f81bff9aaf52a15751fedfdffffff02416c00000000000017a914bc791b2afdfe1e1b5650864a9297b20d74c61f4787d71d0000000000001976a9140a59837ccd4df25adc31cdad39be6a8d97557ed688ac00000000`],
           response: ``,
         },
-        codeSampleBisq: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          response: ''
-        },
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
