@@ -126,12 +126,10 @@ class Blocks {
       } else {
         pool = await poolsRepository.$getUnknownPool();
       }
-      blockExtended.extras.pool = pool;
-
-      if (transactions.length > 0) {
-        const coinbase: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(transactions[0].txid, true);
-        blockExtended.extras.coinbaseHex = coinbase.hex;
-      }
+      blockExtended.extras.pool = {
+        id: pool.id,
+        name: pool.name
+      };
     }
 
     return blockExtended;
@@ -404,13 +402,9 @@ class Blocks {
         medianFee: block?.medianFee,
         feeRange: block?.feeRange ?? [], // TODO
         reward: block?.reward,
-        coinbaseHex: block?.extras?.coinbaseHex ?? block?.coinbase_raw, // coinbase_raw for indexed block
         pool: block?.extras?.pool ?? (block?.pool_id ? {
           id: block?.pool_id,
           name: block?.pool_name,
-          link: block?.pool_link,
-          regexes: block?.pool_regexes,
-          addresses: block?.pool_addresses,
         } : undefined),
       }
     };
