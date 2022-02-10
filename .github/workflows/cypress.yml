@@ -1,7 +1,10 @@
 name: Cypress Tests
 
-on: [push, pull_request]
-
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 jobs:
   cypress:
     runs-on: ${{ matrix.os }}
@@ -24,6 +27,7 @@ jobs:
       - name: ${{ matrix.browser }} browser tests (Mempool)
         uses: cypress-io/github-action@v2
         with:
+          tag: ${{ github.event_name }}
           working-directory: frontend
           build: npm run config:defaults:mempool
           start: npm run start:local-staging
@@ -39,6 +43,7 @@ jobs:
           browser: ${{ matrix.browser }}
           ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
         env:
+          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
@@ -47,6 +52,7 @@ jobs:
         uses: cypress-io/github-action@v2
         if: always()
         with:
+          tag: ${{ github.event_name }}
           working-directory: frontend
           build: npm run config:defaults:liquid
           start: npm run start:local-staging
@@ -61,6 +67,7 @@ jobs:
           browser: ${{ matrix.browser }}
           ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
         env:
+          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
@@ -69,6 +76,7 @@ jobs:
         uses: cypress-io/github-action@v2
         if: always()
         with:
+          tag: ${{ github.event_name }}
           working-directory: frontend
           build: npm run config:defaults:bisq
           start: npm run start:local-staging
@@ -81,6 +89,7 @@ jobs:
           browser: ${{ matrix.browser }}
           ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
         env:
+          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
