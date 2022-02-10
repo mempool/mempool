@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { once } from 'process';
+import { BehaviorSubject, combineLatest, from, merge, Observable } from 'rxjs';
+import { delay, distinctUntilChanged, map, scan, startWith, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended, PoolStat } from 'src/app/interfaces/node-api.interface';
 import { ApiService } from 'src/app/services/api.service';
 import { StateService } from 'src/app/services/state.service';
@@ -13,51 +15,56 @@ import { StateService } from 'src/app/services/state.service';
 })
 export class PoolComponent implements OnInit {
   poolStats$: Observable<PoolStat>;
+  blocks$: Observable<BlockExtended[]>;
+
+  fromHeight: number = -1;
+  fromHeightSubject: BehaviorSubject<number> = new BehaviorSubject(this.fromHeight);
+
+  blocks: BlockExtended[] = [];
+  poolId: number = undefined;
   isLoading = false;
-
-  poolId: number;
-  interval: string;
-
-  blocks: any[] = [];
+  radioGroupForm: FormGroup;
 
   constructor(
     private apiService: ApiService,
     private route: ActivatedRoute,
     public stateService: StateService,
-  ) { }
-
-  ngOnInit(): void {
-    this.poolStats$ = this.route.params
-      .pipe(
-        switchMap((params) => {
-          this.poolId = params.poolId;
-          this.interval = params.interval;
-          this.loadMore(2);
-          return this.apiService.getPoolStats$(params.poolId, params.interval ?? 'all');
-        }),
-      );
+    private formBuilder: FormBuilder,
+  ) {
+    this.radioGroupForm = this.formBuilder.group({ dateSpan: '1w' });
+    this.radioGroupForm.controls.dateSpan.setValue('1w');
   }
 
-  loadMore(chunks = 0) {
-    let fromHeight: number | undefined;
-    if (this.blocks.length > 0) {
-      fromHeight = this.blocks[this.blocks.length - 1].height - 1;
-    }
+  ngOnInit(): void {
+    this.poolStats$ = combineLatest([
+      this.route.params.pipe(map((params) => params.poolId)),
+      this.radioGroupForm.get('dateSpan').valueChanges.pipe(startWith('1w')),
+    ])
+      .pipe(
+        switchMap((params: any) => {
+          this.poolId = params[0];
+          if (this.blocks.length === 0) {
+            this.fromHeightSubject.next(undefined);
+          }
+          return this.apiService.getPoolStats$(this.poolId, params[1] ?? '1w');
+        }),
+      );
 
-    this.apiService.getPoolBlocks$(this.poolId, fromHeight)
-      .subscribe((blocks) => {
-        this.blocks = this.blocks.concat(blocks);
+    this.blocks$ = this.fromHeightSubject
+      .pipe(
+        distinctUntilChanged(),
+        switchMap((fromHeight) => {
+          return this.apiService.getPoolBlocks$(this.poolId, fromHeight);
+        }),
+        tap((newBlocks) => {
+          this.blocks = this.blocks.concat(newBlocks);
+        }),
+        map(() => this.blocks)
+      )
+  }
 
-        const chunksLeft = chunks - 1;
-        if (chunksLeft > 0) {
-          this.loadMore(chunksLeft);
-        }
-        // this.cd.markForCheck();
-      },
-      (error) => {
-        console.log(error);
-        // this.cd.markForCheck();
-      });
+  loadMore() {
+    this.fromHeightSubject.next(this.blocks[this.blocks.length - 1]?.height);
   }
 
   trackByBlock(index: number, block: BlockExtended) {
