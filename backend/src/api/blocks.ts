@@ -42,7 +42,12 @@ class Blocks {
    * @param onlyCoinbase - Set to true if you only need the coinbase transaction
    * @returns Promise<TransactionExtended[]>
    */
-  private async $getTransactionsExtended(blockHash: string, blockHeight: number, onlyCoinbase: boolean): Promise<TransactionExtended[]> {
+  private async $getTransactionsExtended(
+    blockHash: string,
+    blockHeight: number,
+    onlyCoinbase: boolean,
+    quiet: boolean = false,
+  ): Promise<TransactionExtended[]> {
     const transactions: TransactionExtended[] = [];
     const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
 
@@ -58,7 +63,7 @@ class Blocks {
         transactionsFound++;
       } else if (config.MEMPOOL.BACKEND === 'esplora' || memPool.isInSync() || i === 0) {
         // Otherwise we fetch the tx data through backend services (esplora, electrum, core rpc...)
-        if (i % (Math.round((txIds.length) / 10)) === 0 || i + 1 === txIds.length) { // Avoid log spam
+        if (!quiet && (i % (Math.round((txIds.length) / 10)) === 0 || i + 1 === txIds.length)) { // Avoid log spam
           logger.debug(`Indexing tx ${i + 1} of ${txIds.length} in block #${blockHeight}`);
         }
         try {
@@ -84,7 +89,9 @@ class Blocks {
       }
     });
 
-    logger.debug(`${transactionsFound} of ${txIds.length} found in mempool. ${transactionsFetched} fetched through backend service.`);
+    if (!quiet) {
+      logger.debug(`${transactionsFound} of ${txIds.length} found in mempool. ${transactionsFetched} fetched through backend service.`);
+    }
 
     return transactions;
   }
@@ -183,6 +190,7 @@ class Blocks {
     }
 
     this.blockIndexingStarted = true;
+    const startedAt = new Date().getTime() / 1000;
 
     try {
       let currentBlockHeight = blockchainInfo.blocks;
@@ -197,6 +205,7 @@ class Blocks {
       logger.info(`Indexing blocks from #${currentBlockHeight} to #${lastBlockToIndex}`);
 
       const chunkSize = 10000;
+      let totaIndexed = 0;
       while (currentBlockHeight >= lastBlockToIndex) {
         const endBlock = Math.max(0, lastBlockToIndex, currentBlockHeight - chunkSize + 1);
 
@@ -215,12 +224,17 @@ class Blocks {
             break;
           }
           try {
-            logger.debug(`Indexing block #${blockHeight}`);
+            if (totaIndexed % 100 === 0 || blockHeight === lastBlockToIndex) {
+              const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
+              const blockPerSeconds = Math.round(totaIndexed / elapsedSeconds);
+              logger.debug(`Indexing block #${blockHeight} | ~${blockPerSeconds} blocks/sec | total: ${totaIndexed} | elapsed: ${elapsedSeconds} seconds`);
+            }
             const blockHash = await bitcoinApi.$getBlockHash(blockHeight);
             const block = await bitcoinApi.$getBlock(blockHash);
-            const transactions = await this.$getTransactionsExtended(blockHash, block.height, true);
+            const transactions = await this.$getTransactionsExtended(blockHash, block.height, true, true);
             const blockExtended = await this.$getBlockExtended(block, transactions);
             await blocksRepository.$saveBlockInDatabase(blockExtended);
+            ++totaIndexed;
           } catch (e) {
             logger.err(`Something went wrong while indexing blocks.` + e);
           }
