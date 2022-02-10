@@ -168,7 +168,8 @@ class Mempool {
     const newTransactionsStripped = newTransactions.map((tx) => Common.stripTransaction(tx));
     this.latestTransactions = newTransactionsStripped.concat(this.latestTransactions).slice(0, 6);
 
-    if (!this.inSync && transactions.length === Object.keys(this.mempoolCache).length) {
+    const syncedThreshold = 0.99; // If we synced 99% of the mempool tx count, consider we're synced
+    if (!this.inSync && Object.keys(this.mempoolCache).length >= transactions.length * syncedThreshold) {
       this.inSync = true;
       logger.notice('The mempool is now in sync!');
       loadingIndicators.setProgress('mempool', 100);
