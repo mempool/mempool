@@ -34,7 +34,7 @@ class BlocksRepository {
         block.size,
         block.weight,
         block.tx_count,
-        block.extras?.coinbaseHex ?? '',
+        '',
         block.difficulty,
         block.extras?.pool?.id, // Should always be set to something
         0,

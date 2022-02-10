@@ -1,7 +1,7 @@
 import { IEsploraApi } from './api/bitcoin/esplora-api.interface';
 
 export interface PoolTag {
-  id: number | null, // mysql row id
+  id: number, // mysql row id
   name: string,
   link: string,
   regexes: string, // JSON array
@@ -83,8 +83,10 @@ export interface BlockExtension {
   reward?: number;
   coinbaseTx?: TransactionMinerInfo;
   matchRate?: number;
-  coinbaseHex?: string;
-  pool?: PoolTag;
+  pool?: {
+    id: number;
+    name: string;
+  }
 }
 
 export interface BlockExtended extends IEsploraApi.Block {
