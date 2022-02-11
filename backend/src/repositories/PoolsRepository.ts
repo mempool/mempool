@@ -41,7 +41,7 @@ class PoolsRepository {
     query += ` GROUP BY pool_id
       ORDER BY COUNT(height) DESC`;
 
-    logger.debug(query);
+    // logger.debug(query);
     const connection = await DB.pool.getConnection();
     const [rows] = await connection.query(query);
     connection.release();
@@ -58,7 +58,7 @@ class PoolsRepository {
       FROM pools
       WHERE pools.id = ?`;
 
-    logger.debug(query);
+    // logger.debug(query);
     const connection = await DB.pool.getConnection();
     const [rows] = await connection.query(query, [poolId]);
     connection.release();

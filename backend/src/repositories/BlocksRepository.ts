@@ -44,7 +44,7 @@ class BlocksRepository {
         block.extras?.reward ?? 0,
       ];
 
-      logger.debug(query);
+      // logger.debug(query);
       await connection.query(query, params);
     } catch (e: any) {
       if (e.errno === 1062) { // ER_DUP_ENTRY
@@ -102,7 +102,7 @@ class BlocksRepository {
       query += ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
     }
 
-    logger.debug(query);
+    // logger.debug(query);
     const connection = await DB.pool.getConnection();
     const [rows] = await connection.query(query, params);
     connection.release();
@@ -134,7 +134,7 @@ class BlocksRepository {
       query += ` blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
     }
 
-    logger.debug(query);
+    // logger.debug(query);
     const connection = await DB.pool.getConnection();
     const [rows] = await connection.query(query, params);
     connection.release();
@@ -152,7 +152,7 @@ class BlocksRepository {
       LIMIT 1;`;
 
 
-    logger.debug(query);
+    // logger.debug(query);
     const connection = await DB.pool.getConnection();
     const [rows]: any[] = await connection.query(query);
     connection.release();
@@ -185,7 +185,7 @@ class BlocksRepository {
     query += ` ORDER BY height DESC
       LIMIT 10`;
 
-    logger.debug(query);
+    // logger.debug(query);
     const connection = await DB.pool.getConnection();
     const [rows] = await connection.query(query, params);
     connection.release();
