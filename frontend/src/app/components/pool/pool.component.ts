@@ -49,6 +49,13 @@ export class PoolComponent implements OnInit {
           return this.apiService.getPoolStats$(this.poolId, params[1] ?? '1w');
         }),
         map((poolStats) => {
+          let regexes = '"';
+          for (const regex of JSON.parse(poolStats.pool.regexes)) {
+            regexes += regex + '", "';
+          }
+          poolStats.pool.regexes = regexes.slice(0, -3);
+          poolStats.pool.addresses = JSON.parse(poolStats.pool.addresses);
+
           return Object.assign({
             logo: `./resources/mining-pools/` + poolStats.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg'
           }, poolStats);
