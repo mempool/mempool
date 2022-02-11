@@ -172,7 +172,7 @@ class BlocksRepository {
     startHeight: number | null = null
   ): Promise<object[]> {
     const params: any[] = [];
-    let query = `SELECT height, hash, tx_count, size, weight, pool_id, UNIX_TIMESTAMP(blockTimestamp) as timestamp
+    let query = `SELECT height, hash, tx_count, size, weight, pool_id, UNIX_TIMESTAMP(blockTimestamp) as timestamp, reward
       FROM blocks
       WHERE pool_id = ?`;
     params.push(poolId);
