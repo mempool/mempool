@@ -61,7 +61,7 @@ class Blocks {
         // optimize here by directly fetching txs in the "outdated" mempool
         transactions.push(mempool[txIds[i]]);
         transactionsFound++;
-      } else if (config.MEMPOOL.BACKEND === 'esplora' || memPool.isInSync() || i === 0) {
+      } else if (config.MEMPOOL.BACKEND === 'esplora' || !memPool.hasPriority() || i === 0) {
         // Otherwise we fetch the tx data through backend services (esplora, electrum, core rpc...)
         if (!quiet && (i % (Math.round((txIds.length) / 10)) === 0 || i + 1 === txIds.length)) { // Avoid log spam
           logger.debug(`Indexing tx ${i + 1} of ${txIds.length} in block #${blockHeight}`);
@@ -175,7 +175,7 @@ class Blocks {
   public async $generateBlockDatabase() {
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false || // Bitcoin only
       config.MEMPOOL.INDEXING_BLOCKS_AMOUNT === 0 || // Indexing of older blocks must be enabled
-      !memPool.isInSync() || // We sync the mempool first
+      memPool.hasPriority() || // We sync the mempool first
       this.blockIndexingStarted === true || // Indexing must not already be in progress
       config.DATABASE.ENABLED === false
     ) {
@@ -314,7 +314,7 @@ class Blocks {
       if (this.newBlockCallbacks.length) {
         this.newBlockCallbacks.forEach((cb) => cb(blockExtended, txIds, transactions));
       }
-      if (memPool.isInSync()) {
+      if (!memPool.hasPriority()) {
         diskCache.$saveCacheToDisk();
       }
     }
