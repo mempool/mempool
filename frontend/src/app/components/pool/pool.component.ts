@@ -48,6 +48,11 @@ export class PoolComponent implements OnInit {
           }
           return this.apiService.getPoolStats$(this.poolId, params[1] ?? '1w');
         }),
+        map((poolStats) => {
+          return Object.assign({
+            logo: `./resources/mining-pools/` + poolStats.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg'
+          }, poolStats);
+        })
       );
 
     this.blocks$ = this.fromHeightSubject
