@@ -283,3 +283,26 @@
   margin-right: -2px;
   font-size: 10px;
 }
+
+.assetIcon {
+  width: 28px;
+  height: 28px;
+}
+
+.asset-title {
+  text-align: left;
+}
+
+.asset-ticker {
+  color: grey;
+}
+
+.asset-icon {
+  width: 54px;
+  height: 52px;
+}
+
+.asset-table {
+  width: calc(100% - 20px);
+  margin-left: 1.25rem;
+}

@@ -47,17 +47,36 @@
               <ng-container *ngTemplateOutlet="mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
               <hr>
             </div>
-            <ng-container *ngIf="{ value: (mempoolStats$ | async) } as mempoolStats">
-              <div class="mempool-graph">
-                <app-mempool-graph
-                [template]="'widget'"
-                [limitFee]="150"
-                [limitFilterFee]="1"
-                [data]="mempoolStats.value?.mempool"
-                [windowPreferenceOverride]="'2h'"
-                ></app-mempool-graph>
-              </div>
-            </ng-container>
+            <ng-template [ngIf]="(network$ | async) !== 'liquid' && (network$ | async) !== 'liquidtestnet'" [ngIfElse]="liquidAssets">
+              <ng-container *ngIf="{ value: (mempoolStats$ | async) } as mempoolStats">
+                <div class="mempool-graph">
+                  <app-mempool-graph
+                  [template]="'widget'"
+                  [limitFee]="150"
+                  [limitFilterFee]="1"
+                  [data]="mempoolStats.value?.mempool"
+                  [windowPreferenceOverride]="'2h'"
+                  ></app-mempool-graph>
+                </div>
+              </ng-container>
+            </ng-template>
+            <ng-template #liquidAssets>
+              <table class="table table-borderless table-striped asset-table" *ngIf="(featuredAssets$ | async) as featuredAssets else loadingAssetsTable">
+                <tbody>
+                  <tr *ngFor="let group of featuredAssets">
+                    <td class="asset-icon">
+                      <a [routerLink]="['/assets/asset/' | relativeUrl, group.asset]">
+                        <img class="assetIcon" [src]="'https://liquid.network/api/v1/asset/' + group.asset + '/icon'">
+                      </a>
+                    </td>
+                    <td class="asset-title">
+                      <a [routerLink]="['/assets/asset/' | relativeUrl, group.asset]">{{ group.name }}</a>
+                      <span class="asset-ticker"> {{ group.ticker }}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </ng-template>
           </div>
         </div>
       </div>
@@ -157,6 +176,21 @@
   </div>
 
 </div>
+
+<ng-template #loadingAssetsTable>
+  <table class="table table-borderless table-striped asset-table">
+    <tbody>
+      <tr *ngFor="let i of [1,2,3,4,5]">
+        <td class="asset-icon">
+          <div class="skeleton-loader skeleton-loader-transactions"></div>
+        </td>
+        <td class="asset-title">
+          <div class="skeleton-loader skeleton-loader-transactions"></div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>
 
 <ng-template #loadingTransactions>
   <div class="skeleton-loader skeleton-loader-transactions"></div>
