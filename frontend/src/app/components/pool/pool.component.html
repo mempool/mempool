@@ -47,21 +47,26 @@
 
     <div class="box">
       <div class="row">
-        <div class="col-sm">
+        <div class="col-md-8">
           <table class="table table-borderless table-striped" style="table-layout: fixed;">
             <tbody>
               <tr>
-                <td>Address</td>
-                <td class="text-truncate">{{ poolStats.pool.addresses }}</td>
+                <td class="col-4 col-lg-3">Addresses</td>
+                <td class="text-truncate" *ngIf="poolStats.pool.addresses.length else noaddress">
+                  <div class="scrollable">
+                    <a *ngFor="let address of poolStats.pool.addresses" [routerLink]="['/address' | relativeUrl, address]">{{ address }}<br></a>
+                  </div>
+                </td>
+                <ng-template #noaddress><td>~</td></ng-template>
               </tr>
               <tr>
-                <td>Coinbase Tag</td>
+                <td class="col-4 col-lg-3">Coinbase Tags</td>
                 <td class="text-truncate">{{ poolStats.pool.regexes }}</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div class="col-sm">
+        <div class="col-md-4">
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
