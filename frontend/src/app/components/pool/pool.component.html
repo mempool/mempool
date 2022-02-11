@@ -1,7 +1,8 @@
 <div class="container">
 
   <div *ngIf="poolStats$ | async as poolStats">
-    <h1>
+    <h1 class="m-0">
+      <img width="50" src="{{ poolStats['logo'] }}" onError="this.src = './resources/mining-pools/default.svg'" class="mr-3">
       {{ poolStats.pool.name }}
     </h1>
 
