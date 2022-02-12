@@ -46,8 +46,12 @@ class BlocksRepository {
       ];
 
       await connection.query(query, params);
-    } catch (e) {
-      logger.err('$saveBlockInDatabase() error' + (e instanceof Error ? e.message : e));
+    } catch (e: any) {
+      if (e.errno === 1062) { // ER_DUP_ENTRY
+        logger.debug(`$saveBlockInDatabase() - Block ${block.height} has already been indexed, ignoring`);
+      } else {
+        logger.err('$saveBlockInDatabase() error' + (e instanceof Error ? e.message : e));
+      }
     }
 
     connection.release();
