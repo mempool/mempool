@@ -97,6 +97,9 @@ class Logger {
       syslogmsg = `<${(Logger.facilities[config.SYSLOG.FACILITY] * 8 + prionum)}> ${this.name}[${process.pid}]: ${priority.toUpperCase()}${network} ${msg}`;
       this.syslog(syslogmsg);
     }
+    if (Logger.priorities[priority] > Logger.priorities[config.MEMPOOL.STDOUT_LOG_MIN_PRIORITY]) {
+      return;
+    }
     if (priority === 'warning') {
       priority = 'warn';
     }
