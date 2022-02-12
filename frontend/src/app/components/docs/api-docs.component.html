@@ -24,664 +24,54 @@
 
         <div id="mobile-top-doc-nav" #mobileFixedApiNav class="hide-on-desktop"><app-api-docs-nav [network]="{ val: network$ | async }"></app-api-docs-nav></div>
 
-        <div class="api-category" *ngIf="network.val !== 'bisq' && network.val !== 'liquid' && network.val !== 'liquidtestnet'">
-
-          <div class="endpoint-container" id="get-difficulty-adjustment">
-            <a class="section-header" [routerLink]="['./']" fragment="get-difficulty-adjustment">GET Difficulty Adjustment <span>General</span></a>
+        <div *ngFor="let item of restDocs">
+          <div *ngIf="( item.type !== 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )" class="endpoint-container" id="{{ item.fragment }}">
+            <a class="section-header" [routerLink]="['./']" fragment="{{ item.fragment }}">{{ item.title }} <span>{{ item.category }}</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.difficulty)" target="_blank">GET {{ baseNetworkUrl }}/api/v1/difficulty-adjustment</a>
+              <ng-container *ngIf="item.httpRequestMethod === 'GET' && network.val === 'bisq' && item.codeExample.hasOwnProperty('bisq');else liquid_link_example" #bisq_link_example>
+                <a [href]="wrapUrl(network.val, item.codeExample.bisq)" target="_blank">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</a>
+              </ng-container>
+              <ng-template #liquid_link_example>
+                <ng-container *ngIf="item.httpRequestMethod === 'GET' && network.val === 'liquid' && item.codeExample.hasOwnProperty('liquid');else default_link_example">
+                  <a [href]="wrapUrl(network.val, item.codeExample.liquid)" target="_blank">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</a>
+                </ng-container>
+              </ng-template>
+              <ng-template #default_link_example>
+                <ng-container *ngIf="item.httpRequestMethod === 'GET'">
+                  <a [href]="wrapUrl(network.val, item.codeExample.default)" target="_blank">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</a>
+                </ng-container>
+              </ng-template>
+              <div *ngIf="item.httpRequestMethod === 'POST'">{{ item.httpRequestMethod }} {{ item.urlString }}</div>
             </div>
             <div class="description">
               <div class="subtitle" i18n>Description</div>
-                <div i18n>Returns details about difficulty adjustment.</div>
+              <ng-container *ngIf="network.val === 'bisq' && item.description.hasOwnProperty('bisq');else liquid_description" #bisq_description>
+                <div [innerHTML]="item.description.bisq" i18n></div>
+              </ng-container>
+              <ng-template #liquid_description>
+                <ng-container *ngIf="network.val === 'liquid' && item.description.hasOwnProperty('liquid');else default_description">
+                  <div [innerHTML]="item.description.liquid" i18n></div>
+                </ng-container>
+              </ng-template>
+              <ng-template #default_description>
+                <div [innerHTML]="item.description.default" i18n></div>
+              </ng-template>
             </div>
-            <app-code-template [hostname]="hostname" [code]="code.difficulty" [network]="network.val" ></app-code-template>
+            <ng-container *ngIf="network.val === 'bisq' && item.codeExample.hasOwnProperty('bisq');else liquid_code_example" #bisq_code_example>
+              <app-code-template [hostname]="hostname" [baseNetworkUrl]="baseNetworkUrl" [method]="item.httpRequestMethod" [code]="item.codeExample.bisq" [network]="network.val" ></app-code-template>
+            </ng-container>
+            <ng-template #liquid_code_example>
+              <ng-container *ngIf="network.val === 'liquid' && item.codeExample.hasOwnProperty('liquid');else default_code_example">
+                <app-code-template [hostname]="hostname" [baseNetworkUrl]="baseNetworkUrl" [method]="item.httpRequestMethod" [code]="item.codeExample.liquid" [network]="network.val" ></app-code-template>
+              </ng-container>
+            </ng-template>
+            <ng-template #default_code_example>
+              <app-code-template [hostname]="hostname" [baseNetworkUrl]="baseNetworkUrl" [method]="item.httpRequestMethod" [code]="item.codeExample.default" [network]="network.val" ></app-code-template>
+            </ng-template>
           </div>
-
         </div>
 
-        <div class="api-category" *ngIf="network.val === 'bisq'">
-
-          <div class="endpoint-container" id="get-market-currencies">
-            <a class="section-header" [routerLink]="['./']" fragment="get-market-currencies">GET Market Currencies <span>Markets</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.marketsCurrencies)" target="_blank">GET {{ baseNetworkUrl }}/api/currencies</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Provides list of available currencies for a given base currency. </div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.marketsCurrencies" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" id="get-market-depth">
-            <a class="section-header" [routerLink]="['./']" fragment="get-market-depth">GET Market Depth <span>Markets</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.marketDepth)" target="_blank">GET {{ baseNetworkUrl }}/api/depth?market=[:market]</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Provides list of open offer prices for a single market.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.marketDepth" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" id="get-market-hloc">
-            <a class="section-header" [routerLink]="['./']" fragment="get-market-hloc">GET Market HLOC <span>Markets</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.marketHloc)" target="_blank">GET {{ baseNetworkUrl }}/api/hloc?market=[:market]</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Provides hi/low/open/close data for a given market. This can be used to generate a candlestick chart.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.marketHloc" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" id="get-markets">
-            <a class="section-header" [routerLink]="['./']" fragment="get-markets">GET Markets <span>Markets</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.markets)" target="_blank">GET {{ baseNetworkUrl }}/api/markets</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Provides list of available markets.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.markets" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" id="get-market-offers">
-            <a class="section-header" [routerLink]="['./']" fragment="get-market-offers">GET Market Offers <span>Markets</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.marketOffers)" target="_blank">GET {{ baseNetworkUrl }}/api/offers?market=[:market]</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Provides list of open offer details for a single market.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.marketOffers" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" id="get-market-ticker">
-            <a class="section-header" [routerLink]="['./']" fragment="get-market-ticker">GET Market Ticker <span>Markets</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.marketTicker)" target="_blank">GET {{ baseNetworkUrl }}/api/ticker?market=[:market]</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Provides 24 hour price ticker for single market or all markets</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.marketTicker" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" id="get-market-trades">
-            <a class="section-header" [routerLink]="['./']" fragment="get-market-trades">GET Market Trades <span>Markets</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.marketTrades)" target="_blank">GET {{ baseNetworkUrl }}/api/trades?market=[:market]&limit=[:limit]</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Provides list of completed trades for a single market.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.marketTrades" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" id="get-market-volumes">
-            <a class="section-header" [routerLink]="['./']" fragment="get-market-volumes">GET Market Volumes <span>Markets</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.marketVolumes)" target="_blank">GET {{ baseNetworkUrl }}/api/volumes?basecurrency=[:basecurrency]</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Provides periodic volume data in terms of base currency for one or all markets.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.marketVolumes" [network]="network.val" ></app-code-template>
-          </div>
-
-        </div>
-
-        <div class="api-category" *ngIf="network.val === 'bisq'">
-
-          <div class="endpoint-container" id="get-stats">
-            <a class="section-header" [routerLink]="['./']" fragment="get-stats">GET Stats <span>General</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.stats)" target="_blank'" target="_blank">GET {{ baseNetworkUrl }}/api/stats</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns statistics about all Bisq transactions.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.stats" [network]="network.val"></app-code-template>
-          </div>
-
-        </div>
-
-        <div class="api-category">
-
-          <div class="endpoint-container" id="get-address">
-            <a class="section-header" [routerLink]="['./']" fragment="get-address">GET Address <span>Addresses</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.address)" target="_blank">GET {{ baseNetworkUrl }}/api/address/:address</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-                <div i18n>Returns details about an address. Available fields: <code>address</code>, <code>chain_stats</code>, and <code>mempool_stats</code>. {{ '{' }}chain,mempool{{ '}' }}_stats each contain an object with <code>tx_count</code>, <code>funded_txo_count</code>, <code>funded_txo_sum</code>, <code>spent_txo_count</code>, and <code>spent_txo_sum</code>.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.address" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="get-address-transactions">
-            <a class="section-header" [routerLink]="['./']" fragment="get-address-transactions">GET Address Transactions <span>Addresses</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.addressTransactions)" target="_blank">GET {{ baseNetworkUrl }}/api/address/:address/txs</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Get transaction history for the specified address/scripthash, sorted with newest first. Returns up to 50 mempool transactions plus the first 25 confirmed transactions. You can request more confirmed transactions using <code>:last_seen_txid</code> (see below).</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.addressTransactions" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="get-address-transactions-chain">
-            <a class="section-header" [routerLink]="['./']" fragment="get-address-transactions-chain">GET Address Transactions Chain <span>Addresses</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.addressTransactionsChain)" target="_blank">GET {{ baseNetworkUrl }}/api/address/:address/txs/chain</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Get confirmed transaction history for the specified address/scripthash, sorted with newest first. Returns 25 transactions per page. More can be requested by specifying the last txid seen by the previous query.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.addressTransactionsChain" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="get-address-transactions-mempool">
-              <a class="section-header" [routerLink]="['./']" fragment="get-address-transactions-mempool">GET Address Transactions Mempool <span>Addresses</span></a>
-              <div class="endpoint">
-                <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-                <a [href]="wrapUrl(network.val, code.addressTransactionsMempool)" target="_blank">GET {{ baseNetworkUrl }}/api/address/:address/txs/mempool</a>
-              </div>
-              <div class="description">
-                <div class="subtitle" i18n>Description</div>
-                <div i18n>Get unconfirmed transaction history for the specified address/scripthash. Returns up to 50 transactions (no paging).</div>
-              </div>
-              <app-code-template [hostname]="hostname" [code]="code.addressTransactionsMempool" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="get-address-utxo">
-            <a class="section-header" [routerLink]="['./']" fragment="get-address-utxo">GET Address UTXO <span>Addresses</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.addressUTXO)" target="_blank">GET {{ baseNetworkUrl }}/api/address/:address/utxo</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Get the list of unspent transaction outputs associated with the address/scripthash. Available fields: <code>txid</code>, <code>vout</code>, <code>value</code>, and <code>status</code> (with the status of the funding tx).<ng-container *ngIf="network.val === 'liquid' || network.val === 'liquidtestnet'">There is also a <code>valuecommitment</code> field that may appear in place of <code>value</code>, plus the following additional fields: <code>asset</code>/<code>assetcommitment</code>, <code>nonce</code>/<code>noncecommitment</code>, <code>surjection_proof</code>, and <code>range_proof</code>.</ng-container></div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.addressUTXO" [network]="network.val" ></app-code-template>
-          </div>
-
-        </div>
-
-        <div class="api-category" *ngIf="network.val === 'liquid' || network.val === 'liquidtestnet'">
-
-          <div class="endpoint-container" id="get-asset">
-            <a class="section-header" [routerLink]="['./']" fragment="get-assets">GET Asset <span>Assets</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.assets)" target="_blank">GET {{ baseNetworkUrl }}/api/asset/:asset_id</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns information about a Liquid asset.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.assets" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" id="get-asset-transactions">
-            <a class="section-header" [routerLink]="['./']" fragment="get-asset-transactions">GET Asset Transactions <span>Assets</span></a>
-            <div class="endpoint">
-              <a [href]="wrapUrl(network.val, code.assetTransactions)" target="_blank">GET {{ baseNetworkUrl }}/api/asset/:asset_id/txs[/mempool|/chain]</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns transactions associated with the specified Liquid asset. For the network's native asset, returns a list of peg in, peg out, and burn transactions. For user-issued assets, returns a list of issuance, reissuance, and burn transactions. Does not include regular transactions transferring this asset.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.assetTransactions" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" id="get-asset-supply">
-            <a class="section-header" [routerLink]="['./']" fragment="get-asset-supply">GET Asset Supply <span>Assets</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.assetSupply)" target="_blank">GET {{ baseNetworkUrl }}/api/asset/:asset_id/supply[/decimal]</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Get the current total supply of the specified asset. For the native asset (L-BTC), this is calculated as [chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount. For issued assets, this is calculated as [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount. Not available for assets with blinded issuances. If /decimal is specified, returns the supply as a decimal according to the asset's divisibility. Otherwise, returned in base units.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.assetSupply" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" id="get-asset-icons">
-            <a class="section-header" [routerLink]="['./']" fragment="get-assets-icons">GET Asset Icons <span>Assets</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.assetIcons)" target="_blank">GET {{ baseNetworkUrl }}/api/v1/assets/icons</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div>Get all the Asset IDs that have icons.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.assetIcons" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" id="get-asset-icon">
-            <a class="section-header" [routerLink]="['./']" fragment="get-asset-icon">GET Asset Icon <span>Assets</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.assetIcon)" target="_blank">GET {{ baseNetworkUrl }}/api/v1/asset/:asset_id/icon</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div>Get the icon of the specified asset.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.assetIcon" [network]="network.val" ></app-code-template>
-          </div>
-
-        </div>
-
-        <div class="api-category">
-
-          <div class="endpoint-container" id="get-block">
-            <a class="section-header" [routerLink]="['./']" fragment="get-block">GET Block <span>Blocks</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.block)" target="_blank">GET {{ baseNetworkUrl }}/api/block/:hash</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns details about a block. Available fields: <code>id</code>, <code>height</code>, <code>version</code>, <code>timestamp</code>, <code>bits</code>, <code>nonce</code>, <code>merkle_root</code>, <code>tx_count</code>, <code>size</code>, <code>weight</code>,<ng-container *ngIf="network.val === 'liquid' || network.val === 'liquidtestnet'"> <code>proof</code>,</ng-container> and <code>previousblockhash</code>.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.block" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="get-block-header">
-            <a class="section-header" [routerLink]="['./']" fragment="get-block-header">GET Block Header <span>Blocks</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.blockHeader)" target="_blank">GET {{ baseNetworkUrl }}/api/block/:hash/header</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns the hex-encoded block header.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.blockHeader" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="get-block-height">
-            <a class="section-header" [routerLink]="['./']" fragment="get-block-height">GET Block Height <span>Blocks</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.blockHeight)" target="_blank">GET {{ baseNetworkUrl }}/api/block-height/:height</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns the hash of the block currently at <code>:height</code>.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.blockHeight" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="get-block-raw">
-            <a class="section-header" [routerLink]="['./']" fragment="get-block-raw">GET Block Raw <span>Blocks</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.blockRaw)" target="_blank">GET {{ baseNetworkUrl }}/api/block/:hash/raw</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns the raw block representation in binary.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.blockRaw" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="get-block-status">
-            <a class="section-header" [routerLink]="['./']" fragment="get-block-status">GET Block Status <span>Blocks</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.blockStatus)" target="_blank">GET {{ baseNetworkUrl }}/api/block/:hash/status</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns the confirmation status of a block. Available fields: <code>in_best_chain</code> (boolean, false for orphaned blocks), <code>next_best</code> (the hash of the next block, only available for blocks in the best chain).</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.blockStatus" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" id="get-block-tip-height">
-            <a class="section-header" [routerLink]="['./']" fragment="get-block-tip-height">GET Block Tip Height <span>Blocks</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.blockTipHeight)" target="_blank">GET {{ baseNetworkUrl }}/api/blocks/tip/height</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns the height of the last block.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.blockTipHeight" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="get-block-tip-hash">
-            <a class="section-header" [routerLink]="['./']" fragment="get-block-tip-hash">GET Block Tip Hash <span>Blocks</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.blockTipHash)" target="_blank">GET {{ baseNetworkUrl }}/api/blocks/tip/hash</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns the hash of the last block.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.blockTipHash" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="get-block-transaction-id">
-            <a class="section-header" [routerLink]="['./']" fragment="get-block-transaction-id">GET Block Transaction ID <span>Blocks</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.blockTxId)" target="_blank">GET {{ baseNetworkUrl }}/api/block/:hash/txid/:index</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns the transaction at index <code>:index</code> within the specified block.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.blockTxId" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="get-block-transaction-ids">
-            <a class="section-header" [routerLink]="['./']" fragment="get-block-transaction-ids">GET Block Transaction IDs <span>Blocks</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.blockTxIds)" target="_blank">GET {{ baseNetworkUrl }}/api/block/:hash/txids</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns a list of all txids in the block.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.blockTxIds" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="get-block-transactions">
-            <a class="section-header" [routerLink]="['./']" fragment="get-block-transactions">GET Block Transactions <span>Blocks</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.blockTxs)" target="_blank">GET {{ baseNetworkUrl }}/api/block/:hash/txs[/:start_index]</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns a list of transactions in the block (up to 25 transactions beginning at <code>start_index</code>). Transactions returned here do not have the <code>status</code> field, since all the transactions share the same block and confirmation status.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.blockTxs" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="get-blocks">
-            <a class="section-header" [routerLink]="['./']" fragment="get-blocks">GET Blocks <span>Blocks</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.blocks)" target="_blank">GET {{ baseNetworkUrl }}/api/blocks[/:start_height]</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns the 10 newest blocks starting at the tip or at <code>:start_height</code> if specified.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.blocks" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val === 'bisq'" id="get-blocks">
-            <a class="section-header" [routerLink]="['./']" fragment="get-blocks">GET Blocks <span>Blocks</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.blocksBisq)" target="_blank">GET {{ baseNetworkUrl }}/api/blocks/:index/:length</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns the 10 newest blocks starting at the tip or at <code>:start_height</code> if specified.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.blocksBisq" [network]="network.val" ></app-code-template>
-          </div>
-
-        </div>
-
-        <div class="api-category" *ngIf="network.val !== 'bisq'">
-
-          <div class="endpoint-container" id="get-mempool-blocks-fees">
-            <a class="section-header" [routerLink]="['./']" fragment="get-mempool-blocks-fees">GET Mempool Blocks Fees <span>Fees</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.feeMempoolBlocks)" target="_blank">GET {{ baseNetworkUrl }}/api/v1/fees/mempool-blocks</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n="api-docs.fees.mempool-blocks|API Docs for /api/v1/fees/mempool-blocks">Returns current mempool as projected blocks.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.feeMempoolBlocks" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" id="get-recommended-fees">
-            <a class="section-header" [routerLink]="['./']" fragment="get-recommended-fees">GET Recommended Fees <span>Fees</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.feeRecommended)" target="_blank">GET {{ baseNetworkUrl }}/api/v1/fees/recommended</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n="api-docs.fees.recommended|API Docs for /api/v1/fees/recommended">Returns our currently suggested fees for new transactions.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.feeRecommended" [network]="network.val" ></app-code-template>
-          </div>
-
-        </div>
-
-        <div class="api-category" *ngIf="network.val !== 'bisq'">
-
-          <div class="endpoint-container" id="get-mempool">
-            <a class="section-header" [routerLink]="['./']" fragment="get-mempool">GET Mempool <span>Fees</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.mempool)" target="_blank">GET {{ baseNetworkUrl }}/api/mempool</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n="api-docs.mempool.mempool|API Docs for /api/mempool">Returns current mempool backlog statistics.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.mempool" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" id="get-mempool-transaction-ids">
-            <a class="section-header" [routerLink]="['./']" fragment="get-mempool-transaction-ids">GET Mempool Transactions IDs <span>Fees</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.mempoolTxs)" target="_blank">GET {{ baseNetworkUrl }}/api/mempool/txids</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n="api-docs.mempool.txids|API Docs for /api/mempool/txids">Get the full list of txids in the mempool as an array. The order of the txids is arbitrary and does not match bitcoind.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.mempoolTxs" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" id="get-mempool-recent">
-            <a class="section-header" [routerLink]="['./']" fragment="get-mempool-recent">GET Mempool Recent <span>Fees</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.mempoolRecent)" target="_blank">GET {{ baseNetworkUrl }}/api/mempool/recent</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n="api-docs.mempool.recent|API Docs for /api/mempool/recent">Get a list of the last 10 transactions to enter the mempool. Each transaction object contains simplified overview data, with the following fields: <code>txid</code>, <code>fee</code>, <code>vsize</code>, and <code>value</code>.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.mempoolRecent" [network]="network.val" ></app-code-template>
-          </div>
-
-        </div>
-
-        <div class="api-category">
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="get-cpfp">
-            <a class="section-header" [routerLink]="['./']" fragment="get-cpfp">GET Children Pay for Parent <span>Transactions</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.transactionCpfp)" target="_blank">GET {{ baseNetworkUrl }}/api/v1/cpfp/:txid</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n="api-docs.fees.cpfp|API Docs for /api/v1/fees/cpfp">Returns the ancestors and the best descendant fees for a transaction.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.transactionCpfp" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" id="get-transaction">
-            <a class="section-header" [routerLink]="['./']" fragment="get-transaction">GET Transaction <span>Transactions</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.transaction)" target="_blank">GET {{ baseNetworkUrl }}/api/tx/:txid</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns details about a transaction. Available fields: <code>txid</code>, <code>version</code>, <code>locktime</code>, <code>size</code>, <code>weight</code>, <code>fee</code>, <code>vin</code>, <code>vout</code>, and <code>status</code>.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.transaction" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="get-transaction-hex">
-            <a class="section-header" [routerLink]="['./']" fragment="get-transaction-hex">GET Transaction Hex <span>Transactions</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-                <a [href]="wrapUrl(network.val, code.transactionHex)" target="_blank">GET {{ baseNetworkUrl }}/api/tx/:txid/hex</a>
-              </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns a transaction serialized as hex.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.transactionHex" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq' && network.val !== 'liquid' && network.val !== 'liquidtestnet'" id="get-transaction-merkleblock-proof">
-            <a class="section-header" [routerLink]="['./']" fragment="get-transaction-merkleblock-proof">GET Transaction Merkleblock Proof <span>Transactions</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.transactionMerkleBlockProof)" target="_blank">GET {{ baseNetworkUrl }}/api/tx/:txid/merkleblock-proof</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns a merkle inclusion proof for the transaction using <a href="https://bitcoin.org/en/glossary/merkle-block">bitcoind's merkleblock</a> format.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.transactionMerkleBlockProof" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="get-transaction-merkle-proof">
-            <a class="section-header" [routerLink]="['./']" fragment="get-transaction-merkle-proof">GET Transaction Merkle Proof <span>Transactions</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.transactionMerkleProof)" target="_blank">GET {{ baseNetworkUrl }}/api/tx/:txid/merkle-proof</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns a merkle inclusion proof for the transaction using <a href="https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle">Electrum's blockchain.transaction.get_merkle format.</a></div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.transactionMerkleProof" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="get-transaction-outspend">
-            <a class="section-header" [routerLink]="['./']" fragment="get-transaction-outspend">GET Transaction Outspend <span>Transactions</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.transactionOutspend)" target="_blank">GET {{ baseNetworkUrl }}/api/tx/:txid/outspend/:vout</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns the spending status of a transaction output. Available fields: <code>spent</code> (boolean), <code>txid</code> (optional), <code>vin</code> (optional), and <code>status</code> (optional, the status of the spending tx).</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.transactionOutspend" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="get-transaction-outspends">
-            <a class="section-header" [routerLink]="['./']" fragment="get-transaction-outspends">GET Transaction Outspends <span>Transactions</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.transactionOutspends)" target="_blank">GET {{ baseNetworkUrl }}/api/tx/:txid/outspends</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns the spending status of all transaction outputs.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.transactionOutspends" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="get-transaction-raw">
-            <a class="section-header" [routerLink]="['./']" fragment="get-transaction-raw">GET Transaction Raw <span>Transactions</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.transactionRaw)" target="_blank">GET {{ baseNetworkUrl }}/api/tx/:txid/raw</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns a transaction as binary data.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.transactionRaw" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="get-transaction-status">
-            <a class="section-header" [routerLink]="['./']" fragment="get-transaction-status">GET Transaction Status <span>Transactions</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.transactionStatus)" target="_blank">GET {{ baseNetworkUrl }}/api/tx/:txid/status</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns the confirmation status of a transaction. Available fields: <code>confirmed</code> (boolean), <code>block_height</code> (optional), and <code>block_hash</code> (optional).</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.transactionStatus" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val === 'bisq'" id="get-transactions">
-            <a class="section-header" [routerLink]="['./']" fragment="get-transactions">GET Transactions <span>Transactions</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <a [href]="wrapUrl(network.val, code.transactionsBisq)" target="_blank">GET {{ baseNetworkUrl }}/api/txs/:index/:length</a>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Returns :length of latest Bisq transactions, starting from :index.</div>
-            </div>
-            <app-code-template [hostname]="hostname" [code]="code.transactionsBisq" [network]="network.val" ></app-code-template>
-          </div>
-
-          <div class="endpoint-container" *ngIf="network.val !== 'bisq'" id="post-transaction">
-            <a class="section-header" [routerLink]="['./']" fragment="post-transaction">POST Transaction <span>Transactions</span></a>
-            <div class="endpoint">
-              <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-              <div>POST {{ baseNetworkUrl }}/api/tx</div>
-            </div>
-            <div class="description">
-              <div class="subtitle" i18n>Description</div>
-              <div i18n>Broadcast a raw transaction to the network. The transaction should be provided as hex in the request body. The <code>txid</code> will be returned on success.</div>
-            </div>
-            <app-code-template [method]="'post'" [hostname]="hostname" [code]="code.transactionPost" [network]="network.val" ></app-code-template>
-          </div>
-
-        </div>
       </div>
     </div>
 
@@ -690,16 +80,17 @@
         <div class="websocket">
           <div class="endpoint">
             <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-            {{ wrapUrl(network.val, code.websocket, true) }}
+            {{ wrapUrl(network.val, wsDocs, true) }}
           </div>
           <div class="description">
             <div class="subtitle" i18n>Description</div>
             <div i18n="api-docs.websocket.websocket">Default push: <code>{{ '{' }} action: 'want', data: ['blocks', ...] {{ '}' }}</code> to express what you want pushed. Available: <code>blocks</code>, <code>mempool-blocks</code>, <code>live-2h-chart</code>, and <code>stats</code>.<br><br>Push transactions related to address: <code>{{ '{' }} 'track-address': '3PbJ...bF9B' {{ '}' }}</code> to receive all new transactions containing that address as input or output. Returns an array of transactions. <code>address-transactions</code> for new mempool transactions, and <code>block-transactions</code> for new block confirmed transactions.</div>
           </div>
-          <app-code-template [method]="'websocket'" [hostname]="hostname" [code]="code.websocket" [network]="network.val" ></app-code-template>
+          <app-code-template [method]="'websocket'" [hostname]="hostname" [code]="wsDocs" [network]="network.val" ></app-code-template>
         </div>
       </div>
     </div>
 
   </div>
 </ng-container>
+
