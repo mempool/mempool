@@ -285,8 +285,8 @@
 }
 
 .assetIcon {
-  width: 28px;
-  height: 28px;
+  width: 40px;
+  height: 40px;
 }
 
 .asset-title {
@@ -298,11 +298,16 @@
 }
 
 .asset-icon {
-  width: 54px;
-  height: 52px;
+  width: 65px;
+  height: 65px;
 }
 
 .asset-table {
   width: calc(100% - 20px);
   margin-left: 1.25rem;
+}
+
+.circulating-amount {
+  text-align: right;
+  width: 100%;
 }

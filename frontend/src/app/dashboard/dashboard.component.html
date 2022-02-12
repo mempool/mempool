@@ -47,7 +47,7 @@
               <ng-container *ngTemplateOutlet="mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
               <hr>
             </div>
-            <ng-template [ngIf]="(network$ | async) !== 'liquid' && (network$ | async) !== 'liquidtestnet'" [ngIfElse]="liquidAssets">
+            <ng-template [ngIf]="(network$ | async) !== 'liquid'" [ngIfElse]="liquidAssets">
               <ng-container *ngIf="{ value: (mempoolStats$ | async) } as mempoolStats">
                 <div class="mempool-graph">
                   <app-mempool-graph
@@ -71,8 +71,9 @@
                     </td>
                     <td class="asset-title">
                       <a [routerLink]="['/assets/asset/' | relativeUrl, group.asset]">{{ group.name }}</a>
-                      <span class="asset-ticker"> {{ group.ticker }}</span>
                     </td>
+                    <td class="asset-ticker d-none d-md-table-cell">{{ group.ticker }}</td>
+                    <td class="circulating-amount"><app-asset-circulation [assetId]="group.asset"></app-asset-circulation></td>
                   </tr>
                 </tbody>
               </table>
@@ -180,8 +181,14 @@
 <ng-template #loadingAssetsTable>
   <table class="table table-borderless table-striped asset-table">
     <tbody>
-      <tr *ngFor="let i of [1,2,3,4,5]">
+      <tr *ngFor="let i of [1,2,3,4]">
         <td class="asset-icon">
+          <div class="skeleton-loader skeleton-loader-transactions"></div>
+        </td>
+        <td class="asset-title">
+          <div class="skeleton-loader skeleton-loader-transactions"></div>
+        </td>
+        <td class="asset-title d-none d-md-table-cell">
           <div class="skeleton-loader skeleton-loader-transactions"></div>
         </td>
         <td class="asset-title">

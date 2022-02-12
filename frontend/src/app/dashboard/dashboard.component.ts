@@ -127,15 +127,15 @@ export class DashboardComponent implements OnInit {
 
     this.featuredAssets$ = this.apiService.listFeaturedAssets$()
       .pipe(
-        take(5),
         map((featured) => {
+          featured = featured.slice(0, 4);
           for (const feature of featured) {
             if (feature.assets) {
               feature.asset = feature.assets[0];
             }
           }
           return featured;
-        })
+        }),
       );
 
     this.blocks$ = this.stateService.blocks$
