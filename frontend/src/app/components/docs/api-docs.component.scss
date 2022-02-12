@@ -78,6 +78,7 @@ li.nav-item {
 
 #doc-nav-desktop {
   width: 300px;
+  margin-top: -15px;
 }
 
 #doc-nav-desktop.relative {
@@ -152,6 +153,10 @@ li.nav-item {
   top: 20px;
   width: calc(100% - 60px);
   z-index: 100;
+}
+
+#doc-nav-mobile .card-body {
+  padding: 0 1.25rem 1.25rem 1.25rem;
 }
 
 #doc-nav-mobile > div {
