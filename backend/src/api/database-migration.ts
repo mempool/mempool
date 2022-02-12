@@ -6,7 +6,7 @@ import logger from '../logger';
 const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 class DatabaseMigration {
-  private static currentVersion = 4;
+  private static currentVersion = 5;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
 
@@ -227,6 +227,10 @@ class DatabaseMigration {
       if (config.MEMPOOL.NETWORK !== 'liquid' && config.MEMPOOL.NETWORK !== 'liquidtestnet') {
         queries.push(this.getShiftStatisticsQuery());
       }
+    }
+
+    if (version < 5 && (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === true)) {
+      queries.push('ALTER TABLE blocks ADD `reward` double unsigned NOT NULL DEFAULT "0"');
     }
 
     return queries;

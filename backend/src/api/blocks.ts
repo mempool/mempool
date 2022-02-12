@@ -10,6 +10,7 @@ import bitcoinClient from './bitcoin/bitcoin-client';
 import { IEsploraApi } from './bitcoin/esplora-api.interface';
 import poolsRepository from '../repositories/PoolsRepository';
 import blocksRepository from '../repositories/BlocksRepository';
+import loadingIndicators from './loading-indicators';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -41,7 +42,12 @@ class Blocks {
    * @param onlyCoinbase - Set to true if you only need the coinbase transaction
    * @returns Promise<TransactionExtended[]>
    */
-  private async $getTransactionsExtended(blockHash: string, blockHeight: number, onlyCoinbase: boolean): Promise<TransactionExtended[]> {
+  private async $getTransactionsExtended(
+    blockHash: string,
+    blockHeight: number,
+    onlyCoinbase: boolean,
+    quiet: boolean = false,
+  ): Promise<TransactionExtended[]> {
     const transactions: TransactionExtended[] = [];
     const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
 
@@ -57,7 +63,7 @@ class Blocks {
         transactionsFound++;
       } else if (config.MEMPOOL.BACKEND === 'esplora' || memPool.isInSync() || i === 0) {
         // Otherwise we fetch the tx data through backend services (esplora, electrum, core rpc...)
-        if (i % (Math.round((txIds.length) / 10)) === 0 || i + 1 === txIds.length) { // Avoid log spam
+        if (!quiet && (i % (Math.round((txIds.length) / 10)) === 0 || i + 1 === txIds.length)) { // Avoid log spam
           logger.debug(`Indexing tx ${i + 1} of ${txIds.length} in block #${blockHeight}`);
         }
         try {
@@ -83,7 +89,9 @@ class Blocks {
       }
     });
 
-    logger.debug(`${transactionsFound} of ${txIds.length} found in mempool. ${transactionsFetched} fetched through backend service.`);
+    if (!quiet) {
+      logger.debug(`${transactionsFound} of ${txIds.length} found in mempool. ${transactionsFetched} fetched through backend service.`);
+    }
 
     return transactions;
   }
@@ -94,13 +102,10 @@ class Blocks {
    * @param transactions
    * @returns BlockExtended
    */
-  private getBlockExtended(block: IEsploraApi.Block, transactions: TransactionExtended[]): BlockExtended {
-    const blockExtended: BlockExtended = Object.assign({}, block);
-
-    blockExtended.extras = {
-      reward: transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0),
-      coinbaseTx: transactionUtils.stripCoinbaseTransaction(transactions[0]),
-    };
+   private async $getBlockExtended(block: IEsploraApi.Block, transactions: TransactionExtended[]): Promise<BlockExtended> {
+    const blockExtended: BlockExtended = Object.assign({extras: {}}, block);
+    blockExtended.extras.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
+    blockExtended.extras.coinbaseTx = transactionUtils.stripCoinbaseTransaction(transactions[0]);
 
     const transactionsTmp = [...transactions];
     transactionsTmp.shift();
@@ -110,6 +115,22 @@ class Blocks {
       Common.median(transactionsTmp.map((tx) => tx.effectiveFeePerVsize)) : 0;
     blockExtended.extras.feeRange = transactionsTmp.length > 0 ?
       Common.getFeesInRange(transactionsTmp, 8) : [0, 0];
+
+    const indexingAvailable =
+      ['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) &&
+      config.DATABASE.ENABLED === true;
+    if (indexingAvailable) {
+      let pool: PoolTag;
+      if (blockExtended.extras?.coinbaseTx !== undefined) {
+        pool = await this.$findBlockMiner(blockExtended.extras?.coinbaseTx);
+      } else {
+        pool = await poolsRepository.$getUnknownPool();
+      }
+      blockExtended.extras.pool = {
+        id: pool.id,
+        name: pool.name
+      };
+    }
 
     return blockExtended;
   }
@@ -153,19 +174,21 @@ class Blocks {
    */
   public async $generateBlockDatabase() {
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false || // Bitcoin only
-      config.MEMPOOL.INDEXING_BLOCKS_AMOUNT === 0 || // Indexing must be enabled
+      config.MEMPOOL.INDEXING_BLOCKS_AMOUNT === 0 || // Indexing of older blocks must be enabled
       !memPool.isInSync() || // We sync the mempool first
-      this.blockIndexingStarted === true // Indexing must not already be in progress
+      this.blockIndexingStarted === true || // Indexing must not already be in progress
+      config.DATABASE.ENABLED === false
     ) {
       return;
     }
 
     const blockchainInfo = await bitcoinClient.getBlockchainInfo();
-    if (blockchainInfo.blocks !== blockchainInfo.headers) {
+    if (blockchainInfo.blocks !== blockchainInfo.headers) { // Wait for node to sync
       return;
     }
 
     this.blockIndexingStarted = true;
+    const startedAt = new Date().getTime() / 1000;
 
     try {
       let currentBlockHeight = blockchainInfo.blocks;
@@ -180,6 +203,7 @@ class Blocks {
       logger.info(`Indexing blocks from #${currentBlockHeight} to #${lastBlockToIndex}`);
 
       const chunkSize = 10000;
+      let totaIndexed = 0;
       while (currentBlockHeight >= lastBlockToIndex) {
         const endBlock = Math.max(0, lastBlockToIndex, currentBlockHeight - chunkSize + 1);
 
@@ -198,21 +222,17 @@ class Blocks {
             break;
           }
           try {
-            logger.debug(`Indexing block #${blockHeight}`);
+            if (totaIndexed % 100 === 0 || blockHeight === lastBlockToIndex) {
+              const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
+              const blockPerSeconds = Math.round(totaIndexed / elapsedSeconds);
+              logger.debug(`Indexing block #${blockHeight} | ~${blockPerSeconds} blocks/sec | total: ${totaIndexed} | elapsed: ${elapsedSeconds} seconds`);
+            }
             const blockHash = await bitcoinApi.$getBlockHash(blockHeight);
             const block = await bitcoinApi.$getBlock(blockHash);
-            const transactions = await this.$getTransactionsExtended(blockHash, block.height, true);
-            const blockExtended = this.getBlockExtended(block, transactions);
-
-            let miner: PoolTag;
-            if (blockExtended?.extras?.coinbaseTx) {
-              miner = await this.$findBlockMiner(blockExtended.extras.coinbaseTx);
-            } else {
-              miner = await poolsRepository.$getUnknownPool();
-            }
-
-            const coinbase: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(transactions[0].txid, true);
-            await blocksRepository.$saveBlockInDatabase(blockExtended, blockHash, coinbase.hex, miner);
+            const transactions = await this.$getTransactionsExtended(blockHash, block.height, true, true);
+            const blockExtended = await this.$getBlockExtended(block, transactions);
+            await blocksRepository.$saveBlockInDatabase(blockExtended);
+            ++totaIndexed;
           } catch (e) {
             logger.err(`Something went wrong while indexing blocks.` + e);
           }
@@ -271,17 +291,13 @@ class Blocks {
       const block = await bitcoinApi.$getBlock(blockHash);
       const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
       const transactions = await this.$getTransactionsExtended(blockHash, block.height, false);
-      const blockExtended: BlockExtended = this.getBlockExtended(block, transactions);
-      const coinbase: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(transactions[0].txid, true);
+      const blockExtended: BlockExtended = await this.$getBlockExtended(block, transactions);
 
-      if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === true) {
-        let miner: PoolTag;
-        if (blockExtended?.extras?.coinbaseTx) {
-          miner = await this.$findBlockMiner(blockExtended.extras.coinbaseTx);
-        } else {
-          miner = await poolsRepository.$getUnknownPool();
-        }
-        await blocksRepository.$saveBlockInDatabase(blockExtended, blockHash, coinbase.hex, miner);
+      const indexingAvailable =
+        ['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) &&
+        config.DATABASE.ENABLED === true;
+      if (indexingAvailable) {
+        await blocksRepository.$saveBlockInDatabase(blockExtended);
       }
 
       if (block.height % 2016 === 0) {
@@ -302,6 +318,96 @@ class Blocks {
         diskCache.$saveCacheToDisk();
       }
     }
+  }
+
+  /**
+   * Index a block if it's missing from the database. Returns the block after indexing
+   */
+   public async $indexBlock(height: number): Promise<BlockExtended> {
+    const dbBlock = await blocksRepository.$getBlockByHeight(height);
+    if (dbBlock != null) {
+      return this.prepareBlock(dbBlock);
+    }
+
+    const blockHash = await bitcoinApi.$getBlockHash(height);
+    const block = await bitcoinApi.$getBlock(blockHash);
+    const transactions = await this.$getTransactionsExtended(blockHash, block.height, true);
+    const blockExtended = await this.$getBlockExtended(block, transactions);
+
+    await blocksRepository.$saveBlockInDatabase(blockExtended);
+
+    return blockExtended;
+  }
+
+  public async $getBlocksExtras(fromHeight: number): Promise<BlockExtended[]> {
+    const indexingAvailable =
+      ['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) &&
+      config.DATABASE.ENABLED === true;
+
+    try {
+      loadingIndicators.setProgress('blocks', 0);
+
+      let currentHeight = fromHeight ? fromHeight : this.getCurrentBlockHeight();
+      const returnBlocks: BlockExtended[] = [];
+
+      if (currentHeight < 0) {
+        return returnBlocks;
+      }
+
+      // Check if block height exist in local cache to skip the hash lookup
+      const blockByHeight = this.getBlocks().find((b) => b.height === currentHeight);
+      let startFromHash: string | null = null;
+      if (blockByHeight) {
+        startFromHash = blockByHeight.id;
+      } else {
+        startFromHash = await bitcoinApi.$getBlockHash(currentHeight);
+      }
+
+      let nextHash = startFromHash;
+      for (let i = 0; i < 10 && currentHeight >= 0; i++) {
+        let block = this.getBlocks().find((b) => b.height === currentHeight);
+        if (!block && indexingAvailable) {
+          block = this.prepareBlock(await this.$indexBlock(currentHeight));
+        } else if (!block) {
+          block = this.prepareBlock(await bitcoinApi.$getBlock(nextHash));
+        }
+        returnBlocks.push(block);
+        nextHash = block.previousblockhash;
+        loadingIndicators.setProgress('blocks', i / 10 * 100);
+        currentHeight--;
+      }
+
+      return returnBlocks;
+    } catch (e) {
+      loadingIndicators.setProgress('blocks', 100);
+      throw e;
+    }
+  }
+
+  private prepareBlock(block: any): BlockExtended {
+    return <BlockExtended>{
+      id: block.id ?? block.hash, // hash for indexed block
+      timestamp: block?.timestamp ?? block?.blockTimestamp, // blockTimestamp for indexed block
+      height: block?.height,
+      version: block?.version,
+      bits: block?.bits,
+      nonce: block?.nonce,
+      difficulty: block?.difficulty,
+      merkle_root: block?.merkle_root,
+      tx_count: block?.tx_count,
+      size: block?.size,
+      weight: block?.weight,
+      previousblockhash: block?.previousblockhash,
+      extras: {
+        medianFee: block?.medianFee,
+        feeRange: block?.feeRange ?? [], // TODO
+        reward: block?.reward,
+        pool: block?.extras?.pool ?? (block?.pool_id ? {
+          id: block?.pool_id,
+          name: block?.pool_name,
+        } : undefined),
+      }
+    };
   }
 
   public getLastDifficultyAdjustmentTime(): number {
