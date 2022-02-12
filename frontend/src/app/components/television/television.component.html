@@ -7,7 +7,7 @@
         [height]="600"
         [left]="60"
         [right]="10"
-        [data]="mempoolStats && mempoolStats.length ? mempoolStats : null"
+        [data]="statsSubscription$ | async"
         [showZoom]="false"
       ></app-mempool-graph>
     </div>
