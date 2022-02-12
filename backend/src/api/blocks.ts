@@ -303,8 +303,6 @@ class Blocks {
       if (memPool.isInSync()) {
         diskCache.$saveCacheToDisk();
       }
-
-      return;
     }
   }
 
