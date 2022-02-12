@@ -7,7 +7,7 @@ class PoolsRepository {
    */
   public async $getPools(): Promise<PoolTag[]> {
     const connection = await DB.pool.getConnection();
-    const [rows] = await connection.query('SELECT * FROM pools;');
+    const [rows] = await connection.query('SELECT id, name, addresses, regexes FROM pools;');
     connection.release();
     return <PoolTag[]>rows;
   }
@@ -17,7 +17,7 @@ class PoolsRepository {
    */
   public async $getUnknownPool(): Promise<PoolTag> {
     const connection = await DB.pool.getConnection();
-    const [rows] = await connection.query('SELECT * FROM pools where name = "Unknown"');
+    const [rows] = await connection.query('SELECT id, name FROM pools where name = "Unknown"');
     connection.release();
     return <PoolTag>rows[0];
   }
