@@ -69,7 +69,7 @@ export function calcSegwitFeeGains(tx: Transaction) {
 export function moveDec(num: number, n: number) {
   let frac, int, neg, ref;
   if (n === 0) {
-    return num;
+    return num.toString();
   }
   ref = ('' + num).split('.'), int = ref[0], frac = ref[1];
   int || (int = '0');
