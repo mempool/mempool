@@ -703,7 +703,8 @@ class Routes {
     res.json({
       count: info.size,
       vsize: info.bytes,
-      total_fee: info.total_fee * 1e8
+      total_fee: info.total_fee * 1e8,
+      fee_histogram: []
     });
   }
 
