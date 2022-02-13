@@ -11,38 +11,36 @@ class BlocksRepository {
   /**
    * Save indexed block data in the database
    */
-  public async $saveBlockInDatabase(
-    block: BlockExtended,
-    blockHash: string,
-    coinbaseHex: string | undefined,
-    poolTag: PoolTag
-  ) {
+  public async $saveBlockInDatabase(block: BlockExtended) {
     const connection = await DB.pool.getConnection();
 
     try {
       const query = `INSERT INTO blocks(
         height,  hash,     blockTimestamp, size,
         weight,  tx_count, coinbase_raw,   difficulty,
-        pool_id, fees,     fee_span,       median_fee
+        pool_id, fees,     fee_span,       median_fee,
+        reward
       ) VALUE (
         ?, ?, FROM_UNIXTIME(?), ?,
         ?, ?, ?, ?,
-        ?, ?, ?, ?
+        ?, ?, ?, ?,
+        ?
       )`;
 
       const params: any[] = [
         block.height,
-        blockHash,
+        block.id,
         block.timestamp,
         block.size,
         block.weight,
         block.tx_count,
-        coinbaseHex ? coinbaseHex : '',
+        '',
         block.difficulty,
-        poolTag.id,
+        block.extras?.pool?.id, // Should always be set to something
         0,
         '[]',
-        block.extras ? block.extras.medianFee : 0,
+        block.extras.medianFee ?? 0,
+        block.extras?.reward ?? 0,
       ];
 
       await connection.query(query, params);
@@ -135,6 +133,26 @@ class BlocksRepository {
     }
 
     return <number>rows[0].blockTimestamp;
+  }
+
+  /**
+   * Get one block by height
+   */
+   public async $getBlockByHeight(height: number): Promise<object | null> {
+    const connection = await DB.pool.getConnection();
+    const [rows]: any[] = await connection.query(`
+      SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp, pools.id as pool_id, pools.name as pool_name, pools.link as pool_link, pools.addresses as pool_addresses, pools.regexes as pool_regexes
+      FROM blocks
+      JOIN pools ON blocks.pool_id = pools.id
+      WHERE height = ${height};
+    `);
+    connection.release();
+
+    if (rows.length <= 0) {
+      return null;
+    }
+
+    return rows[0];
   }
 }
 
