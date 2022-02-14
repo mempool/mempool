@@ -47,11 +47,11 @@
 
     <div class="box">
       <div class="row">
-        <div class="col-md-8">
+        <div class="col-lg-9">
           <table class="table table-borderless table-striped" style="table-layout: fixed;">
             <tbody>
               <tr>
-                <td class="col-4 col-lg-3">Addresses</td>
+                <td class="col-3 col-lg-3">Addresses</td>
                 <td class="text-truncate" *ngIf="poolStats.pool.addresses.length else noaddress">
                   <div class="scrollable">
                     <a *ngFor="let address of poolStats.pool.addresses" [routerLink]="['/address' | relativeUrl, address]">{{ address }}<br></a>
@@ -60,22 +60,22 @@
                 <ng-template #noaddress><td>~</td></ng-template>
               </tr>
               <tr>
-                <td class="col-4 col-lg-3">Coinbase Tags</td>
+                <td class="col-3 col-lg-3">Coinbase Tags</td>
                 <td class="text-truncate">{{ poolStats.pool.regexes }}</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div class="col-md-4">
+        <div class="col-lg-3">
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td>Mined Blocks</td>
-                <td>{{ poolStats.blockCount }}</td>
+                <td class="col-3 col-lg-8">Mined Blocks</td>
+                <td class="text-left">{{ poolStats.blockCount }}</td>
               </tr>
               <tr>
-                <td>Empty Blocks</td>
-                <td>{{ poolStats.emptyBlocks.length }}</td>
+                <td class="col-3 col-lg-8">Empty Blocks</td>
+                <td class="text-left">{{ poolStats.emptyBlocks.length }}</td>
               </tr>
             </tbody>
           </table>

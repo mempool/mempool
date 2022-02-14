@@ -2,7 +2,6 @@ import { PoolInfo, PoolStats } from '../mempool.interfaces';
 import BlocksRepository, { EmptyBlocks } from '../repositories/BlocksRepository';
 import PoolsRepository from '../repositories/PoolsRepository';
 import bitcoinClient from './bitcoin/bitcoin-client';
-import { Common } from './common';
 
 class Mining {
   constructor() {

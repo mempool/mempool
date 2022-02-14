@@ -1,7 +1,7 @@
 <div class="container-xl">
   <!-- <app-difficulty [showProgress]=false [showHalving]=true></app-difficulty>  -->
 
-  <div class="hashrate-pie" echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
+  <div class="hashrate-pie" echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartInit)="onChartInit($event)"></div>
   <div class="text-center loadingGraphs" *ngIf="isLoading">
     <div class="spinner-border text-light"></div>
   </div>

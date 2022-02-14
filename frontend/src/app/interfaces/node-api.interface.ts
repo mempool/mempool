@@ -106,6 +106,10 @@ export interface BlockExtension {
   reward?: number;
   coinbaseTx?: Transaction;
   matchRate?: number;
+  pool?: {
+    id: number;
+    name: string;
+  }
 
   stage?: number; // Frontend only
 }
