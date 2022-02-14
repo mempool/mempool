@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { EChartsOption } from 'echarts';
+import { Router } from '@angular/router';
+import { EChartsOption, PieSeriesOption } from 'echarts';
 import { combineLatest, Observable, of } from 'rxjs';
 import { catchError, map, share, skip, startWith, switchMap, tap } from 'rxjs/operators';
 import { SinglePoolStats } from 'src/app/interfaces/node-api.interface';
@@ -31,6 +32,7 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
   chartInitOptions = {
     renderer: 'svg'
   };
+  chartInstance: any = undefined;
 
   miningStatsObservable$: Observable<MiningStats>;
 
@@ -40,6 +42,7 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private miningService: MiningService,
     private seoService: SeoService,
+    private router: Router,
   ) {
     this.seoService.setTitle($localize`:@@mining.mining-pools:Mining Pools`);
     this.poolsWindowPreference = this.storageService.getValue('poolsWindowPreference') ? this.storageService.getValue('poolsWindowPreference') : '1w';
@@ -107,7 +110,7 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
       if (parseFloat(pool.share) < poolShareThreshold) {
         return;
       }
-      data.push({
+      data.push(<PieSeriesOption>{
         value: pool.share,
         name: pool.name + (this.isMobile() ? `` : ` (${pool.share}%)`),
         label: {
@@ -129,7 +132,8 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
                 pool.blockCount.toString() + ` blocks`;
             }
           }
-        }
+        },
+        data: pool.poolId,
       });
     });
     return data;
@@ -197,6 +201,17 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
     };
   }
 
+  onChartInit(ec) {
+    if (this.chartInstance !== undefined) {
+      return;
+    }
+
+    this.chartInstance = ec;
+    this.chartInstance.on('click', (e) => {
+      this.router.navigate(['/mining/pool/', e.data.data]); 
+    })
+  }
+  
   /**
    * Default mining stats if something goes wrong
    */
