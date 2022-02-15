@@ -116,10 +116,7 @@ class Blocks {
     blockExtended.extras.feeRange = transactionsTmp.length > 0 ?
       Common.getFeesInRange(transactionsTmp, 8) : [0, 0];
 
-    const indexingAvailable =
-      ['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) &&
-      config.DATABASE.ENABLED === true;
-    if (indexingAvailable) {
+    if (Common.indexingEnabled()) {
       let pool: PoolTag;
       if (blockExtended.extras?.coinbaseTx !== undefined) {
         pool = await this.$findBlockMiner(blockExtended.extras?.coinbaseTx);
@@ -173,11 +170,9 @@ class Blocks {
    * Index all blocks metadata for the mining dashboard
    */
   public async $generateBlockDatabase() {
-    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false || // Bitcoin only
-      config.MEMPOOL.INDEXING_BLOCKS_AMOUNT === 0 || // Indexing of older blocks must be enabled
-      memPool.hasPriority() || // We sync the mempool first
-      this.blockIndexingStarted === true || // Indexing must not already be in progress
-      config.DATABASE.ENABLED === false
+    if (this.blockIndexingStarted === true ||
+      !Common.indexingEnabled() ||
+      memPool.hasPriority()
     ) {
       return;
     }
@@ -293,10 +288,7 @@ class Blocks {
       const transactions = await this.$getTransactionsExtended(blockHash, block.height, false);
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, transactions);
 
-      const indexingAvailable =
-        ['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) &&
-        config.DATABASE.ENABLED === true;
-      if (indexingAvailable) {
+      if (Common.indexingEnabled()) {
         await blocksRepository.$saveBlockInDatabase(blockExtended);
       }
 
@@ -340,10 +332,6 @@ class Blocks {
   }
 
   public async $getBlocksExtras(fromHeight: number): Promise<BlockExtended[]> {
-    const indexingAvailable =
-      ['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) &&
-      config.DATABASE.ENABLED === true;
-
     try {
       loadingIndicators.setProgress('blocks', 0);
 
@@ -366,7 +354,7 @@ class Blocks {
       let nextHash = startFromHash;
       for (let i = 0; i < 10 && currentHeight >= 0; i++) {
         let block = this.getBlocks().find((b) => b.height === currentHeight);
-        if (!block && indexingAvailable) {
+        if (!block && Common.indexingEnabled()) {
           block = this.prepareBlock(await this.$indexBlock(currentHeight));
         } else if (!block) {
           block = this.prepareBlock(await bitcoinApi.$getBlock(nextHash));

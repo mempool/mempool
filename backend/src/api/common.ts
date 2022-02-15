@@ -154,4 +154,12 @@ export class Common {
     });
     return parents;
   }
+
+  static indexingEnabled(): boolean {
+    return (
+      ['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) &&
+      config.DATABASE.ENABLED === true &&
+      config.MEMPOOL.INDEXING_BLOCKS_AMOUNT != 0
+    );
+  }
 }
