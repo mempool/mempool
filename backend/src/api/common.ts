@@ -155,6 +155,21 @@ export class Common {
     return parents;
   }
 
+  static getSqlInterval(interval: string | null): string | null {
+    switch (interval) {
+      case '24h': return '1 DAY';
+      case '3d': return '3 DAY';
+      case '1w': return '1 WEEK';
+      case '1m': return '1 MONTH';
+      case '3m': return '3 MONTH';
+      case '6m': return '6 MONTH';
+      case '1y': return '1 YEAR';
+      case '2y': return '2 YEAR';
+      case '3y': return '3 YEAR';
+      default: return null;
+    }
+  }
+  
   static indexingEnabled(): boolean {
     return (
       ['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) &&

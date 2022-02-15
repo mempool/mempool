@@ -22,6 +22,9 @@ import elementsParser from './api/liquid/elements-parser';
 import icons from './api/liquid/icons';
 import miningStats from './api/mining';
 import axios from 'axios';
+import PoolsRepository from './repositories/PoolsRepository';
+import mining from './api/mining';
+import BlocksRepository from './repositories/BlocksRepository';
 
 class Routes {
   constructor() {}
@@ -533,9 +536,36 @@ class Routes {
     }
   }
 
+  public async $getPool(req: Request, res: Response) {
+    try {
+      const stats = await mining.$getPoolStat(req.params.interval ?? null, parseInt(req.params.poolId, 10));
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      res.json(stats);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  public async $getPoolBlocks(req: Request, res: Response) {
+    try {
+      const poolBlocks = await BlocksRepository.$getBlocksByPool(
+        parseInt(req.params.poolId, 10),
+        parseInt(req.params.height, 10) ?? null,
+      );
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      res.json(poolBlocks);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
   public async $getPools(interval: string, req: Request, res: Response) {
     try {
-      let stats = await miningStats.$getPoolsStats(interval);
+      const stats = await miningStats.$getPoolsStats(interval);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
