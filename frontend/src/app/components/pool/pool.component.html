@@ -95,7 +95,7 @@
     </thead>
     <tbody *ngIf="blocks$ | async as blocks">
       <tr *ngFor="let block of blocks">
-        <td><a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
+        <td><a [routerLink]="['/block' | relativeUrl, block.id]">{{ block.height }}</a></td>
         <td class="d-none d-md-block">&lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}</td>
         <td><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since></td>
         <td class=""><app-amount [satoshis]="block['reward']" digitsInfo="1.2-2" [noFiat]="true"></app-amount></td>
