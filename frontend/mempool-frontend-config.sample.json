@@ -15,5 +15,6 @@
   "BASE_MODULE": "mempool",
   "MEMPOOL_WEBSITE_URL": "https://mempool.space",
   "LIQUID_WEBSITE_URL": "https://liquid.network",
-  "BISQ_WEBSITE_URL": "https://bisq.markets"
+  "BISQ_WEBSITE_URL": "https://bisq.markets",
+  "MINING_DASHBOARD": true
 }
