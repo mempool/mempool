@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { once } from 'process';
-import { BehaviorSubject, combineLatest, from, merge, Observable } from 'rxjs';
-import { delay, distinctUntilChanged, map, scan, startWith, switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { distinctUntilChanged, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended, PoolStat } from 'src/app/interfaces/node-api.interface';
 import { ApiService } from 'src/app/services/api.service';
 import { StateService } from 'src/app/services/state.service';
@@ -11,7 +10,8 @@ import { StateService } from 'src/app/services/state.service';
 @Component({
   selector: 'app-pool',
   templateUrl: './pool.component.html',
-  styleUrls: ['./pool.component.scss']
+  styleUrls: ['./pool.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PoolComponent implements OnInit {
   poolStats$: Observable<PoolStat>;
@@ -22,7 +22,6 @@ export class PoolComponent implements OnInit {
 
   blocks: BlockExtended[] = [];
   poolId: number = undefined;
-  isLoading = false;
   radioGroupForm: FormGroup;
 
   constructor(
