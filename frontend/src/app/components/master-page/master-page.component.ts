@@ -18,7 +18,7 @@ export class MasterPageComponent implements OnInit {
   urlLanguage: string;
 
   constructor(
-    private stateService: StateService,
+    public stateService: StateService,
     private languageService: LanguageService,
   ) { }
 

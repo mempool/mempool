@@ -729,7 +729,13 @@ class Routes {
   }
 
   public async getMempool(req: Request, res: Response) {
-    res.status(501).send('Not implemented');
+    const info = mempool.getMempoolInfo();
+    res.json({
+      count: info.size,
+      vsize: info.bytes,
+      total_fee: info.total_fee * 1e8,
+      fee_histogram: []
+    });
   }
 
   public async getMempoolTxIds(req: Request, res: Response) {
