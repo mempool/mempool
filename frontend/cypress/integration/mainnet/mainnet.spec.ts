@@ -275,16 +275,18 @@ describe('Mainnet', () => {
           });
         });
 
-    it('loads genesis block and click on the arrow left', () => {
-      cy.viewport('macbook-16');
-      cy.visit('/block/0');
-      cy.waitForSkeletonGone();
-      cy.waitForPageIdle();
-      cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
-      cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
-      cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').click().then(() => {
-        cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
-        cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+        it('loads genesis block and click on the arrow left', () => {
+          cy.viewport('macbook-16');
+          cy.visit('/block/0');
+          cy.waitForSkeletonGone();
+          cy.waitForPageIdle();
+          cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+          cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
+          cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').click().then(() => {
+            cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+            cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+          });
+        });
       });
     });
 
