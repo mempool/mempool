@@ -63,6 +63,9 @@ class PoolsRepository {
     const [rows] = await connection.query(query, [poolId]);
     connection.release();
 
+    rows[0].regexes = JSON.parse(rows[0].regexes);
+    rows[0].addresses = JSON.parse(rows[0].addresses);
+
     return rows[0];
   }
 }
