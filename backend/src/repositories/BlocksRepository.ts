@@ -1,6 +1,7 @@
 import { BlockExtended, PoolTag } from '../mempool.interfaces';
 import { DB } from '../database';
 import logger from '../logger';
+import { Common } from '../api/common';
 
 export interface EmptyBlocks {
   emptyBlocks: number;
@@ -43,6 +44,7 @@ class BlocksRepository {
         block.extras?.reward ?? 0,
       ];
 
+      // logger.debug(query);
       await connection.query(query, params);
     } catch (e: any) {
       if (e.errno === 1062) { // ER_DUP_ENTRY
@@ -64,35 +66,45 @@ class BlocksRepository {
     }
 
     const connection = await DB.pool.getConnection();
-    const [rows] : any[] = await connection.query(`
+    const [rows]: any[] = await connection.query(`
       SELECT height
       FROM blocks
-      WHERE height <= ${startHeight} AND height >= ${endHeight}
+      WHERE height <= ? AND height >= ?
       ORDER BY height DESC;
-    `);
+    `, [startHeight, endHeight]);
     connection.release();
 
     const indexedBlockHeights: number[] = [];
     rows.forEach((row: any) => { indexedBlockHeights.push(row.height); });
     const seekedBlocks: number[] = Array.from(Array(startHeight - endHeight + 1).keys(), n => n + endHeight).reverse();
-    const missingBlocksHeights =  seekedBlocks.filter(x => indexedBlockHeights.indexOf(x) === -1);
+    const missingBlocksHeights = seekedBlocks.filter(x => indexedBlockHeights.indexOf(x) === -1);
 
     return missingBlocksHeights;
   }
 
   /**
-   * Count empty blocks for all pools
+   * Get empty blocks for one or all pools
    */
-  public async $countEmptyBlocks(interval: string | null): Promise<EmptyBlocks[]> {
-    const query = `
-      SELECT pool_id as poolId
-      FROM blocks
-      WHERE tx_count = 1` +
-      (interval != null ? ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()` : ``)
-    ;
+  public async $getEmptyBlocks(poolId: number | null, interval: string | null = null): Promise<EmptyBlocks[]> {
+    interval = Common.getSqlInterval(interval);
 
+    const params: any[] = [];
+    let query = `SELECT height, hash, tx_count, size, pool_id, weight, UNIX_TIMESTAMP(blockTimestamp) as timestamp
+      FROM blocks
+      WHERE tx_count = 1`;
+
+    if (poolId) {
+      query += ` AND pool_id = ?`;
+      params.push(poolId);
+    }
+
+    if (interval) {
+      query += ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+    }
+
+    // logger.debug(query);
     const connection = await DB.pool.getConnection();
-    const [rows] = await connection.query(query);
+    const [rows] = await connection.query(query, params);
     connection.release();
 
     return <EmptyBlocks[]>rows;
@@ -101,15 +113,30 @@ class BlocksRepository {
   /**
    * Get blocks count for a period
    */
-   public async $blockCount(interval: string | null): Promise<number> {
-    const query = `
-      SELECT count(height) as blockCount
-      FROM blocks` +
-      (interval != null ? ` WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()` : ``)
-    ;
+  public async $blockCount(poolId: number | null, interval: string | null): Promise<number> {
+    interval = Common.getSqlInterval(interval);
 
+    const params: any[] = [];
+    let query = `SELECT count(height) as blockCount
+      FROM blocks`;
+
+    if (poolId) {
+      query += ` WHERE pool_id = ?`;
+      params.push(poolId);
+    }
+
+    if (interval) {
+      if (poolId) {
+        query += ` AND`;
+      } else {
+        query += ` WHERE`;
+      }
+      query += ` blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+    }
+
+    // logger.debug(query);
     const connection = await DB.pool.getConnection();
-    const [rows] = await connection.query(query);
+    const [rows] = await connection.query(query, params);
     connection.release();
 
     return <number>rows[0].blockCount;
@@ -119,13 +146,15 @@ class BlocksRepository {
    * Get the oldest indexed block
    */
   public async $oldestBlockTimestamp(): Promise<number> {
-    const connection = await DB.pool.getConnection();
-    const [rows]: any[] = await connection.query(`
-      SELECT blockTimestamp
+    const query = `SELECT blockTimestamp
       FROM blocks
       ORDER BY height
-      LIMIT 1;
-    `);
+      LIMIT 1;`;
+
+
+    // logger.debug(query);
+    const connection = await DB.pool.getConnection();
+    const [rows]: any[] = await connection.query(query);
     connection.release();
 
     if (rows.length <= 0) {
@@ -133,6 +162,39 @@ class BlocksRepository {
     }
 
     return <number>rows[0].blockTimestamp;
+  }
+
+  /**
+   * Get blocks mined by a specific mining pool
+   */
+  public async $getBlocksByPool(
+    poolId: number,
+    startHeight: number | null = null
+  ): Promise<object[]> {
+    const params: any[] = [];
+    let query = `SELECT height, hash as id, tx_count, size, weight, pool_id, UNIX_TIMESTAMP(blockTimestamp) as timestamp, reward
+      FROM blocks
+      WHERE pool_id = ?`;
+    params.push(poolId);
+
+    if (startHeight) {
+      query += ` AND height < ?`;
+      params.push(startHeight);
+    }
+
+    query += ` ORDER BY height DESC
+      LIMIT 10`;
+
+    // logger.debug(query);
+    const connection = await DB.pool.getConnection();
+    const [rows] = await connection.query(query, params);
+    connection.release();
+
+    for (const block of <object[]>rows) {
+      delete block['blockTimestamp'];
+    }
+
+    return <object[]>rows;
   }
 
   /**

@@ -1,7 +1,7 @@
 <div class="container-xl">
   <!-- <app-difficulty [showProgress]=false [showHalving]=true></app-difficulty>  -->
 
-  <div class="hashrate-pie" echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
+  <div class="hashrate-pie" echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartInit)="onChartInit($event)"></div>
   <div class="text-center loadingGraphs" *ngIf="isLoading">
     <div class="spinner-border text-light"></div>
   </div>
@@ -58,7 +58,7 @@
       <tr *ngFor="let pool of miningStats.pools">
         <td class="d-none d-md-block">{{ pool.rank }}</td>
         <td class="text-right"><img width="25" height="25" src="{{ pool.logo }}" onError="this.src = './resources/mining-pools/default.svg'"></td>
-        <td class="">{{ pool.name }}</td>
+        <td class=""><a [routerLink]="[('/mining/pool/' + pool.poolId) | relativeUrl]">{{ pool.name }}</a></td>
         <td class="" *ngIf="this.poolsWindowPreference === '24h'">{{ pool.lastEstimatedHashrate }} {{ miningStats.miningUnits.hashrateUnit }}</td>
         <td class="">{{ pool['blockText'] }}</td>
         <td class="d-none d-md-block">{{ pool.emptyBlocks }} ({{ pool.emptyBlockRatio }}%)</td>

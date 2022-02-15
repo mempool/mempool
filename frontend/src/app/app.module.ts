@@ -38,6 +38,7 @@ import { TimeSpanComponent } from './components/time-span/time-span.component';
 import { SeoService } from './services/seo.service';
 import { MempoolGraphComponent } from './components/mempool-graph/mempool-graph.component';
 import { PoolRankingComponent } from './components/pool-ranking/pool-ranking.component';
+import { PoolComponent } from './components/pool/pool.component';
 import { LbtcPegsGraphComponent } from './components/lbtc-pegs-graph/lbtc-pegs-graph.component';
 import { AssetComponent } from './components/asset/asset.component';
 import { AssetsComponent } from './components/assets/assets.component';
@@ -96,6 +97,7 @@ import { AssetGroupComponent } from './components/assets/asset-group/asset-group
     IncomingTransactionsGraphComponent,
     MempoolGraphComponent,
     PoolRankingComponent,
+    PoolComponent,
     LbtcPegsGraphComponent,
     AssetComponent,
     AssetsComponent,
