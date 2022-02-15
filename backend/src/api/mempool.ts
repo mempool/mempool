@@ -13,6 +13,7 @@ class Mempool {
   private static WEBSOCKET_REFRESH_RATE_MS = 10000;
   private static LAZY_DELETE_AFTER_SECONDS = 30;
   private inSync: boolean = false;
+  private mempoolCacheDelta: number = -1;
   private mempoolCache: { [txId: string]: TransactionExtended } = {};
   private mempoolInfo: IBitcoinApi.MempoolInfo = { loaded: false, size: 0, bytes: 0, usage: 0, total_fee: 0,
                                                     maxmempool: 300000000, mempoolminfee: 0.00001000, minrelaytxfee: 0.00001000 };
@@ -30,6 +31,17 @@ class Mempool {
   constructor() {
     setInterval(this.updateTxPerSecond.bind(this), 1000);
     setInterval(this.deleteExpiredTransactions.bind(this), 20000);
+  }
+
+  /**
+   * Return true if we should leave resources available for mempool tx caching
+   */
+  public hasPriority(): boolean {
+    if (this.inSync) {
+      return false;
+    } else {
+      return this.mempoolCacheDelta == -1 || this.mempoolCacheDelta > 25;
+    }
   }
 
   public isInSync(): boolean {
@@ -100,6 +112,8 @@ class Mempool {
     const diff = transactions.length - currentMempoolSize;
     const newTransactions: TransactionExtended[] = [];
 
+    this.mempoolCacheDelta = Math.abs(diff);
+
     if (!this.inSync) {
       loadingIndicators.setProgress('mempool', Object.keys(this.mempoolCache).length / transactions.length * 100);
     }
@@ -168,12 +182,13 @@ class Mempool {
     const newTransactionsStripped = newTransactions.map((tx) => Common.stripTransaction(tx));
     this.latestTransactions = newTransactionsStripped.concat(this.latestTransactions).slice(0, 6);
 
-    const syncedThreshold = 0.99; // If we synced 99% of the mempool tx count, consider we're synced
-    if (!this.inSync && Object.keys(this.mempoolCache).length >= transactions.length * syncedThreshold) {
+    if (!this.inSync && transactions.length === Object.keys(this.mempoolCache).length) {
       this.inSync = true;
       logger.notice('The mempool is now in sync!');
       loadingIndicators.setProgress('mempool', 100);
     }
+
+    this.mempoolCacheDelta = Math.abs(transactions.length - Object.keys(this.mempoolCache).length);
 
     if (this.mempoolChangedCallback && (hasChange || deletedTransactions.length)) {
       this.mempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
