@@ -20,12 +20,14 @@ class BlocksRepository {
         height,  hash,     blockTimestamp, size,
         weight,  tx_count, coinbase_raw,   difficulty,
         pool_id, fees,     fee_span,       median_fee,
-        reward
+        reward,  version,  bits,           nonce,
+        merkle_root,       previous_block_hash
       ) VALUE (
         ?, ?, FROM_UNIXTIME(?), ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?,
-        ?
+        ?, ?, ?, ?,
+        ?,    ?
       )`;
 
       const params: any[] = [
@@ -37,11 +39,16 @@ class BlocksRepository {
         block.tx_count,
         '',
         block.difficulty,
-        block.extras?.pool?.id, // Should always be set to something
+        block.extras.pool?.id, // Should always be set to something
         0,
         '[]',
         block.extras.medianFee ?? 0,
-        block.extras?.reward ?? 0,
+        block.extras.reward ?? 0,
+        block.version,
+        block.bits,
+        block.nonce,
+        block.merkle_root,
+        block.previousblockhash
       ];
 
       // logger.debug(query);
