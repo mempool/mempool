@@ -72,7 +72,6 @@
                     <td class="asset-title">
                       <a [routerLink]="['/assets/asset/' | relativeUrl, group.asset]">{{ group.name }}</a>
                     </td>
-                    <td class="asset-ticker d-none d-md-table-cell">{{ group.ticker }}</td>
                     <td class="circulating-amount"><app-asset-circulation [assetId]="group.asset"></app-asset-circulation></td>
                   </tr>
                 </tbody>

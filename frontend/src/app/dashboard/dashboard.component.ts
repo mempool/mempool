@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
-import { combineLatest, merge, Observable, of, timer } from 'rxjs';
-import { filter, map, scan, share, switchMap, take, tap } from 'rxjs/operators';
+import { combineLatest, merge, Observable, of } from 'rxjs';
+import { filter, map, scan, share, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended, OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
 import { ApiService } from '../services/api.service';
@@ -128,13 +128,13 @@ export class DashboardComponent implements OnInit {
     this.featuredAssets$ = this.apiService.listFeaturedAssets$()
       .pipe(
         map((featured) => {
-          featured = featured.slice(0, 4);
+          const newArray = [];
           for (const feature of featured) {
-            if (feature.assets) {
-              feature.asset = feature.assets[0];
+            if (feature.ticker !== 'L-BTC' && feature.asset) {
+              newArray.push(feature);
             }
           }
-          return featured;
+          return newArray.slice(0, 4);
         }),
       );
 
