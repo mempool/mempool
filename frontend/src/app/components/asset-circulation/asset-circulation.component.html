@@ -1,3 +1,3 @@
-<ng-container *ngIf="(circulatingAmount$ | async) as circulatingAmount">
-  {{ circulatingAmount }}
+<ng-container *ngIf="(circulatingAmount$ | async) as circulating">
+  {{ circulating.amount }} <span class="ticker">{{ circulating.ticker }}</span>
 </ng-container>

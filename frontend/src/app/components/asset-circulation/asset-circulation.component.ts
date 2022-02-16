@@ -16,7 +16,7 @@ import { environment } from 'src/environments/environment';
 export class AssetCirculationComponent implements OnInit {
   @Input() assetId: string;
 
-  circulatingAmount$: Observable<string>;
+  circulatingAmount$: Observable<{ amount: string, ticker: string}>;
 
   constructor(
     private electrsApiService: ElectrsApiService,
@@ -34,14 +34,23 @@ export class AssetCirculationComponent implements OnInit {
         const assetData = assetsMinimal[asset.asset_id];
         if (!asset.chain_stats.has_blinded_issuances) {
           if (asset.asset_id === environment.nativeAssetId) {
-            return formatNumber(this.formatAmount(asset.chain_stats.peg_in_amount - asset.chain_stats.burned_amount
-              - asset.chain_stats.peg_out_amount, assetData[3]), this.locale, '1.2-2');
+            return {
+              amount: formatNumber(this.formatAmount(asset.chain_stats.peg_in_amount - asset.chain_stats.burned_amount
+              - asset.chain_stats.peg_out_amount, assetData[3]), this.locale, '1.2-2'),
+              ticker: assetData[1]
+            };
           } else {
-            return formatNumber(this.formatAmount(asset.chain_stats.issued_amount
-              - asset.chain_stats.burned_amount, assetData[3]), this.locale, '1.2-2');
+            return {
+              amount: formatNumber(this.formatAmount(asset.chain_stats.issued_amount
+              - asset.chain_stats.burned_amount, assetData[3]), this.locale, '1.2-2'),
+              ticker: assetData[1]
+            };
           }
         } else {
-          return $localize`:@@shared.confidential:Confidential`;
+          return {
+            amount: $localize`:@@shared.confidential:Confidential`,
+            ticker: '',
+          };
         }
       }),
     );
