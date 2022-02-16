@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import { Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { map, share, tap } from 'rxjs/operators';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
+import { formatNumber } from "@angular/common";
 
 @Component({
   selector: 'app-difficulty-chart',
@@ -26,8 +27,10 @@ export class DifficultyChartComponent implements OnInit {
 
   difficultyObservable$: Observable<any>;
   isLoading = true;
+  formatNumber = formatNumber;
 
   constructor(
+    @Inject(LOCALE_ID) public locale: string,
     private seoService: SeoService,
     private apiService: ApiService,
   ) {
@@ -38,12 +41,25 @@ export class DifficultyChartComponent implements OnInit {
     this.difficultyObservable$ = this.apiService.getHistoricalDifficulty$(undefined)
       .pipe(
         map(data => {
-          return data.map(val => [val.timestamp, val.difficulty])
+          let formatted = [];
+          for (let i = 0; i < data.length - 1; ++i) {
+            const change = (data[i].difficulty / data[i + 1].difficulty - 1) * 100;
+            formatted.push([
+              data[i].timestamp,
+              data[i].difficulty,
+              data[i].height,
+              formatNumber(change, this.locale, '1.2-2'),
+              change,
+              formatNumber(data[i].difficulty, this.locale, '1.2-2'),
+            ]);
+          }
+          return formatted;
         }),
         tap(data => {
           this.prepareChartOptions(data);
           this.isLoading = false;
-        })
+        }),
+        share()
       )
   }
 
