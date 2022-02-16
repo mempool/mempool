@@ -1,0 +1,8 @@
+<div class="container-xl">
+
+  <div *ngIf="difficultyObservable$ | async" class="" echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
+  <div class="text-center loadingGraphs" *ngIf="isLoading">
+    <div class="spinner-border text-light"></div>
+  </div>
+
+</div>

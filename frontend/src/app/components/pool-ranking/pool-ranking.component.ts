@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from 'echarts';
@@ -23,7 +23,7 @@ import { StateService } from '../../services/state.service';
     }
   `],
 })
-export class PoolRankingComponent implements OnInit, OnDestroy {
+export class PoolRankingComponent implements OnInit {
   poolsWindowPreference: string;
   radioGroupForm: FormGroup;
 
@@ -88,9 +88,6 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
         }),
         share()
       );
-  }
-
-  ngOnDestroy(): void {
   }
 
   formatPoolUI(pool: SinglePoolStats) {

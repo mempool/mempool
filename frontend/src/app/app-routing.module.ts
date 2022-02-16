@@ -27,6 +27,7 @@ import { AssetGroupComponent } from './components/assets/asset-group/asset-group
 import { AssetsFeaturedComponent } from './components/assets/assets-featured/assets-featured.component';
 import { AssetsComponent } from './components/assets/assets.component';
 import { PoolComponent } from './components/pool/pool.component';
+import { DifficultyChartComponent } from './components/difficulty-chart/difficulty-chart.component';
 
 let routes: Routes = [
   {
@@ -62,6 +63,10 @@ let routes: Routes = [
       {
         path: 'blocks',
         component: LatestBlocksComponent,
+      },
+      {
+        path: 'mining/difficulty',
+        component: DifficultyChartComponent,
       },
       {
         path: 'mining/pools',
@@ -156,6 +161,10 @@ let routes: Routes = [
             component: LatestBlocksComponent,
           },
           {
+            path: 'mining/difficulty',
+            component: DifficultyChartComponent,
+          },
+          {
             path: 'mining/pools',
             component: PoolRankingComponent,
           },
@@ -240,6 +249,10 @@ let routes: Routes = [
           {
             path: 'blocks',
             component: LatestBlocksComponent,
+          },
+          {
+            path: 'mining/difficulty',
+            component: DifficultyChartComponent,
           },
           {
             path: 'mining/pools',

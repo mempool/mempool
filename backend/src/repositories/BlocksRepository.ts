@@ -223,6 +223,30 @@ class BlocksRepository {
 
     return rows[0];
   }
+
+  /**
+   * Return blocks difficulty
+   */
+   public async $getBlocksDifficulty(interval: string | null): Promise<object[]> {
+    interval = Common.getSqlInterval(interval);
+
+    const connection = await DB.pool.getConnection();
+
+    let query = `SELECT MIN(blockTimestamp) as timestamp, difficulty
+      FROM blocks`;
+
+    if (interval) {
+      query += ` WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+    }
+
+    query += ` GROUP BY difficulty
+      ORDER BY blockTimestamp DESC`;
+
+    const [rows]: any[] = await connection.query(query);
+    connection.release();
+
+    return rows;
+  }
 }
 
 export default new BlocksRepository();
