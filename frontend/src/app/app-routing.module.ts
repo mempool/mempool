@@ -74,7 +74,7 @@ let routes: Routes = [
         component: PoolRankingComponent,
       },
       {
-        path: 'mining/dashboard',
+        path: 'mining',
         component: MiningDashboardComponent,
       },
       {
@@ -174,7 +174,7 @@ let routes: Routes = [
             component: PoolRankingComponent,
           },
           {
-            path: 'mining/dashboard',
+            path: 'mining',
             component: MiningDashboardComponent,
           },
           {
@@ -268,7 +268,7 @@ let routes: Routes = [
             component: PoolRankingComponent,
           },
           {
-            path: 'mining/dashboard',
+            path: 'mining',
             component: MiningDashboardComponent,
           },
           {
