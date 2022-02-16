@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from 'echarts';
@@ -25,6 +25,8 @@ import { chartColors } from 'src/app/app.constants';
   `],
 })
 export class PoolRankingComponent implements OnInit {
+  @Input() widget: boolean = false;
+
   poolsWindowPreference: string;
   radioGroupForm: FormGroup;
 
@@ -46,12 +48,17 @@ export class PoolRankingComponent implements OnInit {
     private router: Router,
   ) {
     this.seoService.setTitle($localize`:@@mining.mining-pools:Mining Pools`);
-    this.poolsWindowPreference = this.storageService.getValue('poolsWindowPreference') ? this.storageService.getValue('poolsWindowPreference') : '1w';
-    this.radioGroupForm = this.formBuilder.group({ dateSpan: this.poolsWindowPreference });
-    this.radioGroupForm.controls.dateSpan.setValue(this.poolsWindowPreference);
   }
 
   ngOnInit(): void {
+    if (this.widget) {
+      this.poolsWindowPreference = '1w';
+    } else {
+      this.poolsWindowPreference = this.storageService.getValue('poolsWindowPreference') ? this.storageService.getValue('poolsWindowPreference') : '1w';    
+    }
+    this.radioGroupForm = this.formBuilder.group({ dateSpan: this.poolsWindowPreference });
+    this.radioGroupForm.controls.dateSpan.setValue(this.poolsWindowPreference);
+
     // When...
     this.miningStatsObservable$ = combineLatest([
       // ...a new block is mined
@@ -65,7 +72,9 @@ export class PoolRankingComponent implements OnInit {
         .pipe(
           startWith(this.poolsWindowPreference), // (trigger when the page loads)
           tap((value) => {
-            this.storageService.setValue('poolsWindowPreference', value);
+            if (!this.widget) {
+              this.storageService.setValue('poolsWindowPreference', value);
+            }
             this.poolsWindowPreference = value;
           })
         )
@@ -147,7 +156,7 @@ export class PoolRankingComponent implements OnInit {
     this.chartOptions = {
       title: {
         text: $localize`:@@mining.pool-chart-title:${network}:NETWORK: mining pools share`,
-        subtext: $localize`:@@mining.pool-chart-sub-title:Estimated from the # of blocks mined`,
+        subtext: $localize`:@@mining.pool-chart-sub-title:Estimated from the # of blocks mined (${this.poolsWindowPreference})`,
         left: 'center',
         textStyle: {
           color: '#FFF',

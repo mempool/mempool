@@ -1,0 +1,50 @@
+.dashboard-container {
+  padding-bottom: 60px;
+  text-align: center;
+  margin-top: 0.5rem;
+  @media (min-width: 992px) {
+    padding-bottom: 0px;
+  }
+  .col {
+    margin-bottom: 1.5rem;
+  }
+}
+
+.card {
+  background-color: #1d1f31;
+  height: 100%;
+}
+
+.card-wrapper {
+  .card {
+    height: auto !important;
+  }
+  .card-body {
+    display: flex;
+    flex: inherit;
+    text-align: center;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 22px 20px;
+  }
+}
+
+.blockchain-wrapper {
+  position: relative;
+  overflow: hidden;
+  height: 250px;
+
+  -webkit-user-select: none; /* Safari */        
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
+}
+
+.position-container {
+  position: absolute;
+  top: 75px;
+}
+
+.fade-border {
+  -webkit-mask-image: linear-gradient(90deg, #000 70%, transparent);
+}
