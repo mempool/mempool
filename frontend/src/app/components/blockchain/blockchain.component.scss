@@ -16,7 +16,6 @@
 }
 
 .blockchain-wrapper {
-  overflow: hidden;
   height: 250px;
 
   -webkit-user-select: none; /* Safari */        
@@ -60,4 +59,14 @@
   width: 300px;
   left: -150px;
   top: 0px;
+}
+
+.animate {
+  transition: all 1s ease-in-out;
+}
+.move-left {
+  transform: translate(-40%, 0);
+	@media (max-width: 767.98px) {
+    transform: translate(-85%, 0);
+	}
 }
