@@ -1,11 +1,5 @@
-<!-- lastest blocks -->
-<div id="blockchain-container" class="fade-border" dir="ltr" #blockchainContainer>
-  <app-blockchain [miningInfo]=true></app-blockchain>
-</div>
-
 <div class="container-xl">
   
-
   <div class="row row-cols-1 row-cols-md-2 mt-3">
 
     <!-- pool distribution -->
@@ -26,8 +20,6 @@
           <app-difficulty-chart [widget]=true></app-difficulty-chart>
           <div class=""><a href="" [routerLink]="['/mining/difficulty' | relativeUrl]" i18n="dashboard.view-more">View more
               &raquo;</a></div>
-          <!-- <app-difficulty [showProgress]=false [showHalving]=true></app-difficulty>
-          Imagine more stuff down there -->
         </div>
       </div>
     </div>

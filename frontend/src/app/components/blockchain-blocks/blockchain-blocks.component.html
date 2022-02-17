@@ -21,7 +21,7 @@
         </div>
         <div class="time-difference"><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since></div>
       </div>
-    <div class="" *ngIf="miningInfo === true">
+    <div class="" *ngIf="showMiningInfo === true">
       <a class="badge badge-primary" [routerLink]="[('/mining/pool/' + block.extras.pool.id) | relativeUrl]">
         {{ block.extras.pool.name}}</a>
     </div>

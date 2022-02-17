@@ -1,8 +1,8 @@
-<div class="text-center" class="blockchain-wrapper animate" #container [class]="stateService.blockShifted ? 'move-left' : ''">
+<div class="text-center" class="blockchain-wrapper animate" #container>
   <div class="position-container {{ network }}">
     <span>
       <app-mempool-blocks></app-mempool-blocks>
-      <app-blockchain-blocks [miningInfo]="miningInfo"></app-blockchain-blocks>
+      <app-blockchain-blocks [showMiningInfo]="showMiningInfo"></app-blockchain-blocks>
       <div id="divider"></div>
     </span>
   </div>

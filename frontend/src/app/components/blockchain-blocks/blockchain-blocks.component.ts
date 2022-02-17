@@ -12,7 +12,7 @@ import { BlockExtended } from 'src/app/interfaces/node-api.interface';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlockchainBlocksComponent implements OnInit, OnDestroy {
-  @Input() miningInfo: boolean = false;
+  @Input() showMiningInfo: boolean = false;
   specialBlocks = specialBlocks;
   network = '';
   blocks: BlockExtended[] = [];

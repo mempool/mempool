@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { StateService } from 'src/app/services/state.service';
 
 @Component({
@@ -8,8 +8,7 @@ import { StateService } from 'src/app/services/state.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlockchainComponent implements OnInit {
-  @Input() miningInfo: boolean = false;
-  @ViewChild('container') container: ElementRef;
+  showMiningInfo: boolean = false;
   network: string;
 
   constructor(
@@ -18,15 +17,5 @@ export class BlockchainComponent implements OnInit {
 
   ngOnInit() {
     this.network = this.stateService.network;
-
-    setTimeout(() => {
-      if (this.miningInfo) {
-        this.container.nativeElement.className += ' move-left';
-        this.stateService.blockShifted = true;
-      } else if (this.stateService.blockShifted) {
-        this.container.nativeElement.className = this.container.nativeElement.className.replace(' move-left', '');
-        this.stateService.blockShifted = false;
-      }
-    }, 250);
   }
 }
