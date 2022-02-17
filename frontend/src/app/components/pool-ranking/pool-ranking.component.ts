@@ -1,6 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { EChartsOption } from 'echarts';
+import { Router } from '@angular/router';
+import { EChartsOption, PieSeriesOption } from 'echarts';
 import { combineLatest, Observable, of } from 'rxjs';
 import { catchError, map, share, skip, startWith, switchMap, tap } from 'rxjs/operators';
 import { SinglePoolStats } from 'src/app/interfaces/node-api.interface';
@@ -8,6 +9,7 @@ import { SeoService } from 'src/app/services/seo.service';
 import { StorageService } from '../..//services/storage.service';
 import { MiningService, MiningStats } from '../../services/mining.service';
 import { StateService } from '../../services/state.service';
+import { chartColors } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-pool-ranking',
@@ -22,7 +24,9 @@ import { StateService } from '../../services/state.service';
     }
   `],
 })
-export class PoolRankingComponent implements OnInit, OnDestroy {
+export class PoolRankingComponent implements OnInit {
+  @Input() widget: boolean = false;
+
   poolsWindowPreference: string;
   radioGroupForm: FormGroup;
 
@@ -31,6 +35,7 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
   chartInitOptions = {
     renderer: 'svg'
   };
+  chartInstance: any = undefined;
 
   miningStatsObservable$: Observable<MiningStats>;
 
@@ -40,14 +45,20 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private miningService: MiningService,
     private seoService: SeoService,
+    private router: Router,
   ) {
     this.seoService.setTitle($localize`:@@mining.mining-pools:Mining Pools`);
-    this.poolsWindowPreference = this.storageService.getValue('poolsWindowPreference') ? this.storageService.getValue('poolsWindowPreference') : '1w';
-    this.radioGroupForm = this.formBuilder.group({ dateSpan: this.poolsWindowPreference });
-    this.radioGroupForm.controls.dateSpan.setValue(this.poolsWindowPreference);
   }
 
   ngOnInit(): void {
+    if (this.widget) {
+      this.poolsWindowPreference = '1w';
+    } else {
+      this.poolsWindowPreference = this.storageService.getValue('poolsWindowPreference') ? this.storageService.getValue('poolsWindowPreference') : '1w';    
+    }
+    this.radioGroupForm = this.formBuilder.group({ dateSpan: this.poolsWindowPreference });
+    this.radioGroupForm.controls.dateSpan.setValue(this.poolsWindowPreference);
+
     // When...
     this.miningStatsObservable$ = combineLatest([
       // ...a new block is mined
@@ -61,7 +72,9 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
         .pipe(
           startWith(this.poolsWindowPreference), // (trigger when the page loads)
           tap((value) => {
-            this.storageService.setValue('poolsWindowPreference', value);
+            if (!this.widget) {
+              this.storageService.setValue('poolsWindowPreference', value);
+            }
             this.poolsWindowPreference = value;
           })
         )
@@ -85,9 +98,6 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
         }),
         share()
       );
-  }
-
-  ngOnDestroy(): void {
   }
 
   formatPoolUI(pool: SinglePoolStats) {
@@ -115,9 +125,9 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
           overflow: 'break',
         },
         tooltip: {
-          backgroundColor: "#282d47",
+          backgroundColor: '#282d47',
           textStyle: {
-            color: "#FFFFFF",
+            color: '#FFFFFF',
           },
           formatter: () => {
             if (this.poolsWindowPreference === '24h') {
@@ -129,8 +139,9 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
                 pool.blockCount.toString() + ` blocks`;
             }
           }
-        }
-      });
+        },
+        data: pool.poolId,
+      } as PieSeriesOption);
     });
     return data;
   }
@@ -144,8 +155,7 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
 
     this.chartOptions = {
       title: {
-        text: $localize`:@@mining.pool-chart-title:${network}:NETWORK: mining pools share`,
-        subtext: $localize`:@@mining.pool-chart-sub-title:Estimated from the # of blocks mined`,
+        text: this.widget ? '' : $localize`:@@mining.pool-chart-title:${network}:NETWORK: mining pools share`,
         left: 'center',
         textStyle: {
           color: '#FFF',
@@ -160,10 +170,11 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
       },
       series: [
         {
-          top: this.isMobile() ? '5%' : '20%',
+          top: this.widget ? '0%' : (this.isMobile() ? '5%' : '10%'),
+          bottom: this.widget ? '0%' : (this.isMobile() ? '0%' : '5%'),
           name: 'Mining pool',
           type: 'pie',
-          radius: this.isMobile() ? ['10%', '50%'] : ['20%', '80%'],
+          radius: this.widget ? ['20%', '60%'] : (this.isMobile() ? ['10%', '50%'] : ['20%', '70%']),
           data: this.generatePoolsChartSerieData(miningStats),
           labelLine: {
             lineStyle: {
@@ -180,11 +191,8 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
           },
           emphasis: {
             itemStyle: {
-              borderWidth: 2,
-              borderColor: '#FFF',
-              borderRadius: 2,
-              shadowBlur: 80,
-              shadowColor: 'rgba(255, 255, 255, 0.75)',
+              shadowBlur: 40,
+              shadowColor: 'rgba(0, 0, 0, 0.75)',
             },
             labelLine: {
               lineStyle: {
@@ -193,8 +201,20 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
             }
           }
         }
-      ]
+      ],
+      color: chartColors
     };
+  }
+
+  onChartInit(ec) {
+    if (this.chartInstance !== undefined) {
+      return;
+    }
+
+    this.chartInstance = ec;
+    this.chartInstance.on('click', (e) => {
+      this.router.navigate(['/mining/pool/', e.data.data]);
+    });
   }
 
   /**
