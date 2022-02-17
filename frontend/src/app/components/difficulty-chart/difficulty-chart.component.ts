@@ -1,10 +1,11 @@
 import { Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import { Observable } from 'rxjs';
-import { map, share, tap } from 'rxjs/operators';
+import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
-import { formatNumber } from "@angular/common";
+import { formatNumber } from '@angular/common';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-difficulty-chart',
@@ -20,6 +21,8 @@ import { formatNumber } from "@angular/common";
   `],
 })
 export class DifficultyChartComponent implements OnInit {
+  radioGroupForm: FormGroup;
+
   chartOptions: EChartsOption = {};
   chartInitOptions = {
     renderer: 'svg'
@@ -33,34 +36,45 @@ export class DifficultyChartComponent implements OnInit {
     @Inject(LOCALE_ID) public locale: string,
     private seoService: SeoService,
     private apiService: ApiService,
+    private formBuilder: FormBuilder,
   ) {
     this.seoService.setTitle($localize`:@@mining.difficulty:Difficulty`);
+    this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
+    this.radioGroupForm.controls.dateSpan.setValue('1y');
   }
 
   ngOnInit(): void {
-    this.difficultyObservable$ = this.apiService.getHistoricalDifficulty$(undefined)
+    this.difficultyObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
       .pipe(
-        map(data => {
-          let formatted = [];
-          for (let i = 0; i < data.length - 1; ++i) {
-            const change = (data[i].difficulty / data[i + 1].difficulty - 1) * 100;
-            formatted.push([
-              data[i].timestamp,
-              data[i].difficulty,
-              data[i].height,
-              formatNumber(change, this.locale, '1.2-2'),
-              change,
-              formatNumber(data[i].difficulty, this.locale, '1.2-2'),
-            ]);
-          }
-          return formatted;
-        }),
-        tap(data => {
-          this.prepareChartOptions(data);
-          this.isLoading = false;
-        }),
-        share()
-      )
+        startWith('1y'),
+        switchMap((timespan) => {
+          return this.apiService.getHistoricalDifficulty$(timespan)
+            .pipe(
+              tap(data => {
+                this.prepareChartOptions(data.adjustments.map(val => [val.timestamp * 1000, val.difficulty]));
+                this.isLoading = false;
+              }),
+              map(data => {
+                const availableTimespanDay = (
+                  (new Date().getTime() / 1000) - (data.oldestIndexedBlockTimestamp / 1000)
+                ) / 3600 / 24;
+
+                const tableData = [];
+                for (let i = 0; i < data.adjustments.length - 1; ++i) {
+                  const change = (data.adjustments[i].difficulty / data.adjustments[i + 1].difficulty - 1) * 100;
+                  tableData.push(Object.assign(data.adjustments[i], {
+                    change: change
+                  }));
+                }
+                return {
+                  availableTimespanDay: availableTimespanDay,
+                  data: tableData
+                };
+              }),
+            );
+          }),
+          share()
+        );
   }
 
   prepareChartOptions(data) {
@@ -88,7 +102,7 @@ export class DifficultyChartComponent implements OnInit {
         type: 'value',
         axisLabel: {
           fontSize: 11,
-          formatter: function(val) {
+          formatter: (val) => {
             const diff = val / Math.pow(10, 12); // terra
             return diff.toString() + 'T';
           }

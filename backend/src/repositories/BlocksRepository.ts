@@ -232,7 +232,7 @@ class BlocksRepository {
 
     const connection = await DB.pool.getConnection();
 
-    let query = `SELECT MIN(blockTimestamp) as timestamp, difficulty, height
+    let query = `SELECT MIN(UNIX_TIMESTAMP(blockTimestamp)) as timestamp, difficulty, height
       FROM blocks`;
 
     if (interval) {
