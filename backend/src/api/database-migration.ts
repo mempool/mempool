@@ -96,8 +96,6 @@ class DatabaseMigration {
       }
 
       if (databaseSchemaVersion < 6 && isBitcoin === true) {
-        // We need to re-index the blocks table, so we nuke it
-        await this.$executeQuery(connection, 'TRUNCATE blocks;');
         // Cleanup original blocks fields type
         await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `height` integer unsigned NOT NULL DEFAULT "0"');
         await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `tx_count` smallint unsigned NOT NULL DEFAULT "0"');
