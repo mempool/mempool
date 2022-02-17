@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, Input } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
@@ -12,6 +12,7 @@ import { BlockExtended } from 'src/app/interfaces/node-api.interface';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlockchainBlocksComponent implements OnInit, OnDestroy {
+  @Input() showMiningInfo: boolean = false;
   specialBlocks = specialBlocks;
   network = '';
   blocks: BlockExtended[] = [];

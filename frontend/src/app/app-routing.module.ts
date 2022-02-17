@@ -27,6 +27,7 @@ import { AssetGroupComponent } from './components/assets/asset-group/asset-group
 import { AssetsFeaturedComponent } from './components/assets/assets-featured/assets-featured.component';
 import { AssetsComponent } from './components/assets/assets.component';
 import { PoolComponent } from './components/pool/pool.component';
+import { MiningDashboardComponent } from './components/mining-dashboard/mining-dashboard.component';
 import { DifficultyChartComponent } from './components/difficulty-chart/difficulty-chart.component';
 
 let routes: Routes = [
@@ -57,6 +58,10 @@ let routes: Routes = [
           {
             path: 'mempool-block/:id',
             component: MempoolBlockComponent
+          },
+          {
+            path: 'mining',
+            component: MiningDashboardComponent,
           },
         ],
       },
@@ -154,6 +159,10 @@ let routes: Routes = [
                 path: 'mempool-block/:id',
                 component: MempoolBlockComponent
               },
+              {
+                path: 'mining',
+                component: MiningDashboardComponent,
+              },
             ],
           },
           {
@@ -243,6 +252,10 @@ let routes: Routes = [
               {
                 path: 'mempool-block/:id',
                 component: MempoolBlockComponent
+              },
+              {
+                path: 'mining',
+                component: MiningDashboardComponent,
               },
             ],
           },
