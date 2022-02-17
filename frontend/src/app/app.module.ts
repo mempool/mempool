@@ -68,6 +68,7 @@ import { PushTransactionComponent } from './components/push-transaction/push-tra
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AssetsFeaturedComponent } from './components/assets/assets-featured/assets-featured.component';
 import { AssetGroupComponent } from './components/assets/asset-group/asset-group.component';
+import { DifficultyChartComponent } from './components/difficulty-chart/difficulty-chart.component';
 
 @NgModule({
   declarations: [
@@ -118,6 +119,7 @@ import { AssetGroupComponent } from './components/assets/asset-group/asset-group
     AssetsNavComponent,
     AssetsFeaturedComponent,
     AssetGroupComponent,
+    DifficultyChartComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),

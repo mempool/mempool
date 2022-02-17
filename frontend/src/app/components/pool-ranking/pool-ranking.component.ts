@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from 'echarts';
@@ -23,7 +23,7 @@ import { StateService } from '../../services/state.service';
     }
   `],
 })
-export class PoolRankingComponent implements OnInit, OnDestroy {
+export class PoolRankingComponent implements OnInit {
   poolsWindowPreference: string;
   radioGroupForm: FormGroup;
 
@@ -90,9 +90,6 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
       );
   }
 
-  ngOnDestroy(): void {
-  }
-
   formatPoolUI(pool: SinglePoolStats) {
     pool['blockText'] = pool.blockCount.toString() + ` (${pool.share}%)`;
     return pool;
@@ -110,7 +107,7 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
       if (parseFloat(pool.share) < poolShareThreshold) {
         return;
       }
-      data.push(<PieSeriesOption>{
+      data.push({
         value: pool.share,
         name: pool.name + (this.isMobile() ? `` : ` (${pool.share}%)`),
         label: {
@@ -118,9 +115,9 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
           overflow: 'break',
         },
         tooltip: {
-          backgroundColor: "#282d47",
+          backgroundColor: '#282d47',
           textStyle: {
-            color: "#FFFFFF",
+            color: '#FFFFFF',
           },
           formatter: () => {
             if (this.poolsWindowPreference === '24h') {
@@ -134,7 +131,7 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
           }
         },
         data: pool.poolId,
-      });
+      } as PieSeriesOption);
     });
     return data;
   }
@@ -208,10 +205,10 @@ export class PoolRankingComponent implements OnInit, OnDestroy {
 
     this.chartInstance = ec;
     this.chartInstance.on('click', (e) => {
-      this.router.navigate(['/mining/pool/', e.data.data]); 
-    })
+      this.router.navigate(['/mining/pool/', e.data.data]);
+    });
   }
-  
+
   /**
    * Default mining stats if something goes wrong
    */

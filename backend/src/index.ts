@@ -259,10 +259,7 @@ class Server {
         ;
     }
 
-    const indexingAvailable =
-      ['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) &&
-      config.DATABASE.ENABLED === true;
-    if (indexingAvailable) {
+    if (Common.indexingEnabled()) {
       this.app
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/24h', routes.$getPools.bind(routes, '24h'))
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/3d', routes.$getPools.bind(routes, '3d'))
@@ -277,7 +274,9 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:poolId/blocks', routes.$getPoolBlocks)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:poolId/blocks/:height', routes.$getPoolBlocks)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:poolId', routes.$getPool)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:poolId/:interval', routes.$getPool);
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:poolId/:interval', routes.$getPool)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty', routes.$getHistoricalDifficulty)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty/:interval', routes.$getHistoricalDifficulty);
     }
 
     if (config.BISQ.ENABLED) {
