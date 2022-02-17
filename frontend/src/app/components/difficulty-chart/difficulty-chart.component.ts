@@ -1,4 +1,4 @@
-import { Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
+import { Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
@@ -21,6 +21,8 @@ import { FormBuilder, FormGroup } from '@angular/forms';
   `],
 })
 export class DifficultyChartComponent implements OnInit {
+  @Input() widget: boolean = false;
+
   radioGroupForm: FormGroup;
 
   chartOptions: EChartsOption = {};
@@ -99,7 +101,7 @@ export class DifficultyChartComponent implements OnInit {
   prepareChartOptions(data) {
     this.chartOptions = {
       title: {
-        text: $localize`:@@mining.difficulty:Difficulty`,
+        text: this.widget? '' : $localize`:@@mining.difficulty:Difficulty`,
         left: 'center',
         textStyle: {
           color: '#FFF',
