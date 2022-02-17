@@ -1,23 +1,23 @@
 import { IEsploraApi } from './api/bitcoin/esplora-api.interface';
 
 export interface PoolTag {
-  id: number | null, // mysql row id
-  name: string,
-  link: string,
-  regexes: string, // JSON array
-  addresses: string, // JSON array
+  id: number; // mysql row id
+  name: string;
+  link: string;
+  regexes: string; // JSON array
+  addresses: string; // JSON array
 }
 
 export interface PoolInfo {
-  poolId: number, // mysql row id
-  name: string,
-  link: string,
-  blockCount: number,
+  poolId: number; // mysql row id
+  name: string;
+  link: string;
+  blockCount: number;
 }
 
 export interface PoolStats extends PoolInfo {
-  rank: number,
-  emptyBlocks: number,
+  rank: number;
+  emptyBlocks: number;
 }
 
 export interface MempoolBlock {
@@ -83,10 +83,14 @@ export interface BlockExtension {
   reward?: number;
   coinbaseTx?: TransactionMinerInfo;
   matchRate?: number;
+  pool?: {
+    id: number;
+    name: string;
+  }
 }
 
 export interface BlockExtended extends IEsploraApi.Block {
-  extras?: BlockExtension;
+  extras: BlockExtension;
 }
 
 export interface TransactionMinerInfo {

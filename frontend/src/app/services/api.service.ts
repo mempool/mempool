@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { CpfpInfo, OptimizedMempoolStats, DifficultyAdjustment, AddressInformation, LiquidPegs, ITranslators, PoolsStats } from '../interfaces/node-api.interface';
+import { CpfpInfo, OptimizedMempoolStats, DifficultyAdjustment, AddressInformation, LiquidPegs, ITranslators, PoolsStats, PoolStat, BlockExtended, BlockExtension } from '../interfaces/node-api.interface';
 import { Observable } from 'rxjs';
 import { StateService } from './state.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
@@ -129,7 +129,31 @@ export class ApiService {
     return this.httpClient.post<any>(this.apiBaseUrl + this.apiBasePath + '/api/tx', hexPayload, { responseType: 'text' as 'json'});
   }
 
-  listPools$(interval: string | null) : Observable<PoolsStats> {
-    return this.httpClient.get<PoolsStats>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pools/${interval}`);
+  listPools$(interval: string | undefined) : Observable<PoolsStats> {
+    return this.httpClient.get<PoolsStats>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pools` +
+      (interval !== undefined ? `/${interval}` : '')
+    );
+  }
+
+  getPoolStats$(poolId: number, interval: string | undefined): Observable<PoolStat> {
+    return this.httpClient.get<PoolStat>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${poolId}` +
+      (interval !== undefined ? `/${interval}` : '')
+    );
+  }
+
+  getPoolBlocks$(poolId: number, fromHeight: number): Observable<BlockExtended[]> {
+    return this.httpClient.get<BlockExtended[]>(
+        this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${poolId}/blocks` +
+        (fromHeight !== undefined ? `/${fromHeight}` : '')
+      );
+  }
+
+  getHistoricalDifficulty$(interval: string | undefined): Observable<any> {
+    return this.httpClient.get<any[]>(
+        this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/difficulty` +
+        (interval !== undefined ? `/${interval}` : '')
+      );
   }
 }

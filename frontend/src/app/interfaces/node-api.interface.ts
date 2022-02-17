@@ -54,8 +54,11 @@ export interface LiquidPegs {
 
 export interface ITranslators { [language: string]: string; }
 
+/**
+ * PoolRanking component
+ */
 export interface SinglePoolStats {
-  pooldId: number;
+  poolId: number;
   name: string;
   link: string;
   blockCount: number;
@@ -66,20 +69,35 @@ export interface SinglePoolStats {
   emptyBlockRatio: string;
   logo: string;
 }
-
 export interface PoolsStats {
   blockCount: number;
   lastEstimatedHashrate: number;
   oldestIndexedBlockTimestamp: number;
   pools: SinglePoolStats[];
 }
-
 export interface MiningStats {
-  lastEstimatedHashrate: string,
-  blockCount: number,
-  totalEmptyBlock: number,
-  totalEmptyBlockRatio: string,
-  pools: SinglePoolStats[],
+  lastEstimatedHashrate: string;
+  blockCount: number;
+  totalEmptyBlock: number;
+  totalEmptyBlockRatio: string;
+  pools: SinglePoolStats[];
+}
+
+/**
+ * Pool component
+ */
+export interface PoolInfo {
+  id: number | null; // mysql row id
+  name: string;
+  link: string;
+  regexes: string; // JSON array
+  addresses: string; // JSON array
+  emptyBlocks: number;
+}
+export interface PoolStat {
+  pool: PoolInfo;
+  blockCount: number;
+  emptyBlocks: BlockExtended[];
 }
 
 export interface BlockExtension {
@@ -88,6 +106,10 @@ export interface BlockExtension {
   reward?: number;
   coinbaseTx?: Transaction;
   matchRate?: number;
+  pool?: {
+    id: number;
+    name: string;
+  }
 
   stage?: number; // Frontend only
 }
