@@ -155,8 +155,7 @@ export class PoolRankingComponent implements OnInit {
 
     this.chartOptions = {
       title: {
-        text: $localize`:@@mining.pool-chart-title:${network}:NETWORK: mining pools share`,
-        subtext: $localize`:@@mining.pool-chart-sub-title:Estimated from the # of blocks mined (${this.poolsWindowPreference})`,
+        text: this.widget ? '' : $localize`:@@mining.pool-chart-title:${network}:NETWORK: mining pools share`,
         left: 'center',
         textStyle: {
           color: '#FFF',
@@ -171,10 +170,11 @@ export class PoolRankingComponent implements OnInit {
       },
       series: [
         {
-          top: this.isMobile() ? '5%' : '20%',
+          top: this.widget ? '0%' : (this.isMobile() ? '5%' : '10%'),
+          bottom: this.widget ? '0%' : (this.isMobile() ? '0%' : '5%'),
           name: 'Mining pool',
           type: 'pie',
-          radius: this.isMobile() ? ['10%', '50%'] : ['20%', '80%'],
+          radius: this.widget ? ['20%', '60%'] : (this.isMobile() ? ['10%', '50%'] : ['20%', '70%']),
           data: this.generatePoolsChartSerieData(miningStats),
           labelLine: {
             lineStyle: {
