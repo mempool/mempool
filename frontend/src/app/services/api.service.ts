@@ -150,7 +150,7 @@ export class ApiService {
       );
   }
 
-  getHistoricalDifficulty$(interval: string | undefined): Observable<any[]> {
+  getHistoricalDifficulty$(interval: string | undefined): Observable<any> {
     return this.httpClient.get<any[]>(
         this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/difficulty` +
         (interval !== undefined ? `/${interval}` : '')

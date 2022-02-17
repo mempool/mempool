@@ -69,6 +69,19 @@ class Mining {
       emptyBlocks: emptyBlocks,
     };
   }
+
+  /**
+   * Return the historical difficulty adjustments and oldest indexed block timestamp
+   */
+  public async $getHistoricalDifficulty(interval: string | null): Promise<object> {
+    const difficultyAdjustments = await BlocksRepository.$getBlocksDifficulty(interval);
+    const oldestBlock = new Date(await BlocksRepository.$oldestBlockTimestamp());
+
+    return {
+      adjustments: difficultyAdjustments,
+      oldestIndexedBlockTimestamp: oldestBlock.getTime(),
+    }
+  }
 }
 
 export default new Mining();

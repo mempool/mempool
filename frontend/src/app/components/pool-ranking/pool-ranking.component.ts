@@ -107,7 +107,7 @@ export class PoolRankingComponent implements OnInit {
       if (parseFloat(pool.share) < poolShareThreshold) {
         return;
       }
-      data.push(<PieSeriesOption>{
+      data.push({
         value: pool.share,
         name: pool.name + (this.isMobile() ? `` : ` (${pool.share}%)`),
         label: {
@@ -115,9 +115,9 @@ export class PoolRankingComponent implements OnInit {
           overflow: 'break',
         },
         tooltip: {
-          backgroundColor: "#282d47",
+          backgroundColor: '#282d47',
           textStyle: {
-            color: "#FFFFFF",
+            color: '#FFFFFF',
           },
           formatter: () => {
             if (this.poolsWindowPreference === '24h') {
@@ -131,7 +131,7 @@ export class PoolRankingComponent implements OnInit {
           }
         },
         data: pool.poolId,
-      });
+      } as PieSeriesOption);
     });
     return data;
   }
@@ -205,10 +205,10 @@ export class PoolRankingComponent implements OnInit {
 
     this.chartInstance = ec;
     this.chartInstance.on('click', (e) => {
-      this.router.navigate(['/mining/pool/', e.data.data]); 
-    })
+      this.router.navigate(['/mining/pool/', e.data.data]);
+    });
   }
-  
+
   /**
    * Default mining stats if something goes wrong
    */
