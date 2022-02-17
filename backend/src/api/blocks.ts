@@ -198,7 +198,7 @@ class Blocks {
       logger.info(`Indexing blocks from #${currentBlockHeight} to #${lastBlockToIndex}`);
 
       const chunkSize = 10000;
-      let totaIndexed = 0;
+      let totaIndexed = await blocksRepository.$blockCount(null, null);
       let indexedThisRun = 0;
       while (currentBlockHeight >= lastBlockToIndex) {
         const endBlock = Math.max(0, lastBlockToIndex, currentBlockHeight - chunkSize + 1);
@@ -208,11 +208,9 @@ class Blocks {
         if (missingBlockHeights.length <= 0) {
           logger.debug(`No missing blocks between #${currentBlockHeight} to #${endBlock}`);
           currentBlockHeight -= chunkSize;
-          totaIndexed += chunkSize;
           continue;
         }
 
-        totaIndexed += chunkSize - missingBlockHeights.length;
         logger.debug(`Indexing ${missingBlockHeights.length} blocks from #${currentBlockHeight} to #${endBlock}`);
 
         for (const blockHeight of missingBlockHeights) {
@@ -220,7 +218,8 @@ class Blocks {
             break;
           }
           try {
-            if (totaIndexed % 100 === 0 || blockHeight === lastBlockToIndex) {
+            ++indexedThisRun;
+            if (++totaIndexed % 100 === 0 || blockHeight === lastBlockToIndex) {
               const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
               const blockPerSeconds = Math.max(1, Math.round(indexedThisRun / elapsedSeconds));
               const progress = Math.round(totaIndexed / indexingBlockAmount * 100);
@@ -232,8 +231,6 @@ class Blocks {
             const transactions = await this.$getTransactionsExtended(blockHash, block.height, true, true);
             const blockExtended = await this.$getBlockExtended(block, transactions);
             await blocksRepository.$saveBlockInDatabase(blockExtended);
-            ++totaIndexed;
-            ++indexedThisRun;
           } catch (e) {
             logger.err(`Something went wrong while indexing blocks.` + e);
           }

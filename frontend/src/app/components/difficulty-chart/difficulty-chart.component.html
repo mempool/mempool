@@ -1,11 +1,11 @@
-<div class="container-xl">
+<div [class]="widget === false ? 'container-xl' : ''">
 
   <div *ngIf="difficultyObservable$ | async" class="" echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
   <div class="text-center loadingGraphs" *ngIf="isLoading">
     <div class="spinner-border text-light"></div>
   </div>
 
-  <div class="card-header mb-0 mb-lg-4">
+  <div class="card-header mb-0 mb-lg-4" [style]="widget ? 'display:none' : ''">
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(difficultyObservable$ | async) as diffChanges">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
         <label ngbButtonLabel class="btn-primary btn-sm" [routerLink]="['/mining/difficulty' | relativeUrl]" *ngIf="diffChanges.availableTimespanDay >= 90">
@@ -30,7 +30,7 @@
     </form>
   </div>
 
-  <table class="table table-borderless table-sm text-center">
+  <table class="table table-borderless table-sm text-center" *ngIf="!widget">
     <thead>
       <tr>
         <th i18n="mining.rank">Block</th>
