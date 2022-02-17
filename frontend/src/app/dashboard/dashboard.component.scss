@@ -291,19 +291,17 @@
 
 .asset-title {
   text-align: left;
+  vertical-align: middle;
 }
 
 .asset-icon {
   width: 65px;
   height: 65px;
-}
-
-.asset-table {
-  width: calc(100% - 20px);
-  margin-left: 1.25rem;
+  vertical-align: middle;
 }
 
 .circulating-amount {
   text-align: right;
   width: 100%;
+  vertical-align: middle;
 }
