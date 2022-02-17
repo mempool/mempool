@@ -37,6 +37,7 @@ export interface Env {
   MEMPOOL_WEBSITE_URL: string;
   LIQUID_WEBSITE_URL: string;
   BISQ_WEBSITE_URL: string;
+  MINING_DASHBOARD: boolean;
 }
 
 const defaultEnv: Env = {
@@ -61,6 +62,7 @@ const defaultEnv: Env = {
   'MEMPOOL_WEBSITE_URL': 'https://mempool.space',
   'LIQUID_WEBSITE_URL': 'https://liquid.network',
   'BISQ_WEBSITE_URL': 'https://bisq.markets',
+  'MINING_DASHBOARD': true
 };
 
 @Injectable({

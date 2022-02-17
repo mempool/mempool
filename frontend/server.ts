@@ -66,6 +66,7 @@ export function app(locale: string): express.Express {
   server.get('/address/*', getLocalizedSSR(indexHtml));
   server.get('/blocks', getLocalizedSSR(indexHtml));
   server.get('/mining/pools', getLocalizedSSR(indexHtml));
+  server.get('/mining/pool/*', getLocalizedSSR(indexHtml));
   server.get('/graphs', getLocalizedSSR(indexHtml));
   server.get('/liquid', getLocalizedSSR(indexHtml));
   server.get('/liquid/tx/*', getLocalizedSSR(indexHtml));

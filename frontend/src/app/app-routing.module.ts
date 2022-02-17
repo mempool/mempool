@@ -26,6 +26,9 @@ import { PoolRankingComponent } from './components/pool-ranking/pool-ranking.com
 import { AssetGroupComponent } from './components/assets/asset-group/asset-group.component';
 import { AssetsFeaturedComponent } from './components/assets/assets-featured/assets-featured.component';
 import { AssetsComponent } from './components/assets/assets.component';
+import { PoolComponent } from './components/pool/pool.component';
+import { MiningDashboardComponent } from './components/mining-dashboard/mining-dashboard.component';
+import { DifficultyChartComponent } from './components/difficulty-chart/difficulty-chart.component';
 
 let routes: Routes = [
   {
@@ -56,6 +59,10 @@ let routes: Routes = [
             path: 'mempool-block/:id',
             component: MempoolBlockComponent
           },
+          {
+            path: 'mining',
+            component: MiningDashboardComponent,
+          },
         ],
       },
       {
@@ -63,8 +70,16 @@ let routes: Routes = [
         component: LatestBlocksComponent,
       },
       {
+        path: 'mining/difficulty',
+        component: DifficultyChartComponent,
+      },
+      {
         path: 'mining/pools',
         component: PoolRankingComponent,
+      },
+      {
+        path: 'mining/pool/:poolId',
+        component: PoolComponent,
       },
       {
         path: 'graphs',
@@ -144,6 +159,10 @@ let routes: Routes = [
                 path: 'mempool-block/:id',
                 component: MempoolBlockComponent
               },
+              {
+                path: 'mining',
+                component: MiningDashboardComponent,
+              },
             ],
           },
           {
@@ -151,8 +170,16 @@ let routes: Routes = [
             component: LatestBlocksComponent,
           },
           {
+            path: 'mining/difficulty',
+            component: DifficultyChartComponent,
+          },
+          {
             path: 'mining/pools',
             component: PoolRankingComponent,
+          },
+          {
+            path: 'mining/pool/:poolId',
+            component: PoolComponent,
           },
           {
             path: 'graphs',
@@ -226,6 +253,10 @@ let routes: Routes = [
                 path: 'mempool-block/:id',
                 component: MempoolBlockComponent
               },
+              {
+                path: 'mining',
+                component: MiningDashboardComponent,
+              },
             ],
           },
           {
@@ -233,8 +264,16 @@ let routes: Routes = [
             component: LatestBlocksComponent,
           },
           {
+            path: 'mining/difficulty',
+            component: DifficultyChartComponent,
+          },
+          {
             path: 'mining/pools',
             component: PoolRankingComponent,
+          },
+          {
+            path: 'mining/pool/:poolId',
+            component: PoolComponent,
           },
           {
             path: 'graphs',
