@@ -1,4 +1,3 @@
-<div class="main-title" i18n="mining.pool-share" *ngIf="widget">Mining Pools Share ({{ poolsWindowPreference }})</div>
 <div [class]="widget === false ? 'container-xl' : ''">
 
   <div class="hashrate-pie" echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartInit)="onChartInit($event)"></div>
