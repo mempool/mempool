@@ -21,9 +21,13 @@
         </div>
         <div class="time-difference"><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since></div>
       </div>
+    <div class="" *ngIf="showMiningInfo === true">
+      <a class="badge badge-primary" [routerLink]="[('/mining/pool/' + block.extras.pool.id) | relativeUrl]">
+        {{ block.extras.pool.name}}</a>
+    </div>
     </div>
   </div>
-  <div [hidden]="!arrowVisible" id="arrow-up" [style.transition]="transition" [ngStyle]="{'left': arrowLeftPx + 'px' }"></div>
+<div [hidden]="!arrowVisible" id="arrow-up" [style.transition]="transition" [ngStyle]="{'left': arrowLeftPx + 'px' }"></div>
 </div>
 
 <ng-template #loadingBlocksTemplate>
