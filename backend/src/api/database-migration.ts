@@ -92,10 +92,12 @@ class DatabaseMigration {
         await this.$executeQuery(connection, this.getCreateBlocksTableQuery(), await this.$checkIfTableExists('blocks'));
       }
       if (databaseSchemaVersion < 5 && isBitcoin === true) {
+        await this.$executeQuery(connection, 'TRUNCATE blocks;'); // Need to re-index
         await this.$executeQuery(connection, 'ALTER TABLE blocks ADD `reward` double unsigned NOT NULL DEFAULT "0"');
       }
 
       if (databaseSchemaVersion < 6 && isBitcoin === true) {
+        await this.$executeQuery(connection, 'TRUNCATE blocks;');  // Need to re-index
         // Cleanup original blocks fields type
         await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `height` integer unsigned NOT NULL DEFAULT "0"');
         await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `tx_count` smallint unsigned NOT NULL DEFAULT "0"');
