@@ -1,13 +1,10 @@
-<div class="container-xl dashboard-container">
+<!-- lastest blocks -->
+<div id="blockchain-container" class="fade-border" dir="ltr" #blockchainContainer>
+  <app-blockchain [miningInfo]=true></app-blockchain>
+</div>
+
+<div class="container-xl">
   
-  <!-- lastest blocks -->
-  <div class="text-center" class="blockchain-wrapper fade-border">
-    <div class="position-container">
-      <span>
-        <app-blockchain-blocks [miningInfo]="true"></app-blockchain-blocks>
-      </span>
-    </div>
-  </div>
 
   <div class="row row-cols-1 row-cols-md-2 mt-3">
 

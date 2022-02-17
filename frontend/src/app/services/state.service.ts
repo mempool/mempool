@@ -100,6 +100,7 @@ export class StateService {
   keyNavigation$ = new Subject<KeyboardEvent>();
 
   blockScrolling$: Subject<boolean> = new Subject<boolean>();
+  public blockShifted: boolean = false;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,

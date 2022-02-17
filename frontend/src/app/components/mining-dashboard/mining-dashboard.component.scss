@@ -29,22 +29,19 @@
   }
 }
 
-.blockchain-wrapper {
+#blockchain-container {
   position: relative;
-  overflow: hidden;
-  height: 250px;
-
-  -webkit-user-select: none; /* Safari */        
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* IE10+/Edge */
-  user-select: none; /* Standard */
+  overflow-x: scroll;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-.position-container {
-  position: absolute;
-  top: 75px;
+#blockchain-container::-webkit-scrollbar {
+  display: none;
 }
 
 .fade-border {
-  -webkit-mask-image: linear-gradient(90deg, #000 70%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 80%, transparent 100%)
 }
+  
