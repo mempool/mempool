@@ -44,6 +44,13 @@ export class DifficultyChartComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const powerOfTen = {
+      terra: Math.pow(10, 12),
+      giga: Math.pow(10, 9),
+      mega: Math.pow(10, 6),
+      kilo: Math.pow(10, 3),
+    }
+
     this.difficultyObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
       .pipe(
         startWith('1y'),
@@ -62,8 +69,20 @@ export class DifficultyChartComponent implements OnInit {
                 const tableData = [];
                 for (let i = 0; i < data.adjustments.length - 1; ++i) {
                   const change = (data.adjustments[i].difficulty / data.adjustments[i + 1].difficulty - 1) * 100;
+                  let selectedPowerOfTen = { divider: powerOfTen.terra, unit: 'T' };
+                  if (data.adjustments[i].difficulty < powerOfTen.mega) {
+                    selectedPowerOfTen = { divider: 1, unit: '' }; // no scaling
+                  } else if (data.adjustments[i].difficulty < powerOfTen.giga) {
+                    selectedPowerOfTen = { divider: powerOfTen.mega, unit: 'M' };
+                  } else if (data.adjustments[i].difficulty < powerOfTen.terra) {
+                    selectedPowerOfTen = { divider: powerOfTen.giga, unit: 'G' };
+                  }
+
                   tableData.push(Object.assign(data.adjustments[i], {
-                    change: change
+                    change: change,
+                    difficultyShorten: formatNumber(
+                      data.adjustments[i].difficulty / selectedPowerOfTen.divider,
+                      this.locale, '1.2-2') + selectedPowerOfTen.unit
                   }));
                 }
                 return {
