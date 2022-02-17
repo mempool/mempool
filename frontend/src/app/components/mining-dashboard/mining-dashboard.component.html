@@ -1,9 +1,10 @@
-<div class="container-xl">
+<div class="container-xl dashboard-container">
   
-  <div class="row row-cols-1 row-cols-md-2 mt-3">
+  <div class="row row-cols-1 row-cols-md-2">
 
     <!-- pool distribution -->
     <div class="col">
+      <div class="main-title" i18n="mining.pool-share">Mining Pools Share (1w)</div>
       <div class="card">
         <div class="card-body">
           <app-pool-ranking [widget]=true></app-pool-ranking>
@@ -15,6 +16,7 @@
 
     <!-- difficulty -->
     <div class="col">
+      <div class="main-title" i18n="mining.difficulty">Difficulty (1y)</div>
       <div class="card">
         <div class="card-body">
           <app-difficulty-chart [widget]=true></app-difficulty-chart>

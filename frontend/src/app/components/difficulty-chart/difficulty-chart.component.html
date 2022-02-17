@@ -1,4 +1,3 @@
-<div class="main-title" i18n="mining.difficulty" *ngIf="widget">Difficulty (1y)</div>
 <div [class]="widget === false ? 'container-xl' : ''">
 
   <div *ngIf="difficultyObservable$ | async" class="" echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
