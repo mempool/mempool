@@ -6,7 +6,7 @@ import logger from '../logger';
 const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 class DatabaseMigration {
-  private static currentVersion = 4;
+  private static currentVersion = 6;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
 
@@ -76,6 +76,7 @@ class DatabaseMigration {
   private async $createMissingTablesAndIndexes(databaseSchemaVersion: number) {
     await this.$setStatisticsAddedIndexedFlag(databaseSchemaVersion);
 
+    const isBitcoin = ['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK);
     const connection = await DB.pool.getConnection();
     try {
       await this.$executeQuery(connection, this.getCreateElementsTableQuery(), await this.$checkIfTableExists('elements_pegs'));
@@ -89,6 +90,31 @@ class DatabaseMigration {
       if (databaseSchemaVersion < 4) {
         await this.$executeQuery(connection, 'DROP table IF EXISTS blocks;');
         await this.$executeQuery(connection, this.getCreateBlocksTableQuery(), await this.$checkIfTableExists('blocks'));
+      }
+      if (databaseSchemaVersion < 5 && isBitcoin === true) {
+        await this.$executeQuery(connection, 'TRUNCATE blocks;'); // Need to re-index
+        await this.$executeQuery(connection, 'ALTER TABLE blocks ADD `reward` double unsigned NOT NULL DEFAULT "0"');
+      }
+
+      if (databaseSchemaVersion < 6 && isBitcoin === true) {
+        await this.$executeQuery(connection, 'TRUNCATE blocks;');  // Need to re-index
+        // Cleanup original blocks fields type
+        await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `height` integer unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `tx_count` smallint unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `size` integer unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `weight` integer unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `difficulty` double NOT NULL DEFAULT "0"');
+        // We also fix the pools.id type so we need to drop/re-create the foreign key
+        await this.$executeQuery(connection, 'ALTER TABLE blocks DROP FOREIGN KEY IF EXISTS `blocks_ibfk_1`');
+        await this.$executeQuery(connection, 'ALTER TABLE pools MODIFY `id` smallint unsigned AUTO_INCREMENT');
+        await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `pool_id` smallint unsigned NULL');
+        await this.$executeQuery(connection, 'ALTER TABLE blocks ADD FOREIGN KEY (`pool_id`) REFERENCES `pools` (`id`)');
+        // Add new block indexing fields
+        await this.$executeQuery(connection, 'ALTER TABLE blocks ADD `version` integer unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery(connection, 'ALTER TABLE blocks ADD `bits` integer unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery(connection, 'ALTER TABLE blocks ADD `nonce` bigint unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery(connection, 'ALTER TABLE blocks ADD `merkle_root` varchar(65) NOT NULL DEFAULT ""');
+        await this.$executeQuery(connection, 'ALTER TABLE blocks ADD `previous_block_hash` varchar(65) NULL');
       }
       connection.release();
     } catch (e) {
