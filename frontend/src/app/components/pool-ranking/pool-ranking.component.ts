@@ -9,6 +9,7 @@ import { SeoService } from 'src/app/services/seo.service';
 import { StorageService } from '../..//services/storage.service';
 import { MiningService, MiningStats } from '../../services/mining.service';
 import { StateService } from '../../services/state.service';
+import { chartColors } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-pool-ranking',
@@ -181,11 +182,8 @@ export class PoolRankingComponent implements OnInit {
           },
           emphasis: {
             itemStyle: {
-              borderWidth: 2,
-              borderColor: '#FFF',
-              borderRadius: 2,
-              shadowBlur: 80,
-              shadowColor: 'rgba(255, 255, 255, 0.75)',
+              shadowBlur: 40,
+              shadowColor: 'rgba(0, 0, 0, 0.75)',
             },
             labelLine: {
               lineStyle: {
@@ -194,7 +192,8 @@ export class PoolRankingComponent implements OnInit {
             }
           }
         }
-      ]
+      ],
+      color: chartColors
     };
   }
 
