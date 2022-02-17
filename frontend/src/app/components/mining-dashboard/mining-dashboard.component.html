@@ -26,8 +26,11 @@
     <div class="col">
       <div class="card">
         <div class="card-body">
-          <app-difficulty [showProgress]=false [showHalving]=true></app-difficulty>
-          Imagine more stuff down there
+          <app-difficulty-chart [widget]=true></app-difficulty-chart>
+          <div class=""><a href="" [routerLink]="['/mining/difficulty' | relativeUrl]" i18n="dashboard.view-more">View more
+              &raquo;</a></div>
+          <!-- <app-difficulty [showProgress]=false [showHalving]=true></app-difficulty>
+          Imagine more stuff down there -->
         </div>
       </div>
     </div>
