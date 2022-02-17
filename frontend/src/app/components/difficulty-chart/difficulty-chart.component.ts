@@ -114,15 +114,13 @@ export class DifficultyChartComponent implements OnInit {
       axisPointer: {
         type: 'line',
       },
-      xAxis: [
-        {
-          type: 'time',
-        }
-      ],
+      xAxis: {
+        type: 'time',
+        splitNumber: this.isMobile() ? 5 : 10,
+      },
       yAxis: {
         type: 'value',
         axisLabel: {
-          fontSize: 11,
           formatter: (val) => {
             const diff = val / Math.pow(10, 12); // terra
             return diff.toString() + 'T';
@@ -150,4 +148,7 @@ export class DifficultyChartComponent implements OnInit {
     };
   }
 
+  isMobile() {
+    return (window.innerWidth <= 767.98);
+  }
 }
