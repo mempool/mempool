@@ -16,38 +16,40 @@
       <div class="col">
         <div class="card">
           <div class="card-body">
-            <ng-container *ngTemplateOutlet="mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
+            <ng-container *ngTemplateOutlet="stateService.network === 'liquid' ? lbtcPegs : mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
           </div>
         </div>
       </div>
       <div class="col">
         <div class="card">
           <div class="card-body">
-            <ng-container *ngTemplateOutlet="stateService.network === 'liquid' ? lbtcPegs : txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
+            <ng-container *ngTemplateOutlet="stateService.network === 'liquid' ? mempoolTable : txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
           </div>
         </div>
       </div>
     </ng-template>
     <ng-template #expanded>
-      <div class="col card-wrapper" *ngIf="(network$ | async) !== 'liquid' && (network$ | async) !== 'liquidtestnet'">
-        <div class="main-title" i18n="fees-box.transaction-fees">Transaction Fees</div>
-        <div class="card">
-          <div class="card-body">
-            <app-fees-box class="d-block"></app-fees-box>
+      <ng-container *ngIf="(network$ | async) !== 'liquid' && (network$ | async) !== 'liquidtestnet'">
+        <div class="col card-wrapper">
+          <div class="main-title" i18n="fees-box.transaction-fees">Transaction Fees</div>
+          <div class="card">
+            <div class="card-body">
+              <app-fees-box class="d-block"></app-fees-box>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="col" *ngIf="(network$ | async) !== 'liquid' && (network$ | async) !== 'liquidtestnet'">
-        <app-difficulty></app-difficulty>
-      </div>
+        <div class="col">
+          <app-difficulty></app-difficulty>
+        </div>
+      </ng-container>
       <div class="col">
         <div class="card graph-card">
           <div class="card-body pl-0">
             <div style="padding-left: 1.25rem;">
-              <ng-container *ngTemplateOutlet="mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
+              <ng-container *ngTemplateOutlet="stateService.network === 'liquid' ? lbtcPegs : mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
               <hr>
             </div>
-            <ng-template [ngIf]="(network$ | async) !== 'liquid'" [ngIfElse]="liquidAssets">
+            <ng-template [ngIf]="(network$ | async) !== 'liquid'" [ngIfElse]="liquidPegs">
               <ng-container *ngIf="{ value: (mempoolStats$ | async) } as mempoolStats">
                 <div class="mempool-graph">
                   <app-mempool-graph
@@ -60,8 +62,19 @@
                 </div>
               </ng-container>
             </ng-template>
-            <ng-template #liquidAssets>
-              <table class="table table-borderless table-striped asset-table" *ngIf="(featuredAssets$ | async) as featuredAssets else loadingAssetsTable">
+            <ng-template #liquidPegs>
+              <app-lbtc-pegs-graph [data]="liquidPegsMonth$ | async"></app-lbtc-pegs-graph>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card graph-card">
+          <div class="card-body">
+            <ng-container *ngTemplateOutlet="stateService.network === 'liquid' ? mempoolTable : txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
+            <hr>
+            <div class="mempool-graph" *ngIf="stateService.network === 'liquid'; else mempoolGraph">
+              <table class="table table-borderless table-striped" *ngIf="(featuredAssets$ | async) as featuredAssets else loadingAssetsTable">
                 <tbody>
                   <tr *ngFor="let group of featuredAssets">
                     <td class="asset-icon">
@@ -76,17 +89,6 @@
                   </tr>
                 </tbody>
               </table>
-            </ng-template>
-          </div>
-        </div>
-      </div>
-      <div class="col">
-        <div class="card graph-card">
-          <div class="card-body">
-            <ng-container *ngTemplateOutlet="stateService.network === 'liquid' ? lbtcPegs : txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
-            <hr>
-            <div class="mempool-graph" *ngIf="stateService.network === 'liquid'; else mempoolGraph">
-              <app-lbtc-pegs-graph [data]="liquidPegsMonth$ | async"></app-lbtc-pegs-graph>
             </div>
             <ng-template #mempoolGraph>
               <div class="mempool-graph" *ngIf="{ value: (mempoolStats$ | async) } as mempoolStats">
