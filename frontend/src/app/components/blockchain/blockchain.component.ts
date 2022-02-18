@@ -11,7 +11,7 @@ export class BlockchainComponent implements OnInit {
   network: string;
 
   constructor(
-    private stateService: StateService,
+    public stateService: StateService,
   ) {}
 
   ngOnInit() {

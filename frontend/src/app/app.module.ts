@@ -38,6 +38,7 @@ import { TimeSpanComponent } from './components/time-span/time-span.component';
 import { SeoService } from './services/seo.service';
 import { MempoolGraphComponent } from './components/mempool-graph/mempool-graph.component';
 import { PoolRankingComponent } from './components/pool-ranking/pool-ranking.component';
+import { PoolComponent } from './components/pool/pool.component';
 import { LbtcPegsGraphComponent } from './components/lbtc-pegs-graph/lbtc-pegs-graph.component';
 import { AssetComponent } from './components/asset/asset.component';
 import { AssetsComponent } from './components/assets/assets.component';
@@ -68,6 +69,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AssetsFeaturedComponent } from './components/assets/assets-featured/assets-featured.component';
 import { AssetGroupComponent } from './components/assets/asset-group/asset-group.component';
 import { AssetCirculationComponent } from './components/asset-circulation/asset-circulation.component';
+import { MiningDashboardComponent } from './components/mining-dashboard/mining-dashboard.component';
+import { DifficultyChartComponent } from './components/difficulty-chart/difficulty-chart.component';
 
 @NgModule({
   declarations: [
@@ -97,6 +100,7 @@ import { AssetCirculationComponent } from './components/asset-circulation/asset-
     IncomingTransactionsGraphComponent,
     MempoolGraphComponent,
     PoolRankingComponent,
+    PoolComponent,
     LbtcPegsGraphComponent,
     AssetComponent,
     AssetsComponent,
@@ -118,6 +122,8 @@ import { AssetCirculationComponent } from './components/asset-circulation/asset-
     AssetsFeaturedComponent,
     AssetGroupComponent,
     AssetCirculationComponent,
+    MiningDashboardComponent,
+    DifficultyChartComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
