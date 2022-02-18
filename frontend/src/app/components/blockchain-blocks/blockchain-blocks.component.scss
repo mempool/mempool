@@ -130,3 +130,14 @@
   top: 15px;
   z-index: 101;
 }
+
+.animated {
+  transition: all 0.15s ease-in-out;
+}
+.show {
+  opacity: 1;
+}
+.hide {
+  opacity: 0;
+  pointer-events : none;
+}
