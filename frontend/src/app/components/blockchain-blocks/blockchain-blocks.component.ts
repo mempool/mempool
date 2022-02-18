@@ -47,13 +47,12 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
     public stateService: StateService,
     private cd: ChangeDetectorRef,
     private location: Location,
-    private cdr: ChangeDetectorRef
   ) {
   }
 
   enabledMiningInfoIfNeeded(url) {
     this.showMiningInfo = url === '/mining';
-    this.cdr.detectChanges(); // Need to update the view asap
+    this.cd.markForCheck(); // Need to update the view asap
   }
 
   ngOnInit() {
