@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { StateService } from 'src/app/services/state.service';
-import { Router } from '@angular/router';
 import { specialBlocks } from 'src/app/app.constants';
 import { BlockExtended } from 'src/app/interfaces/node-api.interface';
+import { Location } from '@angular/common';
+import { config } from 'process';
 
 @Component({
   selector: 'app-blockchain-blocks',
@@ -31,6 +32,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   arrowLeftPx = 30;
   blocksFilled = false;
   transition = '1s';
+  showMiningInfo = false;
 
   gradientColors = {
     '': ['#9339f4', '#105fb0'],
@@ -43,11 +45,22 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
 
   constructor(
     public stateService: StateService,
-    private router: Router,
     private cd: ChangeDetectorRef,
-  ) { }
+    private location: Location,
+  ) {
+  }
+
+  enabledMiningInfoIfNeeded(url) {
+    this.showMiningInfo = url === '/mining';
+    this.cd.markForCheck(); // Need to update the view asap
+  }
 
   ngOnInit() {
+    if (['', 'testnet', 'signet'].includes(this.stateService.network)) {
+      this.enabledMiningInfoIfNeeded(this.location.path());
+      this.location.onUrlChange((url) => this.enabledMiningInfoIfNeeded(url));
+    }
+
     if (this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet') {
       this.feeRounding = '1.0-1';
     }
