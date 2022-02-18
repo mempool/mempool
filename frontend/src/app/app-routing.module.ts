@@ -29,6 +29,8 @@ import { AssetsComponent } from './components/assets/assets.component';
 import { PoolComponent } from './components/pool/pool.component';
 import { MiningDashboardComponent } from './components/mining-dashboard/mining-dashboard.component';
 import { DifficultyChartComponent } from './components/difficulty-chart/difficulty-chart.component';
+import { HashrateChartComponent } from './components/hashrate-chart/hashrate-chart.component';
+import { MiningStartComponent } from './components/mining-start/mining-start.component';
 
 let routes: Routes = [
   {
@@ -70,16 +72,35 @@ let routes: Routes = [
         component: LatestBlocksComponent,
       },
       {
-        path: 'mining/difficulty',
-        component: DifficultyChartComponent,
-      },
-      {
-        path: 'mining/pools',
-        component: PoolRankingComponent,
-      },
-      {
-        path: 'mining/pool/:poolId',
-        component: PoolComponent,
+        path: 'mining',
+        component: MiningStartComponent,
+        children: [
+          {
+            path: 'difficulty',
+            component: DifficultyChartComponent,
+          },
+          {
+            path: 'hashrate',
+            component: HashrateChartComponent,
+          },
+          {
+            path: 'pools',
+            component: PoolRankingComponent,
+          },
+          {
+            path: 'pool',
+            children: [
+              {
+                path: ':poolId',
+                component: PoolComponent,
+              },
+              {
+                path: ':poolId/hashrate',
+                component: HashrateChartComponent,
+              },
+            ]
+          },
+        ]
       },
       {
         path: 'graphs',
@@ -170,16 +191,35 @@ let routes: Routes = [
             component: LatestBlocksComponent,
           },
           {
-            path: 'mining/difficulty',
-            component: DifficultyChartComponent,
-          },
-          {
-            path: 'mining/pools',
-            component: PoolRankingComponent,
-          },
-          {
-            path: 'mining/pool/:poolId',
-            component: PoolComponent,
+            path: 'mining',
+            component: MiningStartComponent,
+            children: [
+              {
+                path: 'difficulty',
+                component: DifficultyChartComponent,
+              },
+              {
+                path: 'hashrate',
+                component: HashrateChartComponent,
+              },
+              {
+                path: 'pools',
+                component: PoolRankingComponent,
+              },
+              {
+                path: 'pool',
+                children: [
+                  {
+                    path: ':poolId',
+                    component: PoolComponent,
+                  },
+                  {
+                    path: ':poolId/hashrate',
+                    component: HashrateChartComponent,
+                  },
+                ]
+              },
+            ]
           },
           {
             path: 'graphs',
@@ -264,16 +304,35 @@ let routes: Routes = [
             component: LatestBlocksComponent,
           },
           {
-            path: 'mining/difficulty',
-            component: DifficultyChartComponent,
-          },
-          {
-            path: 'mining/pools',
-            component: PoolRankingComponent,
-          },
-          {
-            path: 'mining/pool/:poolId',
-            component: PoolComponent,
+            path: 'mining',
+            component: MiningStartComponent,
+            children: [
+              {
+                path: 'difficulty',
+                component: DifficultyChartComponent,
+              },
+              {
+                path: 'hashrate',
+                component: HashrateChartComponent,
+              },
+              {
+                path: 'pools',
+                component: PoolRankingComponent,
+              },
+              {
+                path: 'pool',
+                children: [
+                  {
+                    path: ':poolId',
+                    component: PoolComponent,
+                  },
+                  {
+                    path: ':poolId/hashrate',
+                    component: HashrateChartComponent,
+                  },
+                ]
+              },
+            ]
           },
           {
             path: 'graphs',
