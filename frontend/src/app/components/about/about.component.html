@@ -31,6 +31,12 @@
     </a>
   </div>
 
+  <br><br>
+  <div class="sponsor-button">
+    <button [hidden]="showNavigateToSponsor" type="button" class="btn btn-primary" (click)="sponsor()" i18n="about.become-a-sponsor">Become a sponsor ❤️</button>
+    <ng-container *ngIf="showNavigateToSponsor" i18n="about.navigate-to-sponsor">Navigate to <a href="https://mempool.space/sponsor" target="_blank">https://mempool.space/sponsor</a> to sponsor</ng-container>
+  </div>
+
   <div class="enterprise-sponsor">
     <h3 i18n="about.sponsors.enterprise.withRocket">Enterprise Sponsors 🚀</h3>
     <div class="wrapper">
@@ -73,9 +79,6 @@
         </ng-template>
       </ng-container>
     </div>
-
-    <button [hidden]="showNavigateToSponsor" type="button" class="btn btn-primary" (click)="sponsor()" i18n="about.become-a-sponsor">Become a sponsor ❤️</button>
-    <ng-container *ngIf="showNavigateToSponsor" i18n="about.navigate-to-sponsor">Navigate to <a href="https://mempool.space/sponsor" target="_blank">https://mempool.space/sponsor</a> to sponsor</ng-container>
   </div>
 
   <div class="community-integrations-sponsor">
@@ -177,7 +180,7 @@
     </div>
     <br>
   </ng-container>
-  
+
   <ng-container *ngIf="allContributors$ | async as contributors else loadingSponsors">
     <div class="contributors">
       <h3 i18n="about.contributors">Project Contributors</h3>
@@ -252,7 +255,7 @@
     <a href="/3rdpartylicenses.txt">Third-party Licenses</a>
     <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a>
   </div>
-  
+
   <div class="footer-version" *ngIf="officialMempoolSpace">
     {{ (backendInfo$ | async)?.hostname }} (v{{ (backendInfo$ | async )?.version }}) [<a href="https://github.com/mempool/mempool/commit/{{ (backendInfo$ | async )?.gitCommit | slice:0:8 }}">{{ (backendInfo$ | async )?.gitCommit | slice:0:8 }}</a>]
   </div>
