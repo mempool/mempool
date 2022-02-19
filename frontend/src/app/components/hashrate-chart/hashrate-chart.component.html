@@ -1,1 +1,53 @@
-<p>hashrate-chart works!</p>
+<div [class]="widget === false ? 'container-xl' : ''">
+
+  <div *ngIf="hashrateObservable$ | async" class="" echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
+  <div class="text-center loadingGraphs" *ngIf="isLoading">
+    <div class="spinner-border text-light"></div>
+  </div>
+
+  <div class="card-header mb-0 mb-lg-4" [style]="widget ? 'display:none' : ''">
+    <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(hashrateObservable$ | async) as diffChanges">
+      <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
+        <label ngbButtonLabel class="btn-primary btn-sm" [routerLink]="['/mining/hashrate' | relativeUrl]" *ngIf="diffChanges.availableTimespanDay >= 90">
+          <input ngbButton type="radio" [value]="'3m'" fragment="3m"> 3M
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" [routerLink]="['/mining/hashrate' | relativeUrl]" *ngIf="diffChanges.availableTimespanDay >= 180">
+          <input ngbButton type="radio" [value]="'6m'" fragment="6m"> 6M
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" [routerLink]="['/mining/hashrate' | relativeUrl]" *ngIf="diffChanges.availableTimespanDay >= 365">
+          <input ngbButton type="radio" [value]="'1y'" fragment="1y"> 1Y
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" [routerLink]="['/mining/hashrate' | relativeUrl]" *ngIf="diffChanges.availableTimespanDay >= 730">
+          <input ngbButton type="radio" [value]="'2y'" fragment="2y"> 2Y
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" [routerLink]="['/mining/hashrate' | relativeUrl]" *ngIf="diffChanges.availableTimespanDay >= 1095">
+          <input ngbButton type="radio" [value]="'3y'" fragment="3y"> 3Y
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'all'" [routerLink]="['/mining/hashrate' | relativeUrl]" fragment="all"> ALL
+        </label>
+      </div>
+    </form>
+  </div>
+
+  <!-- <table class="table table-borderless table-sm text-center" *ngIf="!widget">
+    <thead>
+      <tr>
+        <th i18n="mining.rank">Block</th>
+        <th i18n="block.timestamp">Timestamp</th>
+        <th i18n="mining.hashrate">Difficulty</th>
+        <th i18n="mining.change">Change</th>
+      </tr>
+    </thead>
+    <tbody *ngIf="(hashrateObservable$ | async) as diffChanges">
+      <tr *ngFor="let diffChange of diffChanges.data">
+        <td><a [routerLink]="['/block' | relativeUrl, diffChange.height]">{{ diffChange.height }}</a></td>
+        <td>&lrm;{{ diffChange.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}</td>
+        <td class="d-none d-md-block">{{ formatNumber(diffChange.hashrate, locale, '1.2-2') }}</td>
+        <td class="d-block d-md-none">{{ diffChange.difficultyShorten }}</td>
+        <td [style]="diffChange.change >= 0 ? 'color: #42B747' : 'color: #B74242'">{{ formatNumber(diffChange.change, locale, '1.2-2') }}%</td>
+      </tr>
+    </tbody>
+  </table> -->
+
+</div>
