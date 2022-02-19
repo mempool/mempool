@@ -6,7 +6,7 @@ import logger from '../logger';
 const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 class DatabaseMigration {
-  private static currentVersion = 6;
+  private static currentVersion = 7;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
 
@@ -116,6 +116,12 @@ class DatabaseMigration {
         await this.$executeQuery(connection, 'ALTER TABLE blocks ADD `merkle_root` varchar(65) NOT NULL DEFAULT ""');
         await this.$executeQuery(connection, 'ALTER TABLE blocks ADD `previous_block_hash` varchar(65) NULL');
       }
+
+      if (databaseSchemaVersion < 7 && isBitcoin === true) {
+        await this.$executeQuery(connection, 'DROP table IF EXISTS hashrates;');
+        await this.$executeQuery(connection, this.getCreateDailyStatsTableQuery(), await this.$checkIfTableExists('hashrates'));
+      }
+
       connection.release();
     } catch (e) {
       connection.release();
@@ -394,6 +400,17 @@ class DatabaseMigration {
       fee_span json NOT NULL,
       median_fee double unsigned NOT NULL,
       PRIMARY KEY (height),
+      INDEX (pool_id),
+      FOREIGN KEY (pool_id) REFERENCES pools (id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateDailyStatsTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS hashrates (
+      hashrate_timestamp timestamp NOT NULL,
+      avg_hashrate double unsigned DEFAULT '0',
+      pool_id smallint unsigned NULL,
+      PRIMARY KEY (hashrate_timestamp),
       INDEX (pool_id),
       FOREIGN KEY (pool_id) REFERENCES pools (id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;

@@ -170,10 +170,7 @@ class Blocks {
    * Index all blocks metadata for the mining dashboard
    */
   public async $generateBlockDatabase() {
-    if (this.blockIndexingStarted === true ||
-      !Common.indexingEnabled() ||
-      memPool.hasPriority()
-    ) {
+    if (this.blockIndexingStarted) {
       return;
     }
 

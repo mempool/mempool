@@ -22,7 +22,6 @@ import elementsParser from './api/liquid/elements-parser';
 import icons from './api/liquid/icons';
 import miningStats from './api/mining';
 import axios from 'axios';
-import PoolsRepository from './repositories/PoolsRepository';
 import mining from './api/mining';
 import BlocksRepository from './repositories/BlocksRepository';
 
