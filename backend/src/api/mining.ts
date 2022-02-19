@@ -1,9 +1,13 @@
 import { PoolInfo, PoolStats } from '../mempool.interfaces';
 import BlocksRepository, { EmptyBlocks } from '../repositories/BlocksRepository';
 import PoolsRepository from '../repositories/PoolsRepository';
+import HashratesRepository from '../repositories/HashratesRepository';
 import bitcoinClient from './bitcoin/bitcoin-client';
+import logger from '../logger';
 
 class Mining {
+  hashrateIndexingStarted = false;
+
   constructor() {
   }
 
@@ -45,7 +49,7 @@ class Mining {
     poolsStatistics['blockCount'] = blockCount;
 
     const blockHeightTip = await bitcoinClient.getBlockCount();
-    const lastBlockHashrate = await bitcoinClient.getNetworkHashPs(120, blockHeightTip);
+    const lastBlockHashrate = await bitcoinClient.getNetworkHashPs(144, blockHeightTip);
     poolsStatistics['lastEstimatedHashrate'] = lastBlockHashrate;
 
     return poolsStatistics;
@@ -82,6 +86,52 @@ class Mining {
       oldestIndexedBlockTimestamp: oldestBlock.getTime(),
     }
   }
+
+  /**
+   * 
+   */
+  public async $generateNetworkHashrateHistory() : Promise<void> {
+    if (this.hashrateIndexingStarted) {
+      return;
+    }
+    this.hashrateIndexingStarted = true;
+
+    const totalIndexed = await BlocksRepository.$blockCount(null, null);
+    const indexedTimestamp = await HashratesRepository.$getAllTimestamp();
+
+    const genesisTimestamp = 1231006505; // bitcoin-cli getblock 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
+    const lastMidnight = new Date();
+    lastMidnight.setUTCHours(0); lastMidnight.setUTCMinutes(0); lastMidnight.setUTCSeconds(0); lastMidnight.setUTCMilliseconds(0);
+    let toTimestamp = Math.round(lastMidnight.getTime() / 1000);
+
+    while (toTimestamp > genesisTimestamp) {
+      const fromTimestamp = toTimestamp - 86400;
+      if (indexedTimestamp.includes(fromTimestamp)) {
+        toTimestamp -= 86400;
+        continue;
+      }
+
+      const blockStats: any = await BlocksRepository.$blockCountBetweenTimestamp(
+        null, fromTimestamp, toTimestamp
+      );
+      let lastBlockHashrate = await bitcoinClient.getNetworkHashPs(blockStats.blockCount, blockStats.lastBlockHeight);
+
+      if (toTimestamp % 864000 === 0) {
+        const progress = Math.round((totalIndexed - blockStats.lastBlockHeight) / totalIndexed * 100);
+        const formattedDate = new Date(fromTimestamp * 1000).toUTCString();
+        logger.debug(`Counting blocks and hashrate for ${formattedDate}. Progress: ${progress}%`);
+      }
+
+      await HashratesRepository.$saveDailyStat({
+        hashrateTimestamp: fromTimestamp,
+        avgHashrate: lastBlockHashrate,
+        poolId: null,
+      });
+
+      toTimestamp -= 86400;
+    }
+  }
+
 }
 
 export default new Mining();

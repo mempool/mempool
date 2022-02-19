@@ -26,6 +26,7 @@ import poolsParser from './api/pools-parser';
 import syncAssets from './sync-assets';
 import icons from './api/liquid/icons';
 import { Common } from './api/common';
+import mining from './api/mining';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -138,7 +139,7 @@ class Server {
       }
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
-      blocks.$generateBlockDatabase();
+      this.runIndexingWhenReady();
 
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;
@@ -155,6 +156,14 @@ class Server {
       this.currentBackendRetryInterval *= 2;
       this.currentBackendRetryInterval = Math.min(this.currentBackendRetryInterval, 60);
     }
+  }
+
+  async runIndexingWhenReady() {
+    if (!Common.indexingEnabled() || mempool.hasPriority()) {
+      return;
+    }
+    await blocks.$generateBlockDatabase();
+    await mining.$generateNetworkHashrateHistory();
   }
 
   setUpWebsocketHandling() {
