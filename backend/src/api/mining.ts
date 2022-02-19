@@ -88,6 +88,19 @@ class Mining {
   }
 
   /**
+   * Return the historical hashrates and oldest indexed block timestamp
+   */
+   public async $getHistoricalHashrates(interval: string | null): Promise<object> {
+    const hashrates = await HashratesRepository.$get(interval);
+    const oldestBlock = new Date(await BlocksRepository.$oldestBlockTimestamp());
+
+    return {
+      hashrates: hashrates,
+      oldestIndexedBlockTimestamp: oldestBlock.getTime(),
+    }
+  }
+
+  /**
    * 
    */
   public async $generateNetworkHashrateHistory() : Promise<void> {
@@ -97,7 +110,7 @@ class Mining {
     this.hashrateIndexingStarted = true;
 
     const totalIndexed = await BlocksRepository.$blockCount(null, null);
-    const indexedTimestamp = await HashratesRepository.$getAllTimestamp();
+    const indexedTimestamp = (await HashratesRepository.$get(null)).map(hashrate => hashrate.timestamp);
 
     const genesisTimestamp = 1231006505; // bitcoin-cli getblock 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
     const lastMidnight = new Date();
@@ -114,7 +127,12 @@ class Mining {
       const blockStats: any = await BlocksRepository.$blockCountBetweenTimestamp(
         null, fromTimestamp, toTimestamp
       );
-      let lastBlockHashrate = await bitcoinClient.getNetworkHashPs(blockStats.blockCount, blockStats.lastBlockHeight);
+
+      let lastBlockHashrate = 0;
+      if (blockStats.blockCount > 0) {
+        lastBlockHashrate = await bitcoinClient.getNetworkHashPs(blockStats.blockCount,
+          blockStats.lastBlockHeight);
+      }
 
       if (toTimestamp % 864000 === 0) {
         const progress = Math.round((totalIndexed - blockStats.lastBlockHeight) / totalIndexed * 100);
@@ -130,6 +148,8 @@ class Mining {
 
       toTimestamp -= 86400;
     }
+
+    logger.info(`Hashrates indexing completed`);
   }
 
 }
