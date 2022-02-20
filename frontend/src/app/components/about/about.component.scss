@@ -9,7 +9,7 @@
     border-radius: 50%;
     margin: 25px;
     line-height: 32px;
-  }  
+  }
 
   .intro {
     margin: 25px auto 30px;
@@ -41,7 +41,7 @@
   }
 
   .alliances,
-  .enterprise-sponsor, 
+  .enterprise-sponsor,
   .community-integrations-sponsor,
   .maintainers {
     margin-top: 68px;
@@ -58,7 +58,7 @@
     .wrapper {
       margin: 20px auto;
     }
-    .btn-primary {   
+    .btn-primary {
       max-width: 250px;
       margin: auto;
       height: 45px;
@@ -68,7 +68,7 @@
 
   .alliances {
     margin-bottom: 100px;
-    a {    
+    a {
       &:nth-child(3) {
         position: relative;
         top: 10px;
@@ -88,17 +88,17 @@
         margin: 50px 30px 0px;
       }
     }
-    .liquid {    
+    .liquid {
       top: 7px;
       position: relative;
     }
-    .copa {    
+    .copa {
       height: auto;
       top: 23px;
       position: relative;
       width: 300px;
     }
-    .bisq {    
+    .bisq {
       top: 3px;
       position: relative;
     }
@@ -115,15 +115,15 @@
         display: inline-block;
         &:hover {
           text-decoration: none;
-          img {
+          img, svg {
             transform: scale(1.1);
           }
         }
-        img, span{
+        img, svg, span {
           display: block;
           transition: 150ms all;
         }
-        img {
+        img, svg {
           margin: 40px 29px 10px;
         }
       }

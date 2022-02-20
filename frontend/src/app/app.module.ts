@@ -68,6 +68,7 @@ import { PushTransactionComponent } from './components/push-transaction/push-tra
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AssetsFeaturedComponent } from './components/assets/assets-featured/assets-featured.component';
 import { AssetGroupComponent } from './components/assets/asset-group/asset-group.component';
+import { AssetCirculationComponent } from './components/asset-circulation/asset-circulation.component';
 import { MiningDashboardComponent } from './components/mining-dashboard/mining-dashboard.component';
 import { DifficultyChartComponent } from './components/difficulty-chart/difficulty-chart.component';
 
@@ -120,6 +121,7 @@ import { DifficultyChartComponent } from './components/difficulty-chart/difficul
     AssetsNavComponent,
     AssetsFeaturedComponent,
     AssetGroupComponent,
+    AssetCirculationComponent,
     MiningDashboardComponent,
     DifficultyChartComponent,
   ],
