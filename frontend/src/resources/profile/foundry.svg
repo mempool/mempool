@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="400px" height="400px" viewBox="0 0 400 400" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <g id="Artboard" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="exodus">
-            <rect id="Rectangle" fill="#87E1A1" fill-rule="nonzero" x="0" y="0" width="400" height="400"></rect>
-            <path d="M124,149.256434 L169.106586,149.256434 L169.106586,128.378728 C169.106586,102.958946 183.316852,90 207.489341,90 L276.773787,90 L276.773787,119.404671 L222.192348,119.404671 C216.458028,119.404671 213.968815,122.397366 213.968815,127.633575 L213.968815,149.256434 L276.023264,149.256434 L276.023264,181.902184 L213.968815,181.902184 L213.968815,310 L169.106586,310 L169.106586,181.902184 L124,181.902184 L124,149.256434" id="Fill-1" fill="#000000"></path>
-        </g>
-    </g>
-</svg>
