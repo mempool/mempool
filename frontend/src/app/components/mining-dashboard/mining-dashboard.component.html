@@ -14,6 +14,18 @@
       </div>
     </div>
 
+    <!-- hashrate -->
+    <div class="col">
+      <div class="main-title" i18n="mining.hashrate">Hashrate (1y)</div>
+      <div class="card">
+        <div class="card-body">
+          <app-hashrate-chart [widget]=true></app-hashrate-chart>
+          <div class="text-center"><a href="" [routerLink]="['/mining/hashrate' | relativeUrl]" i18n="dashboard.view-more">View more
+              &raquo;</a></div>
+        </div>
+      </div>
+    </div>
+
     <!-- difficulty -->
     <div class="col">
       <div class="main-title" i18n="mining.difficulty">Difficulty (1y)</div>

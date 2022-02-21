@@ -26,6 +26,7 @@ import poolsParser from './api/pools-parser';
 import syncAssets from './sync-assets';
 import icons from './api/liquid/icons';
 import { Common } from './api/common';
+import mining from './api/mining';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -88,6 +89,12 @@ class Server {
     if (config.DATABASE.ENABLED) {
       await checkDbConnection();
       try {
+        if (process.env.npm_config_reindex != undefined) { // Re-index requests
+          const tables = process.env.npm_config_reindex.split(',');
+          logger.warn(`Indexed data for "${process.env.npm_config_reindex}" tables will be erased in 5 seconds from now (using '--reindex') ...`);
+          await Common.sleep(5000);
+          await databaseMigration.$truncateIndexedData(tables);
+        }
         await databaseMigration.$initializeOrMigrateDatabase();
         await poolsParser.migratePoolsJson();
       } catch (e) {
@@ -138,7 +145,7 @@ class Server {
       }
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
-      blocks.$generateBlockDatabase();
+      this.runIndexingWhenReady();
 
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;
@@ -154,6 +161,19 @@ class Server {
       setTimeout(this.runMainUpdateLoop.bind(this), 1000 * this.currentBackendRetryInterval);
       this.currentBackendRetryInterval *= 2;
       this.currentBackendRetryInterval = Math.min(this.currentBackendRetryInterval, 60);
+    }
+  }
+
+  async runIndexingWhenReady() {
+    if (!Common.indexingEnabled() || mempool.hasPriority()) {
+      return;
+    }
+
+    try {
+      await blocks.$generateBlockDatabase();
+      await mining.$generateNetworkHashrateHistory();
+    } catch (e) {
+      logger.err(`Unable to run indexing right now, trying again later. ` + e);
     }
   }
 
@@ -276,7 +296,9 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:poolId', routes.$getPool)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:poolId/:interval', routes.$getPool)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty', routes.$getHistoricalDifficulty)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty/:interval', routes.$getHistoricalDifficulty);
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty/:interval', routes.$getHistoricalDifficulty)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/hashrate', routes.$getHistoricalHashrate)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/hashrate/:interval', routes.$getHistoricalHashrate);
     }
 
     if (config.BISQ.ENABLED) {
