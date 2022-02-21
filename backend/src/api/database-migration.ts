@@ -15,13 +15,13 @@ class DatabaseMigration {
    * Entry point
    */
   public async $initializeOrMigrateDatabase(): Promise<void> {
-    logger.info('MIGRATIONS: Running migrations');
+    logger.debug('MIGRATIONS: Running migrations');
 
     await this.$printDatabaseVersion();
 
     // First of all, if the `state` database does not exist, create it so we can track migration version
     if (!await this.$checkIfTableExists('state')) {
-      logger.info('MIGRATIONS: `state` table does not exist. Creating it.');
+      logger.debug('MIGRATIONS: `state` table does not exist. Creating it.');
       try {
         await this.$createMigrationStateTable();
       } catch (e) {
@@ -29,7 +29,7 @@ class DatabaseMigration {
         await sleep(10000);
         process.exit(-1);
       }
-      logger.info('MIGRATIONS: `state` table initialized.');
+      logger.debug('MIGRATIONS: `state` table initialized.');
     }
 
     let databaseSchemaVersion = 0;
@@ -41,10 +41,10 @@ class DatabaseMigration {
       process.exit(-1);
     }
 
-    logger.info('MIGRATIONS: Current state.schema_version ' + databaseSchemaVersion);
-    logger.info('MIGRATIONS: Latest DatabaseMigration.version is ' + DatabaseMigration.currentVersion);
+    logger.debug('MIGRATIONS: Current state.schema_version ' + databaseSchemaVersion);
+    logger.debug('MIGRATIONS: Latest DatabaseMigration.version is ' + DatabaseMigration.currentVersion);
     if (databaseSchemaVersion >= DatabaseMigration.currentVersion) {
-      logger.info('MIGRATIONS: Nothing to do.');
+      logger.debug('MIGRATIONS: Nothing to do.');
       return;
     }
 
@@ -58,10 +58,10 @@ class DatabaseMigration {
     }
 
     if (DatabaseMigration.currentVersion > databaseSchemaVersion) {
-      logger.info('MIGRATIONS: Upgrading datababse schema');
+      logger.notice('MIGRATIONS: Upgrading datababse schema');
       try {
         await this.$migrateTableSchemaFromVersion(databaseSchemaVersion);
-        logger.info(`MIGRATIONS: OK. Database schema have been migrated from version ${databaseSchemaVersion} to ${DatabaseMigration.currentVersion} (latest version)`);
+        logger.notice(`MIGRATIONS: OK. Database schema have been migrated from version ${databaseSchemaVersion} to ${DatabaseMigration.currentVersion} (latest version)`);
       } catch (e) {
         logger.err('MIGRATIONS: Unable to migrate database, aborting. ' + e);
       }
@@ -149,10 +149,10 @@ class DatabaseMigration {
         WHERE table_schema=DATABASE() AND table_name='statistics' AND index_name='added';`;
       const [rows] = await this.$executeQuery(connection, query, true);
       if (rows[0].hasIndex === 0) {
-        logger.info('MIGRATIONS: `statistics.added` is not indexed');
+        logger.debug('MIGRATIONS: `statistics.added` is not indexed');
         this.statisticsAddedIndexed = false;
       } else if (rows[0].hasIndex === 1) {
-        logger.info('MIGRATIONS: `statistics.added` is already indexed');
+        logger.debug('MIGRATIONS: `statistics.added` is already indexed');
         this.statisticsAddedIndexed = true;
       }
     } catch (e) {
@@ -170,7 +170,7 @@ class DatabaseMigration {
    */
   private async $executeQuery(connection: PoolConnection, query: string, silent: boolean = false): Promise<any> {
     if (!silent) {
-      logger.info('MIGRATIONS: Execute query:\n' + query);
+      logger.debug('MIGRATIONS: Execute query:\n' + query);
     }
     return connection.query<any>({ sql: query, timeout: this.queryTimeout });
   }
@@ -282,9 +282,9 @@ class DatabaseMigration {
     const connection = await DB.pool.getConnection();
     try {
       const [rows] = await this.$executeQuery(connection, 'SELECT VERSION() as version;', true);
-      logger.info(`MIGRATIONS: Database engine version '${rows[0].version}'`);
+      logger.debug(`MIGRATIONS: Database engine version '${rows[0].version}'`);
     } catch (e) {
-      logger.info(`MIGRATIONS: Could not fetch database engine version. ` + e);
+      logger.debug(`MIGRATIONS: Could not fetch database engine version. ` + e);
     }
     connection.release();
   }
@@ -427,7 +427,7 @@ class DatabaseMigration {
     try {
       for (const table of tables) {
         if (!allowedTables.includes(table)) {
-          logger.info(`Table ${table} cannot to be re-indexed (not allowed)`);
+          logger.debug(`Table ${table} cannot to be re-indexed (not allowed)`);
           continue;
         };
 
@@ -435,7 +435,7 @@ class DatabaseMigration {
         if (table === 'hashrates') {
           await this.$executeQuery(connection, 'UPDATE state set number = 0 where name = "last_hashrates_indexing"', true);
         }
-        logger.info(`Table ${table} has been truncated`);
+        logger.notice(`Table ${table} has been truncated`);
       }
     } catch (e) {
       logger.warn(`Unable to erase indexed data`);
