@@ -89,6 +89,12 @@ class Server {
     if (config.DATABASE.ENABLED) {
       await checkDbConnection();
       try {
+        if (process.env.npm_config_reindex != undefined) { // Re-index requests
+          const tables = process.env.npm_config_reindex.split(',');
+          logger.warn(`Indexed data for "${process.env.npm_config_reindex}" tables will be erased in 5 seconds from now (using '--reindex') ...`);
+          await Common.sleep(5000);
+          await databaseMigration.$truncateIndexedData(tables);
+        }
         await databaseMigration.$initializeOrMigrateDatabase();
         await poolsParser.migratePoolsJson();
       } catch (e) {
