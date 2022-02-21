@@ -164,12 +164,17 @@ class Server {
     }
   }
 
-  runIndexingWhenReady() {
+  async runIndexingWhenReady() {
     if (!Common.indexingEnabled() || mempool.hasPriority()) {
       return;
     }
-    blocks.$generateBlockDatabase();
-    mining.$generateNetworkHashrateHistory();
+
+    try {
+      await blocks.$generateBlockDatabase();
+      await mining.$generateNetworkHashrateHistory();
+    } catch (e) {
+      logger.info(`Unable to run indexing right now, trying again later. ` + e);
+    }
   }
 
   setUpWebsocketHandling() {
