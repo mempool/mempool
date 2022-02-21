@@ -14,7 +14,7 @@ class Mining {
   /**
    * Generate high level overview of the pool ranks and general stats
    */
-  public async $getPoolsStats(interval: string | null) : Promise<object> {
+  public async $getPoolsStats(interval: string | null): Promise<object> {
     const poolsStatistics = {};
 
     const poolsInfo: PoolInfo[] = await PoolsRepository.$getPoolsInfo(interval);
@@ -30,8 +30,8 @@ class Mining {
         link: poolInfo.link,
         blockCount: poolInfo.blockCount,
         rank: rank++,
-        emptyBlocks: 0, 
-      }
+        emptyBlocks: 0
+      };
       for (let i = 0; i < emptyBlocks.length; ++i) {
         if (emptyBlocks[i].poolId === poolInfo.poolId) {
           poolStat.emptyBlocks++;
@@ -84,32 +84,41 @@ class Mining {
     return {
       adjustments: difficultyAdjustments,
       oldestIndexedBlockTimestamp: oldestBlock.getTime(),
-    }
+    };
   }
 
   /**
    * Return the historical hashrates and oldest indexed block timestamp
    */
-   public async $getHistoricalHashrates(interval: string | null): Promise<object> {
+  public async $getHistoricalHashrates(interval: string | null): Promise<object> {
     const hashrates = await HashratesRepository.$get(interval);
     const oldestBlock = new Date(await BlocksRepository.$oldestBlockTimestamp());
 
     return {
       hashrates: hashrates,
       oldestIndexedBlockTimestamp: oldestBlock.getTime(),
-    }
+    };
   }
 
   /**
-   * 
+   * Generate daily hashrate data
    */
-  public async $generateNetworkHashrateHistory() : Promise<void> {
+  public async $generateNetworkHashrateHistory(): Promise<void> {
+    // We only run this once a day
+    const latestTimestamp = await HashratesRepository.$getLatestRunTimestamp();
+    const now = new Date().getTime() / 1000;
+    if (now - latestTimestamp < 86400) {
+      return;
+    }
+
+    logger.info(`Indexing hashrates`);
+
     if (this.hashrateIndexingStarted) {
       return;
     }
     this.hashrateIndexingStarted = true;
 
-    const totalIndexed = await BlocksRepository.$blockCount(null, null);
+    const oldestIndexedBlockHeight = await BlocksRepository.$getOldestIndexedBlockHeight();
     const indexedTimestamp = (await HashratesRepository.$get(null)).map(hashrate => hashrate.timestamp);
 
     const genesisTimestamp = 1231006505; // bitcoin-cli getblock 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
@@ -128,16 +137,18 @@ class Mining {
         null, fromTimestamp, toTimestamp
       );
 
-      let lastBlockHashrate = 0;
-      if (blockStats.blockCount > 0) {
-        lastBlockHashrate = await bitcoinClient.getNetworkHashPs(blockStats.blockCount,
-          blockStats.lastBlockHeight);
+      if (blockStats.blockCount === 0) { // We are done indexing, no blocks left
+        break;
       }
 
-      if (toTimestamp % 864000 === 0) {
-        const progress = Math.round((totalIndexed - blockStats.lastBlockHeight) / totalIndexed * 100);
+      let lastBlockHashrate = 0;
+      lastBlockHashrate = await bitcoinClient.getNetworkHashPs(blockStats.blockCount,
+        blockStats.lastBlockHeight);
+
+      if (toTimestamp % 864000 === 0) { // Log every 10 days during initial indexing
         const formattedDate = new Date(fromTimestamp * 1000).toUTCString();
-        logger.debug(`Counting blocks and hashrate for ${formattedDate}. Progress: ${progress}%`);
+        const blocksLeft = blockStats.lastBlockHeight - oldestIndexedBlockHeight;
+        logger.debug(`Counting blocks and hashrate for ${formattedDate}. ${blocksLeft} blocks left`);
       }
 
       await HashratesRepository.$saveDailyStat({
@@ -148,6 +159,9 @@ class Mining {
 
       toTimestamp -= 86400;
     }
+
+    await HashratesRepository.$setLatestRunTimestamp();
+    this.hashrateIndexingStarted = false;
 
     logger.info(`Hashrates indexing completed`);
   }

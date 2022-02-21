@@ -66,15 +66,15 @@ export class HashrateChartComponent implements OnInit {
                 };
               }),
             );
-          }),
-          share()
-        );
+        }),
+        share()
+      );
   }
 
   prepareChartOptions(data) {
     this.chartOptions = {
       title: {
-        text: this.widget? '' : $localize`:@@mining.hashrate:Hashrate`,
+        text: this.widget ? '' : $localize`:@@mining.hashrate:Hashrate`,
         left: 'center',
         textStyle: {
           color: '#FFF',
@@ -102,7 +102,7 @@ export class HashrateChartComponent implements OnInit {
               giga: Math.pow(10, 9),
               mega: Math.pow(10, 6),
               kilo: Math.pow(10, 3),
-            }
+            };
 
             let selectedPowerOfTen = { divider: powerOfTen.exa, unit: 'E' };
             if (val < powerOfTen.mega) {
@@ -135,9 +135,11 @@ export class HashrateChartComponent implements OnInit {
         type: 'line',
         smooth: false,
         lineStyle: {
-          width: 3,
+          width: 2,
         },
-        areaStyle: {},
+        areaStyle: {
+          opacity: 0.25
+        },
       },
       dataZoom: this.widget ? null : [{
         type: 'inside',

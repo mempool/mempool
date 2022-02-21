@@ -261,6 +261,10 @@ class DatabaseMigration {
       }
     }
 
+    if (version < 7) {
+      queries.push(`INSERT INTO state(name, number, string) VALUES ('last_hashrates_indexing', 0, NULL)`);
+    }
+
     return queries;
   }
 
