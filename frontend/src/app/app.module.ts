@@ -71,6 +71,8 @@ import { AssetGroupComponent } from './components/assets/asset-group/asset-group
 import { AssetCirculationComponent } from './components/asset-circulation/asset-circulation.component';
 import { MiningDashboardComponent } from './components/mining-dashboard/mining-dashboard.component';
 import { DifficultyChartComponent } from './components/difficulty-chart/difficulty-chart.component';
+import { HashrateChartComponent } from './components/hashrate-chart/hashrate-chart.component';
+import { MiningStartComponent } from './components/mining-start/mining-start.component';
 
 @NgModule({
   declarations: [
@@ -124,6 +126,8 @@ import { DifficultyChartComponent } from './components/difficulty-chart/difficul
     AssetCirculationComponent,
     MiningDashboardComponent,
     DifficultyChartComponent,
+    HashrateChartComponent,
+    MiningStartComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),

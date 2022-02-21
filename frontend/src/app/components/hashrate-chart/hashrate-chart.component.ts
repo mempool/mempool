@@ -9,9 +9,9 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { selectPowerOfTen } from 'src/app/bitcoin.utils';
 
 @Component({
-  selector: 'app-difficulty-chart',
-  templateUrl: './difficulty-chart.component.html',
-  styleUrls: ['./difficulty-chart.component.scss'],
+  selector: 'app-hashrate-chart',
+  templateUrl: './hashrate-chart.component.html',
+  styleUrls: ['./hashrate-chart.component.scss'],
   styles: [`
     .loadingGraphs {
       position: absolute;
@@ -21,17 +21,21 @@ import { selectPowerOfTen } from 'src/app/bitcoin.utils';
     }
   `],
 })
-export class DifficultyChartComponent implements OnInit {
+export class HashrateChartComponent implements OnInit {
   @Input() widget: boolean = false;
+  @Input() right: number | string = 10;
+  @Input() left: number | string = 75;
 
   radioGroupForm: FormGroup;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
-    renderer: 'svg'
+    renderer: 'svg',
+    width: 'auto',
+    height: 'auto',
   };
 
-  difficultyObservable$: Observable<any>;
+  hashrateObservable$: Observable<any>;
   isLoading = true;
   formatNumber = formatNumber;
 
@@ -41,61 +45,45 @@ export class DifficultyChartComponent implements OnInit {
     private apiService: ApiService,
     private formBuilder: FormBuilder,
   ) {
-    this.seoService.setTitle($localize`:@@mining.difficulty:Difficulty`);
+    this.seoService.setTitle($localize`:@@mining.hashrate:hashrate`);
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
   }
 
   ngOnInit(): void {
-    const powerOfTen = {
-      terra: Math.pow(10, 12),
-      giga: Math.pow(10, 9),
-      mega: Math.pow(10, 6),
-      kilo: Math.pow(10, 3),
-    }
-
-    this.difficultyObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
+    this.hashrateObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
       .pipe(
         startWith('1y'),
         switchMap((timespan) => {
-          return this.apiService.getHistoricalDifficulty$(timespan)
+          return this.apiService.getHistoricalHashrate$(timespan)
             .pipe(
               tap(data => {
-                this.prepareChartOptions(data.adjustments.map(val => [val.timestamp * 1000, val.difficulty]));
+                this.prepareChartOptions(data.hashrates.map(val => [val.timestamp * 1000, val.avgHashrate]));
                 this.isLoading = false;
               }),
               map(data => {
                 const availableTimespanDay = (
                   (new Date().getTime() / 1000) - (data.oldestIndexedBlockTimestamp / 1000)
                 ) / 3600 / 24;
-
-                const tableData = [];
-                for (let i = 0; i < data.adjustments.length - 1; ++i) {
-                  const selectedPowerOfTen: any = selectPowerOfTen(data.adjustments[i].difficulty);
-                  const change = (data.adjustments[i].difficulty / data.adjustments[i + 1].difficulty - 1) * 100;
-
-                  tableData.push(Object.assign(data.adjustments[i], {
-                    change: change,
-                    difficultyShorten: formatNumber(
-                      data.adjustments[i].difficulty / selectedPowerOfTen.divider,
-                      this.locale, '1.2-2') + selectedPowerOfTen.unit
-                  }));
-                }
                 return {
                   availableTimespanDay: availableTimespanDay,
-                  data: tableData
+                  data: data.hashrates
                 };
               }),
             );
-          }),
-          share()
-        );
+        }),
+        share()
+      );
   }
 
   prepareChartOptions(data) {
     this.chartOptions = {
+      grid: {
+        right: this.right,
+        left: this.left,
+      },
       title: {
-        text: this.widget? '' : $localize`:@@mining.difficulty:Difficulty`,
+        text: this.widget ? '' : $localize`:@@mining.hashrate:Hashrate`,
         left: 'center',
         textStyle: {
           color: '#FFF',
@@ -117,8 +105,8 @@ export class DifficultyChartComponent implements OnInit {
         axisLabel: {
           formatter: (val) => {
             const selectedPowerOfTen: any = selectPowerOfTen(val);
-            const diff = val / selectedPowerOfTen.divider;
-            return `${diff} ${selectedPowerOfTen.unit}`;
+            const newVal = val / selectedPowerOfTen.divider;
+            return `${newVal} ${selectedPowerOfTen.unit}H/s`
           }
         },
         splitLine: {
@@ -127,7 +115,7 @@ export class DifficultyChartComponent implements OnInit {
             color: '#ffffff66',
             opacity: 0.25,
           }
-        }
+        },
       },
       series: {
         showSymbol: false,
@@ -141,6 +129,31 @@ export class DifficultyChartComponent implements OnInit {
           opacity: 0.25
         },
       },
+      dataZoom: this.widget ? null : [{
+        type: 'inside',
+        realtime: true,
+        zoomLock: true,
+        zoomOnMouseWheel: true,
+        moveOnMouseMove: true,
+        maxSpan: 100,
+        minSpan: 10,
+      }, {
+        showDetail: false,
+        show: true,
+        type: 'slider',
+        brushSelect: false,
+        realtime: true,
+        bottom: 0,
+        selectedDataBackground: {
+          lineStyle: {
+            color: '#fff',
+            opacity: 0.45,
+          },
+          areaStyle: {
+            opacity: 0,
+          }
+        },
+      }],
     };
   }
 
