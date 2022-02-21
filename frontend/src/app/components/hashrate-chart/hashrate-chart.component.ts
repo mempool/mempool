@@ -22,12 +22,16 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 })
 export class HashrateChartComponent implements OnInit {
   @Input() widget: boolean = false;
+  @Input() right: number | string = 10;
+  @Input() left: number | string = 75;
 
   radioGroupForm: FormGroup;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
-    renderer: 'svg'
+    renderer: 'svg',
+    width: 'auto',
+    height: 'auto',
   };
 
   hashrateObservable$: Observable<any>;
@@ -73,6 +77,10 @@ export class HashrateChartComponent implements OnInit {
 
   prepareChartOptions(data) {
     this.chartOptions = {
+      grid: {
+        right: this.right,
+        left: this.left,
+      },
       title: {
         text: this.widget ? '' : $localize`:@@mining.hashrate:Hashrate`,
         left: 'center',
