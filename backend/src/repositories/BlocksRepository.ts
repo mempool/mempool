@@ -274,7 +274,7 @@ class BlocksRepository {
     }
 
     query += ` GROUP BY difficulty
-      ORDER BY blockTimestamp DESC`;
+      ORDER BY blockTimestamp`;
 
     const [rows]: any[] = await connection.query(query);
     connection.release();
