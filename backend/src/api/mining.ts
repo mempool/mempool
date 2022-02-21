@@ -111,12 +111,12 @@ class Mining {
       return;
     }
 
-    logger.info(`Indexing hashrates`);
-
     if (this.hashrateIndexingStarted) {
       return;
     }
     this.hashrateIndexingStarted = true;
+
+    logger.info(`Indexing hashrates`);
 
     const totalDayIndexed = (await BlocksRepository.$blockCount(null, null)) / 144;
     const indexedTimestamp = (await HashratesRepository.$get(null)).map(hashrate => hashrate.timestamp);
@@ -149,7 +149,7 @@ class Mining {
         blockStats.lastBlockHeight);
 
       const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
-      if (elapsedSeconds > 1) {
+      if (elapsedSeconds > 10) {
         const daysPerSeconds = Math.max(1, Math.round(indexedThisRun / elapsedSeconds));
         const formattedDate = new Date(fromTimestamp * 1000).toUTCString();
         const daysLeft = Math.round(totalDayIndexed - totalIndexed);
