@@ -4,6 +4,7 @@ import PoolsRepository from '../repositories/PoolsRepository';
 import HashratesRepository from '../repositories/HashratesRepository';
 import bitcoinClient from './bitcoin/bitcoin-client';
 import logger from '../logger';
+import blocks from './blocks';
 
 class Mining {
   hashrateIndexingStarted = false;
@@ -111,7 +112,7 @@ class Mining {
       return;
     }
 
-    if (this.hashrateIndexingStarted) {
+    if (!blocks.blockIndexingCompleted || this.hashrateIndexingStarted) {
       return;
     }
     this.hashrateIndexingStarted = true;
@@ -128,6 +129,8 @@ class Mining {
     let indexedThisRun = 0;
     let totalIndexed = 0;
 
+    const hashrates: any[] = [];
+
     while (toTimestamp > genesisTimestamp) {
       const fromTimestamp = toTimestamp - 86400;
       if (indexedTimestamp.includes(fromTimestamp)) {
@@ -137,9 +140,7 @@ class Mining {
       }
 
       const blockStats: any = await BlocksRepository.$blockCountBetweenTimestamp(
-        null, fromTimestamp, toTimestamp
-      );
-
+        null, fromTimestamp, toTimestamp);
       if (blockStats.blockCount === 0) { // We are done indexing, no blocks left
         break;
       }
@@ -158,23 +159,28 @@ class Mining {
         indexedThisRun = 0;
       }
 
-      await HashratesRepository.$saveDailyStat({
+      hashrates.push({
         hashrateTimestamp: fromTimestamp,
         avgHashrate: lastBlockHashrate,
         poolId: null,
       });
+
+      if (hashrates.length > 100) {
+        await HashratesRepository.$saveHashrates(hashrates);
+        hashrates.length = 0;
+      }
 
       toTimestamp -= 86400;
       ++indexedThisRun;
       ++totalIndexed;
     }
 
+    await HashratesRepository.$saveHashrates(hashrates);
     await HashratesRepository.$setLatestRunTimestamp();
     this.hashrateIndexingStarted = false;
 
     logger.info(`Hashrates indexing completed`);
   }
-
 }
 
 export default new Mining();
