@@ -6,21 +6,19 @@ class HashratesRepository {
   /**
    * Save indexed block data in the database
    */
-  public async $saveDailyStat(dailyStat: any) {
+  public async $saveHashrates(hashrates: any) {
+    let query = `INSERT INTO
+      hashrates(hashrate_timestamp, avg_hashrate, pool_id) VALUES`;
+
+    for (const hashrate of hashrates) {
+      query += ` (FROM_UNIXTIME(${hashrate.hashrateTimestamp}), ${hashrate.avgHashrate}, ${hashrate.poolId}),`;
+    }
+    query = query.slice(0, -1);
+
     const connection = await DB.pool.getConnection();
-
     try {
-      const query = `INSERT INTO
-      hashrates(hashrate_timestamp, avg_hashrate, pool_id)
-      VALUE (FROM_UNIXTIME(?), ?, ?)`;
-
-      const params: any[] = [
-        dailyStat.hashrateTimestamp, dailyStat.avgHashrate,
-        dailyStat.poolId
-      ];
-
       // logger.debug(query);
-      await connection.query(query, params);
+      await connection.query(query);
     } catch (e: any) {
       logger.err('$saveHashrateInDatabase() error' + (e instanceof Error ? e.message : e));
     }

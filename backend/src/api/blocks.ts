@@ -20,6 +20,7 @@ class Blocks {
   private previousDifficultyRetarget = 0;
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
   private blockIndexingStarted = false;
+  public blockIndexingCompleted = false;
 
   constructor() { }
 
@@ -240,6 +241,8 @@ class Blocks {
       logger.err('An error occured in $generateBlockDatabase(). Skipping block indexing. ' + e);
       console.log(e);
     }
+
+    this.blockIndexingCompleted = true;
   }
 
   public async $updateBlocks() {

@@ -164,12 +164,12 @@ class Server {
     }
   }
 
-  async runIndexingWhenReady() {
+  runIndexingWhenReady() {
     if (!Common.indexingEnabled() || mempool.hasPriority()) {
       return;
     }
-    await blocks.$generateBlockDatabase();
-    await mining.$generateNetworkHashrateHistory();
+    blocks.$generateBlockDatabase();
+    mining.$generateNetworkHashrateHistory();
   }
 
   setUpWebsocketHandling() {
