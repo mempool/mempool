@@ -73,6 +73,7 @@ import { MiningDashboardComponent } from './components/mining-dashboard/mining-d
 import { DifficultyChartComponent } from './components/difficulty-chart/difficulty-chart.component';
 import { HashrateChartComponent } from './components/hashrate-chart/hashrate-chart.component';
 import { MiningStartComponent } from './components/mining-start/mining-start.component';
+import { AmountShortenerPipe } from './shared/pipes/amount-shortener.pipe';
 
 @NgModule({
   declarations: [
@@ -128,6 +129,7 @@ import { MiningStartComponent } from './components/mining-start/mining-start.com
     DifficultyChartComponent,
     HashrateChartComponent,
     MiningStartComponent,
+    AmountShortenerPipe,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
