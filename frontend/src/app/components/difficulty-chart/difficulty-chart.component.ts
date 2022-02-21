@@ -134,17 +134,18 @@ export class DifficultyChartComponent implements OnInit {
           }
         }
       },
-      series: [
-        {
-          data: data,
-          type: 'line',
-          smooth: false,
-          lineStyle: {
-            width: 3,
-          },
-          areaStyle: {}
+      series: {
+        showSymbol: false,
+        data: data,
+        type: 'line',
+        smooth: false,
+        lineStyle: {
+          width: 2,
         },
-      ],
+        areaStyle: {
+          opacity: 0.25
+        },
+      },
     };
   }
 

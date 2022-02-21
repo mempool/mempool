@@ -281,6 +281,13 @@ class BlocksRepository {
 
     return rows;
   }
+
+  public async $getOldestIndexedBlockHeight(): Promise<number> {
+    const connection = await DB.pool.getConnection();
+    const [rows]: any[] = await connection.query(`SELECT MIN(height) as minHeight FROM blocks`);
+    connection.release();
+    return rows[0].minHeight;
+  }
 }
 
 export default new BlocksRepository();
