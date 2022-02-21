@@ -419,6 +419,29 @@ class DatabaseMigration {
       FOREIGN KEY (pool_id) REFERENCES pools (id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
+
+  public async $truncateIndexedData(tables: string[]) {
+    const allowedTables = ['blocks', 'hashrates'];
+
+    const connection = await DB.pool.getConnection();
+    try {
+      for (const table of tables) {
+        if (!allowedTables.includes(table)) {
+          logger.info(`Table ${table} cannot to be re-indexed (not allowed)`);
+          continue;
+        };
+
+        await this.$executeQuery(connection, `TRUNCATE ${table}`, true);
+        if (table === 'hashrates') {
+          await this.$executeQuery(connection, 'UPDATE state set number = 0 where name = "last_hashrates_indexing"', true);
+        }
+        logger.info(`Table ${table} has been truncated`);
+      }
+    } catch (e) {
+      logger.warn(`Unable to erase indexed data`);
+    }
+    connection.release();
+  }
 }
 
 export default new DatabaseMigration();
