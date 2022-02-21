@@ -1,10 +1,5 @@
 <div [class]="widget === false ? 'container-xl' : ''">
 
-  <div *ngIf="difficultyObservable$ | async" class="" echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
-  <div class="text-center loadingGraphs" *ngIf="isLoading">
-    <div class="spinner-border text-light"></div>
-  </div>
-
   <div class="card-header mb-0 mb-lg-4" [style]="widget ? 'display:none' : ''">
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(difficultyObservable$ | async) as diffChanges">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
@@ -28,6 +23,11 @@
         </label>
       </div>
     </form>
+  </div>
+
+  <div *ngIf="difficultyObservable$ | async" class="mb-5" echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
+  <div class="text-center loadingGraphs" *ngIf="isLoading">
+    <div class="spinner-border text-light"></div>
   </div>
 
   <table class="table table-borderless table-sm text-center" *ngIf="!widget">

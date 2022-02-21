@@ -63,9 +63,9 @@ export class DifficultyChartComponent implements OnInit {
                 ) / 3600 / 24;
 
                 const tableData = [];
-                for (let i = 0; i < data.adjustments.length - 1; ++i) {
+                for (let i = data.adjustments.length - 1; i > 0; --i) {
                   const selectedPowerOfTen: any = selectPowerOfTen(data.adjustments[i].difficulty);
-                  const change = (data.adjustments[i].difficulty / data.adjustments[i + 1].difficulty - 1) * 100;
+                  const change = (data.adjustments[i].difficulty / data.adjustments[i - 1].difficulty - 1) * 100;
 
                   tableData.push(Object.assign(data.adjustments[i], {
                     change: change,
@@ -149,6 +149,31 @@ export class DifficultyChartComponent implements OnInit {
           width: 2,
         },
       },
+      dataZoom: this.widget ? null : [{
+        type: 'inside',
+        realtime: true,
+        zoomLock: true,
+        zoomOnMouseWheel: true,
+        moveOnMouseMove: true,
+        maxSpan: 100,
+        minSpan: 10,
+      }, {
+        showDetail: false,
+        show: true,
+        type: 'slider',
+        brushSelect: false,
+        realtime: true,
+        bottom: 0,
+        selectedDataBackground: {
+          lineStyle: {
+            color: '#fff',
+            opacity: 0.45,
+          },
+          areaStyle: {
+            opacity: 0,
+          }
+        },
+      }],
     };
   }
 
