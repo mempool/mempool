@@ -1,5 +1,5 @@
 import { Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
-import { EChartsOption } from 'echarts';
+import { EChartsOption, graphic } from 'echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from 'src/app/services/api.service';
@@ -47,13 +47,6 @@ export class DifficultyChartComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const powerOfTen = {
-      terra: Math.pow(10, 12),
-      giga: Math.pow(10, 9),
-      mega: Math.pow(10, 6),
-      kilo: Math.pow(10, 3),
-    }
-
     this.difficultyObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
       .pipe(
         startWith('1y'),
@@ -94,6 +87,13 @@ export class DifficultyChartComponent implements OnInit {
 
   prepareChartOptions(data) {
     this.chartOptions = {
+      color: new graphic.LinearGradient(0, 0, 0, 0.65, [
+        { offset: 0, color: '#D81B60' },
+        { offset: 0.25, color: '#8E24AA' },
+        { offset: 0.5, color: '#5E35B1' },
+        { offset: 0.75, color: '#3949AB' },
+        { offset: 1, color: '#1E88E5' }
+      ]),
       title: {
         text: this.widget? '' : $localize`:@@mining.difficulty:Difficulty`,
         left: 'center',
@@ -104,6 +104,17 @@ export class DifficultyChartComponent implements OnInit {
       tooltip: {
         show: true,
         trigger: 'axis',
+        backgroundColor: 'rgba(17, 19, 31, 1)',
+        borderRadius: 4,
+        shadowColor: 'rgba(0, 0, 0, 0.5)',
+        textStyle: {
+          color: '#b1b1b1',
+        },
+        borderColor: '#000',
+        formatter: params => {
+          return `<b style="color: white">${params[0].axisValueLabel}</b><br>
+            ${params[0].marker} ${formatNumber(params[0].value[1], this.locale, '1.0-0')}`
+        }
       },
       axisPointer: {
         type: 'line',
@@ -136,9 +147,6 @@ export class DifficultyChartComponent implements OnInit {
         smooth: false,
         lineStyle: {
           width: 2,
-        },
-        areaStyle: {
-          opacity: 0.25
         },
       },
     };

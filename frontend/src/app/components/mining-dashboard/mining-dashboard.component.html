@@ -4,9 +4,9 @@
 
     <!-- pool distribution -->
     <div class="col">
-      <div class="main-title" i18n="mining.pool-share">Mining Pools Share (1w)</div>
       <div class="card">
         <div class="card-body">
+          <h5 class="card-title" i18n="mining.pool-share">Mining Pools Share (1w)</h5>
           <app-pool-ranking [widget]=true></app-pool-ranking>
           <div class="text-center"><a href="" [routerLink]="['/mining/pools' | relativeUrl]" i18n="dashboard.view-more">View more
               &raquo;</a></div>
@@ -16,9 +16,9 @@
 
     <!-- hashrate -->
     <div class="col">
-      <div class="main-title" i18n="mining.hashrate">Hashrate (1y)</div>
       <div class="card">
         <div class="card-body">
+          <h5 class="card-title" i18n="mining.hashrate">Hashrate (1y)</h5>
           <app-hashrate-chart [widget]=true></app-hashrate-chart>
           <div class="text-center"><a href="" [routerLink]="['/mining/hashrate' | relativeUrl]" i18n="dashboard.view-more">View more
               &raquo;</a></div>
@@ -28,9 +28,9 @@
 
     <!-- difficulty -->
     <div class="col">
-      <div class="main-title" i18n="mining.difficulty">Difficulty (1y)</div>
       <div class="card">
         <div class="card-body">
+          <h5 class="card-title" i18n="ning.difficulty">Difficulty (1y)</h5>
           <app-difficulty-chart [widget]=true></app-difficulty-chart>
           <div class="text-center"><a href="" [routerLink]="['/mining/difficulty' | relativeUrl]" i18n="dashboard.view-more">View more
               &raquo;</a></div>
