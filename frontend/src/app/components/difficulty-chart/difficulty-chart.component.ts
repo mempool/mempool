@@ -116,8 +116,9 @@ export class DifficultyChartComponent implements OnInit {
         type: 'value',
         axisLabel: {
           formatter: (val) => {
-            const diff = val / Math.pow(10, 12); // terra
-            return diff.toString() + 'T';
+            const selectedPowerOfTen: any = selectPowerOfTen(val);
+            const diff = val / selectedPowerOfTen.divider;
+            return `${diff} ${selectedPowerOfTen.unit}`;
           }
         },
         splitLine: {

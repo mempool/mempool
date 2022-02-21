@@ -106,7 +106,7 @@ export class HashrateChartComponent implements OnInit {
           formatter: (val) => {
             const selectedPowerOfTen: any = selectPowerOfTen(val);
             const newVal = val / selectedPowerOfTen.divider;
-            return `${newVal} ${selectedPowerOfTen.unit}`
+            return `${newVal} ${selectedPowerOfTen.unit}H/s`
           }
         },
         splitLine: {
