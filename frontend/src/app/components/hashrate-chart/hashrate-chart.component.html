@@ -1,11 +1,6 @@
-<div [class]="widget === false ? 'container-xl' : ''">
+<div [class]="widget === false ? 'full-container' : ''">
 
-  <div *ngIf="hashrateObservable$ | async" class="" echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
-  <div class="text-center loadingGraphs" *ngIf="isLoading">
-    <div class="spinner-border text-light"></div>
-  </div>
-  
-  <div class="card-header mb-0 mb-lg-4 mt-3" [style]="widget ? 'display:none' : ''">
+  <div class="card-header mb-0 mb-lg-4" [style]="widget ? 'display:none' : ''">
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(hashrateObservable$ | async) as hashrates">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 90">
@@ -29,4 +24,10 @@
       </div>
     </form>
   </div>
+
+  <div *ngIf="hashrateObservable$ | async" [class]="widget === false ? 'chart' : ''" echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
+  <div class="text-center loadingGraphs" *ngIf="isLoading">
+    <div class="spinner-border text-light"></div>
+  </div>
+  
 </div>
