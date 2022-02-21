@@ -6,6 +6,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { formatNumber } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { selectPowerOfTen } from 'src/app/bitcoin.utils';
 
 @Component({
   selector: 'app-hashrate-chart',
@@ -103,28 +104,7 @@ export class HashrateChartComponent implements OnInit {
         type: 'value',
         axisLabel: {
           formatter: (val) => {
-            const powerOfTen = {
-              exa: Math.pow(10, 18),
-              peta: Math.pow(10, 15),
-              terra: Math.pow(10, 12),
-              giga: Math.pow(10, 9),
-              mega: Math.pow(10, 6),
-              kilo: Math.pow(10, 3),
-            };
-
-            let selectedPowerOfTen = { divider: powerOfTen.exa, unit: 'E' };
-            if (val < powerOfTen.mega) {
-              selectedPowerOfTen = { divider: 1, unit: '' }; // no scaling
-            } else if (val < powerOfTen.giga) {
-              selectedPowerOfTen = { divider: powerOfTen.mega, unit: 'M' };
-            } else if (val < powerOfTen.terra) {
-              selectedPowerOfTen = { divider: powerOfTen.giga, unit: 'G' };
-            } else if (val < powerOfTen.peta) {
-              selectedPowerOfTen = { divider: powerOfTen.terra, unit: 'T' };
-            } else if (val < powerOfTen.exa) {
-              selectedPowerOfTen = { divider: powerOfTen.peta, unit: 'P' };
-            }
-
+            const selectedPowerOfTen: any = selectPowerOfTen(val);
             const newVal = val / selectedPowerOfTen.divider;
             return `${newVal} ${selectedPowerOfTen.unit}`
           }

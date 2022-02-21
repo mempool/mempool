@@ -6,6 +6,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { formatNumber } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { selectPowerOfTen } from 'src/app/bitcoin.utils';
 
 @Component({
   selector: 'app-difficulty-chart',
@@ -70,15 +71,8 @@ export class DifficultyChartComponent implements OnInit {
 
                 const tableData = [];
                 for (let i = 0; i < data.adjustments.length - 1; ++i) {
+                  const selectedPowerOfTen: any = selectPowerOfTen(data.adjustments[i].difficulty);
                   const change = (data.adjustments[i].difficulty / data.adjustments[i + 1].difficulty - 1) * 100;
-                  let selectedPowerOfTen = { divider: powerOfTen.terra, unit: 'T' };
-                  if (data.adjustments[i].difficulty < powerOfTen.mega) {
-                    selectedPowerOfTen = { divider: 1, unit: '' }; // no scaling
-                  } else if (data.adjustments[i].difficulty < powerOfTen.giga) {
-                    selectedPowerOfTen = { divider: powerOfTen.mega, unit: 'M' };
-                  } else if (data.adjustments[i].difficulty < powerOfTen.terra) {
-                    selectedPowerOfTen = { divider: powerOfTen.giga, unit: 'G' };
-                  }
 
                   tableData.push(Object.assign(data.adjustments[i], {
                     change: change,
