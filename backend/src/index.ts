@@ -173,7 +173,7 @@ class Server {
       await blocks.$generateBlockDatabase();
       await mining.$generateNetworkHashrateHistory();
     } catch (e) {
-      logger.info(`Unable to run indexing right now, trying again later. ` + e);
+      logger.err(`Unable to run indexing right now, trying again later. ` + e);
     }
   }
 
