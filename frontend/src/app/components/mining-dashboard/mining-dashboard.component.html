@@ -5,11 +5,13 @@
     <!-- pool distribution -->
     <div class="col">
       <div class="card">
-        <div class="card-body">
-          <h5 class="card-title" i18n="mining.pool-share">Mining Pools Share (1w)</h5>
+        <div class="card-body pool-ranking">
+          <h5 class="card-title">
+            <a href="" [routerLink]="['/mining/pools' | relativeUrl]" i18n="mining.pool-share">
+              Mining Pools Share (1w)
+            </a>
+          </h5>
           <app-pool-ranking [widget]=true></app-pool-ranking>
-          <div class="text-center"><a href="" [routerLink]="['/mining/pools' | relativeUrl]" i18n="dashboard.view-more">View more
-              &raquo;</a></div>
         </div>
       </div>
     </div>
@@ -18,10 +20,12 @@
     <div class="col">
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title" i18n="mining.hashrate">Hashrate (1y)</h5>
+          <h5 class="card-title">
+            <a class="link" href="" [routerLink]="['/mining/hashrate' | relativeUrl]" i18n="mining.hashrate">
+              Hashrate (1y)
+            </a>
+          </h5>
           <app-hashrate-chart [widget]=true></app-hashrate-chart>
-          <div class="text-center"><a href="" [routerLink]="['/mining/hashrate' | relativeUrl]" i18n="dashboard.view-more">View more
-              &raquo;</a></div>
         </div>
       </div>
     </div>

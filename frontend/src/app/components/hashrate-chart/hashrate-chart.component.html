@@ -25,13 +25,14 @@
     </form>
   </div>
 
-  <div *ngIf="hashrateObservable$ | async" [class]="widget === false ? 'chart' : ''" echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
+  <div *ngIf="hashrateObservable$ | async" [class]="!widget ? 'chart' : 'chart-widget'"
+    echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
   <div class="text-center loadingGraphs" *ngIf="isLoading">
     <div class="spinner-border text-light"></div>
   </div>
   
-  <div class="container-xl mt-3">
-    <table class="table table-borderless table-sm text-center" *ngIf="!widget">
+  <div class="mt-3" *ngIf="!widget">
+    <table class="table table-borderless table-sm text-center">
       <thead>
         <tr>
           <th i18n="mining.rank">Block</th>
