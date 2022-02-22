@@ -172,7 +172,7 @@ export class HashrateChartComponent implements OnInit {
       },
       xAxis: {
         type: 'time',
-        splitNumber: this.isMobile() ? 5 : 10,
+        splitNumber: (this.isMobile() || this.widget) ? 5 : 10,
       },
       legend: {
         data: [
