@@ -41,7 +41,7 @@ class HashratesRepository {
       query += ` WHERE hashrate_timestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
     }
 
-    query += ` ORDER by hashrate_timestamp DESC`;
+    query += ` ORDER by hashrate_timestamp`;
 
     const [rows]: any[] = await connection.query(query);
     connection.release();

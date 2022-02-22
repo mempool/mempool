@@ -1,5 +1,5 @@
 import { Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
-import { EChartsOption } from 'echarts';
+import { EChartsOption, graphic } from 'echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from 'src/app/services/api.service';
@@ -78,6 +78,13 @@ export class HashrateChartComponent implements OnInit {
 
   prepareChartOptions(data) {
     this.chartOptions = {
+      color: new graphic.LinearGradient(0, 0, 0, 0.65, [
+        { offset: 0, color: '#F4511E' },
+        { offset: 0.25, color: '#FB8C00' },
+        { offset: 0.5, color: '#FFB300' },
+        { offset: 0.75, color: '#FDD835' },
+        { offset: 1, color: '#7CB342' }
+      ]),
       grid: {
         right: this.right,
         left: this.left,
@@ -92,6 +99,17 @@ export class HashrateChartComponent implements OnInit {
       tooltip: {
         show: true,
         trigger: 'axis',
+        backgroundColor: 'rgba(17, 19, 31, 1)',
+        borderRadius: 4,
+        shadowColor: 'rgba(0, 0, 0, 0.5)',
+        textStyle: {
+          color: '#b1b1b1',
+        },
+        borderColor: '#000',
+        formatter: params => {
+          return `<b style="color: white">${params[0].axisValueLabel}</b><br>
+            ${params[0].marker} ${formatNumber(params[0].value[1], this.locale, '1.0-0')} H/s`
+        }
       },
       axisPointer: {
         type: 'line',
@@ -124,9 +142,6 @@ export class HashrateChartComponent implements OnInit {
         smooth: false,
         lineStyle: {
           width: 2,
-        },
-        areaStyle: {
-          opacity: 0.25
         },
       },
       dataZoom: this.widget ? null : [{
