@@ -591,7 +591,6 @@ class Routes {
       const hashrates = await mining.$getHistoricalHashrates(req.params.interval ?? null);
       const difficulty = await mining.$getHistoricalDifficulty(req.params.interval ?? null);
       const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
-      console.log(oldestIndexedBlockTimestamp);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
