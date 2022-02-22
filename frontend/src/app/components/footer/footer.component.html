@@ -2,15 +2,18 @@
   <div class="container-xl">
     <div class="row text-center" *ngIf="mempoolInfoData$ | async as mempoolInfoData">
       <div class="col d-none d-sm-block">
-        <span class="txPerSecond" i18n="footer.tx-vbytes-per-second">Tx vBytes per second:</span>
-        <span *ngIf="mempoolInfoData.vBytesPerSecond === 0; else inSync">
-          &nbsp;<span class="badge badge-pill badge-warning" i18n="dashboard.backend-is-synchronizing">Backend is synchronizing</span>
-        </span>
-        <ng-template #inSync>
-          <div class="progress sub-text">
-            <div class="progress-bar {{ mempoolInfoData.progressClass }}" role="progressbar" [ngStyle]="{'width': mempoolInfoData.progressWidth}">{{ mempoolInfoData.vBytesPerSecond | ceil | number }} <ng-container i18n="shared.vbytes-per-second|vB/s">vB/s</ng-container></div>
-          </div>
-        </ng-template>    
+        <span class="txPerSecond" i18n="dashboard.incoming-transactions">Incoming transactions</span>&nbsp;
+        <ng-template [ngIf]="(isLoadingWebSocket$ | async) === false && mempoolInfoData" [ngIfElse]="loadingTransactions">
+          <span *ngIf="(mempoolLoadingStatus$ | async) !== 100; else inSync">
+            &nbsp;<span class="badge badge-pill badge-warning"><ng-container i18n="dashboard.backend-is-synchronizing">Backend is synchronizing</ng-container> ({{ mempoolLoadingStatus$ | async }}%)</span>
+          </span>
+          <ng-template #inSync>
+            <div class="progress inc-tx-progress-bar">
+              <div class="progress-bar" role="progressbar" [ngStyle]="{'width': mempoolInfoData.progressWidth, 'background-color': mempoolInfoData.progressColor}">&nbsp;</div>
+              <div class="progress-text">&lrm;{{ mempoolInfoData.vBytesPerSecond | ceil | number }} <ng-container i18n="shared.vbytes-per-second|vB/s">vB/s</ng-container></div>
+            </div>
+          </ng-template>
+        </ng-template>  
       </div>
       <div class="col">
         <span class="unconfirmedTx"><ng-container i18n="dashboard.unconfirmed|Unconfirmed count">Unconfirmed</ng-container>:</span>
@@ -25,3 +28,7 @@
     </div>
   </div>
 </footer>
+
+<ng-template #loadingTransactions>
+  <div class="skeleton-loader skeleton-loader-transactions"></div>
+</ng-template>
