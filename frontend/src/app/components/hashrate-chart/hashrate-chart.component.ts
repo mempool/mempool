@@ -60,7 +60,7 @@ export class HashrateChartComponent implements OnInit {
               tap((data: any) => {
                 // We generate duplicated data point so the tooltip works nicely
                 const diffFixed = [];
-                let diffIndex = 0;
+                let diffIndex = 1;
                 let hashIndex = 0;
                 while (hashIndex < data.hashrates.length) {
                   if (diffIndex >= data.difficulty.length) {
@@ -74,7 +74,9 @@ export class HashrateChartComponent implements OnInit {
                     break;
                   }
 
-                  while (data.hashrates[hashIndex].timestamp < data.difficulty[diffIndex].timestamp) {
+                  while (hashIndex < data.hashrates.length && diffIndex < data.difficulty.length &&
+                    data.hashrates[hashIndex].timestamp <= data.difficulty[diffIndex].timestamp
+                  ) {
                     diffFixed.push({
                       timestamp: data.hashrates[hashIndex].timestamp,
                       difficulty: data.difficulty[diffIndex - 1].difficulty
@@ -133,7 +135,7 @@ export class HashrateChartComponent implements OnInit {
       grid: {
         right: this.right,
         left: this.left,
-        bottom: 30,
+        bottom: this.widget ? 30 : 60,
       },
       tooltip: {
         trigger: 'axis',
@@ -164,7 +166,7 @@ export class HashrateChartComponent implements OnInit {
           return `
             <b style="color: white; margin-left: 18px">${data[0].axisValueLabel}</b><br>
             <span>${data[0].marker} ${data[0].seriesName}: ${formatNumber(hashrate, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s</span><br>
-            <span>${data[1].marker} ${data[1].seriesName}: ${formatNumber(difficulty, this.locale, '1.0-0')} ${difficultyPowerOfTen.unit}</span>
+            <span>${data[1].marker} ${data[1].seriesName}: ${formatNumber(difficulty, this.locale, '1.2-2')} ${difficultyPowerOfTen.unit}</span>
           `;
         }.bind(this)
       },

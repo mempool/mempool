@@ -265,15 +265,37 @@ class BlocksRepository {
 
     const connection = await DB.pool.getConnection();
 
-    let query = `SELECT MIN(UNIX_TIMESTAMP(blockTimestamp)) as timestamp, difficulty, height
-      FROM blocks`;
+    // :D ... Yeah don't ask me about this one https://stackoverflow.com/a/40303162
+    // Basically, using temporary user defined fields, we are able to extract all
+    // difficulty adjustments from the blocks tables.
+    // This allow use to avoid indexing it in another table.
+    let query = `
+      SELECT
+      *
+      FROM 
+      (
+        SELECT
+        UNIX_TIMESTAMP(blockTimestamp) as timestamp, difficulty, height,
+        IF(@prevStatus = YT.difficulty, @rn := @rn + 1,
+          IF(@prevStatus := YT.difficulty, @rn := 1, @rn := 1)
+        ) AS rn
+        FROM blocks YT
+        CROSS JOIN 
+        (
+          SELECT @prevStatus := -1, @rn := 1
+        ) AS var
+    `;
 
     if (interval) {
       query += ` WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
     }
 
-    query += ` GROUP BY difficulty
-      ORDER BY blockTimestamp`;
+    query += `
+        ORDER BY YT.height
+      ) AS t
+      WHERE t.rn = 1
+      ORDER BY t.height
+    `;
 
     const [rows]: any[] = await connection.query(query);
     connection.release();
