@@ -13,7 +13,10 @@
         <div class="fee-span">
           {{ block?.extras?.feeRange[1] | number:feeRounding }} - {{ block?.extras?.feeRange[block?.extras?.feeRange.length - 1] | number:feeRounding }} <ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
         </div>
-        <div class="block-size" [innerHTML]="'&lrm;' + (block.size | bytes: 2)"></div>
+        <div *ngIf="showMiningInfo" class="block-size">
+          <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
+        </div>
+        <div *ngIf="!showMiningInfo" class="block-size" [innerHTML]="'&lrm;' + (block.size | bytes: 2)"></div>
         <div class="transaction-count">
           <ng-container *ngTemplateOutlet="block.tx_count === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: block.tx_count | number}"></ng-container>
           <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
