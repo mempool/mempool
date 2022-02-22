@@ -22,7 +22,6 @@ import elementsParser from './api/liquid/elements-parser';
 import icons from './api/liquid/icons';
 import miningStats from './api/mining';
 import axios from 'axios';
-import PoolsRepository from './repositories/PoolsRepository';
 import mining from './api/mining';
 import BlocksRepository from './repositories/BlocksRepository';
 
@@ -578,6 +577,18 @@ class Routes {
   public async $getHistoricalDifficulty(req: Request, res: Response) {
     try {
       const stats = await mining.$getHistoricalDifficulty(req.params.interval ?? null);
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.json(stats);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  public async $getHistoricalHashrate(req: Request, res: Response) {
+    try {
+      const stats = await mining.$getHistoricalHashrates(req.params.interval ?? null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());

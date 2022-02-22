@@ -121,21 +121,24 @@ export class PoolRankingComponent implements OnInit {
         value: pool.share,
         name: pool.name + (this.isMobile() ? `` : ` (${pool.share}%)`),
         label: {
-          color: '#FFFFFF',
+          color: '#b1b1b1',
           overflow: 'break',
         },
         tooltip: {
-          backgroundColor: '#282d47',
+          backgroundColor: 'rgba(17, 19, 31, 1)',
+          borderRadius: 4,
+          shadowColor: 'rgba(0, 0, 0, 0.5)',
           textStyle: {
-            color: '#FFFFFF',
+            color: '#b1b1b1',
           },
+          borderColor: '#000',
           formatter: () => {
             if (this.poolsWindowPreference === '24h') {
-              return `<u><b>${pool.name} (${pool.share}%)</b></u><br>` +
+              return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
                 pool.lastEstimatedHashrate.toString() + ' PH/s' +
                 `<br>` + pool.blockCount.toString() + ` blocks`;
             } else {
-              return `<u><b>${pool.name} (${pool.share}%)</b></u><br>` +
+              return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
                 pool.blockCount.toString() + ` blocks`;
             }
           }
