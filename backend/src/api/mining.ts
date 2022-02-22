@@ -162,7 +162,7 @@ class Mining {
     }
 
     // Add genesis block manually
-    if (!indexedTimestamp.includes(genesisTimestamp)) {
+    if (toTimestamp <= genesisTimestamp && !indexedTimestamp.includes(genesisTimestamp)) {
       hashrates.push({
         hashrateTimestamp: genesisTimestamp,
         avgHashrate: await bitcoinClient.getNetworkHashPs(1, 1),
