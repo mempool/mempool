@@ -69,7 +69,7 @@ export class HashrateChartComponent implements OnInit {
                         timestamp: data.hashrates[hashIndex].timestamp,
                         difficulty: data.difficulty[data.difficulty.length - 1].difficulty
                       });
-                      ++hashIndex;  
+                      ++hashIndex;
                     }
                     break;
                   }
@@ -121,7 +121,7 @@ export class HashrateChartComponent implements OnInit {
   prepareChartOptions(data) {
     this.chartOptions = {
       color: [
-          new graphic.LinearGradient(0, 0, 0, 0.65, [
+        new graphic.LinearGradient(0, 0, 0, 0.65, [
           { offset: 0, color: '#F4511E' },
           { offset: 0.25, color: '#FB8C00' },
           { offset: 0.5, color: '#FFB300' },
@@ -133,6 +133,7 @@ export class HashrateChartComponent implements OnInit {
       grid: {
         right: this.right,
         left: this.left,
+        bottom: 30,
       },
       tooltip: {
         trigger: 'axis',
@@ -146,6 +147,25 @@ export class HashrateChartComponent implements OnInit {
           color: '#b1b1b1',
         },
         borderColor: '#000',
+        formatter: function (data) {
+          let hashratePowerOfTen: any = selectPowerOfTen(1);
+          let hashrate = data[0].data[1];
+          let difficultyPowerOfTen = hashratePowerOfTen;
+          let difficulty = data[1].data[1];
+
+          if (this.isMobile()) {
+            hashratePowerOfTen = selectPowerOfTen(data[0].data[1]);
+            hashrate = Math.round(data[0].data[1] / hashratePowerOfTen.divider);
+            difficultyPowerOfTen = selectPowerOfTen(data[1].data[1]);
+            difficulty = Math.round(data[1].data[1] / difficultyPowerOfTen.divider);
+          }
+
+          return `
+            <b style="color: white; margin-left: 18px">${data[0].axisValueLabel}</b><br>
+            <span>${data[0].marker} ${data[0].seriesName}: ${formatNumber(hashrate, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s</span><br>
+            <span>${data[1].marker} ${data[1].seriesName}: ${formatNumber(difficulty, this.locale, '1.0-0')} ${difficultyPowerOfTen.unit}</span>
+          `;
+        }.bind(this)
       },
       xAxis: {
         type: 'time',
@@ -179,13 +199,16 @@ export class HashrateChartComponent implements OnInit {
       },
       yAxis: [
         {
+          min: function (value) {
+            return value.min * 0.9;
+          },
           type: 'value',
           name: 'Hashrate',
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val) => {
               const selectedPowerOfTen: any = selectPowerOfTen(val);
-              const newVal = val / selectedPowerOfTen.divider;
+              const newVal = Math.round(val / selectedPowerOfTen.divider);
               return `${newVal} ${selectedPowerOfTen.unit}H/s`
             }
           },
@@ -194,6 +217,9 @@ export class HashrateChartComponent implements OnInit {
           }
         },
         {
+          min: function (value) {
+            return value.min * 0.9;
+          },
           type: 'value',
           name: 'Difficulty',
           position: 'right',
@@ -201,7 +227,7 @@ export class HashrateChartComponent implements OnInit {
             color: 'rgb(110, 112, 121)',
             formatter: (val) => {
               const selectedPowerOfTen: any = selectPowerOfTen(val);
-              const newVal = val / selectedPowerOfTen.divider;
+              const newVal = Math.round(val / selectedPowerOfTen.divider);
               return `${newVal} ${selectedPowerOfTen.unit}`
             }
           },

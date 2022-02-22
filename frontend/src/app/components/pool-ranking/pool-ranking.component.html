@@ -1,11 +1,12 @@
 <div [class]="widget === false ? 'container-xl' : ''">
 
-  <div class="hashrate-pie" echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartInit)="onChartInit($event)"></div>
+  <div [class]="widget ? 'chart-widget' : 'chart'"
+    echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartInit)="onChartInit($event)"></div>
   <div class="text-center loadingGraphs" *ngIf="isLoading">
     <div class="spinner-border text-light"></div>
   </div>
 
-  <div class="card-header mb-0 mb-lg-4" [style]="widget === true ? 'display:none' : ''">
+  <div class="card-header mb-0 mb-lg-4 mt-md-3" [style]="widget ? 'display:none' : ''">
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(miningStatsObservable$ | async) as miningStats">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="miningStats.availableTimespanDay >= 1">
