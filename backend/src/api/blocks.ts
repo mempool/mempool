@@ -116,6 +116,9 @@ class Blocks {
       Common.median(transactionsTmp.map((tx) => tx.effectiveFeePerVsize)) : 0;
     blockExtended.extras.feeRange = transactionsTmp.length > 0 ?
       Common.getFeesInRange(transactionsTmp, 8) : [0, 0];
+    blockExtended.extras.totalFees = transactionsTmp.reduce((acc, tx) => {
+      return acc + tx.fee;
+    }, 0)
 
     if (Common.indexingEnabled()) {
       let pool: PoolTag;
