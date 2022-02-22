@@ -161,7 +161,18 @@ class Mining {
       ++totalIndexed;
     }
 
-    await HashratesRepository.$saveHashrates(hashrates);
+    // Add genesis block manually
+    if (!indexedTimestamp.includes(genesisTimestamp)) {
+      hashrates.push({
+        hashrateTimestamp: genesisTimestamp,
+        avgHashrate: await bitcoinClient.getNetworkHashPs(1, 1),
+        poolId: null
+      });
+    }
+
+    if (hashrates.length > 0) {
+      await HashratesRepository.$saveHashrates(hashrates);
+    }
     await HashratesRepository.$setLatestRunTimestamp();
     this.hashrateIndexingStarted = false;
 
