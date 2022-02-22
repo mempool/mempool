@@ -176,7 +176,10 @@ export class PoolRankingComponent implements OnInit {
         }
       },
       tooltip: {
-        trigger: 'item'
+        trigger: 'item',
+        textStyle: {
+          align: 'left',
+        }
       },
       series: [
         {
