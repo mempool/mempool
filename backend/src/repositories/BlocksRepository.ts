@@ -150,6 +150,40 @@ class BlocksRepository {
   }
 
   /**
+   * Get blocks count between two dates
+   * @param poolId 
+   * @param from - The oldest timestamp
+   * @param to - The newest timestamp
+   * @returns 
+   */
+  public async $blockCountBetweenTimestamp(poolId: number | null, from: number, to: number): Promise<number> {
+    const params: any[] = [];
+    let query = `SELECT
+      count(height) as blockCount,
+      max(height) as lastBlockHeight
+      FROM blocks`;
+
+    if (poolId) {
+      query += ` WHERE pool_id = ?`;
+      params.push(poolId);
+    }
+
+    if (poolId) {
+      query += ` AND`;
+    } else {
+      query += ` WHERE`;
+    }
+    query += ` UNIX_TIMESTAMP(blockTimestamp) BETWEEN '${from}' AND '${to}'`;
+
+    // logger.debug(query);
+    const connection = await DB.pool.getConnection();
+    const [rows] = await connection.query(query, params);
+    connection.release();
+
+    return <number>rows[0];
+  }
+
+  /**
    * Get the oldest indexed block
    */
   public async $oldestBlockTimestamp(): Promise<number> {
@@ -240,12 +274,19 @@ class BlocksRepository {
     }
 
     query += ` GROUP BY difficulty
-      ORDER BY blockTimestamp DESC`;
+      ORDER BY blockTimestamp`;
 
     const [rows]: any[] = await connection.query(query);
     connection.release();
 
     return rows;
+  }
+
+  public async $getOldestIndexedBlockHeight(): Promise<number> {
+    const connection = await DB.pool.getConnection();
+    const [rows]: any[] = await connection.query(`SELECT MIN(height) as minHeight FROM blocks`);
+    connection.release();
+    return rows[0].minHeight;
   }
 }
 

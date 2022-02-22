@@ -130,3 +130,32 @@ export const formatNumber = (s, precision = null) => {
 // Utilities for segwitFeeGains
 const witnessSize = (vin: Vin) => vin.witness.reduce((S, w) => S + (w.length / 2), 0);
 const scriptSigSize = (vin: Vin) => vin.scriptsig ? vin.scriptsig.length / 2 : 0;
+
+// Power of ten wrapper
+export function selectPowerOfTen(val: number) {
+  const powerOfTen = {
+    exa: Math.pow(10, 18),
+    peta: Math.pow(10, 15),
+    terra: Math.pow(10, 12),
+    giga: Math.pow(10, 9),
+    mega: Math.pow(10, 6),
+    kilo: Math.pow(10, 3),
+  };
+
+  let selectedPowerOfTen;
+  if (val < powerOfTen.mega) {
+    selectedPowerOfTen = { divider: 1, unit: '' }; // no scaling
+  } else if (val < powerOfTen.giga) {
+    selectedPowerOfTen = { divider: powerOfTen.mega, unit: 'M' };
+  } else if (val < powerOfTen.terra) {
+    selectedPowerOfTen = { divider: powerOfTen.giga, unit: 'G' };
+  } else if (val < powerOfTen.peta) {
+    selectedPowerOfTen = { divider: powerOfTen.terra, unit: 'T' };
+  } else if (val < powerOfTen.exa) {
+    selectedPowerOfTen = { divider: powerOfTen.peta, unit: 'P' };
+  } else {
+    selectedPowerOfTen = { divider: powerOfTen.exa, unit: 'E' };
+  }
+
+  return selectedPowerOfTen;
+}
