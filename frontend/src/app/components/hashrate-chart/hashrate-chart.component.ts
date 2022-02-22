@@ -145,6 +145,7 @@ export class HashrateChartComponent implements OnInit {
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
           color: '#b1b1b1',
+          align: 'left',
         },
         borderColor: '#000',
         formatter: function (data) {
