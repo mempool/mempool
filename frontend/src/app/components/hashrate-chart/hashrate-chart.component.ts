@@ -57,16 +57,11 @@ export class HashrateChartComponent implements OnInit {
         switchMap((timespan) => {
           return this.apiService.getHistoricalHashrate$(timespan)
             .pipe(
-              map((data: any) => {
+              tap((data: any) => {
+                // We generate duplicated data point so the tooltip works nicely
                 const diffFixed = [];
-                diffFixed.push({
-                  timestamp: data.hashrates[0].timestamp,
-                  difficulty: data.difficulty[0].difficulty
-                });
-
-                let diffIndex = 1;
+                let diffIndex = 0;
                 let hashIndex = 0;
-
                 while (hashIndex < data.hashrates.length) {
                   if (diffIndex >= data.difficulty.length) {
                     while (hashIndex < data.hashrates.length) {
@@ -89,13 +84,9 @@ export class HashrateChartComponent implements OnInit {
                   ++diffIndex;
                 }
 
-                data.difficulty = diffFixed;
-                return data;
-              }),
-              tap((data: any) => {
                 this.prepareChartOptions({
                   hashrates: data.hashrates.map(val => [val.timestamp * 1000, val.avgHashrate]),
-                  difficulty: data.difficulty.map(val => [val.timestamp * 1000, val.difficulty])
+                  difficulty: diffFixed.map(val => [val.timestamp * 1000, val.difficulty])
                 });
                 this.isLoading = false;
               }),
@@ -103,8 +94,22 @@ export class HashrateChartComponent implements OnInit {
                 const availableTimespanDay = (
                   (new Date().getTime() / 1000) - (data.oldestIndexedBlockTimestamp)
                 ) / 3600 / 24;
+
+                const tableData = [];
+                for (let i = data.difficulty.length - 1; i > 0; --i) {
+                  const selectedPowerOfTen: any = selectPowerOfTen(data.difficulty[i].difficulty);
+                  const change = (data.difficulty[i].difficulty / data.difficulty[i - 1].difficulty - 1) * 100;
+
+                  tableData.push(Object.assign(data.difficulty[i], {
+                    change: change,
+                    difficultyShorten: formatNumber(
+                      data.difficulty[i].difficulty / selectedPowerOfTen.divider,
+                      this.locale, '1.2-2') + selectedPowerOfTen.unit
+                  }));
+                }
                 return {
                   availableTimespanDay: availableTimespanDay,
+                  difficulty: tableData
                 };
               }),
             );
