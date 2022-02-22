@@ -42,9 +42,7 @@ class Mining {
     });
 
     poolsStatistics['pools'] = poolsStats;
-
-    const oldestBlock = new Date(await BlocksRepository.$oldestBlockTimestamp());
-    poolsStatistics['oldestIndexedBlockTimestamp'] = oldestBlock.getTime();
+    poolsStatistics['oldestIndexedBlockTimestamp'] = await BlocksRepository.$oldestBlockTimestamp();
 
     const blockCount: number = await BlocksRepository.$blockCount(null, interval);
     poolsStatistics['blockCount'] = blockCount;
@@ -79,26 +77,14 @@ class Mining {
    * Return the historical difficulty adjustments and oldest indexed block timestamp
    */
   public async $getHistoricalDifficulty(interval: string | null): Promise<object> {
-    const difficultyAdjustments = await BlocksRepository.$getBlocksDifficulty(interval);
-    const oldestBlock = new Date(await BlocksRepository.$oldestBlockTimestamp());
-
-    return {
-      adjustments: difficultyAdjustments,
-      oldestIndexedBlockTimestamp: oldestBlock.getTime(),
-    };
+    return await BlocksRepository.$getBlocksDifficulty(interval);
   }
 
   /**
    * Return the historical hashrates and oldest indexed block timestamp
    */
   public async $getHistoricalHashrates(interval: string | null): Promise<object> {
-    const hashrates = await HashratesRepository.$get(interval);
-    const oldestBlock = new Date(await BlocksRepository.$oldestBlockTimestamp());
-
-    return {
-      hashrates: hashrates,
-      oldestIndexedBlockTimestamp: oldestBlock.getTime(),
-    };
+    return await HashratesRepository.$get(interval);
   }
 
   /**

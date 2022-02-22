@@ -59,7 +59,7 @@ export class DifficultyChartComponent implements OnInit {
               }),
               map(data => {
                 const availableTimespanDay = (
-                  (new Date().getTime() / 1000) - (data.oldestIndexedBlockTimestamp / 1000)
+                  (new Date().getTime() / 1000) - (data.oldestIndexedBlockTimestamp)
                 ) / 3600 / 24;
 
                 const tableData = [];

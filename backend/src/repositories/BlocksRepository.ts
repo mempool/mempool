@@ -187,11 +187,10 @@ class BlocksRepository {
    * Get the oldest indexed block
    */
   public async $oldestBlockTimestamp(): Promise<number> {
-    const query = `SELECT blockTimestamp
+    const query = `SELECT UNIX_TIMESTAMP(blockTimestamp) as blockTimestamp
       FROM blocks
       ORDER BY height
       LIMIT 1;`;
-
 
     // logger.debug(query);
     const connection = await DB.pool.getConnection();
