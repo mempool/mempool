@@ -34,7 +34,6 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   network = '';
   now = new Date().getTime();
   showMiningInfo = false;
-  blockSubsidy = 50;
 
   blockWidth = 125;
   blockPadding = 30;
@@ -111,7 +110,6 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
             if (this.stateService.network === '') {
               block.blink = specialBlocks[block.height] ? true : false;
             }
-            this.setBlockSubsidy(block.height);
           });
 
           const stringifiedBlocks = JSON.stringify(mempoolBlocks);
@@ -210,18 +208,6 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
   trackByFn(index: number, block: MempoolBlock) {
     return block.index;
-  }
-
-  setBlockSubsidy(blockHeight) {
-    if (!['', 'testnet', 'signet'].includes(this.stateService.network)) {
-      return;
-    }
-    this.blockSubsidy = 50;
-    let halvenings = Math.floor(blockHeight / 210000);
-    while (halvenings > 0) {
-      this.blockSubsidy = this.blockSubsidy / 2;
-      halvenings--;
-    }
   }
 
   reduceMempoolBlocksToFitScreen(blocks: MempoolBlock[]): MempoolBlock[] {

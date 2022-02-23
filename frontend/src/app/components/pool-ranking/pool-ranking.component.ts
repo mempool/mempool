@@ -33,7 +33,9 @@ export class PoolRankingComponent implements OnInit {
   isLoading = true;
   chartOptions: EChartsOption = {};
   chartInitOptions = {
-    renderer: 'svg'
+    renderer: 'svg',
+    width: 'auto',
+    height: 'auto',
   };
   chartInstance: any = undefined;
 
@@ -156,6 +158,11 @@ export class PoolRankingComponent implements OnInit {
     }
     network = network.charAt(0).toUpperCase() + network.slice(1);
 
+    let radius: any[] = ['20%', '70%'];
+    if (this.isMobile() || this.widget) {
+      radius = ['20%', '65%'];
+    }
+
     this.chartOptions = {
       title: {
         text: this.widget ? '' : $localize`:@@mining.pool-chart-title:${network}:NETWORK: mining pools share`,
@@ -169,17 +176,21 @@ export class PoolRankingComponent implements OnInit {
         }
       },
       tooltip: {
-        trigger: 'item'
+        trigger: 'item',
+        textStyle: {
+          align: 'left',
+        }
       },
       series: [
         {
-          top: this.widget ? '0%' : (this.isMobile() ? '5%' : '10%'),
-          bottom: this.widget ? '0%' : (this.isMobile() ? '0%' : '5%'),
+          top: this.widget ? 0 : 35,
           name: 'Mining pool',
           type: 'pie',
-          radius: this.widget ? ['20%', '60%'] : (this.isMobile() ? ['10%', '50%'] : ['20%', '70%']),
+          radius: radius,
           data: this.generatePoolsChartSerieData(miningStats),
           labelLine: {
+            length: this.isMobile() ? 10 : 15,
+            length2: this.isMobile() ? 0 : 15,
             lineStyle: {
               width: 2,
             },
