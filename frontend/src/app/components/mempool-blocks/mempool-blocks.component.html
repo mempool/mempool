@@ -13,7 +13,7 @@
               {{ projectedBlock.feeRange[0] | number:feeRounding }} - {{ projectedBlock.feeRange[projectedBlock.feeRange.length - 1] | number:feeRounding }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
             </div>
             <div *ngIf="showMiningInfo" class="block-size">
-              <app-amount [satoshis]="projectedBlock.totalFees + blockSubsidy * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
+              <app-amount [satoshis]="projectedBlock.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
             </div>
             <div *ngIf="!showMiningInfo" class="block-size" [innerHTML]="'&lrm;' + (projectedBlock.blockSize | bytes: 2)"></div>
             <div class="transaction-count">
