@@ -82,7 +82,7 @@ export class MiningService {
     });
 
     const availableTimespanDay = (
-      (new Date().getTime() / 1000) - (stats.oldestIndexedBlockTimestamp / 1000)
+      (new Date().getTime() / 1000) - (stats.oldestIndexedBlockTimestamp)
     ) / 3600 / 24;
 
     return {
