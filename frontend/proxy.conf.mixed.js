@@ -40,6 +40,24 @@ if (configContent && configContent.BASE_MODULE === 'liquid') {
       changeOrigin: true,
       proxyTimeout: 30000,
     },
+    {
+      context: ['/liquidtestnet/api/v1/**'],
+      target: `http://localhost:8999`,
+      secure: false,
+      ws: true,
+      changeOrigin: true,
+      proxyTimeout: 30000,
+      pathRewrite: {
+          "^/liquidtestnet": ""
+      },
+    },
+    {
+      context: ['/liquidtestnet/api/**'],
+      target: `https://liquid.network`,
+      secure: false,
+      changeOrigin: true,
+      proxyTimeout: 30000,
+    },
   ]);
 }
 
