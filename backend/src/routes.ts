@@ -588,11 +588,17 @@ class Routes {
 
   public async $getHistoricalHashrate(req: Request, res: Response) {
     try {
-      const stats = await mining.$getHistoricalHashrates(req.params.interval ?? null);
+      const hashrates = await mining.$getHistoricalHashrates(req.params.interval ?? null);
+      const difficulty = await mining.$getHistoricalDifficulty(req.params.interval ?? null);
+      const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
-      res.json(stats);
+      res.json({
+        oldestIndexedBlockTimestamp: oldestIndexedBlockTimestamp,
+        hashrates: hashrates,
+        difficulty: difficulty,
+      });
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
