@@ -28,7 +28,6 @@ import { AssetsFeaturedComponent } from './components/assets/assets-featured/ass
 import { AssetsComponent } from './components/assets/assets.component';
 import { PoolComponent } from './components/pool/pool.component';
 import { MiningDashboardComponent } from './components/mining-dashboard/mining-dashboard.component';
-import { DifficultyChartComponent } from './components/difficulty-chart/difficulty-chart.component';
 import { HashrateChartComponent } from './components/hashrate-chart/hashrate-chart.component';
 import { MiningStartComponent } from './components/mining-start/mining-start.component';
 
@@ -75,10 +74,6 @@ let routes: Routes = [
         path: 'mining',
         component: MiningStartComponent,
         children: [
-          {
-            path: 'difficulty',
-            component: DifficultyChartComponent,
-          },
           {
             path: 'hashrate',
             component: HashrateChartComponent,
@@ -195,10 +190,6 @@ let routes: Routes = [
             component: MiningStartComponent,
             children: [
               {
-                path: 'difficulty',
-                component: DifficultyChartComponent,
-              },
-              {
                 path: 'hashrate',
                 component: HashrateChartComponent,
               },
@@ -307,10 +298,6 @@ let routes: Routes = [
             path: 'mining',
             component: MiningStartComponent,
             children: [
-              {
-                path: 'difficulty',
-                component: DifficultyChartComponent,
-              },
               {
                 path: 'hashrate',
                 component: HashrateChartComponent,
