@@ -42,7 +42,28 @@ if (configContent && configContent.BASE_MODULE === 'liquid') {
       pathRewrite: {
           "^/liquid/api/": "/api/v1/"
       },
-    }
+    },
+    {
+      context: ['/liquidtestnet/api/v1/**'],
+      target: `http://localhost:8999`,
+      secure: false,
+      ws: true,
+      changeOrigin: true,
+      proxyTimeout: 30000,
+      pathRewrite: {
+          "^/liquidtestnet": ""
+      },
+    },
+    {
+      context: ['/liquidtestnet/api/**'],
+      target: `http://localhost:8999`,
+      secure: false,
+      changeOrigin: true,
+      proxyTimeout: 30000,
+      pathRewrite: {
+          "^/liquidtestnet/api/": "/api/v1/"
+      },
+    },
   ]);
 }
 
