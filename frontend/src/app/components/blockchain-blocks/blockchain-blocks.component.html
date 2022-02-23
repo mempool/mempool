@@ -14,7 +14,7 @@
           {{ block?.extras?.feeRange[1] | number:feeRounding }} - {{ block?.extras?.feeRange[block?.extras?.feeRange.length - 1] | number:feeRounding }} <ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
         </div>
         <div *ngIf="showMiningInfo" class="block-size">
-          <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
+          <app-amount [satoshis]="block.extras?.totalFees ?? 0" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
         </div>
         <div *ngIf="!showMiningInfo" class="block-size" [innerHTML]="'&lrm;' + (block.size | bytes: 2)"></div>
         <div class="transaction-count">
