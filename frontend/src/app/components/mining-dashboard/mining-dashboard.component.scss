@@ -16,22 +16,17 @@
 }
 
 .card-title {
-  color: #4a68b9;
   font-size: 1rem;
 }
+.card-title > a {
+  color: #4a68b9;
+}
 
-.card-wrapper {
-  .card {
-    height: auto !important;
-  }
-  .card-body {
-    display: flex;
-    flex: inherit;
-    text-align: center;
-    flex-direction: column;
-    justify-content: space-around;
-    padding: 22px 20px;
-  }
+.card-body {
+  padding: 1.25rem 1rem 0.75rem 1rem;
+}
+.card-body.pool-ranking {
+  padding: 1.25rem 0.25rem 0.75rem 0.25rem;
 }
 
 #blockchain-container {
