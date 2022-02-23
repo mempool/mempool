@@ -257,7 +257,7 @@
           &nbsp;
         </span>
         <button type="button" class="btn btn-sm btn-primary mt-2" (click)="switchCurrency()">
-          <ng-template [ngIf]="network === 'liquid' || network === 'liquidtestnet'" [ngIfElse]="defaultAmount" i18n="shared.confidential">Confidential</ng-template>
+          <ng-template [ngIf]="(network === 'liquid' || network === 'liquidtestnet') && haveBlindedOutputValues(tx)" [ngIfElse]="defaultAmount" i18n="shared.confidential">Confidential</ng-template>
           <ng-template #defaultAmount>
             <app-amount [satoshis]="getTotalTxOutput(tx)"></app-amount>
           </ng-template>
