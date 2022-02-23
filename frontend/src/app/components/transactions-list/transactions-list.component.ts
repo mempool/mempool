@@ -95,6 +95,10 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     }
   }
 
+  haveBlindedOutputValues(tx: Transaction): boolean {
+    return tx.vout.some((v: any) => v.value === undefined);
+  }
+
   getTotalTxOutput(tx: Transaction) {
     return tx.vout.map((v: any) => v.value || 0).reduce((a: number, b: number) => a + b);
   }
