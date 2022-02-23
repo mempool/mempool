@@ -23,7 +23,7 @@ import { selectPowerOfTen } from 'src/app/bitcoin.utils';
 })
 export class HashrateChartComponent implements OnInit {
   @Input() widget: boolean = false;
-  @Input() right: number | string = 10;
+  @Input() right: number | string = 45;
   @Input() left: number | string = 75;
 
   radioGroupForm: FormGroup;
@@ -45,7 +45,7 @@ export class HashrateChartComponent implements OnInit {
     private apiService: ApiService,
     private formBuilder: FormBuilder,
   ) {
-    this.seoService.setTitle($localize`:@@mining.hashrate:hashrate`);
+    this.seoService.setTitle($localize`:@@mining.hashrate-difficulty:Hashrate and Difficulty`);
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
   }
@@ -57,17 +57,61 @@ export class HashrateChartComponent implements OnInit {
         switchMap((timespan) => {
           return this.apiService.getHistoricalHashrate$(timespan)
             .pipe(
-              tap(data => {
-                this.prepareChartOptions(data.hashrates.map(val => [val.timestamp * 1000, val.avgHashrate]));
+              tap((data: any) => {
+                // We generate duplicated data point so the tooltip works nicely
+                const diffFixed = [];
+                let diffIndex = 1;
+                let hashIndex = 0;
+                while (hashIndex < data.hashrates.length) {
+                  if (diffIndex >= data.difficulty.length) {
+                    while (hashIndex < data.hashrates.length) {
+                      diffFixed.push({
+                        timestamp: data.hashrates[hashIndex].timestamp,
+                        difficulty: data.difficulty[data.difficulty.length - 1].difficulty
+                      });
+                      ++hashIndex;
+                    }
+                    break;
+                  }
+
+                  while (hashIndex < data.hashrates.length && diffIndex < data.difficulty.length &&
+                    data.hashrates[hashIndex].timestamp <= data.difficulty[diffIndex].timestamp
+                  ) {
+                    diffFixed.push({
+                      timestamp: data.hashrates[hashIndex].timestamp,
+                      difficulty: data.difficulty[diffIndex - 1].difficulty
+                    });
+                    ++hashIndex;
+                  }
+                  ++diffIndex;
+                }
+
+                this.prepareChartOptions({
+                  hashrates: data.hashrates.map(val => [val.timestamp * 1000, val.avgHashrate]),
+                  difficulty: diffFixed.map(val => [val.timestamp * 1000, val.difficulty])
+                });
                 this.isLoading = false;
               }),
-              map(data => {
+              map((data: any) => {
                 const availableTimespanDay = (
-                  (new Date().getTime() / 1000) - (data.oldestIndexedBlockTimestamp / 1000)
+                  (new Date().getTime() / 1000) - (data.oldestIndexedBlockTimestamp)
                 ) / 3600 / 24;
+
+                const tableData = [];
+                for (let i = data.difficulty.length - 1; i > 0; --i) {
+                  const selectedPowerOfTen: any = selectPowerOfTen(data.difficulty[i].difficulty);
+                  const change = (data.difficulty[i].difficulty / data.difficulty[i - 1].difficulty - 1) * 100;
+
+                  tableData.push(Object.assign(data.difficulty[i], {
+                    change: change,
+                    difficultyShorten: formatNumber(
+                      data.difficulty[i].difficulty / selectedPowerOfTen.divider,
+                      this.locale, '1.2-2') + selectedPowerOfTen.unit
+                  }));
+                }
                 return {
                   availableTimespanDay: availableTimespanDay,
-                  data: data.hashrates
+                  difficulty: tableData
                 };
               }),
             );
@@ -78,72 +122,144 @@ export class HashrateChartComponent implements OnInit {
 
   prepareChartOptions(data) {
     this.chartOptions = {
-      color: new graphic.LinearGradient(0, 0, 0, 0.65, [
-        { offset: 0, color: '#F4511E' },
-        { offset: 0.25, color: '#FB8C00' },
-        { offset: 0.5, color: '#FFB300' },
-        { offset: 0.75, color: '#FDD835' },
-        { offset: 1, color: '#7CB342' }
-      ]),
+      color: [
+        new graphic.LinearGradient(0, 0, 0, 0.65, [
+          { offset: 0, color: '#F4511E' },
+          { offset: 0.25, color: '#FB8C00' },
+          { offset: 0.5, color: '#FFB300' },
+          { offset: 0.75, color: '#FDD835' },
+          { offset: 1, color: '#7CB342' }
+        ]),
+        '#D81B60',
+      ],
       grid: {
         right: this.right,
         left: this.left,
-      },
-      title: {
-        text: this.widget ? '' : $localize`:@@mining.hashrate:Hashrate`,
-        left: 'center',
-        textStyle: {
-          color: '#FFF',
-        },
+        bottom: this.widget ? 30 : 60,
       },
       tooltip: {
-        show: true,
         trigger: 'axis',
+        axisPointer: {
+          type: 'line'
+        },
         backgroundColor: 'rgba(17, 19, 31, 1)',
         borderRadius: 4,
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
           color: '#b1b1b1',
+          align: 'left',
         },
         borderColor: '#000',
-        formatter: params => {
-          return `<b style="color: white">${params[0].axisValueLabel}</b><br>
-            ${params[0].marker} ${formatNumber(params[0].value[1], this.locale, '1.0-0')} H/s`
-        }
-      },
-      axisPointer: {
-        type: 'line',
+        formatter: function (data) {
+          let hashratePowerOfTen: any = selectPowerOfTen(1);
+          let hashrate = data[0].data[1];
+          let difficultyPowerOfTen = hashratePowerOfTen;
+          let difficulty = data[1].data[1];
+
+          if (this.isMobile()) {
+            hashratePowerOfTen = selectPowerOfTen(data[0].data[1]);
+            hashrate = Math.round(data[0].data[1] / hashratePowerOfTen.divider);
+            difficultyPowerOfTen = selectPowerOfTen(data[1].data[1]);
+            difficulty = Math.round(data[1].data[1] / difficultyPowerOfTen.divider);
+          }
+
+          return `
+            <b style="color: white; margin-left: 18px">${data[0].axisValueLabel}</b><br>
+            <span>${data[0].marker} ${data[0].seriesName}: ${formatNumber(hashrate, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s</span><br>
+            <span>${data[1].marker} ${data[1].seriesName}: ${formatNumber(difficulty, this.locale, '1.2-2')} ${difficultyPowerOfTen.unit}</span>
+          `;
+        }.bind(this)
       },
       xAxis: {
         type: 'time',
         splitNumber: this.isMobile() ? 5 : 10,
       },
-      yAxis: {
-        type: 'value',
-        axisLabel: {
-          formatter: (val) => {
-            const selectedPowerOfTen: any = selectPowerOfTen(val);
-            const newVal = val / selectedPowerOfTen.divider;
-            return `${newVal} ${selectedPowerOfTen.unit}H/s`
+      legend: {
+        data: [
+          {
+            name: 'Hashrate',
+            inactiveColor: 'rgb(110, 112, 121)',
+            textStyle: {
+              color: 'white',
+            },
+            icon: 'roundRect',
+            itemStyle: {
+              color: '#FFB300',
+            },
+          },
+          {
+            name: 'Difficulty',
+            inactiveColor: 'rgb(110, 112, 121)',
+            textStyle: {
+              color: 'white',
+            },
+            icon: 'roundRect',
+            itemStyle: {
+              color: '#D81B60',
+            }
+          },
+        ],
+      },
+      yAxis: [
+        {
+          min: function (value) {
+            return value.min * 0.9;
+          },
+          type: 'value',
+          name: 'Hashrate',
+          axisLabel: {
+            color: 'rgb(110, 112, 121)',
+            formatter: (val) => {
+              const selectedPowerOfTen: any = selectPowerOfTen(val);
+              const newVal = Math.round(val / selectedPowerOfTen.divider);
+              return `${newVal} ${selectedPowerOfTen.unit}H/s`
+            }
+          },
+          splitLine: {
+            show: false,
           }
         },
-        splitLine: {
+        {
+          min: function (value) {
+            return value.min * 0.9;
+          },
+          type: 'value',
+          name: 'Difficulty',
+          position: 'right',
+          axisLabel: {
+            color: 'rgb(110, 112, 121)',
+            formatter: (val) => {
+              const selectedPowerOfTen: any = selectPowerOfTen(val);
+              const newVal = Math.round(val / selectedPowerOfTen.divider);
+              return `${newVal} ${selectedPowerOfTen.unit}`
+            }
+          },
+          splitLine: {
+            show: false,
+          }
+        }
+      ],
+      series: [
+        {
+          name: 'Hashrate',
+          showSymbol: false,
+          data: data.hashrates,
+          type: 'line',
           lineStyle: {
-            type: 'dotted',
-            color: '#ffffff66',
-            opacity: 0.25,
+            width: 2,
+          },
+        },
+        {
+          yAxisIndex: 1,
+          name: 'Difficulty',
+          showSymbol: false,
+          data: data.difficulty,
+          type: 'line',
+          lineStyle: {
+            width: 3,
           }
-        },
-      },
-      series: {
-        showSymbol: false,
-        data: data,
-        type: 'line',
-        smooth: false,
-        lineStyle: {
-          width: 2,
-        },
-      },
+        }
+      ],
       dataZoom: this.widget ? null : [{
         type: 'inside',
         realtime: true,
