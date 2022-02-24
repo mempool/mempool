@@ -45,12 +45,15 @@ export class HashrateChartComponent implements OnInit {
     private apiService: ApiService,
     private formBuilder: FormBuilder,
   ) {
-    this.seoService.setTitle($localize`:@@mining.hashrate-difficulty:Hashrate and Difficulty`);
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
   }
 
   ngOnInit(): void {
+    if (!this.widget) {
+      this.seoService.setTitle($localize`:@@mining.hashrate-difficulty:Hashrate and Difficulty`);
+    }
+
     this.hashrateObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
       .pipe(
         startWith('1y'),

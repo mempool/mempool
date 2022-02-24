@@ -84,10 +84,11 @@ class HashratesRepository {
     return rows;
   }
 
-  public async $setLatestRunTimestamp() {
+  public async $setLatestRunTimestamp(val: any = null) {
     const connection = await DB.pool.getConnection();
     const query = `UPDATE state SET number = ? WHERE name = 'last_hashrates_indexing'`;
-    await connection.query<any>(query, [Math.round(new Date().getTime() / 1000)]);
+
+    await connection.query<any>(query, (val === null) ? [Math.round(new Date().getTime() / 1000)] : [val]);
     connection.release();
   }
 

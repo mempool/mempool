@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from 'echarts';
@@ -18,11 +18,12 @@ import { chartColors, poolsColor } from 'src/app/app.constants';
   styles: [`
     .loadingGraphs {
       position: absolute;
-      top: 38%;
+      top: 50%;
       left: calc(50% - 15px);
       z-index: 100;
     }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PoolRankingComponent implements OnInit {
   @Input() widget: boolean = false;
@@ -49,13 +50,13 @@ export class PoolRankingComponent implements OnInit {
     private seoService: SeoService,
     private router: Router,
   ) {
-    this.seoService.setTitle($localize`:@@mining.mining-pools:Mining Pools`);
   }
 
   ngOnInit(): void {
     if (this.widget) {
       this.poolsWindowPreference = '1w';
     } else {
+      this.seoService.setTitle($localize`:@@mining.mining-pools:Mining Pools`);
       this.poolsWindowPreference = this.storageService.getValue('poolsWindowPreference') ? this.storageService.getValue('poolsWindowPreference') : '1w';    
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.poolsWindowPreference });
@@ -167,6 +168,7 @@ export class PoolRankingComponent implements OnInit {
     }
 
     this.chartOptions = {
+      color: chartColors,
       title: {
         text: this.widget ? '' : $localize`:@@mining.pool-chart-title:${network}:NETWORK: mining pools share`,
         left: 'center',
