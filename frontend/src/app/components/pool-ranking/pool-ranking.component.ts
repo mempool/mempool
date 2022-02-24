@@ -9,7 +9,7 @@ import { SeoService } from 'src/app/services/seo.service';
 import { StorageService } from '../..//services/storage.service';
 import { MiningService, MiningStats } from '../../services/mining.service';
 import { StateService } from '../../services/state.service';
-import { chartColors } from 'src/app/app.constants';
+import { chartColors, poolsColor } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-pool-ranking',
@@ -120,6 +120,9 @@ export class PoolRankingComponent implements OnInit {
         return;
       }
       data.push({
+        itemStyle: {
+          color: poolsColor[pool.name.replace(/[^a-zA-Z0-9]/g, "").toLowerCase()],
+        },
         value: pool.share,
         name: pool.name + (this.isMobile() ? `` : ` (${pool.share}%)`),
         label: {
@@ -216,7 +219,6 @@ export class PoolRankingComponent implements OnInit {
           }
         }
       ],
-      color: chartColors
     };
   }
 
