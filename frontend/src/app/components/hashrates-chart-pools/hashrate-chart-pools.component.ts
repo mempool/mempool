@@ -1,10 +1,9 @@
-import { Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
-import { formatNumber } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { poolsColor } from 'src/app/app.constants';
 
@@ -15,11 +14,12 @@ import { poolsColor } from 'src/app/app.constants';
   styles: [`
     .loadingGraphs {
       position: absolute;
-      top: 38%;
+      top: 50%;
       left: calc(50% - 15px);
       z-index: 100;
     }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HashrateChartPoolsComponent implements OnInit {
   @Input() widget: boolean = false;
@@ -37,7 +37,6 @@ export class HashrateChartPoolsComponent implements OnInit {
 
   hashrateObservable$: Observable<any>;
   isLoading = true;
-  formatNumber = formatNumber;
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -45,19 +44,24 @@ export class HashrateChartPoolsComponent implements OnInit {
     private apiService: ApiService,
     private formBuilder: FormBuilder,
   ) {
-    this.seoService.setTitle($localize`:@@mining.hashrate-difficulty:Hashrate and Difficulty`);
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
   }
 
   ngOnInit(): void {
+    if (!this.widget) {
+      this.seoService.setTitle($localize`:@@mining.pools-historical-dominance:Pools Historical Dominance`);
+    }
+
     this.hashrateObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
       .pipe(
         startWith('1y'),
         switchMap((timespan) => {
+          this.isLoading = true;
           return this.apiService.getHistoricalPoolsHashrate$(timespan)
             .pipe(
               tap((data: any) => {
+                // Prepare series (group all hashrates data point by pool)
                 const grouped = {};
                 for (const hashrate of data.hashrates) {
                   if (!grouped.hasOwnProperty(hashrate.poolName)) {
@@ -68,7 +72,6 @@ export class HashrateChartPoolsComponent implements OnInit {
 
                 const series = [];
                 const legends = [];
-
                 for (const name in grouped) {
                   series.push({
                     stack: 'Total',
@@ -76,12 +79,8 @@ export class HashrateChartPoolsComponent implements OnInit {
                     showSymbol: false,
                     data: grouped[name].map((val) => [val.timestamp * 1000, (val.share * 100).toFixed(2)]),
                     type: 'line',
-                    lineStyle: {
-                      width: 0,
-                    },
-                    areaStyle: {
-                      opacity: 1,
-                    },
+                    lineStyle: { width: 0 },
+                    areaStyle: { opacity: 1 },
                     smooth: true,
                     color: poolsColor[name.replace(/[^a-zA-Z0-9]/g, "").toLowerCase()],
                     emphasis: {
@@ -115,7 +114,6 @@ export class HashrateChartPoolsComponent implements OnInit {
                 ) / 3600 / 24;
                 return {
                   availableTimespanDay: availableTimespanDay,
-                  hashrates: data
                 };
               }),
             );
@@ -129,7 +127,7 @@ export class HashrateChartPoolsComponent implements OnInit {
       grid: {
         right: this.right,
         left: this.left,
-        bottom: this.widget ? 30 : 60,
+        bottom: this.widget ? 30 : 20,
         top: this.widget ? 10 : 40,
       },
       tooltip: {

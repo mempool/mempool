@@ -27,6 +27,7 @@ import syncAssets from './sync-assets';
 import icons from './api/liquid/icons';
 import { Common } from './api/common';
 import mining from './api/mining';
+import HashratesRepository from './repositories/HashratesRepository';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -95,6 +96,7 @@ class Server {
           await Common.sleep(5000);
           await databaseMigration.$truncateIndexedData(tables);
         }
+        await this.$resetHashratesIndexingState();
         await databaseMigration.$initializeOrMigrateDatabase();
         await poolsParser.migratePoolsJson();
       } catch (e) {
@@ -145,7 +147,7 @@ class Server {
       }
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
-      this.runIndexingWhenReady();
+      this.$runIndexingWhenReady();
 
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;
@@ -164,7 +166,11 @@ class Server {
     }
   }
 
-  async runIndexingWhenReady() {
+  async $resetHashratesIndexingState() {
+    return await HashratesRepository.$setLatestRunTimestamp(0);    
+  }
+
+  async $runIndexingWhenReady() {
     if (!Common.indexingEnabled() || mempool.hasPriority()) {
       return;
     }

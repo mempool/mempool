@@ -11,12 +11,12 @@
 
 .full-container {
   width: 100%;
-  height: calc(100% - 50px);
+  height: calc(100% - 100px);
   @media (max-width: 992px) {
-    height: calc(100% - 110px);
+    height: calc(100% - 140px);
   };
   @media (max-width: 576px) {
-    height: calc(100% - 130px);
+    height: calc(100% - 180px);
   };
 }
 
