@@ -29,6 +29,7 @@ import { AssetsComponent } from './components/assets/assets.component';
 import { PoolComponent } from './components/pool/pool.component';
 import { MiningDashboardComponent } from './components/mining-dashboard/mining-dashboard.component';
 import { HashrateChartComponent } from './components/hashrate-chart/hashrate-chart.component';
+import { HashrateChartPoolsComponent } from './components/hashrates-chart-pools/hashrate-chart-pools.component';
 import { MiningStartComponent } from './components/mining-start/mining-start.component';
 
 let routes: Routes = [
@@ -79,6 +80,10 @@ let routes: Routes = [
             component: HashrateChartComponent,
           },
           {
+            path: 'hashrate/pools',
+            component: HashrateChartPoolsComponent,
+          },
+          {
             path: 'pools',
             component: PoolRankingComponent,
           },
@@ -88,10 +93,6 @@ let routes: Routes = [
               {
                 path: ':poolId',
                 component: PoolComponent,
-              },
-              {
-                path: ':poolId/hashrate',
-                component: HashrateChartComponent,
               },
             ]
           },
@@ -194,6 +195,10 @@ let routes: Routes = [
                 component: HashrateChartComponent,
               },
               {
+                path: 'hashrate/pools',
+                component: HashrateChartPoolsComponent,
+              },
+              {
                 path: 'pools',
                 component: PoolRankingComponent,
               },
@@ -203,10 +208,6 @@ let routes: Routes = [
                   {
                     path: ':poolId',
                     component: PoolComponent,
-                  },
-                  {
-                    path: ':poolId/hashrate',
-                    component: HashrateChartComponent,
                   },
                 ]
               },
@@ -303,6 +304,10 @@ let routes: Routes = [
                 component: HashrateChartComponent,
               },
               {
+                path: 'hashrate/pools',
+                component: HashrateChartPoolsComponent,
+              },
+              {
                 path: 'pools',
                 component: PoolRankingComponent,
               },
@@ -312,10 +317,6 @@ let routes: Routes = [
                   {
                     path: ':poolId',
                     component: PoolComponent,
-                  },
-                  {
-                    path: ':poolId/hashrate',
-                    component: HashrateChartComponent,
                   },
                 ]
               },

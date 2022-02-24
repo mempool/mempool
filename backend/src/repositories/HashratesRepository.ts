@@ -1,6 +1,7 @@
 import { Common } from '../api/common';
 import { DB } from '../database';
 import logger from '../logger';
+import PoolsRepository from './PoolsRepository';
 
 class HashratesRepository {
   /**
@@ -8,10 +9,10 @@ class HashratesRepository {
    */
   public async $saveHashrates(hashrates: any) {
     let query = `INSERT INTO
-      hashrates(hashrate_timestamp, avg_hashrate, pool_id) VALUES`;
+      hashrates(hashrate_timestamp, avg_hashrate, pool_id, share, type) VALUES`;
 
     for (const hashrate of hashrates) {
-      query += ` (FROM_UNIXTIME(${hashrate.hashrateTimestamp}), ${hashrate.avgHashrate}, ${hashrate.poolId}),`;
+      query += ` (FROM_UNIXTIME(${hashrate.hashrateTimestamp}), ${hashrate.avgHashrate}, ${hashrate.poolId}, ${hashrate.share}, "${hashrate.type}"),`;
     }
     query = query.slice(0, -1);
 
@@ -26,10 +27,7 @@ class HashratesRepository {
     connection.release();
   }
 
-  /**
-   * Returns an array of all timestamp we've already indexed
-   */
-  public async $get(interval: string | null): Promise<any[]> {
+  public async $getNetworkDailyHashrate(interval: string | null): Promise<any[]> {
     interval = Common.getSqlInterval(interval);
 
     const connection = await DB.pool.getConnection();
@@ -38,10 +36,47 @@ class HashratesRepository {
       FROM hashrates`;
 
     if (interval) {
-      query += ` WHERE hashrate_timestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+      query += ` WHERE hashrate_timestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()
+        AND hashrates.type = 'daily'
+        AND pool_id IS NULL`;
+    } else {
+      query += ` WHERE hashrates.type = 'daily'
+        AND pool_id IS NULL`;
     }
 
     query += ` ORDER by hashrate_timestamp`;
+
+    const [rows]: any[] = await connection.query(query);
+    connection.release();
+
+    return rows;
+  }
+
+  /**
+   * Returns the current biggest pool hashrate history
+   */
+  public async $getPoolsWeeklyHashrate(interval: string | null): Promise<any[]> {
+    interval = Common.getSqlInterval(interval);
+
+    const connection = await DB.pool.getConnection();
+    const topPoolsId = (await PoolsRepository.$getPoolsInfo('1w')).map((pool) => pool.poolId);
+
+    let query = `SELECT UNIX_TIMESTAMP(hashrate_timestamp) as timestamp, avg_hashrate as avgHashrate, share, pools.name as poolName
+      FROM hashrates
+      JOIN pools on pools.id = pool_id`;
+
+    if (interval) {
+      query += ` WHERE hashrate_timestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()
+        AND hashrates.type = 'weekly'
+        AND pool_id IN (${topPoolsId})`;
+    } else {
+      query += ` WHERE hashrates.type = 'weekly'
+        AND pool_id IN (${topPoolsId})`;
+    }
+
+    query += ` ORDER by hashrate_timestamp, FIELD(pool_id, ${topPoolsId})`;
+
+    console.log(query);
 
     const [rows]: any[] = await connection.query(query);
     connection.release();

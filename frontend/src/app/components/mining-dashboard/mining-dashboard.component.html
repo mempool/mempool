@@ -30,5 +30,19 @@
       </div>
     </div>
 
+    <!-- pools hashrate -->
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">
+            <a class="link" href="" [routerLink]="['/mining/hashrate/pools' | relativeUrl]" i18n="mining.pools-hashrate">
+              Pools Hashrate Share (1y)
+            </a>
+          </h5>
+          <app-hashrate-chart-pools [widget]=true></app-hashrate-chart-pools>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>

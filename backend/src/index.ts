@@ -297,8 +297,11 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:poolId/:interval', routes.$getPool)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty', routes.$getHistoricalDifficulty)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty/:interval', routes.$getHistoricalDifficulty)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/hashrate/pools', routes.$getPoolsHistoricalHashrate)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/hashrate/pools/:interval', routes.$getPoolsHistoricalHashrate)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/hashrate', routes.$getHistoricalHashrate)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/hashrate/:interval', routes.$getHistoricalHashrate);
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/hashrate/:interval', routes.$getHistoricalHashrate)
+      ;
     }
 
     if (config.BISQ.ENABLED) {
