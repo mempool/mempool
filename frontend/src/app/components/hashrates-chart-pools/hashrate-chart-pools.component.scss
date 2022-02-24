@@ -1,0 +1,50 @@
+.main-title {
+  position: relative;
+  color: #ffffff91;
+  margin-top: -13px;
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 500;
+  text-align: center;
+  padding-bottom: 3px;
+}
+
+.full-container {
+  width: 100%;
+  height: calc(100% - 50px);
+  @media (max-width: 992px) {
+    height: calc(100% - 110px);
+  };
+  @media (max-width: 576px) {
+    height: calc(100% - 130px);
+  };
+}
+
+.chart {
+  width: 100%;
+  height: 100%;
+  padding-bottom: 20px;
+  padding-right: 20px;
+}
+.chart-widget {
+  width: 100%;
+  height: 100%;
+  max-height: 275px;
+}
+
+.formRadioGroup {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  @media (min-width: 830px) {
+    flex-direction: row;
+    float: right;
+    margin-top: 0px;
+  }
+  .btn-sm {
+    font-size: 9px;
+    @media (min-width: 830px) {
+      font-size: 14px;
+    }
+  }
+}
