@@ -77,6 +77,7 @@ export class HashrateChartPoolsComponent implements OnInit {
                     stack: 'Total',
                     name: name,
                     showSymbol: false,
+                    symbol: 'none',
                     data: grouped[name].map((val) => [val.timestamp * 1000, (val.share * 100).toFixed(2)]),
                     type: 'line',
                     lineStyle: { width: 0 },
