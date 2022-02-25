@@ -173,7 +173,7 @@ class BlocksRepository {
     } else {
       query += ` WHERE`;
     }
-    query += ` UNIX_TIMESTAMP(blockTimestamp) BETWEEN '${from}' AND '${to}'`;
+    query += ` blockTimestamp BETWEEN FROM_UNIXTIME('${from}') AND FROM_UNIXTIME('${to}')`;
 
     // logger.debug(query);
     const connection = await DB.pool.getConnection();
@@ -299,6 +299,10 @@ class BlocksRepository {
 
     const [rows]: any[] = await connection.query(query);
     connection.release();
+
+    for (let row of rows) {
+      delete row['rn'];
+    }
 
     return rows;
   }

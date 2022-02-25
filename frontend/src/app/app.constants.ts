@@ -71,7 +71,23 @@ export const chartColors = [
   "#263238",
 ];
 
-export const feeLevels = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
+export const poolsColor = {
+   'foundryusa': '#D81B60',
+   'antpool': '#8E24AA',
+   'f2pool': '#5E35B1',
+   'poolin': '#3949AB',
+   'binancepool': '#1E88E5',
+   'viabtc': '#039BE5',
+   'btccom': '#00897B',
+   'slushpool': '#00ACC1',
+   'sbicrypto': '#43A047',
+   'marapool': '#7CB342',
+   'luxor': '#C0CA33',
+   'unknown': '#FDD835',
+   'okkong': '#FFB300',
+}
+
+ export const feeLevels = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
   250, 300, 350, 400, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000];
 
 export interface Language {

@@ -6,7 +6,7 @@ import logger from '../logger';
 const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 class DatabaseMigration {
-  private static currentVersion = 7;
+  private static currentVersion = 8;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
 
@@ -92,11 +92,13 @@ class DatabaseMigration {
         await this.$executeQuery(connection, this.getCreateBlocksTableQuery(), await this.$checkIfTableExists('blocks'));
       }
       if (databaseSchemaVersion < 5 && isBitcoin === true) {
+        logger.warn(`'blocks' table has been truncated. Re-indexing from scratch.'`);
         await this.$executeQuery(connection, 'TRUNCATE blocks;'); // Need to re-index
         await this.$executeQuery(connection, 'ALTER TABLE blocks ADD `reward` double unsigned NOT NULL DEFAULT "0"');
       }
 
       if (databaseSchemaVersion < 6 && isBitcoin === true) {
+        logger.warn(`'blocks' table has been truncated. Re-indexing from scratch.'`);
         await this.$executeQuery(connection, 'TRUNCATE blocks;');  // Need to re-index
         // Cleanup original blocks fields type
         await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `height` integer unsigned NOT NULL DEFAULT "0"');
@@ -120,6 +122,15 @@ class DatabaseMigration {
       if (databaseSchemaVersion < 7 && isBitcoin === true) {
         await this.$executeQuery(connection, 'DROP table IF EXISTS hashrates;');
         await this.$executeQuery(connection, this.getCreateDailyStatsTableQuery(), await this.$checkIfTableExists('hashrates'));
+      }
+
+      if (databaseSchemaVersion < 8 && isBitcoin === true) {
+        logger.warn(`'hashrates' table has been truncated. Re-indexing from scratch.'`);
+        await this.$executeQuery(connection, 'TRUNCATE hashrates;'); // Need to re-index
+        await this.$executeQuery(connection, 'ALTER TABLE `hashrates` DROP INDEX `PRIMARY`');
+        await this.$executeQuery(connection, 'ALTER TABLE `hashrates` ADD `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST');
+        await this.$executeQuery(connection, 'ALTER TABLE `hashrates` ADD `share` float NOT NULL DEFAULT "0"');
+        await this.$executeQuery(connection, 'ALTER TABLE `hashrates` ADD `type` enum("daily", "weekly") DEFAULT "daily"');
       }
 
       connection.release();

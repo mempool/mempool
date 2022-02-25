@@ -2,16 +2,16 @@
   
   <div class="row row-cols-1 row-cols-md-2">
 
-    <!-- pool distribution -->
+    <!-- pools hashrate -->
     <div class="col">
       <div class="card">
-        <div class="card-body pool-ranking">
+        <div class="card-body">
           <h5 class="card-title">
-            <a href="" [routerLink]="['/mining/pools' | relativeUrl]" i18n="mining.pool-share">
-              Mining Pools Share (1w)
+            <a class="link" href="" [routerLink]="['/mining/hashrate/pools' | relativeUrl]" i18n="mining.pools-hashrate">
+              Mining Pools Dominance (1y)
             </a>
           </h5>
-          <app-pool-ranking [widget]=true></app-pool-ranking>
+          <app-hashrate-chart-pools [widget]=true></app-hashrate-chart-pools>
         </div>
       </div>
     </div>
@@ -26,6 +26,20 @@
             </a>
           </h5>
           <app-hashrate-chart [widget]=true></app-hashrate-chart>
+        </div>
+      </div>
+    </div>
+
+    <!-- pool distribution -->
+    <div class="col">
+      <div class="card">
+        <div class="card-body pool-ranking">
+          <h5 class="card-title">
+            <a href="" [routerLink]="['/mining/pools' | relativeUrl]" i18n="mining.pool-share">
+              Mining Pools Share (1w)
+            </a>
+          </h5>
+          <app-pool-ranking [widget]=true></app-pool-ranking>
         </div>
       </div>
     </div>

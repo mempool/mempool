@@ -71,6 +71,7 @@ import { AssetGroupComponent } from './components/assets/asset-group/asset-group
 import { AssetCirculationComponent } from './components/asset-circulation/asset-circulation.component';
 import { MiningDashboardComponent } from './components/mining-dashboard/mining-dashboard.component';
 import { HashrateChartComponent } from './components/hashrate-chart/hashrate-chart.component';
+import { HashrateChartPoolsComponent } from './components/hashrates-chart-pools/hashrate-chart-pools.component';
 import { MiningStartComponent } from './components/mining-start/mining-start.component';
 import { AmountShortenerPipe } from './shared/pipes/amount-shortener.pipe';
 
@@ -126,6 +127,7 @@ import { AmountShortenerPipe } from './shared/pipes/amount-shortener.pipe';
     AssetCirculationComponent,
     MiningDashboardComponent,
     HashrateChartComponent,
+    HashrateChartPoolsComponent,
     MiningStartComponent,
     AmountShortenerPipe,
   ],
