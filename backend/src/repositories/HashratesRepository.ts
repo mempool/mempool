@@ -76,8 +76,6 @@ class HashratesRepository {
 
     query += ` ORDER by hashrate_timestamp, FIELD(pool_id, ${topPoolsId})`;
 
-    console.log(query);
-
     const [rows]: any[] = await connection.query(query);
     connection.release();
 
