@@ -246,6 +246,7 @@ export class HashrateChartComponent implements OnInit {
         {
           name: 'Hashrate',
           showSymbol: false,
+          symbol: 'none',
           data: data.hashrates,
           type: 'line',
           lineStyle: {
@@ -256,6 +257,7 @@ export class HashrateChartComponent implements OnInit {
           yAxisIndex: 1,
           name: 'Difficulty',
           showSymbol: false,
+          symbol: 'none',
           data: data.difficulty,
           type: 'line',
           lineStyle: {
