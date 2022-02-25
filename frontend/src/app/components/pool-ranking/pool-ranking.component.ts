@@ -15,14 +15,6 @@ import { chartColors, poolsColor } from 'src/app/app.constants';
   selector: 'app-pool-ranking',
   templateUrl: './pool-ranking.component.html',
   styleUrls: ['./pool-ranking.component.scss'],
-  styles: [`
-    .loadingGraphs {
-      position: absolute;
-      top: 50%;
-      left: calc(50% - 15px);
-      z-index: 100;
-    }
-  `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PoolRankingComponent implements OnInit {
@@ -164,7 +156,7 @@ export class PoolRankingComponent implements OnInit {
 
     let radius: any[] = ['20%', '70%'];
     if (this.isMobile() || this.widget) {
-      radius = ['20%', '65%'];
+      radius = ['20%', '60%'];
     }
 
     this.chartOptions = {
