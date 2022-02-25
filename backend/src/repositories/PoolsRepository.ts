@@ -50,6 +50,22 @@ class PoolsRepository {
   }
 
   /**
+   * Get basic pool info and block count between two timestamp
+   */
+   public async $getPoolsInfoBetween(from: number, to: number): Promise<PoolInfo[]> {
+    let query = `SELECT COUNT(height) as blockCount, pools.id as poolId, pools.name as poolName
+      FROM pools
+      LEFT JOIN blocks on pools.id = blocks.pool_id AND blocks.blockTimestamp BETWEEN FROM_UNIXTIME(?) AND FROM_UNIXTIME(?)
+      GROUP BY pools.id`;
+
+    const connection = await DB.pool.getConnection();
+    const [rows] = await connection.query(query, [from, to]);
+    connection.release();
+
+    return <PoolInfo[]>rows;
+  }
+
+  /**
    * Get mining pool statistics for one pool
    */
    public async $getPool(poolId: any): Promise<object> {

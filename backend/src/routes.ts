@@ -586,9 +586,25 @@ class Routes {
     }
   }
 
+  public async $getPoolsHistoricalHashrate(req: Request, res: Response) {
+    try {
+      const hashrates = await mining.$getPoolsHistoricalHashrates(req.params.interval ?? null, parseInt(req.params.poolId, 10));
+      const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.json({
+        oldestIndexedBlockTimestamp: oldestIndexedBlockTimestamp,
+        hashrates: hashrates,
+      });
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
   public async $getHistoricalHashrate(req: Request, res: Response) {
     try {
-      const hashrates = await mining.$getHistoricalHashrates(req.params.interval ?? null);
+      const hashrates = await mining.$getNetworkHistoricalHashrates(req.params.interval ?? null);
       const difficulty = await mining.$getHistoricalDifficulty(req.params.interval ?? null);
       const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
       res.header('Pragma', 'public');

@@ -160,6 +160,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
           type: 'line',
           smooth: false,
           showSymbol: false,
+          symbol: 'none',
           lineStyle: {
             width: 3,
           },
