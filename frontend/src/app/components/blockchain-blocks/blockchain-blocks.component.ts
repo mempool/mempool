@@ -4,7 +4,7 @@ import { StateService } from 'src/app/services/state.service';
 import { specialBlocks } from 'src/app/app.constants';
 import { BlockExtended } from 'src/app/interfaces/node-api.interface';
 import { Location } from '@angular/common';
-import { config } from 'process';
+import { blockFeeBottomColors } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-blockchain-blocks',
@@ -94,10 +94,14 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
         }
 
         this.blockStyles = [];
-        this.blocks.forEach((b) => this.blockStyles.push(this.getStyleForBlock(b)));
+        this.blocks.forEach((blockchainBlock, i) =>
+          this.blockStyles.push(this.getStyleForBlockchainBlock(blockchainBlock, i))
+        );
         setTimeout(() => {
           this.blockStyles = [];
-          this.blocks.forEach((b) => this.blockStyles.push(this.getStyleForBlock(b)));
+          this.blocks.forEach((blockchainBlock, i) =>
+            this.blockStyles.push(this.getStyleForBlockchainBlock(blockchainBlock, i))
+          );
           this.cd.markForCheck();
         }, 50);
 
@@ -160,22 +164,33 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
     return item.height;
   }
 
-  getStyleForBlock(block: BlockExtended) {
-    const greenBackgroundHeight = 100 - (block.weight / this.stateService.env.BLOCK_WEIGHT_UNITS) * 100;
+  getStyleForBlockchainBlock(blockchainBlock: BlockExtended, index: number) {
     let addLeft = 0;
 
-    if (block?.extras?.stage === 1) {
-      block.extras.stage = 2;
+    if (blockchainBlock?.extras?.stage === 1) {
+      blockchainBlock.extras.stage = 2;
       addLeft = -205;
     }
 
+    const gradientColorTop = this.gradientColors[this.network][0];
+    let gradientColorBottom = this.gradientColors[this.network][1];
+
+    if (this.network === '') { // Bottom color will change based on the block total fees on mainnet
+      const maxFee = 500000000; // 5 BTC
+      const gradientStartIndex = Math.floor(Math.min((blockFeeBottomColors.length - 1),
+        (blockchainBlock.extras?.totalFees ?? 0) / maxFee * (blockFeeBottomColors.length - 1)));
+      gradientColorBottom = blockFeeBottomColors[gradientStartIndex];
+    }
+
+    const greenBackgroundHeight = 100 - (blockchainBlock.weight / this.stateService.env.BLOCK_WEIGHT_UNITS) * 100;
+
     return {
-      left: addLeft + 155 * this.blocks.indexOf(block) + 'px',
+      left: addLeft + 155 * index + 'px',
       background: `repeating-linear-gradient(
         #2d3348,
         #2d3348 ${greenBackgroundHeight}%,
-        ${this.gradientColors[this.network][0]} ${Math.max(greenBackgroundHeight, 0)}%,
-        ${this.gradientColors[this.network][1]} 100%
+        ${gradientColorTop} ${Math.max(greenBackgroundHeight, 0)}%,
+        ${gradientColorBottom} 100%
       )`,
     };
   }

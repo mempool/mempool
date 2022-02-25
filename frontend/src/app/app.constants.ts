@@ -31,6 +31,19 @@ export const mempoolFeeColors = [
   'b9254b',
 ];
 
+export const blockFeeBottomColors = [
+  '#105fb0',
+  '#006ebc',
+  '#007cc4',
+  '#008ac8',
+  '#0097c9',
+  '#00a3c7',
+  '#00afc2',
+  '#00babb',
+  '#00c5b3',
+  '#23cfaa',
+];
+
 export const chartColors = [
   "#D81B60",
   "#8E24AA",
