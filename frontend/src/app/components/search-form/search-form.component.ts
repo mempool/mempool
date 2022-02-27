@@ -8,6 +8,7 @@ import { debounceTime, distinctUntilChanged, switchMap, filter, catchError, map 
 import { ElectrsApiService } from 'src/app/services/electrs-api.service';
 import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
+import { ShortenStringPipe } from 'src/app/shared/pipes/shorten-string-pipe/shorten-string.pipe';
 
 @Component({
   selector: 'app-search-form',
@@ -33,6 +34,8 @@ export class SearchFormComponent implements OnInit {
   focus$ = new Subject<string>();
   click$ = new Subject<string>();
 
+  formatterFn = (address: string) => this.shortenStringPipe.transform(address, 40);
+
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
@@ -40,6 +43,7 @@ export class SearchFormComponent implements OnInit {
     private stateService: StateService,
     private electrsApiService: ElectrsApiService,
     private relativeUrlPipe: RelativeUrlPipe,
+    private shortenStringPipe: ShortenStringPipe,
   ) { }
 
   ngOnInit() {

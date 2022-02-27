@@ -1,8 +1,11 @@
-:host ::ng-deep .dropdown-item {
-  white-space: nowrap;
-  overflow: hidden;
-  width: 375px;
-  text-overflow: ellipsis;
+:host ::ng-deep {
+  .dropdown-item {
+    white-space: nowrap;
+    width: 410px;
+  }
+  .dropdown-menu {
+    width: 410px;
+  }
 }
 
 form {
