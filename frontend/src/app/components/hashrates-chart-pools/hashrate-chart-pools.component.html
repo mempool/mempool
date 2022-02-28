@@ -27,7 +27,7 @@
 
   <div *ngIf="hashrateObservable$ | async" [class]="!widget ? 'chart' : 'chart-widget'"
     echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
-  <div class="text-center loadingGraphs" [class]="widget ? 'widget' : ''" *ngIf="isLoading">
+  <div class="text-center loadingGraphs" *ngIf="isLoading">
     <div class="spinner-border text-light"></div>
   </div>
 
