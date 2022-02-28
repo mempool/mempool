@@ -22,7 +22,8 @@ import { selectPowerOfTen } from 'src/app/bitcoin.utils';
   `],
 })
 export class HashrateChartComponent implements OnInit {
-  @Input() widget: boolean = false;
+  @Input() tableOnly = false;
+  @Input() widget = false;
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
 
@@ -114,7 +115,7 @@ export class HashrateChartComponent implements OnInit {
                 }
                 return {
                   availableTimespanDay: availableTimespanDay,
-                  difficulty: tableData
+                  difficulty: this.tableOnly ? tableData.slice(0, 8) : tableData
                 };
               }),
             );
