@@ -2,7 +2,7 @@
 
   <div [class]="widget ? 'chart-widget' : 'chart'"
     echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartInit)="onChartInit($event)"></div>
-  <div class="text-center loadingGraphs" [class]="widget ? 'widget' : ''" *ngIf="isLoading">
+  <div class="text-center loadingGraphs" *ngIf="isLoading">
     <div class="spinner-border text-light"></div>
   </div>
 

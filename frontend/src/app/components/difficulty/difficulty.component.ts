@@ -28,8 +28,9 @@ export class DifficultyComponent implements OnInit {
   isLoadingWebSocket$: Observable<boolean>;
   difficultyEpoch$: Observable<EpochProgress>;
 
-  @Input() showProgress: boolean = true;
-  @Input() showHalving: boolean = false;
+  @Input() showProgress = true;
+  @Input() showHalving = false;
+  @Input() showTitle = true;
 
   constructor(
     public stateService: StateService,
