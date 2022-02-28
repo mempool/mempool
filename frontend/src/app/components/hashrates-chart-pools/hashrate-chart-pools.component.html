@@ -1,0 +1,34 @@
+<div [class]="widget === false ? 'full-container' : ''">
+
+  <div class="card-header mb-0 mb-md-4" [style]="widget ? 'display:none' : ''">
+    <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(hashrateObservable$ | async) as hashrates">
+      <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 90">
+          <input ngbButton type="radio" [value]="'3m'"> 3M
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 180">
+          <input ngbButton type="radio" [value]="'6m'"> 6M
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 365">
+          <input ngbButton type="radio" [value]="'1y'"> 1Y
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 730">
+          <input ngbButton type="radio" [value]="'2y'"> 2Y
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 1095">
+          <input ngbButton type="radio" [value]="'3y'"> 3Y
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'all'"> ALL
+        </label>
+      </div>
+    </form>
+  </div>
+
+  <div *ngIf="hashrateObservable$ | async" [class]="!widget ? 'chart' : 'chart-widget'"
+    echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
+  <div class="text-center loadingGraphs" [class]="widget ? 'widget' : ''" *ngIf="isLoading">
+    <div class="spinner-border text-light"></div>
+  </div>
+
+</div>

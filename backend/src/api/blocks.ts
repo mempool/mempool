@@ -20,6 +20,7 @@ class Blocks {
   private previousDifficultyRetarget = 0;
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
   private blockIndexingStarted = false;
+  public blockIndexingCompleted = false;
 
   constructor() { }
 
@@ -115,6 +116,9 @@ class Blocks {
       Common.median(transactionsTmp.map((tx) => tx.effectiveFeePerVsize)) : 0;
     blockExtended.extras.feeRange = transactionsTmp.length > 0 ?
       Common.getFeesInRange(transactionsTmp, 8) : [0, 0];
+    blockExtended.extras.totalFees = transactionsTmp.reduce((acc, tx) => {
+      return acc + tx.fee;
+    }, 0)
 
     if (Common.indexingEnabled()) {
       let pool: PoolTag;
@@ -170,10 +174,7 @@ class Blocks {
    * Index all blocks metadata for the mining dashboard
    */
   public async $generateBlockDatabase() {
-    if (this.blockIndexingStarted === true ||
-      !Common.indexingEnabled() ||
-      memPool.hasPriority()
-    ) {
+    if (this.blockIndexingStarted) {
       return;
     }
 
@@ -243,6 +244,8 @@ class Blocks {
       logger.err('An error occured in $generateBlockDatabase(). Skipping block indexing. ' + e);
       console.log(e);
     }
+
+    this.blockIndexingCompleted = true;
   }
 
   public async $updateBlocks() {

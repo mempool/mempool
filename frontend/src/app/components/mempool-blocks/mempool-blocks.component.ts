@@ -7,6 +7,7 @@ import { take, map, switchMap } from 'rxjs/operators';
 import { feeLevels, mempoolFeeColors } from 'src/app/app.constants';
 import { specialBlocks } from 'src/app/app.constants';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-mempool-blocks',
@@ -32,6 +33,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   networkSubscription: Subscription;
   network = '';
   now = new Date().getTime();
+  showMiningInfo = false;
 
   blockWidth = 125;
   blockPadding = 30;
@@ -54,9 +56,20 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     public stateService: StateService,
     private cd: ChangeDetectorRef,
     private relativeUrlPipe: RelativeUrlPipe,
+    private location: Location
   ) { }
 
+  enabledMiningInfoIfNeeded(url) {
+    this.showMiningInfo = url === '/mining';
+    this.cd.markForCheck(); // Need to update the view asap
+  }
+
   ngOnInit() {
+    if (['', 'testnet', 'signet'].includes(this.stateService.network)) {
+      this.enabledMiningInfoIfNeeded(this.location.path());
+      this.location.onUrlChange((url) => this.enabledMiningInfoIfNeeded(url));
+    }
+
     if (this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet') {
       this.feeRounding = '1.0-1';
     }

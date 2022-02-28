@@ -21,6 +21,18 @@ do for url in / \
 	'/api/v1/mining/pools/2y' \
 	'/api/v1/mining/pools/3y' \
 	'/api/v1/mining/pools/all' \
+	'/api/v1/mining/hashrate/3m' \
+	'/api/v1/mining/hashrate/6m' \
+	'/api/v1/mining/hashrate/1y' \
+	'/api/v1/mining/hashrate/2y' \
+	'/api/v1/mining/hashrate/3y' \
+	'/api/v1/mining/hashrate/all' \
+	'/api/v1/mining/hashrate/pools/3m' \
+	'/api/v1/mining/hashrate/pools/6m' \
+	'/api/v1/mining/hashrate/pools/1y' \
+	'/api/v1/mining/hashrate/pools/2y' \
+	'/api/v1/mining/hashrate/pools/3y' \
+	'/api/v1/mining/hashrate/pools/all' \
 
 	do
 		curl -s "https://${hostname}${url}" >/dev/null
