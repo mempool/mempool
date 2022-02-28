@@ -156,4 +156,18 @@ export class ApiService {
         (interval !== undefined ? `/${interval}` : '')
       );
   }
+
+  getHistoricalHashrate$(interval: string | undefined): Observable<any> {
+    return this.httpClient.get<any[]>(
+        this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/hashrate` +
+        (interval !== undefined ? `/${interval}` : '')
+      );
+  }
+
+  getHistoricalPoolsHashrate$(interval: string | undefined): Observable<any> {
+    return this.httpClient.get<any[]>(
+        this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/hashrate/pools` +
+        (interval !== undefined ? `/${interval}` : '')
+      );
+  }
 }

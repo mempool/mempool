@@ -46,53 +46,68 @@ export class AddressLabelsComponent implements OnInit {
         return;
       }
 
-      [
-        // {regexp: /^OP_DUP OP_HASH160/, label: 'HTLC'},
-        {regexp: /^OP_IF OP_PUSHBYTES_33 \w{33} OP_ELSE OP_PUSHBYTES_2 \w{2} OP_CSV OP_DROP/, label: 'Force Close'}
-      ].forEach((item) => {
-          if (item.regexp.test(this.vin.inner_witnessscript_asm)) {
-            this.lightning = item.label;
+      // https://github.com/lightning/bolts/blob/master/03-transactions.md#commitment-transaction-outputs
+      if (/^OP_IF OP_PUSHBYTES_33 \w{66} OP_ELSE OP_PUSHBYTES_(1 \w{2}|2 \w{4}) OP_CSV OP_DROP OP_PUSHBYTES_33 \w{66} OP_ENDIF OP_CHECKSIG$/.test(this.vin.inner_witnessscript_asm)) {
+          if (this.vin.witness[this.vin.witness.length - 2] == '01') {
+              this.lightning = 'Revoked Force Close';
+          } else {
+              this.lightning = 'Force Close';
           }
+      // https://github.com/lightning/bolts/blob/master/03-transactions.md#offered-htlc-outputs
+      } else if (/^OP_DUP OP_HASH160 OP_PUSHBYTES_20 \w{40} OP_EQUAL OP_IF OP_CHECKSIG OP_ELSE OP_PUSHBYTES_33 \w{66} OP_SWAP OP_SIZE OP_PUSHBYTES_1 20 OP_EQUAL OP_NOTIF OP_DROP OP_PUSHNUM_2 OP_SWAP OP_PUSHBYTES_33 \w{66} OP_PUSHNUM_2 OP_CHECKMULTISIG OP_ELSE OP_HASH160 OP_PUSHBYTES_20 \w{40} OP_EQUALVERIFY OP_CHECKSIG OP_ENDIF (OP_PUSHNUM_1 OP_CHECKSEQUENCEVERIFY OP_DROP |)OP_ENDIF$/.test(this.vin.inner_witnessscript_asm)) {
+        if (this.vin.witness[this.vin.witness.length - 2].length == 66) {
+            this.lightning = 'Revoked HTLC';
+        } else {
+            this.lightning = 'HTLC';
         }
-      );
+      }
 
       if (this.lightning) {
         return;
       }
 
-      if (this.vin.inner_witnessscript_asm.indexOf('OP_CHECKMULTISIG') > -1) {
-        const matches = this.getMatches(this.vin.inner_witnessscript_asm, /OP_PUSHNUM_([0-9])/g, 1);
-        this.multisig = true;
-        this.multisigM = parseInt(matches[0], 10);
-        this.multisigN = parseInt(matches[1], 10);
+      this.detectMultisig(this.vin.inner_witnessscript_asm);
+    }
 
-        if (this.multisigM === 1 && this.multisigN === 1) {
-          this.multisig = false;
-        }
+    this.detectMultisig(this.vin.inner_redeemscript_asm);
+  }
+
+  detectMultisig(script: string) {
+    if (!script) {
+      return;
+    }
+    const ops = script.split(' ');
+    if (ops.length < 3 || ops.pop() != 'OP_CHECKMULTISIG') {
+      return;
+    }
+    const opN = ops.pop();
+    if (!opN.startsWith('OP_PUSHNUM_')) {
+      return;
+    }
+    const n = parseInt(opN.match(/[0-9]+/)[0]);
+    if (ops.length < n * 2 + 1) {
+      return;
+    }
+    // pop n public keys
+    for (var i = 0; i < n; i++) {
+      if (!/^0((2|3)\w{64}|4\w{128})$/.test(ops.pop())) {
+        return;
+      }
+      if (!/^OP_PUSHBYTES_(33|65)$/.test(ops.pop())) {
+        return;
       }
     }
-
-    if (this.vin.inner_redeemscript_asm && this.vin.inner_redeemscript_asm.indexOf('OP_CHECKMULTISIG') > -1) {
-      const matches = this.getMatches(this.vin.inner_redeemscript_asm, /OP_PUSHNUM_([0-9])/g, 1);
-      this.multisig = true;
-      this.multisigM = matches[0];
-      this.multisigN = matches[1];
+    const opM = ops.pop();
+    if (!opM.startsWith('OP_PUSHNUM_')) {
+      return;
     }
+    const m = parseInt(opM.match(/[0-9]+/)[0]);
+
+    this.multisig = true;
+    this.multisigM = m;
+    this.multisigN = n;
   }
 
   handleVout() {
   }
-
-  getMatches(str: string, regex: RegExp, index: number) {
-    if (!index) {
-      index = 1;
-    }
-    const matches = [];
-    let match;
-    while (match = regex.exec(str)) {
-      matches.push(match[index]);
-    }
-    return matches;
-  }
-
 }

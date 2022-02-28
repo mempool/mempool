@@ -91,11 +91,11 @@ JSON:
     "PRICE_FEED_UPDATE_INTERVAL": 600,
     "USE_SECOND_NODE_FOR_MINFEE": false,
     "EXTERNAL_ASSETS": ["https://mempool.space/resources/pools.json"],
-    "STDOUT_LOG_MIN_PRIORITY": "debug"
+    "STDOUT_LOG_MIN_PRIORITY": "info"
   },
 ```
 
-docker-compose overrides::
+docker-compose overrides:
 ```
       MEMPOOL_NETWORK: ""
       MEMPOOL_BACKEND: ""
