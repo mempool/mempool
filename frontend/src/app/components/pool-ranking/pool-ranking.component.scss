@@ -1,9 +1,13 @@
-.hashrate-pie {
-  height: 100%;
-  min-height: 400px;
+.chart {
+  max-height: 400px;
   @media (max-width: 767.98px) {
-    min-height: 300px;
+    max-height: 300px;
   }
+}
+.chart-widget {
+  width: 100%;
+  height: 100%;
+  max-height: 275px;
 }
 
 .formRadioGroup {
@@ -30,3 +34,13 @@
       padding: .3em !important;
    }
  }
+
+.loadingGraphs {
+  position: absolute;
+  top: 50%;
+  left: calc(50% - 15px);
+  z-index: 100;
+}
+.loadingGraphs.widget {
+  top: 25%;
+}

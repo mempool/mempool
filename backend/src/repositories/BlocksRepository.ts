@@ -150,14 +150,47 @@ class BlocksRepository {
   }
 
   /**
+   * Get blocks count between two dates
+   * @param poolId 
+   * @param from - The oldest timestamp
+   * @param to - The newest timestamp
+   * @returns 
+   */
+  public async $blockCountBetweenTimestamp(poolId: number | null, from: number, to: number): Promise<number> {
+    const params: any[] = [];
+    let query = `SELECT
+      count(height) as blockCount,
+      max(height) as lastBlockHeight
+      FROM blocks`;
+
+    if (poolId) {
+      query += ` WHERE pool_id = ?`;
+      params.push(poolId);
+    }
+
+    if (poolId) {
+      query += ` AND`;
+    } else {
+      query += ` WHERE`;
+    }
+    query += ` blockTimestamp BETWEEN FROM_UNIXTIME('${from}') AND FROM_UNIXTIME('${to}')`;
+
+    // logger.debug(query);
+    const connection = await DB.pool.getConnection();
+    const [rows] = await connection.query(query, params);
+    connection.release();
+
+    return <number>rows[0];
+  }
+
+  /**
    * Get the oldest indexed block
    */
   public async $oldestBlockTimestamp(): Promise<number> {
-    const query = `SELECT blockTimestamp
+    const query = `SELECT UNIX_TIMESTAMP(blockTimestamp) as blockTimestamp
       FROM blocks
       ORDER BY height
       LIMIT 1;`;
-
 
     // logger.debug(query);
     const connection = await DB.pool.getConnection();
@@ -232,20 +265,53 @@ class BlocksRepository {
 
     const connection = await DB.pool.getConnection();
 
-    let query = `SELECT MIN(UNIX_TIMESTAMP(blockTimestamp)) as timestamp, difficulty, height
-      FROM blocks`;
+    // :D ... Yeah don't ask me about this one https://stackoverflow.com/a/40303162
+    // Basically, using temporary user defined fields, we are able to extract all
+    // difficulty adjustments from the blocks tables.
+    // This allow use to avoid indexing it in another table.
+    let query = `
+      SELECT
+      *
+      FROM 
+      (
+        SELECT
+        UNIX_TIMESTAMP(blockTimestamp) as timestamp, difficulty, height,
+        IF(@prevStatus = YT.difficulty, @rn := @rn + 1,
+          IF(@prevStatus := YT.difficulty, @rn := 1, @rn := 1)
+        ) AS rn
+        FROM blocks YT
+        CROSS JOIN 
+        (
+          SELECT @prevStatus := -1, @rn := 1
+        ) AS var
+    `;
 
     if (interval) {
       query += ` WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
     }
 
-    query += ` GROUP BY difficulty
-      ORDER BY blockTimestamp DESC`;
+    query += `
+        ORDER BY YT.height
+      ) AS t
+      WHERE t.rn = 1
+      ORDER BY t.height
+    `;
 
     const [rows]: any[] = await connection.query(query);
     connection.release();
 
+    for (let row of rows) {
+      delete row['rn'];
+    }
+
     return rows;
+  }
+
+  public async $getOldestIndexedBlockHeight(): Promise<number> {
+    const connection = await DB.pool.getConnection();
+    const [rows]: any[] = await connection.query(`SELECT MIN(height) as minHeight FROM blocks`);
+    connection.release();
+    return rows[0].minHeight;
   }
 }
 

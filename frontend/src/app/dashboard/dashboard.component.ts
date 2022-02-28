@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
-import { combineLatest, merge, Observable, of, timer } from 'rxjs';
+import { combineLatest, merge, Observable, of } from 'rxjs';
 import { filter, map, scan, share, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended, OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
@@ -34,6 +34,7 @@ interface MempoolStatsData {
 })
 export class DashboardComponent implements OnInit {
   collapseLevel: string;
+  featuredAssets$: Observable<any>;
   network$: Observable<string>;
   mempoolBlocksData$: Observable<MempoolBlocksData>;
   mempoolInfoData$: Observable<MempoolInfoData>;
@@ -122,6 +123,19 @@ export class DashboardComponent implements OnInit {
             blocks: Math.ceil(vsize / this.stateService.blockVSize)
           };
         })
+      );
+
+    this.featuredAssets$ = this.apiService.listFeaturedAssets$()
+      .pipe(
+        map((featured) => {
+          const newArray = [];
+          for (const feature of featured) {
+            if (feature.ticker !== 'L-BTC' && feature.asset) {
+              newArray.push(feature);
+            }
+          }
+          return newArray.slice(0, 4);
+        }),
       );
 
     this.blocks$ = this.stateService.blocks$
