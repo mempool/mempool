@@ -78,6 +78,7 @@ export interface TransactionStripped {
 }
 
 export interface BlockExtension {
+  totalFees?: number;
   medianFee?: number;
   feeRange?: number[];
   reward?: number;

@@ -8,7 +8,6 @@ import { StateService } from 'src/app/services/state.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlockchainComponent implements OnInit {
-  showMiningInfo: boolean = false;
   network: string;
 
   constructor(

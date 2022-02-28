@@ -22,7 +22,6 @@ import elementsParser from './api/liquid/elements-parser';
 import icons from './api/liquid/icons';
 import miningStats from './api/mining';
 import axios from 'axios';
-import PoolsRepository from './repositories/PoolsRepository';
 import mining from './api/mining';
 import BlocksRepository from './repositories/BlocksRepository';
 
@@ -582,6 +581,40 @@ class Routes {
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
       res.json(stats);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  public async $getPoolsHistoricalHashrate(req: Request, res: Response) {
+    try {
+      const hashrates = await mining.$getPoolsHistoricalHashrates(req.params.interval ?? null, parseInt(req.params.poolId, 10));
+      const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.json({
+        oldestIndexedBlockTimestamp: oldestIndexedBlockTimestamp,
+        hashrates: hashrates,
+      });
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  public async $getHistoricalHashrate(req: Request, res: Response) {
+    try {
+      const hashrates = await mining.$getNetworkHistoricalHashrates(req.params.interval ?? null);
+      const difficulty = await mining.$getHistoricalDifficulty(req.params.interval ?? null);
+      const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.json({
+        oldestIndexedBlockTimestamp: oldestIndexedBlockTimestamp,
+        hashrates: hashrates,
+        difficulty: difficulty,
+      });
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

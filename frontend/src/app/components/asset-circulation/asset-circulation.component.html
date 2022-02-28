@@ -1,0 +1,6 @@
+<ng-container *ngIf="(circulatingAmount$ | async) as circulating">
+  <ng-template [ngIf]="circulating.amount === -1" [ngIfElse]="default" i18n="shared.confidential">Confidential</ng-template>
+  <ng-template #default>
+    <span class="d-inline-block d-md-none">{{ circulating.amount | amountShortener }}</span>
+    <span class="d-none d-md-inline-block">{{ circulating.amount | number: '1.2-2' }}</span>&nbsp;<span class="ticker">{{ circulating.ticker }}</span></ng-template>
+</ng-container>

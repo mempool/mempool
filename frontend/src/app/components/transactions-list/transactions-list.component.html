@@ -172,9 +172,12 @@
                 </td>
                 <td class="text-right nowrap amount">
                   <ng-template [ngIf]="vout.asset && vout.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
-                    <div *ngIf="assetsMinimal && assetsMinimal[vout.asset]">
+                    <div *ngIf="assetsMinimal && assetsMinimal[vout.asset] else assetNotFound">
                       <ng-container *ngTemplateOutlet="assetBox; context:{ $implicit: vout }"></ng-container>
                     </div>
+                    <ng-template #assetNotFound>
+                      {{ vout.value }} <a [routerLink]="['/assets/asset/' | relativeUrl, vout.asset]">{{ vout.asset | slice : 0 : 7 }}</a>
+                    </ng-template>
                   </ng-template>
                   <ng-template #defaultOutput>
                     <app-amount [satoshis]="vout.value"></app-amount>
@@ -254,7 +257,7 @@
           &nbsp;
         </span>
         <button type="button" class="btn btn-sm btn-primary mt-2" (click)="switchCurrency()">
-          <ng-template [ngIf]="network === 'liquid' || network === 'liquidtestnet'" [ngIfElse]="defaultAmount" i18n="shared.confidential">Confidential</ng-template>
+          <ng-template [ngIf]="(network === 'liquid' || network === 'liquidtestnet') && haveBlindedOutputValues(tx)" [ngIfElse]="defaultAmount" i18n="shared.confidential">Confidential</ng-template>
           <ng-template #defaultAmount>
             <app-amount [satoshis]="getTotalTxOutput(tx)"></app-amount>
           </ng-template>
