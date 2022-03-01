@@ -49,7 +49,7 @@ export class PoolRankingComponent implements OnInit {
       this.poolsWindowPreference = '1w';
     } else {
       this.seoService.setTitle($localize`:@@mining.mining-pools:Mining Pools`);
-      this.poolsWindowPreference = this.storageService.getValue('poolsWindowPreference') ? this.storageService.getValue('poolsWindowPreference') : '1w';    
+      this.poolsWindowPreference = this.storageService.getValue('poolsWindowPreference') ? this.storageService.getValue('poolsWindowPreference') : '1w';
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.poolsWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.poolsWindowPreference);
@@ -105,22 +105,37 @@ export class PoolRankingComponent implements OnInit {
   }
 
   generatePoolsChartSerieData(miningStats) {
-    const poolShareThreshold = this.isMobile() ? 1 : 0.5; // Do not draw pools which hashrate share is lower than that
+    const poolShareThreshold = this.isMobile() ? 2 : 1; // Do not draw pools which hashrate share is lower than that
     const data: object[] = [];
+    let totalShareOther = 0;
+    let totalBlockOther = 0;
+    let totalEstimatedHashrateOther = 0;
+
+    let edgeDistance: any = '20%';
+    if (this.isMobile() && this.widget) {
+      edgeDistance = 0;
+    } else if (this.isMobile() && !this.widget || this.widget) {
+      edgeDistance = 20;
+    }
 
     miningStats.pools.forEach((pool) => {
       if (parseFloat(pool.share) < poolShareThreshold) {
+        totalShareOther += parseFloat(pool.share);
+        totalBlockOther += pool.blockCount;
+        totalEstimatedHashrateOther += pool.lastEstimatedHashrate;
         return;
       }
       data.push({
         itemStyle: {
-          color: poolsColor[pool.name.replace(/[^a-zA-Z0-9]/g, "").toLowerCase()],
+          color: poolsColor[pool.name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()],
         },
         value: pool.share,
         name: pool.name + (this.isMobile() ? `` : ` (${pool.share}%)`),
         label: {
+          overflow: 'none',
           color: '#b1b1b1',
-          overflow: 'break',
+          alignTo: 'edge',
+          edgeDistance: edgeDistance,
         },
         tooltip: {
           backgroundColor: 'rgba(17, 19, 31, 1)',
@@ -144,6 +159,42 @@ export class PoolRankingComponent implements OnInit {
         data: pool.poolId,
       } as PieSeriesOption);
     });
+
+    // 'Other'
+    data.push({
+      itemStyle: {
+        color: 'grey',
+      },
+      value: totalShareOther,
+      name: 'Other' + (this.isMobile() ? `` : ` (${totalShareOther.toFixed(2)}%)`),
+      label: {
+        overflow: 'none',
+        color: '#b1b1b1',
+        alignTo: 'edge',
+        edgeDistance: edgeDistance
+      },
+      tooltip: {
+        backgroundColor: 'rgba(17, 19, 31, 1)',
+        borderRadius: 4,
+        shadowColor: 'rgba(0, 0, 0, 0.5)',
+        textStyle: {
+          color: '#b1b1b1',
+        },
+        borderColor: '#000',
+        formatter: () => {
+          if (this.poolsWindowPreference === '24h') {
+            return `<b style="color: white">${'Other'} (${totalShareOther.toFixed(2)}%)</b><br>` +
+              totalEstimatedHashrateOther.toString() + ' PH/s' +
+              `<br>` + totalBlockOther.toString() + ` blocks`;
+          } else {
+            return `<b style="color: white">${'Other'} (${totalShareOther.toFixed(2)}%)</b><br>` +
+              totalBlockOther.toString() + ` blocks`;
+          }
+        }
+      },
+      data: 9999 as any,
+    } as PieSeriesOption);
+
     return data;
   }
 
@@ -154,9 +205,18 @@ export class PoolRankingComponent implements OnInit {
     }
     network = network.charAt(0).toUpperCase() + network.slice(1);
 
-    let radius: any[] = ['20%', '70%'];
-    if (this.isMobile() || this.widget) {
-      radius = ['20%', '60%'];
+    let radius: any[] = ['20%', '80%'];
+    let top: any = undefined; let bottom = undefined; let height = undefined;
+    if (this.isMobile() && this.widget) {
+      radius = ['10%', '50%'];
+    } else if (this.isMobile() && !this.widget) {
+      top = 0;
+      height = 300;
+      radius = ['10%', '50%'];
+    } else if (this.widget) {
+      radius = ['15%', '60%'];
+    } else {
+      top = 35;
     }
 
     this.chartOptions = {
@@ -180,14 +240,15 @@ export class PoolRankingComponent implements OnInit {
       },
       series: [
         {
-          top: this.widget ? 0 : 35,
+          minShowLabelAngle: 3.6,
+          top: top,
+          bottom: bottom,
+          height: height,
           name: 'Mining pool',
           type: 'pie',
           radius: radius,
           data: this.generatePoolsChartSerieData(miningStats),
           labelLine: {
-            length: this.isMobile() ? 10 : 15,
-            length2: this.isMobile() ? 0 : 15,
             lineStyle: {
               width: 2,
             },
@@ -223,6 +284,9 @@ export class PoolRankingComponent implements OnInit {
 
     this.chartInstance = ec;
     this.chartInstance.on('click', (e) => {
+      if (e.data.data === 9999) { // "Other"
+        return;
+      }
       this.router.navigate(['/mining/pool/', e.data.data]);
     });
   }
