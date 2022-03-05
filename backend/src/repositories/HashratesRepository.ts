@@ -22,6 +22,7 @@ class HashratesRepository {
       await connection.query(query);
     } catch (e: any) {
       logger.err('$saveHashrateInDatabase() error' + (e instanceof Error ? e.message : e));
+      throw e;
     }
 
     connection.release();
