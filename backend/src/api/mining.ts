@@ -142,8 +142,8 @@ class Mining {
       lastBlockHashrate = await bitcoinClient.getNetworkHashPs(blockStats.blockCount,
         blockStats.lastBlockHeight);
 
-      if (totalIndexed % 7 === 0 && !indexedTimestamp.includes(fromTimestamp + 1)) { // Save weekly pools hashrate
-        logger.debug("Indexing weekly hashrates for mining pools");
+      if (totalIndexed > 7 && totalIndexed % 7 === 0 && !indexedTimestamp.includes(fromTimestamp + 1)) { // Save weekly pools hashrate
+        logger.debug(`Indexing weekly hashrates for mining pools (timestamp: ${fromTimestamp})`);
         let pools = await PoolsRepository.$getPoolsInfoBetween(fromTimestamp - 604800, fromTimestamp);
         const totalBlocks = pools.reduce((acc, pool) => acc + pool.blockCount, 0);
         pools = pools.map((pool: any) => {
