@@ -1,5 +1,26 @@
 <div [class]="widget === false ? 'container-xl' : ''">
 
+  <div class="pool-distribution" *ngIf="widget && (miningStatsObservable$ | async) as miningStats">
+    <div class="item">
+      <h5 class="card-title" i18n="mining.miners-luck">Pools luck (1w)</h5>
+      <p class="card-text">
+        {{ miningStats['minersLuck'] }}%
+      </p>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="master-page.blocks">Blocks (1w)</h5>
+      <p class="card-text">
+        {{ miningStats.blockCount }}
+      </p>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="mining.miners-count">Pools count (1w)</h5>
+      <p class="card-text">
+        {{ miningStats.pools.length }}
+      </p>
+    </div>
+  </div>
+
   <div [class]="widget ? 'chart-widget' : 'chart'"
     echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartInit)="onChartInit($event)"></div>
   <div class="text-center loadingGraphs" *ngIf="isLoading">
