@@ -85,6 +85,7 @@ export class PoolRankingComponent implements OnInit {
         }),
         map(data => {
           data.pools = data.pools.map((pool: SinglePoolStats) => this.formatPoolUI(pool));
+          data['minersLuck'] = (100 * (data.blockCount / 1008)).toFixed(2); // luck 1w
           return data;
         }),
         tap(data => {
@@ -298,7 +299,7 @@ export class PoolRankingComponent implements OnInit {
   /**
    * Default mining stats if something goes wrong
    */
-  getEmptyMiningStat() {
+  getEmptyMiningStat(): MiningStats {
     return {
       lastEstimatedHashrate: 'Error',
       blockCount: 0,

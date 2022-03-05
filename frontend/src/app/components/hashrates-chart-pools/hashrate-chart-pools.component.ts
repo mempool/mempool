@@ -78,7 +78,7 @@ export class HashrateChartPoolsComponent implements OnInit {
                     name: name,
                     showSymbol: false,
                     symbol: 'none',
-                    data: grouped[name].map((val) => [val.timestamp * 1000, (val.share * 100).toFixed(2)]),
+                    data: grouped[name].map((val) => [val.timestamp * 1000, val.share * 100]),
                     type: 'line',
                     lineStyle: { width: 0 },
                     areaStyle: { opacity: 1 },
@@ -149,7 +149,7 @@ export class HashrateChartPoolsComponent implements OnInit {
           data.sort((a, b) => b.data[1] - a.data[1]);
           for (const pool of data) {
             if (pool.data[1] > 0) {
-              tooltip += `${pool.marker} ${pool.seriesName}: ${pool.data[1]}%<br>`
+              tooltip += `${pool.marker} ${pool.seriesName}: ${pool.data[1].toFixed(2)}%<br>`;
             }
           }
           return tooltip;
