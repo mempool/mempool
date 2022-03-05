@@ -98,7 +98,7 @@ export class DifficultyComponent implements OnInit {
             colorPreviousAdjustments = '#ffffff66';
           }
 
-          const blocksUntilHalving = block.height % 210000;
+          const blocksUntilHalving = 210000 - (block.height % 210000);
           const timeUntilHalving = (blocksUntilHalving * timeAvgMins * 60 * 1000) + (now * 1000);
 
           return {
