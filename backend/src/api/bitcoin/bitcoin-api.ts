@@ -84,19 +84,19 @@ class BitcoinApi implements AbstractBitcoinApi {
   }
 
   $getAddressPrefix(prefix: string): string[] {
-    const found: string[] = [];
+    const found: { [address: string]: string } = {};
     const mp = mempool.getMempool();
     for (const tx in mp) {
       for (const vout of mp[tx].vout) {
         if (vout.scriptpubkey_address.indexOf(prefix) === 0) {
-          found.push(vout.scriptpubkey_address);
-          if (found.length >= 10) {
-            return found;
+          found[vout.scriptpubkey_address] = '';
+          if (Object.keys(found).length >= 10) {
+            return Object.keys(found);
           }
         }
       }
     }
-    return found;
+    return Object.keys(found);
   }
 
   $sendRawTransaction(rawTransaction: string): Promise<string> {
