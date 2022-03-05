@@ -23,6 +23,7 @@ export class SearchFormComponent implements OnInit {
   typeaheadSearchFn: ((text: Observable<string>) => Observable<readonly any[]>);
 
   searchForm: FormGroup;
+  isMobile = (window.innerWidth <= 767.98);
   @Output() searchTriggered = new EventEmitter();
 
   regexAddress = /^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,100}|[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100})$/;
@@ -34,7 +35,7 @@ export class SearchFormComponent implements OnInit {
   focus$ = new Subject<string>();
   click$ = new Subject<string>();
 
-  formatterFn = (address: string) => this.shortenStringPipe.transform(address, 40);
+  formatterFn = (address: string) => this.shortenStringPipe.transform(address, this.isMobile ? 33 : 40);
 
   constructor(
     private formBuilder: FormBuilder,

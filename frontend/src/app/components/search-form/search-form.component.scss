@@ -1,10 +1,18 @@
 :host ::ng-deep {
   .dropdown-item {
     white-space: nowrap;
-    width: 410px;
+    width: calc(100% - 34px);
   }
   .dropdown-menu {
-    width: 410px;
+    width: calc(100% - 34px);
+  }
+  @media (min-width: 768px) {
+    .dropdown-item {
+      width: 410px;
+    }
+    .dropdown-menu {
+      width: 410px;
+    }
   }
 }
 
