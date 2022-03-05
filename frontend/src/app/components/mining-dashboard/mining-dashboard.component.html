@@ -20,12 +20,29 @@
     <div class="col">
       <div class="card" style="height: 385px">
         <div class="card-body">
-          <h5 class="card-title">
-            <a href="" [routerLink]="['/mining/pools' | relativeUrl]" i18n="mining.pool-share">
-              Mining Pools Share (1w)
-            </a>
-          </h5>
+          <div class="pool-distribution">
+            <div class="item">
+              <h5 class="card-title" i18n="dashboard.minimum-fee|Minimum mempool fee">Blocks (1w)</h5>
+              <p class="card-text">
+                1082
+              </p>
+            </div>
+            <div class="item">
+              <h5 class="card-title" i18n="dashboard.minimum-fee|Minimum mempool fee">Miners luck (1w)</h5>
+              <p class="card-text">
+                107.25%
+              </p>
+            </div>
+            <div class="item">
+              <h5 class="card-title" i18n="dashboard.minimum-fee|Minimum mempool fee">Miners Gini (1w)</h5>
+              <p class="card-text">
+                0.123
+              </p>
+            </div>
+          </div>
+
           <app-pool-ranking [widget]=true></app-pool-ranking>
+          <div class="mt-1"><a [routerLink]="['/mining/pools' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>
       </div>
     </div>
@@ -35,11 +52,10 @@
       <div class="card" style="height: 385px">
         <div class="card-body">
           <h5 class="card-title">
-            <a class="link" href="" [routerLink]="['/mining/hashrate' | relativeUrl]" i18n="mining.hashrate">
-              Hashrate (1y)
-            </a>
+            Hashrate (1y)
           </h5>
           <app-hashrate-chart [widget]=true></app-hashrate-chart>
+          <div class="mt-1"><a [routerLink]="['/mining/hashrate' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>
       </div>
     </div>
@@ -49,11 +65,10 @@
       <div class="card" style="height: 385px">
         <div class="card-body">
           <h5 class="card-title">
-            <a href="" [routerLink]="['/mining/hashrate/pools' | relativeUrl]" i18n="mining.pool-historical-dominance">
-              Mining Pools Dominance (1y)
-            </a>
+            Mining Pools Dominance (1y)
           </h5>
           <app-hashrate-chart-pools [widget]=true></app-hashrate-chart-pools>
+          <div class="mt-1"><a [routerLink]="['/mining/hashrate/pools' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>
       </div>
     </div>
@@ -62,11 +77,10 @@
       <div class="card" style="height: 385px">
         <div class="card-body">
           <h5 class="card-title">
-            <a href="" [routerLink]="['/mining/hashrate' | relativeUrl]" i18n="mining.pool-historical-dominance">
-              Adjusments
-            </a>
+            Adjusments
           </h5>
           <app-hashrate-chart [tableOnly]=true [widget]=true></app-hashrate-chart>
+          <div class="mt-1"><a [routerLink]="['/mining/hashrate' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>
       </div>
     </div>

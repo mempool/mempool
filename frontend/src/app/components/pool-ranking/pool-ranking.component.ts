@@ -208,6 +208,8 @@ export class PoolRankingComponent implements OnInit {
     let radius: any[] = ['20%', '80%'];
     let top: any = undefined; let bottom = undefined; let height = undefined;
     if (this.isMobile() && this.widget) {
+      top = -30;
+      height = 270;
       radius = ['10%', '50%'];
     } else if (this.isMobile() && !this.widget) {
       top = 0;
@@ -215,6 +217,8 @@ export class PoolRankingComponent implements OnInit {
       radius = ['10%', '50%'];
     } else if (this.widget) {
       radius = ['15%', '60%'];
+      top = -20;
+      height = 330;
     } else {
       top = 35;
     }
