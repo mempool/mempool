@@ -6,7 +6,7 @@ import logger from '../logger';
 const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 class DatabaseMigration {
-  private static currentVersion = 8;
+  private static currentVersion = 9;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
 
@@ -131,6 +131,10 @@ class DatabaseMigration {
         await this.$executeQuery(connection, 'ALTER TABLE `hashrates` ADD `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST');
         await this.$executeQuery(connection, 'ALTER TABLE `hashrates` ADD `share` float NOT NULL DEFAULT "0"');
         await this.$executeQuery(connection, 'ALTER TABLE `hashrates` ADD `type` enum("daily", "weekly") DEFAULT "daily"');
+      }
+
+      if (databaseSchemaVersion < 9) {
+        await this.$executeQuery(connection, 'ALTER TABLE `state` CHANGE `name` `name` varchar(100)')
       }
 
       connection.release();
@@ -274,6 +278,10 @@ class DatabaseMigration {
 
     if (version < 7) {
       queries.push(`INSERT INTO state(name, number, string) VALUES ('last_hashrates_indexing', 0, NULL)`);
+    }
+
+    if (version < 9) {
+      queries.push(`INSERT INTO state(name, number, string) VALUES ('last_weekly_hashrates_indexing', 0, NULL)`);
     }
 
     return queries;
