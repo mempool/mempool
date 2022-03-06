@@ -134,7 +134,8 @@ class DatabaseMigration {
       }
 
       if (databaseSchemaVersion < 9) {
-        await this.$executeQuery(connection, 'ALTER TABLE `state` CHANGE `name` `name` varchar(100)')
+        await this.$executeQuery(connection, 'ALTER TABLE `state` CHANGE `name` `name` varchar(100)');
+        await this.$executeQuery(connection, 'ALTER TABLE `hashrates` ADD UNIQUE `hashrate_timestamp_pool_id` (`hashrate_timestamp`, `pool_id`)');
       }
 
       connection.release();

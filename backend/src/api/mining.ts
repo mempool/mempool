@@ -97,9 +97,8 @@ class Mining {
       const indexedTimestamp = await HashratesRepository.$getWeeklyHashrateTimestamps();
       const hashrates: any[] = [];
       const genesisTimestamp = 1231006505; // bitcoin-cli getblock 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
-      const lastWeekMidnight = this.getDateMidnight(new Date());
-      lastWeekMidnight.setDate(lastWeekMidnight.getDate() - 7);
-      let toTimestamp = Math.round(lastWeekMidnight.getTime() / 1000);
+      const lastMidnight = this.getDateMidnight(new Date());
+      let toTimestamp = Math.round((lastMidnight.getTime() - 604800) / 1000);
 
       const totalWeekIndexed = (await BlocksRepository.$blockCount(null, null)) / 1008;
       let indexedThisRun = 0;
@@ -167,7 +166,6 @@ class Mining {
       this.weeklyHashrateIndexingStarted = false;
       throw e;
     }
-
   }
 
   /**

@@ -43,26 +43,38 @@ class PoolsRepository {
 
     // logger.debug(query);
     const connection = await DB.pool.getConnection();
-    const [rows] = await connection.query(query);
-    connection.release();
+    try {
+      const [rows] = await connection.query(query);
+      connection.release();
 
-    return <PoolInfo[]>rows;
+      return <PoolInfo[]>rows;
+    } catch (e) {
+      connection.release();
+      logger.err('$getPoolsInfo() error' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
   }
 
   /**
    * Get basic pool info and block count between two timestamp
    */
    public async $getPoolsInfoBetween(from: number, to: number): Promise<PoolInfo[]> {
-    let query = `SELECT COUNT(height) as blockCount, pools.id as poolId, pools.name as poolName
+    const query = `SELECT COUNT(height) as blockCount, pools.id as poolId, pools.name as poolName
       FROM pools
       LEFT JOIN blocks on pools.id = blocks.pool_id AND blocks.blockTimestamp BETWEEN FROM_UNIXTIME(?) AND FROM_UNIXTIME(?)
       GROUP BY pools.id`;
 
     const connection = await DB.pool.getConnection();
-    const [rows] = await connection.query(query, [from, to]);
-    connection.release();
+    try {
+      const [rows] = await connection.query(query, [from, to]);
+      connection.release();
 
-    return <PoolInfo[]>rows;
+      return <PoolInfo[]>rows;
+    } catch (e) {
+      connection.release();
+      logger.err('$getPoolsInfoBetween() error' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
   }
 
   /**
@@ -76,13 +88,19 @@ class PoolsRepository {
 
     // logger.debug(query);
     const connection = await DB.pool.getConnection();
-    const [rows] = await connection.query(query, [poolId]);
-    connection.release();
+    try {
+      const [rows] = await connection.query(query, [poolId]);
+      connection.release();
 
-    rows[0].regexes = JSON.parse(rows[0].regexes);
-    rows[0].addresses = JSON.parse(rows[0].addresses);
+      rows[0].regexes = JSON.parse(rows[0].regexes);
+      rows[0].addresses = JSON.parse(rows[0].addresses);
 
-    return rows[0];
+      return rows[0];
+    } catch (e) {
+      connection.release();
+      logger.err('$getPool() error' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
   }
 }
 
