@@ -122,12 +122,18 @@ class Mining {
       lastWeekMidnight.setDate(lastWeekMidnight.getDate() - 7);
       let toTimestamp = Math.round(lastWeekMidnight.getTime() / 1000);
 
+      const totalWeekIndexed = (await BlocksRepository.$blockCount(null, null)) / 1008;
+      let indexedThisRun = 0;
+      let totalIndexed = 0;
+      let startedAt = new Date().getTime() / 1000;
+
       while (toTimestamp > genesisTimestamp) {
         const fromTimestamp = toTimestamp - 604800;
 
         // Skip already indexed weeks
         if (indexedTimestamp.includes(toTimestamp + 1)) {
           toTimestamp -= 604800;
+          ++totalIndexed;
           continue;
         }
 
@@ -136,10 +142,6 @@ class Mining {
         if (blockStats.blockCount === 0) { // We are done indexing, no blocks left
           break;
         }
-
-        const fromTxt = new Date(1000 * fromTimestamp);
-        const toTxt = new Date(1000 * toTimestamp);
-        logger.debug(`Indexing pools hashrate between ${fromTxt.toUTCString()} and ${toTxt.toUTCString()}`)
 
         const lastBlockHashrate = await bitcoinClient.getNetworkHashPs(blockStats.blockCount,
           blockStats.lastBlockHeight);
@@ -165,7 +167,19 @@ class Mining {
         await HashratesRepository.$saveHashrates(hashrates);
         hashrates.length = 0;
 
+        const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
+        if (elapsedSeconds > 5) {
+          const weeksPerSeconds = (indexedThisRun / elapsedSeconds).toFixed(2);
+          const formattedDate = new Date(fromTimestamp * 1000).toUTCString();
+          const weeksLeft = Math.round(totalWeekIndexed - totalIndexed);
+          logger.debug(`Getting weekly pool hashrate for ${formattedDate} | ~${weeksPerSeconds} weeks/sec | ~${weeksLeft} weeks left to index`);
+          startedAt = new Date().getTime() / 1000;
+          indexedThisRun = 0;
+        }
+
         toTimestamp -= 604800;
+        ++indexedThisRun;
+        ++totalIndexed;
       }
       this.weeklyHashrateIndexingStarted = false;
       await HashratesRepository.$setLatestRunTimestamp('last_weekly_hashrates_indexing');
@@ -197,16 +211,16 @@ class Mining {
 
       logger.info(`Indexing network daily hashrate`);
 
-      const totalDayIndexed = (await BlocksRepository.$blockCount(null, null)) / 144;
       const indexedTimestamp = (await HashratesRepository.$getNetworkDailyHashrate(null)).map(hashrate => hashrate.timestamp);
-      let startedAt = new Date().getTime() / 1000;
       const genesisTimestamp = 1231006505; // bitcoin-cli getblock 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
       const lastMidnight = this.getDateMidnight(new Date());
       let toTimestamp = Math.round(lastMidnight.getTime() / 1000);
+      const hashrates: any[] = [];
+
+      const totalDayIndexed = (await BlocksRepository.$blockCount(null, null)) / 144;
       let indexedThisRun = 0;
       let totalIndexed = 0;
-
-      const hashrates: any[] = [];
+      let startedAt = new Date().getTime() / 1000;
 
       while (toTimestamp > genesisTimestamp) {
         const fromTimestamp = toTimestamp - 86400;
@@ -245,7 +259,7 @@ class Mining {
           const daysPerSeconds = (indexedThisRun / elapsedSeconds).toFixed(2);
           const formattedDate = new Date(fromTimestamp * 1000).toUTCString();
           const daysLeft = Math.round(totalDayIndexed - totalIndexed);
-          logger.debug(`Getting hashrate for ${formattedDate} | ~${daysPerSeconds} days/sec | ~${daysLeft} days left to index`);
+          logger.debug(`Getting network daily hashrate for ${formattedDate} | ~${daysPerSeconds} days/sec | ~${daysLeft} days left to index`);
           startedAt = new Date().getTime() / 1000;
           indexedThisRun = 0;
         }
