@@ -218,31 +218,28 @@ class Blocks {
           if (blockHeight < lastBlockToIndex) {
             break;
           }
-          try {
-            ++indexedThisRun;
-            if (++totaIndexed % 100 === 0 || blockHeight === lastBlockToIndex) {
-              const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
-              const blockPerSeconds = Math.max(1, Math.round(indexedThisRun / elapsedSeconds));
-              const progress = Math.round(totaIndexed / indexingBlockAmount * 100);
-              const timeLeft = Math.round((indexingBlockAmount - totaIndexed) / blockPerSeconds);
-              logger.debug(`Indexing block #${blockHeight} | ~${blockPerSeconds} blocks/sec | total: ${totaIndexed}/${indexingBlockAmount} (${progress}%) | elapsed: ${elapsedSeconds} seconds | left: ~${timeLeft} seconds`);
-            }
-            const blockHash = await bitcoinApi.$getBlockHash(blockHeight);
-            const block = await bitcoinApi.$getBlock(blockHash);
-            const transactions = await this.$getTransactionsExtended(blockHash, block.height, true, true);
-            const blockExtended = await this.$getBlockExtended(block, transactions);
-            await blocksRepository.$saveBlockInDatabase(blockExtended);
-          } catch (e) {
-            logger.err(`Something went wrong while indexing blocks.` + e);
+          ++indexedThisRun;
+          if (++totaIndexed % 100 === 0 || blockHeight === lastBlockToIndex) {
+            const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
+            const blockPerSeconds = Math.max(1, Math.round(indexedThisRun / elapsedSeconds));
+            const progress = Math.round(totaIndexed / indexingBlockAmount * 100);
+            const timeLeft = Math.round((indexingBlockAmount - totaIndexed) / blockPerSeconds);
+            logger.debug(`Indexing block #${blockHeight} | ~${blockPerSeconds} blocks/sec | total: ${totaIndexed}/${indexingBlockAmount} (${progress}%) | elapsed: ${elapsedSeconds} seconds | left: ~${timeLeft} seconds`);
           }
+          const blockHash = await bitcoinApi.$getBlockHash(blockHeight);
+          const block = await bitcoinApi.$getBlock(blockHash);
+          const transactions = await this.$getTransactionsExtended(blockHash, block.height, true, true);
+          const blockExtended = await this.$getBlockExtended(block, transactions);
+          await blocksRepository.$saveBlockInDatabase(blockExtended);
         }
 
         currentBlockHeight -= chunkSize;
       }
       logger.info('Block indexing completed');
     } catch (e) {
-      logger.err('An error occured in $generateBlockDatabase(). Skipping block indexing. ' + e);
-      console.log(e);
+      logger.err('An error occured in $generateBlockDatabase(). Trying again later. ' + e);
+      this.blockIndexingStarted = false;
+      return;
     }
 
     this.blockIndexingCompleted = true;
