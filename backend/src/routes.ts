@@ -24,6 +24,7 @@ import miningStats from './api/mining';
 import axios from 'axios';
 import mining from './api/mining';
 import BlocksRepository from './repositories/BlocksRepository';
+import HashratesRepository from './repositories/HashratesRepository';
 
 class Routes {
   constructor() {}
@@ -576,7 +577,7 @@ class Routes {
 
   public async $getHistoricalDifficulty(req: Request, res: Response) {
     try {
-      const stats = await mining.$getHistoricalDifficulty(req.params.interval ?? null);
+      const stats = await BlocksRepository.$getBlocksDifficulty(req.params.interval ?? null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
@@ -588,7 +589,7 @@ class Routes {
 
   public async $getPoolsHistoricalHashrate(req: Request, res: Response) {
     try {
-      const hashrates = await mining.$getPoolsHistoricalHashrates(req.params.interval ?? null, parseInt(req.params.poolId, 10));
+      const hashrates = await HashratesRepository.$getPoolsWeeklyHashrate(req.params.interval ?? null);
       const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
@@ -604,8 +605,8 @@ class Routes {
 
   public async $getHistoricalHashrate(req: Request, res: Response) {
     try {
-      const hashrates = await mining.$getNetworkHistoricalHashrates(req.params.interval ?? null);
-      const difficulty = await mining.$getHistoricalDifficulty(req.params.interval ?? null);
+      const hashrates = await HashratesRepository.$getNetworkDailyHashrate(req.params.interval ?? null);
+      const difficulty = await BlocksRepository.$getBlocksDifficulty(req.params.interval ?? null);
       const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
