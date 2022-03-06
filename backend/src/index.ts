@@ -168,7 +168,7 @@ class Server {
 
   async $resetHashratesIndexingState() {
     await HashratesRepository.$setLatestRunTimestamp('last_hashrates_indexing', 0);
-    await HashratesRepository.$setLatestRunTimestamp('last_week_hashrates_indexing', 0);
+    await HashratesRepository.$setLatestRunTimestamp('last_weekly_hashrates_indexing', 0);
   }
 
   async $runIndexingWhenReady() {
