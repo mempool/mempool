@@ -134,6 +134,8 @@ class DatabaseMigration {
       }
 
       if (databaseSchemaVersion < 9) {
+        logger.warn(`'hashrates' table has been truncated. Re-indexing from scratch.'`);
+        await this.$executeQuery(connection, 'TRUNCATE hashrates;'); // Need to re-index
         await this.$executeQuery(connection, 'ALTER TABLE `state` CHANGE `name` `name` varchar(100)');
         await this.$executeQuery(connection, 'ALTER TABLE `hashrates` ADD UNIQUE `hashrate_timestamp_pool_id` (`hashrate_timestamp`, `pool_id`)');
       }
