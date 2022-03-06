@@ -219,7 +219,7 @@ class Mining {
           blockStats.lastBlockHeight);
 
         hashrates.push({
-          hashrateTimestamp: fromTimestamp,
+          hashrateTimestamp: toTimestamp,
           avgHashrate: lastBlockHashrate,
           poolId: null,
           share: 1,
