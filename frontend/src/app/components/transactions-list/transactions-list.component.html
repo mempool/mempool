@@ -21,7 +21,10 @@
         <table class="table table-borderless smaller-text table-sm" id="table-tx-vin">
           <tbody>
             <ng-template ngFor let-vin [ngForOf]="tx['@vinLimit'] ? ((tx.vin.length>12)?tx.vin.slice(0, 10): tx.vin.slice(0, 12)) : tx.vin" [ngForTrackBy]="trackByIndexFn">
-              <tr [ngClass]="assetsMinimal && vin.prevout && assetsMinimal[vin.prevout.asset] && !vin.is_coinbase && vin.prevout.scriptpubkey_address && tx._unblinded ? 'assetBox' : ''">
+              <tr [ngClass]="{
+                'assetBox': assetsMinimal && vin.prevout && assetsMinimal[vin.prevout.asset] && !vin.is_coinbase && vin.prevout.scriptpubkey_address && tx._unblinded,
+                'highlight': vin.prevout?.scriptpubkey_address === this.address && this.address !== ''
+              }">
                 <td class="arrow-td">
                   <ng-template [ngIf]="vin.prevout === null && !vin.is_pegin" [ngIfElse]="hasPrevout">
                     <span class="grey">
@@ -143,7 +146,10 @@
         <table class="table table-borderless smaller-text table-sm"  id="table-tx-vout">
           <tbody>
             <ng-template ngFor let-vout let-vindex="index" [ngForOf]="tx['@voutLimit'] && !outputIndex ? ((tx.vout.length > 12) ? tx.vout.slice(0, 10) : tx.vout.slice(0, 12)) : tx.vout" [ngForTrackBy]="trackByIndexFn">
-              <tr [ngClass]="assetsMinimal && assetsMinimal[vout.asset] && vout.scriptpubkey_address && tx.vin && !tx.vin[0].is_coinbase && tx._unblinded || outputIndex === vindex ? 'assetBox' : ''">
+              <tr [ngClass]="{
+                'assetBox': assetsMinimal && assetsMinimal[vout.asset] && vout.scriptpubkey_address && tx.vin && !tx.vin[0].is_coinbase && tx._unblinded || outputIndex === vindex,
+                'highlight': vout.scriptpubkey_address === this.address && this.address !== ''
+              }">
                 <td>
                   <a *ngIf="vout.scriptpubkey_address; else scriptpubkey_type" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">
                     <span class="d-block d-lg-none">{{ vout.scriptpubkey_address | shortenString : 16 }}</span>
@@ -242,13 +248,13 @@
       </div>
     </div>
 
-    <div>
+    <div class="summary">
       <div class="float-left mt-2-5" *ngIf="!transactionPage && !tx.vin[0].is_coinbase">
         {{ tx.fee / (tx.weight / 4) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span> <span class="d-none d-sm-inline-block">&nbsp;&ndash; {{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [value]="tx.fee"></app-fiat></span></span>
       </div>
 
       <div class="float-right">
-        <span *ngIf="showConfirmations && latestBlock$ | async as latestBlock">
+        <ng-container *ngIf="showConfirmations && latestBlock$ | async as latestBlock">
           <button *ngIf="tx.status.confirmed; else unconfirmedButton" type="button" class="btn btn-sm btn-success mt-2">
             <ng-container *ngTemplateOutlet="latestBlock.height - tx.status.block_height + 1 == 1 ? confirmationSingular : confirmationPlural; context: {$implicit: latestBlock.height - tx.status.block_height + 1}"></ng-container>
             <ng-template #confirmationSingular let-i i18n="shared.confirmation-count.singular|Transaction singular confirmation count">{{ i }} confirmation</ng-template>
@@ -257,14 +263,18 @@
           <ng-template #unconfirmedButton>
             <button type="button" class="btn btn-sm btn-danger mt-2" i18n="transaction.unconfirmed|Transaction unconfirmed state">Unconfirmed</button>
           </ng-template>
-          &nbsp;
-        </span>
-        <button type="button" class="btn btn-sm btn-primary mt-2" (click)="switchCurrency()">
+        </ng-container>
+        <button *ngIf="address === ''; else viewingAddress" type="button" class="btn btn-sm btn-primary mt-2 ml-2" (click)="switchCurrency()">
           <ng-template [ngIf]="(network === 'liquid' || network === 'liquidtestnet') && haveBlindedOutputValues(tx)" [ngIfElse]="defaultAmount" i18n="shared.confidential">Confidential</ng-template>
           <ng-template #defaultAmount>
             <app-amount [satoshis]="getTotalTxOutput(tx)"></app-amount>
           </ng-template>
         </button>
+        <ng-template #viewingAddress>
+          <button type="button" class="btn btn-sm mt-2 ml-2" (click)="switchCurrency()" [ngClass]="{'btn-success': tx['addressValue'] >= 0, 'btn-danger': tx['addressValue'] < 0}">
+            <app-amount [satoshis]="tx['addressValue']" [addPlus]="true"></app-amount>
+          </button>
+        </ng-template>
       </div>
       <div class="clearfix"></div>
     </div>

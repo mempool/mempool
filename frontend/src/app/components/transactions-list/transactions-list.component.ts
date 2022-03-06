@@ -1,11 +1,11 @@
 import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { StateService } from '../../services/state.service';
-import { Observable, forkJoin, ReplaySubject, BehaviorSubject, merge, of, Subject, Subscription } from 'rxjs';
-import { Outspend, Transaction } from '../../interfaces/electrs.interface';
+import { Observable, forkJoin, ReplaySubject, BehaviorSubject, merge, Subscription } from 'rxjs';
+import { Outspend, Transaction, Vin, Vout } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { environment } from 'src/environments/environment';
 import { AssetsService } from 'src/app/services/assets.service';
-import { map, share, switchMap, tap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { BlockExtended } from 'src/app/interfaces/node-api.interface';
 
 @Component({
@@ -23,6 +23,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   @Input() transactionPage = false;
   @Input() errorUnblinded = false;
   @Input() outputIndex: number;
+  @Input() address: string = '';
 
   @Output() loadMore = new EventEmitter();
 
@@ -98,6 +99,21 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       if (this.outspends[i]) {
         return;
       }
+
+      if (this.address) {
+        const addressIn = tx.vout
+          .filter((v: Vout) => v.scriptpubkey_address === this.address)
+          .map((v: Vout) => v.value || 0)
+          .reduce((a: number, b: number) => a + b, 0);
+
+        const addressOut = tx.vin
+          .filter((v: Vin) => v.prevout && v.prevout.scriptpubkey_address === this.address)
+          .map((v: Vin) => v.prevout.value || 0)
+          .reduce((a: number, b: number) => a + b, 0);
+
+        tx['addressValue'] = addressIn || -addressOut;
+      }
+
       observableObject[i] = this.electrsApiService.getOutspends$(tx.txid);
     });
     this.refreshOutspends$.next(observableObject);
@@ -119,7 +135,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   }
 
   getTotalTxOutput(tx: Transaction) {
-    return tx.vout.map((v: any) => v.value || 0).reduce((a: number, b: number) => a + b);
+    return tx.vout.map((v: Vout) => v.value || 0).reduce((a: number, b: number) => a + b);
   }
 
   switchCurrency() {
