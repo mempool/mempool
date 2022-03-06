@@ -167,7 +167,8 @@ class Server {
   }
 
   async $resetHashratesIndexingState() {
-    return await HashratesRepository.$setLatestRunTimestamp(0);
+    await HashratesRepository.$setLatestRunTimestamp('last_hashrates_indexing', 0);
+    await HashratesRepository.$setLatestRunTimestamp('last_week_hashrates_indexing', 0);
   }
 
   async $runIndexingWhenReady() {
@@ -178,6 +179,7 @@ class Server {
     try {
       await blocks.$generateBlockDatabase();
       await mining.$generateNetworkHashrateHistory();
+      await mining.$generatePoolHashrateHistory();
     } catch (e) {
       logger.err(`Unable to run indexing right now, trying again later. ` + e);
     }

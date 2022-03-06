@@ -8,6 +8,10 @@ class HashratesRepository {
    * Save indexed block data in the database
    */
   public async $saveHashrates(hashrates: any) {
+    if (hashrates.length === 0) {
+      return;
+    }
+
     let query = `INSERT INTO
       hashrates(hashrate_timestamp, avg_hashrate, pool_id, share, type) VALUES`;
 
@@ -53,6 +57,16 @@ class HashratesRepository {
     return rows;
   }
 
+  public async $getWeeklyHashrateTimestamps(): Promise<number[]> {
+    const connection = await DB.pool.getConnection();
+
+    let query = `SELECT UNIX_TIMESTAMP(hashrate_timestamp) as timestamp FROM hashrates where type = 'weekly' GROUP BY hashrate_timestamp`;
+    const [rows]: any[] = await connection.query(query);
+    connection.release();
+
+    return rows.map(row => row.timestamp);
+  }
+
   /**
    * Returns the current biggest pool hashrate history
    */
@@ -83,18 +97,18 @@ class HashratesRepository {
     return rows;
   }
 
-  public async $setLatestRunTimestamp(val: any = null) {
+  public async $setLatestRunTimestamp(key: string, val: any = null) {
     const connection = await DB.pool.getConnection();
-    const query = `UPDATE state SET number = ? WHERE name = 'last_hashrates_indexing'`;
+    const query = `UPDATE state SET number = ? WHERE name = ?`;
 
-    await connection.query<any>(query, (val === null) ? [Math.round(new Date().getTime() / 1000)] : [val]);
+    await connection.query<any>(query, (val === null) ? [Math.round(new Date().getTime() / 1000), key] : [val, key]);
     connection.release();
   }
 
-  public async $getLatestRunTimestamp(): Promise<number> {
+  public async $getLatestRunTimestamp(key: string): Promise<number> {
     const connection = await DB.pool.getConnection();
-    const query = `SELECT number FROM state WHERE name = 'last_hashrates_indexing'`;
-    const [rows] = await connection.query<any>(query);
+    const query = `SELECT number FROM state WHERE name = ?`;
+    const [rows] = await connection.query<any>(query, [key]);
     connection.release();
     return rows[0]['number'];
   }
