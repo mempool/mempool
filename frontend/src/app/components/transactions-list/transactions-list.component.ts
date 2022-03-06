@@ -1,11 +1,11 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, EventEmitter } from '@angular/core';
 import { StateService } from '../../services/state.service';
-import { Observable, forkJoin } from 'rxjs';
+import { Observable, forkJoin, ReplaySubject, BehaviorSubject, merge } from 'rxjs';
 import { Outspend, Transaction } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { environment } from 'src/environments/environment';
 import { AssetsService } from 'src/app/services/assets.service';
-import { map } from 'rxjs/operators';
+import { map, share, switchMap } from 'rxjs/operators';
 import { BlockExtended } from 'src/app/interfaces/node-api.interface';
 
 @Component({
@@ -17,7 +17,6 @@ import { BlockExtended } from 'src/app/interfaces/node-api.interface';
 export class TransactionsListComponent implements OnInit, OnChanges {
   network = '';
   nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
-  displayDetails = false;
 
   @Input() transactions: Transaction[];
   @Input() showConfirmations = false;
@@ -28,15 +27,41 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   @Output() loadMore = new EventEmitter();
 
   latestBlock$: Observable<BlockExtended>;
-  outspends: Outspend[] = [];
+  outspends$: Observable<Outspend[]>;
+  refreshOutspends$: ReplaySubject<object> = new ReplaySubject();
+  showDetails$ = new BehaviorSubject<boolean>(false);
+  _outspends: Outspend[] = [];
   assetsMinimal: any;
 
   constructor(
     public stateService: StateService,
     private electrsApiService: ElectrsApiService,
     private assetsService: AssetsService,
-    private ref: ChangeDetectorRef,
-  ) { }
+  ) {
+    this.outspends$ = merge(
+      this.refreshOutspends$,
+      this.stateService.utxoSpent$
+        .pipe(
+          map(() => {
+            this._outspends = [];
+            return { 0: this.electrsApiService.getOutspends$(this.transactions[0].txid) };
+          }),
+        )
+    ).pipe(
+      switchMap((observableObject) => forkJoin(observableObject)),
+      map((outspends: any) => {
+        const newOutspends = [];
+        for (const i in outspends) {
+          if (outspends.hasOwnProperty(i)) {
+            newOutspends.push(outspends[i]);
+          }
+        }
+        this._outspends = this._outspends.concat(newOutspends);
+        return this._outspends;
+      }),
+      share(),
+    );
+  }
 
   ngOnInit() {
     this.latestBlock$ = this.stateService.blocks$.pipe(map(([block]) => block));
@@ -65,23 +90,12 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     this.transactions.forEach((tx, i) => {
       tx['@voutLimit'] = true;
       tx['@vinLimit'] = true;
-      if (this.outspends[i]) {
+      if (this._outspends[i]) {
         return;
       }
       observableObject[i] = this.electrsApiService.getOutspends$(tx.txid);
     });
-
-    forkJoin(observableObject)
-      .subscribe((outspends: any) => {
-        const newOutspends = [];
-        for (const i in outspends) {
-          if (outspends.hasOwnProperty(i)) {
-            newOutspends.push(outspends[i]);
-          }
-        }
-        this.outspends = this.outspends.concat(newOutspends);
-        this.ref.markForCheck();
-      });
+    this.refreshOutspends$.next(observableObject);
   }
 
   onScroll() {
@@ -129,7 +143,10 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   }
 
   toggleDetails() {
-    this.displayDetails = !this.displayDetails;
-    this.ref.markForCheck();
+    if (this.showDetails$.value === true) {
+      this.showDetails$.next(false);
+    } else {
+      this.showDetails$.next(true);
+    }
   }
 }
