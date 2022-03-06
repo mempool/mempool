@@ -75,28 +75,7 @@ class Mining {
   }
 
   /**
-   * Return the historical difficulty adjustments and oldest indexed block timestamp
-   */
-  public async $getHistoricalDifficulty(interval: string | null): Promise<object> {
-    return await BlocksRepository.$getBlocksDifficulty(interval);
-  }
-
-  /**
-   * Return the historical hashrates and oldest indexed block timestamp
-   */
-  public async $getNetworkHistoricalHashrates(interval: string | null): Promise<object> {
-    return await HashratesRepository.$getNetworkDailyHashrate(interval);
-  }
-
-  /**
-   * Return the historical hashrates and oldest indexed block timestamp for one or all pools
-   */
-  public async $getPoolsHistoricalHashrates(interval: string | null, poolId: number): Promise<object> {
-    return await HashratesRepository.$getPoolsWeeklyHashrate(interval);
-  }
-
-  /**
-   * Generate weekly mining pool hashrate history
+   * [INDEXING] Generate weekly mining pool hashrate history
    */
   public async $generatePoolHashrateHistory(): Promise<void> {
     if (!blocks.blockIndexingCompleted || this.weeklyHashrateIndexingStarted) {
@@ -192,7 +171,7 @@ class Mining {
   }
 
   /**
-   * Generate daily hashrate data
+   * [INDEXING] Generate daily hashrate data
    */
   public async $generateNetworkHashrateHistory(): Promise<void> {
     if (!blocks.blockIndexingCompleted || this.hashrateIndexingStarted) {
