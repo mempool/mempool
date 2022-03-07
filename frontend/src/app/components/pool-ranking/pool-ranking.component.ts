@@ -139,6 +139,7 @@ export class PoolRankingComponent implements OnInit {
           edgeDistance: edgeDistance,
         },
         tooltip: {
+          show: !this.isMobile() || !this.widget,
           backgroundColor: 'rgba(17, 19, 31, 1)',
           borderRadius: 4,
           shadowColor: 'rgba(0, 0, 0, 0.5)',

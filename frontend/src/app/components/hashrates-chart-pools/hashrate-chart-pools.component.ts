@@ -132,6 +132,7 @@ export class HashrateChartPoolsComponent implements OnInit {
         top: this.widget ? 10 : 40,
       },
       tooltip: {
+        show: !this.isMobile() || !this.widget,
         trigger: 'axis',
         axisPointer: {
           type: 'line'
