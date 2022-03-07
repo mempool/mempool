@@ -15,7 +15,7 @@ import { selectPowerOfTen } from 'src/app/bitcoin.utils';
   styles: [`
     .loadingGraphs {
       position: absolute;
-      top: 38%;
+      top: 50%;
       left: calc(50% - 15px);
       z-index: 100;
     }
