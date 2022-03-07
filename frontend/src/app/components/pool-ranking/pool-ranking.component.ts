@@ -116,7 +116,7 @@ export class PoolRankingComponent implements OnInit {
     if (this.isMobile() && this.widget) {
       edgeDistance = 0;
     } else if (this.isMobile() && !this.widget || this.widget) {
-      edgeDistance = 20;
+      edgeDistance = 35;
     }
 
     miningStats.pools.forEach((pool) => {
@@ -131,7 +131,7 @@ export class PoolRankingComponent implements OnInit {
           color: poolsColor[pool.name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()],
         },
         value: pool.share,
-        name: pool.name + (this.isMobile() ? `` : ` (${pool.share}%)`),
+        name: pool.name + ((this.isMobile() || this.widget) ? `` : ` (${pool.share}%)`),
         label: {
           overflow: 'none',
           color: '#b1b1b1',
