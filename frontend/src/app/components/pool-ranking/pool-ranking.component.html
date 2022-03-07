@@ -1,8 +1,29 @@
 <div [class]="widget === false ? 'container-xl' : ''">
 
+  <div class="pool-distribution" *ngIf="widget && (miningStatsObservable$ | async) as miningStats">
+    <div class="item">
+      <h5 class="card-title" i18n="mining.miners-luck">Pools luck (1w)</h5>
+      <p class="card-text">
+        {{ miningStats['minersLuck'] }}%
+      </p>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="master-page.blocks">Blocks (1w)</h5>
+      <p class="card-text">
+        {{ miningStats.blockCount }}
+      </p>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="mining.miners-count">Pools count (1w)</h5>
+      <p class="card-text">
+        {{ miningStats.pools.length }}
+      </p>
+    </div>
+  </div>
+
   <div [class]="widget ? 'chart-widget' : 'chart'"
     echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartInit)="onChartInit($event)"></div>
-  <div class="text-center loadingGraphs" [class]="widget ? 'widget' : ''" *ngIf="isLoading">
+  <div class="text-center loadingGraphs" *ngIf="isLoading">
     <div class="spinner-border text-light"></div>
   </div>
 
@@ -59,7 +80,7 @@
         <td class="d-none d-md-block">{{ pool.rank }}</td>
         <td class="text-right"><img width="25" height="25" src="{{ pool.logo }}" onError="this.src = './resources/mining-pools/default.svg'"></td>
         <td class=""><a [routerLink]="[('/mining/pool/' + pool.poolId) | relativeUrl]">{{ pool.name }}</a></td>
-        <td class="" *ngIf="this.poolsWindowPreference === '24h'">{{ pool.lastEstimatedHashrate }} {{ miningStats.miningUnits.hashrateUnit }}</td>
+        <td class="" *ngIf="this.poolsWindowPreference === '24h' && !isLoading">{{ pool.lastEstimatedHashrate }} {{ miningStats.miningUnits.hashrateUnit }}</td>
         <td class="">{{ pool['blockText'] }}</td>
         <td class="d-none d-md-block">{{ pool.emptyBlocks }} ({{ pool.emptyBlockRatio }}%)</td>
       </tr>

@@ -12,14 +12,11 @@
 
 .card {
   background-color: #1d1f31;
-  height: 340px;
-}
-.card.double {
-  height: 620px;
 }
 
 .card-title {
   font-size: 1rem;
+  color: #4a68b9;
 }
 .card-title > a {
   color: #4a68b9;
@@ -57,4 +54,92 @@
   font-weight: 500;
   text-align: center;
   padding-bottom: 3px;
+}
+
+.general-stats {
+  min-height: 56px;
+  display: block;
+  @media (min-width: 485px) {
+    display: flex;
+    flex-direction: row;
+  }
+  h5 {
+    margin-bottom: 10px;
+  }
+  .item {
+    width: 50%;
+    margin: 0px auto 10px;
+    display: inline-block;
+    @media (min-width: 485px) {
+      margin: 0px auto 10px;
+    }
+    @media (min-width: 785px) {
+      margin: 0px auto 0px;
+    }
+    &:last-child {
+      margin: 0px auto 0px;
+    }
+    &:nth-child(2) {
+      order: 2;
+      @media (min-width: 485px) {
+        order: 3;
+      }
+    }
+    &:nth-child(3) {
+      order: 3;
+      @media (min-width: 485px) {
+        order: 2;
+        display: block;
+      }
+      @media (min-width: 768px) {
+        display: none;
+      }
+      @media (min-width: 992px) {
+        display: block;
+      }
+    }
+    .card-title {
+      font-size: 1rem;
+      color: #4a68b9;
+    }
+    .card-text {
+      font-size: 18px;
+      span {
+        color: #ffffff66;
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+.difficulty-adjustment-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  height: 76px;
+  .shared-block {
+    color: #ffffff66;
+    font-size: 12px;
+  }
+  .item {
+    padding: 0 5px;
+    width: 100%;
+    &:nth-child(1) {
+      display: none;
+      @media (min-width: 485px) {
+        display: table-cell;
+      }
+      @media (min-width: 768px) {
+        display: none;
+      }
+      @media (min-width: 992px) {
+        display: table-cell;
+      }
+    }
+  }
+  .card-text {
+    font-size: 22px;
+    margin-top: -9px;
+    position: relative;
+  }
 }

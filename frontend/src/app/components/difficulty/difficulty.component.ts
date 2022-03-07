@@ -28,8 +28,9 @@ export class DifficultyComponent implements OnInit {
   isLoadingWebSocket$: Observable<boolean>;
   difficultyEpoch$: Observable<EpochProgress>;
 
-  @Input() showProgress: boolean = true;
-  @Input() showHalving: boolean = false;
+  @Input() showProgress = true;
+  @Input() showHalving = false;
+  @Input() showTitle = true;
 
   constructor(
     public stateService: StateService,
@@ -97,7 +98,7 @@ export class DifficultyComponent implements OnInit {
             colorPreviousAdjustments = '#ffffff66';
           }
 
-          const blocksUntilHalving = block.height % 210000;
+          const blocksUntilHalving = 210000 - (block.height % 210000);
           const timeUntilHalving = (blocksUntilHalving * timeAvgMins * 60 * 1000) + (now * 1000);
 
           return {
