@@ -25,13 +25,13 @@
     </form>
   </div>
 
-  <div *ngIf="(hashrateObservable$ | async) && !tableOnly" [class]="!widget ? 'chart' : 'chart-widget'"
+  <div *ngIf="!tableOnly" [class]="!widget ? 'chart' : 'chart-widget'"
     echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
   <div class="text-center loadingGraphs" *ngIf="isLoading">
     <div class="spinner-border text-light"></div>
   </div>
   
-  <div [class]="!widget ? 'mt-3 p-2' : 'ml-4 mr-4 mt-1'" *ngIf="tableOnly">
+  <div [class]="!widget ? 'mt-3 p-2' : 'ml-4 mr-4 mt-1'" *ngIf="tableOnly" style="min-height: 295px">
     <table class="table table-borderless table-sm text-left" [class]="widget ? 'compact' : ''">
       <thead>
         <tr>
