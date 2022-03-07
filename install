@@ -343,10 +343,23 @@ osUserCreate()
 {
     case $OS in
         FreeBSD)
+            # pw useradd -d /mempool -g mempool -n mempool
             osSudo "${ROOT_USER}" pw useradd $*
             ;;
         Debian)
             osSudo "${ROOT_USER}" useradd $*
+            ;;
+    esac
+}
+
+osGroupCreate()
+{
+    case $OS in
+        FreeBSD)
+            osSudo "${ROOT_USER}" pw groupadd $*
+            ;;
+        Debian)
+            osSudo "${ROOT_USER}" groupadd $*
             ;;
     esac
 }
@@ -699,18 +712,17 @@ set -x
 # Install all the OS packages #
 ###############################
 
-osPackageUpdate
-osPackageUpgrade
-osPackageInstallAll
-
-exit 0
+#osPackageUpdate
+#osPackageUpgrade
+#osPackageInstallAll
 
 ##########################
 # Mempool top-level repo #
 ##########################
 
 echo "[*] Creating Mempool user with Tor access"
-osUserCreate -d "${MEMPOOL_HOME}" -g "${MEMPOOL_GROUP}" -G "${TOR_GROUP}" "${MEMPOOL_USER}"
+osGroupCreate "${MEMPOOL_GROUP}"
+osUserCreate -d "${MEMPOOL_HOME}" -g "${MEMPOOL_GROUP}" -n "${MEMPOOL_USER}"
 id "${MEMPOOL_USER}"
 echo "[*] Creating Mempool data folder"
 osSudo "${ROOT_USER}" mkdir -p "${MEMPOOL_HOME}"
@@ -718,6 +730,8 @@ osSudo "${ROOT_USER}" chown "${MEMPOOL_USER}:${MEMPOOL_GROUP}" "${MEMPOOL_HOME}"
 echo "[*] Cloning Mempool repo from ${MEMPOOL_REPO_URL}"
 osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
 osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}"
+
+exit 0
 
 ####################
 # Tor installation #
@@ -737,6 +751,9 @@ if [ "${TOR_INSTALL}" = ON ];then
         osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServicePort 80 127.0.0.1:81 >> ${TOR_CONFIGURATION}"
         osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServiceVersion 3 >> ${TOR_CONFIGURATION}"
     fi
+
+    # TODO: ADD mempool, bitcoin, bisq to tor group
+    # TODO: detect what the tor group is on this OS somehow
 
     # start tor now so it can bootstrap in time for bitcoin starting a few mins later
     echo "[*] Starting Tor service"
