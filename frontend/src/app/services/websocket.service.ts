@@ -252,7 +252,7 @@ export class WebsocketService {
     }
 
     if (response.utxoSpent) {
-      this.stateService.utxoSpent$.next();
+      this.stateService.utxoSpent$.next(response.utxoSpent);
     }
 
     if (response.backendInfo) {
