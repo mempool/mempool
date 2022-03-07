@@ -115,7 +115,7 @@ export class HashrateChartComponent implements OnInit {
                 }
                 return {
                   availableTimespanDay: availableTimespanDay,
-                  difficulty: this.tableOnly ? (this.isMobile() ? tableData.slice(0, 12) : tableData.slice(0, 9)) : tableData
+                  difficulty: this.tableOnly ? tableData.slice(0, 5) : tableData
                 };
               }),
             );
