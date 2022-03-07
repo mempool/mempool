@@ -1,4 +1,4 @@
-#!/usr/local/bin/zsh
+#!/usr/bin/env zsh
 set -e
 echo -n "Initializing..."
 
@@ -56,7 +56,7 @@ HOSTNAME=$(hostname)
 
 # get newest zpool if using zfs
 ZPOOL=""
-[ "${OS}" = FreeBSD ] && ZPOOL=$(zpool list -H|tail -1|cut -f 1)
+[ "${OS}" = FreeBSD ] && ZPOOL=$(zpool list -H|head -1|cut -f 1)
 
 MD5=md5sum
 [ "${OS}" = FreeBSD ] && MD5=md5
@@ -141,6 +141,11 @@ DEBIAN_SERVICE_HOME=/etc/systemd/system
 # where environment variables for services are set
 DEBIAN_ENV_HOME=/etc/default
 
+# mysql data folder and user/group
+MYSQL_HOME=/mysql
+MYSQL_USER=mysql
+MYSQL_GROUP=mysql
+
 # mempool data folder and user/group
 MEMPOOL_HOME=/mempool
 MEMPOOL_USER=mempool
@@ -182,6 +187,8 @@ ELEMENTS_USER=elements
 ELEMENTS_GROUP=elements
 # liquid home/data/blockchain folder, needs about 10GB
 ELEMENTS_HOME=/elements
+# electrs db top-level
+ELECTRS_HOME=/electrs
 # elements electrs source/binaries
 ELEMENTS_ELECTRS_HOME=${ELEMENTS_HOME}/electrs
 
@@ -229,12 +236,12 @@ ELEMENTS_REPO_BRANCH=master
 ELEMENTS_LATEST_RELEASE=master
 echo -n '.'
 
-BITCOIN_ELECTRS_REPO_URL=https://github.com/mempool/electrs
+BITCOIN_ELECTRS_REPO_URL=https://github.com/blockstream/electrs
 BITCOIN_ELECTRS_REPO_NAME=electrs
 BITCOIN_ELECTRS_REPO_BRANCH=new-index
 BITCOIN_ELECTRS_LATEST_RELEASE=new-index
 
-ELEMENTS_ELECTRS_REPO_URL=https://github.com/mempool/electrs
+ELEMENTS_ELECTRS_REPO_URL=https://github.com/blockstream/electrs
 ELEMENTS_ELECTRS_REPO_NAME=electrs
 ELEMENTS_ELECTRS_REPO_BRANCH=new-index
 ELEMENTS_ELECTRS_LATEST_RELEASE=new-index
@@ -244,7 +251,7 @@ ELEMENTS_ELECTRS_LATEST_RELEASE=new-index
 #######################
 
 # package needed for just certbot test before full install
-FREEBSD_CERTBOT_PKG=py37-certbot
+FREEBSD_CERTBOT_PKG=py38-certbot
 DEBIAN_CERTBOT_PKG=python-certbot
 
 # packages needed for mempool ecosystem
@@ -258,10 +265,10 @@ DEBIAN_PKG+=(nodejs npm mariadb-server nginx-core python-certbot-nginx rsync ufw
 
 # packages needed for mempool ecosystem
 FREEBSD_PKG=()
-FREEBSD_PKG+=(zsh sudo git screen vim-console curl wget calc neovim)
-FREEBSD_PKG+=(openssh-portable open-vm-tools-nox11 py27-pip py37-pip)
+FREEBSD_PKG+=(zsh sudo git screen curl wget calc neovim)
+FREEBSD_PKG+=(openssh-portable open-vm-tools-nox11 py38-pip)
 FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc libevent libtool pkgconf)
-FREEBSD_PKG+=(node npm nginx rsync py37-certbot-nginx mariadb-server)
+FREEBSD_PKG+=(node npm nginx rsync py38-certbot-nginx )
 
 #############################
 ##### utility functions #####
@@ -286,7 +293,7 @@ osPackageUpdate()
     echo "[*] Updating OS sources"
     case $OS in
         FreeBSD)
-            osSudo "${ROOT_USER}" pkg update -y
+            pkg update
             ;;
         Debian)
             osSudo "${ROOT_USER}" DEBIAN_FRONTEND=noninteractive apt-get update -q
@@ -299,7 +306,7 @@ osPackageUpgrade()
     echo "[*] Upgrading OS packages $*"
     case $OS in
         FreeBSD)
-            osSudo "${ROOT_USER}" pkg upgrade -y $*
+            pkg upgrade -y $*
             ;;
         Debian)
             osSudo "${ROOT_USER}" DEBIAN_FRONTEND=noninteractive apt-get upgrade -qq -y $*
@@ -312,7 +319,7 @@ osPackageInstall()
     echo "[*] Installing OS packages $*"
     case $OS in
         FreeBSD)
-            osSudo "${ROOT_USER}" pkg install -y $*
+            pkg install -y $*
             ;;
         Debian)
             osSudo "${ROOT_USER}" DEBIAN_FRONTEND=noninteractive apt-get install -qq -y $*
@@ -365,22 +372,30 @@ zfsCreateFilesystems()
     zfs create -o "mountpoint=${ELEMENTS_HOME}" "${ZPOOL}/elements"
     zfs create -o "mountpoint=${BITCOIN_HOME}" "${ZPOOL}/bitcoin"
     zfs create -o "mountpoint=${ELECTRS_HOME}" "${ZPOOL}/electrs"
+    zfs create -o "mountpoint=${MEMPOOL_HOME}" "${ZPOOL}/mempool"
+    zfs create -o "mountpoint=${MYSQL_HOME}" "${ZPOOL}/mysql"
+
+    zfs create -o "mountpoint=${BITCOIN_ELECTRS_HOME}" "${ZPOOL}/bitcoin/electrs"
 
     zfs create -o "mountpoint=${ELEMENTS_HOME}/liquidv1" "${ZPOOL}/elements/liquidv1"
     zfs create -o "mountpoint=${ELEMENTS_ELECTRS_HOME}" "${ZPOOL}/elements/electrs"
 
     # Bitcoin Mainnet
-    zfs create -o "mountpoint=${BITCOIN_HOME}/chainstate" "${ZPOOL}/bitcoin/chainstate"
-    zfs create -o "mountpoint=${BITCOIN_HOME}/indexes" "${ZPOOL}/bitcoin/indexes"
-    zfs create -o "mountpoint=${BITCOIN_HOME}/blocks" "${ZPOOL}/bitcoin/blocks"
+    if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
+        for folder in chainstate indexes blocks
+        do
+            zfs create -o "mountpoint=${BITCOIN_HOME}/${folder}" "${ZPOOL}/bitcoin/${folder}"
+        done
+    fi
 
     # Bitcoin Testnet
-    zfs create -o "mountpoint=${BITCOIN_TESTNET_DATA}" "${ZPOOL}/bitcoin/testnet"
-    zfs create -o "mountpoint=${BITCOIN_TESTNET_DATA}/blocks" "${ZPOOL}/bitcoin/testnet/blocks"
-    zfs create -o "mountpoint=${BITCOIN_TESTNET_DATA}/chainstate" "${ZPOOL}/bitcoin/testnet/chainstate"
-    zfs create -o "mountpoint=${BITCOIN_TESTNET_DATA}/indexes" "${ZPOOL}/bitcoin/testnet/indexes"
-
-    zfs create -o "mountpoint=${BITCOIN_ELECTRS_HOME}" "${ZPOOL}/bitcoin/electrs"
+    if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
+        zfs create -o "mountpoint=${BITCOIN_TESTNET_DATA}" "${ZPOOL}/bitcoin/testnet"
+        for folder in chainstate indexes blocks
+        do
+            zfs create -o "mountpoint=${BITCOIN_TESTNET_DATA}/${folder}" "${ZPOOL}/bitcoin/testnet/${folder}"
+        done
+    fi
 
     # electrs mainnet data
     if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
@@ -412,9 +427,6 @@ zfsCreateFilesystems()
     if [ "${BISQ_INSTALL}" = ON ];then
         zfs create -o "mountpoint=${BISQ_HOME}" "${ZPOOL}/bisq"
     fi
-
-    zfs create -o "mountpoint=/mempool" "${ZPOOL}/mempool"
-    zfs create -o "mountpoint=/mysql" "${ZPOOL}/mysql"
 }
 
 ##### Perform sanity checks before trying anything
@@ -659,6 +671,7 @@ $DIALOG --ok-label "Submit" \
     "HOSTNAME"                          92 1 "${HOSTNAME}"                          92 35 35 0 \
     "TOR_INSTALL"                       93 1 "${TOR_INSTALL}"                       93 35 35 0 \
     "CERTBOT_INSTALL"                   94 1 "${CERTBOT_INSTALL}"                   94 35 35 0 \
+2> $tempfile
 
 retval=$?
 
@@ -674,11 +687,13 @@ fi
 date
 echo "[*] Mempool installation script for ${OS}"
 
-exit 0
+set -x
 
 ###################################
 # create filesystems if necessary #
 ###################################
+
+#zfsCreateFilesystems
 
 ###############################
 # Install all the OS packages #
@@ -687,6 +702,8 @@ exit 0
 osPackageUpdate
 osPackageUpgrade
 osPackageInstallAll
+
+exit 0
 
 ##########################
 # Mempool top-level repo #
