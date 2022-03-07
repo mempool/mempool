@@ -133,7 +133,7 @@ class DatabaseMigration {
         await this.$executeQuery(connection, 'ALTER TABLE `hashrates` ADD `type` enum("daily", "weekly") DEFAULT "daily"');
       }
 
-      if (databaseSchemaVersion < 9) {
+      if (databaseSchemaVersion < 9 && isBitcoin === true) {
         logger.warn(`'hashrates' table has been truncated. Re-indexing from scratch.'`);
         await this.$executeQuery(connection, 'TRUNCATE hashrates;'); // Need to re-index
         await this.$executeQuery(connection, 'ALTER TABLE `state` CHANGE `name` `name` varchar(100)');
