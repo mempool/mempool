@@ -16,6 +16,7 @@ export interface WebsocketResponse {
   data?: string[];
   tx?: Transaction;
   rbfTransaction?: Transaction;
+  utxoSpent?: boolean;
   transactions?: TransactionStripped[];
   loadingIndicators?: ILoadingIndicators;
   backendInfo?: IBackendInfo;

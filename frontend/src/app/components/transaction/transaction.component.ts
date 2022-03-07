@@ -185,15 +185,12 @@ export class TransactionComponent implements OnInit, OnDestroy {
           this.error = undefined;
           this.waitingForTransaction = false;
           this.setMempoolBlocksSubscription();
+          this.websocketService.startTrackTransaction(tx.txid);
 
-          if (!tx.status.confirmed) {
-            this.websocketService.startTrackTransaction(tx.txid);
-
-            if (tx.firstSeen) {
-              this.transactionTime = tx.firstSeen;
-            } else {
-              this.getTransactionTime();
-            }
+          if (!tx.status.confirmed && tx.firstSeen) {
+            this.transactionTime = tx.firstSeen;
+          } else {
+            this.getTransactionTime();
           }
 
           if (this.tx.status.confirmed) {
