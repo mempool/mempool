@@ -31,7 +31,7 @@ export class MiningDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.$rewardStats = this.stateService.blocks$.pipe(
       map(([block]) => {
-        this.blocks.push(block);
+        this.blocks.unshift(block);
         this.blocks = this.blocks.slice(0, 8);
         const totalTx = this.blocks.reduce((acc, block) => acc + block.tx_count, 0);
         const totalFee = this.blocks.reduce((acc, block) => acc + block.extras?.totalFees ?? 0, 0);
