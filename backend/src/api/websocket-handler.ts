@@ -331,21 +331,30 @@ class WebsocketHandler {
         }
       }
 
-      if (client['track-tx'] && rbfTransactions[client['track-tx']]) {
-        for (const rbfTransaction in rbfTransactions) {
-          if (client['track-tx'] === rbfTransaction) {
-            const rbfTx = rbfTransactions[rbfTransaction];
-            if (config.MEMPOOL.BACKEND !== 'esplora') {
-              try {
-                const fullTx = await transactionUtils.$getTransactionExtended(rbfTransaction, true);
-                response['rbfTransaction'] = fullTx;
-              } catch (e) {
-                logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
+      if (client['track-tx']) {
+        const utxoSpent = newTransactions.some((tx) => {
+          return tx.vin.some((vin) => vin.txid === client['track-tx']);
+        });
+        if (utxoSpent) {
+          response['utxoSpent'] = true;
+        }
+
+        if (rbfTransactions[client['track-tx']]) {
+          for (const rbfTransaction in rbfTransactions) {
+            if (client['track-tx'] === rbfTransaction) {
+              const rbfTx = rbfTransactions[rbfTransaction];
+              if (config.MEMPOOL.BACKEND !== 'esplora') {
+                try {
+                  const fullTx = await transactionUtils.$getTransactionExtended(rbfTransaction, true);
+                  response['rbfTransaction'] = fullTx;
+                } catch (e) {
+                  logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
+                }
+              } else {
+                response['rbfTransaction'] = rbfTx;
               }
-            } else {
-              response['rbfTransaction'] = rbfTx;
+              break;
             }
-            break;
           }
         }
       }

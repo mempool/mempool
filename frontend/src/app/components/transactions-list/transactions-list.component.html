@@ -82,7 +82,7 @@
                   </ng-template>
                 </td>
               </tr>
-              <tr *ngIf="displayDetails">
+              <tr *ngIf="(showDetails$ | async) === true">
                 <td colspan="3" class="details-container" >
                   <table class="table table-striped table-borderless details-table mb-3">
                     <tbody>
@@ -183,16 +183,16 @@
                     <app-amount [satoshis]="vout.value"></app-amount>
                   </ng-template>
                 </td>
-                <td class="arrow-td">
-                  <span *ngIf="!outspends[i] || vout.scriptpubkey_type === 'op_return' || vout.scriptpubkey_type === 'fee' ; else outspend" class="grey">
+                <td class="arrow-td" *ngIf="{ value: (outspends$ | async) } as outspends">
+                  <span *ngIf="!outspends.value || !outspends.value[i] || vout.scriptpubkey_type === 'op_return' || vout.scriptpubkey_type === 'fee' ; else outspend" class="grey">
                     <fa-icon [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
                   </span>
                   <ng-template #outspend>
-                    <span *ngIf="!outspends[i][vindex] || !outspends[i][vindex].spent; else spent" class="green">
+                    <span *ngIf="!outspends.value[i][vindex] || !outspends.value[i][vindex].spent; else spent" class="green">
                       <fa-icon [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
                     </span>
                     <ng-template #spent>
-                      <a *ngIf="outspends[i][vindex].txid else outputNoTxId" [routerLink]="['/tx/' | relativeUrl, outspends[i][vindex].txid]" class="red">
+                      <a *ngIf="outspends.value[i][vindex].txid else outputNoTxId" [routerLink]="['/tx/' | relativeUrl, outspends.value[i][vindex].txid]" class="red">
                         <fa-icon [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
                       </a>
                       <ng-template #outputNoTxId>
@@ -204,7 +204,7 @@
                   </ng-template>
                 </td>
               </tr>
-              <tr *ngIf="displayDetails">
+              <tr *ngIf="(showDetails$ | async) === true">
                 <td colspan="3" class=" details-container" >
                   <table class="table table-striped table-borderless details-table mb-3">
                     <tbody>
