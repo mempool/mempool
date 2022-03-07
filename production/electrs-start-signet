@@ -1,7 +1,7 @@
 #!/usr/local/bin/zsh
-cd /bitcoin/electrs
-#source $HOME/.cargo/env
-#export PATH=$HOME/.cargo/bin:$PATH
+cd "${HOME}/electrs"
+#source "${HOME}/.cargo/env"
+#export PATH="${HOME}/.cargo/bin:${PATH}"
 
 until false
 do
@@ -13,11 +13,11 @@ do
 		--network signet \
 		--address-search \
 		--cors '*' \
-		--db-dir /electrs \
+		--db-dir __ELECTRS_DATA_ROOT__ \
 		--daemon-rpc-addr '127.0.0.1:38332' \
-		--daemon-dir /bitcoin \
+		--daemon-dir "${HOME}" \
 		--http-addr '[::]:3003' \
-		--cookie 'user:pass' \
-		--precache-scripts /bitcoin/electrs/contrib/popular-scripts.txt
+		--cookie '__BITCOIN_RPC_USER__:__BITCOIN_RPC_PASS__' \
+		--precache-scripts "${HOME}/electrs/contrib/popular-scripts.txt"
 	sleep 1
 done
