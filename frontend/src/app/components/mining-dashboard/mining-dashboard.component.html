@@ -2,11 +2,12 @@
 
   <div class="row row-cols-1 row-cols-md-2">
 
+    <!-- Temporary stuff here - Will be moved to a component once we have more useful data to show -->
     <div class="col">
       <div class="main-title">Reward stats</div>
       <div class="card" style="height: 123px">
         <div class="card-body more-padding">
-          <div class="difficulty-adjustment-container" *ngIf="$rewardStats | async as rewardStats">
+          <div class="fee-estimation-container" *ngIf="$rewardStats | async as rewardStats; else loadingReward">
             <div class="item">
               <h5 class="card-title" i18n="">Miners Reward</h5>
               <div class="card-text">
@@ -34,6 +35,31 @@
         </div>
       </div>
     </div>
+    <ng-template #loadingReward>
+      <div class="fee-estimation-container">
+        <div class="item">
+          <h5 class="card-title" i18n="">Miners Reward</h5>
+          <div class="card-text">
+            <div class="skeleton-loader"></div>
+            <div class="skeleton-loader"></div>
+          </div>
+        </div>
+        <div class="item">
+          <h5 class="card-title" i18n="">Reward Per Tx</h5>
+          <div class="card-text">
+            <div class="skeleton-loader"></div>
+            <div class="skeleton-loader"></div>
+          </div>
+        </div>
+        <div class="item">
+          <h5 class="card-title" i18n="">Average Fee</h5>
+          <div class="card-text">
+            <div class="skeleton-loader"></div>
+            <div class="skeleton-loader"></div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
 
     <!-- difficulty adjustment -->
     <div class="col">
