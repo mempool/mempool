@@ -81,7 +81,7 @@ export class StateService {
   mempoolInfo$ = new ReplaySubject<MempoolInfo>(1);
   mempoolBlocks$ = new ReplaySubject<MempoolBlock[]>(1);
   txReplaced$ = new Subject<Transaction>();
-  utxoSpent$ = new Subject<null>();
+  utxoSpent$ = new Subject<object>();
   mempoolTransactions$ = new Subject<Transaction>();
   blockTransactions$ = new Subject<Transaction>();
   isLoadingWebSocket$ = new ReplaySubject<boolean>(1);
