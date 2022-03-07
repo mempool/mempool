@@ -1,13 +1,16 @@
 .chart {
   max-height: 400px;
   @media (max-width: 767.98px) {
-    max-height: 300px;
+    max-height: 270px;
   }
 }
 .chart-widget {
   width: 100%;
   height: 100%;
-  max-height: 275px;
+  max-height: 270px;
+  @media (max-width: 767.98px) {
+    max-height: 200px;
+  }
 }
 
 .formRadioGroup {
@@ -43,4 +46,60 @@
 }
 .loadingGraphs.widget {
   top: 25%;
+}
+
+.pool-distribution {
+  min-height: 56px;
+  display: block;
+  @media (min-width: 485px) {
+    display: flex;
+    flex-direction: row;
+  }
+  h5 {
+    margin-bottom: 10px;
+  }
+  .item {
+    width: 50%;
+    margin: 0px auto 10px;
+    display: inline-block;
+    @media (min-width: 485px) {
+      margin: 0px auto 10px;
+    }
+    @media (min-width: 785px) {
+      margin: 0px auto 0px;
+    }
+    &:last-child {
+      margin: 0px auto 0px;
+    }
+    &:nth-child(2) {
+      order: 2;
+      @media (min-width: 485px) {
+        order: 3;
+      }
+    }
+    &:nth-child(3) {
+      order: 3;
+      @media (min-width: 485px) {
+        order: 2;
+        display: block;
+      }
+      @media (min-width: 768px) {
+        display: none;
+      }
+      @media (min-width: 992px) {
+        display: block;
+      }
+    }
+    .card-title {
+      font-size: 1rem;
+      color: #4a68b9;
+    }
+    .card-text {
+      font-size: 18px;
+      span {
+        color: #ffffff66;
+        font-size: 12px;
+      }
+    }
+  }
 }
