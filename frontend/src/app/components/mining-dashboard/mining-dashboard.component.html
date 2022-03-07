@@ -18,7 +18,7 @@
             <div class="item">
               <h5 class="card-title" i18n="">Reward Per Tx</h5>
               <div class="card-text">
-                {{ rewardStats.rewardPerTx }}
+                {{ rewardStats.rewardPerTx | amountShortener }}
                 <span class="symbol">sats/tx</span>
                 <div class="symbol">in the last 8 blocks</div>
               </div>
@@ -26,7 +26,7 @@
             <div class="item">
               <h5 class="card-title" i18n="">Average Fee</h5>
               <div class="card-text">
-                {{ rewardStats.feePerTx }}
+                {{ rewardStats.feePerTx | amountShortener}}
                 <span class="symbol">sats/tx</span>
                 <div class="symbol">in the last 8 blocks</div>
               </div>
