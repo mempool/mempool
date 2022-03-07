@@ -1,11 +1,11 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { StateService } from '../../services/state.service';
-import { Observable, forkJoin, ReplaySubject, BehaviorSubject, merge } from 'rxjs';
+import { Observable, forkJoin, ReplaySubject, BehaviorSubject, merge, of, Subject, Subscription } from 'rxjs';
 import { Outspend, Transaction } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { environment } from 'src/environments/environment';
 import { AssetsService } from 'src/app/services/assets.service';
-import { map, share, switchMap } from 'rxjs/operators';
+import { map, share, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended } from 'src/app/interfaces/node-api.interface';
 
 @Component({
@@ -27,41 +27,18 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   @Output() loadMore = new EventEmitter();
 
   latestBlock$: Observable<BlockExtended>;
-  outspends$: Observable<Outspend[]>;
+  outspendsSubscription: Subscription;
   refreshOutspends$: ReplaySubject<object> = new ReplaySubject();
   showDetails$ = new BehaviorSubject<boolean>(false);
-  _outspends: Outspend[] = [];
+  outspends: Outspend[][] = [];
   assetsMinimal: any;
 
   constructor(
     public stateService: StateService,
     private electrsApiService: ElectrsApiService,
     private assetsService: AssetsService,
-  ) {
-    this.outspends$ = merge(
-      this.refreshOutspends$,
-      this.stateService.utxoSpent$
-        .pipe(
-          map(() => {
-            this._outspends = [];
-            return { 0: this.electrsApiService.getOutspends$(this.transactions[0].txid) };
-          }),
-        )
-    ).pipe(
-      switchMap((observableObject) => forkJoin(observableObject)),
-      map((outspends: any) => {
-        const newOutspends = [];
-        for (const i in outspends) {
-          if (outspends.hasOwnProperty(i)) {
-            newOutspends.push(outspends[i]);
-          }
-        }
-        this._outspends = this._outspends.concat(newOutspends);
-        return this._outspends;
-      }),
-      share(),
-    );
-  }
+    private ref: ChangeDetectorRef,
+  ) { }
 
   ngOnInit() {
     this.latestBlock$ = this.stateService.blocks$.pipe(map(([block]) => block));
@@ -72,6 +49,34 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         this.assetsMinimal = assets;
       });
     }
+
+    this.outspendsSubscription = merge(
+      this.refreshOutspends$
+        .pipe(
+          switchMap((observableObject) => forkJoin(observableObject)),
+          map((outspends: any) => {
+            const newOutspends: Outspend[] = [];
+            for (const i in outspends) {
+              if (outspends.hasOwnProperty(i)) {
+                newOutspends.push(outspends[i]);
+              }
+            }
+            this.outspends = this.outspends.concat(newOutspends);
+          }),
+        ),
+      this.stateService.utxoSpent$
+        .pipe(
+          map((utxoSpent) => {
+            for (const i in utxoSpent) {
+              this.outspends[0][i] = {
+                spent: true,
+                txid: utxoSpent[i].txid,
+                vin: utxoSpent[i].vin,
+              };
+            }
+          }),
+        )
+    ).subscribe(() => this.ref.markForCheck());
   }
 
   ngOnChanges() {
@@ -90,7 +95,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     this.transactions.forEach((tx, i) => {
       tx['@voutLimit'] = true;
       tx['@vinLimit'] = true;
-      if (this._outspends[i]) {
+      if (this.outspends[i]) {
         return;
       }
       observableObject[i] = this.electrsApiService.getOutspends$(tx.txid);
@@ -148,5 +153,9 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     } else {
       this.showDetails$.next(true);
     }
+  }
+
+  ngOnDestroy() {
+    this.outspendsSubscription.unsubscribe();
   }
 }
