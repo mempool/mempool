@@ -332,11 +332,18 @@ class WebsocketHandler {
       }
 
       if (client['track-tx']) {
-        const utxoSpent = newTransactions.some((tx) => {
-          return tx.vin.some((vin) => vin.txid === client['track-tx']);
-        });
-        if (utxoSpent) {
-          response['utxoSpent'] = true;
+        const outspends: object = {};
+        newTransactions.forEach((tx) => tx.vin.forEach((vin, i) => {
+          if (vin.txid === client['track-tx']) {
+            outspends[vin.vout] = {
+              vin: i,
+              txid: tx.txid,
+            };
+          }
+        }));
+
+        if (Object.keys(outspends).length) {
+          response['utxoSpent'] = outspends;
         }
 
         if (rbfTransactions[client['track-tx']]) {
@@ -414,7 +421,6 @@ class WebsocketHandler {
       }
 
       if (client['track-tx'] && txIds.indexOf(client['track-tx']) > -1) {
-        client['track-tx'] = null;
         response['txConfirmed'] = true;
       }
 
