@@ -66,14 +66,7 @@ export class DifficultyComponent implements OnInit {
             }
           }
 
-          const timeAvgDiff = change * 0.1;
-
-          let timeAvgMins = 10;
-          if (timeAvgDiff > 0) {
-            timeAvgMins -= Math.abs(timeAvgDiff);
-          } else {
-            timeAvgMins += Math.abs(timeAvgDiff);
-          }
+          const timeAvgMins = blocksInEpoch ? diff / blocksInEpoch / 60 : 10;
 
           const timeAvg = timeAvgMins.toFixed(0);
           const remainingTime = (remainingBlocks * timeAvgMins * 60 * 1000) + (now * 1000);
