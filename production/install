@@ -1040,7 +1040,7 @@ fi
 
 if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
     echo "[*] Installing Bitcoin Mainnet electrs start script"
-    osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-mainnet" "${BITCOIN_ELECTRS_HOME}"
+    osSudo "${ROOT_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-mainnet" "${BITCOIN_ELECTRS_HOME}"
 
     echo "[*] Installing Bitcoin crontab"
     # FIXME: must only crontab enabled daemons
@@ -1058,7 +1058,7 @@ fi
 
 if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
     echo "[*] Installing Bitcoin Testnet electrs start script"
-    osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-testnet" "${BITCOIN_ELECTRS_HOME}"
+    osSudo "${ROOT_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-testnet" "${BITCOIN_ELECTRS_HOME}"
 
     echo "[*] Configuring Bitcoin Testnet RPC credentials in electrs start script"
     osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-testnet"
@@ -1072,7 +1072,7 @@ fi
 
 if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
     echo "[*] Installing Bitcoin Signet electrs start script"
-    osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-signet" "${BITCOIN_ELECTRS_HOME}"
+    osSudo "${ROOT_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-signet" "${BITCOIN_ELECTRS_HOME}"
 
     echo "[*] Configuring Bitcoin Signet RPC credentials in electrs start script"
     osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-signet"
@@ -1085,6 +1085,9 @@ fi
 ########################################
 
 if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
+    echo "[*] Installing Elements Liquid electrs start script"
+    osSudo "${ROOT_USER}" install -c -o "${ELEMENTS_USER}" -g "${ELEMENTS_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-liquid" "${ELEMENTS_ELECTRS_HOME}"
+
     echo "[*] Installing Elements crontab"
     # FIXME: must only crontab enabled daemons
     osSudo "${ROOT_USER}" crontab -u "${ELEMENTS_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/elements.crontab"
@@ -1100,6 +1103,9 @@ fi
 ################################################
 
 if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
+    echo "[*] Installing Elements Liquid Testnet electrs start script"
+    osSudo "${ROOT_USER}" install -c -o "${ELEMENTS_USER}" -g "${ELEMENTS_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-liquidtestnet" "${ELEMENTS_ELECTRS_HOME}"
+
     echo "[*] Installing Elements Liquid Testnet RPC credentials"
     osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${ELEMENTS_HOME}/elements.conf"
     osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
