@@ -11,7 +11,7 @@
     </ng-container>
   </a>
 
-  <div ngbDropdown (window:resize)="onResize($event)" class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.REGTEST_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED || env.LIQUID_TESTNET_ENABLED">
+  <div ngbDropdown (window:resize)="onResize($event)" class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED || env.LIQUID_TESTNET_ENABLED">
     <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split" aria-haspopup="true">
       <img src="./resources/{{ network.val === '' ? 'liquid' : network.val }}-logo.png" style="width: 25px; height: 25px;" class="mr-1">
     </button>
@@ -19,7 +19,6 @@
       <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage" ngbDropdownItem class="mainnet"><img src="./resources/bitcoin-logo.png" style="width: 30px;" class="mr-1"> Mainnet</a>
       <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage + '/signet'" ngbDropdownItem *ngIf="env.SIGNET_ENABLED" class="signet"><img src="./resources/signet-logo.png" style="width: 30px;" class="mr-1"> Signet</a>
       <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage + '/testnet'" ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet"><img src="./resources/testnet-logo.png" style="width: 30px;" class="mr-1"> Testnet</a>
-      <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage + '/regtest'" ngbDropdownItem *ngIf="env.REGTEST_ENABLED" class="regtest"><img src="./resources/regtest-logo.png" style="width: 30px;" class="mr-1"> Regtest</a>
       <h6 class="dropdown-header" i18n="master-page.layer2-networks-header">Layer 2 Networks</h6>
       <a [href]="env.BISQ_WEBSITE_URL + urlLanguage" ngbDropdownItem class="mainnet"><img src="./resources/bisq-logo.png" style="width: 30px;" class="mr-1"> Bisq</a>
       <button ngbDropdownItem class="liquid" [class.active]="network.val === 'liquid'" routerLink="/"><img src="./resources/liquid-logo.png" style="width: 30px;" class="mr-1"> Liquid</button>

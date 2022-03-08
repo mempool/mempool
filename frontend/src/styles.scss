@@ -100,10 +100,6 @@ body {
   background-color: #6f1d5d !important;
 }
 
-.navbar-nav.regtest > .active {
-  background-color: #6f1d5d !important;
-}
-
 .navbar-nav.liquidtestnet > .active {
   background-color: #494a4a !important;
 }
@@ -639,10 +635,6 @@ h1, h2, h3 {
 }
 
 .progress-mempool.signet {
-  background: repeating-linear-gradient(to right, #2d3348, #2d3348 0%, #6f1d5d 0%, #471850 100%);
-}
-
-.progress-mempool.regtest {
   background: repeating-linear-gradient(to right, #2d3348, #2d3348 0%, #6f1d5d 0%, #471850 100%);
 }
 

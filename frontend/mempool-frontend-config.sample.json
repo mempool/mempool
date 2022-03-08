@@ -1,7 +1,6 @@
 {
   "TESTNET_ENABLED": false,
   "SIGNET_ENABLED": false,
-  "REGTEST_ENABLED": false,
   "LIQUID_ENABLED": false,
   "LIQUID_TESTNET_ENABLED": false,
   "BISQ_ENABLED": false,
