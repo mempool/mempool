@@ -217,7 +217,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       this.blockSubsidy = 0;
       return;
     }
-    const halvings = Math.floor(this.block.height / (this.network === 'regtest' ? 150 : 210000));
+    const halvings = Math.floor(this.block.height / 210000);
     this.blockSubsidy = 50 * 2 ** -halvings;
   }
 
