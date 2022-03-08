@@ -8,6 +8,10 @@ class HashratesRepository {
    * Save indexed block data in the database
    */
   public async $saveHashrates(hashrates: any) {
+    if (hashrates.length === 0) {
+      return;
+    }
+
     let query = `INSERT INTO
       hashrates(hashrate_timestamp, avg_hashrate, pool_id, share, type) VALUES`;
 
@@ -20,11 +24,12 @@ class HashratesRepository {
     try {
       // logger.debug(query);
       await connection.query(query);
+      connection.release();
     } catch (e: any) {
+      connection.release();
       logger.err('$saveHashrateInDatabase() error' + (e instanceof Error ? e.message : e));
+      throw e;
     }
-
-    connection.release();
   }
 
   public async $getNetworkDailyHashrate(interval: string | null): Promise<any[]> {
@@ -46,10 +51,33 @@ class HashratesRepository {
 
     query += ` ORDER by hashrate_timestamp`;
 
-    const [rows]: any[] = await connection.query(query);
-    connection.release();
+    try {
+      const [rows]: any[] = await connection.query(query);
+      connection.release();
 
-    return rows;
+      return rows;
+    } catch (e) {
+      connection.release();
+      logger.err('$getNetworkDailyHashrate() error' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  public async $getWeeklyHashrateTimestamps(): Promise<number[]> {
+    const connection = await DB.pool.getConnection();
+
+    const query = `SELECT UNIX_TIMESTAMP(hashrate_timestamp) as timestamp FROM hashrates where type = 'weekly' GROUP BY hashrate_timestamp`;
+
+    try {
+      const [rows]: any[] = await connection.query(query);
+      connection.release();
+
+      return rows.map(row => row.timestamp);
+    } catch (e) {
+      connection.release();
+      logger.err('$getWeeklyHashrateTimestamps() error' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
   }
 
   /**
@@ -76,26 +104,44 @@ class HashratesRepository {
 
     query += ` ORDER by hashrate_timestamp, FIELD(pool_id, ${topPoolsId})`;
 
-    const [rows]: any[] = await connection.query(query);
-    connection.release();
+    try {
+      const [rows]: any[] = await connection.query(query);
+      connection.release();
 
-    return rows;
+      return rows;
+    } catch (e) {
+      connection.release();
+      logger.err('$getPoolsWeeklyHashrate() error' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
   }
 
-  public async $setLatestRunTimestamp(val: any = null) {
+  public async $setLatestRunTimestamp(key: string, val: any = null) {
     const connection = await DB.pool.getConnection();
-    const query = `UPDATE state SET number = ? WHERE name = 'last_hashrates_indexing'`;
+    const query = `UPDATE state SET number = ? WHERE name = ?`;
 
-    await connection.query<any>(query, (val === null) ? [Math.round(new Date().getTime() / 1000)] : [val]);
-    connection.release();
+    try {
+      await connection.query<any>(query, (val === null) ? [Math.round(new Date().getTime() / 1000), key] : [val, key]);
+      connection.release();
+    } catch (e) {
+      connection.release();
+    }
   }
 
-  public async $getLatestRunTimestamp(): Promise<number> {
+  public async $getLatestRunTimestamp(key: string): Promise<number> {
     const connection = await DB.pool.getConnection();
-    const query = `SELECT number FROM state WHERE name = 'last_hashrates_indexing'`;
-    const [rows] = await connection.query<any>(query);
-    connection.release();
-    return rows[0]['number'];
+    const query = `SELECT number FROM state WHERE name = ?`;
+
+    try {
+      const [rows] = await connection.query<any>(query, [key]);
+      connection.release();
+
+      return rows[0]['number'];
+    } catch (e) {
+      connection.release();
+      logger.err('$setLatestRunTimestamp() error' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
   }
 }
 

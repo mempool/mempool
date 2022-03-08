@@ -8,6 +8,7 @@ import { IBitcoinApi } from './bitcoin/bitcoin-api.interface';
 import loadingIndicators from './loading-indicators';
 import bitcoinClient from './bitcoin/bitcoin-client';
 import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
+import rbfCache from './rbf-cache';
 
 class Mempool {
   private static WEBSOCKET_REFRESH_RATE_MS = 10000;
@@ -198,6 +199,17 @@ class Mempool {
     const time = end - start;
     logger.debug(`New mempool size: ${Object.keys(this.mempoolCache).length} Change: ${diff}`);
     logger.debug('Mempool updated in ' + time / 1000 + ' seconds');
+  }
+
+  public handleRbfTransactions(rbfTransactions: { [txid: string]: TransactionExtended; }) {
+    for (const rbfTransaction in rbfTransactions) {
+      if (this.mempoolCache[rbfTransaction]) {
+        // Store replaced transactions
+        rbfCache.add(rbfTransaction, rbfTransactions[rbfTransaction].txid);
+        // Erase the replaced transactions from the local mempool
+        delete this.mempoolCache[rbfTransaction];
+      }
+    }
   }
 
   private updateTxPerSecond() {

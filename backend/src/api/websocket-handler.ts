@@ -11,6 +11,7 @@ import { Common } from './common';
 import loadingIndicators from './loading-indicators';
 import config from '../config';
 import transactionUtils from './transaction-utils';
+import rbfCache from './rbf-cache';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
@@ -48,28 +49,37 @@ class WebsocketHandler {
           if (parsedMessage && parsedMessage['track-tx']) {
             if (/^[a-fA-F0-9]{64}$/.test(parsedMessage['track-tx'])) {
               client['track-tx'] = parsedMessage['track-tx'];
-              // Client is telling the transaction wasn't found but it might have appeared before we had the time to start watching for it
+              // Client is telling the transaction wasn't found
               if (parsedMessage['watch-mempool']) {
-                const tx = memPool.getMempool()[client['track-tx']];
-                if (tx) {
-                  if (config.MEMPOOL.BACKEND === 'esplora') {
-                    response['tx'] = tx;
+                const rbfCacheTx = rbfCache.get(client['track-tx']);
+                if (rbfCacheTx) {
+                  response['txReplaced'] = {
+                    txid: rbfCacheTx.txid,
+                  };
+                  client['track-tx'] = null;
+                } else {
+                  // It might have appeared before we had the time to start watching for it
+                  const tx = memPool.getMempool()[client['track-tx']];
+                  if (tx) {
+                    if (config.MEMPOOL.BACKEND === 'esplora') {
+                      response['tx'] = tx;
+                    } else {
+                      // tx.prevout is missing from transactions when in bitcoind mode
+                      try {
+                        const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, true);
+                        response['tx'] = fullTx;
+                      } catch (e) {
+                        logger.debug('Error finding transaction: ' + (e instanceof Error ? e.message : e));
+                      }
+                    }
                   } else {
-                    // tx.prevouts is missing from transactions when in bitcoind mode
                     try {
-                      const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, true);
+                      const fullTx = await transactionUtils.$getTransactionExtended(client['track-tx'], true);
                       response['tx'] = fullTx;
                     } catch (e) {
-                      logger.debug('Error finding transaction: ' + (e instanceof Error ? e.message : e));
+                      logger.debug('Error finding transaction. ' + (e instanceof Error ? e.message : e));
+                      client['track-mempool-tx'] = parsedMessage['track-tx'];
                     }
-                  }
-                } else {
-                  try {
-                    const fullTx = await transactionUtils.$getTransactionExtended(client['track-tx'], true);
-                    response['tx'] = fullTx;
-                  } catch (e) {
-                    logger.debug('Error finding transaction. ' + (e instanceof Error ? e.message : e));
-                    client['track-mempool-tx'] = parsedMessage['track-tx'];
                   }
                 }
               }
@@ -221,14 +231,10 @@ class WebsocketHandler {
 
     mempoolBlocks.updateMempoolBlocks(newMempool);
     const mBlocks = mempoolBlocks.getMempoolBlocks();
-    const mempool = memPool.getMempool();
     const mempoolInfo = memPool.getMempoolInfo();
     const vBytesPerSecond = memPool.getVBytesPerSecond();
     const rbfTransactions = Common.findRbfTransactions(newTransactions, deletedTransactions);
-
-    for (const rbfTransaction in rbfTransactions) {
-      delete mempool[rbfTransaction];
-    }
+    memPool.handleRbfTransactions(rbfTransactions);
 
     this.wss.clients.forEach(async (client: WebSocket) => {
       if (client.readyState !== WebSocket.OPEN) {
@@ -331,21 +337,29 @@ class WebsocketHandler {
         }
       }
 
-      if (client['track-tx'] && rbfTransactions[client['track-tx']]) {
-        for (const rbfTransaction in rbfTransactions) {
-          if (client['track-tx'] === rbfTransaction) {
-            const rbfTx = rbfTransactions[rbfTransaction];
-            if (config.MEMPOOL.BACKEND !== 'esplora') {
-              try {
-                const fullTx = await transactionUtils.$getTransactionExtended(rbfTransaction, true);
-                response['rbfTransaction'] = fullTx;
-              } catch (e) {
-                logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
-              }
-            } else {
-              response['rbfTransaction'] = rbfTx;
+      if (client['track-tx']) {
+        const outspends: object = {};
+        newTransactions.forEach((tx) => tx.vin.forEach((vin, i) => {
+          if (vin.txid === client['track-tx']) {
+            outspends[vin.vout] = {
+              vin: i,
+              txid: tx.txid,
+            };
+          }
+        }));
+
+        if (Object.keys(outspends).length) {
+          response['utxoSpent'] = outspends;
+        }
+
+        if (rbfTransactions[client['track-tx']]) {
+          for (const rbfTransaction in rbfTransactions) {
+            if (client['track-tx'] === rbfTransaction) {
+              response['rbfTransaction'] = {
+                txid: rbfTransactions[rbfTransaction].txid,
+              };
+              break;
             }
-            break;
           }
         }
       }
@@ -405,7 +419,6 @@ class WebsocketHandler {
       }
 
       if (client['track-tx'] && txIds.indexOf(client['track-tx']) > -1) {
-        client['track-tx'] = null;
         response['txConfirmed'] = true;
       }
 

@@ -96,8 +96,8 @@ class Server {
           await Common.sleep(5000);
           await databaseMigration.$truncateIndexedData(tables);
         }
-        await this.$resetHashratesIndexingState();
         await databaseMigration.$initializeOrMigrateDatabase();
+        await this.$resetHashratesIndexingState();
         await poolsParser.migratePoolsJson();
       } catch (e) {
         throw new Error(e instanceof Error ? e.message : 'Error');
@@ -167,7 +167,8 @@ class Server {
   }
 
   async $resetHashratesIndexingState() {
-    return await HashratesRepository.$setLatestRunTimestamp(0);    
+    await HashratesRepository.$setLatestRunTimestamp('last_hashrates_indexing', 0);
+    await HashratesRepository.$setLatestRunTimestamp('last_weekly_hashrates_indexing', 0);
   }
 
   async $runIndexingWhenReady() {
@@ -176,8 +177,9 @@ class Server {
     }
 
     try {
-      await blocks.$generateBlockDatabase();
-      await mining.$generateNetworkHashrateHistory();
+      blocks.$generateBlockDatabase();
+      mining.$generateNetworkHashrateHistory();
+      mining.$generatePoolHashrateHistory();
     } catch (e) {
       logger.err(`Unable to run indexing right now, trying again later. ` + e);
     }
