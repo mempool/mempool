@@ -3,11 +3,6 @@ import { DB } from '../database';
 import logger from '../logger';
 import { Common } from '../api/common';
 
-export interface EmptyBlocks {
-  emptyBlocks: number;
-  poolId: number;
-}
-
 class BlocksRepository {
   /**
    * Save indexed block data in the database
@@ -100,12 +95,13 @@ class BlocksRepository {
   /**
    * Get empty blocks for one or all pools
    */
-  public async $getEmptyBlocks(poolId: number | null, interval: string | null = null): Promise<EmptyBlocks[]> {
+  public async $countEmptyBlocks(poolId: number | null, interval: string | null = null): Promise<any> {
     interval = Common.getSqlInterval(interval);
 
     const params: any[] = [];
-    let query = `SELECT height, hash, tx_count, size, pool_id, weight, UNIX_TIMESTAMP(blockTimestamp) as timestamp
+    let query = `SELECT count(height) as count, pools.id as poolId
       FROM blocks
+      JOIN pools on pools.id = blocks.pool_id
       WHERE tx_count = 1`;
 
     if (poolId) {
@@ -117,13 +113,14 @@ class BlocksRepository {
       query += ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
     }
 
-    // logger.debug(query);
+    query += ` GROUP by pools.id`;
+
     const connection = await DB.pool.getConnection();
     try {
       const [rows] = await connection.query(query, params);
       connection.release();
 
-      return <EmptyBlocks[]>rows;
+      return rows;
     } catch (e) {
       connection.release();
       logger.err('$getEmptyBlocks() error' + (e instanceof Error ? e.message : e));
