@@ -2,7 +2,7 @@
 
   <div *ngIf="poolStats$ | async as poolStats; else loadingMain">
     <h1 class="m-0 mb-2">
-      <img width="50" src="{{ poolStats['logo'] }}" onError="this.src = './resources/mining-pools/default.svg'"
+      <img width="50" height="50" src="{{ poolStats['logo'] }}" onError="this.src = './resources/mining-pools/default.svg'"
         class="mr-3">
       {{ poolStats.pool.name }}
     </h1>
@@ -91,7 +91,7 @@
 <ng-template #loadingMain>
   <div>
     <h1 class="m-0 mb-2">
-      <img width="50" src="./resources/mining-pools/default.svg" class="mr-3">
+      <img width="50" height="50" src="./resources/mining-pools/default.svg" class="mr-3">
       <div class="skeleton-loader"></div>
     </h1>
 
