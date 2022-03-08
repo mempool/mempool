@@ -61,6 +61,7 @@ export class PoolComponent implements OnInit {
           return this.apiService.getPoolHashrate$(this.poolId)
             .pipe(
               switchMap((data) => {
+                this.isLoading = false;
                 this.prepareChartOptions(data.hashrates.map(val => [val.timestamp * 1000, val.avgHashrate]));
                 return poolId;
               }),
@@ -80,7 +81,6 @@ export class PoolComponent implements OnInit {
           poolStats.pool.regexes = regexes.slice(0, -3);
           poolStats.pool.addresses = poolStats.pool.addresses;
 
-          this.isLoading = false;
           return Object.assign({
             logo: `./resources/mining-pools/` + poolStats.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg'
           }, poolStats);
