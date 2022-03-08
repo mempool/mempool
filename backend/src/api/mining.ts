@@ -1,5 +1,5 @@
 import { PoolInfo, PoolStats } from '../mempool.interfaces';
-import BlocksRepository, { EmptyBlocks } from '../repositories/BlocksRepository';
+import BlocksRepository from '../repositories/BlocksRepository';
 import PoolsRepository from '../repositories/PoolsRepository';
 import HashratesRepository from '../repositories/HashratesRepository';
 import bitcoinClient from './bitcoin/bitcoin-client';
@@ -20,25 +20,21 @@ class Mining {
     const poolsStatistics = {};
 
     const poolsInfo: PoolInfo[] = await PoolsRepository.$getPoolsInfo(interval);
-    const emptyBlocks: EmptyBlocks[] = await BlocksRepository.$getEmptyBlocks(null, interval);
+    const emptyBlocks: any[] = await BlocksRepository.$countEmptyBlocks(null, interval);
 
     const poolsStats: PoolStats[] = [];
     let rank = 1;
 
     poolsInfo.forEach((poolInfo: PoolInfo) => {
+      const emptyBlocksCount = emptyBlocks.filter((emptyCount) => emptyCount.poolId === poolInfo.poolId);
       const poolStat: PoolStats = {
         poolId: poolInfo.poolId, // mysql row id
         name: poolInfo.name,
         link: poolInfo.link,
         blockCount: poolInfo.blockCount,
         rank: rank++,
-        emptyBlocks: 0
+        emptyBlocks: emptyBlocksCount.length > 0 ? emptyBlocksCount[0]['count'] : 0
       };
-      for (let i = 0; i < emptyBlocks.length; ++i) {
-        if (emptyBlocks[i].poolId === poolInfo.poolId) {
-          poolStat.emptyBlocks++;
-        }
-      }
       poolsStats.push(poolStat);
     });
 
@@ -65,12 +61,12 @@ class Mining {
     }
 
     const blockCount: number = await BlocksRepository.$blockCount(poolId);
-    const emptyBlocks: EmptyBlocks[] = await BlocksRepository.$getEmptyBlocks(poolId);
+    const emptyBlocksCount = await BlocksRepository.$countEmptyBlocks(poolId);
 
     return {
       pool: pool,
       blockCount: blockCount,
-      emptyBlocks: emptyBlocks,
+      emptyBlocks: emptyBlocksCount.length > 0 ? emptyBlocksCount[0]['count'] : 0,
     };
   }
 
