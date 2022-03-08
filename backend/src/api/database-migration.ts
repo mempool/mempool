@@ -140,6 +140,10 @@ class DatabaseMigration {
         await this.$executeQuery(connection, 'ALTER TABLE `hashrates` ADD UNIQUE `hashrate_timestamp_pool_id` (`hashrate_timestamp`, `pool_id`)');
       }
 
+      if (databaseSchemaVersion < 10 && isBitcoin === true) {
+        await this.$executeQuery(connection, 'ALTER TABLE `blocks` ADD INDEX `blockTimestamp` (`blockTimestamp`)');
+      }
+
       connection.release();
     } catch (e) {
       connection.release();
