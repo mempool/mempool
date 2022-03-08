@@ -299,6 +299,7 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/2y', routes.$getPools.bind(routes, '2y'))
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/3y', routes.$getPools.bind(routes, '3y'))
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/all', routes.$getPools.bind(routes, 'all'))
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:poolId/hashrate', routes.$getPoolHistoricalHashrate)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:poolId/blocks', routes.$getPoolBlocks)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:poolId/blocks/:height', routes.$getPoolBlocks)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:poolId', routes.$getPool)

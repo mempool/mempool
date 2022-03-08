@@ -18,9 +18,8 @@
   display: flex;
   flex-direction: column;
   @media (min-width: 830px) {
-    margin-left: 2%;
     flex-direction: row;
-    float: left;
+    float: right;
     margin-top: 0px;
   }
   .btn-sm {
@@ -38,4 +37,14 @@ div.scrollable {
   padding: 0;
   overflow: auto;
   max-height: 100px;
+}
+
+.skeleton-loader {
+  width: 100%;
+  max-width: 90px;
+}
+
+.table {
+  margin: 0px auto;
+  max-width: 900px;
 }

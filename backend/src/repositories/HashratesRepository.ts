@@ -116,6 +116,52 @@ class HashratesRepository {
     }
   }
 
+  /**
+   * Returns a pool hashrate history
+   */
+   public async $getPoolWeeklyHashrate(poolId: number): Promise<any[]> {
+    const connection = await DB.pool.getConnection();
+
+    // Find hashrate boundaries
+    let query = `SELECT MIN(hashrate_timestamp) as firstTimestamp, MAX(hashrate_timestamp) as lastTimestamp
+      FROM hashrates 
+      JOIN pools on pools.id = pool_id 
+      WHERE hashrates.type = 'weekly' AND pool_id = ? AND avg_hashrate != 0
+      ORDER by hashrate_timestamp LIMIT 1`;
+
+    let boundaries = {
+      firstTimestamp: '1970-01-01',
+      lastTimestamp: '9999-01-01'
+    };
+    try {
+      const [rows]: any[] = await connection.query(query, [poolId]);
+      boundaries = rows[0];
+      connection.release();
+    } catch (e) {
+      connection.release();
+      logger.err('$getPoolWeeklyHashrate() error' + (e instanceof Error ? e.message : e));
+    }
+
+    // Get hashrates entries between boundaries
+    query = `SELECT UNIX_TIMESTAMP(hashrate_timestamp) as timestamp, avg_hashrate as avgHashrate, share, pools.name as poolName
+      FROM hashrates
+      JOIN pools on pools.id = pool_id
+      WHERE hashrates.type = 'weekly' AND hashrate_timestamp BETWEEN ? AND ?
+      AND pool_id = ?
+      ORDER by hashrate_timestamp`;
+
+    try {
+      const [rows]: any[] = await connection.query(query, [boundaries.firstTimestamp, boundaries.lastTimestamp, poolId]);
+      connection.release();
+
+      return rows;
+    } catch (e) {
+      connection.release();
+      logger.err('$getPoolWeeklyHashrate() error' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
   public async $setLatestRunTimestamp(key: string, val: any = null) {
     const connection = await DB.pool.getConnection();
     const query = `UPDATE state SET number = ? WHERE name = ?`;
@@ -136,6 +182,9 @@ class HashratesRepository {
       const [rows] = await connection.query<any>(query, [key]);
       connection.release();
 
+      if (rows.length === 0) {
+        return 0;
+      }
       return rows[0]['number'];
     } catch (e) {
       connection.release();
