@@ -37,6 +37,8 @@ export class TransactionComponent implements OnInit, OnDestroy {
   transactionTime = -1;
   subscription: Subscription;
   fetchCpfpSubscription: Subscription;
+  txReplacedSubscription: Subscription;
+  blocksSubscription: Subscription;
   rbfTransaction: undefined | Transaction;
   cpfpInfo: CpfpInfo | null;
   showCpfpDetails = false;
@@ -217,7 +219,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
         }
       );
 
-    this.stateService.blocks$.subscribe(([block, txConfirmed]) => {
+    this.blocksSubscription = this.stateService.blocks$.subscribe(([block, txConfirmed]) => {
       this.latestBlock = block;
 
       if (txConfirmed && this.tx) {
@@ -232,9 +234,13 @@ export class TransactionComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.stateService.txReplaced$.subscribe(
-      (rbfTransaction) => (this.rbfTransaction = rbfTransaction)
-    );
+    this.txReplacedSubscription = this.stateService.txReplaced$.subscribe((rbfTransaction) => {
+      if (!rbfTransaction.size) {
+        this.error = new Error();
+        this.waitingForTransaction = false;
+      }
+      this.rbfTransaction = rbfTransaction;
+    });
   }
 
   handleLoadElectrsTransactionError(error: any): Observable<any> {
@@ -302,6 +308,8 @@ export class TransactionComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscription.unsubscribe();
     this.fetchCpfpSubscription.unsubscribe();
+    this.txReplacedSubscription.unsubscribe();
+    this.blocksSubscription.unsubscribe();
     this.leaveTransaction();
   }
 }
