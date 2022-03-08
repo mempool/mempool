@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { EChartsOption, graphic } from 'echarts';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { distinctUntilChanged, map, startWith, switchMap, tap, toArray } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { distinctUntilChanged, map, switchMap, tap, toArray } from 'rxjs/operators';
 import { BlockExtended, PoolStat } from 'src/app/interfaces/node-api.interface';
 import { ApiService } from 'src/app/services/api.service';
 import { StateService } from 'src/app/services/state.service';
@@ -24,8 +23,6 @@ export class PoolComponent implements OnInit {
   blocks$: Observable<BlockExtended[]>;
   isLoading = true;
 
-  radioGroupForm: FormGroup;
-
   chartOptions: EChartsOption = {};
   chartInitOptions = {
     renderer: 'svg',
@@ -44,34 +41,27 @@ export class PoolComponent implements OnInit {
     private apiService: ApiService,
     private route: ActivatedRoute,
     public stateService: StateService,
-    private formBuilder: FormBuilder,
   ) {
-    this.radioGroupForm = this.formBuilder.group({ dateSpan: 'all' });
-    this.radioGroupForm.controls.dateSpan.setValue('all');
   }
 
   ngOnInit(): void {
-    this.poolStats$ = combineLatest([
-      this.route.params.pipe(map((params) => params.poolId)),
-      this.radioGroupForm.get('dateSpan').valueChanges.pipe(startWith('all')),
-    ])
+    this.poolStats$ = this.route.params.pipe(map((params) => params.poolId))
       .pipe(
-        switchMap((params: any) => {
-          this.poolId = params[0];
-          return this.apiService.getPoolHashrate$(this.poolId, params[1] ?? 'all')
+        switchMap((poolId: any) => {
+          this.poolId = poolId;
+          return this.apiService.getPoolHashrate$(this.poolId)
             .pipe(
               switchMap((data) => {
                 this.prepareChartOptions(data.hashrates.map(val => [val.timestamp * 1000, val.avgHashrate]));
-                return params;
+                return poolId;
               }),
-              toArray(),
             )
         }),
-        switchMap((params: any) => {
+        switchMap(() => {
           if (this.blocks.length === 0) {
             this.fromHeightSubject.next(undefined);
           }
-          return this.apiService.getPoolStats$(this.poolId, params[1] ?? '1w');
+          return this.apiService.getPoolStats$(this.poolId);
         }),
         map((poolStats) => {
           let regexes = '"';
