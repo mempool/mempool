@@ -355,17 +355,9 @@ class WebsocketHandler {
         if (rbfTransactions[client['track-tx']]) {
           for (const rbfTransaction in rbfTransactions) {
             if (client['track-tx'] === rbfTransaction) {
-              const rbfTx = rbfTransactions[rbfTransaction];
-              if (config.MEMPOOL.BACKEND !== 'esplora') {
-                try {
-                  const fullTx = await transactionUtils.$getTransactionExtended(rbfTx.txid, true);
-                  response['rbfTransaction'] = fullTx;
-                } catch (e) {
-                  logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
-                }
-              } else {
-                response['rbfTransaction'] = rbfTx;
-              }
+              response['rbfTransaction'] = {
+                txid: rbfTransactions[rbfTransaction].txid,
+              };
               break;
             }
           }
