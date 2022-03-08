@@ -13,6 +13,14 @@ import { formatNumber } from '@angular/common';
   selector: 'app-pool',
   templateUrl: './pool.component.html',
   styleUrls: ['./pool.component.scss'],
+  styles: [`
+    .loadingGraphs {
+      position: absolute;
+      top: 50%;
+      left: calc(50% - 15px);
+      z-index: 100;
+    }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PoolComponent implements OnInit {
@@ -48,6 +56,7 @@ export class PoolComponent implements OnInit {
     this.poolStats$ = this.route.params.pipe(map((params) => params.poolId))
       .pipe(
         switchMap((poolId: any) => {
+          this.isLoading = true;
           this.poolId = poolId;
           return this.apiService.getPoolHashrate$(this.poolId)
             .pipe(
