@@ -239,6 +239,10 @@ export class WebsocketService {
       this.stateService.txReplaced$.next(response.rbfTransaction);
     }
 
+    if (response.txReplaced) {
+      this.stateService.txReplaced$.next(response.txReplaced);
+    }
+
     if (response['mempool-blocks']) {
       this.stateService.mempoolBlocks$.next(response['mempool-blocks']);
     }
@@ -249,6 +253,10 @@ export class WebsocketService {
 
     if (response['bsq-price']) {
       this.stateService.bsqPrice$.next(response['bsq-price']);
+    }
+
+    if (response.utxoSpent) {
+      this.stateService.utxoSpent$.next(response.utxoSpent);
     }
 
     if (response.backendInfo) {

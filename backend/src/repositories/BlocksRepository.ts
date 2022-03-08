@@ -53,15 +53,17 @@ class BlocksRepository {
 
       // logger.debug(query);
       await connection.query(query, params);
+      connection.release();
     } catch (e: any) {
+      connection.release();
       if (e.errno === 1062) { // ER_DUP_ENTRY
         logger.debug(`$saveBlockInDatabase() - Block ${block.height} has already been indexed, ignoring`);
       } else {
+        connection.release();
         logger.err('$saveBlockInDatabase() error' + (e instanceof Error ? e.message : e));
+        throw e;
       }
     }
-
-    connection.release();
   }
 
   /**
@@ -73,20 +75,26 @@ class BlocksRepository {
     }
 
     const connection = await DB.pool.getConnection();
-    const [rows]: any[] = await connection.query(`
-      SELECT height
-      FROM blocks
-      WHERE height <= ? AND height >= ?
-      ORDER BY height DESC;
-    `, [startHeight, endHeight]);
-    connection.release();
+    try {
+      const [rows]: any[] = await connection.query(`
+        SELECT height
+        FROM blocks
+        WHERE height <= ? AND height >= ?
+        ORDER BY height DESC;
+      `, [startHeight, endHeight]);
+      connection.release();
 
-    const indexedBlockHeights: number[] = [];
-    rows.forEach((row: any) => { indexedBlockHeights.push(row.height); });
-    const seekedBlocks: number[] = Array.from(Array(startHeight - endHeight + 1).keys(), n => n + endHeight).reverse();
-    const missingBlocksHeights = seekedBlocks.filter(x => indexedBlockHeights.indexOf(x) === -1);
+      const indexedBlockHeights: number[] = [];
+      rows.forEach((row: any) => { indexedBlockHeights.push(row.height); });
+      const seekedBlocks: number[] = Array.from(Array(startHeight - endHeight + 1).keys(), n => n + endHeight).reverse();
+      const missingBlocksHeights = seekedBlocks.filter(x => indexedBlockHeights.indexOf(x) === -1);
 
-    return missingBlocksHeights;
+      return missingBlocksHeights;
+    } catch (e) {
+      connection.release();
+      logger.err('$getMissingBlocksBetweenHeights() error' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
   }
 
   /**
@@ -111,10 +119,16 @@ class BlocksRepository {
 
     // logger.debug(query);
     const connection = await DB.pool.getConnection();
-    const [rows] = await connection.query(query, params);
-    connection.release();
+    try {
+      const [rows] = await connection.query(query, params);
+      connection.release();
 
-    return <EmptyBlocks[]>rows;
+      return <EmptyBlocks[]>rows;
+    } catch (e) {
+      connection.release();
+      logger.err('$getEmptyBlocks() error' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
   }
 
   /**
@@ -143,10 +157,16 @@ class BlocksRepository {
 
     // logger.debug(query);
     const connection = await DB.pool.getConnection();
-    const [rows] = await connection.query(query, params);
-    connection.release();
+    try {
+      const [rows] = await connection.query(query, params);
+      connection.release();
 
-    return <number>rows[0].blockCount;
+      return <number>rows[0].blockCount;
+    } catch (e) {
+      connection.release();
+      logger.err('$blockCount() error' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
   }
 
   /**
@@ -177,10 +197,16 @@ class BlocksRepository {
 
     // logger.debug(query);
     const connection = await DB.pool.getConnection();
-    const [rows] = await connection.query(query, params);
-    connection.release();
+    try {
+      const [rows] = await connection.query(query, params);
+      connection.release();
 
-    return <number>rows[0];
+      return <number>rows[0];
+    } catch (e) {
+      connection.release();
+      logger.err('$blockCountBetweenTimestamp() error' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
   }
 
   /**
@@ -194,23 +220,26 @@ class BlocksRepository {
 
     // logger.debug(query);
     const connection = await DB.pool.getConnection();
-    const [rows]: any[] = await connection.query(query);
-    connection.release();
+    try {
+      const [rows]: any[] = await connection.query(query);
+      connection.release();
 
-    if (rows.length <= 0) {
-      return -1;
+      if (rows.length <= 0) {
+        return -1;
+      }
+
+      return <number>rows[0].blockTimestamp;
+    } catch (e) {
+      connection.release();
+      logger.err('$oldestBlockTimestamp() error' + (e instanceof Error ? e.message : e));
+      throw e;
     }
-
-    return <number>rows[0].blockTimestamp;
   }
 
   /**
    * Get blocks mined by a specific mining pool
    */
-  public async $getBlocksByPool(
-    poolId: number,
-    startHeight: number | null = null
-  ): Promise<object[]> {
+  public async $getBlocksByPool(poolId: number, startHeight: number | null = null): Promise<object[]> {
     const params: any[] = [];
     let query = `SELECT height, hash as id, tx_count, size, weight, pool_id, UNIX_TIMESTAMP(blockTimestamp) as timestamp, reward
       FROM blocks
@@ -227,14 +256,20 @@ class BlocksRepository {
 
     // logger.debug(query);
     const connection = await DB.pool.getConnection();
-    const [rows] = await connection.query(query, params);
-    connection.release();
+    try {
+      const [rows] = await connection.query(query, params);
+      connection.release();
 
-    for (const block of <object[]>rows) {
-      delete block['blockTimestamp'];
+      for (const block of <object[]>rows) {
+        delete block['blockTimestamp'];
+      }
+
+      return <object[]>rows;
+    } catch (e) {
+      connection.release();
+      logger.err('$getBlocksByPool() error' + (e instanceof Error ? e.message : e));
+      throw e;
     }
-
-    return <object[]>rows;
   }
 
   /**
@@ -242,19 +277,25 @@ class BlocksRepository {
    */
    public async $getBlockByHeight(height: number): Promise<object | null> {
     const connection = await DB.pool.getConnection();
-    const [rows]: any[] = await connection.query(`
-      SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp, pools.id as pool_id, pools.name as pool_name, pools.link as pool_link, pools.addresses as pool_addresses, pools.regexes as pool_regexes
-      FROM blocks
-      JOIN pools ON blocks.pool_id = pools.id
-      WHERE height = ${height};
-    `);
-    connection.release();
+    try {
+      const [rows]: any[] = await connection.query(`
+        SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp, pools.id as pool_id, pools.name as pool_name, pools.link as pool_link, pools.addresses as pool_addresses, pools.regexes as pool_regexes
+        FROM blocks
+        JOIN pools ON blocks.pool_id = pools.id
+        WHERE height = ${height};
+      `);
+      connection.release();
 
-    if (rows.length <= 0) {
-      return null;
+      if (rows.length <= 0) {
+        return null;
+      }
+
+      return rows[0];
+    } catch (e) {
+      connection.release();
+      logger.err('$getBlockByHeight() error' + (e instanceof Error ? e.message : e));
+      throw e;
     }
-
-    return rows[0];
   }
 
   /**
@@ -297,21 +338,34 @@ class BlocksRepository {
       ORDER BY t.height
     `;
 
-    const [rows]: any[] = await connection.query(query);
-    connection.release();
+    try {
+      const [rows]: any[] = await connection.query(query);
+      connection.release();
 
-    for (let row of rows) {
-      delete row['rn'];
+      for (let row of rows) {
+        delete row['rn'];
+      }
+
+      return rows;
+    } catch (e) {
+      connection.release();
+      logger.err('$getBlocksDifficulty() error' + (e instanceof Error ? e.message : e));
+      throw e;
     }
-
-    return rows;
   }
 
   public async $getOldestIndexedBlockHeight(): Promise<number> {
     const connection = await DB.pool.getConnection();
-    const [rows]: any[] = await connection.query(`SELECT MIN(height) as minHeight FROM blocks`);
-    connection.release();
-    return rows[0].minHeight;
+    try {
+      const [rows]: any[] = await connection.query(`SELECT MIN(height) as minHeight FROM blocks`);
+      connection.release();
+
+      return rows[0].minHeight;
+    } catch (e) {
+      connection.release();
+      logger.err('$getOldestIndexedBlockHeight() error' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
   }
 }
 

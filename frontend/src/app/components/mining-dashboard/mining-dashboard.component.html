@@ -2,36 +2,124 @@
 
   <div class="row row-cols-1 row-cols-md-2">
 
+    <!-- Temporary stuff here - Will be moved to a component once we have more useful data to show -->
     <div class="col">
-      <div class="card double">
-        <div class="card-body">
-          <!-- pool distribution -->
-          <h5 class="card-title">
-            <a href="" [routerLink]="['/mining/pools' | relativeUrl]" i18n="mining.pool-share">
-              Mining Pools Share (1w)
-            </a>
-          </h5>
-          <app-pool-ranking [widget]=true></app-pool-ranking>
+      <div class="main-title">Reward stats</div>
+      <div class="card" style="height: 123px">
+        <div class="card-body more-padding">
+          <div class="fee-estimation-container" *ngIf="$rewardStats | async as rewardStats; else loadingReward">
+            <div class="item">
+              <h5 class="card-title" i18n="">Miners Reward</h5>
+              <div class="card-text">
+                <app-amount [satoshis]="rewardStats.totalReward" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
+                <div class="symbol">in the last 8 blocks</div>
+              </div>
+            </div>
+            <div class="item">
+              <h5 class="card-title" i18n="">Reward Per Tx</h5>
+              <div class="card-text">
+                {{ rewardStats.rewardPerTx | amountShortener }}
+                <span class="symbol">sats/tx</span>
+                <div class="symbol">in the last 8 blocks</div>
+              </div>
+            </div>
+            <div class="item">
+              <h5 class="card-title" i18n="">Average Fee</h5>
+              <div class="card-text">
+                {{ rewardStats.feePerTx | amountShortener}}
+                <span class="symbol">sats/tx</span>
+                <div class="symbol">in the last 8 blocks</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ng-template #loadingReward>
+      <div class="fee-estimation-container">
+        <div class="item">
+          <h5 class="card-title" i18n="">Miners Reward</h5>
+          <div class="card-text">
+            <div class="skeleton-loader"></div>
+            <div class="skeleton-loader"></div>
+          </div>
+        </div>
+        <div class="item">
+          <h5 class="card-title" i18n="">Reward Per Tx</h5>
+          <div class="card-text">
+            <div class="skeleton-loader"></div>
+            <div class="skeleton-loader"></div>
+          </div>
+        </div>
+        <div class="item">
+          <h5 class="card-title" i18n="">Average Fee</h5>
+          <div class="card-text">
+            <div class="skeleton-loader"></div>
+            <div class="skeleton-loader"></div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
 
-          <!-- pools hashrate -->
+    <!-- difficulty adjustment -->
+    <div class="col">
+      <div class="main-title" i18n="dashboard.difficulty-adjustment">Difficulty Adjustment</div>
+      <div class="card" style="height: 123px">
+        <app-difficulty [showTitle]="false" [showProgress]="false" [showHalving]="true"></app-difficulty>
+      </div>
+    </div>
+
+    <!-- pool distribution -->
+    <div class="col">
+      <div class="card" style="height: 385px">
+        <div class="card-body">
+          <app-pool-ranking [widget]=true></app-pool-ranking>
+          <div class="mt-1"><a [routerLink]="['/mining/pools' | relativeUrl]" i18n="dashboard.view-more">View more
+              &raquo;</a></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- hashrate -->
+    <div class="col">
+      <div class="card" style="height: 385px">
+        <div class="card-body">
+          <h5 class="card-title">
+            Hashrate (1y)
+          </h5>
+          <app-hashrate-chart [widget]=true></app-hashrate-chart>
+          <div class="mt-1"><a [routerLink]="['/mining/hashrate' | relativeUrl]" i18n="dashboard.view-more">View more
+              &raquo;</a></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- pool dominance -->
+    <div class="col">
+      <div class="card" style="height: 385px">
+        <div class="card-body">
+          <h5 class="card-title">
+            Mining Pools Dominance (1y)
+          </h5>
           <app-hashrate-chart-pools [widget]=true></app-hashrate-chart-pools>
+          <div class="mt-1"><a [routerLink]="['/mining/hashrate/pools' | relativeUrl]" i18n="dashboard.view-more">View
+              more &raquo;</a></div>
         </div>
       </div>
     </div>
 
     <div class="col">
-      <div class="card">
+      <div class="card" style="height: 385px">
         <div class="card-body">
-          <!-- hashrate -->
           <h5 class="card-title">
-            <a class="link" href="" [routerLink]="['/mining/hashrate' | relativeUrl]" i18n="mining.hashrate">
-              Hashrate (1y)
-            </a>
+            Adjustments
           </h5>
-          <app-hashrate-chart [widget]=true></app-hashrate-chart>
+          <app-hashrate-chart [tableOnly]=true [widget]=true></app-hashrate-chart>
+          <div class="mt-1"><a [routerLink]="['/mining/hashrate' | relativeUrl]" i18n="dashboard.view-more">View more
+              &raquo;</a></div>
         </div>
       </div>
-    </div>  
+    </div>
 
   </div>
 </div>

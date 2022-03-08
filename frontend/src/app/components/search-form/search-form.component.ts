@@ -8,6 +8,7 @@ import { debounceTime, distinctUntilChanged, switchMap, filter, catchError, map 
 import { ElectrsApiService } from 'src/app/services/electrs-api.service';
 import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
+import { ShortenStringPipe } from 'src/app/shared/pipes/shorten-string-pipe/shorten-string.pipe';
 
 @Component({
   selector: 'app-search-form',
@@ -22,6 +23,7 @@ export class SearchFormComponent implements OnInit {
   typeaheadSearchFn: ((text: Observable<string>) => Observable<readonly any[]>);
 
   searchForm: FormGroup;
+  isMobile = (window.innerWidth <= 767.98);
   @Output() searchTriggered = new EventEmitter();
 
   regexAddress = /^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,100}|[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100})$/;
@@ -33,6 +35,8 @@ export class SearchFormComponent implements OnInit {
   focus$ = new Subject<string>();
   click$ = new Subject<string>();
 
+  formatterFn = (address: string) => this.shortenStringPipe.transform(address, this.isMobile ? 33 : 40);
+
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
@@ -40,6 +44,7 @@ export class SearchFormComponent implements OnInit {
     private stateService: StateService,
     private electrsApiService: ElectrsApiService,
     private relativeUrlPipe: RelativeUrlPipe,
+    private shortenStringPipe: ShortenStringPipe,
   ) { }
 
   ngOnInit() {

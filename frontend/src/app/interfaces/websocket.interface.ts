@@ -15,7 +15,9 @@ export interface WebsocketResponse {
   action?: string;
   data?: string[];
   tx?: Transaction;
-  rbfTransaction?: Transaction;
+  rbfTransaction?: ReplacedTransaction;
+  txReplaced?: ReplacedTransaction;
+  utxoSpent?: object;
   transactions?: TransactionStripped[];
   loadingIndicators?: ILoadingIndicators;
   backendInfo?: IBackendInfo;
@@ -26,6 +28,9 @@ export interface WebsocketResponse {
   'track-bisq-market'?: string;
 }
 
+export interface ReplacedTransaction extends Transaction {
+  txid: string;
+}
 export interface MempoolBlock {
   blink?: boolean;
   height?: number;

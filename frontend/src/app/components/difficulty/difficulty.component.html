@@ -1,4 +1,4 @@
-<div class="main-title" i18n="dashboard.difficulty-adjustment">Difficulty Adjustment</div>
+<div *ngIf="showTitle" class="main-title" i18n="dashboard.difficulty-adjustment">Difficulty Adjustment</div>
 <div class="card-wrapper">
   <div class="card">
     <div class="card-body more-padding">
@@ -47,7 +47,7 @@
           </div>
         </div>
         <div class="item" *ngIf="showHalving">
-          <h5 class="card-title" i18n="difficulty-box.next-halving">Next halving</h5>
+          <h5 class="card-title" i18n="difficulty-box.next-halving">Next Halving</h5>
           <div class="card-text">
             <ng-container *ngTemplateOutlet="epochData.blocksUntilHalving === 1 ? blocksSingular : blocksPlural; context: {$implicit: epochData.blocksUntilHalving }"></ng-container>
             <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>

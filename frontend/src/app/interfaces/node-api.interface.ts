@@ -64,7 +64,7 @@ export interface SinglePoolStats {
   blockCount: number;
   emptyBlocks: number;
   rank: number;
-  share: string;
+  share: number;
   lastEstimatedHashrate: string;
   emptyBlockRatio: string;
   logo: string;
@@ -73,13 +73,6 @@ export interface PoolsStats {
   blockCount: number;
   lastEstimatedHashrate: number;
   oldestIndexedBlockTimestamp: number;
-  pools: SinglePoolStats[];
-}
-export interface MiningStats {
-  lastEstimatedHashrate: string;
-  blockCount: number;
-  totalEmptyBlock: number;
-  totalEmptyBlockRatio: string;
   pools: SinglePoolStats[];
 }
 

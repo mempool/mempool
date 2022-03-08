@@ -74,6 +74,7 @@ import { HashrateChartComponent } from './components/hashrate-chart/hashrate-cha
 import { HashrateChartPoolsComponent } from './components/hashrates-chart-pools/hashrate-chart-pools.component';
 import { MiningStartComponent } from './components/mining-start/mining-start.component';
 import { AmountShortenerPipe } from './shared/pipes/amount-shortener.pipe';
+import { ShortenStringPipe } from './shared/pipes/shorten-string-pipe/shorten-string.pipe';
 
 @NgModule({
   declarations: [
@@ -154,6 +155,7 @@ import { AmountShortenerPipe } from './shared/pipes/amount-shortener.pipe';
     SeoService,
     StorageService,
     LanguageService,
+    ShortenStringPipe,
     { provide: HTTP_INTERCEPTORS, useClass: HttpCacheInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
