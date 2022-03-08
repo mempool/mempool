@@ -143,6 +143,10 @@ export class ApiService {
     );
   }
 
+  getPoolHashrate$(poolId: number, interval: string | undefined): Observable<any> {
+    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${poolId}/hashrate/${interval}`);
+  }
+
   getPoolBlocks$(poolId: number, fromHeight: number): Observable<BlockExtended[]> {
     return this.httpClient.get<BlockExtended[]>(
         this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${poolId}/blocks` +

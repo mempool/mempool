@@ -116,6 +116,41 @@ class HashratesRepository {
     }
   }
 
+  /**
+   * Returns a pool hashrate history
+   */
+   public async $getPoolWeeklyHashrate(interval: string | null, poolId: number): Promise<any[]> {
+    interval = Common.getSqlInterval(interval);
+
+    const connection = await DB.pool.getConnection();
+
+    let query = `SELECT UNIX_TIMESTAMP(hashrate_timestamp) as timestamp, avg_hashrate as avgHashrate, share, pools.name as poolName
+      FROM hashrates
+      JOIN pools on pools.id = pool_id`;
+
+    if (interval) {
+      query += ` WHERE hashrate_timestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()
+        AND hashrates.type = 'weekly'
+        AND pool_id = ${poolId}`;
+    } else {
+      query += ` WHERE hashrates.type = 'weekly'
+        AND pool_id = ${poolId}`;
+    }
+
+    query += ` ORDER by hashrate_timestamp`;
+
+    try {
+      const [rows]: any[] = await connection.query(query);
+      connection.release();
+
+      return rows;
+    } catch (e) {
+      connection.release();
+      logger.err('$getPoolWeeklyHashrate() error' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
   public async $setLatestRunTimestamp(key: string, val: any = null) {
     const connection = await DB.pool.getConnection();
     const query = `UPDATE state SET number = ? WHERE name = ?`;
