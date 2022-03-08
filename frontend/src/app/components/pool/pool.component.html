@@ -1,47 +1,34 @@
 <div class="container">
 
   <div *ngIf="poolStats$ | async as poolStats">
-    <h1 class="m-0">
-      <img width="50" src="{{ poolStats['logo'] }}" onError="this.src = './resources/mining-pools/default.svg'" class="mr-3">
-      {{ poolStats.pool.name }}
-    </h1>
-
-    <div class="box pl-0 bg-transparent">
-      <div class="card-header mb-0 mb-lg-4 pr-0 pl-0">
-        <form [formGroup]="radioGroupForm" class="formRadioGroup ml-0">
-          <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
-            <label ngbButtonLabel class="btn-primary btn-sm">
-              <input ngbButton type="radio" [value]="'24h'"> 24h
-            </label>
-            <label ngbButtonLabel class="btn-primary btn-sm">
-              <input ngbButton type="radio" [value]="'3d'"> 3D
-            </label>
-            <label ngbButtonLabel class="btn-primary btn-sm">
-              <input ngbButton type="radio" [value]="'1w'"> 1W
-            </label>
-            <label ngbButtonLabel class="btn-primary btn-sm">
-              <input ngbButton type="radio" [value]="'1m'"> 1M
-            </label>
-            <label ngbButtonLabel class="btn-primary btn-sm">
-              <input ngbButton type="radio" [value]="'3m'"> 3M
-            </label>
-            <label ngbButtonLabel class="btn-primary btn-sm">
-              <input ngbButton type="radio" [value]="'6m'"> 6M
-            </label>
-            <label ngbButtonLabel class="btn-primary btn-sm">
-              <input ngbButton type="radio" [value]="'1y'"> 1Y
-            </label>
-            <label ngbButtonLabel class="btn-primary btn-sm">
-              <input ngbButton type="radio" [value]="'2y'"> 2Y
-            </label>
-            <label ngbButtonLabel class="btn-primary btn-sm">
-              <input ngbButton type="radio" [value]="'3y'"> 3Y
-            </label>
-            <label ngbButtonLabel class="btn-primary btn-sm">
-              <input ngbButton type="radio" [value]="'all'"> ALL
-            </label>
-          </div>
-        </form>
+    <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+      <h1 class="m-0">
+        <img width="50" src="{{ poolStats['logo'] }}" onError="this.src = './resources/mining-pools/default.svg'"
+          class="mr-3">
+        {{ poolStats.pool.name }}
+      </h1>
+      <div class="pl-0 bg-transparent">
+        <div class="card-header mb-0 mb-lg-4 pr-0 pl-0">
+          <form [formGroup]="radioGroupForm" class="formRadioGroup ml-0">
+            <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="'6m'"> 6M
+              </label>
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="'1y'"> 1Y
+              </label>
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="'2y'"> 2Y
+              </label>
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="'3y'"> 3Y
+              </label>
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="'all'"> ALL
+              </label>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
 
@@ -54,10 +41,13 @@
                 <td class="col-4 col-lg-3">Addresses</td>
                 <td class="text-truncate" *ngIf="poolStats.pool.addresses.length else noaddress">
                   <div class="scrollable">
-                    <a *ngFor="let address of poolStats.pool.addresses" [routerLink]="['/address' | relativeUrl, address]">{{ address }}<br></a>
+                    <a *ngFor="let address of poolStats.pool.addresses"
+                      [routerLink]="['/address' | relativeUrl, address]">{{ address }}<br></a>
                   </div>
                 </td>
-                <ng-template #noaddress><td>~</td></ng-template>
+                <ng-template #noaddress>
+                  <td>~</td>
+                </ng-template>
               </tr>
               <tr>
                 <td class="col-4 col-lg-3">Coinbase Tags</td>
@@ -84,7 +74,13 @@
     </div>
   </div>
 
-  <table class="table table-borderless" [alwaysCallback]="true" infiniteScroll [infiniteScrollDistance]="1.5" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50" (scrolled)="loadMore()">
+  <div class="chart" echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
+  <div class="text-center loadingGraphs" *ngIf="isLoading">
+    <div class="spinner-border text-light"></div>
+  </div>
+
+  <table class="table table-borderless" [alwaysCallback]="true" infiniteScroll [infiniteScrollDistance]="1.5"
+    [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50" (scrolled)="loadMore()">
     <thead>
       <th style="width: 15%;" i18n="latest-blocks.height">Height</th>
       <th class="d-none d-md-block" style="width: 20%;" i18n="latest-blocks.timestamp">Timestamp</th>
@@ -97,12 +93,17 @@
       <tr *ngFor="let block of blocks">
         <td><a [routerLink]="['/block' | relativeUrl, block.id]">{{ block.height }}</a></td>
         <td class="d-none d-md-block">&lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}</td>
-        <td><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since></td>
-        <td class=""><app-amount [satoshis]="block['reward']" digitsInfo="1.2-2" [noFiat]="true"></app-amount></td>
+        <td>
+          <app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since>
+        </td>
+        <td class="">
+          <app-amount [satoshis]="block['reward']" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
+        </td>
         <td class="d-none d-lg-block">{{ block.tx_count | number }}</td>
         <td>
           <div class="progress">
-            <div class="progress-bar progress-mempool" role="progressbar" [ngStyle]="{'width': (block.weight / stateService.env.BLOCK_WEIGHT_UNITS)*100 + '%' }"></div>
+            <div class="progress-bar progress-mempool" role="progressbar"
+              [ngStyle]="{'width': (block.weight / stateService.env.BLOCK_WEIGHT_UNITS)*100 + '%' }"></div>
             <div class="progress-text" [innerHTML]="block.size | bytes: 2"></div>
           </div>
         </td>
