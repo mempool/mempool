@@ -538,7 +538,7 @@ class Routes {
 
   public async $getPool(req: Request, res: Response) {
     try {
-      const stats = await mining.$getPoolStat(req.params.interval ?? null, parseInt(req.params.poolId, 10));
+      const stats = await mining.$getPoolStat(parseInt(req.params.poolId, 10));
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
@@ -605,7 +605,7 @@ class Routes {
 
   public async $getPoolHistoricalHashrate(req: Request, res: Response) {
     try {
-      const hashrates = await HashratesRepository.$getPoolWeeklyHashrate(req.params.interval ?? null, parseInt(req.params.poolId, 10));
+      const hashrates = await HashratesRepository.$getPoolWeeklyHashrate(parseInt(req.params.poolId, 10));
       const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');

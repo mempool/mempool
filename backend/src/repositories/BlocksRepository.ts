@@ -134,7 +134,7 @@ class BlocksRepository {
   /**
    * Get blocks count for a period
    */
-  public async $blockCount(poolId: number | null, interval: string | null): Promise<number> {
+  public async $blockCount(poolId: number | null, interval: string | null = null): Promise<number> {
     interval = Common.getSqlInterval(interval);
 
     const params: any[] = [];

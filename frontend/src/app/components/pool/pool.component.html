@@ -1,36 +1,11 @@
 <div class="container">
 
   <div *ngIf="poolStats$ | async as poolStats">
-    <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
-      <h1 class="m-0">
-        <img width="50" src="{{ poolStats['logo'] }}" onError="this.src = './resources/mining-pools/default.svg'"
-          class="mr-3">
-        {{ poolStats.pool.name }}
-      </h1>
-      <div class="pl-0 bg-transparent">
-        <div class="card-header mb-0 mb-lg-4 pr-0 pl-0">
-          <form [formGroup]="radioGroupForm" class="formRadioGroup ml-0">
-            <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
-              <label ngbButtonLabel class="btn-primary btn-sm">
-                <input ngbButton type="radio" [value]="'6m'"> 6M
-              </label>
-              <label ngbButtonLabel class="btn-primary btn-sm">
-                <input ngbButton type="radio" [value]="'1y'"> 1Y
-              </label>
-              <label ngbButtonLabel class="btn-primary btn-sm">
-                <input ngbButton type="radio" [value]="'2y'"> 2Y
-              </label>
-              <label ngbButtonLabel class="btn-primary btn-sm">
-                <input ngbButton type="radio" [value]="'3y'"> 3Y
-              </label>
-              <label ngbButtonLabel class="btn-primary btn-sm">
-                <input ngbButton type="radio" [value]="'all'"> ALL
-              </label>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+    <h1 class="m-0">
+      <img width="50" src="{{ poolStats['logo'] }}" onError="this.src = './resources/mining-pools/default.svg'"
+        class="mr-3">
+      {{ poolStats.pool.name }}
+    </h1>
 
     <div class="box">
       <div class="row">

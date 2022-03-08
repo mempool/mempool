@@ -58,14 +58,14 @@ class Mining {
   /**
    * Get all mining pool stats for a pool
    */
-  public async $getPoolStat(interval: string | null, poolId: number): Promise<object> {
+  public async $getPoolStat(poolId: number): Promise<object> {
     const pool = await PoolsRepository.$getPool(poolId);
     if (!pool) {
       throw new Error(`This mining pool does not exist`);
     }
 
-    const blockCount: number = await BlocksRepository.$blockCount(poolId, interval);
-    const emptyBlocks: EmptyBlocks[] = await BlocksRepository.$getEmptyBlocks(poolId, interval);
+    const blockCount: number = await BlocksRepository.$blockCount(poolId);
+    const emptyBlocks: EmptyBlocks[] = await BlocksRepository.$getEmptyBlocks(poolId);
 
     return {
       pool: pool,
