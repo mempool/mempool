@@ -358,7 +358,7 @@ class WebsocketHandler {
               const rbfTx = rbfTransactions[rbfTransaction];
               if (config.MEMPOOL.BACKEND !== 'esplora') {
                 try {
-                  const fullTx = await transactionUtils.$getTransactionExtended(rbfTransaction, true);
+                  const fullTx = await transactionUtils.$getTransactionExtended(rbfTx.txid, true);
                   response['rbfTransaction'] = fullTx;
                 } catch (e) {
                   logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
