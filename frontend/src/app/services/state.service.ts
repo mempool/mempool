@@ -18,7 +18,6 @@ export interface ILoadingIndicators { [name: string]: number; }
 export interface Env {
   TESTNET_ENABLED: boolean;
   SIGNET_ENABLED: boolean;
-  REGTEST_ENABLED: boolean;
   LIQUID_ENABLED: boolean;
   LIQUID_TESTNET_ENABLED: boolean;
   BISQ_ENABLED: boolean;
@@ -43,7 +42,6 @@ export interface Env {
 const defaultEnv: Env = {
   'TESTNET_ENABLED': false,
   'SIGNET_ENABLED': false,
-  'REGTEST_ENABLED': false,
   'LIQUID_ENABLED': false,
   'LIQUID_TESTNET_ENABLED': false,
   'BASE_MODULE': 'mempool',
@@ -141,7 +139,7 @@ export class StateService {
     if (this.env.BASE_MODULE !== 'mempool' && this.env.BASE_MODULE !== 'liquid') {
       return;
     }
-    const networkMatches = url.match(/\/(bisq|testnet|liquidtestnet|liquid|signet|regtest)/);
+    const networkMatches = url.match(/\/(bisq|testnet|liquidtestnet|liquid|signet)/);
     switch (networkMatches && networkMatches[1]) {
       case 'liquid':
         if (this.network !== 'liquid') {
@@ -159,12 +157,6 @@ export class StateService {
         if (this.network !== 'signet') {
           this.network = 'signet';
           this.networkChanged$.next('signet');
-        }
-        return;
-      case 'regtest':
-        if (this.network !== 'regtest') {
-          this.network = 'regtest';
-          this.networkChanged$.next('regtest');
         }
         return;
       case 'testnet':

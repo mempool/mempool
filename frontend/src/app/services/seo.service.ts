@@ -31,8 +31,6 @@ export class SeoService {
       return 'mempool - Bitcoin Testnet';
     if (this.network === 'signet')
       return 'mempool - Bitcoin Signet';
-    if (this.network === 'regtest')
-      return 'mempool - Bitcoin Regtest';
     if (this.network === 'liquid')
       return 'mempool - Liquid Network';
     if (this.network === 'liquidtestnet')
