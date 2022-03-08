@@ -235,7 +235,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
     });
 
     this.txReplacedSubscription = this.stateService.txReplaced$.subscribe((rbfTransaction) => {
-      if (!rbfTransaction.size) {
+      if (!this.tx) {
         this.error = new Error();
         this.waitingForTransaction = false;
       }
