@@ -2,45 +2,50 @@
 
   <div *ngIf="poolStats$ | async as poolStats; else loadingMain">
     <h1 class="m-0 mb-2">
-      <img width="50" height="50" src="{{ poolStats['logo'] }}" onError="this.src = './resources/mining-pools/default.svg'"
-        class="mr-3">
+      <img width="50" height="50" src="{{ poolStats['logo'] }}"
+        onError="this.src = './resources/mining-pools/default.svg'" class="mr-3">
       {{ poolStats.pool.name }}
     </h1>
 
     <div class="box">
       <div class="row">
-        <div class="col-lg-9">
+        <div class="col-lg-7">
           <table class="table table-borderless table-striped" style="table-layout: fixed;">
             <tbody>
               <tr>
-                <td class="col-4 col-lg-3">Addresses</td>
+                <td class="label">Tags</td>
+                <td class="text-truncate">
+                  <div class="scrollable">
+                    {{ poolStats.pool.regexes }}
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="label">Addresses</td>
                 <td class="text-truncate" *ngIf="poolStats.pool.addresses.length else noaddress">
                   <div class="scrollable">
                     <a *ngFor="let address of poolStats.pool.addresses"
-                      [routerLink]="['/address' | relativeUrl, address]">{{ address }}<br></a>
+                      [routerLink]="['/address' | relativeUrl, address]">{{
+                      address }}<br></a>
                   </div>
                 </td>
                 <ng-template #noaddress>
                   <td>~</td>
                 </ng-template>
               </tr>
-              <tr>
-                <td class="col-4 col-lg-3">Coinbase Tags</td>
-                <td class="text-truncate">{{ poolStats.pool.regexes }}</td>
-              </tr>
             </tbody>
           </table>
         </div>
-        <div class="col-lg-3">
+        <div class="col-lg-5">
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td class="col-4 col-lg-8">Mined Blocks</td>
-                <td class="text-left">{{ poolStats.blockCount }}</td>
+                <td class="label">Mined Blocks</td>
+                <td class="data">{{ formatNumber(poolStats.blockCount, this.locale, '1.0-0') }}</td>
               </tr>
               <tr>
-                <td class="col-4 col-lg-8">Empty Blocks</td>
-                <td class="text-left">{{ poolStats.emptyBlocks }}</td>
+                <td class="label">Empty Blocks</td>
+                <td class="data">{{ formatNumber(poolStats.emptyBlocks, this.locale, '1.0-0') }}</td>
               </tr>
             </tbody>
           </table>
@@ -54,14 +59,17 @@
     <div class="spinner-border text-light"></div>
   </div>
 
-  <table *ngIf="blocks$ | async as blocks" class="table table-borderless" [alwaysCallback]="true" infiniteScroll [infiniteScrollDistance]="1.5"
-    [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50" (scrolled)="loadMore()">
+  <table *ngIf="blocks$ | async as blocks" class="table table-borderless" [alwaysCallback]="true" infiniteScroll
+    [infiniteScrollDistance]="1.5" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50"
+    (scrolled)="loadMore()">
     <thead>
       <th style="width: 15%;" i18n="latest-blocks.height">Height</th>
       <th class="d-none d-md-block" style="width: 20%;" i18n="latest-blocks.timestamp">Timestamp</th>
       <th style="width: 20%;" i18n="latest-blocks.mined">Mined</th>
       <th class="text-right" style="width: 10%; padding-right: 30px" i18n="latest-blocks.reward">Reward</th>
-      <th class="d-none d-lg-block text-right" style="width: 15%; padding-right: 40px" i18n="latest-blocks.transactions">Transactions</th>
+      <th class="d-none d-lg-block text-right" style="width: 15%; padding-right: 40px"
+        i18n="latest-blocks.transactions">
+        Transactions</th>
       <th style="width: 20%;" i18n="latest-blocks.size">Size</th>
     </thead>
     <tbody>
@@ -113,7 +121,9 @@
               </tr>
               <tr>
                 <td class="col-4 col-lg-3">Coinbase Tags</td>
-                <td class="text-truncate"><div class="skeleton-loader"></div></td>
+                <td class="text-truncate">
+                  <div class="skeleton-loader"></div>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -123,11 +133,15 @@
             <tbody>
               <tr>
                 <td class="col-4 col-lg-8">Mined Blocks</td>
-                <td class="text-left"><div class="skeleton-loader"></div></td>
+                <td class="text-left">
+                  <div class="skeleton-loader"></div>
+                </td>
               </tr>
               <tr>
                 <td class="col-4 col-lg-8">Empty Blocks</td>
-                <td class="text-left"><div class="skeleton-loader"></div></td>
+                <td class="text-left">
+                  <div class="skeleton-loader"></div>
+                </td>
               </tr>
             </tbody>
           </table>
