@@ -1,7 +1,7 @@
-import { Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
 import { EChartsOption, graphic } from 'echarts';
 import { Observable } from 'rxjs';
-import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
+import { delay, map, retryWhen, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { formatNumber } from '@angular/common';
@@ -20,6 +20,7 @@ import { selectPowerOfTen } from 'src/app/bitcoin.utils';
       z-index: 100;
     }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HashrateChartComponent implements OnInit {
   @Input() tableOnly = false;
@@ -45,6 +46,7 @@ export class HashrateChartComponent implements OnInit {
     private seoService: SeoService,
     private apiService: ApiService,
     private formBuilder: FormBuilder,
+    private cd: ChangeDetectorRef,
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
@@ -96,6 +98,11 @@ export class HashrateChartComponent implements OnInit {
                   timestamp: data.oldestIndexedBlockTimestamp,
                 });
                 this.isLoading = false;
+
+                if (data.hashrates.length === 0) {
+                  this.cd.markForCheck();
+                  throw new Error();
+                }
               }),
               map((data: any) => {
                 const availableTimespanDay = (
@@ -116,9 +123,12 @@ export class HashrateChartComponent implements OnInit {
                 }
                 return {
                   availableTimespanDay: availableTimespanDay,
-                  difficulty: this.tableOnly ? tableData.slice(0, 5) : tableData
+                  difficulty: this.tableOnly ? tableData.slice(0, 5) : tableData,
                 };
               }),
+              retryWhen((errors) => errors.pipe(
+                  delay(60000)
+              ))
             );
         }),
         share()
