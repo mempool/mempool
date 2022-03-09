@@ -268,7 +268,7 @@ class Blocks {
         this.lastDifficultyAdjustmentTime = block.timestamp;
         this.currentDifficulty = block.difficulty;
 
-        if (blockHeightTip - heightDiff - 2016 >= 0) {
+        if (blockHeightTip >= 2016) {
           const previousPeriodBlockHash = await bitcoinApi.$getBlockHash(blockHeightTip - heightDiff - 2016);
           const previousPeriodBlock = await bitcoinApi.$getBlock(previousPeriodBlockHash);
           this.previousDifficultyRetarget = (block.difficulty - previousPeriodBlock.difficulty) / previousPeriodBlock.difficulty * 100;
