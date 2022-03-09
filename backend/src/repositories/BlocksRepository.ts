@@ -12,17 +12,21 @@ class BlocksRepository {
 
     try {
       const query = `INSERT INTO blocks(
-        height,  hash,     blockTimestamp, size,
-        weight,  tx_count, coinbase_raw,   difficulty,
-        pool_id, fees,     fee_span,       median_fee,
-        reward,  version,  bits,           nonce,
-        merkle_root,       previous_block_hash
+        height,           hash,                blockTimestamp, size,
+        weight,           tx_count,            coinbase_raw,   difficulty,
+        pool_id,          fees,                fee_span,       median_fee,
+        reward,           version,             bits,           nonce,
+        merkle_root,      previous_block_hash, avg_fee,        avg_fee_rate,
+        max_fee,          max_fee_rate,        min_fee,        min_fee_rate,
+        median_fee_value, subsidy
       ) VALUE (
         ?, ?, FROM_UNIXTIME(?), ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?,
-        ?,    ?
+        ?, ?, ?, ?,
+        ?, ?, ?, ?,
+        ?, ?
       )`;
 
       const params: any[] = [
@@ -35,18 +39,25 @@ class BlocksRepository {
         '',
         block.difficulty,
         block.extras.pool?.id, // Should always be set to something
-        0,
-        '[]',
-        block.extras.medianFee ?? 0,
-        block.extras.reward ?? 0,
+        block.extras.totalFees,
+        JSON.stringify(block.extras.feeRange),
+        block.extras.medianFee,
+        block.extras.reward,
         block.version,
         block.bits,
         block.nonce,
         block.merkle_root,
-        block.previousblockhash
+        block.previousblockhash,
+        block.extras.avgFee,
+        block.extras.avgFeeRate,
+        block.extras.maxFee,
+        block.extras.maxFeeRate,
+        block.extras.minFee,
+        block.extras.minFeeRate,
+        block.extras.medianFeeValue,
+        block.extras.subsidy,
       ];
 
-      // logger.debug(query);
       await connection.query(query, params);
       connection.release();
     } catch (e: any) {
@@ -272,7 +283,7 @@ class BlocksRepository {
   /**
    * Get one block by height
    */
-   public async $getBlockByHeight(height: number): Promise<object | null> {
+  public async $getBlockByHeight(height: number): Promise<object | null> {
     const connection = await DB.pool.getConnection();
     try {
       const [rows]: any[] = await connection.query(`
@@ -298,7 +309,7 @@ class BlocksRepository {
   /**
    * Return blocks difficulty
    */
-   public async $getBlocksDifficulty(interval: string | null): Promise<object[]> {
+  public async $getBlocksDifficulty(interval: string | null): Promise<object[]> {
     interval = Common.getSqlInterval(interval);
 
     const connection = await DB.pool.getConnection();

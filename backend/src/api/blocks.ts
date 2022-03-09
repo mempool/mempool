@@ -111,14 +111,20 @@ class Blocks {
     const transactionsTmp = [...transactions];
     transactionsTmp.shift();
     transactionsTmp.sort((a, b) => b.effectiveFeePerVsize - a.effectiveFeePerVsize);
-
     blockExtended.extras.medianFee = transactionsTmp.length > 0 ?
       Common.median(transactionsTmp.map((tx) => tx.effectiveFeePerVsize)) : 0;
-    blockExtended.extras.feeRange = transactionsTmp.length > 0 ?
-      Common.getFeesInRange(transactionsTmp, 8) : [0, 0];
-    blockExtended.extras.totalFees = transactionsTmp.reduce((acc, tx) => {
-      return acc + tx.fee;
-    }, 0)
+
+    const stats = await bitcoinClient.getBlockStats(block.id);
+    blockExtended.extras.feeRange = stats.feerate_percentiles;
+    blockExtended.extras.totalFees = stats.totalfee;
+    blockExtended.extras.avgFee = stats.avgfee;
+    blockExtended.extras.avgFeeRate = stats.avgfeerate;
+    blockExtended.extras.maxFee = stats.maxfee;
+    blockExtended.extras.maxFeeRate = stats.maxfeerate;
+    blockExtended.extras.minFee = stats.minfee;
+    blockExtended.extras.minFeeRate = stats.minfeerate;
+    blockExtended.extras.subsidy = stats.subsidy;
+    blockExtended.extras.medianFeeValue = stats.medianfee;
 
     if (Common.indexingEnabled()) {
       let pool: PoolTag;
