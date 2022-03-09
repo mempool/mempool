@@ -136,11 +136,12 @@ export class ApiService {
     );
   }
 
-  getPoolStats$(poolId: number, interval: string | undefined): Observable<PoolStat> {
-    return this.httpClient.get<PoolStat>(
-      this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${poolId}` +
-      (interval !== undefined ? `/${interval}` : '')
-    );
+  getPoolStats$(poolId: number): Observable<PoolStat> {
+    return this.httpClient.get<PoolStat>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${poolId}`);
+  }
+
+  getPoolHashrate$(poolId: number): Observable<any> {
+    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${poolId}/hashrate`);
   }
 
   getPoolBlocks$(poolId: number, fromHeight: number): Observable<BlockExtended[]> {

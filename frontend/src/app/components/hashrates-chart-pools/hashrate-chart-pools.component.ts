@@ -124,7 +124,21 @@ export class HashrateChartPoolsComponent implements OnInit {
   }
 
   prepareChartOptions(data) {
+    let title = undefined;
+    if (data.series.length === 0) {
+      title = {
+        textStyle: {
+            color: "grey",
+            fontSize: 15
+        },
+        text: "Indexing in progress...",
+        left: "center",
+        top: this.widget ? 115 : this.isMobile() ? 'center' : 225,
+      };
+    }
+
     this.chartOptions = {
+      title: title,
       grid: {
         right: this.right,
         left: this.left,
