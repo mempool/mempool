@@ -26,7 +26,7 @@
                 <app-time-until [time]="(1 * i) + now + 61000" [fastRender]="false" [fixedRender]="true"></app-time-until>
               </ng-template>
               <ng-template #timeDiffMainnet>
-                <app-time-until [time]="(timeAvg * i) + now + timeAvg" [fastRender]="false" [fixedRender]="true" [forceFloorOnTimeIntervals]="['hour']"></app-time-until>
+                <app-time-until [time]="(timeAvg * i) + now + timeAvg + timeOffset" [fastRender]="false" [fixedRender]="true" [forceFloorOnTimeIntervals]="['hour']"></app-time-until>
               </ng-template>
             </div>
             <ng-template #mergedBlock>
