@@ -36,7 +36,7 @@ div.scrollable {
   margin: 0;
   padding: 0;
   overflow: auto;
-  max-height: 100px;
+  max-height: 75px;
 }
 
 .skeleton-loader {
@@ -47,4 +47,20 @@ div.scrollable {
 .table {
   margin: 0px auto;
   max-width: 900px;
+}
+
+.box {
+  padding-bottom: 0px;
+}
+
+.label {
+  max-width: 50px;
+  width: 30%;
+}
+
+.data {
+  text-align: center;
+  @media (max-width: 767.98px) {
+    text-align: right;
+  }
 }
