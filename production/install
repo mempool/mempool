@@ -118,19 +118,34 @@ ELECTRS_MAINNET_HTTP_HOST=127.0.0.1
 ELECTRS_MAINNET_HTTP_PORT=3000
 
 # set either socket or TCP host/port, not both
-#ELECTRS_TESTNET_HTTP_SOCK=/tmp/bitcoin.testnet.electrs
-ELECTRS_TESTNET_HTTP_HOST=127.0.0.1
-ELECTRS_TESTNET_HTTP_PORT=3002
-
-# set either socket or TCP host/port, not both
 #ELECTRS_LIQUID_HTTP_SOCK=/tmp/elements.liquid.electrs
 ELECTRS_LIQUID_HTTP_HOST=127.0.0.1
 ELECTRS_LIQUID_HTTP_PORT=3001
 
 # set either socket or TCP host/port, not both
+#ELECTRS_TESTNET_HTTP_SOCK=/tmp/bitcoin.testnet.electrs
+ELECTRS_TESTNET_HTTP_HOST=127.0.0.1
+ELECTRS_TESTNET_HTTP_PORT=3002
+
+# set either socket or TCP host/port, not both
+#ELECTRS_SIGNET_HTTP_SOCK=/tmp/bitcoin.testnet.electrs
+ELECTRS_SIGNET_HTTP_HOST=127.0.0.1
+ELECTRS_SIGNET_HTTP_PORT=3003
+
+# set either socket or TCP host/port, not both
+#ELECTRS_LIQUIDTESTNET_HTTP_SOCK=/tmp/bitcoin.testnet.electrs
+ELECTRS_LIQUIDTESTNET_HTTP_HOST=127.0.0.1
+ELECTRS_LIQUIDTESTNET_HTTP_PORT=3004
+
+# set either socket or TCP host/port, not both
 #MEMPOOL_MAINNET_HTTP_SOCK=/tmp/bitcoin.mainnet.mempool
 MEMPOOL_MAINNET_HTTP_HOST=127.0.0.1
 MEMPOOL_MAINNET_HTTP_PORT=8999
+
+# set either socket or TCP host/port, not both
+#MEMPOOL_LIQUID_HTTP_SOCK=/tmp/elements.liquid.mempool
+MEMPOOL_LIQUID_HTTP_HOST=127.0.0.1
+MEMPOOL_LIQUID_HTTP_PORT=8998
 
 # set either socket or TCP host/port, not both
 #MEMPOOL_TESTNET_HTTP_SOCK=/tmp/bitcoin.testnet.mempool
@@ -143,9 +158,14 @@ MEMPOOL_BISQ_HTTP_HOST=127.0.0.1
 MEMPOOL_BISQ_HTTP_PORT=8996
 
 # set either socket or TCP host/port, not both
-#MEMPOOL_LIQUID_HTTP_SOCK=/tmp/elements.liquid.mempool
-MEMPOOL_LIQUID_HTTP_HOST=127.0.0.1
-MEMPOOL_LIQUID_HTTP_PORT=8998
+#MEMPOOL_SIGNET_HTTP_SOCK=/tmp/bitcoin.bisq.mempool
+MEMPOOL_SIGNET_HTTP_HOST=127.0.0.1
+MEMPOOL_SIGNET_HTTP_PORT=8995
+
+# set either socket or TCP host/port, not both
+#MEMPOOL_LIQUIDTESTNET_HTTP_SOCK=/tmp/bitcoin.bisq.mempool
+MEMPOOL_LIQUIDTESTNET_HTTP_HOST=127.0.0.1
+MEMPOOL_LIQUIDTESTNET_HTTP_PORT=8994
 
 ##### OS options, should be automatically detected
 
@@ -205,6 +225,9 @@ BITCOIN_HOME=/bitcoin
 
 # bitcoin testnet data
 BITCOIN_TESTNET_DATA=${BITCOIN_HOME}/testnet3
+# bitcoin testnet data
+BITCOIN_SIGNET_DATA=${BITCOIN_HOME}/signet
+
 # bitcoin electrs source/binaries
 BITCOIN_ELECTRS_HOME=${BITCOIN_HOME}/electrs
 
@@ -216,9 +239,15 @@ ELECTRS_MAINNET_DATA=${ELECTRS_DATA_ROOT}/mainnet
 # bitcoin testnet electrs database, only a few GB
 ELECTRS_TESTNET_ZPOOL=${ZPOOL}
 ELECTRS_TESTNET_DATA=${ELECTRS_DATA_ROOT}/testnet
+# bitcoin signet electrs database, only a few GB
+ELECTRS_SIGNET_ZPOOL=${ZPOOL}
+ELECTRS_SIGNET_DATA=${ELECTRS_DATA_ROOT}/signet
 # liquid electrs data, needs about 5GB
 ELECTRS_LIQUID_ZPOOL=${ZPOOL}
-ELECTRS_LIQUID_DATA=/electrs
+ELECTRS_LIQUID_DATA=${ELECTRS_DATA_ROOT}/liquid
+# liquid electrs data, needs about 5GB
+ELECTRS_LIQUIDTESTNET_ZPOOL=${ZPOOL}
+ELECTRS_LIQUIDTESTNET_DATA=${ELECTRS_DATA_ROOT}/liquidtestnet
 
 # bisq user/group
 BISQ_USER=bisq
@@ -439,12 +468,21 @@ zfsCreateFilesystems()
         done
     fi
 
+    # Bitcoin Signet
+    if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
+        zfs create -o "mountpoint=${BITCOIN_SIGNET_DATA}" "${ZPOOL}/bitcoin/signet"
+        for folder in chainstate indexes blocks
+        do
+            zfs create -o "mountpoint=${BITCOIN_SIGNET_DATA}/${folder}" "${ZPOOL}/bitcoin/signet/${folder}"
+        done
+    fi
+
     # electrs mainnet data
     if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
         zfs create -o "mountpoint=${ELECTRS_MAINNET_DATA}" "${ELECTRS_MAINNET_ZPOOL}/electrs/mainnet"
         for folder in cache history txstore
         do
-            zfs create -o "mountpoint=${ELECTRS_MAINNET_DATA}/mainnet/newindex/${folder}" "${ELECTRS_MAINNET_ZPOOL}/electrs/mainnet/${folder}"
+            zfs create -o "mountpoint=${ELECTRS_MAINNET_DATA}/newindex/${folder}" "${ELECTRS_MAINNET_ZPOOL}/electrs/mainnet/${folder}"
         done
     fi
 
@@ -453,7 +491,7 @@ zfsCreateFilesystems()
         zfs create -o "mountpoint=${ELECTRS_TESTNET_DATA}" "${ELECTRS_TESTNET_ZPOOL}/electrs/testnet"
         for folder in cache history txstore
         do
-            zfs create -o "mountpoint=${ELECTRS_TESTNET_DATA}/testnet/newindex/${folder}" "${ELECTRS_TESTNET_ZPOOL}/electrs/testnet/${folder}"
+            zfs create -o "mountpoint=${ELECTRS_TESTNET_DATA}/newindex/${folder}" "${ELECTRS_TESTNET_ZPOOL}/electrs/testnet/${folder}"
         done
     fi
 
@@ -462,7 +500,16 @@ zfsCreateFilesystems()
         zfs create -o "mountpoint=${ELECTRS_LIQUID_DATA}" "${ELECTRS_LIQUID_ZPOOL}/electrs/liquid"
         for folder in cache history txstore
         do
-            zfs create -o "mountpoint=${ELECTRS_LIQUID_DATA}/liquid/newindex/${folder}" "${ELECTRS_LIQUID_ZPOOL}/electrs/liquid/${folder}"
+            zfs create -o "mountpoint=${ELECTRS_LIQUID_DATA}/newindex/${folder}" "${ELECTRS_LIQUID_ZPOOL}/electrs/liquid/${folder}"
+        done
+    fi
+
+    # electrs liquidtestnet data
+    if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
+        zfs create -o "mountpoint=${ELECTRS_LIQUIDTESTNET_DATA}" "${ELECTRS_LIQUIDTESTNET_ZPOOL}/electrs/liquidtestnet"
+        for folder in cache history txstore
+        do
+            zfs create -o "mountpoint=${ELECTRS_LIQUIDTESTNET_DATA}/newindex/${folder}" "${ELECTRS_LIQUIDTESTNET_ZPOOL}/electrs/liquidtestnet/${folder}"
         done
     fi
 
@@ -747,6 +794,12 @@ osPackageUpdate
 osPackageUpgrade
 osPackageInstallAll
 
+###############
+# enable sudo #
+###############
+
+sed -i .bak -e 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /usr/local/etc/sudoers
+
 ##########################
 # Mempool top-level repo #
 ##########################
@@ -816,6 +869,9 @@ if [ "${BITCOIN_INSTALL}" = ON ];then
     osSudo "${BITCOIN_USER}" git config --global advice.detachedHead false
     osSudo "${BITCOIN_USER}" git clone --branch "${BITCOIN_REPO_BRANCH}" "${BITCOIN_REPO_URL}" "${BITCOIN_HOME}/${BITCOIN_REPO_NAME}"
 
+    echo "[*] Checking out Bitcoin ${BITCOIN_LATEST_RELEASE}"
+    osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_HOME}/${BITCOIN_REPO_NAME} && git checkout ${BITCOIN_LATEST_RELEASE}"
+
     echo "[*] Building Bitcoin from source repo"
     osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && ./autogen.sh --quiet"
     osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && MAKE=gmake CC=cc CXX=c++ CPPFLAGS=-I/usr/local/include ./configure --with-gui=no --disable-wallet --disable-tests"
@@ -852,6 +908,9 @@ if [ "${ELEMENTS_INSTALL}" = ON ];then
     osSudo "${ELEMENTS_USER}" git config --global advice.detachedHead false
     osSudo "${ELEMENTS_USER}" git clone --branch "${ELEMENTS_REPO_BRANCH}" "${ELEMENTS_REPO_URL}" "${ELEMENTS_HOME}/${ELEMENTS_REPO_NAME}"
 
+    echo "[*] Checking out Elements ${ELEMENTS_LATEST_RELEASE}"
+    osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_HOME}/${ELEMENTS_REPO_NAME} && git checkout ${ELEMENTS_LATEST_RELEASE}"
+
     echo "[*] Building Elements from source repo"
     osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_REPO_NAME} && ./autogen.sh --quiet"
     osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_REPO_NAME} && MAKE=gmake CC=cc CXX=c++ CPPFLAGS=-I/usr/local/include ./configure --with-gui=no --disable-wallet --disable-tests"
@@ -882,6 +941,9 @@ echo "[*] Cloning Bitcoin Electrs repo from ${BITCOIN_ELECTRS_REPO_URL}"
 osSudo "${BITCOIN_USER}" git config --global advice.detachedHead false
 osSudo "${BITCOIN_USER}" git clone --branch "${BITCOIN_ELECTRS_REPO_BRANCH}" "${BITCOIN_ELECTRS_REPO_URL}" "${BITCOIN_HOME}/${BITCOIN_ELECTRS_REPO_NAME}"
 
+echo "[*] Checking out Electrs ${BITCOIN_ELECTRS_LATEST_RELEASE}"
+osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_HOME}/${BITCOIN_ELECTRS_REPO_NAME} && git checkout ${BITCOIN_ELECTRS_LATEST_RELEASE}"
+
 case $OS in
     FreeBSD)
        echo "[*] Installing Rust from pkg install"
@@ -897,6 +959,7 @@ osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_ELECTRS_HOME} && cargo run --releas
 
 echo "[*] Patching Bitcoin Electrs code for FreeBSD"
 osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_HOME}/.cargo/registry/src/github.com-1ecc6299db9ec823/sysconf-0.3.4\" && patch -p1 < \"${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/sysconf.patch\""
+osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_ELECTRS_HOME}/src/new_index/\" && sed -i .bak -e s/Snappy/None/ db.rs && rm db.rs.bak"
 
 echo "[*] Building Bitcoin Electrs release binary"
 osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_ELECTRS_HOME} && cargo run --release --bin electrs -- --version"
@@ -913,6 +976,9 @@ osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_
 echo "[*] Cloning Liquid Electrs repo from ${ELEMENTS_ELECTRS_REPO_URL}"
 osSudo "${ELEMENTS_USER}" git config --global advice.detachedHead false
 osSudo "${ELEMENTS_USER}" git clone --branch "${ELEMENTS_ELECTRS_REPO_BRANCH}" "${ELEMENTS_ELECTRS_REPO_URL}" "${ELEMENTS_HOME}/${ELEMENTS_ELECTRS_REPO_NAME}"
+
+echo "[*] Checking out Liquid Electrs ${ELEMENTS_ELECTRS_LATEST_RELEASE}"
+osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_HOME}/${ELEMENTS_ELECTRS_REPO_NAME} && git checkout ${ELEMENTS_ELECTRS_LATEST_RELEASE}"
 
 echo "[*] Cloning Liquid Asset Registry repo from ${LIQUID_ASSET_REGISTRY_DB_URL}"
 osSudo "${ELEMENTS_USER}" git config --global advice.detachedHead false
@@ -1049,7 +1115,7 @@ if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
     echo "[*] Configuring Bitcoin Mainnet RPC credentials in electrs start script"
     osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-mainnet"
     osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-mainnet"
-    osSudo "${ROOT_USER}" sed -i .orig "s!__ELECTRS_DATA_ROOT__!${BITCOIN_ELECTRS_HOME}!" "${BITCOIN_ELECTRS_HOME}/electrs-start-mainnet"
+    osSudo "${ROOT_USER}" sed -i .orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${BITCOIN_ELECTRS_HOME}/electrs-start-mainnet"
 fi
 
 ########################################
@@ -1063,7 +1129,7 @@ if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
     echo "[*] Configuring Bitcoin Testnet RPC credentials in electrs start script"
     osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-testnet"
     osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-testnet"
-    osSudo "${ROOT_USER}" sed -i .orig "s!__ELECTRS_DATA_ROOT__!${BITCOIN_ELECTRS_HOME}!" "${BITCOIN_ELECTRS_HOME}/electrs-start-testnet"
+    osSudo "${ROOT_USER}" sed -i .orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${BITCOIN_ELECTRS_HOME}/electrs-start-testnet"
 fi
 
 #######################################
@@ -1077,7 +1143,7 @@ if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
     echo "[*] Configuring Bitcoin Signet RPC credentials in electrs start script"
     osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-signet"
     osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-signet"
-    osSudo "${ROOT_USER}" sed -i .orig "s!__ELECTRS_DATA_ROOT__!${BITCOIN_ELECTRS_HOME}!" "${BITCOIN_ELECTRS_HOME}/electrs-start-signet"
+    osSudo "${ROOT_USER}" sed -i .orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${BITCOIN_ELECTRS_HOME}/electrs-start-signet"
 fi
 
 ########################################
@@ -1095,7 +1161,7 @@ if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
     echo "[*] Configuring Bitcoin Signet RPC credentials in electrs start script"
     osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquid"
     osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquid"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__ELECTRS_DATA_ROOT__/${ELEMENTS_ELECTRS_HOME}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquid"
+    osSudo "${ROOT_USER}" sed -i .orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquid"
 fi
 
 ################################################
@@ -1126,30 +1192,45 @@ if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
     echo "[*] Creating Mempool instance for Bitcoin Mainnet"
     osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
     osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/mainnet"
+
+    echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Bitcoin Mainnet"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
 
 if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
     echo "[*] Creating Mempool instance for Bitcoin Testnet"
     osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
     osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/testnet"
+
+    echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Bitcoin Testnet"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
 
 if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
     echo "[*] Creating Mempool instance for Bitcoin Signet"
     osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
     osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/signet"
+
+    echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Bitcoin Signet"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
 
 if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
     echo "[*] Creating Mempool instance for Liquid"
     osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
     osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/liquid"
+
+    echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Liquid"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
 
 if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
     echo "[*] Creating Mempool instance for Liquid Testnet"
     osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
     osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/liquidtestnet"
+
+    echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Liquid Testnet"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
 
 ##### nginx
