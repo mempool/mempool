@@ -125,7 +125,21 @@ export class HashrateChartComponent implements OnInit {
   }
 
   prepareChartOptions(data) {
+    let title = undefined;
+    if (data.hashrates.length === 0) {
+      title = {
+        textStyle: {
+            color: "grey",
+            fontSize: 15
+        },
+        text: "Indexing in progress...",
+        left: "center",
+        top: "center"
+      };
+    }
+
     this.chartOptions = {
+      title: title,
       color: [
         new graphic.LinearGradient(0, 0, 0, 0.65, [
           { offset: 0, color: '#F4511E' },
