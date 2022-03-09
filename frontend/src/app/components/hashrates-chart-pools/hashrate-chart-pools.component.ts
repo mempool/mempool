@@ -105,7 +105,8 @@ export class HashrateChartPoolsComponent implements OnInit {
 
                 this.prepareChartOptions({
                   legends: legends,
-                  series: series
+                  series: series,
+                  timestamp: data.oldestIndexedBlockTimestamp,
                 });
                 this.isLoading = false;
               }),
@@ -124,16 +125,20 @@ export class HashrateChartPoolsComponent implements OnInit {
   }
 
   prepareChartOptions(data) {
-    let title = undefined;
+    let title: object;
     if (data.series.length === 0) {
+      const lastBlock = new Date(data.timestamp * 1000);
+      const dd = String(lastBlock.getDate()).padStart(2, '0');
+      const mm = String(lastBlock.getMonth() + 1).padStart(2, '0'); // January is 0!
+      const yyyy = lastBlock.getFullYear();
       title = {
         textStyle: {
-            color: "grey",
+            color: 'grey',
             fontSize: 15
         },
-        text: "Indexing in progress...",
-        left: "center",
-        top: this.widget ? 115 : this.isMobile() ? 'center' : 225,
+        text: `Indexing in progess - ${yyyy}-${mm}-${dd}`,
+        left: 'center',
+        top: 'center',
       };
     }
 
@@ -171,14 +176,14 @@ export class HashrateChartPoolsComponent implements OnInit {
           return tooltip;
         }.bind(this)
       },
-      xAxis: {
+      xAxis: data.series.length === 0 ? undefined : {
         type: 'time',
         splitNumber: (this.isMobile() || this.widget) ? 5 : 10,
       },
-      legend: (this.isMobile() || this.widget) ? undefined : {
+      legend: (this.isMobile() || this.widget || data.series.length === 0) ? undefined : {
         data: data.legends
       },
-      yAxis: {
+      yAxis: data.series.length === 0 ? undefined : {
         position: 'right',
         axisLabel: {
           color: 'rgb(110, 112, 121)',
