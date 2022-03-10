@@ -75,6 +75,7 @@ import { HashrateChartPoolsComponent } from './components/hashrates-chart-pools/
 import { MiningStartComponent } from './components/mining-start/mining-start.component';
 import { AmountShortenerPipe } from './shared/pipes/amount-shortener.pipe';
 import { ShortenStringPipe } from './shared/pipes/shorten-string-pipe/shorten-string.pipe';
+import { DifficultyAdjustmentsTable } from './components/difficulty-adjustments-table/difficulty-adjustments-table.components';
 
 @NgModule({
   declarations: [
@@ -131,6 +132,7 @@ import { ShortenStringPipe } from './shared/pipes/shorten-string-pipe/shorten-st
     HashrateChartPoolsComponent,
     MiningStartComponent,
     AmountShortenerPipe,
+    DifficultyAdjustmentsTable,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),

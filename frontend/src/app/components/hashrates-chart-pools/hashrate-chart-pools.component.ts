@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import { Observable } from 'rxjs';
-import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
+import { delay, map, retryWhen, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -22,7 +22,7 @@ import { poolsColor } from 'src/app/app.constants';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HashrateChartPoolsComponent implements OnInit {
-  @Input() widget: boolean = false;
+  @Input() widget = false;
   @Input() right: number | string = 40;
   @Input() left: number | string = 25;
 
@@ -43,6 +43,7 @@ export class HashrateChartPoolsComponent implements OnInit {
     private seoService: SeoService,
     private apiService: ApiService,
     private formBuilder: FormBuilder,
+    private cd: ChangeDetectorRef,
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
@@ -105,9 +106,15 @@ export class HashrateChartPoolsComponent implements OnInit {
 
                 this.prepareChartOptions({
                   legends: legends,
-                  series: series
+                  series: series,
+                  timestamp: data.oldestIndexedBlockTimestamp,
                 });
                 this.isLoading = false;
+
+                if (series.length === 0) {
+                  this.cd.markForCheck();
+                  throw new Error();
+                }
               }),
               map((data: any) => {
                 const availableTimespanDay = (
@@ -117,6 +124,9 @@ export class HashrateChartPoolsComponent implements OnInit {
                   availableTimespanDay: availableTimespanDay,
                 };
               }),
+              retryWhen((errors) => errors.pipe(
+                delay(60000)
+              ))
             );
         }),
         share()
@@ -124,16 +134,20 @@ export class HashrateChartPoolsComponent implements OnInit {
   }
 
   prepareChartOptions(data) {
-    let title = undefined;
+    let title: object;
     if (data.series.length === 0) {
+      const lastBlock = new Date(data.timestamp * 1000);
+      const dd = String(lastBlock.getDate()).padStart(2, '0');
+      const mm = String(lastBlock.getMonth() + 1).padStart(2, '0'); // January is 0!
+      const yyyy = lastBlock.getFullYear();
       title = {
         textStyle: {
-            color: "grey",
-            fontSize: 15
+          color: 'grey',
+          fontSize: 15
         },
-        text: "Indexing in progress...",
-        left: "center",
-        top: this.widget ? 115 : this.isMobile() ? 'center' : 225,
+        text: `Indexing in progess - ${yyyy}-${mm}-${dd}`,
+        left: 'center',
+        top: 'center',
       };
     }
 
@@ -171,14 +185,14 @@ export class HashrateChartPoolsComponent implements OnInit {
           return tooltip;
         }.bind(this)
       },
-      xAxis: {
+      xAxis: data.series.length === 0 ? undefined : {
         type: 'time',
         splitNumber: (this.isMobile() || this.widget) ? 5 : 10,
       },
-      legend: (this.isMobile() || this.widget) ? undefined : {
+      legend: (this.isMobile() || this.widget || data.series.length === 0) ? undefined : {
         data: data.legends
       },
-      yAxis: {
+      yAxis: data.series.length === 0 ? undefined : {
         position: 'right',
         axisLabel: {
           color: 'rgb(110, 112, 121)',
