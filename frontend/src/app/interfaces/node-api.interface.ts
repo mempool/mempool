@@ -90,7 +90,7 @@ export interface PoolInfo {
 export interface PoolStat {
   pool: PoolInfo;
   blockCount: number;
-  emptyBlocks: BlockExtended[];
+  emptyBlocks: number;
 }
 
 export interface BlockExtension {
