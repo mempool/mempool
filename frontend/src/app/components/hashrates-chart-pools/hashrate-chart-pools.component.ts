@@ -160,7 +160,8 @@ export class HashrateChartPoolsComponent implements OnInit {
         },
         borderColor: '#000',
         formatter: function (data) {
-          let tooltip = `<b style="color: white; margin-left: 18px">${data[0].axisValueLabel}</b><br>`;
+          const date = new Date(data[0].data[0]).toLocaleDateString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
+          let tooltip = `<b style="color: white; margin-left: 18px">${date}</b><br>`;
           data.sort((a, b) => b.data[1] - a.data[1]);
           for (const pool of data) {
             if (pool.data[1] > 0) {

@@ -182,8 +182,9 @@ export class HashrateChartComponent implements OnInit {
             difficulty = Math.round(data[1].data[1] / difficultyPowerOfTen.divider);
           }
 
+          const date = new Date(data[0].data[0]).toLocaleDateString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
           return `
-            <b style="color: white; margin-left: 18px">${data[0].axisValueLabel}</b><br>
+            <b style="color: white; margin-left: 18px">${date}</b><br>
             <span>${data[0].marker} ${data[0].seriesName}: ${formatNumber(hashrate, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s</span><br>
             <span>${data[1].marker} ${data[1].seriesName}: ${formatNumber(difficulty, this.locale, '1.2-2')} ${difficultyPowerOfTen.unit}</span>
           `;
