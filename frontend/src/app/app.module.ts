@@ -76,6 +76,7 @@ import { MiningStartComponent } from './components/mining-start/mining-start.com
 import { AmountShortenerPipe } from './shared/pipes/amount-shortener.pipe';
 import { ShortenStringPipe } from './shared/pipes/shorten-string-pipe/shorten-string.pipe';
 import { DifficultyAdjustmentsTable } from './components/difficulty-adjustments-table/difficulty-adjustments-table.components';
+import { BlocksList } from './components/blocks-list/blocks-list.component';
 
 @NgModule({
   declarations: [
@@ -133,6 +134,7 @@ import { DifficultyAdjustmentsTable } from './components/difficulty-adjustments-
     MiningStartComponent,
     AmountShortenerPipe,
     DifficultyAdjustmentsTable,
+    BlocksList,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),

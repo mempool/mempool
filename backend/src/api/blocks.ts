@@ -339,7 +339,7 @@ class Blocks {
     return blockExtended;
   }
 
-  public async $getBlocksExtras(fromHeight: number): Promise<BlockExtended[]> {
+  public async $getBlocksExtras(fromHeight: number, limit: number = 15): Promise<BlockExtended[]> {
     try {
       loadingIndicators.setProgress('blocks', 0);
 
@@ -360,7 +360,7 @@ class Blocks {
       }
 
       let nextHash = startFromHash;
-      for (let i = 0; i < 10 && currentHeight >= 0; i++) {
+      for (let i = 0; i < limit && currentHeight >= 0; i++) {
         let block = this.getBlocks().find((b) => b.height === currentHeight);
         if (!block && Common.indexingEnabled()) {
           block = this.prepareBlock(await this.$indexBlock(currentHeight));
