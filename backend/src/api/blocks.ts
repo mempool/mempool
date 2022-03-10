@@ -218,6 +218,7 @@ class Blocks {
             break;
           }
           ++indexedThisRun;
+          ++totaIndexed;
           const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - timer));
           if (elapsedSeconds > 5 || blockHeight === lastBlockToIndex) {
             const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
@@ -227,7 +228,7 @@ class Blocks {
             logger.debug(`Indexing block #${blockHeight} | ~${blockPerSeconds} blocks/sec | total: ${totaIndexed}/${indexingBlockAmount} (${progress}%) | elapsed: ${runningFor} seconds | left: ~${timeLeft} seconds`);
             timer = new Date().getTime() / 1000;
             indexedThisRun = 0;
-            }
+          }
           const blockHash = await bitcoinApi.$getBlockHash(blockHeight);
           const block = await bitcoinApi.$getBlock(blockHash);
           const transactions = await this.$getTransactionsExtended(blockHash, block.height, true, true);
