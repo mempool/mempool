@@ -495,6 +495,15 @@ zfsCreateFilesystems()
         done
     fi
 
+    # electrs signet data
+    if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
+        zfs create -o "mountpoint=${ELECTRS_SIGNET_DATA}" "${ELECTRS_SIGNET_ZPOOL}/electrs/signet"
+        for folder in cache history txstore
+        do
+            zfs create -o "mountpoint=${ELECTRS_SIGNET_DATA}/newindex/${folder}" "${ELECTRS_SIGNET_ZPOOL}/electrs/signet/${folder}"
+        done
+    fi
+
     # electrs liquid data
     if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
         zfs create -o "mountpoint=${ELECTRS_LIQUID_DATA}" "${ELECTRS_LIQUID_ZPOOL}/electrs/liquid"
@@ -935,7 +944,10 @@ fi
 
 echo "[*] Creating Bitcoin Electrs data folder"
 osSudo "${ROOT_USER}" mkdir -p "${BITCOIN_ELECTRS_HOME}"
-osSudo "${ROOT_USER}" chown "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_ELECTRS_HOME}"
+osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_ELECTRS_HOME}"
+osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${ELECTRS_MAINNET_DATA}"
+osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${ELECTRS_TESTNET_DATA}"
+osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${ELECTRS_SIGNET_DATA}"
 
 echo "[*] Cloning Bitcoin Electrs repo from ${BITCOIN_ELECTRS_REPO_URL}"
 osSudo "${BITCOIN_USER}" git config --global advice.detachedHead false
@@ -972,6 +984,8 @@ echo "[*] Creating Liquid Electrs data folder"
 osSudo "${ROOT_USER}" mkdir -p "${ELEMENTS_ELECTRS_HOME}"
 osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_HOME}"
 osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_ELECTRS_HOME}"
+osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELECTRS_LIQUID_DATA}"
+osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELECTRS_LIQUIDTESTNET_DATA}"
 
 echo "[*] Cloning Liquid Electrs repo from ${ELEMENTS_ELECTRS_REPO_URL}"
 osSudo "${ELEMENTS_USER}" git config --global advice.detachedHead false
