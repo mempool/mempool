@@ -31,6 +31,7 @@ import { MiningDashboardComponent } from './components/mining-dashboard/mining-d
 import { HashrateChartComponent } from './components/hashrate-chart/hashrate-chart.component';
 import { HashrateChartPoolsComponent } from './components/hashrates-chart-pools/hashrate-chart-pools.component';
 import { MiningStartComponent } from './components/mining-start/mining-start.component';
+import { BlocksList } from './components/blocks-list/blocks-list.component';
 
 let routes: Routes = [
   {
@@ -75,6 +76,10 @@ let routes: Routes = [
         path: 'mining',
         component: MiningStartComponent,
         children: [
+          {
+            path: 'blocks',
+            component: BlocksList,
+          },
           {
             path: 'hashrate',
             component: HashrateChartComponent,
@@ -191,6 +196,10 @@ let routes: Routes = [
             component: MiningStartComponent,
             children: [
               {
+                path: 'blocks',
+                component: BlocksList,
+              },
+              {
                 path: 'hashrate',
                 component: HashrateChartComponent,
               },
@@ -299,6 +308,10 @@ let routes: Routes = [
             path: 'mining',
             component: MiningStartComponent,
             children: [
+              {
+                path: 'blocks',
+                component: BlocksList,
+              },
               {
                 path: 'hashrate',
                 component: HashrateChartComponent,
@@ -630,7 +643,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
     initialNavigation: 'enabled',
     scrollPositionRestoration: 'enabled',
     anchorScrolling: 'enabled'
-})],
+  })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

@@ -1,0 +1,74 @@
+.container-xl {
+  max-width: 1400px;
+}
+
+.container {
+  max-width: 100%;
+}
+
+.row {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.pool-name {
+  display: inline-block;
+  vertical-align: text-top;
+  padding-left: 10px;
+}
+
+.height {
+  width: 12%;
+  @media (max-width: 1100px) {
+    width: 10%;
+  }
+}
+
+.timestamp {
+  @media (max-width: 900px) {
+    display: none;
+  }
+}
+
+.mined {
+  @media (max-width: 576px) {
+    display: none;
+  }
+}
+
+.txs {
+  padding-right: 40px;
+  @media (max-width: 1100px) {
+    padding-right: 10px;
+  }
+  @media (max-width: 800px) {
+    display: none;
+  }
+}
+
+.fees {
+  @media (max-width: 650px) {
+    display: none;
+  }
+}
+
+.pool {
+  width: 12%;
+}
+
+.reward {
+  @media (max-width: 576px) {
+    width: 7%;
+    padding-right: 30px;
+  }
+}
+
+.size {
+  width: 12%;
+  @media (max-width: 1000px) {
+    width: 15%;
+  }
+  @media (max-width: 650px) {
+    width: 20%;
+  }
+}
