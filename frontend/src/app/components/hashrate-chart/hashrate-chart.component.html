@@ -1,6 +1,6 @@
 <div [class]="widget === false ? 'full-container' : ''">
 
-  <div *ngIf="!tableOnly" class="card-header mb-0 mb-md-4" [style]="widget ? 'display:none' : ''">
+  <div class="card-header mb-0 mb-md-4" [style]="widget ? 'display:none' : ''">
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(hashrateObservable$ | async) as hashrates">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 90">
@@ -25,39 +25,10 @@
     </form>
   </div>
 
-  <div *ngIf="!tableOnly" [class]="!widget ? 'chart' : 'chart-widget'"
+  <div [class]="!widget ? 'chart' : 'chart-widget'"
     echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
-  <div class="text-center loadingGraphs" *ngIf="isLoading && !tableOnly">
+  <div class="text-center loadingGraphs" *ngIf="isLoading">
     <div class="spinner-border text-light"></div>
   </div>
   
-  <table *ngIf="tableOnly" class="table latest-transactions" style="min-height: 295px">
-    <thead>
-      <tr>
-        <th class="d-none d-md-block" i18n="block.height">Height</th>
-        <th i18n="mining.adjusted" class="text-left">Adjusted</th>
-        <th i18n="mining.difficulty" class="text-right">Difficulty</th>
-        <th i18n="mining.change" class="text-right">Change</th>
-      </tr>
-    </thead>
-    <tbody *ngIf="(hashrateObservable$ | async) as data">
-      <tr *ngFor="let diffChange of data.difficulty">
-        <td class="d-none d-md-block"><a [routerLink]="['/block' | relativeUrl, diffChange.height]">{{ diffChange.height }}</a></td>
-        <td class="text-left"><app-time-since [time]="diffChange.timestamp" [fastRender]="true"></app-time-since></td>
-        <td class="text-right">{{ diffChange.difficultyShorten }}</td>
-        <td class="text-right" [style]="diffChange.change >= 0 ? 'color: #42B747' : 'color: #B74242'">
-          {{ diffChange.change >= 0 ? '+' : '' }}{{ formatNumber(diffChange.change, locale, '1.2-2') }}%
-        </td>
-      </tr>
-    </tbody>
-    <tbody *ngIf="isLoading">
-      <tr *ngFor="let item of [1,2,3,4,5]">
-        <td class="d-none d-md-block w-75"><span class="skeleton-loader"></span></td>
-        <td class="text-left"><span class="skeleton-loader w-75"></span></td>
-        <td class="text-right"><span class="skeleton-loader w-75"></span></td>
-        <td class="text-right"><span class="skeleton-loader w-75"></span></td>
-      </tr>
-  </tbody>
-  </table>
-
 </div>
