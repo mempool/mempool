@@ -90,12 +90,7 @@ export interface BlockExtension {
   };
   avgFee?: number;
   avgFeeRate?: number;
-  maxFee?: number;
-  maxFeeRate?: number;
-  minFee?: number;
-  minFeeRate?: number;
-  subsidy?: number;
-  medianFeeValue?: number; // The actual median fee amount from getblockstats RPC
+  coinbaseRaw?: string;
 }
 
 export interface BlockExtended extends IEsploraApi.Block {
