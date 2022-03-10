@@ -148,15 +148,12 @@ class DatabaseMigration {
         logger.warn(`'blocks' table has been truncated. Re-indexing from scratch.`);
         await this.$executeQuery(connection, 'TRUNCATE blocks;'); // Need to re-index
         await this.$executeQuery(connection, `ALTER TABLE blocks
-          ADD avg_fee int unsigned NULL,
-          ADD avg_fee_rate int unsigned NULL,
-          ADD max_fee int unsigned NULL,
-          ADD max_fee_rate int unsigned NULL,
-          ADD min_fee int unsigned NULL,
-          ADD min_fee_rate int unsigned NULL,
-          ADD median_fee_value int unsigned NULL,
-          ADD subsidy float unsigned NULL;
+          ADD avg_fee INT UNSIGNED NULL,
+          ADD avg_fee_rate INT UNSIGNED NULL
         `);
+        await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `reward` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
+        await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `median_fee` INT UNSIGNED NOT NULL DEFAULT "0"');
+        await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `fees` INT UNSIGNED NOT NULL DEFAULT "0"');
       }
 
       connection.release();
