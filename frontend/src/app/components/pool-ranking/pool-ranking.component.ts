@@ -264,8 +264,8 @@ export class PoolRankingComponent implements OnInit {
             fontSize: 14,
           },
           itemStyle: {
-            borderRadius: 2,
-            borderWidth: 2,
+            borderRadius: 1,
+            borderWidth: 1,
             borderColor: '#000',
           },
           emphasis: {
