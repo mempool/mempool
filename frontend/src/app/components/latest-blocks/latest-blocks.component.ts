@@ -109,8 +109,12 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
     if (this.isLoading) {
       return;
     }
+    const height = this.blocks[this.blocks.length - 1].height - 1;
+    if (height < 0) {
+      return;
+    }
     this.isLoading = true;
-    this.electrsApiService.listBlocks$(this.blocks[this.blocks.length - 1].height - 1)
+    this.electrsApiService.listBlocks$(height)
       .subscribe((blocks) => {
         this.blocks = this.blocks.concat(blocks);
         this.isLoading = false;

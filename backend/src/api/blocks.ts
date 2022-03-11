@@ -252,7 +252,7 @@ class Blocks {
     const blockHeightTip = await bitcoinApi.$getBlockHeightTip();
 
     if (this.blocks.length === 0) {
-      this.currentBlockHeight = blockHeightTip - config.MEMPOOL.INITIAL_BLOCKS_AMOUNT;
+      this.currentBlockHeight = Math.max(blockHeightTip - config.MEMPOOL.INITIAL_BLOCKS_AMOUNT, -1);
     } else {
       this.currentBlockHeight = this.blocks[this.blocks.length - 1].height;
     }
@@ -271,17 +271,19 @@ class Blocks {
         this.lastDifficultyAdjustmentTime = block.timestamp;
         this.currentDifficulty = block.difficulty;
 
-        const previousPeriodBlockHash = await bitcoinApi.$getBlockHash(blockHeightTip - heightDiff - 2016);
-        const previousPeriodBlock = await bitcoinApi.$getBlock(previousPeriodBlockHash);
-        this.previousDifficultyRetarget = (block.difficulty - previousPeriodBlock.difficulty) / previousPeriodBlock.difficulty * 100;
-        logger.debug(`Initial difficulty adjustment data set.`);
+        if (blockHeightTip >= 2016) {
+          const previousPeriodBlockHash = await bitcoinApi.$getBlockHash(blockHeightTip - heightDiff - 2016);
+          const previousPeriodBlock = await bitcoinApi.$getBlock(previousPeriodBlockHash);
+          this.previousDifficultyRetarget = (block.difficulty - previousPeriodBlock.difficulty) / previousPeriodBlock.difficulty * 100;
+          logger.debug(`Initial difficulty adjustment data set.`);
+        }
       } else {
         logger.debug(`Blockchain headers (${blockchainInfo.headers}) and blocks (${blockchainInfo.blocks}) not in sync. Waiting...`);
       }
     }
 
     while (this.currentBlockHeight < blockHeightTip) {
-      if (this.currentBlockHeight === 0) {
+      if (this.currentBlockHeight < blockHeightTip - config.MEMPOOL.INITIAL_BLOCKS_AMOUNT) {
         this.currentBlockHeight = blockHeightTip;
       } else {
         this.currentBlockHeight++;
