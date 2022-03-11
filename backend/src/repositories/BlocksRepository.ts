@@ -277,7 +277,10 @@ class BlocksRepository {
     const connection = await DB.pool.getConnection();
     try {
       const [rows]: any[] = await connection.query(`
-        SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp, pools.id as pool_id, pools.name as pool_name, pools.link as pool_link, pools.addresses as pool_addresses, pools.regexes as pool_regexes
+        SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
+        pools.id as pool_id, pools.name as pool_name, pools.link as pool_link,
+        pools.addresses as pool_addresses, pools.regexes as pool_regexes,
+        previous_block_hash as previousblockhash
         FROM blocks
         JOIN pools ON blocks.pool_id = pools.id
         WHERE height = ${height};

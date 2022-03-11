@@ -1,5 +1,6 @@
 .container-xl {
   max-width: 1400px;
+  padding-bottom: 0;
 }
 
 .container {
@@ -11,6 +12,15 @@
   padding-bottom: 15px;
 }
 
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.progress {
+  background-color: #2d3348;
+}
+
 .pool-name {
   display: inline-block;
   vertical-align: text-top;
@@ -18,7 +28,7 @@
 }
 
 .height {
-  width: 12%;
+  width: 10%;
   @media (max-width: 1100px) {
     width: 10%;
   }
@@ -31,6 +41,7 @@
 }
 
 .mined {
+  width: 13%;
   @media (max-width: 576px) {
     display: none;
   }
@@ -53,7 +64,7 @@
 }
 
 .pool {
-  width: 12%;
+  width: 17%;
 }
 
 .reward {
