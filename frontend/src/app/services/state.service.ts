@@ -71,7 +71,7 @@ export class StateService {
   network = '';
   blockVSize: number;
   env: Env;
-  latestBlockHeight = 0;
+  latestBlockHeight = -1;
 
   networkChanged$ = new ReplaySubject<string>(1);
   blocks$: ReplaySubject<[BlockExtended, boolean]>;

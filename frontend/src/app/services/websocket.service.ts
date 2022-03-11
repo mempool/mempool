@@ -68,7 +68,7 @@ export class WebsocketService {
         clearTimeout(this.onlineCheckTimeout);
         clearTimeout(this.onlineCheckTimeoutTwo);
 
-        this.stateService.latestBlockHeight = 0;
+        this.stateService.latestBlockHeight = -1;
 
         this.websocketSubject.complete();
         this.subscription.unsubscribe();
