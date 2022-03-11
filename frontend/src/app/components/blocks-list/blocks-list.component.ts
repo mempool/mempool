@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map, repeat, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, timer } from 'rxjs';
+import { delayWhen, map, retryWhen, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended } from 'src/app/interfaces/node-api.interface';
 import { ApiService } from 'src/app/services/api.service';
 import { StateService } from 'src/app/services/state.service';
@@ -13,33 +13,52 @@ import { StateService } from 'src/app/services/state.service';
 })
 export class BlocksList implements OnInit {
   blocks$: Observable<BlockExtended[]> = undefined
+
   isLoading = true;
-  oldestBlockHeight = undefined;
+  fromBlockHeight = undefined;
+  paginationMaxSize: number;
+  page = 1;
+  blocksCount: number;
+  fromHeightSubject: BehaviorSubject<number> = new BehaviorSubject(this.fromBlockHeight);
 
   constructor(
     private apiService: ApiService,
-    public stateService: StateService
+    public stateService: StateService,
   ) {
 
   }
 
   ngOnInit(): void {
-    this.blocks$ = this.apiService.getBlocks$(this.oldestBlockHeight)
-      .pipe(
-        tap(blocks => {
-          this.isLoading = false;
-        }),
-        map(blocks => {
-          for (const block of blocks) {
-            // @ts-ignore
-            block.extras.pool.logo = `./resources/mining-pools/` +
-              block.extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
-            this.oldestBlockHeight = block.height;
-          }
-          return blocks;
-        }),
-        repeat(2),
-      );
+    this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
+
+    this.blocks$ = this.fromHeightSubject.pipe(
+      switchMap(() => {
+        this.isLoading = true;
+        return this.apiService.getBlocks$(this.fromBlockHeight)
+          .pipe(
+            tap(blocks => {
+              if (this.blocksCount === undefined) {
+                this.blocksCount = blocks[0].height;
+              }
+              this.isLoading = false;
+            }),
+            map(blocks => {
+              for (const block of blocks) {
+                // @ts-ignore: Need to add an extra field for the template
+                block.extras.pool.logo = `./resources/mining-pools/` +
+                  block.extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
+              }
+              return blocks;
+            }),
+            retryWhen(errors => errors.pipe(delayWhen(() => timer(1000))))
+          )
+      })
+    );
+  }
+
+  pageChange(page: number) {
+    this.fromBlockHeight = this.blocksCount - (page - 1) * 15;
+    this.fromHeightSubject.next(this.fromBlockHeight);
   }
 
   trackByBlock(index: number, block: BlockExtended) {
