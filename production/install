@@ -810,6 +810,7 @@ osPackageInstallAll
 echo "[*] Creating Mempool user with Tor access"
 osGroupCreate "${MEMPOOL_GROUP}"
 osUserCreate -d "${MEMPOOL_HOME}" -g "${MEMPOOL_GROUP}" -n "${MEMPOOL_USER}"
+osSudo "${MEMPOOL_USER}" touch "${MEMPOOL_HOME}/.zshrc"
 osSudo "${ROOT_USER}" chsh -s `which zsh` "${MEMPOOL_USER}"
 id "${MEMPOOL_USER}"
 
@@ -861,6 +862,7 @@ if [ "${BITCOIN_INSTALL}" = ON ];then
     echo "[*] Creating Bitcoin user with Tor access"
     osGroupCreate "${BITCOIN_GROUP}"
     osUserCreate -d "${BITCOIN_HOME}" -g "${BITCOIN_GROUP}" -G "${TOR_GROUP}" -n "${BITCOIN_USER}"
+    osSudo "${BITCOIN_USER}" touch "${BITCOIN_HOME}/.zshrc"
     osSudo "${ROOT_USER}" chsh -s `which zsh` "${BITCOIN_USER}"
 
     echo "[*] Creating Bitcoin data folder"
@@ -900,6 +902,7 @@ if [ "${ELEMENTS_INSTALL}" = ON ];then
     echo "[*] Creating Elements user with Tor access"
     osGroupCreate "${ELEMENTS_GROUP}"
     osUserCreate -d "${ELEMENTS_HOME}" -g "${ELEMENTS_GROUP}" -G "${TOR_GROUP}" -n "${ELEMENTS_USER}"
+    osSudo "${ELEMENTS_USER}" touch "${ELEMENTS_HOME}/.zshrc"
     osSudo "${ROOT_USER}" chsh -s `which zsh` "${ELEMENTS_USER}"
 
     echo "[*] Creating Elements data folder"
@@ -1023,6 +1026,7 @@ if [ "${BISQ_INSTALL}" = ON ];then
     echo "[*] Creating Bisq user with Tor access"
     osGroupCreate "${BISQ_GROUP}"
     osUserCreate -d "${BISQ_HOME}" -g "${BISQ_GROUP}" -G "${TOR_GROUP}" -n "${BISQ_USER}"
+    osSudo "${BISQ_USER}" touch "${BISQ_HOME}/.zshrc"
     osSudo "${ROOT_USER}" chsh -s `which zsh` "${BISQ_USER}"
 
     echo "[*] Creating Bisq data folder"
