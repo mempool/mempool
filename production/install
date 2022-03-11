@@ -803,12 +803,6 @@ osPackageUpdate
 osPackageUpgrade
 osPackageInstallAll
 
-###############
-# enable sudo #
-###############
-
-sed -i .bak -e 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /usr/local/etc/sudoers
-
 ##########################
 # Mempool top-level repo #
 ##########################
