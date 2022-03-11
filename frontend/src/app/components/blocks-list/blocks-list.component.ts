@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
 import { BehaviorSubject, Observable, timer } from 'rxjs';
 import { delayWhen, map, retryWhen, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended } from 'src/app/interfaces/node-api.interface';
@@ -12,6 +12,8 @@ import { StateService } from 'src/app/services/state.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlocksList implements OnInit {
+  @Input() widget: boolean = false;
+
   blocks$: Observable<BlockExtended[]> = undefined
 
   isLoading = true;
@@ -20,17 +22,18 @@ export class BlocksList implements OnInit {
   page = 1;
   blocksCount: number;
   fromHeightSubject: BehaviorSubject<number> = new BehaviorSubject(this.fromBlockHeight);
+  skeletonLines: number[] = [];
 
   constructor(
     private apiService: ApiService,
     public stateService: StateService,
   ) {
-
   }
 
   ngOnInit(): void {
+    this.skeletonLines = this.widget === true ? [...Array(5).keys()] : [...Array(15).keys()]; 
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
-
+    
     this.blocks$ = this.fromHeightSubject.pipe(
       switchMap(() => {
         this.isLoading = true;
@@ -47,6 +50,9 @@ export class BlocksList implements OnInit {
                 // @ts-ignore: Need to add an extra field for the template
                 block.extras.pool.logo = `./resources/mining-pools/` +
                   block.extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
+              }
+              if (this.widget) {
+                return blocks.slice(0, 5);
               }
               return blocks;
             }),
