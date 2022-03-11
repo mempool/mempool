@@ -3,13 +3,13 @@
   <div class="title-block">
     <div *ngIf="rbfTransaction" class="alert alert-mempool" role="alert">
       <span i18n="transaction.rbf.replacement|RBF replacement">This transaction has been replaced by:</span>
-      <a class="alert-link" [routerLink]="['/tx/' | relativeUrl, rbfTransaction.txid]" [state]="{ data: rbfTransaction }">
+      <a class="alert-link" [routerLink]="['/tx/' | relativeUrl, rbfTransaction.txid]" [state]="{ data: rbfTransaction.size ? rbfTransaction : null }">
         <span class="d-inline d-lg-none">{{ rbfTransaction.txid | shortenString : 24 }}</span>
         <span class="d-none d-lg-inline">{{ rbfTransaction.txid }}</span>
       </a>
     </div>
 
-    <ng-container>
+    <ng-container *ngIf="!rbfTransaction || rbfTransaction?.size">
       <h1 i18n="shared.transaction">Transaction</h1>
 
       <span class="tx-link float-left">

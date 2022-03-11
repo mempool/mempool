@@ -110,7 +110,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
     this.markBlockSubscription = this.stateService.markBlock$
       .subscribe((state) => {
         this.markHeight = undefined;
-        if (state.blockHeight) {
+        if (state.blockHeight !== undefined) {
           this.markHeight = state.blockHeight;
         }
         this.moveArrowToPosition(false);
@@ -127,7 +127,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   }
 
   moveArrowToPosition(animate: boolean, newBlockFromLeft = false) {
-    if (!this.markHeight) {
+    if (this.markHeight === undefined) {
       this.arrowVisible = false;
       return;
     }

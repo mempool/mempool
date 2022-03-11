@@ -217,12 +217,8 @@ export class BlockComponent implements OnInit, OnDestroy {
       this.blockSubsidy = 0;
       return;
     }
-    this.blockSubsidy = 50;
-    let halvenings = Math.floor(this.block.height / 210000);
-    while (halvenings > 0) {
-      this.blockSubsidy = this.blockSubsidy / 2;
-      halvenings--;
-    }
+    const halvings = Math.floor(this.block.height / 210000);
+    this.blockSubsidy = 50 * 2 ** -halvings;
   }
 
   pageChange(page: number, target: HTMLElement) {

@@ -33,6 +33,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   networkSubscription: Subscription;
   network = '';
   now = new Date().getTime();
+  timeOffset = 0;
   showMiningInfo = false;
 
   blockWidth = 125;
@@ -144,6 +145,15 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
             timeAvgMins -= Math.abs(timeAvgDiff);
           } else {
             timeAvgMins += Math.abs(timeAvgDiff);
+          }
+
+          // testnet difficulty is set to 1 after 20 minutes of no blockSize
+          // therefore the time between blocks will always be below 20 minutes (1200s)
+          if (this.stateService.network === 'testnet' && now - block.timestamp + timeAvgMins * 60 > 1200) {
+            this.timeOffset = -Math.min(now - block.timestamp, 1200) * 1000;
+            timeAvgMins = 20;
+          } else {
+            this.timeOffset = 0;
           }
 
           return timeAvgMins * 60 * 1000;
