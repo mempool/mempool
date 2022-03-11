@@ -810,13 +810,13 @@ osPackageInstallAll
 echo "[*] Creating Mempool user with Tor access"
 osGroupCreate "${MEMPOOL_GROUP}"
 osUserCreate -d "${MEMPOOL_HOME}" -g "${MEMPOOL_GROUP}" -n "${MEMPOOL_USER}"
-osSudo "${MEMPOOL_USER}" touch "${MEMPOOL_HOME}/.zshrc"
 osSudo "${ROOT_USER}" chsh -s `which zsh` "${MEMPOOL_USER}"
 id "${MEMPOOL_USER}"
 
 echo "[*] Creating Mempool data folder"
 osSudo "${ROOT_USER}" mkdir -p "${MEMPOOL_HOME}"
-osSudo "${ROOT_USER}" chown "${MEMPOOL_USER}:${MEMPOOL_GROUP}" "${MEMPOOL_HOME}"
+osSudo "${ROOT_USER}" chown -R "${MEMPOOL_USER}:${MEMPOOL_GROUP}" "${MEMPOOL_HOME}"
+osSudo "${MEMPOOL_USER}" touch "${MEMPOOL_HOME}/.zshrc"
 
 echo "[*] Cloning Mempool repo from ${MEMPOOL_REPO_URL}"
 osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
@@ -868,12 +868,12 @@ if [ "${BITCOIN_INSTALL}" = ON ];then
     echo "[*] Creating Bitcoin user with Tor access"
     osGroupCreate "${BITCOIN_GROUP}"
     osUserCreate -d "${BITCOIN_HOME}" -g "${BITCOIN_GROUP}" -G "${TOR_GROUP}" -n "${BITCOIN_USER}"
-    osSudo "${BITCOIN_USER}" touch "${BITCOIN_HOME}/.zshrc"
     osSudo "${ROOT_USER}" chsh -s `which zsh` "${BITCOIN_USER}"
 
     echo "[*] Creating Bitcoin data folder"
     osSudo "${ROOT_USER}" mkdir -p "${BITCOIN_HOME}"
-    osSudo "${ROOT_USER}" chown "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_HOME}"
+    osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_HOME}"
+    osSudo "${BITCOIN_USER}" touch "${BITCOIN_HOME}/.zshrc"
     osSudo "${BITCOIN_USER}" ln -s . .bitcoin
 
     echo "[*] Cloning Bitcoin repo from ${BITCOIN_REPO_URL}"
@@ -908,12 +908,12 @@ if [ "${ELEMENTS_INSTALL}" = ON ];then
     echo "[*] Creating Elements user with Tor access"
     osGroupCreate "${ELEMENTS_GROUP}"
     osUserCreate -d "${ELEMENTS_HOME}" -g "${ELEMENTS_GROUP}" -G "${TOR_GROUP}" -n "${ELEMENTS_USER}"
-    osSudo "${ELEMENTS_USER}" touch "${ELEMENTS_HOME}/.zshrc"
     osSudo "${ROOT_USER}" chsh -s `which zsh` "${ELEMENTS_USER}"
 
     echo "[*] Creating Elements data folder"
     osSudo "${ROOT_USER}" mkdir -p "${ELEMENTS_HOME}"
-    osSudo "${ROOT_USER}" chown "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_HOME}"
+    osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_HOME}"
+    osSudo "${ELEMENTS_USER}" touch "${ELEMENTS_HOME}/.zshrc"
     osSudo "${ELEMENTS_USER}" ln -s . .elements
 
     echo "[*] Cloning Elements repo from ${ELEMENTS_REPO_URL}"
@@ -1032,12 +1032,12 @@ if [ "${BISQ_INSTALL}" = ON ];then
     echo "[*] Creating Bisq user with Tor access"
     osGroupCreate "${BISQ_GROUP}"
     osUserCreate -d "${BISQ_HOME}" -g "${BISQ_GROUP}" -G "${TOR_GROUP}" -n "${BISQ_USER}"
-    osSudo "${BISQ_USER}" touch "${BISQ_HOME}/.zshrc"
     osSudo "${ROOT_USER}" chsh -s `which zsh` "${BISQ_USER}"
 
     echo "[*] Creating Bisq data folder"
     osSudo "${ROOT_USER}" mkdir -p "${BISQ_HOME}"
     osSudo "${ROOT_USER}" chown -R "${BISQ_USER}:${BISQ_GROUP}" "${BISQ_HOME}"
+    osSudo "${BISQ_USER}" touch "${BISQ_HOME}/.zshrc"
 
     echo "[*] Building Bisq"
     case $OS in
