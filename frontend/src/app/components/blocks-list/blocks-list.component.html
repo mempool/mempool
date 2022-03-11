@@ -7,31 +7,31 @@
   <table class="table table-borderless">
     <thead>
       <th class="height" i18n="latest-blocks.height">Height</th>
+      <th class="pool" i18n="latest-blocks.mined-by">Pool</th>
       <th class="timestamp" i18n="latest-blocks.timestamp">Timestamp</th>
       <th class="mined" i18n="latest-blocks.mined">Mined</th>
-      <th class="pool" i18n="latest-blocks.mined-by">Pool</th>
       <th class="reward text-right" i18n="latest-blocks.reward">Reward</th>
       <th class="fees text-right" i18n="latest-blocks.fees">Fees</th>
       <th class="txs text-right" i18n="latest-blocks.transactions">Txs</th>
       <th class="size" i18n="latest-blocks.size">Size</th>
     </thead>
-    <tbody *ngIf="blocks$ | async as blocks">
+    <tbody *ngIf="blocks$ | async as blocks; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
       <tr *ngFor="let block of blocks; let i= index; trackBy: trackByBlock">
         <td>
           <a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height
             }}</a>
-        </td>
-        <td class="timestamp">
-          &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
-        </td>
-        <td class="mined">
-          <app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since>
         </td>
         <td>
           <img width="25" height="25" src="{{ block.extras.pool['logo'] }}"
             onError="this.src = './resources/mining-pools/default.svg'">
           <span class="pool-name"><a [routerLink]="[('/mining/pool/' + block.extras.pool.id) | relativeUrl]">{{
               block.extras.pool.name }}</a></span>
+        </td>
+        <td class="timestamp">
+          &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
+        </td>
+        <td class="mined">
+          <app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since>
         </td>
         <td class="reward text-right">
           <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-2"></app-amount>
@@ -50,51 +50,41 @@
           </div>
         </td>
       </tr>
-      <ng-template [ngIf]="isLoading">
-        <tr *ngFor="let item of [1,2,3,4,5,6,7,8,9,10]">
-          <td><span class="skeleton-loader"></span></td>
-          <td><span class="skeleton-loader"></span></td>
-          <td><span class="skeleton-loader"></span></td>
-          <td><span class="skeleton-loader"></span></td>
-          <td><span class="skeleton-loader"></span></td>
-          <td><span class="skeleton-loader"></span></td>
-          <td><span class="skeleton-loader"></span></td>
-          <td><span class="skeleton-loader"></span></td>
+    </tbody>
+    <ng-template #skeleton>
+      <tbody>
+        <tr *ngFor="let item of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]">
+          <td>
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="timestamp">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="mined">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td>
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="reward text-right">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="fees text-right">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="txs text-right">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="size">
+            <span class="skeleton-loader"></span>
+          </td>
         </tr>
-      </ng-template>
-    </tbody>
-    <tbody *ngIf="isLoading">
-      <tr *ngFor="let item of [1,2,3,4,5,6,7,8,9,10,11,12]">
-        <td>
-          <span class="skeleton-loader"></span>
-        </td>
-        <td class="timestamp">
-          <span class="skeleton-loader"></span>
-        </td>
-        <td class="mined">
-          <span class="skeleton-loader"></span>
-        </td>
-        <td>
-          <span class="skeleton-loader"></span>
-        </td>
-        <td class="reward text-right">
-          <span class="skeleton-loader"></span>
-        </td>
-        <td class="fees text-right">
-          <span class="skeleton-loader"></span>
-        </td>
-        <td class="txs text-right">
-          <span class="skeleton-loader"></span>
-        </td>
-        <td class="size">
-          <span class="skeleton-loader"></span>
-        </td>
-      </tr>
-    </tbody>
+      </tbody>
+    </ng-template>
   </table>
 
-  <!-- <ngb-pagination class="pagination-container float-right" [collectionSize]="block.tx_count" [rotate]="true"
-    [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page, blockTxTitle)"
-    [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination> -->
+  <ngb-pagination class="pagination-container float-right mt-3" [class]="isLoading ? 'disabled' : ''" [collectionSize]="blocksCount" [rotate]="true" [maxSize]="5"
+    [pageSize]="15" [(page)]="page" (pageChange)="pageChange(page)" [boundaryLinks]="true" [ellipses]="false">
+  </ngb-pagination>
 
 </div>
