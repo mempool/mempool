@@ -79,7 +79,7 @@ export interface TransactionStripped {
 
 export interface BlockExtension {
   totalFees?: number;
-  medianFee?: number;
+  medianFee?: number; // Actually the median fee rate that we compute ourself
   feeRange?: number[];
   reward?: number;
   coinbaseTx?: TransactionMinerInfo;
@@ -87,7 +87,10 @@ export interface BlockExtension {
   pool?: {
     id: number;
     name: string;
-  }
+  };
+  avgFee?: number;
+  avgFeeRate?: number;
+  coinbaseRaw?: string;
 }
 
 export interface BlockExtended extends IEsploraApi.Block {

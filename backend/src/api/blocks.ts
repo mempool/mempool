@@ -108,17 +108,14 @@ class Blocks {
     blockExtended.extras.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
     blockExtended.extras.coinbaseTx = transactionUtils.stripCoinbaseTransaction(transactions[0]);
 
-    const transactionsTmp = [...transactions];
-    transactionsTmp.shift();
-    transactionsTmp.sort((a, b) => b.effectiveFeePerVsize - a.effectiveFeePerVsize);
-
-    blockExtended.extras.medianFee = transactionsTmp.length > 0 ?
-      Common.median(transactionsTmp.map((tx) => tx.effectiveFeePerVsize)) : 0;
-    blockExtended.extras.feeRange = transactionsTmp.length > 0 ?
-      Common.getFeesInRange(transactionsTmp, 8) : [0, 0];
-    blockExtended.extras.totalFees = transactionsTmp.reduce((acc, tx) => {
-      return acc + tx.fee;
-    }, 0)
+    const stats = await bitcoinClient.getBlockStats(block.id);
+    const coinbaseRaw: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(transactions[0].txid, true);
+    blockExtended.extras.coinbaseRaw = coinbaseRaw.hex;
+    blockExtended.extras.medianFee = stats.feerate_percentiles[2]; // 50th percentiles
+    blockExtended.extras.feeRange = [stats.minfeerate, stats.feerate_percentiles, stats.maxfeerate].flat();
+    blockExtended.extras.totalFees = stats.totalfee;
+    blockExtended.extras.avgFee = stats.avgfee;
+    blockExtended.extras.avgFeeRate = stats.avgfeerate;
 
     if (Common.indexingEnabled()) {
       let pool: PoolTag;
@@ -184,7 +181,6 @@ class Blocks {
     }
 
     this.blockIndexingStarted = true;
-    const startedAt = new Date().getTime() / 1000;
 
     try {
       let currentBlockHeight = blockchainInfo.blocks;
@@ -201,6 +197,9 @@ class Blocks {
       const chunkSize = 10000;
       let totaIndexed = await blocksRepository.$blockCount(null, null);
       let indexedThisRun = 0;
+      const startedAt = new Date().getTime() / 1000;
+      let timer = new Date().getTime() / 1000;
+
       while (currentBlockHeight >= lastBlockToIndex) {
         const endBlock = Math.max(0, lastBlockToIndex, currentBlockHeight - chunkSize + 1);
 
@@ -219,12 +218,16 @@ class Blocks {
             break;
           }
           ++indexedThisRun;
-          if (++totaIndexed % 100 === 0 || blockHeight === lastBlockToIndex) {
-            const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
+          ++totaIndexed;
+          const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - timer));
+          if (elapsedSeconds > 5 || blockHeight === lastBlockToIndex) {
+            const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
             const blockPerSeconds = Math.max(1, Math.round(indexedThisRun / elapsedSeconds));
             const progress = Math.round(totaIndexed / indexingBlockAmount * 100);
             const timeLeft = Math.round((indexingBlockAmount - totaIndexed) / blockPerSeconds);
-            logger.debug(`Indexing block #${blockHeight} | ~${blockPerSeconds} blocks/sec | total: ${totaIndexed}/${indexingBlockAmount} (${progress}%) | elapsed: ${elapsedSeconds} seconds | left: ~${timeLeft} seconds`);
+            logger.debug(`Indexing block #${blockHeight} | ~${blockPerSeconds} blocks/sec | total: ${totaIndexed}/${indexingBlockAmount} (${progress}%) | elapsed: ${runningFor} seconds | left: ~${timeLeft} seconds`);
+            timer = new Date().getTime() / 1000;
+            indexedThisRun = 0;
           }
           const blockHash = await bitcoinApi.$getBlockHash(blockHeight);
           const block = await bitcoinApi.$getBlock(blockHash);
