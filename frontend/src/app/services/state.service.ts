@@ -1,7 +1,7 @@
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable } from 'rxjs';
 import { Transaction } from '../interfaces/electrs.interface';
-import { IBackendInfo, MempoolBlock, MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
+import { IBackendInfo, MempoolBlock, MempoolInfo, ReplacedTransaction, TransactionStripped } from '../interfaces/websocket.interface';
 import { BlockExtended, OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
@@ -71,7 +71,7 @@ export class StateService {
   network = '';
   blockVSize: number;
   env: Env;
-  latestBlockHeight = 0;
+  latestBlockHeight = -1;
 
   networkChanged$ = new ReplaySubject<string>(1);
   blocks$: ReplaySubject<[BlockExtended, boolean]>;
@@ -80,8 +80,8 @@ export class StateService {
   bsqPrice$ = new ReplaySubject<number>(1);
   mempoolInfo$ = new ReplaySubject<MempoolInfo>(1);
   mempoolBlocks$ = new ReplaySubject<MempoolBlock[]>(1);
-  txReplaced$ = new Subject<Transaction>();
-  utxoSpent$ = new Subject<null>();
+  txReplaced$ = new Subject<ReplacedTransaction>();
+  utxoSpent$ = new Subject<object>();
   mempoolTransactions$ = new Subject<Transaction>();
   blockTransactions$ = new Subject<Transaction>();
   isLoadingWebSocket$ = new ReplaySubject<boolean>(1);

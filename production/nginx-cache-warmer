@@ -38,5 +38,13 @@ do for url in / \
 		curl -s "https://${hostname}${url}" >/dev/null
 	done
 
+	counter=1
+	while [ $counter -le 134 ]
+	do
+		curl -s "https://${hostname}/api/v1/mining/pool/${counter}/hashrate" >/dev/null
+		curl -s "https://${hostname}/api/v1/mining/pool/${counter}" >/dev/null
+		((counter++))
+	done
+
 	sleep 10
 done

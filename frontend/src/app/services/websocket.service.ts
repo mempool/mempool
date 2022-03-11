@@ -68,7 +68,7 @@ export class WebsocketService {
         clearTimeout(this.onlineCheckTimeout);
         clearTimeout(this.onlineCheckTimeoutTwo);
 
-        this.stateService.latestBlockHeight = 0;
+        this.stateService.latestBlockHeight = -1;
 
         this.websocketSubject.complete();
         this.subscription.unsubscribe();
@@ -239,6 +239,10 @@ export class WebsocketService {
       this.stateService.txReplaced$.next(response.rbfTransaction);
     }
 
+    if (response.txReplaced) {
+      this.stateService.txReplaced$.next(response.txReplaced);
+    }
+
     if (response['mempool-blocks']) {
       this.stateService.mempoolBlocks$.next(response['mempool-blocks']);
     }
@@ -252,7 +256,7 @@ export class WebsocketService {
     }
 
     if (response.utxoSpent) {
-      this.stateService.utxoSpent$.next();
+      this.stateService.utxoSpent$.next(response.utxoSpent);
     }
 
     if (response.backendInfo) {

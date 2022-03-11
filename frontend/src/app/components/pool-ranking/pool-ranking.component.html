@@ -1,23 +1,25 @@
 <div [class]="widget === false ? 'container-xl' : ''">
 
-  <div class="pool-distribution" *ngIf="widget && (miningStatsObservable$ | async) as miningStats">
-    <div class="item">
-      <h5 class="card-title" i18n="mining.miners-luck">Pools luck (1w)</h5>
-      <p class="card-text">
-        {{ miningStats['minersLuck'] }}%
-      </p>
-    </div>
-    <div class="item">
-      <h5 class="card-title" i18n="master-page.blocks">Blocks (1w)</h5>
-      <p class="card-text">
-        {{ miningStats.blockCount }}
-      </p>
-    </div>
-    <div class="item">
-      <h5 class="card-title" i18n="mining.miners-count">Pools count (1w)</h5>
-      <p class="card-text">
-        {{ miningStats.pools.length }}
-      </p>
+  <div *ngIf="widget">
+    <div class="pool-distribution" *ngIf="(miningStatsObservable$ | async) as miningStats; else loadingReward">
+      <div class="item">
+        <h5 class="card-title" i18n="mining.miners-luck">Pools luck (1w)</h5>
+        <p class="card-text">
+          {{ miningStats['minersLuck'] }}%
+        </p>
+      </div>
+      <div class="item">
+        <h5 class="card-title" i18n="master-page.blocks">Blocks (1w)</h5>
+        <p class="card-text">
+          {{ miningStats.blockCount }}
+        </p>
+      </div>
+      <div class="item">
+        <h5 class="card-title" i18n="mining.miners-count">Pools count (1w)</h5>
+        <p class="card-text">
+          {{ miningStats.pools.length }}
+        </p>
+      </div>
     </div>
   </div>
 
@@ -96,3 +98,27 @@
   </table>
 
 </div>
+
+
+<ng-template #loadingReward>
+  <div class="pool-distribution">
+    <div class="item">
+      <h5 class="card-title" i18n="mining.miners-luck">Pools luck (1w)</h5>
+      <p class="card-text">
+        <span class="skeleton-loader skeleton-loader-big"></span>
+      </p>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="master-page.blocks">Blocks (1w)</h5>
+      <p class="card-text">
+        <span class="skeleton-loader skeleton-loader-big"></span>
+      </p>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="mining.miners-count">Pools count (1w)</h5>
+      <p class="card-text">
+        <span class="skeleton-loader skeleton-loader-big"></span>
+      </p>
+    </div>
+  </div>
+</ng-template>

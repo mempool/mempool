@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, NgZone, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from 'echarts';
@@ -41,6 +41,7 @@ export class PoolRankingComponent implements OnInit {
     private miningService: MiningService,
     private seoService: SeoService,
     private router: Router,
+    private zone: NgZone,
   ) {
   }
 
@@ -263,8 +264,8 @@ export class PoolRankingComponent implements OnInit {
             fontSize: 14,
           },
           itemStyle: {
-            borderRadius: 2,
-            borderWidth: 2,
+            borderRadius: 1,
+            borderWidth: 1,
             borderColor: '#000',
           },
           emphasis: {
@@ -293,7 +294,9 @@ export class PoolRankingComponent implements OnInit {
       if (e.data.data === 9999) { // "Other"
         return;
       }
-      this.router.navigate(['/mining/pool/', e.data.data]);
+      this.zone.run(() => {
+        this.router.navigate(['/mining/pool/', e.data.data]);
+      });
     });
   }
 

@@ -44,7 +44,7 @@
 .fade-border {
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 80%, transparent 100%)
 }
-  
+
 .main-title {
   position: relative;
   color: #ffffff91;
@@ -56,39 +56,22 @@
   padding-bottom: 3px;
 }
 
-.general-stats {
-  min-height: 56px;
-  display: block;
-  @media (min-width: 485px) {
-    display: flex;
+.fee-estimation-container {
+  display: flex;
+  justify-content: space-between;
+  @media (min-width: 376px) {
     flex-direction: row;
   }
-  h5 {
-    margin-bottom: 10px;
-  }
   .item {
-    width: 50%;
-    margin: 0px auto 10px;
-    display: inline-block;
-    @media (min-width: 485px) {
-      margin: 0px auto 10px;
+    max-width: 150px;
+    margin: 0;
+    width: -webkit-fill-available;
+    @media (min-width: 376px) {
+      margin: 0 auto 0px;
     }
-    @media (min-width: 785px) {
-      margin: 0px auto 0px;
-    }
-    &:last-child {
-      margin: 0px auto 0px;
-    }
-    &:nth-child(2) {
-      order: 2;
+    &:first-child{
+      display: none;
       @media (min-width: 485px) {
-        order: 3;
-      }
-    }
-    &:nth-child(3) {
-      order: 3;
-      @media (min-width: 485px) {
-        order: 2;
         display: block;
       }
       @media (min-width: 768px) {
@@ -98,48 +81,37 @@
         display: block;
       }
     }
-    .card-title {
-      font-size: 1rem;
-      color: #4a68b9;
+    &:last-child {
+      margin-bottom: 0;
     }
-    .card-text {
-      font-size: 18px;
-      span {
-        color: #ffffff66;
-        font-size: 12px;
-      }
+    .card-text span {
+      color: #ffffff66;
+      font-size: 12px;
+      top: 0px;
+    }
+    .fee-text{
+      border-bottom: 1px solid #ffffff1c;
+      width: fit-content;
+      margin: auto;
+      line-height: 1.45;
+      padding: 0px 2px;
+    }
+    .fiat {
+      display: block;
+      font-size: 14px !important;
     }
   }
 }
 
-.difficulty-adjustment-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  height: 76px;
-  .shared-block {
-    color: #ffffff66;
-    font-size: 12px;
+.skeleton-loader {
+  width: 100%;
+  display: block;
+  &:first-child {
+    max-width: 90px;
+    margin: 15px auto 3px;
   }
-  .item {
-    padding: 0 5px;
-    width: 100%;
-    &:nth-child(1) {
-      display: none;
-      @media (min-width: 485px) {
-        display: table-cell;
-      }
-      @media (min-width: 768px) {
-        display: none;
-      }
-      @media (min-width: 992px) {
-        display: table-cell;
-      }
-    }
-  }
-  .card-text {
-    font-size: 22px;
-    margin-top: -9px;
-    position: relative;
+  &:last-child {
+    margin: 10px auto 3px;
+    max-width: 55px;
   }
 }

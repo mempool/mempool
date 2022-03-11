@@ -2,8 +2,6 @@ import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnDestroy, OnIni
 import { map } from 'rxjs/operators';
 import { SeoService } from 'src/app/services/seo.service';
 import { StateService } from 'src/app/services/state.service';
-import { formatNumber } from '@angular/common';
-import { WebsocketService } from 'src/app/services/websocket.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -22,7 +20,6 @@ export class MiningDashboardComponent implements OnInit {
 
   constructor(private seoService: SeoService,
     public stateService: StateService,
-    private websocketService: WebsocketService,
     @Inject(LOCALE_ID) private locale: string,
   ) {
     this.seoService.setTitle($localize`:@@mining.mining-dashboard:Mining Dashboard`);
@@ -39,8 +36,8 @@ export class MiningDashboardComponent implements OnInit {
 
         return {
           'totalReward': totalReward,
-          'rewardPerTx': formatNumber(totalReward / totalTx, this.locale, '1.0-0'),
-          'feePerTx': formatNumber(totalFee / totalTx, this.locale, '1.0-0'),
+          'rewardPerTx': totalReward / totalTx,
+          'feePerTx': totalFee / totalTx,
         }
       })
     );

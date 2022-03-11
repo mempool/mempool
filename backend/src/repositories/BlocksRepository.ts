@@ -3,11 +3,6 @@ import { DB } from '../database';
 import logger from '../logger';
 import { Common } from '../api/common';
 
-export interface EmptyBlocks {
-  emptyBlocks: number;
-  poolId: number;
-}
-
 class BlocksRepository {
   /**
    * Save indexed block data in the database
@@ -17,17 +12,17 @@ class BlocksRepository {
 
     try {
       const query = `INSERT INTO blocks(
-        height,  hash,     blockTimestamp, size,
-        weight,  tx_count, coinbase_raw,   difficulty,
-        pool_id, fees,     fee_span,       median_fee,
-        reward,  version,  bits,           nonce,
-        merkle_root,       previous_block_hash
+        height,           hash,                blockTimestamp, size,
+        weight,           tx_count,            coinbase_raw,   difficulty,
+        pool_id,          fees,                fee_span,       median_fee,
+        reward,           version,             bits,           nonce,
+        merkle_root,      previous_block_hash, avg_fee,        avg_fee_rate
       ) VALUE (
         ?, ?, FROM_UNIXTIME(?), ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?,
-        ?,    ?
+        ?, ?, ?, ?
       )`;
 
       const params: any[] = [
@@ -37,21 +32,22 @@ class BlocksRepository {
         block.size,
         block.weight,
         block.tx_count,
-        '',
+        block.extras.coinbaseRaw,
         block.difficulty,
         block.extras.pool?.id, // Should always be set to something
-        0,
-        '[]',
-        block.extras.medianFee ?? 0,
-        block.extras.reward ?? 0,
+        block.extras.totalFees,
+        JSON.stringify(block.extras.feeRange),
+        block.extras.medianFee,
+        block.extras.reward,
         block.version,
         block.bits,
         block.nonce,
         block.merkle_root,
-        block.previousblockhash
+        block.previousblockhash,
+        block.extras.avgFee,
+        block.extras.avgFeeRate,
       ];
 
-      // logger.debug(query);
       await connection.query(query, params);
       connection.release();
     } catch (e: any) {
@@ -100,12 +96,13 @@ class BlocksRepository {
   /**
    * Get empty blocks for one or all pools
    */
-  public async $getEmptyBlocks(poolId: number | null, interval: string | null = null): Promise<EmptyBlocks[]> {
+  public async $countEmptyBlocks(poolId: number | null, interval: string | null = null): Promise<any> {
     interval = Common.getSqlInterval(interval);
 
     const params: any[] = [];
-    let query = `SELECT height, hash, tx_count, size, pool_id, weight, UNIX_TIMESTAMP(blockTimestamp) as timestamp
+    let query = `SELECT count(height) as count, pools.id as poolId
       FROM blocks
+      JOIN pools on pools.id = blocks.pool_id
       WHERE tx_count = 1`;
 
     if (poolId) {
@@ -117,13 +114,14 @@ class BlocksRepository {
       query += ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
     }
 
-    // logger.debug(query);
+    query += ` GROUP by pools.id`;
+
     const connection = await DB.pool.getConnection();
     try {
       const [rows] = await connection.query(query, params);
       connection.release();
 
-      return <EmptyBlocks[]>rows;
+      return rows;
     } catch (e) {
       connection.release();
       logger.err('$getEmptyBlocks() error' + (e instanceof Error ? e.message : e));
@@ -134,7 +132,7 @@ class BlocksRepository {
   /**
    * Get blocks count for a period
    */
-  public async $blockCount(poolId: number | null, interval: string | null): Promise<number> {
+  public async $blockCount(poolId: number | null, interval: string | null = null): Promise<number> {
     interval = Common.getSqlInterval(interval);
 
     const params: any[] = [];
@@ -275,7 +273,7 @@ class BlocksRepository {
   /**
    * Get one block by height
    */
-   public async $getBlockByHeight(height: number): Promise<object | null> {
+  public async $getBlockByHeight(height: number): Promise<object | null> {
     const connection = await DB.pool.getConnection();
     try {
       const [rows]: any[] = await connection.query(`
@@ -301,7 +299,7 @@ class BlocksRepository {
   /**
    * Return blocks difficulty
    */
-   public async $getBlocksDifficulty(interval: string | null): Promise<object[]> {
+  public async $getBlocksDifficulty(interval: string | null): Promise<object[]> {
     interval = Common.getSqlInterval(interval);
 
     const connection = await DB.pool.getConnection();
