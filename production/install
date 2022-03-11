@@ -1172,7 +1172,7 @@ if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
     # FIXME: must only crontab enabled daemons
     osSudo "${ROOT_USER}" crontab -u "${ELEMENTS_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/elements.crontab"
 
-    echo "[*] Configuring Bitcoin Signet RPC credentials in electrs start script"
+    echo "[*] Configuring Elements Liquid RPC credentials in electrs start script"
     osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquid"
     osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquid"
     osSudo "${ROOT_USER}" sed -i .orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquid"
@@ -1191,6 +1191,11 @@ if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
     osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
     osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_HOME}/elements.conf"
     osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
+
+    echo "[*] Configuring Elements LiquidTestnet RPC credentials in electrs start script"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquidtestnet"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquidtestnet"
+    osSudo "${ROOT_USER}" sed -i .orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquidtestnet"
 fi
 
 #####################################
