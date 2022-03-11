@@ -1,0 +1,12 @@
+--- a/src/raw.rs	2020-10-22 05:59:43.747207000 +0000
++++ b/src/raw2.rs	2020-10-22 06:00:04.016688000 +0000
+@@ -82,9 +82,6 @@
+     Sc2CharTerm = sc!(_SC_2_CHAR_TERM),
+     Sc2CVersion = 96, // TODO(joshlf): Switch to a libc constant once it's added
+     Sc2Upe = sc!(_SC_2_UPE),
+-    ScXbs5Ilp32Off32 = sc!(_SC_XBS5_ILP32_OFF32),
+-    ScXbs5Ilp32Offbig = sc!(_SC_XBS5_ILP32_OFFBIG),
+-    ScXbs5LpbigOffbig = sc!(_SC_XBS5_LPBIG_OFFBIG),
+ }
+ 
+ /// Query the system's configuration.

@@ -1,0 +1,6 @@
+@reboot sleep 60 ; /usr/local/bin/elementsd -chain=liquidv1 >/dev/null 2>&1
+@reboot sleep 60 ; /usr/local/bin/elementsd -chain=liquidtestnet >/dev/null 2>&1
+@reboot sleep 90 ; screen -dmS liquidv1 /elements/electrs/electrs-start-liquid
+@reboot sleep 90 ; screen -dmS liquidtestnet /elements/electrs/electrs-start-liquidtestnet
+6 * * * * cd $HOME/asset_registry_db && git pull origin master >/dev/null 2>&1
+6 * * * * cd $HOME/asset_registry_testnet_db && git pull origin master >/dev/null 2>&1

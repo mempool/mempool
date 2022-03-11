@@ -3,7 +3,7 @@ export NVM_DIR="$HOME/.nvm"
 source "$NVM_DIR/nvm.sh"
 for site in mainnet liquid testnet bisq signet liquidtestnet
 do
-    git clone https://github.com/mempool/mempool "${HOME}/${site}"
+    #git clone https://github.com/mempool/mempool "${HOME}/${site}"
     mkdir -p "${HOME}/public_html/${site}/"
 
     cd "${HOME}/${site}/backend/"

@@ -1,0 +1,180 @@
+#!/bin/sh
+# PROVIDE: bitcoin_testnet
+# REQUIRE: LOGIN cleanvar
+# KEYWORD: shutdown
+
+#
+# Add the following lines to /etc/rc.conf to enable :
+# bitcoin_testnet_enable (bool):	Set to "NO" by default.
+#				Set it to "YES" to enable bitcoin
+# bitcoin_testnet_user (str)		Set to "bitcoin" by default.
+# bitcoin_testnet_group (str)		Set to "bitcoin" by default.
+# bitcoin_testnet_conf (str)		Set to "/bitcoin/bitcoin.conf" by default.
+# bitcoin_testnet_data_dir (str)	Set to "/var/db/bitcoin" by default.
+# bitcoin_testnet_syslog_facility(str)	Set to "local0" by default.
+# bitcoin_testnet_syslog_priority(str)	Set to "info" by default.
+# bitcoinlimits_enable (bool)	Set to "NO" by default.
+#				Set it to "YES" to enable bitcoinlimits
+# bitcoinlimits_args		Set to "-e -U ${bitcoin_testnet_user}" by default
+
+
+. /etc/rc.subr
+
+name="bitcoin_testnet"
+rcvar=bitcoin_testnet_enable
+
+start_precmd="bitcoin_testnet_precmd"
+start_cmd="bitcoin_testnet_start"
+restart_precmd="bitcoin_testnet_checkconfig"
+reload_precmd="bitcoin_testnet_checkconfig"
+configtest_cmd="bitcoin_testnet_checkconfig"
+status_cmd="bitcoin_testnet_status"
+stop_cmd="bitcoin_testnet_stop"
+stop_postcmd="bitcoin_testnet_wait"
+command="/usr/local/bin/bitcoind"
+daemon_command="/usr/sbin/daemon"
+extra_commands="configtest"
+pidfile="/bitcoin/bitcoin.pid"
+
+: ${bitcoin_testnet_enable:="NO"}
+: ${bitcoinlimits_enable:="NO"}
+
+load_rc_config ${name}
+
+: ${bitcoin_testnet_user:="bitcoin"}
+: ${bitcoin_testnet_group:="bitcoin"}
+: ${bitcoin_testnet_data_dir:="/bitcoin"}
+: ${bitcoin_testnet_config_file:="/bitcoin/bitcoin.conf"}
+: ${bitcoin_testnet_syslog_facility:="local0"}
+: ${bitcoin_testnet_syslog_priority:="info"}
+: ${bitcoin_testnet_syslog_tag:="bitcoin"}
+: ${bitcoin_testnet_kill_after:="300"}
+: ${bitcoinlimits_args:="-e -U ${bitcoin_testnet_user}"}
+
+# set up dependant variables
+procname="${command}"
+required_files="${bitcoin_testnet_config_file}"
+pidfile="${bitcoin_testnet_data_dir}/testnet3/bitcoind.pid"
+
+bitcoin_testnet_checkconfig()
+{
+  echo "Performing sanity check on bitcoin configuration:"
+  if [ ! -d "${bitcoin_testnet_data_dir}" ]
+  then
+    echo "Missing data directory: ${bitcoin_testnet_data_dir}"
+    exit 1
+  fi
+  chown -R "${bitcoin_testnet_user}:${bitcoin_testnet_group}" "${bitcoin_testnet_data_dir}"
+
+  if [ ! -f "${bitcoin_testnet_config_file}" ]
+  then
+    echo "Missing configuration file: ${bitcoin_testnet_config_file}"
+    exit 1
+  fi
+  if [ ! -x "${command}" ]
+  then
+    echo "Missing executable: ${command}"
+    exit 1
+  fi
+  return 0
+}
+
+bitcoin_testnet_cleanup()
+{
+  rm -f "${pidfile}"
+}
+
+bitcoin_testnet_precmd()
+{
+  bitcoin_testnet_checkconfig
+
+  pid=$(check_pidfile "${pidfile}" "${procname}")
+  if [ -z "${pid}" ]
+  then
+    echo "Bitcoind is not running"
+    rm -f "${pidfile}"
+  fi
+
+  if checkyesno bitcoinlimits_enable
+  then
+    eval $(/usr/bin/limits ${bitcoinlimits_args}) 2>/dev/null
+  else
+    return 0
+  fi
+}
+
+bitcoin_testnet_status()
+{
+  local pid
+  pid=$(check_pidfile "${pidfile}" "${procname}")
+  if [ -z "${pid}" ]
+  then
+    echo "Bitcoind is not running"
+    return 1
+  else
+    echo "Bitcoind running, pid: ${pid}"
+  fi
+}
+
+bitcoin_testnet_start()
+{
+  echo "Starting bitcoin:"
+  cd "${bitcoin_testnet_data_dir}" || return 1
+  ${daemon_command} \
+    -u "${bitcoin_testnet_user}" \
+    -l "${bitcoin_testnet_syslog_facility}" \
+    -s "${bitcoin_testnet_syslog_priority}" \
+    -T "${bitcoin_testnet_syslog_tag}" \
+    ${command} \
+    -testnet \
+    -printtoconsole=1 \
+    -conf="${bitcoin_testnet_config_file}" \
+    -datadir="${bitcoin_testnet_data_dir}"
+}
+
+bitcoin_testnet_stop()
+{
+  echo "Stopping bitcoin:"
+  pid=$(check_pidfile "${pidfile}" "${procname}")
+  if [ -z "${pid}" ]
+  then
+    echo "Bitcoind is not running"
+    return 1
+  else
+    kill ${pid}
+  fi
+}
+
+bitcoin_testnet_wait()
+{
+  local n="${bitcoin_testnet_kill_after}"
+  echo "Waiting for bitcoin shutdown:"
+  while :
+  do
+    printf '.'
+    pid=$(check_pidfile "${pidfile}" "${procname}")
+    if [ -z "${pid}" ]
+    then
+      printf '\n'
+      break
+    fi
+    sleep 1
+    n=$((${n} - 1))
+    if [ ${n} -eq 0 -a -f "${pidfile}" ]
+    then
+      printf "\nForce shutdown"
+      kill -9 $(cat "${pidfile}")
+      for n in 1 2 3
+      do
+        printf '.'
+        sleep 1
+      done
+      printf '\n'
+      break
+    fi
+  done
+  rm -f "${pidfile}"
+  echo "Shutdown complete"
+}
+
+run_rc_command "$1"
