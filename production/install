@@ -1,0 +1,1387 @@
+#!/usr/bin/env zsh
+set -e
+echo -n "Initializing..."
+
+case `uname -s` in
+
+    FreeBSD)
+        OS=FreeBSD
+    ;;
+
+    Linux)
+        if [ "$(grep -Ei 'debian|buntu|mint' /etc/*release)" ]; then
+            OS=Debian
+        else
+            echo "Your distribution of Linux is not yet supported by this installation script"
+            exit 1
+        fi
+    ;;
+
+    *)
+        echo "Unsupported OS"
+        exit 1
+    ;;
+
+esac
+
+########################################
+##### mempool installation options #####
+########################################
+
+# tor onion and clearnet hostname
+TOR_INSTALL=ON
+CERTBOT_INSTALL=ON
+
+# install 3 network daemons
+BITCOIN_INSTALL=ON
+BISQ_INSTALL=ON
+ELEMENTS_INSTALL=ON
+
+# configure 4 network instances
+BITCOIN_MAINNET_ENABLE=ON
+BITCOIN_TESTNET_ENABLE=ON
+BITCOIN_SIGNET_ENABLE=ON
+BISQ_MAINNET_ENABLE=ON
+ELEMENTS_LIQUID_ENABLE=ON
+ELEMENTS_LIQUIDTESTNET_ENABLE=ON
+
+# enable lightmode and disable compaction to fit on 1TB SSD drive
+BITCOIN_ELECTRS_LIGHT_MODE=ON
+BITCOIN_ELECTRS_COMPACTION=OFF
+ELEMENTS_ELECTRS_LIGHT_MODE=ON
+ELEMENTS_ELECTRS_COMPACTION=OFF
+
+# automaitcally configure firewall
+FIREWALL_CONFIGURE=ON
+
+############
+# probe OS #
+############
+
+HOSTNAME=$(hostname)
+
+# get newest zpool if using zfs
+ZPOOL=""
+[ "${OS}" = FreeBSD ] && ZPOOL=$(zpool list -H|head -1|cut -f 1)
+
+MD5=md5sum
+[ "${OS}" = FreeBSD ] && MD5=md5
+
+##################################################
+##### P2P / RPC / HTTP network communication #####
+##################################################
+
+# used for bisq and firewall configuration
+BITCOIN_MAINNET_P2P_HOST=127.0.0.1
+BITCOIN_MAINNET_P2P_PORT=8333
+# used for RPC communication
+BITCOIN_MAINNET_RPC_HOST=127.0.0.1
+BITCOIN_MAINNET_RPC_PORT=8332
+# generate random hex string
+BITCOIN_RPC_USER=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
+BITCOIN_RPC_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
+
+# used for firewall configuration
+BITCOIN_TESTNET_P2P_HOST=127.0.0.1
+BITCOIN_TESTNET_P2P_PORT=18333
+# used for RPC communication
+BITCOIN_TESTNET_RPC_HOST=127.0.0.1
+BITCOIN_TESTNET_RPC_PORT=18332
+
+# used for firewall configuration
+BITCOIN_SIGNET_P2P_HOST=127.0.0.1
+BITCOIN_SIGNET_P2P_PORT=18333
+# used for RPC communication
+BITCOIN_SIGNET_RPC_HOST=127.0.0.1
+BITCOIN_SIGNET_RPC_PORT=18332
+# generate random hex string
+BITCOIN_SIGNET_RPC_USER=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
+BITCOIN_SIGNET_RPC_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
+
+# used by bisq to receive notifications from bitcoin about new blocks
+BISQ_BLOCKNOTIFY_HOST=127.0.0.1
+BISQ_BLOCKNOTIFY_PORT=5120
+
+# used for firewall configuration
+ELEMENTS_LIQUID_P2P_HOST=127.0.0.1
+ELEMENTS_LIQUID_P2P_PORT=7042
+# used for RPC communication
+ELEMENTS_LIQUID_RPC_HOST=127.0.0.1
+ELEMENTS_LIQUID_RPC_PORT=7041
+# generate random hex string
+ELEMENTS_RPC_USER=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
+ELEMENTS_RPC_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
+
+# set either socket or TCP host/port, not both
+#ELECTRS_MAINNET_HTTP_SOCK=/tmp/bitcoin.mainnet.electrs
+ELECTRS_MAINNET_HTTP_HOST=127.0.0.1
+ELECTRS_MAINNET_HTTP_PORT=3000
+
+# set either socket or TCP host/port, not both
+#ELECTRS_LIQUID_HTTP_SOCK=/tmp/elements.liquid.electrs
+ELECTRS_LIQUID_HTTP_HOST=127.0.0.1
+ELECTRS_LIQUID_HTTP_PORT=3001
+
+# set either socket or TCP host/port, not both
+#ELECTRS_TESTNET_HTTP_SOCK=/tmp/bitcoin.testnet.electrs
+ELECTRS_TESTNET_HTTP_HOST=127.0.0.1
+ELECTRS_TESTNET_HTTP_PORT=3002
+
+# set either socket or TCP host/port, not both
+#ELECTRS_SIGNET_HTTP_SOCK=/tmp/bitcoin.testnet.electrs
+ELECTRS_SIGNET_HTTP_HOST=127.0.0.1
+ELECTRS_SIGNET_HTTP_PORT=3003
+
+# set either socket or TCP host/port, not both
+#ELECTRS_LIQUIDTESTNET_HTTP_SOCK=/tmp/bitcoin.testnet.electrs
+ELECTRS_LIQUIDTESTNET_HTTP_HOST=127.0.0.1
+ELECTRS_LIQUIDTESTNET_HTTP_PORT=3004
+
+# set either socket or TCP host/port, not both
+#MEMPOOL_MAINNET_HTTP_SOCK=/tmp/bitcoin.mainnet.mempool
+MEMPOOL_MAINNET_HTTP_HOST=127.0.0.1
+MEMPOOL_MAINNET_HTTP_PORT=8999
+
+# set either socket or TCP host/port, not both
+#MEMPOOL_LIQUID_HTTP_SOCK=/tmp/elements.liquid.mempool
+MEMPOOL_LIQUID_HTTP_HOST=127.0.0.1
+MEMPOOL_LIQUID_HTTP_PORT=8998
+
+# set either socket or TCP host/port, not both
+#MEMPOOL_TESTNET_HTTP_SOCK=/tmp/bitcoin.testnet.mempool
+MEMPOOL_TESTNET_HTTP_HOST=127.0.0.1
+MEMPOOL_TESTNET_HTTP_PORT=8997
+
+# set either socket or TCP host/port, not both
+#MEMPOOL_BISQ_HTTP_SOCK=/tmp/bitcoin.bisq.mempool
+MEMPOOL_BISQ_HTTP_HOST=127.0.0.1
+MEMPOOL_BISQ_HTTP_PORT=8996
+
+# set either socket or TCP host/port, not both
+#MEMPOOL_SIGNET_HTTP_SOCK=/tmp/bitcoin.bisq.mempool
+MEMPOOL_SIGNET_HTTP_HOST=127.0.0.1
+MEMPOOL_SIGNET_HTTP_PORT=8995
+
+# set either socket or TCP host/port, not both
+#MEMPOOL_LIQUIDTESTNET_HTTP_SOCK=/tmp/bitcoin.bisq.mempool
+MEMPOOL_LIQUIDTESTNET_HTTP_HOST=127.0.0.1
+MEMPOOL_LIQUIDTESTNET_HTTP_PORT=8994
+
+##### OS options, should be automatically detected
+
+case $OS in
+    FreeBSD)
+        ROOT_USER=root
+        ROOT_GROUP=wheel
+        ROOT_HOME=/root
+        TOR_HOME=/var/db/tor
+        TOR_CONFIGURATION=/usr/local/etc/tor/torrc
+        TOR_RESOURCES=/var/db/tor
+        TOR_PKG=tor
+        TOR_USER=_tor
+        TOR_GROUP=_tor
+        CERTBOT_PKG=py38-certbot
+    ;;
+
+    Debian)
+        ROOT_USER=root
+        ROOT_GROUP=root
+        ROOT_HOME=/root
+        TOR_HOME=/etc/tor
+        TOR_CONFIGURATION=/etc/tor/torrc
+        TOR_RESOURCES=/var/lib/tor
+        TOR_PKG=tor
+        TOR_USER=tor-debian
+        TOR_GROUP=tor-debian
+        CERTBOT_PKG=python-certbot
+        NGINX_CONFIGURATION=/etc/nginx/nginx.conf
+    ;;
+esac
+
+# where systemd services get installed
+DEBIAN_SERVICE_HOME=/etc/systemd/system
+# where environment variables for services are set
+DEBIAN_ENV_HOME=/etc/default
+# where rc.d scripts live
+FREEBSD_SERVICE_HOME=/usr/local/etc/rc.d
+
+# mysql data folder and user/group
+MYSQL_HOME=/mysql
+MYSQL_USER=mysql
+MYSQL_GROUP=mysql
+
+# mempool data folder and user/group
+MEMPOOL_HOME=/mempool
+MEMPOOL_USER=mempool
+MEMPOOL_GROUP=mempool
+# name of Tor hidden service in torrc
+MEMPOOL_TOR_HS=mempool
+
+# bitcoin user/group
+BITCOIN_USER=bitcoin
+BITCOIN_GROUP=bitcoin
+# bitcoin core data folder, needs about 300GB
+BITCOIN_HOME=/bitcoin
+
+# bitcoin testnet data
+BITCOIN_TESTNET_DATA=${BITCOIN_HOME}/testnet3
+# bitcoin testnet data
+BITCOIN_SIGNET_DATA=${BITCOIN_HOME}/signet
+
+# bitcoin electrs source/binaries
+BITCOIN_ELECTRS_HOME=${BITCOIN_HOME}/electrs
+
+# electrs database root
+ELECTRS_DATA_ROOT=/electrs
+# bitcoin electrs data, needs about 350GB, and uses double that during compaction
+ELECTRS_MAINNET_ZPOOL=${ZPOOL}
+ELECTRS_MAINNET_DATA=${ELECTRS_DATA_ROOT}/mainnet
+# bitcoin testnet electrs database, only a few GB
+ELECTRS_TESTNET_ZPOOL=${ZPOOL}
+ELECTRS_TESTNET_DATA=${ELECTRS_DATA_ROOT}/testnet
+# bitcoin signet electrs database, only a few GB
+ELECTRS_SIGNET_ZPOOL=${ZPOOL}
+ELECTRS_SIGNET_DATA=${ELECTRS_DATA_ROOT}/signet
+# liquid electrs data, needs about 5GB
+ELECTRS_LIQUID_ZPOOL=${ZPOOL}
+ELECTRS_LIQUID_DATA=${ELECTRS_DATA_ROOT}/liquid
+# liquid electrs data, needs about 5GB
+ELECTRS_LIQUIDTESTNET_ZPOOL=${ZPOOL}
+ELECTRS_LIQUIDTESTNET_DATA=${ELECTRS_DATA_ROOT}/liquidtestnet
+
+# bisq user/group
+BISQ_USER=bisq
+BISQ_GROUP=bisq
+# bisq home folder, needs about 1GB
+BISQ_HOME=/bisq
+
+# liquid user/group
+ELEMENTS_USER=elements
+ELEMENTS_GROUP=elements
+# liquid home/data/blockchain folder, needs about 10GB
+ELEMENTS_HOME=/elements
+# electrs db top-level
+ELECTRS_HOME=/electrs
+# elements electrs source/binaries
+ELEMENTS_ELECTRS_HOME=${ELEMENTS_HOME}/electrs
+
+##### git repo settings, shouldn't need changing
+
+MEMPOOL_REPO_URL=https://github.com/mempool/mempool
+MEMPOOL_REPO_NAME=mempool
+MEMPOOL_REPO_BRANCH=wiz/installer2
+MEMPOOL_LATEST_RELEASE=v2.3.1
+
+BITCOIN_REPO_URL=https://github.com/bitcoin/bitcoin
+BITCOIN_REPO_NAME=bitcoin
+BITCOIN_REPO_BRANCH=master
+#BITCOIN_LATEST_RELEASE=$(curl -s https://api.github.com/repos/bitcoin/bitcoin/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
+BITCOIN_LATEST_RELEASE=v22.0
+echo -n '.'
+
+BISQ_REPO_URL=https://github.com/bisq-network/bisq
+BISQ_REPO_NAME=bisq
+BISQ_REPO_BRANCH=master
+#BISQ_LATEST_RELEASE=$(curl -s https://api.github.com/repos/bisq-network/bisq/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
+BISQ_LATEST_RELEASE=master
+echo -n '.'
+
+ELEMENTS_REPO_URL=https://github.com/ElementsProject/elements
+ELEMENTS_REPO_NAME=elements
+ELEMENTS_REPO_BRANCH=master
+#ELEMENTS_LATEST_RELEASE=$(curl -s https://api.github.com/repos/ElementsProject/elements/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
+ELEMENTS_LATEST_RELEASE=elements-0.21.0.2
+echo -n '.'
+
+BITCOIN_ELECTRS_REPO_URL=https://github.com/blockstream/electrs
+BITCOIN_ELECTRS_REPO_NAME=electrs
+BITCOIN_ELECTRS_REPO_BRANCH=new-index
+BITCOIN_ELECTRS_LATEST_RELEASE=new-index
+
+ELEMENTS_ELECTRS_REPO_URL=https://github.com/blockstream/electrs
+ELEMENTS_ELECTRS_REPO_NAME=electrs
+ELEMENTS_ELECTRS_REPO_BRANCH=new-index
+ELEMENTS_ELECTRS_LATEST_RELEASE=new-index
+
+LIQUID_ASSET_REGISTRY_DB_URL=https://github.com/blockstream/asset_registry_db
+LIQUID_ASSET_REGISTRY_DB_NAME=asset_registry_db
+LIQUIDTESTNET_ASSET_REGISTRY_DB_URL=https://github.com/blockstream/asset_registry_testnet_db
+LIQUIDTESTNET_ASSET_REGISTRY_DB_NAME=asset_registry_testnet_db
+
+#######################
+##### OS packages #####
+#######################
+
+# packages needed for mempool ecosystem
+DEBIAN_PKG=()
+DEBIAN_PKG+=(zsh vim curl screen openssl python3)
+DEBIAN_PKG+=(build-essential git git-lfs clang cmake)
+DEBIAN_PKG+=(autotools-dev autoconf automake pkg-config bsdmainutils)
+DEBIAN_PKG+=(libevent-dev libdb-dev libssl-dev libtool-dev autotools-dev)
+DEBIAN_PKG+=(libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-test-dev libboost-thread-dev)
+DEBIAN_PKG+=(nodejs npm mariadb-server nginx-core python-certbot-nginx rsync ufw)
+
+# packages needed for mempool ecosystem
+FREEBSD_PKG=()
+FREEBSD_PKG+=(zsh sudo git screen curl wget calc neovim)
+FREEBSD_PKG+=(openssh-portable py38-pip rust llvm90)
+FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc libevent libtool pkgconf)
+FREEBSD_PKG+=(nginx rsync py38-certbot-nginx )
+
+#############################
+##### utility functions #####
+#############################
+
+osSudo()
+{
+    SUDO_USER=$1
+    shift
+    case $OS in
+        FreeBSD)
+            sudo -H -i -u "${SUDO_USER}" $*
+        ;;
+        Debian)
+            sudo -H -i -u "${SUDO_USER}" $*
+        ;;
+    esac
+}
+
+osPackageUpdate()
+{
+    echo "[*] Updating OS sources"
+    case $OS in
+        FreeBSD)
+            pkg update
+        ;;
+        Debian)
+            osSudo "${ROOT_USER}" DEBIAN_FRONTEND=noninteractive apt-get update -q
+        ;;
+    esac
+}
+
+osPackageUpgrade()
+{
+    echo "[*] Upgrading OS packages $*"
+    case $OS in
+        FreeBSD)
+            pkg upgrade -y $*
+        ;;
+        Debian)
+            osSudo "${ROOT_USER}" DEBIAN_FRONTEND=noninteractive apt-get upgrade -qq -y $*
+        ;;
+    esac
+}
+
+osPackageInstall()
+{
+    echo "[*] Installing OS packages $*"
+    case $OS in
+        FreeBSD)
+            pkg install -y $*
+        ;;
+        Debian)
+            osSudo "${ROOT_USER}" DEBIAN_FRONTEND=noninteractive apt-get install -qq -y $*
+        ;;
+    esac
+}
+
+osPackageInstallAll()
+{
+    case $OS in
+        FreeBSD)
+            osPackageInstall ${FREEBSD_PKG[@]}
+        ;;
+        Debian)
+            osPackageInstall ${DEBIAN_PKG[@]}
+        ;;
+    esac
+}
+
+osUserCreate()
+{
+    case $OS in
+        FreeBSD)
+            # pw useradd -d /mempool -g mempool -n mempool
+            osSudo "${ROOT_USER}" pw useradd $*
+        ;;
+        Debian)
+            osSudo "${ROOT_USER}" useradd $*
+        ;;
+    esac
+}
+
+osGroupCreate()
+{
+    case $OS in
+        FreeBSD)
+            osSudo "${ROOT_USER}" pw groupadd $*
+        ;;
+        Debian)
+            osSudo "${ROOT_USER}" groupadd $*
+        ;;
+    esac
+}
+
+osCertbotDryRun()
+{
+    if [ ! -z "${HOSTNAME}" ];then
+        case $OS in
+            FreeBSD)
+                osPackageInstall "${FREEBSD_PKG_CERTBOT}"
+            ;;
+            Debian)
+                osPackageInstall "${DEBIAN_PKG_CERTBOT}"
+            ;;
+        esac
+
+        certbot certonly --dry-run --standalone --agree-tos --register-unsafely-without-email -d "${HOSTNAME}"
+    fi
+}
+
+zfsCreateFilesystems()
+{
+    zfs create -o "mountpoint=${ELEMENTS_HOME}" "${ZPOOL}/elements"
+    zfs create -o "mountpoint=${BITCOIN_HOME}" "${ZPOOL}/bitcoin"
+    zfs create -o "mountpoint=${ELECTRS_HOME}" "${ZPOOL}/electrs"
+    zfs create -o "mountpoint=${MEMPOOL_HOME}" "${ZPOOL}/mempool"
+    zfs create -o "mountpoint=${MYSQL_HOME}" "${ZPOOL}/mysql"
+
+    zfs create -o "mountpoint=${BITCOIN_ELECTRS_HOME}" "${ZPOOL}/bitcoin/electrs"
+
+    zfs create -o "mountpoint=${ELEMENTS_HOME}/liquidv1" "${ZPOOL}/elements/liquidv1"
+    zfs create -o "mountpoint=${ELEMENTS_ELECTRS_HOME}" "${ZPOOL}/elements/electrs"
+
+    # Bitcoin Mainnet
+    if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
+        for folder in chainstate indexes blocks
+        do
+            zfs create -o "mountpoint=${BITCOIN_HOME}/${folder}" "${ZPOOL}/bitcoin/${folder}"
+        done
+    fi
+
+    # Bitcoin Testnet
+    if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
+        zfs create -o "mountpoint=${BITCOIN_TESTNET_DATA}" "${ZPOOL}/bitcoin/testnet"
+        for folder in chainstate indexes blocks
+        do
+            zfs create -o "mountpoint=${BITCOIN_TESTNET_DATA}/${folder}" "${ZPOOL}/bitcoin/testnet/${folder}"
+        done
+    fi
+
+    # Bitcoin Signet
+    if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
+        zfs create -o "mountpoint=${BITCOIN_SIGNET_DATA}" "${ZPOOL}/bitcoin/signet"
+        for folder in chainstate indexes blocks
+        do
+            zfs create -o "mountpoint=${BITCOIN_SIGNET_DATA}/${folder}" "${ZPOOL}/bitcoin/signet/${folder}"
+        done
+    fi
+
+    # electrs mainnet data
+    if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
+        zfs create -o "mountpoint=${ELECTRS_MAINNET_DATA}" "${ELECTRS_MAINNET_ZPOOL}/electrs/mainnet"
+        for folder in cache history txstore
+        do
+            zfs create -o "mountpoint=${ELECTRS_MAINNET_DATA}/newindex/${folder}" "${ELECTRS_MAINNET_ZPOOL}/electrs/mainnet/${folder}"
+        done
+    fi
+
+    # electrs testnet data
+    if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
+        zfs create -o "mountpoint=${ELECTRS_TESTNET_DATA}" "${ELECTRS_TESTNET_ZPOOL}/electrs/testnet"
+        for folder in cache history txstore
+        do
+            zfs create -o "mountpoint=${ELECTRS_TESTNET_DATA}/newindex/${folder}" "${ELECTRS_TESTNET_ZPOOL}/electrs/testnet/${folder}"
+        done
+    fi
+
+    # electrs signet data
+    if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
+        zfs create -o "mountpoint=${ELECTRS_SIGNET_DATA}" "${ELECTRS_SIGNET_ZPOOL}/electrs/signet"
+        for folder in cache history txstore
+        do
+            zfs create -o "mountpoint=${ELECTRS_SIGNET_DATA}/newindex/${folder}" "${ELECTRS_SIGNET_ZPOOL}/electrs/signet/${folder}"
+        done
+    fi
+
+    # electrs liquid data
+    if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
+        zfs create -o "mountpoint=${ELECTRS_LIQUID_DATA}" "${ELECTRS_LIQUID_ZPOOL}/electrs/liquid"
+        for folder in cache history txstore
+        do
+            zfs create -o "mountpoint=${ELECTRS_LIQUID_DATA}/newindex/${folder}" "${ELECTRS_LIQUID_ZPOOL}/electrs/liquid/${folder}"
+        done
+    fi
+
+    # electrs liquidtestnet data
+    if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
+        zfs create -o "mountpoint=${ELECTRS_LIQUIDTESTNET_DATA}" "${ELECTRS_LIQUIDTESTNET_ZPOOL}/electrs/liquidtestnet"
+        for folder in cache history txstore
+        do
+            zfs create -o "mountpoint=${ELECTRS_LIQUIDTESTNET_DATA}/newindex/${folder}" "${ELECTRS_LIQUIDTESTNET_ZPOOL}/electrs/liquidtestnet/${folder}"
+        done
+    fi
+
+    if [ "${BISQ_INSTALL}" = ON ];then
+        zfs create -o "mountpoint=${BISQ_HOME}" "${ZPOOL}/bisq"
+    fi
+}
+
+##### Perform sanity checks before trying anything
+
+# what OS running, what FS partitions, etc.
+# how much free disk space available?
+# is something listening on port 80 already?
+# is nginx or apache running?
+
+##### Determine what actually needs to be installed
+
+# does bitcoin exist?
+
+##########
+# dialog #
+##########
+
+: ${DIALOG=dialog}
+
+: ${DIALOG_OK=0}
+: ${DIALOG_CANCEL=1}
+: ${DIALOG_HELP=2}
+: ${DIALOG_EXTRA=3}
+: ${DIALOG_ITEM_HELP=4}
+: ${DIALOG_ESC=255}
+
+: ${SIG_OFFNE=0}
+: ${SIG_HUP=1}
+: ${SIG_INT=2}
+: ${SIG_QUIT=3}
+: ${SIG_KILL=9}
+: ${SIG_TERM=15}
+
+input=`tempfile 2>/dev/null` || input=/tmp/input$$
+output=`tempfile 2>/dev/null` || output=/tmp/test$$
+trap "rm -f $input $output" $SIG_OFFNE $SIG_HUP $SIG_INT $SIG_TRAP $SIG_TERM
+
+DIALOG_ERROR=254
+export DIALOG_ERROR
+
+backtitle="Mempool Fullnode Installer"
+title="Mempool Fullnode Installer"
+returncode=0
+
+#################
+# dialog part 1 #
+#################
+
+$CUT >$input <<-EOF
+Tor:Enable Tor v3 HS Onion:ON
+Certbot:Enable HTTPS using Certbot:ON
+Mainnet:Enable Bitcoin Mainnet:ON
+Testnet:Enable Bitcoin Testnet:ON
+Liquid:Enable Elements Liquid:ON
+Bisq:Enable Bisq:ON
+Lightmode:Enable Electrs Lightmode to save disk space:ON
+Smalldisk:Disable Electrs Compaction to save disk space:ON
+Firewall:Enable Firewall:ON
+EOF
+
+cat $input | sed -e 's/^/"/' -e 's/:/" "/g' -e 's/$/"/' >$output
+cat $output >$input
+
+$DIALOG --backtitle "${backtitle}" \
+        --title "${title}" "$@" \
+        --checklist "Toggle the features below to configure your fullnode:\n" \
+        20 80 10 \
+        --file $input 2> $output
+
+retval=$?
+
+tempfile=$output
+if [ $retval != $DIALOG_OK ];then
+    echo "Installation aborted."
+    exit 1
+fi
+
+if grep Tor $tempfile >/dev/null 2>&1;then
+    TOR_INSTALL=ON
+else
+    TOR_INSTALL=OFF
+fi
+
+if grep Certbot $tempfile >/dev/null 2>&1;then
+    CERTBOT_INSTALL=ON
+else
+    CERTBOT_INSTALL=OFF
+fi
+
+if grep Mainnet $tempfile >/dev/null 2>&1;then
+    BITCOIN_MAINNET_ENABLE=ON
+else
+    BITCOIN_MAINNET_ENABLE=OFF
+fi
+
+if grep Testnet $tempfile >/dev/null 2>&1;then
+    BITCOIN_TESTNET_ENABLE=ON
+else
+    BITCOIN_TESTNET_ENABLE=OFF
+fi
+
+if grep Liquid $tempfile >/dev/null 2>&1;then
+    ELEMENTS_INSTALL=ON
+    ELEMENTS_LIQUID_ENABLE=ON
+else
+    ELEMENTS_INSTALL=OFF
+    ELEMENTS_LIQUID_ENABLE=OFF
+fi
+
+if grep Bisq $tempfile >/dev/null 2>&1;then
+    BISQ_INSTALL=ON
+    BISQ_MAINNET_ENABLE=ON
+else
+    BISQ_INSTALL=OFF
+    BISQ_MAINNET_ENABLE=OFF
+fi
+
+if grep Lightmode $tempfile >/dev/null 2>&1;then
+    BITCOIN_ELECTRS_LIGHT_MODE=ON
+else
+    BITCOIN_ELECTRS_LIGHT_MODE=OFF
+fi
+
+if grep Smalldisk $tempfile >/dev/null 2>&1;then
+    BITCOIN_ELECTRS_LIGHT_MODE=ON
+else
+    BITCOIN_ELECTRS_LIGHT_MODE=OFF
+fi
+
+#################
+# dialog part 2 #
+#################
+
+$DIALOG --cr-wrap \
+        --title "INPUT BOX" --clear \
+        --inputbox "$@" \
+"Enter the FQDN hostname for obtaining an SSL certificate using Certbot:" 0 0 "${HOSTNAME}" 2> $tempfile
+HOSTNAME=$(cat $tempfile)
+
+#################
+# dialog part 3 #
+#################
+
+#   --form text height width formheight
+#   [ label y x item y x flen ilen ]
+    #"BISQ_BLOCKNOTIFY_HOST"             0 1 "${BISQ_BLOCKNOTIFY_HOST}"              0 30 0 0 \
+
+$DIALOG --ok-label "Submit" \
+    --backtitle "$backtitle" "$@" \
+    --form "Your fullnode will be installed as follows:" 30 70 0 \
+    "BISQ_BLOCKNOTIFY_PORT"             1 1 "${BISQ_BLOCKNOTIFY_PORT}"              1 35 35 0 \
+    "BISQ_GROUP"                        2 1 "${BISQ_GROUP}"                         2 35 35 0 \
+    "BISQ_HOME"                         3 1 "${BISQ_HOME}"                          3 35 35 0 \
+    "BISQ_INSTALL"                      4 1 "${BISQ_INSTALL}"                       4 35 35 0 \
+    "BISQ_LATEST_RELEASE"               5 1 "${BISQ_LATEST_RELEASE}"                5 35 35 0 \
+    "BISQ_MAINNET_ENABLE"               6 1 "${BISQ_MAINNET_ENABLE}"                6 35 35 0 \
+    "BISQ_REPO_BRANCH"                  7 1 "${BISQ_REPO_BRANCH}"                   7 35 35 0 \
+    "BISQ_REPO_NAME"                    8 1 "${BISQ_REPO_NAME}"                     8 35 35 0 \
+    "BISQ_REPO_URL"                     9 1 "${BISQ_REPO_URL}"                      9 35 35 0 \
+    "BISQ_USER"                         10 1 "${BISQ_USER}"                         10 35 35 0 \
+    "BITCOIN_ELECTRS_COMPACTION"        11 1 "${BITCOIN_ELECTRS_COMPACTION}"        11 35 35 0 \
+    "BITCOIN_ELECTRS_HOME"              12 1 "${BITCOIN_ELECTRS_HOME}"              12 35 35 0 \
+    "BITCOIN_ELECTRS_LATEST_RELEASE"    13 1 "${BITCOIN_ELECTRS_LATEST_RELEASE}"    13 35 35 0 \
+    "BITCOIN_ELECTRS_LIGHT_MODE"        14 1 "${BITCOIN_ELECTRS_LIGHT_MODE}"        14 35 35 0 \
+    "BITCOIN_ELECTRS_REPO_BRANCH"       15 1 "${BITCOIN_ELECTRS_REPO_BRANCH}"       15 35 35 0 \
+    "BITCOIN_ELECTRS_REPO_NAME"         16 1 "${BITCOIN_ELECTRS_REPO_NAME}"         16 35 35 0 \
+    "BITCOIN_ELECTRS_REPO_URL"          17 1 "${BITCOIN_ELECTRS_REPO_URL}"          17 35 35 0 \
+    "BITCOIN_GROUP"                     18 1 "${BITCOIN_GROUP}"                     18 35 35 0 \
+    "BITCOIN_HOME"                      19 1 "${BITCOIN_HOME}"                      19 35 35 0 \
+    "BITCOIN_INSTALL"                   20 1 "${BITCOIN_INSTALL}"                   20 35 35 0 \
+    "BITCOIN_LATEST_RELEASE"            21 1 "${BITCOIN_LATEST_RELEASE}"            21 35 35 0 \
+    "BITCOIN_MAINNET_ENABLE"            22 1 "${BITCOIN_MAINNET_ENABLE}"            22 35 35 0 \
+    "BITCOIN_MAINNET_P2P_HOST"          23 1 "${BITCOIN_MAINNET_P2P_HOST}"          23 35 35 0 \
+    "BITCOIN_MAINNET_P2P_PORT"          24 1 "${BITCOIN_MAINNET_P2P_PORT}"          24 35 35 0 \
+    "BITCOIN_MAINNET_RPC_HOST"          25 1 "${BITCOIN_MAINNET_RPC_HOST}"          25 35 35 0 \
+    "BITCOIN_MAINNET_RPC_PORT"          26 1 "${BITCOIN_MAINNET_RPC_PORT}"          26 35 35 0 \
+    "BITCOIN_RPC_PASS"                  27 1 "${BITCOIN_RPC_PASS}"                  27 35 35 0 \
+    "BITCOIN_RPC_USER"                  28 1 "${BITCOIN_RPC_USER}"                  28 35 35 0 \
+    "BITCOIN_REPO_BRANCH"               29 1 "${BITCOIN_REPO_BRANCH}"               29 35 35 0 \
+    "BITCOIN_REPO_NAME"                 30 1 "${BITCOIN_REPO_NAME}"                 30 35 35 0 \
+    "BITCOIN_REPO_URL"                  31 1 "${BITCOIN_REPO_URL}"                  31 35 35 0 \
+    "BITCOIN_TESTNET_DATA"              32 1 "${BITCOIN_TESTNET_DATA}"              32 35 35 0 \
+    "BITCOIN_TESTNET_ENABLE"            33 1 "${BITCOIN_TESTNET_ENABLE}"            33 35 35 0 \
+    "BITCOIN_TESTNET_P2P_HOST"          34 1 "${BITCOIN_TESTNET_P2P_HOST}"          34 35 35 0 \
+    "BITCOIN_TESTNET_P2P_PORT"          35 1 "${BITCOIN_TESTNET_P2P_PORT}"          35 35 35 0 \
+    "BITCOIN_TESTNET_RPC_HOST"          36 1 "${BITCOIN_TESTNET_RPC_HOST}"          36 35 35 0 \
+    "BITCOIN_TESTNET_RPC_PORT"          38 1 "${BITCOIN_TESTNET_RPC_PORT}"          38 35 35 0 \
+    "BITCOIN_USER"                      40 1 "${BITCOIN_USER}"                      40 35 35 0 \
+    "ELECTRS_DATA_ROOT"                 41 1 "${ELECTRS_DATA_ROOT}"                 41 35 35 0 \
+    "ELECTRS_LIQUID_DATA"               42 1 "${ELECTRS_LIQUID_DATA}"               42 35 35 0 \
+    "ELECTRS_LIQUID_HTTP_HOST"          43 1 "${ELECTRS_LIQUID_HTTP_HOST}"          43 35 35 0 \
+    "ELECTRS_LIQUID_HTTP_PORT"          44 1 "${ELECTRS_LIQUID_HTTP_PORT}"          44 35 35 0 \
+    "ELECTRS_LIQUID_ZPOOL"              45 1 "${ELECTRS_LIQUID_ZPOOL}"              45 35 35 0 \
+    "ELECTRS_MAINNET_DATA"              46 1 "${ELECTRS_MAINNET_DATA}"              46 35 35 0 \
+    "ELECTRS_MAINNET_HTTP_HOST"         47 1 "${ELECTRS_MAINNET_HTTP_HOST}"         47 35 35 0 \
+    "ELECTRS_MAINNET_HTTP_PORT"         48 1 "${ELECTRS_MAINNET_HTTP_PORT}"         48 35 35 0 \
+    "ELECTRS_MAINNET_ZPOOL"             49 1 "${ELECTRS_MAINNET_ZPOOL}"             49 35 35 0 \
+    "ELECTRS_TESTNET_DATA"              50 1 "${ELECTRS_TESTNET_DATA}"              50 35 35 0 \
+    "ELECTRS_TESTNET_HTTP_HOST"         51 1 "${ELECTRS_TESTNET_HTTP_HOST}"         51 35 35 0 \
+    "ELECTRS_TESTNET_HTTP_PORT"         52 1 "${ELECTRS_TESTNET_HTTP_PORT}"         52 35 35 0 \
+    "ELECTRS_TESTNET_ZPOOL"             53 1 "${ELECTRS_TESTNET_ZPOOL}"             53 35 35 0 \
+    "ELEMENTS_ELECTRS_COMPACTION"       54 1 "${ELEMENTS_ELECTRS_COMPACTION}"       54 35 35 0 \
+    "ELEMENTS_ELECTRS_HOME"             55 1 "${ELEMENTS_ELECTRS_HOME}"             55 35 35 0 \
+    "ELEMENTS_ELECTRS_LATEST_RELEASE"   56 1 "${ELEMENTS_ELECTRS_LATEST_RELEASE}"   56 35 35 0 \
+    "ELEMENTS_ELECTRS_LIGHT_MODE"       57 1 "${ELEMENTS_ELECTRS_LIGHT_MODE}"       57 35 35 0 \
+    "ELEMENTS_ELECTRS_REPO_BRANCH"      58 1 "${ELEMENTS_ELECTRS_REPO_BRANCH}"      58 35 35 0 \
+    "ELEMENTS_ELECTRS_REPO_NAME"        59 1 "${ELEMENTS_ELECTRS_REPO_NAME}"        59 35 35 0 \
+    "ELEMENTS_ELECTRS_REPO_URL"         60 1 "${ELEMENTS_ELECTRS_REPO_URL}"         60 35 35 0 \
+    "ELEMENTS_GROUP"                    61 1 "${ELEMENTS_GROUP}"                    61 35 35 0 \
+    "ELEMENTS_HOME"                     62 1 "${ELEMENTS_HOME}"                     62 35 35 0 \
+    "ELEMENTS_INSTALL"                  63 1 "${ELEMENTS_INSTALL}"                  63 35 35 0 \
+    "ELEMENTS_LATEST_RELEASE"           64 1 "${ELEMENTS_LATEST_RELEASE}"           64 35 35 0 \
+    "ELEMENTS_LIQUID_ENABLE"            65 1 "${ELEMENTS_LIQUID_ENABLE}"            65 35 35 0 \
+    "ELEMENTS_LIQUID_P2P_HOST"          66 1 "${ELEMENTS_LIQUID_P2P_HOST}"          66 35 35 0 \
+    "ELEMENTS_LIQUID_P2P_PORT"          67 1 "${ELEMENTS_LIQUID_P2P_PORT}"          67 35 35 0 \
+    "ELEMENTS_LIQUID_RPC_HOST"          68 1 "${ELEMENTS_LIQUID_RPC_HOST}"          68 35 35 0 \
+    "ELEMENTS_RPC_PASS"                 69 1 "${ELEMENTS_RPC_PASS}"                 69 35 35 0 \
+    "ELEMENTS_LIQUID_RPC_PORT"          70 1 "${ELEMENTS_LIQUID_RPC_PORT}"          70 35 35 0 \
+    "ELEMENTS_RPC_USER"                 71 1 "${ELEMENTS_RPC_USER}"                 71 35 35 0 \
+    "ELEMENTS_REPO_BRANCH"              72 1 "${ELEMENTS_REPO_BRANCH}"              72 35 35 0 \
+    "ELEMENTS_REPO_NAME"                73 1 "${ELEMENTS_REPO_NAME}"                73 35 35 0 \
+    "ELEMENTS_REPO_URL"                 74 1 "${ELEMENTS_REPO_URL}"                 74 35 35 0 \
+    "ELEMENTS_USER"                     75 1 "${ELEMENTS_USER}"                     75 35 35 0 \
+    "MEMPOOL_BISQ_HTTP_HOST"            76 1 "${MEMPOOL_BISQ_HTTP_HOST}"            76 35 35 0 \
+    "MEMPOOL_BISQ_HTTP_PORT"            77 1 "${MEMPOOL_BISQ_HTTP_PORT}"            77 35 35 0 \
+    "MEMPOOL_GROUP"                     78 1 "${MEMPOOL_GROUP}"                     78 35 35 0 \
+    "MEMPOOL_HOME"                      79 1 "${MEMPOOL_HOME}"                      79 35 35 0 \
+    "MEMPOOL_LATEST_RELEASE"            80 1 "${MEMPOOL_LATEST_RELEASE}"            80 35 35 0 \
+    "MEMPOOL_LIQUID_HTTP_HOST"          81 1 "${MEMPOOL_LIQUID_HTTP_HOST}"          81 35 35 0 \
+    "MEMPOOL_LIQUID_HTTP_PORT"          82 1 "${MEMPOOL_LIQUID_HTTP_PORT}"          82 35 35 0 \
+    "MEMPOOL_MAINNET_HTTP_HOST"         83 1 "${MEMPOOL_MAINNET_HTTP_HOST}"         83 35 35 0 \
+    "MEMPOOL_MAINNET_HTTP_PORT"         84 1 "${MEMPOOL_MAINNET_HTTP_PORT}"         84 35 35 0 \
+    "MEMPOOL_REPO_BRANCH"               85 1 "${MEMPOOL_REPO_BRANCH}"               85 35 35 0 \
+    "MEMPOOL_REPO_NAME"                 86 1 "${MEMPOOL_REPO_NAME}"                 86 35 35 0 \
+    "MEMPOOL_REPO_URL"                  87 1 "${MEMPOOL_REPO_URL}"                  87 35 35 0 \
+    "MEMPOOL_TESTNET_HTTP_HOST"         88 1 "${MEMPOOL_TESTNET_HTTP_HOST}"         88 35 35 0 \
+    "MEMPOOL_TESTNET_HTTP_PORT"         89 1 "${MEMPOOL_TESTNET_HTTP_PORT}"         89 35 35 0 \
+    "MEMPOOL_TOR_HS"                    90 1 "${MEMPOOL_TOR_HS}"                    90 35 35 0 \
+    "MEMPOOL_USER"                      91 1 "${MEMPOOL_USER}"                      91 35 35 0 \
+    "HOSTNAME"                          92 1 "${HOSTNAME}"                          92 35 35 0 \
+    "TOR_INSTALL"                       93 1 "${TOR_INSTALL}"                       93 35 35 0 \
+    "CERTBOT_INSTALL"                   94 1 "${CERTBOT_INSTALL}"                   94 35 35 0 \
+2> $tempfile
+
+retval=$?
+
+if [ $retval != $DIALOG_OK ];then
+    echo "Installation aborted."
+    exit 1
+fi
+
+############################
+# START DOING ACTUAL STUFF #
+############################
+
+date
+echo "[*] Mempool installation script for ${OS}"
+
+set -x
+
+###################################
+# create filesystems if necessary #
+###################################
+
+case $OS in
+    FreeBSD)
+        zfsCreateFilesystems
+    ;;
+esac
+
+###############################
+# Install all the OS packages #
+###############################
+
+osPackageUpdate
+osPackageUpgrade
+osPackageInstallAll
+
+##########################
+# Mempool top-level repo #
+##########################
+
+echo "[*] Creating Mempool user with Tor access"
+osGroupCreate "${MEMPOOL_GROUP}"
+osUserCreate -d "${MEMPOOL_HOME}" -g "${MEMPOOL_GROUP}" -n "${MEMPOOL_USER}"
+osSudo "${ROOT_USER}" chsh -s `which zsh` "${MEMPOOL_USER}"
+id "${MEMPOOL_USER}"
+
+echo "[*] Creating Mempool data folder"
+osSudo "${ROOT_USER}" mkdir -p "${MEMPOOL_HOME}"
+osSudo "${ROOT_USER}" chown -R "${MEMPOOL_USER}:${MEMPOOL_GROUP}" "${MEMPOOL_HOME}"
+osSudo "${MEMPOOL_USER}" touch "${MEMPOOL_HOME}/.zshrc"
+
+echo "[*] Cloning Mempool repo from ${MEMPOOL_REPO_URL}"
+osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
+osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}"
+
+echo "[*] Installing nvm.sh from GitHub"
+osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
+
+echo "[*] Building NodeJS via nvm.sh"
+osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm install v16.10.0'
+
+####################
+# Tor installation #
+####################
+
+if [ "${TOR_INSTALL}" = ON ];then
+
+    echo "[*] Installing Tor package"
+    osPackageInstall "${TOR_PKG}"
+
+    echo "[*] Installing Tor base configuration"
+    osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/torrc" "${TOR_HOME}/torrc"
+
+    echo "[*] Adding Tor HS configuration"
+    if ! grep "${MEMPOOL_TOR_HS}" /etc/tor/torrc >/dev/null 2>&1;then
+        osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServiceDir ${TOR_RESOURCES}/${MEMPOOL_TOR_HS}/ >> ${TOR_CONFIGURATION}"
+        osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServicePort 80 127.0.0.1:81 >> ${TOR_CONFIGURATION}"
+        osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServiceVersion 3 >> ${TOR_CONFIGURATION}"
+    fi
+
+    case $OS in
+        FreeBSD)
+            echo net.inet.ip.random_id=1 >> /etc/sysctl.conf
+            sysctl net.inet.ip.random_id=1
+        ;;
+    esac
+
+    # start tor now so it can bootstrap in time for bitcoin starting a few mins later
+    echo "[*] Starting Tor service"
+    osSudo "${ROOT_USER}" service tor start
+fi
+
+########################
+# Bitcoin installation #
+########################
+
+if [ "${BITCOIN_INSTALL}" = ON ];then
+
+    echo "[*] Creating Bitcoin user with Tor access"
+    osGroupCreate "${BITCOIN_GROUP}"
+    osUserCreate -d "${BITCOIN_HOME}" -g "${BITCOIN_GROUP}" -G "${TOR_GROUP}" -n "${BITCOIN_USER}"
+    osSudo "${ROOT_USER}" chsh -s `which zsh` "${BITCOIN_USER}"
+
+    echo "[*] Creating Bitcoin data folder"
+    osSudo "${ROOT_USER}" mkdir -p "${BITCOIN_HOME}"
+    osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_HOME}"
+    osSudo "${BITCOIN_USER}" touch "${BITCOIN_HOME}/.zshrc"
+    osSudo "${BITCOIN_USER}" ln -s . .bitcoin
+
+    echo "[*] Cloning Bitcoin repo from ${BITCOIN_REPO_URL}"
+    osSudo "${BITCOIN_USER}" git config --global advice.detachedHead false
+    osSudo "${BITCOIN_USER}" git clone --branch "${BITCOIN_REPO_BRANCH}" "${BITCOIN_REPO_URL}" "${BITCOIN_HOME}/${BITCOIN_REPO_NAME}"
+
+    echo "[*] Checking out Bitcoin ${BITCOIN_LATEST_RELEASE}"
+    osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_HOME}/${BITCOIN_REPO_NAME} && git checkout ${BITCOIN_LATEST_RELEASE}"
+
+    echo "[*] Building Bitcoin from source repo"
+    osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && ./autogen.sh --quiet"
+    osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && MAKE=gmake CC=cc CXX=c++ CPPFLAGS=-I/usr/local/include ./configure --with-gui=no --disable-wallet --disable-tests"
+    osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && gmake -j48"
+
+    echo "[*] Installing Bitcoin binaries into OS"
+    osSudo "${ROOT_USER}" sh -c "cd ${BITCOIN_HOME}/${BITCOIN_REPO_NAME} && gmake install"
+
+    echo "[*] Installing Bitcoin configuration"
+    osSudo "${ROOT_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.conf" "${BITCOIN_HOME}/bitcoin.conf"
+
+    echo "[*] Installing Bitcoin Mainnet RPC credentials"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_HOME}/bitcoin.conf"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_HOME}/bitcoin.conf"
+fi
+
+#########################
+# Elements installation #
+#########################
+
+if [ "${ELEMENTS_INSTALL}" = ON ];then
+
+    echo "[*] Creating Elements user with Tor access"
+    osGroupCreate "${ELEMENTS_GROUP}"
+    osUserCreate -d "${ELEMENTS_HOME}" -g "${ELEMENTS_GROUP}" -G "${TOR_GROUP}" -n "${ELEMENTS_USER}"
+    osSudo "${ROOT_USER}" chsh -s `which zsh` "${ELEMENTS_USER}"
+
+    echo "[*] Creating Elements data folder"
+    osSudo "${ROOT_USER}" mkdir -p "${ELEMENTS_HOME}"
+    osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_HOME}"
+    osSudo "${ELEMENTS_USER}" touch "${ELEMENTS_HOME}/.zshrc"
+    osSudo "${ELEMENTS_USER}" ln -s . .elements
+
+    echo "[*] Cloning Elements repo from ${ELEMENTS_REPO_URL}"
+    osSudo "${ELEMENTS_USER}" git config --global advice.detachedHead false
+    osSudo "${ELEMENTS_USER}" git clone --branch "${ELEMENTS_REPO_BRANCH}" "${ELEMENTS_REPO_URL}" "${ELEMENTS_HOME}/${ELEMENTS_REPO_NAME}"
+
+    echo "[*] Checking out Elements ${ELEMENTS_LATEST_RELEASE}"
+    osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_HOME}/${ELEMENTS_REPO_NAME} && git checkout ${ELEMENTS_LATEST_RELEASE}"
+
+    echo "[*] Building Elements from source repo"
+    osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_REPO_NAME} && ./autogen.sh --quiet"
+    osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_REPO_NAME} && MAKE=gmake CC=cc CXX=c++ CPPFLAGS=-I/usr/local/include ./configure --with-gui=no --disable-wallet --disable-tests"
+    osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_REPO_NAME} && gmake -j48"
+
+    echo "[*] Installing Elements binaries into OS"
+    osSudo "${ROOT_USER}" sh -c "cd ${ELEMENTS_HOME}/${ELEMENTS_REPO_NAME} && gmake install"
+
+    echo "[*] Installing Elements configuration"
+    osSudo "${ROOT_USER}" install -c -o "${ELEMENTS_USER}" -g "${ELEMENTS_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/elements.conf" "${ELEMENTS_HOME}/elements.conf"
+
+    echo "[*] Configuring Elements Liquid RPC credentials in elements.conf"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${ELEMENTS_HOME}/elements.conf"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_HOME}/elements.conf"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
+fi
+
+###################################
+# Bitcoin -> Electrs installation #
+###################################
+
+echo "[*] Creating Bitcoin Electrs data folder"
+osSudo "${ROOT_USER}" mkdir -p "${BITCOIN_ELECTRS_HOME}"
+osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_ELECTRS_HOME}"
+osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${ELECTRS_MAINNET_DATA}"
+osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${ELECTRS_TESTNET_DATA}"
+osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${ELECTRS_SIGNET_DATA}"
+
+echo "[*] Cloning Bitcoin Electrs repo from ${BITCOIN_ELECTRS_REPO_URL}"
+osSudo "${BITCOIN_USER}" git config --global advice.detachedHead false
+osSudo "${BITCOIN_USER}" git clone --branch "${BITCOIN_ELECTRS_REPO_BRANCH}" "${BITCOIN_ELECTRS_REPO_URL}" "${BITCOIN_HOME}/${BITCOIN_ELECTRS_REPO_NAME}"
+
+echo "[*] Checking out Electrs ${BITCOIN_ELECTRS_LATEST_RELEASE}"
+osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_HOME}/${BITCOIN_ELECTRS_REPO_NAME} && git checkout ${BITCOIN_ELECTRS_LATEST_RELEASE}"
+
+case $OS in
+    FreeBSD)
+       echo "[*] Installing Rust from pkg install"
+    ;;
+    Debian)
+       echo "[*] Installing Rust from rustup.rs"
+       osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_ELECTRS_HOME} && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+    ;;
+esac
+
+echo "[*] Building Bitcoin Electrs release binary"
+osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_ELECTRS_HOME} && cargo run --release --bin electrs -- --version" || true
+
+echo "[*] Patching Bitcoin Electrs code for FreeBSD"
+osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_HOME}/.cargo/registry/src/github.com-1ecc6299db9ec823/sysconf-0.3.4\" && patch -p1 < \"${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/sysconf.patch\""
+osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_ELECTRS_HOME}/src/new_index/\" && sed -i .bak -e s/Snappy/None/ db.rs && rm db.rs.bak"
+
+echo "[*] Building Bitcoin Electrs release binary"
+osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_ELECTRS_HOME} && cargo run --release --bin electrs -- --version"
+
+##################################
+# Liquid -> Electrs installation #
+##################################
+
+echo "[*] Creating Liquid Electrs data folder"
+osSudo "${ROOT_USER}" mkdir -p "${ELEMENTS_ELECTRS_HOME}"
+osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_HOME}"
+osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_ELECTRS_HOME}"
+osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELECTRS_LIQUID_DATA}"
+osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELECTRS_LIQUIDTESTNET_DATA}"
+
+echo "[*] Cloning Liquid Electrs repo from ${ELEMENTS_ELECTRS_REPO_URL}"
+osSudo "${ELEMENTS_USER}" git config --global advice.detachedHead false
+osSudo "${ELEMENTS_USER}" git clone --branch "${ELEMENTS_ELECTRS_REPO_BRANCH}" "${ELEMENTS_ELECTRS_REPO_URL}" "${ELEMENTS_HOME}/${ELEMENTS_ELECTRS_REPO_NAME}"
+
+echo "[*] Checking out Liquid Electrs ${ELEMENTS_ELECTRS_LATEST_RELEASE}"
+osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_HOME}/${ELEMENTS_ELECTRS_REPO_NAME} && git checkout ${ELEMENTS_ELECTRS_LATEST_RELEASE}"
+
+echo "[*] Cloning Liquid Asset Registry repo from ${LIQUID_ASSET_REGISTRY_DB_URL}"
+osSudo "${ELEMENTS_USER}" git config --global advice.detachedHead false
+osSudo "${ELEMENTS_USER}" git clone "${LIQUID_ASSET_REGISTRY_DB_URL}" "${ELEMENTS_HOME}/${LIQUID_ASSET_REGISTRY_DB_NAME}"
+
+echo "[*] Cloning Liquid Asset Registry testnet repo from ${LIQUIDTESTNET_ASSET_REGISTRY_DB_URL}"
+osSudo "${ELEMENTS_USER}" git config --global advice.detachedHead false
+osSudo "${ELEMENTS_USER}" git clone "${LIQUIDTESTNET_ASSET_REGISTRY_DB_URL}" "${ELEMENTS_HOME}/${LIQUIDTESTNET_ASSET_REGISTRY_DB_NAME}"
+
+case $OS in
+    FreeBSD)
+    ;;
+    Debian)
+       echo "[*] Installing Rust from rustup.rs"
+       osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_ELECTRS_HOME} && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+    ;;
+esac
+
+echo "[*] Building Liquid Electrs release binary"
+osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_ELECTRS_HOME} && cargo run --release --features liquid --bin electrs -- --network liquid --version" || true
+
+echo "[*] Patching Liquid Electrs code for FreeBSD"
+osSudo "${ELEMENTS_USER}" sh -c "cd \"${ELEMENTS_HOME}/.cargo/registry/src/github.com-1ecc6299db9ec823/sysconf-0.3.4\" && patch -p1 < \"${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/sysconf.patch\""
+
+echo "[*] Building Liquid Electrs release binary"
+osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_ELECTRS_HOME} && cargo run --release --features liquid --bin electrs -- --network liquid --version" || true
+
+#####################
+# Bisq installation #
+#####################
+
+if [ "${BISQ_INSTALL}" = ON ];then
+
+    echo "[*] Creating Bisq user with Tor access"
+    osGroupCreate "${BISQ_GROUP}"
+    osUserCreate -d "${BISQ_HOME}" -g "${BISQ_GROUP}" -G "${TOR_GROUP}" -n "${BISQ_USER}"
+    osSudo "${ROOT_USER}" chsh -s `which zsh` "${BISQ_USER}"
+
+    echo "[*] Creating Bisq data folder"
+    osSudo "${ROOT_USER}" mkdir -p "${BISQ_HOME}"
+    osSudo "${ROOT_USER}" chown -R "${BISQ_USER}:${BISQ_GROUP}" "${BISQ_HOME}"
+    osSudo "${BISQ_USER}" touch "${BISQ_HOME}/.zshrc"
+
+    echo "[*] Building Bisq"
+    case $OS in
+
+        FreeBSD)
+            echo "[*] FIXME: Bisq must be installed manually on FreeBSD"
+        ;;
+
+        Debian)
+            echo "[*] Cloning Bisq top-level repo"
+            osSudo "${BISQ_USER}" git clone --branch "${BISQ_REPO_BRANCH}" "${BISQ_REPO_URL}" "${BISQ_HOME}/${BISQ_REPO_NAME}"
+
+            echo "[*] Installing OpenJDK 10.0.2 from Bisq install_java.sh script"
+            osSudo "${ROOT_USER}" "${BISQ_HOME}/${BISQ_REPO_NAME}/scripts/install_java.sh"
+
+            echo "[*] Checking out Bisq ${BISQ_LATEST_RELEASE}"
+            osSudo "${BISQ_USER}" sh -c "cd ${BISQ_HOME}/${BISQ_REPO_NAME} && git checkout ${BISQ_LATEST_RELEASE}"
+
+            echo "[*] Performing Git LFS pull"
+            osSudo "${BISQ_USER}" sh -c "cd ${BISQ_HOME}/${BISQ_REPO_NAME} && git lfs pull"
+
+            echo "[*] Building Bisq from source"
+            osSudo "${BISQ_USER}" sh -c "cd ${BISQ_HOME}/${BISQ_REPO_NAME} && ./gradlew build -x test < /dev/null" # redirect from /dev/null is necessary to workaround gradlew non-interactive shell hanging issue
+
+        ;;
+    esac
+
+    echo "[*] Configuring Bisq"
+    case $OS in
+
+        FreeBSD)
+            echo "[*] FIXME: Bisq must be configured manually on FreeBSD"
+        ;;
+
+        Debian)
+            osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${BISQ_HOME}/${BISQ_REPO_NAME}/seednode/bisq.service" "${DEBIAN_SERVICE_HOME}/bisq.service"
+            osSudo "${ROOT_USER}" sed -i .orig "s/#Requires=bitcoin.service/Requires=bitcoin.service/" "${DEBIAN_SERVICE_HOME}/bisq.service"
+            osSudo "${ROOT_USER}" sed -i .orig "s/#BindsTo=bitcoin.service/BindsTo=bitcoin.service/" "${DEBIAN_SERVICE_HOME}/bisq.service"
+            osSudo "${ROOT_USER}" sed -i .orig "s/__BISQ_REPO_NAME__/${BISQ_REPO_NAME}/" "${DEBIAN_SERVICE_HOME}/bisq.service"
+            osSudo "${ROOT_USER}" sed -i .orig "s!__BISQ_HOME__!${BISQ_HOME}!" "${DEBIAN_SERVICE_HOME}/bisq.service"
+
+            echo "[*] Installing Bisq environment file"
+            osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${BISQ_HOME}/${BISQ_REPO_NAME}/seednode/bisq.env" "${DEBIAN_ENV_HOME}/bisq.env"
+            osSudo "${ROOT_USER}" sed -i .orig "s!__BISQ_APP_NAME__!${BISQ_APP_NAME}!" "${DEBIAN_ENV_HOME}/bisq.env"
+            osSudo "${ROOT_USER}" sed -i .orig "s!__BISQ_HOME__!${BISQ_HOME}!" "${DEBIAN_ENV_HOME}/bisq.env"
+
+            echo "[*] Configuring Bisq environment file with Bitcoin RPC credentials"
+            osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_P2P_HOST__/${BITCOIN_MAINNET_P2P_HOST}/" "${DEBIAN_ENV_HOME}/bisq.env"
+            osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_P2P_PORT__/${BITCOIN_MAINNET_P2P_PORT}/" "${DEBIAN_ENV_HOME}/bisq.env"
+            osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_HOST__/${BITCOIN_MAINNET_RPC_HOST}/" "${DEBIAN_ENV_HOME}/bisq.env"
+            osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PORT__/${BITCOIN_MAINNET_RPC_PORT}/" "${DEBIAN_ENV_HOME}/bisq.env"
+            osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${DEBIAN_ENV_HOME}/bisq.env"
+            osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${DEBIAN_ENV_HOME}/bisq.env"
+
+            #echo "[*] Updating Bitcoin configuration for Bisq"
+            #osSudo "${ROOT_USER}" sed -i .orig "s/#blocknotify/blocknotify/" "${BITCOIN_HOME}/bitcoin.conf"
+            #osSudo "${BITCOIN_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${BISQ_HOME}/${BISQ_REPO_NAME}/seednode/blocknotify.sh" "${BITCOIN_HOME}/blocknotify.sh"
+        ;;
+
+    esac
+fi
+
+################################
+# Bitcoin instance for Mainnet #
+################################
+
+if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
+    echo "[*] Installing Bitcoin Mainnet service"
+    case $OS in
+
+        FreeBSD)
+            osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/rc.d/bitcoin" "${FREEBSD_SERVICE_HOME}"
+        ;;
+
+        Debian)
+            osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin-mainnet.service" "${DEBIAN_SERVICE_HOME}"
+        ;;
+    esac
+fi
+
+########################################
+# Electrs instance for Bitcoin Mainnet #
+########################################
+
+if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
+    echo "[*] Installing Bitcoin Mainnet electrs start script"
+    osSudo "${ROOT_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-mainnet" "${BITCOIN_ELECTRS_HOME}"
+
+    echo "[*] Installing Bitcoin crontab"
+    # FIXME: must only crontab enabled daemons
+    osSudo "${ROOT_USER}" crontab -u "${BITCOIN_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.crontab"
+
+    echo "[*] Configuring Bitcoin Mainnet RPC credentials in electrs start script"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-mainnet"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-mainnet"
+    osSudo "${ROOT_USER}" sed -i .orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${BITCOIN_ELECTRS_HOME}/electrs-start-mainnet"
+fi
+
+########################################
+# Electrs instance for Bitcoin Testnet #
+########################################
+
+if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
+    echo "[*] Installing Bitcoin Testnet electrs start script"
+    osSudo "${ROOT_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-testnet" "${BITCOIN_ELECTRS_HOME}"
+
+    echo "[*] Configuring Bitcoin Testnet RPC credentials in electrs start script"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-testnet"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-testnet"
+    osSudo "${ROOT_USER}" sed -i .orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${BITCOIN_ELECTRS_HOME}/electrs-start-testnet"
+fi
+
+#######################################
+# Electrs instance for Bitcoin Signet #
+#######################################
+
+if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
+    echo "[*] Installing Bitcoin Signet electrs start script"
+    osSudo "${ROOT_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-signet" "${BITCOIN_ELECTRS_HOME}"
+
+    echo "[*] Configuring Bitcoin Signet RPC credentials in electrs start script"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-signet"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-signet"
+    osSudo "${ROOT_USER}" sed -i .orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${BITCOIN_ELECTRS_HOME}/electrs-start-signet"
+fi
+
+########################################
+# Electrs instance for Elements Liquid #
+########################################
+
+if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
+    echo "[*] Installing Elements Liquid electrs start script"
+    osSudo "${ROOT_USER}" install -c -o "${ELEMENTS_USER}" -g "${ELEMENTS_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-liquid" "${ELEMENTS_ELECTRS_HOME}"
+
+    echo "[*] Installing Elements crontab"
+    # FIXME: must only crontab enabled daemons
+    osSudo "${ROOT_USER}" crontab -u "${ELEMENTS_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/elements.crontab"
+
+    echo "[*] Configuring Elements Liquid RPC credentials in electrs start script"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquid"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquid"
+    osSudo "${ROOT_USER}" sed -i .orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquid"
+fi
+
+################################################
+# Electrs instance for Elements Liquid Testnet #
+################################################
+
+if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
+    echo "[*] Installing Elements Liquid Testnet electrs start script"
+    osSudo "${ROOT_USER}" install -c -o "${ELEMENTS_USER}" -g "${ELEMENTS_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-liquidtestnet" "${ELEMENTS_ELECTRS_HOME}"
+
+    echo "[*] Installing Elements Liquid Testnet RPC credentials"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${ELEMENTS_HOME}/elements.conf"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_HOME}/elements.conf"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
+
+    echo "[*] Configuring Elements LiquidTestnet RPC credentials in electrs start script"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquidtestnet"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquidtestnet"
+    osSudo "${ROOT_USER}" sed -i .orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquidtestnet"
+fi
+
+#####################################
+# Bisq instance for Bitcoin Mainnet #
+#####################################
+
+if [ "${BISQ_MAINNET_ENABLE}" = ON ];then
+fi
+
+##### Mempool -> Bitcoin Mainnet instance
+
+if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
+    echo "[*] Creating Mempool instance for Bitcoin Mainnet"
+    osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
+    osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/mainnet"
+
+    echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Bitcoin Mainnet"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
+fi
+
+if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
+    echo "[*] Creating Mempool instance for Bitcoin Testnet"
+    osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
+    osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/testnet"
+
+    echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Bitcoin Testnet"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
+fi
+
+if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
+    echo "[*] Creating Mempool instance for Bitcoin Signet"
+    osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
+    osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/signet"
+
+    echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Bitcoin Signet"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
+fi
+
+if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
+    echo "[*] Creating Mempool instance for Liquid"
+    osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
+    osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/liquid"
+
+    echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Liquid"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
+fi
+
+if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
+    echo "[*] Creating Mempool instance for Liquid Testnet"
+    osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
+    osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/liquidtestnet"
+
+    echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Liquid Testnet"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
+fi
+
+##### nginx
+
+echo "[*] Adding Nginx configuration"
+case $OS in
+
+    FreeBSD)
+        echo "[*] FIXME: nginx must be configured manually on FreeBSD"
+    ;;
+
+    Debian)
+        osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/nginx.conf" "${NGINX_CONFIGURATION}"
+#echo "[*] Restarting Nginx"
+#osSudo "${ROOT_USER}" service nginx restart
+    ;;
+esac
+
+##### OS systemd
+
+echo "[*] Updating systemd daemon configuration"
+case $OS in
+
+    FreeBSD)
+    ;;
+
+    Debian)
+        osSudo "${ROOT_USER}" systemctl daemon-reload
+        if [ "${TOR_ENABLE}" = ON ];then
+            osSudo "${ROOT_USER}" systemctl enable tor.service
+        fi
+        if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
+            osSudo "${ROOT_USER}" systemctl enable bitcoin.service
+            osSudo "${ROOT_USER}" systemctl enable electrs.service
+            osSudo "${ROOT_USER}" systemctl enable mempool.service
+        fi
+        if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
+            osSudo "${ROOT_USER}" systemctl enable bitcoin-testnet.service
+            osSudo "${ROOT_USER}" systemctl enable electrs-testnet.service
+            osSudo "${ROOT_USER}" systemctl enable mempool-testnet.service
+        fi
+        if [ "${BISQ_MAINNET_ENABLE}" = ON ];then
+            osSudo "${ROOT_USER}" systemctl enable bisq.service
+            osSudo "${ROOT_USER}" systemctl enable mempool-bisq.service
+        fi
+        if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
+            osSudo "${ROOT_USER}" systemctl enable liquid.service
+            osSudo "${ROOT_USER}" systemctl enable electrs-liquid.service
+            osSudo "${ROOT_USER}" systemctl enable mempool-liquid.service
+        fi
+    ;;
+esac
+
+##### OS services
+
+#if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
+#    echo "[*] Starting Bitcoin Mainnet"
+#    case $OS in
+#
+#        FreeBSD)
+#            osSudo "${ROOT_USER}" service bitcoin onestart
+#            osSudo "${BITCOIN_USER}" sh -c "grep @reboot ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.crontab|cut -d ';' -f2|zsh"
+#        ;;
+#
+#        Debian)
+#            osSudo "${ROOT_USER}" systemctl start bitcoin
+#            osSudo "${ROOT_USER}" systemctl start electrs
+#            osSudo "${ROOT_USER}" journalctl --no-pager --unit bitcoin
+#        ;;
+#    esac
+#fi
+#
+#if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
+#    echo "[*] Starting Bitcoin Mainnet"
+#    case $OS in
+#
+#        FreeBSD)
+#        ;;
+#
+#        Debian)
+#            echo "[*] Starting Bitcoin Testnet"
+#            osSudo "${ROOT_USER}" systemctl start bitcoin-testnet
+#            osSudo "${ROOT_USER}" systemctl start electrs-testnet
+#            osSudo "${ROOT_USER}" journalctl --no-pager --unit bitcoin-testnet
+#    esac
+#fi
+#if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
+#    case $OS in
+#
+#        FreeBSD)
+#            echo "[*] Starting Elements Liquid"
+#            osSudo "${ELEMENTS_USER}" sh -c "grep @reboot ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/elements.crontab|cut -d ';' -f2|zsh"
+#        ;;
+#
+#        Debian)
+#            echo "[*] Starting Elements Liquid"
+#            osSudo "${ROOT_USER}" systemctl start liquid
+#            osSudo "${ROOT_USER}" systemctl start electrs-liquid
+#            osSudo "${ROOT_USER}" journalctl --no-pager --unit liquid
+#    esac
+#fi
+
+#osSudo "${ROOT_USER}" tail "${BITCOIN_HOME}/debug.log"
+
+##### OS notes
+
+#echo "[*] Adding notes to motd"
+#osSudo "${ROOT_USER}" sh -c 'echo " " >> /etc/motd'
+
+##### OS firewall
+
+#case $OS in
+#
+#    FreeBSD)
+#    ;;
+#
+#    Debian)
+#        echo "[*] Preparing firewall"
+#        osSudo "${ROOT_USER}" ufw default deny incoming
+#        osSudo "${ROOT_USER}" ufw default allow outgoing
+#        osSudo "${ROOT_USER}" ufw allow from any to any port ${BITCOIN_MAINNET_P2P_PORT} proto tcp
+#        osSudo "${ROOT_USER}" ufw allow from any to any port ${BITCOIN_TESTNET_P2P_PORT} proto tcp
+#        osSudo "${ROOT_USER}" ufw allow from any to any port ${ELEMENTS_LIQUID_P2P_PORT} proto tcp
+#    ;;
+#esac
+
+##### finish
+
+echo '[*] Done!'
+
+exit 0

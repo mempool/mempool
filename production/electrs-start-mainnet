@@ -1,17 +1,10 @@
 #!/usr/local/bin/zsh
-cd "$HOME/electrs"
-#source $HOME/.cargo/env
-#export PATH=$HOME/.cargo/bin:$PATH
+cd "${HOME}/electrs"
+#source "${HOME}/.cargo/env"
+#export PATH="${HOME}/.cargo/bin:${PATH}"
 
 until false
 do
-	# patch code for FreeBSD
-	if grep XBS5 "$HOME/.cargo/registry/src/github.com-1ecc6299db9ec823/sysconf-0.3.4/src/raw.rs" ; then
-		echo patching sysconf
-		grep -v XBS5 /elements/.cargo/registry/src/github.com-1ecc6299db9ec823/sysconf-0.3.4/src/raw.rs > /tmp/foo && \
-		mv /tmp/foo /elements/.cargo/registry/src/github.com-1ecc6299db9ec823/sysconf-0.3.4/src/raw.rs
-	fi
-
 	cargo run \
 		--release \
 		--bin electrs \
@@ -19,11 +12,11 @@ do
 		-vvvv \
 		--address-search \
 		--cors '*' \
-		--db-dir /electrs \
-		--daemon-dir $HOME \
+		--db-dir __ELECTRS_DATA_ROOT__ \
+		--daemon-dir "${HOME}" \
 		--http-addr '[::]:3000' \
-		--cookie 'user:pass' \
-		--precache-scripts $HOME/electrs/contrib/popular-scripts.txt
+		--cookie '__BITCOIN_RPC_USER__:__BITCOIN_RPC_PASS__' \
+		--precache-scripts "${HOME}/electrs/contrib/popular-scripts.txt"
 
 	sleep 3
 done
