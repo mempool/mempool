@@ -117,7 +117,7 @@ class Blocks {
        blockExtended.extras.totalFees = 0;
        blockExtended.extras.avgFee = 0;
        blockExtended.extras.avgFeeRate = 0;
-     } else {
+    } else {
       const stats = await bitcoinClient.getBlockStats(block.id);
       blockExtended.extras.medianFee = stats.feerate_percentiles[2]; // 50th percentiles
        blockExtended.extras.feeRange = [stats.minfeerate, stats.feerate_percentiles, stats.maxfeerate].flat();
@@ -330,9 +330,35 @@ class Blocks {
   }
 
   /**
-   * Index a block if it's missing from the database. Returns the block after indexing
+   * Index a block by hash if it's missing from the database. Returns the block after indexing
    */
-   public async $indexBlock(height: number): Promise<BlockExtended> {
+   public async $getBlock(hash: string): Promise<BlockExtended | IEsploraApi.Block> {
+    if (Common.indexingEnabled()) {
+      const dbBlock = await blocksRepository.$getBlockByHash(hash);
+      if (dbBlock != null) {
+        return this.prepareBlock(dbBlock);
+      }
+    }
+
+    const block = await bitcoinApi.$getBlock(hash);
+
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
+      return block;
+    }
+
+    const transactions = await this.$getTransactionsExtended(hash, block.height, true);
+    const blockExtended = await this.$getBlockExtended(block, transactions);
+    if (Common.indexingEnabled()) {
+      await blocksRepository.$saveBlockInDatabase(blockExtended);
+    }
+
+    return blockExtended;
+  }
+
+  /**
+   * Index a block by height if it's missing from the database. Returns the block after indexing
+   */
+  public async $indexBlock(height: number): Promise<BlockExtended> {
     const dbBlock = await blocksRepository.$getBlockByHeight(height);
     if (dbBlock != null) {
       return this.prepareBlock(dbBlock);
@@ -405,7 +431,7 @@ class Blocks {
       tx_count: block.tx_count,
       size: block.size,
       weight: block.weight,
-      previousblockhash: block.previousblockhash,
+      previousblockhash: block.previousblockhash ?? block.previous_block_hash,
       extras: {
         medianFee: block.medianFee ?? block.median_fee ?? block.extras?.medianFee,
         feeRange: block.feeRange ?? block.fee_range ?? block?.extras?.feeSpan,

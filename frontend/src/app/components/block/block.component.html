@@ -103,9 +103,17 @@
                   <td><span class="skeleton-loader"></span></td>
                 </tr>
               </ng-template>
-              <tr>
+              <tr *ngIf="!stateService.env.MINING_DASHBOARD">
                 <td i18n="block.miner">Miner</td>
                 <td><app-miner [coinbaseTransaction]="coinbaseTx"></app-miner></td>
+              </tr>
+              <tr *ngIf="stateService.env.MINING_DASHBOARD">
+                <td i18n="block.miner">Miner</td>
+                <td>
+                  <a class="badge badge-primary" [routerLink]="[('/mining/pool/' + block.extras.pool.id) | relativeUrl]">
+                    {{ block.extras.pool.name}}
+                  </a>
+                </td>
               </tr>
             </tbody>
           </table>

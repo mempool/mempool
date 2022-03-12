@@ -169,10 +169,10 @@ class BlocksRepository {
 
   /**
    * Get blocks count between two dates
-   * @param poolId 
+   * @param poolId
    * @param from - The oldest timestamp
    * @param to - The newest timestamp
-   * @returns 
+   * @returns
    */
   public async $blockCountBetweenTimestamp(poolId: number | null, from: number, to: number): Promise<number> {
     const params: any[] = [];
@@ -300,6 +300,32 @@ class BlocksRepository {
   }
 
   /**
+   * Get one block by hash
+   */
+   public async $getBlockByHash(hash: string): Promise<object | null> {
+    const connection = await DB.pool.getConnection();
+    try {
+      const [rows]: any[] = await connection.query(`
+        SELECT blocks.*, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp, pools.id as pool_id, pools.name as pool_name, pools.link as pool_link, pools.addresses as pool_addresses, pools.regexes as pool_regexes
+        FROM blocks
+        JOIN pools ON blocks.pool_id = pools.id
+        WHERE hash = '${hash}';
+      `);
+      connection.release();
+
+      if (rows.length <= 0) {
+        return null;
+      }
+
+      return rows[0];
+    } catch (e) {
+      connection.release();
+      logger.err('$getBlockByHeight() error' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
    * Return blocks difficulty
    */
   public async $getBlocksDifficulty(interval: string | null): Promise<object[]> {
@@ -314,7 +340,7 @@ class BlocksRepository {
     let query = `
       SELECT
       *
-      FROM 
+      FROM
       (
         SELECT
         UNIX_TIMESTAMP(blockTimestamp) as timestamp, difficulty, height,

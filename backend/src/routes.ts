@@ -639,8 +639,7 @@ class Routes {
 
   public async getBlock(req: Request, res: Response) {
     try {
-      const result = await bitcoinApi.$getBlock(req.params.hash);
-      res.json(result);
+      res.json(await blocks.$getBlock(req.params.hash));
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

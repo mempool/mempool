@@ -50,7 +50,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     private location: Location,
     private router: Router,
     private electrsApiService: ElectrsApiService,
-    private stateService: StateService,
+    public stateService: StateService,
     private seoService: SeoService,
     private websocketService: WebsocketService,
     private relativeUrlPipe: RelativeUrlPipe,

@@ -6,7 +6,7 @@ import logger from '../logger';
 const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 class DatabaseMigration {
-  private static currentVersion = 13;
+  private static currentVersion = 15;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
 
@@ -161,11 +161,8 @@ class DatabaseMigration {
         await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `fees` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
       }
 
-      if (databaseSchemaVersion < 13 && isBitcoin === true) {
-        await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `difficulty` DOUBLE UNSIGNED NOT NULL DEFAULT "0"');
-        await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `median_fee` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
-        await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `avg_fee` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
-        await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `avg_fee_rate` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
+      if (databaseSchemaVersion < 15 && isBitcoin === true) {
+        await this.$executeQuery(connection, 'ALTER TABLE `blocks` ADD INDEX `hash` (`hash`)');
       }
 
       connection.release();
