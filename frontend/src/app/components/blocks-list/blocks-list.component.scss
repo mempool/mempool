@@ -1,9 +1,10 @@
 .container-xl {
   max-width: 1400px;
-  padding-bottom: 0;
+  padding-bottom: 100px;
 }
 .container-xl.widget {
   padding-left: 0px;
+  padding-bottom: 0px;
 }
 
 .container {
@@ -117,11 +118,7 @@ td {
   @media (max-width: 650px) {
     width: 20%;
   }
-}
-
-.pagination-container {
-  margin-bottom: 40px;
-  @media (max-width: 992px) {
-    margin-bottom: 80px;
+  @media (max-width: 450px) {
+    display: none;
   }
 }
