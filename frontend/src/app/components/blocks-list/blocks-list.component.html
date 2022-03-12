@@ -19,7 +19,7 @@
     <tbody *ngIf="blocks$ | async as blocks; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
       <tr *ngFor="let block of blocks; let i= index; trackBy: trackByBlock">
         <td class="height "[class]="widget ? 'widget' : ''">
-          <a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height
+          <a [routerLink]="['/block' | relativeUrl, block.height]">{{ block.height
             }}</a>
         </td>
         <td class="pool text-left" [class]="widget ? 'widget' : ''">
