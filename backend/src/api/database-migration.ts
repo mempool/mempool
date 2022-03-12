@@ -6,7 +6,7 @@ import logger from '../logger';
 const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 class DatabaseMigration {
-  private static currentVersion = 11;
+  private static currentVersion = 12;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
 
@@ -154,6 +154,11 @@ class DatabaseMigration {
         await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `reward` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
         await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `median_fee` INT UNSIGNED NOT NULL DEFAULT "0"');
         await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `fees` INT UNSIGNED NOT NULL DEFAULT "0"');
+      }
+
+      if (databaseSchemaVersion < 12 && isBitcoin === true) {
+        // No need to re-index because the new data type can contain larger values
+        await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `fees` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
       }
 
       connection.release();
