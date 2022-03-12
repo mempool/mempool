@@ -97,8 +97,10 @@ class Server {
           await databaseMigration.$truncateIndexedData(tables);
         }
         await databaseMigration.$initializeOrMigrateDatabase();
-        await this.$resetHashratesIndexingState();
-        await poolsParser.migratePoolsJson();
+        if (Common.indexingEnabled()) {
+          await this.$resetHashratesIndexingState();
+          await poolsParser.migratePoolsJson();
+        }
       } catch (e) {
         throw new Error(e instanceof Error ? e.message : 'Error');
       }
