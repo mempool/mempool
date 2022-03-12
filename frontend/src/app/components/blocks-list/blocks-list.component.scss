@@ -1,0 +1,124 @@
+.container-xl {
+  max-width: 1400px;
+  padding-bottom: 100px;
+}
+.container-xl.widget {
+  padding-left: 0px;
+  padding-bottom: 0px;
+}
+
+.container {
+  max-width: 100%;
+}
+
+td {
+  padding-top: 0.7rem !important;
+  padding-bottom: 0.7rem !important;
+}
+
+.clear-link {
+  color: white;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.progress {
+  background-color: #2d3348;
+}
+
+.pool {
+  width: 17%;
+}
+.pool.widget {
+  width: 40%;
+  @media (max-width: 576px) {
+    padding-left: 30px;
+    width: 60%;
+  }
+}
+.pool-name {
+  display: inline-block;
+  vertical-align: text-top;
+  padding-left: 10px;
+}
+
+.height {
+  width: 10%;
+  @media (max-width: 1100px) {
+    width: 10%;
+  }
+}
+.height.widget {
+  width: 20%;
+  @media (max-width: 576px) {
+    width: 10%;
+  }
+}
+
+.timestamp {
+  @media (max-width: 900px) {
+    display: none;
+  }
+}
+
+.mined {
+  width: 13%;
+  @media (max-width: 576px) {
+    display: none;
+  }
+}
+
+.txs {
+  padding-right: 40px;
+  @media (max-width: 1100px) {
+    padding-right: 10px;
+  }
+  @media (max-width: 875px) {
+    display: none;
+  }
+}
+.txs.widget {
+  padding-right: 0;
+  @media (max-width: 650px) {
+    display: none;
+  }
+}
+
+.fees {
+  @media (max-width: 650px) {
+    display: none;
+  }
+}
+.fees.widget {
+  width: 20%;
+}
+
+.reward {
+  @media (max-width: 576px) {
+    width: 7%;
+    padding-right: 30px;
+  }
+}
+.reward.widget {
+  width: 20%;
+  @media (max-width: 576px) {
+    width: 30%;
+    padding-right: 0;
+  }
+}
+
+.size {
+  width: 12%;
+  @media (max-width: 1000px) {
+    width: 15%;
+  }
+  @media (max-width: 650px) {
+    width: 20%;
+  }
+  @media (max-width: 450px) {
+    display: none;
+  }
+}
