@@ -79,27 +79,23 @@ export class ApiDocsComponent implements OnInit {
   }
   
   openEndpointContainer( targetId ) {
-  
-    if( window.innerWidth > 992 ) {
-      return;
-    }
-    
-    const endpointContainerEl = document.querySelector<HTMLElement>( "#" + targetId );
-    const endpointContentEl = document.querySelector<HTMLElement>( "#" + targetId + " .endpoint-content" );
-    const endPointContentElHeight = endpointContentEl.clientHeight;
+    if( window.innerWidth <= 992 ) {
+      const endpointContainerEl = document.querySelector<HTMLElement>( "#" + targetId );
+      const endpointContentEl = document.querySelector<HTMLElement>( "#" + targetId + " .endpoint-content" );
+      const endPointContentElHeight = endpointContentEl.clientHeight;
 
-    if( endpointContentEl.classList.contains( "open" ) ) {
-      endpointContainerEl.style.height = "auto";
-      endpointContentEl.style.top = "-10000px";
-      endpointContentEl.style.opacity = "0";
-      endpointContentEl.classList.remove( "open" );
-    } else {
-      endpointContainerEl.style.height = endPointContentElHeight + 90 + "px";
-      endpointContentEl.style.top = "90px";
-      endpointContentEl.style.opacity = "1";
-      endpointContentEl.classList.add( "open" );
-    }
-    
+      if( endpointContentEl.classList.contains( "open" ) ) {
+        endpointContainerEl.style.height = "auto";
+        endpointContentEl.style.top = "-10000px";
+        endpointContentEl.style.opacity = "0";
+        endpointContentEl.classList.remove( "open" );
+      } else {
+        endpointContainerEl.style.height = endPointContentElHeight + 90 + "px";
+        endpointContentEl.style.top = "90px";
+        endpointContentEl.style.opacity = "1";
+        endpointContentEl.classList.add( "open" );
+      }
+    }  
   }
 
   wrapUrl(network: string, code: any, websocket: boolean = false) {
