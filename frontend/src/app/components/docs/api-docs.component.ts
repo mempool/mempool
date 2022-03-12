@@ -22,6 +22,7 @@ export class ApiDocsComponent implements OnInit {
   desktopDocsNavPosition = "relative";
   restDocs: any[];
   wsDocs: any;
+  screenWidth: number;
 
   constructor(
     private stateService: StateService,
@@ -32,6 +33,7 @@ export class ApiDocsComponent implements OnInit {
   ngAfterViewInit() {
     const that = this;
     setTimeout( () => {
+      this.openEndpointContainer( this.route.snapshot.fragment );
       window.addEventListener('scroll', function() {
         that.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
       });
@@ -73,6 +75,31 @@ export class ApiDocsComponent implements OnInit {
     if( this.route.snapshot.fragment === targetId ) {
       document.getElementById( targetId ).scrollIntoView();
     }
+    this.openEndpointContainer( targetId );
+  }
+  
+  openEndpointContainer( targetId ) {
+  
+    if( window.innerWidth > 992 ) {
+      return;
+    }
+    
+    const endpointContainerEl = document.querySelector<HTMLElement>( "#" + targetId );
+    const endpointContentEl = document.querySelector<HTMLElement>( "#" + targetId + " .endpoint-content" );
+    const endPointContentElHeight = endpointContentEl.clientHeight;
+
+    if( endpointContentEl.classList.contains( "open" ) ) {
+      endpointContainerEl.style.height = "auto";
+      endpointContentEl.style.top = "-10000px";
+      endpointContentEl.style.opacity = "0";
+      endpointContentEl.classList.remove( "open" );
+    } else {
+      endpointContainerEl.style.height = endPointContentElHeight + 90 + "px";
+      endpointContentEl.style.top = "90px";
+      endpointContentEl.style.opacity = "1";
+      endpointContentEl.classList.add( "open" );
+    }
+    
   }
 
   wrapUrl(network: string, code: any, websocket: boolean = false) {
