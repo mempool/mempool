@@ -80,8 +80,8 @@ class Mining {
 
     // We only run this once a week
     const latestTimestamp = await HashratesRepository.$getLatestRunTimestamp('last_weekly_hashrates_indexing');
-    const now = new Date().getTime() / 1000;
-    if (now - latestTimestamp < 604800) {
+    const now = new Date();
+    if ((now.getTime() / 1000) - latestTimestamp < 604800) {
       return;
     }
 
@@ -94,7 +94,6 @@ class Mining {
       const hashrates: any[] = [];
       const genesisTimestamp = 1231006505; // bitcoin-cli getblock 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
 
-      const now = new Date();
       const lastMonday = new Date(now.setDate(now.getDate() - (now.getDay() + 6) % 7));
       const lastMondayMidnight = this.getDateMidnight(lastMonday);
       let toTimestamp = Math.round((lastMondayMidnight.getTime() - 604800) / 1000);
@@ -108,7 +107,7 @@ class Mining {
         const fromTimestamp = toTimestamp - 604800;
 
         // Skip already indexed weeks
-        if (indexedTimestamp.includes(toTimestamp + 1)) {
+        if (indexedTimestamp.includes(toTimestamp)) {
           toTimestamp -= 604800;
           ++totalIndexed;
           continue;
@@ -133,7 +132,7 @@ class Mining {
 
         for (const pool of pools) {
           hashrates.push({
-            hashrateTimestamp: toTimestamp + 1,
+            hashrateTimestamp: toTimestamp,
             avgHashrate: pool['hashrate'],
             poolId: pool.poolId,
             share: pool['share'],
@@ -202,7 +201,7 @@ class Mining {
         const fromTimestamp = toTimestamp - 86400;
 
         // Skip already indexed weeks
-        if (indexedTimestamp.includes(fromTimestamp)) {
+        if (indexedTimestamp.includes(toTimestamp)) {
           toTimestamp -= 86400;
           ++totalIndexed;
           continue;
@@ -220,7 +219,7 @@ class Mining {
         hashrates.push({
           hashrateTimestamp: toTimestamp,
           avgHashrate: lastBlockHashrate,
-          poolId: null,
+          poolId: 0,
           share: 1,
           type: 'daily',
         });
