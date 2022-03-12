@@ -13,13 +13,13 @@
   },
   "CORE_RPC": {
     "PORT": 7041,
-    "USERNAME": "foo",
-    "PASSWORD": "bar"
+    "USERNAME": "__ELEMENTS_RPC_USER__",
+    "PASSWORD": "__ELEMENTS_RPC_PASS__"
   },
   "SECOND_CORE_RPC": {
     "PORT": 8332,
-    "USERNAME": "foo",
-    "PASSWORD": "bar"
+    "USERNAME": "__BITCOIN_RPC_USER__",
+    "PASSWORD": "__BITCOIN_RPC_PASS__"
   },
   "ESPLORA": {
     "REST_API_URL": "http://127.0.0.1:4001"
@@ -28,9 +28,9 @@
     "ENABLED": true,
     "HOST": "127.0.0.1",
     "PORT": 3306,
-    "USERNAME": "lmempool",
-    "PASSWORD": "lmempool",
-    "DATABASE": "lmempool"
+    "USERNAME": "mempool_liquid",
+    "PASSWORD": "mempool_liquid",
+    "DATABASE": "mempool_liquid"
   },
   "STATISTICS": {
     "ENABLED": true,
