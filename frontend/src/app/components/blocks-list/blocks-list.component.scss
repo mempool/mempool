@@ -118,3 +118,10 @@ td {
     width: 20%;
   }
 }
+
+.pagination-container {
+  margin-bottom: 40px;
+  @media (max-width: 992px) {
+    margin-bottom: 80px;
+  }
+}

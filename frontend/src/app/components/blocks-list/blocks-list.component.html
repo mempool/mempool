@@ -23,11 +23,11 @@
             }}</a>
         </td>
         <td class="pool text-left" [class]="widget ? 'widget' : ''">
-          <img width="25" height="25" src="{{ block.extras.pool['logo'] }}"
+          <a class="clear-link"[routerLink]="[('/mining/pool/' + block.extras.pool.id) | relativeUrl]">
+            <img width="25" height="25" src="{{ block.extras.pool['logo'] }}"
             onError="this.src = './resources/mining-pools/default.svg'">
-          <span class="pool-name"><a class="clear-link"
-              [routerLink]="[('/mining/pool/' + block.extras.pool.id) | relativeUrl]">{{
-              block.extras.pool.name }}</a></span>
+            <span class="pool-name">{{ block.extras.pool.name }}</span>
+          </a>
         </td>
         <td class="timestamp" *ngIf="!widget">
           &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
@@ -86,7 +86,7 @@
     </ng-template>
   </table>
 
-  <ngb-pagination *ngIf="!widget" class="pagination-container float-right mt-3 mb-3 mb-lg-0"
+  <ngb-pagination *ngIf="!widget" class="pagination-container float-right mt-2"
     [class]="isLoading ? 'disabled' : ''" [collectionSize]="blocksCount" [rotate]="true" [maxSize]="5" [pageSize]="15"
     [(page)]="page" (pageChange)="pageChange(page)" [boundaryLinks]="true" [ellipses]="false">
   </ngb-pagination>
