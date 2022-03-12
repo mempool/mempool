@@ -822,6 +822,10 @@ echo "[*] Cloning Mempool repo from ${MEMPOOL_REPO_URL}"
 osSudo "${MEMPOOL_USER}" git config --global pull.rebase true
 osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
 osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}"
+osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-build-all upgrade
+osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-kill-all stop
+osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-start-all start
+osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-restart-all restart
 
 echo "[*] Installing nvm.sh from GitHub"
 osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
