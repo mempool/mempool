@@ -3,6 +3,7 @@ import { Env, StateService } from 'src/app/services/state.service';
 import { Observable, merge, of } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
 import { tap } from 'rxjs/operators';
+import { ActivatedRoute } from "@angular/router";
 import { restApiDocsData, wsApiDocsData } from './api-docs-data';
 
 @Component({
@@ -28,6 +29,7 @@ export class ApiDocsComponent implements OnInit {
   constructor(
     private stateService: StateService,
     private seoService: SeoService,
+    private route: ActivatedRoute,
   ) { }
 
   ngAfterViewInit() {
@@ -68,6 +70,13 @@ export class ApiDocsComponent implements OnInit {
     this.network$.subscribe((network) => {
       this.active = (network === 'liquid' || network === 'liquidtestnet') ? 2 : 0;
     });
+  }
+
+  scrollSameId( event: any ) {
+    const targetId = event.target.hash.substring(1);
+    if( this.route.snapshot.fragment === targetId ) {
+      document.getElementById( targetId ).scrollIntoView();
+    }
   }
 
   wrapUrl(network: string, code: any, websocket: boolean = false) {
