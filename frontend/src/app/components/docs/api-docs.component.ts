@@ -19,10 +19,7 @@ export class ApiDocsComponent implements OnInit {
   code: any;
   baseNetworkUrl = '';
   @Input() restTabActivated: Boolean;
-  @ViewChild( "mobileFixedApiNav", { static: false } ) mobileFixedApiNav: ElementRef;
   desktopDocsNavPosition = "relative";
-  showFloatingDocsNav = false;
-  mobileMenuOpen = true;
   restDocs: any[];
   wsDocs: any;
 
@@ -37,7 +34,6 @@ export class ApiDocsComponent implements OnInit {
     setTimeout( () => {
       window.addEventListener('scroll', function() {
         that.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
-        that.showFloatingDocsNav = ( window.pageYOffset > ( that.mobileFixedApiNav.nativeElement.offsetHeight + 188 ) ) ? true : false;
       });
     }, 1 );
   }

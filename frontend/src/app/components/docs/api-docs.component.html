@@ -11,19 +11,6 @@
 
         <p class="hide-on-mobile no-bottom-space">Reference for the {{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} <ng-container i18n="api-docs.title">API service</ng-container>.</p>
 
-        <div id="doc-nav-mobile" class="hide-on-desktop" *ngIf="showFloatingDocsNav">
-          <button type="button" class="btn btn-outline-primary" (click)="collapse.toggle()" [attr.aria-expanded]="mobileMenuOpen" aria-controls="collapseExample"><fa-icon [icon]="['fas', 'list-ul']" [fixedWidth]="true"></fa-icon> {{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} REST API Overview</button>
-          <div #collapse="ngbCollapse" [(ngbCollapse)]="mobileMenuOpen">
-            <div class="card">
-              <div class="card-body">
-                <app-api-docs-nav [network]="{ val: network$ | async }"></app-api-docs-nav>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div id="mobile-top-doc-nav" #mobileFixedApiNav class="hide-on-desktop"><app-api-docs-nav [network]="{ val: network$ | async }"></app-api-docs-nav></div>
-
         <div *ngFor="let item of restDocs">
           <div *ngIf="( item.type !== 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )" class="endpoint-container" id="{{ item.fragment }}">
             <a class="section-header" (click)="anchorLinkClick( $event )" [routerLink]="['./']" fragment="{{ item.fragment }}">{{ item.title }} <span>{{ item.category }}</span></a>
