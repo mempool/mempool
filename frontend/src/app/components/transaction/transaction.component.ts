@@ -66,29 +66,8 @@ export class TransactionComponent implements OnInit, OnDestroy {
 
     this.timeAvg$ = timer(0, 1000)
       .pipe(
-        switchMap(() => combineLatest([
-          this.stateService.blocks$.pipe(map(([block]) => block)),
-          this.stateService.lastDifficultyAdjustment$
-        ])),
-        map(([block, DATime]) => {
-          this.now = new Date().getTime();
-          const now = new Date().getTime() / 1000;
-          const diff = now - DATime;
-          const blocksInEpoch = block.height % 2016;
-          let difficultyChange = 0;
-          if (blocksInEpoch > 0) {
-            difficultyChange = (600 / (diff / blocksInEpoch ) - 1) * 100;
-          }
-          const timeAvgDiff = difficultyChange * 0.1;
-
-          let timeAvgMins = 10;
-          if (timeAvgDiff > 0 ){
-            timeAvgMins -= Math.abs(timeAvgDiff);
-          } else {
-            timeAvgMins += Math.abs(timeAvgDiff);
-          }
-          return timeAvgMins * 60 * 1000;
-        })
+        switchMap(() => this.stateService.difficultyAdjustment$),
+        map((da) => da.timeAvg)
       );
 
     this.fetchCpfpSubscription = this.fetchCpfp$

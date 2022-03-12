@@ -259,6 +259,10 @@ export class WebsocketService {
       this.stateService.utxoSpent$.next(response.utxoSpent);
     }
 
+    if (response.da) {
+      this.stateService.difficultyAdjustment$.next(response.da);
+    }
+
     if (response.backendInfo) {
       this.stateService.backendInfo$.next(response.backendInfo);
 
@@ -299,10 +303,6 @@ export class WebsocketService {
 
     if (response.vBytesPerSecond !== undefined) {
       this.stateService.vbytesPerSecond$.next(response.vBytesPerSecond);
-    }
-
-    if (response.lastDifficultyAdjustment !== undefined) {
-      this.stateService.lastDifficultyAdjustment$.next(response.lastDifficultyAdjustment);
     }
 
     if (response.previousRetarget !== undefined) {
