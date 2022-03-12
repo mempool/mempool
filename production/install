@@ -819,6 +819,7 @@ osSudo "${ROOT_USER}" chown -R "${MEMPOOL_USER}:${MEMPOOL_GROUP}" "${MEMPOOL_HOM
 osSudo "${MEMPOOL_USER}" touch "${MEMPOOL_HOME}/.zshrc"
 
 echo "[*] Cloning Mempool repo from ${MEMPOOL_REPO_URL}"
+osSudo "${MEMPOOL_USER}" git config --global pull.rebase true
 osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
 osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}"
 
