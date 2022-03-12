@@ -4,7 +4,7 @@
     <div id="restAPI" *ngIf="restTabActivated">
 
       <div id="doc-nav-desktop" class="hide-on-mobile" [ngClass]="desktopDocsNavPosition">
-        <app-api-docs-nav (navLinkClickEvent)="scrollSameId( $event )" [network]="{ val: network$ | async }"></app-api-docs-nav>
+        <app-api-docs-nav (navLinkClickEvent)="anchorLinkClick( $event )" [network]="{ val: network$ | async }"></app-api-docs-nav>
       </div>
 
       <div class="doc-content">
@@ -26,7 +26,7 @@
 
         <div *ngFor="let item of restDocs">
           <div *ngIf="( item.type !== 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )" class="endpoint-container" id="{{ item.fragment }}">
-            <a class="section-header" (click)="scrollSameId( $event )" [routerLink]="['./']" fragment="{{ item.fragment }}">{{ item.title }} <span>{{ item.category }}</span></a>
+            <a class="section-header" (click)="anchorLinkClick( $event )" [routerLink]="['./']" fragment="{{ item.fragment }}">{{ item.title }} <span>{{ item.category }}</span></a>
             <div class="endpoint">
               <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
               <ng-container *ngIf="item.httpRequestMethod === 'GET' && network.val === 'bisq' && item.codeExample.hasOwnProperty('bisq');else liquid_link_example" #bisq_link_example>
