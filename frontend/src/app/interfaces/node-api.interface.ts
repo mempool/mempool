@@ -26,12 +26,15 @@ export interface CpfpInfo {
 }
 
 export interface DifficultyAdjustment {
+  progressPercent: number;
   difficultyChange: number;
   estimatedRetargetDate: number;
-  previousRetarget: number;
-  progressPercent: number;
   remainingBlocks: number;
   remainingTime: number;
+  previousRetarget: number;
+  nextRetargetHeight: number;
+  timeAvg: number;
+  timeOffset: number;
 }
 
 export interface AddressInformation {
@@ -111,4 +114,3 @@ export interface BlockExtension {
 export interface BlockExtended extends Block {
   extras?: BlockExtension;
 }
-

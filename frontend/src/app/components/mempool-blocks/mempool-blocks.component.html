@@ -1,5 +1,5 @@
 <ng-container *ngIf="(loadingBlocks$ | async) === false; else loadingBlocks">
-  <div class="mempool-blocks-container" *ngIf="(timeAvg$ | async) as timeAvg;">
+  <div class="mempool-blocks-container" *ngIf="(difficultyAdjustments$ | async) as da;">
     <div class="flashing">
       <ng-template ngFor let-projectedBlock [ngForOf]="mempoolBlocks$ | async" let-i="index" [ngForTrackBy]="trackByFn">
         <div class="bitcoin-block text-center mempool-block" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]" [class.blink-bg]="projectedBlock.blink">
@@ -26,7 +26,7 @@
                 <app-time-until [time]="(1 * i) + now + 61000" [fastRender]="false" [fixedRender]="true"></app-time-until>
               </ng-template>
               <ng-template #timeDiffMainnet>
-                <app-time-until [time]="(timeAvg * i) + now + timeAvg + timeOffset" [fastRender]="false" [fixedRender]="true" [forceFloorOnTimeIntervals]="['hour']"></app-time-until>
+                <app-time-until [time]="da.timeAvg * (i + 1) + now + da.timeOffset" [fastRender]="false" [fixedRender]="true" [forceFloorOnTimeIntervals]="['hour']"></app-time-until>
               </ng-template>
             </div>
             <ng-template #mergedBlock>

@@ -1,6 +1,6 @@
 import { ILoadingIndicators } from '../services/state.service';
 import { Transaction } from './electrs.interface';
-import { BlockExtended } from './node-api.interface';
+import { BlockExtended, DifficultyAdjustment } from './node-api.interface';
 
 export interface WebsocketResponse {
   block?: BlockExtended;
@@ -10,7 +10,6 @@ export interface WebsocketResponse {
   historicalDate?: string;
   mempoolInfo?: MempoolInfo;
   vBytesPerSecond?: number;
-  lastDifficultyAdjustment?: number;
   previousRetarget?: number;
   action?: string;
   data?: string[];
@@ -21,6 +20,7 @@ export interface WebsocketResponse {
   transactions?: TransactionStripped[];
   loadingIndicators?: ILoadingIndicators;
   backendInfo?: IBackendInfo;
+  da?: DifficultyAdjustment;
   'track-tx'?: string;
   'track-address'?: string;
   'track-asset'?: string;
