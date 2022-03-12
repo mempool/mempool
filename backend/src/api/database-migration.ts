@@ -6,7 +6,7 @@ import logger from '../logger';
 const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 class DatabaseMigration {
-  private static currentVersion = 12;
+  private static currentVersion = 13;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
 
@@ -161,6 +161,13 @@ class DatabaseMigration {
         await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `fees` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
       }
 
+      if (databaseSchemaVersion < 13 && isBitcoin === true) {
+        await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `difficulty` DOUBLE UNSIGNED NOT NULL DEFAULT "0"');
+        await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `median_fee` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
+        await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `avg_fee` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
+        await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `avg_fee_rate` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
+      }
+
       connection.release();
     } catch (e) {
       connection.release();
@@ -293,6 +300,7 @@ class DatabaseMigration {
    */
   private getMigrationQueriesFromVersion(version: number): string[] {
     const queries: string[] = [];
+    const isBitcoin = ['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK);
 
     if (version < 1) {
       if (config.MEMPOOL.NETWORK !== 'liquid' && config.MEMPOOL.NETWORK !== 'liquidtestnet') {
@@ -300,11 +308,11 @@ class DatabaseMigration {
       }
     }
 
-    if (version < 7) {
+    if (version < 7 && isBitcoin === true) {
       queries.push(`INSERT INTO state(name, number, string) VALUES ('last_hashrates_indexing', 0, NULL)`);
     }
 
-    if (version < 9) {
+    if (version < 9  && isBitcoin === true) {
       queries.push(`INSERT INTO state(name, number, string) VALUES ('last_weekly_hashrates_indexing', 0, NULL)`);
     }
 
