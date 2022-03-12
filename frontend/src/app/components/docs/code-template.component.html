@@ -1,14 +1,14 @@
 <div class="code">
   <ul ngbNav #navCodeTemplate="ngbNav" class="nav-tabs code-tab">
     <li ngbNavItem *ngIf="code.codeTemplate.curl && method !== 'websocket'">
-      <a ngbNavLink>cURL</a>
+      <a ngbNavLink (click)="adjustContainerHeight( $event )">cURL</a>
       <ng-template ngbNavContent>
         <div class="subtitle"><ng-container i18n="API Docs code example">Code Example</ng-container> <app-clipboard [text]="wrapCurlTemplate(code)"></app-clipboard></div>
         <pre><code [innerText]="wrapCurlTemplate(code)"></code></pre>
       </ng-template>
     </li>
     <li ngbNavItem *ngIf="network !== 'liquidtestnet'">
-      <a ngbNavLink>CommonJS</a>
+      <a ngbNavLink (click)="adjustContainerHeight( $event )" >CommonJS</a>
       <ng-template ngbNavContent>
         <div class="subtitle"><ng-container i18n="API Docs code example">Code Example</ng-container> <app-clipboard [text]="wrapCommonJS(code)"></app-clipboard></div>
         <div class="links">
@@ -18,7 +18,7 @@
       </ng-template>
     </li>
     <li ngbNavItem>
-      <a ngbNavLink *ngIf="network !== 'liquidtestnet'">ES Module</a>
+      <a ngbNavLink (click)="adjustContainerHeight( $event )" *ngIf="network !== 'liquidtestnet'">ES Module</a>
       <ng-template ngbNavContent>
         <div class="subtitle"><ng-container i18n="API Docs install lib">Install Package</ng-container> <app-clipboard [text]="wrapImportTemplate()"></app-clipboard></div>
         <div class="links">
