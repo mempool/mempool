@@ -8,7 +8,7 @@ class PoolsRepository {
    * Get all pools tagging info
    */
   public async $getPools(): Promise<PoolTag[]> {
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     const [rows] = await connection.query('SELECT id, name, addresses, regexes FROM pools;');
     connection.release();
     return <PoolTag[]>rows;
@@ -18,7 +18,7 @@ class PoolsRepository {
    * Get unknown pool tagging info
    */
   public async $getUnknownPool(): Promise<PoolTag> {
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     const [rows] = await connection.query('SELECT id, name FROM pools where name = "Unknown"');
     connection.release();
     return <PoolTag>rows[0];
@@ -42,7 +42,7 @@ class PoolsRepository {
       ORDER BY COUNT(height) DESC`;
 
     // logger.debug(query);
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     try {
       const [rows] = await connection.query(query);
       connection.release();
@@ -64,7 +64,7 @@ class PoolsRepository {
       LEFT JOIN blocks on pools.id = blocks.pool_id AND blocks.blockTimestamp BETWEEN FROM_UNIXTIME(?) AND FROM_UNIXTIME(?)
       GROUP BY pools.id`;
 
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     try {
       const [rows] = await connection.query(query, [from, to]);
       connection.release();
@@ -87,7 +87,7 @@ class PoolsRepository {
       WHERE pools.id = ?`;
 
     // logger.debug(query);
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     try {
       const [rows] = await connection.query(query, [poolId]);
       connection.release();

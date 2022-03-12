@@ -1,5 +1,5 @@
 import config from './config';
-import { createPool } from 'mysql2/promise';
+import { createPool, PoolConnection } from 'mysql2/promise';
 import logger from './logger';
 
 export class DB {
@@ -11,13 +11,24 @@ export class DB {
     password: config.DATABASE.PASSWORD,
     connectionLimit: 10,
     supportBigNumbers: true,
-    timezone: '+00:00',
   });
+
+  static connectionsReady: number[] = [];
+
+  static async getConnection() {
+    const connection: PoolConnection = await DB.pool.getConnection();
+    const connectionId = connection['connection'].connectionId;
+    if (!DB.connectionsReady.includes(connectionId)) {
+      await connection.query(`SET time_zone='+00:00';`);
+      this.connectionsReady.push(connectionId);
+    }
+    return connection;
+  }
 }
 
 export async function checkDbConnection() {
   try {
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     logger.info('Database connection established.');
     connection.release();
   } catch (e) {
