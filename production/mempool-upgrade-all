@@ -4,6 +4,12 @@ HOSTNAME=$(hostname)
 LOCKFILE="${HOME}/lock"
 REF=$(echo "${1:=origin/master}"|sed -e 's!:!/!')
 
+# get rpc credentials
+BITCOIN_RPC_USER=$(grep '^rpcuser' /bitcoin/bitcoin.conf | cut -d '=' -f2)
+BITCOIN_RPC_PASS=$(grep '^rpcpassword' /bitcoin/bitcoin.conf | cut -d '=' -f2)
+ELEMENTS_RPC_USER=$(grep '^rpcuser' /elements/elements.conf | cut -d '=' -f2)
+ELEMENTS_RPC_PASS=$(grep '^rpcpassword' /elements/elements.conf | cut -d '=' -f2)
+
 if [ -f "${LOCKFILE}" ];then
     echo "upgrade already running? check lockfile ${LOCKFILE}"
     exit 1
@@ -42,6 +48,9 @@ build_frontend()
     echo "[*] Building frontend for ${site}"
     [ -z "${HASH}" ] && exit 1
     cd "$HOME/${site}/frontend" || exit 1
+    if [ ! -e "mempool-frontend-config.json" ];then
+        cp "${HOME}/mempool/production/mempool-frontend-config.${site}.json" "mempool-frontend-config.json"
+    fi
     npm install --no-optional || exit 1
     npm run build || exit 1
 }
@@ -52,6 +61,15 @@ build_backend()
     echo "[*] Building backend for ${site}"
     [ -z "${HASH}" ] && exit 1
     cd "$HOME/${site}/backend" || exit 1
+    if [ ! -e "mempool-config.json" ];then
+        cp "${HOME}/mempool/production/mempool-config.${site}.json" "mempool-config.json"
+	sed -i .orig \
+	-e "s!__BITCOIN_RPC_USER__!${BITCOIN_RPC_USER}!" \
+	-e "s!__BITCOIN_RPC_PASS__!${BITCOIN_RPC_PASS}!" \
+	-e "s!__ELEMENTS_RPC_USER__!${ELEMENTS_RPC_USER}!" \
+	-e "s!__ELEMENTS_RPC_PASS__!${ELEMENTS_RPC_PASS}!" \
+	"mempool-config.json"
+    fi
     npm install --no-optional || exit 1
     npm run build || exit 1
 }
@@ -60,16 +78,28 @@ ship_frontend()
 {
     local site="$1"
     cd "$HOME/${site}/frontend" || exit 1
-    rsync -av ./dist/mempool/browser/* "${HOME}/public_html/${site}/" || exit 1
+    mkdir -p "${HOME}/public_html/${site}/"
+    rsync -av "./dist/mempool/browser/" "${HOME}/public_html/${site}/" || exit 1
 }
 
 export NVM_DIR="${HOME}/.nvm"
 source "${NVM_DIR}/nvm.sh"
 
-for target in mainnet testnet signet liquid liquidtestnet bisq;do update_repo "${target}";done
-for target in mainnet testnet signet liquid liquidtestnet bisq;do build_backend "${target}";done
-for target in mainnet liquid bisq;do build_frontend "${target}";done
-for target in mainnet liquid bisq;do ship_frontend "${target}";done
+for target in mainnet testnet signet liquid liquidtestnet bisq;do
+    update_repo "${target}"
+done
+
+for target in mainnet testnet signet liquid liquidtestnet bisq;do
+    build_backend "${target}"
+done
+
+for target in mainnet liquid bisq;do
+    build_frontend "${target}"
+done
+
+for target in mainnet liquid bisq;do
+    ship_frontend "${target}"
+done
 
 echo "${HOSTNAME} updated to \`${REF}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel general mempool.dev
 echo "${HOSTNAME} updated to \`${REF}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel general mempool.ops

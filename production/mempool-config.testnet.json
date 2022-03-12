@@ -13,8 +13,8 @@
   },
   "CORE_RPC": {
     "PORT": 18332,
-    "USERNAME": "foo",
-    "PASSWORD": "bar"
+    "USERNAME": "__BITCOIN_RPC_USER__",
+    "PASSWORD": "__BITCOIN_RPC_PASS__"
   },
   "ESPLORA": {
     "REST_API_URL": "http://127.0.0.1:4002"
@@ -23,9 +23,9 @@
     "ENABLED": true,
     "HOST": "127.0.0.1",
     "PORT": 3306,
-    "USERNAME": "tmempool",
-    "PASSWORD": "tmempool",
-    "DATABASE": "tmempool"
+    "USERNAME": "mempool_testnet",
+    "PASSWORD": "mempool_testnet",
+    "DATABASE": "mempool_testnet"
   },
   "STATISTICS": {
     "ENABLED": true,
