@@ -12,8 +12,8 @@
     "MIN_PRIORITY": "debug"
   },
   "CORE_RPC": {
-    "USERNAME": "foo",
-    "PASSWORD": "bar"
+    "USERNAME": "__BITCOIN_RPC_USER__",
+    "PASSWORD": "__BITCOIN_RPC_PASS__"
   },
   "ESPLORA": {
     "REST_API_URL": "http://127.0.0.1:4000"
@@ -22,9 +22,9 @@
     "ENABLED": false,
     "HOST": "127.0.0.1",
     "PORT": 3306,
-    "USERNAME": "bmempool",
-    "PASSWORD": "bmempool",
-    "DATABASE": "bmempool"
+    "USERNAME": "mempool_bisq",
+    "PASSWORD": "mempool_bisq",
+    "DATABASE": "mempool_bisq"
   },
   "STATISTICS": {
     "ENABLED": true,
