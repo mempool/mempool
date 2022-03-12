@@ -1,0 +1,17 @@
+{
+  "BASE_MODULE": "liquid",
+  "OFFICIAL_MEMPOOL_SPACE": true,
+  "TESTNET_ENABLED": true,
+  "LIQUID_ENABLED": true,
+  "LIQUID_TESTNET_ENABLED": true,
+  "BISQ_ENABLED": true,
+  "BISQ_SEPARATE_BACKEND": true,
+  "SIGNET_ENABLED": true,
+  "MEMPOOL_WEBSITE_URL": "https://mempool.space",
+  "LIQUID_WEBSITE_URL": "https://liquid.network",
+  "BISQ_WEBSITE_URL": "https://bisq.markets",
+  "ITEMS_PER_PAGE": 25,
+  "BLOCK_WEIGHT_UNITS": 300000,
+  "MEMPOOL_BLOCKS_AMOUNT": 2,
+  "KEEP_BLOCKS_AMOUNT": 16
+}
