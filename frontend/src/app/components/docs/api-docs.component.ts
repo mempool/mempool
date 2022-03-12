@@ -72,7 +72,7 @@ export class ApiDocsComponent implements OnInit {
     });
   }
 
-  scrollSameId( event: any ) {
+  anchorLinkClick( event: any ) {
     const targetId = event.target.hash.substring(1);
     if( this.route.snapshot.fragment === targetId ) {
       document.getElementById( targetId ).scrollIntoView();
