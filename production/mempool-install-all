@@ -7,7 +7,7 @@ do
     mkdir -p "${HOME}/public_html/${site}/"
 
     cd "${HOME}/${site}/backend/"
-    cp "../production/mempool-config.${site}.json" "mempool-config.json"
+    cp "${HOME}/mempool/production/mempool-config.${site}.json" "mempool-config.json"
 
     npm install
     npm run build
@@ -15,6 +15,7 @@ do
     if [ "${site}" = "mainnet" ]
     then
         cd "${HOME}/${site}/frontend/"
+        cp "${HOME}/mempool/production/mempool-frontend-config.${site}.json" "mempool-frontend-config.json"
         npm install
         npm run build
         rsync -av ./dist/mempool/browser/* "${HOME}/public_html/${site}/"
