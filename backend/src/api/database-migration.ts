@@ -6,7 +6,7 @@ import logger from '../logger';
 const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 class DatabaseMigration {
-  private static currentVersion = 13;
+  private static currentVersion = 14;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
 
@@ -77,7 +77,7 @@ class DatabaseMigration {
     await this.$setStatisticsAddedIndexedFlag(databaseSchemaVersion);
 
     const isBitcoin = ['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK);
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     try {
       await this.$executeQuery(connection, this.getCreateElementsTableQuery(), await this.$checkIfTableExists('elements_pegs'));
       await this.$executeQuery(connection, this.getCreateStatisticsQuery(), await this.$checkIfTableExists('statistics'));
@@ -168,6 +168,13 @@ class DatabaseMigration {
         await this.$executeQuery(connection, 'ALTER TABLE blocks MODIFY `avg_fee_rate` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
       }
 
+      if (databaseSchemaVersion < 14 && isBitcoin === true) {
+        logger.warn(`'hashrates' table has been truncated. Re-indexing from scratch.`);
+        await this.$executeQuery(connection, 'TRUNCATE hashrates;'); // Need to re-index
+        await this.$executeQuery(connection, 'ALTER TABLE `hashrates` DROP FOREIGN KEY `hashrates_ibfk_1`');
+        await this.$executeQuery(connection, 'ALTER TABLE `hashrates` MODIFY `pool_id` SMALLINT UNSIGNED NOT NULL DEFAULT "0"');
+      }
+
       connection.release();
     } catch (e) {
       connection.release();
@@ -187,7 +194,7 @@ class DatabaseMigration {
       return;
     }
 
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
 
     try {
       // We don't use "CREATE INDEX IF NOT EXISTS" because it is not supported on old mariadb version 5.X
@@ -225,7 +232,7 @@ class DatabaseMigration {
    * Check if 'table' exists in the database
    */
   private async $checkIfTableExists(table: string): Promise<boolean> {
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     const query = `SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '${config.DATABASE.DATABASE}' AND TABLE_NAME = '${table}'`;
     const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
     connection.release();
@@ -236,7 +243,7 @@ class DatabaseMigration {
    * Get current database version
    */
   private async $getSchemaVersionFromDatabase(): Promise<number> {
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     const query = `SELECT number FROM state WHERE name = 'schema_version';`;
     const [rows] = await this.$executeQuery(connection, query, true);
     connection.release();
@@ -247,7 +254,7 @@ class DatabaseMigration {
    * Create the `state` table
    */
   private async $createMigrationStateTable(): Promise<void> {
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
 
     try {
       const query = `CREATE TABLE IF NOT EXISTS state (
@@ -279,7 +286,7 @@ class DatabaseMigration {
     }
     transactionQueries.push(this.getUpdateToLatestSchemaVersionQuery());
 
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     try {
       await this.$executeQuery(connection, 'START TRANSACTION;');
       for (const query of transactionQueries) {
@@ -330,7 +337,7 @@ class DatabaseMigration {
    * Print current database version
    */
   private async $printDatabaseVersion() {
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     try {
       const [rows] = await this.$executeQuery(connection, 'SELECT VERSION() as version;', true);
       logger.debug(`MIGRATIONS: Database engine version '${rows[0].version}'`);
@@ -474,7 +481,7 @@ class DatabaseMigration {
   public async $truncateIndexedData(tables: string[]) {
     const allowedTables = ['blocks', 'hashrates'];
 
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     try {
       for (const table of tables) {
         if (!allowedTables.includes(table)) {
