@@ -70,7 +70,7 @@ class BitcoinApi implements AbstractBitcoinApi {
     }
 
     return this.bitcoindClient.getBlock(hash)
-      .then((block: IBitcoinApi.Block) => this.convertBlock(block));
+      .then((block: IBitcoinApi.Block) => BitcoinApi.convertBlock(block));
   }
 
   $getAddress(address: string): Promise<IEsploraApi.Address> {
@@ -186,7 +186,7 @@ class BitcoinApi implements AbstractBitcoinApi {
     return esploraTransaction;
   }
 
-  private convertBlock(block: IBitcoinApi.Block): IEsploraApi.Block {
+  static convertBlock(block: IBitcoinApi.Block): IEsploraApi.Block {
     return {
       id: block.hash,
       height: block.height,
