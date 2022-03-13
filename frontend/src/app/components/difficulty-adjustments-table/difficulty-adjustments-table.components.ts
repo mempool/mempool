@@ -43,7 +43,7 @@ export class DifficultyAdjustmentsTable implements OnInit {
             const change = (data.difficulty[i].difficulty / data.difficulty[i - 1].difficulty - 1) * 100;
 
             tableData.push(Object.assign(data.difficulty[i], {
-              change: change,
+              change: Math.round(change * 100) / 100,
               difficultyShorten: formatNumber(
                 data.difficulty[i].difficulty / selectedPowerOfTen.divider,
                 this.locale, '1.2-2') + selectedPowerOfTen.unit
