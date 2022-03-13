@@ -112,7 +112,7 @@ sed -i "s/__SECOND_CORE_RPC_PASSWORD__/${__SECOND_CORE_RPC_PASSWORD__}/g" mempoo
 
 sed -i "s/__DATABASE_ENABLED__/${__DATABASE_ENABLED__}/g" mempool-config.json
 sed -i "s/__DATABASE_HOST__/${__DATABASE_HOST__}/g" mempool-config.json
-sed -i "s/__DATABASE_SOCKET__/${__DATABASE_SOCKET__}/g" mempool-config.json
+sed -i "s!__DATABASE_SOCKET__!${__DATABASE_SOCKET__}!g" mempool-config.json
 
 sed -i "s/__DATABASE_PORT__/${__DATABASE_PORT__}/g" mempool-config.json
 sed -i "s/__DATABASE_DATABASE__/${__DATABASE_DATABASE__}/g" mempool-config.json
