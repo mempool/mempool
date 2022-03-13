@@ -11,6 +11,7 @@ import { IEsploraApi } from './bitcoin/esplora-api.interface';
 import poolsRepository from '../repositories/PoolsRepository';
 import blocksRepository from '../repositories/BlocksRepository';
 import loadingIndicators from './loading-indicators';
+import BitcoinApi from './bitcoin/bitcoin-api';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -103,8 +104,8 @@ class Blocks {
    * @param transactions
    * @returns BlockExtended
    */
-   private async $getBlockExtended(block: IEsploraApi.Block, transactions: TransactionExtended[]): Promise<BlockExtended> {
-    const blockExtended: BlockExtended = Object.assign({extras: {}}, block);
+  private async $getBlockExtended(block: IEsploraApi.Block, transactions: TransactionExtended[]): Promise<BlockExtended> {
+    const blockExtended: BlockExtended = Object.assign({ extras: {} }, block);
     blockExtended.extras.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
     blockExtended.extras.coinbaseTx = transactionUtils.stripCoinbaseTransaction(transactions[0]);
 
@@ -112,19 +113,19 @@ class Blocks {
     blockExtended.extras.coinbaseRaw = coinbaseRaw.hex;
 
     if (block.height === 0) {
-       blockExtended.extras.medianFee = 0; // 50th percentiles
-       blockExtended.extras.feeRange = [0, 0, 0, 0, 0, 0, 0];
-       blockExtended.extras.totalFees = 0;
-       blockExtended.extras.avgFee = 0;
-       blockExtended.extras.avgFeeRate = 0;
-     } else {
+      blockExtended.extras.medianFee = 0; // 50th percentiles
+      blockExtended.extras.feeRange = [0, 0, 0, 0, 0, 0, 0];
+      blockExtended.extras.totalFees = 0;
+      blockExtended.extras.avgFee = 0;
+      blockExtended.extras.avgFeeRate = 0;
+    } else {
       const stats = await bitcoinClient.getBlockStats(block.id);
       blockExtended.extras.medianFee = stats.feerate_percentiles[2]; // 50th percentiles
-       blockExtended.extras.feeRange = [stats.minfeerate, stats.feerate_percentiles, stats.maxfeerate].flat();
-       blockExtended.extras.totalFees = stats.totalfee;
-       blockExtended.extras.avgFee = stats.avgfee;
-       blockExtended.extras.avgFeeRate = stats.avgfeerate;
-     }
+      blockExtended.extras.feeRange = [stats.minfeerate, stats.feerate_percentiles, stats.maxfeerate].flat();
+      blockExtended.extras.totalFees = stats.totalfee;
+      blockExtended.extras.avgFee = stats.avgfee;
+      blockExtended.extras.avgFeeRate = stats.avgfeerate;
+    }
 
     if (Common.indexingEnabled()) {
       let pool: PoolTag;
@@ -239,7 +240,7 @@ class Blocks {
             indexedThisRun = 0;
           }
           const blockHash = await bitcoinApi.$getBlockHash(blockHeight);
-          const block = await bitcoinApi.$getBlock(blockHash);
+          const block = BitcoinApi.convertBlock(await bitcoinClient.getBlock(blockHash));
           const transactions = await this.$getTransactionsExtended(blockHash, block.height, true, true);
           const blockExtended = await this.$getBlockExtended(block, transactions);
           await blocksRepository.$saveBlockInDatabase(blockExtended);
@@ -276,7 +277,7 @@ class Blocks {
       if (blockchainInfo.blocks === blockchainInfo.headers) {
         const heightDiff = blockHeightTip % 2016;
         const blockHash = await bitcoinApi.$getBlockHash(blockHeightTip - heightDiff);
-        const block = await bitcoinApi.$getBlock(blockHash);
+        const block = BitcoinApi.convertBlock(await bitcoinClient.getBlock(blockHash));
         this.lastDifficultyAdjustmentTime = block.timestamp;
         this.currentDifficulty = block.difficulty;
 
@@ -300,7 +301,7 @@ class Blocks {
       }
 
       const blockHash = await bitcoinApi.$getBlockHash(this.currentBlockHeight);
-      const block = await bitcoinApi.$getBlock(blockHash);
+      const block = BitcoinApi.convertBlock(await bitcoinClient.getBlock(blockHash));
       const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
       const transactions = await this.$getTransactionsExtended(blockHash, block.height, false);
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, transactions);
@@ -332,14 +333,14 @@ class Blocks {
   /**
    * Index a block if it's missing from the database. Returns the block after indexing
    */
-   public async $indexBlock(height: number): Promise<BlockExtended> {
+  public async $indexBlock(height: number): Promise<BlockExtended> {
     const dbBlock = await blocksRepository.$getBlockByHeight(height);
     if (dbBlock != null) {
       return this.prepareBlock(dbBlock);
     }
 
     const blockHash = await bitcoinApi.$getBlockHash(height);
-    const block = await bitcoinApi.$getBlock(blockHash);
+    const block = BitcoinApi.convertBlock(await bitcoinClient.getBlock(blockHash));
     const transactions = await this.$getTransactionsExtended(blockHash, block.height, true);
     const blockExtended = await this.$getBlockExtended(block, transactions);
 
