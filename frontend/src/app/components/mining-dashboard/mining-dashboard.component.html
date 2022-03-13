@@ -5,30 +5,32 @@
     <!-- Temporary stuff here - Will be moved to a component once we have more useful data to show -->
     <div class="col">
       <div class="main-title">Reward stats</div>
-      <div class="card" style="height: 123px">
-        <div class="card-body more-padding">
-          <div class="fee-estimation-container" *ngIf="$rewardStats | async as rewardStats; else loadingReward">
-            <div class="item">
-              <h5 class="card-title mb-1" i18n="mining.rewards">Miners Reward</h5>
-              <div class="card-text">
-                <app-amount [satoshis]="rewardStats.totalReward" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
-                <div class="symbol">in the last 8 blocks</div>
+      <div class="card-wrapper">
+        <div class="card" style="height: 123px">
+          <div class="card-body more-padding">
+            <div class="reward-container" *ngIf="$rewardStats | async as rewardStats; else loadingReward">
+              <div class="item">
+                <h5 class="card-title" i18n="mining.rewards">Miners Reward</h5>
+                <div class="card-text">
+                  <app-amount [satoshis]="rewardStats.totalReward" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
+                  <div class="symbol">in the last 8 blocks</div>
+                </div>
               </div>
-            </div>
-            <div class="item">
-              <h5 class="card-title mb-1" i18n="mining.rewards-per-tx">Reward Per Tx</h5>
-              <div class="card-text">
-                {{ rewardStats.rewardPerTx | amountShortener }}
-                <span class="symbol">sats/tx</span>
-                <div class="symbol">in the last 8 blocks</div>
+              <div class="item">
+                <h5 class="card-title" i18n="mining.rewards-per-tx">Reward Per Tx</h5>
+                <div class="card-text">
+                  {{ rewardStats.rewardPerTx | amountShortener }}
+                  <span class="symbol">sats/tx</span>
+                  <div class="symbol">in the last 8 blocks</div>
+                </div>
               </div>
-            </div>
-            <div class="item">
-              <h5 class="card-title mb-1" i18n="mining.average-fee">Average Fee</h5>
-              <div class="card-text">
-                {{ rewardStats.feePerTx | amountShortener}}
-                <span class="symbol">sats/tx</span>
-                <div class="symbol">in the last 8 blocks</div>
+              <div class="item">
+                <h5 class="card-title" i18n="mining.average-fee">Average Fee</h5>
+                <div class="card-text">
+                  {{ rewardStats.feePerTx | amountShortener}}
+                  <span class="symbol">sats/tx</span>
+                  <div class="symbol">in the last 8 blocks</div>
+                </div>
               </div>
             </div>
           </div>
@@ -36,24 +38,24 @@
       </div>
     </div>
     <ng-template #loadingReward>
-      <div class="fee-estimation-container">
+      <div class="reward-container">
         <div class="item">
-          <h5 class="card-title" i18n="">Miners Reward</h5>
-          <div class="card-text">
+          <h5 class="card-title" i18n="mining.rewards">Miners Reward</h5>
+          <div class="card-text skeleton">
             <div class="skeleton-loader"></div>
             <div class="skeleton-loader"></div>
           </div>
         </div>
         <div class="item">
-          <h5 class="card-title" i18n="">Reward Per Tx</h5>
-          <div class="card-text">
+          <h5 class="card-title" i18n="mining.rewards-per-tx">Reward Per Tx</h5>
+          <div class="card-text skeleton">
             <div class="skeleton-loader"></div>
             <div class="skeleton-loader"></div>
           </div>
         </div>
         <div class="item">
-          <h5 class="card-title" i18n="">Average Fee</h5>
-          <div class="card-text">
+          <h5 class="card-title" i18n="mining.average-fee">Average Fee</h5>
+          <div class="card-text skeleton">
             <div class="skeleton-loader"></div>
             <div class="skeleton-loader"></div>
           </div>
