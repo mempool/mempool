@@ -1,12 +1,12 @@
 <ng-container *ngIf="!noFiat && (viewFiat$ | async) && (conversions$ | async) as conversions; else viewFiatVin">
-  <span class="fiat">{{ conversions.USD * (satoshis / 100000000) | currency:'USD':'symbol':'1.2-2' }}</span>
+  <span class="fiat">{{ addPlus && satoshis >= 0 ? '+' : '' }}{{ conversions.USD * (satoshis / 100000000) | currency:'USD':'symbol':'1.2-2' }}</span>
 </ng-container>
 <ng-template #viewFiatVin>
   <ng-template [ngIf]="(network === 'liquid' || network === 'liquidtestnet') && (satoshis === undefined || satoshis === null)" [ngIfElse]="default">
     <span i18n="shared.confidential">Confidential</span>
   </ng-template>
   <ng-template #default>
-    &lrm;{{ satoshis / 100000000 | number : digitsInfo }}
+    &lrm;{{ addPlus && satoshis >= 0 ? '+' : '' }}{{ satoshis / 100000000 | number : digitsInfo }}
     <span class="symbol"><ng-template [ngIf]="network === 'liquid'">L-</ng-template>
     <ng-template [ngIf]="network === 'liquidtestnet'">tL-</ng-template>
     <ng-template [ngIf]="network === 'testnet'">t</ng-template>
