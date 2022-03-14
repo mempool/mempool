@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { CpfpInfo, OptimizedMempoolStats, DifficultyAdjustment, AddressInformation, LiquidPegs, ITranslators, PoolsStats, PoolStat, BlockExtended, BlockExtension } from '../interfaces/node-api.interface';
+import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators, PoolsStats, PoolStat, BlockExtended } from '../interfaces/node-api.interface';
 import { Observable } from 'rxjs';
 import { StateService } from './state.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
@@ -103,10 +103,6 @@ export class ApiService {
 
   getCpfpinfo$(txid: string): Observable<CpfpInfo> {
     return this.httpClient.get<CpfpInfo>(this.apiBaseUrl + this.apiBasePath + '/api/v1/cpfp/' + txid);
-  }
-
-  getDifficultyAdjustment$(): Observable<DifficultyAdjustment> {
-    return this.httpClient.get<DifficultyAdjustment>(this.apiBaseUrl + this.apiBasePath + '/api/v1/difficulty-adjustment');
   }
 
   validateAddress$(address: string): Observable<AddressInformation> {
