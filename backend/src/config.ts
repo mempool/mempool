@@ -43,7 +43,7 @@ interface IConfig {
   DATABASE: {
     ENABLED: boolean;
     HOST: string,
-    SOCKET: string | undefined,
+    SOCKET: string,
     PORT: number;
     DATABASE: string;
     USERNAME: string;
@@ -122,7 +122,7 @@ const defaults: IConfig = {
   'DATABASE': {
     'ENABLED': true,
     'HOST': '127.0.0.1',
-    'SOCKET': undefined,
+    'SOCKET': '',
     'PORT': 3306,
     'DATABASE': 'mempool',
     'USERNAME': 'mempool',
