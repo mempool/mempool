@@ -1,5 +1,4 @@
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
-import { WebsocketService } from 'src/app/services/websocket.service';
 import { StateService } from 'src/app/services/state.service';
 import { specialBlocks } from 'src/app/app.constants';
 
@@ -20,12 +19,10 @@ export class StartComponent implements OnInit {
   @ViewChild('blockchainContainer') blockchainContainer: ElementRef;
 
   constructor(
-    private websocketService: WebsocketService,
     private stateService: StateService,
   ) { }
 
   ngOnInit() {
-    this.websocketService.want(['blocks', 'stats', 'mempool-blocks']);
     this.stateService.blocks$
       .subscribe((blocks: any) => {
         if (this.stateService.network !== '') {
