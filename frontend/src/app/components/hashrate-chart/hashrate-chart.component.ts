@@ -110,21 +110,10 @@ export class HashrateChartComponent implements OnInit {
                   (new Date().getTime() / 1000) - (data.oldestIndexedBlockTimestamp)
                 ) / 3600 / 24;
 
-                const tableData = [];
-                for (let i = data.difficulty.length - 1; i > 0; --i) {
-                  const selectedPowerOfTen: any = selectPowerOfTen(data.difficulty[i].difficulty);
-                  const change = (data.difficulty[i].difficulty / data.difficulty[i - 1].difficulty - 1) * 100;
-
-                  tableData.push(Object.assign(data.difficulty[i], {
-                    change: change,
-                    difficultyShorten: formatNumber(
-                      data.difficulty[i].difficulty / selectedPowerOfTen.divider,
-                      this.locale, '1.2-2') + selectedPowerOfTen.unit
-                  }));
-                }
                 return {
                   availableTimespanDay: availableTimespanDay,
-                  difficulty: this.tableOnly ? tableData.slice(0, 5) : tableData,
+                  currentDifficulty: Math.round(data.difficulty[data.difficulty.length - 1].difficulty * 100) / 100,
+                  currentHashrate: data.hashrates[data.hashrates.length - 1].avgHashrate,
                 };
               }),
               retryWhen((errors) => errors.pipe(
@@ -168,6 +157,7 @@ export class HashrateChartComponent implements OnInit {
         '#D81B60',
       ],
       grid: {
+        top: 30,
         right: this.right,
         left: this.left,
         bottom: this.widget ? 30 : this.isMobile() ? 90 : 60,
@@ -211,7 +201,7 @@ export class HashrateChartComponent implements OnInit {
         type: 'time',
         splitNumber: (this.isMobile() || this.widget) ? 5 : 10,
       },
-      legend: data.hashrates.length === 0 ? undefined : {
+      legend: (this.widget || data.hashrates.length === 0) ? undefined : {
         data: [
           {
             name: 'Hashrate',

@@ -1,5 +1,23 @@
 <div [class]="widget === false ? 'full-container' : ''">
 
+  <div *ngIf="widget">
+    <div class="pool-distribution" *ngIf="(hashrateObservable$ | async) as hashrates; else loadingStats">
+      <div class="item">
+        <h5 class="card-title" i18n="mining.hashrate">Hashrate</h5>
+        <p class="card-text">
+          {{ hashrates.currentHashrate | amountShortener }}
+          <span class="symbol">hashes/tx</span>
+        </p>
+      </div>
+      <div class="item">
+        <h5 class="card-title" i18n="master-page.blocks">Difficulty</h5>
+        <p class="card-text">
+          {{ hashrates.currentDifficulty | amountShortener }}
+        </p>
+      </div>
+    </div>
+  </div>
+
   <div class="card-header mb-0 mb-md-4" [style]="widget ? 'display:none' : ''">
     <span i18n="mining.mining-pool-share">Hashrate & Difficulty</span>
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(hashrateObservable$ | async) as hashrates">
@@ -33,3 +51,20 @@
   </div>
   
 </div>
+
+<ng-template #loadingStats>
+  <div class="pool-distribution">
+    <div class="item">
+      <h5 class="card-title" i18n="mining.miners-luck">Hashrate</h5>
+      <p class="card-text">
+        <span class="skeleton-loader skeleton-loader-big"></span>
+      </p>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="master-page.blocks">Difficulty</h5>
+      <p class="card-text">
+        <span class="skeleton-loader skeleton-loader-big"></span>
+      </p>
+    </div>
+  </div>
+</ng-template>
