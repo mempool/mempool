@@ -1,39 +1,26 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-// https://medium.com/@thunderroid/angular-short-number-suffix-pipe-1k-2m-3b-dded4af82fb4
-
 @Pipe({
   name: 'amountShortener'
 })
 export class AmountShortenerPipe implements PipeTransform {
-  transform(number: number, args?: any): any {
-    if (isNaN(number)) return null; // will only work value is a number
-    if (number === null) return null;
-    if (number === 0) return null;
-    let abs = Math.abs(number);
-    const rounder = Math.pow(10, 1);
-    const isNegative = number < 0; // will also work for Negetive numbers
-    let key = '';
-
-    const powers = [
-      { key: 'E', value: 10e18 },
-      { key: 'P', value: 10e15 },
-      { key: 'T', value: 10e12 },
-      { key: 'B', value: 10e9 },
-      { key: 'M', value: 10e6 },
-      { key: 'K', value: 1000 }
-    ];
-
-    for (let i = 0; i < powers.length; i++) {
-      let reduced = abs / powers[i].value;
-      reduced = Math.round(reduced * rounder) / rounder;
-      if (reduced >= 1) {
-        abs = reduced;
-        key = powers[i].key;
-        break;
-      }
+  transform(num: number, ...args: number[]): unknown {
+    if (num < 1000) {
+      return num;
     }
 
-    return (isNegative ? '-' : '') + abs + key;
+    const digits = args[0] || 1;
+    const lookup = [
+      { value: 1, symbol: '' },
+      { value: 1e3, symbol: 'k' },
+      { value: 1e6, symbol: 'M' },
+      { value: 1e9, symbol: 'G' },
+      { value: 1e12, symbol: 'T' },
+      { value: 1e15, symbol: 'P' },
+      { value: 1e18, symbol: 'E' }
+    ];
+    const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+    var item = lookup.slice().reverse().find((item) => num >= item.value);
+    return item ? (num / item.value).toFixed(digits).replace(rx, '$1') + item.symbol : '0';
   }
 }
