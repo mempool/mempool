@@ -40,6 +40,14 @@
   margin-top: 6px;
   display: flex;
   flex-direction: column;
+  @media (min-width: 1130px) {
+    position: relative;
+    top: -65px;
+  }
+  @media (min-width: 830px) and (max-width: 1130px) {
+    position: relative;
+    top: 0px;
+  }
   @media (min-width: 830px) {
     flex-direction: row;
     float: right;
