@@ -213,6 +213,7 @@ export class HashrateChartPoolsComponent implements OnInit {
         zoomLock: true,
         maxSpan: 100,
         minSpan: 10,
+        moveOnMouseMove: false,
       }, {
         showDetail: false,
         show: true,

@@ -170,7 +170,7 @@ export class HashrateChartComponent implements OnInit {
       grid: {
         right: this.right,
         left: this.left,
-        bottom: this.widget ? 30 : 60,
+        bottom: this.widget ? 30 : this.isMobile() ? 90 : 60,
       },
       tooltip: {
         show: !this.isMobile() || !this.widget,
@@ -303,13 +303,14 @@ export class HashrateChartComponent implements OnInit {
         zoomLock: true,
         maxSpan: 100,
         minSpan: 10,
+        moveOnMouseMove: false,
       }, {
         showDetail: false,
         show: true,
         type: 'slider',
         brushSelect: false,
         realtime: true,
-        bottom: 0,
+        bottom: this.isMobile() ? 30 : 0,
         left: 20,
         right: 15,
         selectedDataBackground: {

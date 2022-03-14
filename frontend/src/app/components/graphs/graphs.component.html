@@ -1,20 +1,20 @@
 <ul ngbNav #nav="ngbNav" class="nav-pills mb-3" style="padding: 0px 35px">
   <div class="d-inline-flex flex-wrap menu">
     <li ngbNavItem class="menu-li">
-      <a [routerLink]="['/graphs/mempool' | relativeUrl]" ngbNavLink>Mempool</a>
+      <a routerLinkActive="active" [routerLink]="['/graphs/mempool' | relativeUrl]" ngbNavLink>Mempool</a>
     </li>
     <li ngbNavItem class="menu-li">
-      <a [routerLink]="['/graphs/mining/pools' | relativeUrl]" ngbNavLink i18n="mining.pools">
+      <a routerLinkActive="active" [routerLink]="['/graphs/mining/pools' | relativeUrl]" ngbNavLink i18n="mining.pools">
         Pools ranking
       </a>
     </li>
     <li ngbNavItem class="menu-li">
-      <a [routerLink]="['/graphs/mining/pools-dominance' | relativeUrl]" ngbNavLink i18n="mining.pools-dominance">
+      <a routerLinkActive="active" [routerLink]="['/graphs/mining/pools-dominance' | relativeUrl]" ngbNavLink i18n="mining.pools-dominance">
         Pools dominance
       </a>
     </li>
     <li ngbNavItem class="menu-li">
-      <a [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" ngbNavLink
+      <a routerLinkActive="active" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" ngbNavLink
         i18n="mining.hashrate-difficulty">
         Hashrate & Difficulty
       </a>
