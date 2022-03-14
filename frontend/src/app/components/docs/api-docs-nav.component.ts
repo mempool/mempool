@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { restApiDocsData } from './api-docs-data';
 
 @Component({
@@ -9,13 +9,17 @@ import { restApiDocsData } from './api-docs-data';
 export class ApiDocsNavComponent implements OnInit {
 
   @Input() network: any;
-  @Input() collapseItem: any = { toggle: () => {} };
+  @Output() navLinkClickEvent: EventEmitter<any> = new EventEmitter();
   restDocs: any[];
 
   constructor() { }
 
   ngOnInit(): void {
     this.restDocs = restApiDocsData;
+  }
+  
+  navLinkClick( event ) {
+    this.navLinkClickEvent.emit( event );
   }
 
 }
