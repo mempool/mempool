@@ -36,8 +36,8 @@ export class MiningDashboardComponent implements OnInit {
 
         return {
           'totalReward': totalReward,
-          'rewardPerTx': totalReward / totalTx,
-          'feePerTx': totalFee / totalTx,
+          'rewardPerTx': Math.round(totalReward / totalTx),
+          'feePerTx': Math.round(totalFee / totalTx),
         }
       })
     );

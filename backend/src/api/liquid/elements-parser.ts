@@ -33,7 +33,7 @@ class ElementsParser {
   }
 
   public async $getPegDataByMonth(): Promise<any> {
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     const query = `SELECT SUM(amount) AS amount, DATE_FORMAT(FROM_UNIXTIME(datetime), '%Y-%m-01') AS date FROM elements_pegs GROUP BY DATE_FORMAT(FROM_UNIXTIME(datetime), '%Y%m')`;
     const [rows] = await connection.query<any>(query);
     connection.release();
@@ -79,7 +79,7 @@ class ElementsParser {
 
   protected async $savePegToDatabase(height: number, blockTime: number, amount: number, txid: string,
     txindex: number, bitcoinaddress: string, bitcointxid: string, bitcoinindex: number, final_tx: number): Promise<void> {
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     const query = `INSERT INTO elements_pegs(
         block, datetime, amount, txid, txindex, bitcoinaddress, bitcointxid, bitcoinindex, final_tx
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
@@ -93,7 +93,7 @@ class ElementsParser {
   }
 
   protected async $getLatestBlockHeightFromDatabase(): Promise<number> {
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     const query = `SELECT number FROM state WHERE name = 'last_elements_block'`;
     const [rows] = await connection.query<any>(query);
     connection.release();
@@ -101,7 +101,7 @@ class ElementsParser {
   }
 
   protected async $saveLatestBlockToDatabase(blockHeight: number) {
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     const query = `UPDATE state SET number = ? WHERE name = 'last_elements_block'`;
     await connection.query<any>(query, [blockHeight]);
     connection.release();

@@ -5,7 +5,7 @@ import * as WebSocket from 'ws';
 import * as cluster from 'cluster';
 import axios from 'axios';
 
-import { checkDbConnection } from './database';
+import { checkDbConnection, DB } from './database';
 import config from './config';
 import routes from './routes';
 import blocks from './api/blocks';
@@ -97,8 +97,10 @@ class Server {
           await databaseMigration.$truncateIndexedData(tables);
         }
         await databaseMigration.$initializeOrMigrateDatabase();
-        await this.$resetHashratesIndexingState();
-        await poolsParser.migratePoolsJson();
+        if (Common.indexingEnabled()) {
+          await this.$resetHashratesIndexingState();
+          await poolsParser.migratePoolsJson();
+        }
       } catch (e) {
         throw new Error(e instanceof Error ? e.message : 'Error');
       }
@@ -178,8 +180,8 @@ class Server {
 
     try {
       blocks.$generateBlockDatabase();
-      mining.$generateNetworkHashrateHistory();
-      mining.$generatePoolHashrateHistory();
+      await mining.$generateNetworkHashrateHistory();
+      await mining.$generatePoolHashrateHistory();
     } catch (e) {
       logger.err(`Unable to run indexing right now, trying again later. ` + e);
     }

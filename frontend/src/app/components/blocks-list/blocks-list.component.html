@@ -1,0 +1,96 @@
+<div class="container-xl" [class]="widget ? 'widget' : ''">
+  <h1 *ngIf="!widget" class="float-left" i18n="latest-blocks.blocks">Blocks</h1>
+
+  <div class="clearfix"></div>
+
+  <div style="min-height: 295px">
+    <table class="table table-borderless">
+      <thead>
+        <th class="height" [class]="widget ? 'widget' : ''" i18n="latest-blocks.height">Height</th>
+        <th class="pool text-left" [class]="widget ? 'widget' : ''" i18n="latest-blocks.mined-by">
+          Pool</th>
+        <th class="timestamp" i18n="latest-blocks.timestamp" *ngIf="!widget">Timestamp</th>
+        <th class="mined" i18n="latest-blocks.mined" *ngIf="!widget">Mined</th>
+        <th class="reward text-right" i18n="latest-blocks.reward" [class]="widget ? 'widget' : ''">
+          Reward</th>
+        <th class="fees text-right" i18n="latest-blocks.fees" *ngIf="!widget">Fees</th>
+        <th class="txs text-right" i18n="latest-blocks.transactions" [class]="widget ? 'widget' : ''">Txs</th>
+        <th class="size" i18n="latest-blocks.size" *ngIf="!widget">Size</th>
+      </thead>
+      <tbody *ngIf="blocks$ | async as blocks; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
+        <tr *ngFor="let block of blocks; let i= index; trackBy: trackByBlock">
+          <td class="height " [class]="widget ? 'widget' : ''">
+            <a [routerLink]="['/block' | relativeUrl, block.height]">{{ block.height
+              }}</a>
+          </td>
+          <td class="pool text-left" [class]="widget ? 'widget' : ''">
+            <a class="clear-link" [routerLink]="[('/mining/pool/' + block.extras.pool.id) | relativeUrl]">
+              <img width="25" height="25" src="{{ block.extras.pool['logo'] }}"
+                onError="this.src = './resources/mining-pools/default.svg'">
+              <span class="pool-name">{{ block.extras.pool.name }}</span>
+            </a>
+          </td>
+          <td class="timestamp" *ngIf="!widget">
+            &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
+          </td>
+          <td class="mined" *ngIf="!widget">
+            <app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since>
+          </td>
+          <td class="reward text-right" [class]="widget ? 'widget' : ''">
+            <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-2"></app-amount>
+          </td>
+          <td class="fees text-right" *ngIf="!widget">
+            <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-2"></app-amount>
+          </td>
+          <td class="txs text-right" [class]="widget ? 'widget' : ''">
+            {{ block.tx_count | number }}
+          </td>
+          <td class="size" *ngIf="!widget">
+            <div class="progress">
+              <div class="progress-bar progress-mempool" role="progressbar"
+                [ngStyle]="{'width': (block.weight / stateService.env.BLOCK_WEIGHT_UNITS)*100 + '%' }"></div>
+              <div class="progress-text" [innerHTML]="block.size | bytes: 2"></div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+      <ng-template #skeleton>
+        <tbody>
+          <tr *ngFor="let item of skeletonLines">
+            <td class="height" [class]="widget ? 'widget' : ''">
+              <span class="skeleton-loader"></span>
+            </td>
+            <td class="pool text-left" [class]="widget ? 'widget' : ''">
+              <img width="0" height="25" style="opacity: 0">
+              <span class="skeleton-loader"></span>
+            </td>
+            <td class="timestamp" *ngIf="!widget">
+              <span class="skeleton-loader"></span>
+            </td>
+            <td class="mined" *ngIf="!widget">
+              <span class="skeleton-loader"></span>
+            </td>
+            <td class="reward text-right" [class]="widget ? 'widget' : ''">
+              <span class="skeleton-loader"></span>
+            </td>
+            <td class="fees text-right" *ngIf="!widget">
+              <span class="skeleton-loader"></span>
+            </td>
+            <td class="txs text-right" [class]="widget ? 'widget' : ''">
+              <span class="skeleton-loader"></span>
+            </td>
+            <td class="size" *ngIf="!widget">
+              <span class="skeleton-loader"></span>
+            </td>
+          </tr>
+        </tbody>
+      </ng-template>
+    </table>
+
+    <ngb-pagination *ngIf="!widget" class="pagination-container float-right mt-2" [class]="isLoading ? 'disabled' : ''"
+      [collectionSize]="blocksCount" [rotate]="true" [maxSize]="5" [pageSize]="15" [(page)]="page"
+      (pageChange)="pageChange(page)" [boundaryLinks]="true" [ellipses]="false">
+    </ngb-pagination>
+  </div>
+  
+</div>

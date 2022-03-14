@@ -8,7 +8,7 @@ class BlocksRepository {
    * Save indexed block data in the database
    */
   public async $saveBlockInDatabase(block: BlockExtended) {
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
 
     try {
       const query = `INSERT INTO blocks(
@@ -70,7 +70,7 @@ class BlocksRepository {
       return [];
     }
 
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     try {
       const [rows]: any[] = await connection.query(`
         SELECT height
@@ -116,7 +116,7 @@ class BlocksRepository {
 
     query += ` GROUP by pools.id`;
 
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     try {
       const [rows] = await connection.query(query, params);
       connection.release();
@@ -154,7 +154,7 @@ class BlocksRepository {
     }
 
     // logger.debug(query);
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     try {
       const [rows] = await connection.query(query, params);
       connection.release();
@@ -194,7 +194,7 @@ class BlocksRepository {
     query += ` blockTimestamp BETWEEN FROM_UNIXTIME('${from}') AND FROM_UNIXTIME('${to}')`;
 
     // logger.debug(query);
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     try {
       const [rows] = await connection.query(query, params);
       connection.release();
@@ -217,7 +217,7 @@ class BlocksRepository {
       LIMIT 1;`;
 
     // logger.debug(query);
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     try {
       const [rows]: any[] = await connection.query(query);
       connection.release();
@@ -253,7 +253,7 @@ class BlocksRepository {
       LIMIT 10`;
 
     // logger.debug(query);
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     try {
       const [rows] = await connection.query(query, params);
       connection.release();
@@ -274,10 +274,13 @@ class BlocksRepository {
    * Get one block by height
    */
   public async $getBlockByHeight(height: number): Promise<object | null> {
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     try {
       const [rows]: any[] = await connection.query(`
-        SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp, pools.id as pool_id, pools.name as pool_name, pools.link as pool_link, pools.addresses as pool_addresses, pools.regexes as pool_regexes
+        SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
+        pools.id as pool_id, pools.name as pool_name, pools.link as pool_link,
+        pools.addresses as pool_addresses, pools.regexes as pool_regexes,
+        previous_block_hash as previousblockhash
         FROM blocks
         JOIN pools ON blocks.pool_id = pools.id
         WHERE height = ${height};
@@ -302,7 +305,7 @@ class BlocksRepository {
   public async $getBlocksDifficulty(interval: string | null): Promise<object[]> {
     interval = Common.getSqlInterval(interval);
 
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
 
     // :D ... Yeah don't ask me about this one https://stackoverflow.com/a/40303162
     // Basically, using temporary user defined fields, we are able to extract all
@@ -353,7 +356,7 @@ class BlocksRepository {
   }
 
   public async $getOldestIndexedBlockHeight(): Promise<number> {
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     try {
       const [rows]: any[] = await connection.query(`SELECT MIN(height) as minHeight FROM blocks`);
       connection.release();

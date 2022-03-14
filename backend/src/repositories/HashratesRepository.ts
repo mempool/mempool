@@ -20,9 +20,9 @@ class HashratesRepository {
     }
     query = query.slice(0, -1);
 
-    const connection = await DB.pool.getConnection();
+    let connection;
     try {
-      // logger.debug(query);
+      connection = await DB.getConnection();
       await connection.query(query);
       connection.release();
     } catch (e: any) {
@@ -35,18 +35,16 @@ class HashratesRepository {
   public async $getNetworkDailyHashrate(interval: string | null): Promise<any[]> {
     interval = Common.getSqlInterval(interval);
 
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
 
     let query = `SELECT UNIX_TIMESTAMP(hashrate_timestamp) as timestamp, avg_hashrate as avgHashrate
       FROM hashrates`;
 
     if (interval) {
       query += ` WHERE hashrate_timestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()
-        AND hashrates.type = 'daily'
-        AND pool_id IS NULL`;
+        AND hashrates.type = 'daily'`;
     } else {
-      query += ` WHERE hashrates.type = 'daily'
-        AND pool_id IS NULL`;
+      query += ` WHERE hashrates.type = 'daily'`;
     }
 
     query += ` ORDER by hashrate_timestamp`;
@@ -64,9 +62,12 @@ class HashratesRepository {
   }
 
   public async $getWeeklyHashrateTimestamps(): Promise<number[]> {
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
 
-    const query = `SELECT UNIX_TIMESTAMP(hashrate_timestamp) as timestamp FROM hashrates where type = 'weekly' GROUP BY hashrate_timestamp`;
+    const query = `SELECT UNIX_TIMESTAMP(hashrate_timestamp) as timestamp
+      FROM hashrates
+      WHERE type = 'weekly'
+      GROUP BY hashrate_timestamp`;
 
     try {
       const [rows]: any[] = await connection.query(query);
@@ -86,7 +87,7 @@ class HashratesRepository {
   public async $getPoolsWeeklyHashrate(interval: string | null): Promise<any[]> {
     interval = Common.getSqlInterval(interval);
 
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     const topPoolsId = (await PoolsRepository.$getPoolsInfo('1w')).map((pool) => pool.poolId);
 
     let query = `SELECT UNIX_TIMESTAMP(hashrate_timestamp) as timestamp, avg_hashrate as avgHashrate, share, pools.name as poolName
@@ -120,7 +121,7 @@ class HashratesRepository {
    * Returns a pool hashrate history
    */
    public async $getPoolWeeklyHashrate(poolId: number): Promise<any[]> {
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
 
     // Find hashrate boundaries
     let query = `SELECT MIN(hashrate_timestamp) as firstTimestamp, MAX(hashrate_timestamp) as lastTimestamp
@@ -163,7 +164,7 @@ class HashratesRepository {
   }
 
   public async $setLatestRunTimestamp(key: string, val: any = null) {
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     const query = `UPDATE state SET number = ? WHERE name = ?`;
 
     try {
@@ -175,7 +176,7 @@ class HashratesRepository {
   }
 
   public async $getLatestRunTimestamp(key: string): Promise<number> {
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     const query = `SELECT number FROM state WHERE name = ?`;
 
     try {
