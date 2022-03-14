@@ -44,6 +44,7 @@
     "ENABLED": true,
     "HOST": "127.0.0.1",
     "PORT": 3306,
+    "SOCKET": "/var/run/mysql/mysql.sock",
     "DATABASE": "mempool",
     "USERNAME": "mempool",
     "PASSWORD": "mempool"
