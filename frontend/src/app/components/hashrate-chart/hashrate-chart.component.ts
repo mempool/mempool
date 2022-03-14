@@ -61,6 +61,7 @@ export class HashrateChartComponent implements OnInit {
       .pipe(
         startWith('1y'),
         switchMap((timespan) => {
+          this.isLoading = true;
           return this.apiService.getHistoricalHashrate$(timespan)
             .pipe(
               tap((data: any) => {
@@ -155,6 +156,7 @@ export class HashrateChartComponent implements OnInit {
 
     this.chartOptions = {
       title: title,
+      animation: false,
       color: [
         new graphic.LinearGradient(0, 0, 0, 0.65, [
           { offset: 0, color: '#F4511E' },
@@ -168,7 +170,7 @@ export class HashrateChartComponent implements OnInit {
       grid: {
         right: this.right,
         left: this.left,
-        bottom: this.widget ? 30 : 60,
+        bottom: this.widget ? 30 : this.isMobile() ? 90 : 60,
       },
       tooltip: {
         show: !this.isMobile() || !this.widget,
@@ -241,7 +243,6 @@ export class HashrateChartComponent implements OnInit {
             return value.min * 0.9;
           },
           type: 'value',
-          name: 'Hashrate',
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val) => {
@@ -259,7 +260,6 @@ export class HashrateChartComponent implements OnInit {
             return value.min * 0.9;
           },
           type: 'value',
-          name: 'Difficulty',
           position: 'right',
           axisLabel: {
             color: 'rgb(110, 112, 121)',
@@ -301,17 +301,18 @@ export class HashrateChartComponent implements OnInit {
         type: 'inside',
         realtime: true,
         zoomLock: true,
-        zoomOnMouseWheel: true,
-        moveOnMouseMove: true,
         maxSpan: 100,
         minSpan: 10,
+        moveOnMouseMove: false,
       }, {
         showDetail: false,
         show: true,
         type: 'slider',
         brushSelect: false,
         realtime: true,
-        bottom: 0,
+        bottom: this.isMobile() ? 30 : 0,
+        left: 20,
+        right: 15,
         selectedDataBackground: {
           lineStyle: {
             color: '#fff',
