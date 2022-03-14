@@ -188,15 +188,16 @@ h3 {
   .doc-content {
     width: 100%;
     margin-top: -20px;
+    float: unset;
   }
-  
+
   .endpoint-container {
     position: relative;
     overflow: hidden;
     height: auto;
     transition: 0.5s height ease;
   }
-  
+
   .endpoint-container .section-header {
     margin: 0;
     font-size: 18px;
@@ -226,9 +227,8 @@ h3 {
   .hide-on-desktop {
     display: none;
   }
-  
+
   h3 {
     display: none;
   }
-  
 }

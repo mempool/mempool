@@ -21,15 +21,15 @@ export class CodeTemplateComponent implements OnInit {
   ngOnInit(): void {
     this.env = this.stateService.env;
   }
-  
+
   adjustContainerHeight( event ) {
-    if( window.innerWidth <= 992 ) {
+    if( ( window.innerWidth <= 992 ) && ( this.method !== "websocket" ) ) {
       const urlObj = new URL( window.location + "" );
       const endpointContainerEl = document.querySelector<HTMLElement>( urlObj.hash );
       const endpointContentEl = document.querySelector<HTMLElement>( urlObj.hash + " .endpoint-content" );
       window.setTimeout( function() {
         endpointContainerEl.style.height = endpointContentEl.clientHeight + 90 + "px";
-      }, 400);
+      }, 550);
     }
   }
 

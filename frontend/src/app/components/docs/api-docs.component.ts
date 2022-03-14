@@ -77,9 +77,9 @@ export class ApiDocsComponent implements OnInit {
     }
     this.openEndpointContainer( targetId );
   }
-  
+
   openEndpointContainer( targetId ) {
-    if( window.innerWidth <= 992 ) {
+    if( ( window.innerWidth <= 992 ) && this.restTabActivated && targetId ) {
       const endpointContainerEl = document.querySelector<HTMLElement>( "#" + targetId );
       const endpointContentEl = document.querySelector<HTMLElement>( "#" + targetId + " .endpoint-content" );
       const endPointContentElHeight = endpointContentEl.clientHeight;
@@ -95,7 +95,7 @@ export class ApiDocsComponent implements OnInit {
         endpointContentEl.style.opacity = "1";
         endpointContentEl.classList.add( "open" );
       }
-    }  
+    }
   }
 
   wrapUrl(network: string, code: any, websocket: boolean = false) {
