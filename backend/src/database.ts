@@ -15,10 +15,11 @@ export class DB {
       timezone: '+00:00',
     }
 
-    if (config.DATABASE.SOCKET && config.DATABASE.SOCKET != "")
-      poolConfig.socketPath = config.DATABASE.SOCKET
-    else    
-      poolConfig.host = config.DATABASE.HOST
+    if (config.DATABASE.SOCKET !== "") {
+      poolConfig.socketPath = config.DATABASE.SOCKET;
+    } else {
+      poolConfig.host = config.DATABASE.HOST;
+    }
 
     return poolConfig;
   }
