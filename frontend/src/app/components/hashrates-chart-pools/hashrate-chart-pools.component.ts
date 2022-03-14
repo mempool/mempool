@@ -23,7 +23,7 @@ import { poolsColor } from 'src/app/app.constants';
 })
 export class HashrateChartPoolsComponent implements OnInit {
   @Input() widget = false;
-  @Input() right: number | string = 40;
+  @Input() right: number | string = 45;
   @Input() left: number | string = 25;
 
   radioGroupForm: FormGroup;
@@ -153,11 +153,12 @@ export class HashrateChartPoolsComponent implements OnInit {
 
     this.chartOptions = {
       title: title,
+      animation: false,
       grid: {
         right: this.right,
         left: this.left,
-        bottom: this.widget ? 30 : 20,
-        top: this.widget ? 10 : 40,
+        bottom: this.widget ? 30 : 60,
+        top: this.widget || this.isMobile() ? 10 : 50,
       },
       tooltip: {
         show: !this.isMobile() || !this.widget,
@@ -206,6 +207,31 @@ export class HashrateChartPoolsComponent implements OnInit {
         min: 0,
       },
       series: data.series,
+      dataZoom: this.widget ? null : [{
+        type: 'inside',
+        realtime: true,
+        zoomLock: true,
+        maxSpan: 100,
+        minSpan: 10,
+      }, {
+        showDetail: false,
+        show: true,
+        type: 'slider',
+        brushSelect: false,
+        realtime: true,
+        bottom: 0,
+        left: 20,
+        right: 15,
+        selectedDataBackground: {
+          lineStyle: {
+            color: '#fff',
+            opacity: 0.45,
+          },
+          areaStyle: {
+            opacity: 0,
+          }
+        },
+      }],
     };
   }
 

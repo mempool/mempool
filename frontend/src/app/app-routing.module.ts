@@ -31,6 +31,7 @@ import { MiningDashboardComponent } from './components/mining-dashboard/mining-d
 import { HashrateChartComponent } from './components/hashrate-chart/hashrate-chart.component';
 import { HashrateChartPoolsComponent } from './components/hashrates-chart-pools/hashrate-chart-pools.component';
 import { MiningStartComponent } from './components/mining-start/mining-start.component';
+import { GraphsComponent } from './components/graphs/graphs.component';
 import { BlocksList } from './components/blocks-list/blocks-list.component';
 
 let routes: Routes = [
@@ -81,18 +82,6 @@ let routes: Routes = [
             component: BlocksList,
           },
           {
-            path: 'hashrate',
-            component: HashrateChartComponent,
-          },
-          {
-            path: 'hashrate/pools',
-            component: HashrateChartPoolsComponent,
-          },
-          {
-            path: 'pools',
-            component: PoolRankingComponent,
-          },
-          {
             path: 'pool',
             children: [
               {
@@ -105,7 +94,30 @@ let routes: Routes = [
       },
       {
         path: 'graphs',
-        component: StatisticsComponent,
+        component: GraphsComponent,
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            redirectTo: 'mempool',
+          },
+          {
+            path: 'mempool',
+            component: StatisticsComponent,
+          },
+          {
+            path: 'mining/hashrate-difficulty',
+            component: HashrateChartComponent,
+          },
+          {
+            path: 'mining/pools-dominance',
+            component: HashrateChartPoolsComponent,
+          },
+          {
+            path: 'mining/pools',
+            component: PoolRankingComponent,
+          },
+        ],
       },
       {
         path: 'about',
@@ -224,7 +236,30 @@ let routes: Routes = [
           },
           {
             path: 'graphs',
-            component: StatisticsComponent,
+            component: GraphsComponent,
+            children: [
+              {
+                path: '',
+                pathMatch: 'full',
+                redirectTo: 'mempool',
+              },
+              {
+                path: 'mempool',
+                component: StatisticsComponent,
+              },
+              {
+                path: 'mining/hashrate-difficulty',
+                component: HashrateChartComponent,
+              },
+              {
+                path: 'mining/pools-dominance',
+                component: HashrateChartPoolsComponent,
+              },
+              {
+                path: 'mining/pools',
+                component: PoolRankingComponent,
+              },
+            ]
           },
           {
             path: 'address/:id',
@@ -337,7 +372,30 @@ let routes: Routes = [
           },
           {
             path: 'graphs',
-            component: StatisticsComponent,
+            component: GraphsComponent,
+            children: [
+              {
+                path: '',
+                pathMatch: 'full',
+                redirectTo: 'mempool',
+              },
+              {
+                path: 'mempool',
+                component: StatisticsComponent,
+              },
+              {
+                path: 'mining/hashrate-difficulty',
+                component: HashrateChartComponent,
+              },
+              {
+                path: 'mining/pools-dominance',
+                component: HashrateChartPoolsComponent,
+              },
+              {
+                path: 'mining/pools',
+                component: PoolRankingComponent,
+              },
+            ]
           },
           {
             path: 'address/:id',
@@ -439,7 +497,30 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
       },
       {
         path: 'graphs',
-        component: StatisticsComponent,
+        component: GraphsComponent,
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            redirectTo: 'mempool',
+          },
+          {
+            path: 'mempool',
+            component: StatisticsComponent,
+          },
+          {
+            path: 'mining/hashrate-difficulty',
+            component: HashrateChartComponent,
+          },
+          {
+            path: 'mining/pools-dominance',
+            component: HashrateChartPoolsComponent,
+          },
+          {
+            path: 'mining/pools',
+            component: PoolRankingComponent,
+          },
+        ]
       },
       {
         path: 'address/:id',
@@ -548,7 +629,30 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
           },
           {
             path: 'graphs',
-            component: StatisticsComponent,
+            component: GraphsComponent,
+            children: [
+              {
+                path: '',
+                pathMatch: 'full',
+                redirectTo: 'mempool',
+              },
+              {
+                path: 'mempool',
+                component: StatisticsComponent,
+              },
+              {
+                path: 'mining/hashrate-difficulty',
+                component: HashrateChartComponent,
+              },
+              {
+                path: 'mining/pools-dominance',
+                component: HashrateChartPoolsComponent,
+              },
+              {
+                path: 'mining/pools',
+                component: PoolRankingComponent,
+              },
+            ]
           },
           {
             path: 'address/:id',
