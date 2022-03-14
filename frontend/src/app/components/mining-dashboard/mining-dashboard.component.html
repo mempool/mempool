@@ -86,29 +86,12 @@
     <div class="col">
       <div class="card" style="height: 385px">
         <div class="card-body">
-          <h5 class="card-title">
-            Hashrate (1y)
-          </h5>
           <app-hashrate-chart [widget]=true></app-hashrate-chart>
           <div class="mt-1"><a [routerLink]="['/mining/hashrate' | relativeUrl]" i18n="dashboard.view-more">View more
               &raquo;</a></div>
         </div>
       </div>
     </div>
-
-    <!-- pool dominance -->
-    <!-- <div class="col">
-      <div class="card" style="height: 385px">
-        <div class="card-body">
-          <h5 class="card-title">
-            Mining Pools Dominance (1y)
-          </h5>
-          <app-hashrate-chart-pools [widget]=true></app-hashrate-chart-pools>
-          <div class="mt-1"><a [routerLink]="['/mining/hashrate/pools' | relativeUrl]" i18n="dashboard.view-more">View
-              more &raquo;</a></div>
-        </div>
-      </div>
-    </div> -->
 
     <!-- Latest blocks -->
     <div class="col">
