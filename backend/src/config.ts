@@ -43,6 +43,7 @@ interface IConfig {
   DATABASE: {
     ENABLED: boolean;
     HOST: string,
+    SOCKET: string,
     PORT: number;
     DATABASE: string;
     USERNAME: string;
@@ -90,7 +91,7 @@ const defaults: IConfig = {
     'BLOCK_WEIGHT_UNITS': 4000000,
     'INITIAL_BLOCKS_AMOUNT': 8,
     'MEMPOOL_BLOCKS_AMOUNT': 8,
-    'INDEXING_BLOCKS_AMOUNT': 1100, // 0 = disable indexing, -1 = index all blocks
+    'INDEXING_BLOCKS_AMOUNT': 11000, // 0 = disable indexing, -1 = index all blocks
     'PRICE_FEED_UPDATE_INTERVAL': 600,
     'USE_SECOND_NODE_FOR_MINFEE': false,
     'EXTERNAL_ASSETS': [
@@ -121,6 +122,7 @@ const defaults: IConfig = {
   'DATABASE': {
     'ENABLED': true,
     'HOST': '127.0.0.1',
+    'SOCKET': '',
     'PORT': 3306,
     'DATABASE': 'mempool',
     'USERNAME': 'mempool',

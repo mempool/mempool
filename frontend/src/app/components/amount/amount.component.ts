@@ -18,6 +18,7 @@ export class AmountComponent implements OnInit, OnDestroy {
   @Input() satoshis: number;
   @Input() digitsInfo = '1.8-8';
   @Input() noFiat = false;
+  @Input() addPlus = false;
 
   constructor(
     private stateService: StateService,

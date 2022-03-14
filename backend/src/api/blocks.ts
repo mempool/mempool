@@ -11,6 +11,7 @@ import { IEsploraApi } from './bitcoin/esplora-api.interface';
 import poolsRepository from '../repositories/PoolsRepository';
 import blocksRepository from '../repositories/BlocksRepository';
 import loadingIndicators from './loading-indicators';
+import BitcoinApi from './bitcoin/bitcoin-api';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -103,19 +104,28 @@ class Blocks {
    * @param transactions
    * @returns BlockExtended
    */
-   private async $getBlockExtended(block: IEsploraApi.Block, transactions: TransactionExtended[]): Promise<BlockExtended> {
-    const blockExtended: BlockExtended = Object.assign({extras: {}}, block);
+  private async $getBlockExtended(block: IEsploraApi.Block, transactions: TransactionExtended[]): Promise<BlockExtended> {
+    const blockExtended: BlockExtended = Object.assign({ extras: {} }, block);
     blockExtended.extras.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
     blockExtended.extras.coinbaseTx = transactionUtils.stripCoinbaseTransaction(transactions[0]);
 
-    const stats = await bitcoinClient.getBlockStats(block.id);
     const coinbaseRaw: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(transactions[0].txid, true);
     blockExtended.extras.coinbaseRaw = coinbaseRaw.hex;
-    blockExtended.extras.medianFee = stats.feerate_percentiles[2]; // 50th percentiles
-    blockExtended.extras.feeRange = [stats.minfeerate, stats.feerate_percentiles, stats.maxfeerate].flat();
-    blockExtended.extras.totalFees = stats.totalfee;
-    blockExtended.extras.avgFee = stats.avgfee;
-    blockExtended.extras.avgFeeRate = stats.avgfeerate;
+
+    if (block.height === 0) {
+      blockExtended.extras.medianFee = 0; // 50th percentiles
+      blockExtended.extras.feeRange = [0, 0, 0, 0, 0, 0, 0];
+      blockExtended.extras.totalFees = 0;
+      blockExtended.extras.avgFee = 0;
+      blockExtended.extras.avgFeeRate = 0;
+    } else {
+      const stats = await bitcoinClient.getBlockStats(block.id);
+      blockExtended.extras.medianFee = stats.feerate_percentiles[2]; // 50th percentiles
+      blockExtended.extras.feeRange = [stats.minfeerate, stats.feerate_percentiles, stats.maxfeerate].flat();
+      blockExtended.extras.totalFees = stats.totalfee;
+      blockExtended.extras.avgFee = stats.avgfee;
+      blockExtended.extras.avgFeeRate = stats.avgfeerate;
+    }
 
     if (Common.indexingEnabled()) {
       let pool: PoolTag;
@@ -230,7 +240,7 @@ class Blocks {
             indexedThisRun = 0;
           }
           const blockHash = await bitcoinApi.$getBlockHash(blockHeight);
-          const block = await bitcoinApi.$getBlock(blockHash);
+          const block = BitcoinApi.convertBlock(await bitcoinClient.getBlock(blockHash));
           const transactions = await this.$getTransactionsExtended(blockHash, block.height, true, true);
           const blockExtended = await this.$getBlockExtended(block, transactions);
           await blocksRepository.$saveBlockInDatabase(blockExtended);
@@ -267,7 +277,7 @@ class Blocks {
       if (blockchainInfo.blocks === blockchainInfo.headers) {
         const heightDiff = blockHeightTip % 2016;
         const blockHash = await bitcoinApi.$getBlockHash(blockHeightTip - heightDiff);
-        const block = await bitcoinApi.$getBlock(blockHash);
+        const block = BitcoinApi.convertBlock(await bitcoinClient.getBlock(blockHash));
         this.lastDifficultyAdjustmentTime = block.timestamp;
         this.currentDifficulty = block.difficulty;
 
@@ -291,7 +301,7 @@ class Blocks {
       }
 
       const blockHash = await bitcoinApi.$getBlockHash(this.currentBlockHeight);
-      const block = await bitcoinApi.$getBlock(blockHash);
+      const block = BitcoinApi.convertBlock(await bitcoinClient.getBlock(blockHash));
       const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
       const transactions = await this.$getTransactionsExtended(blockHash, block.height, false);
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, transactions);
@@ -323,23 +333,26 @@ class Blocks {
   /**
    * Index a block if it's missing from the database. Returns the block after indexing
    */
-   public async $indexBlock(height: number): Promise<BlockExtended> {
+  public async $indexBlock(height: number): Promise<BlockExtended> {
     const dbBlock = await blocksRepository.$getBlockByHeight(height);
     if (dbBlock != null) {
       return this.prepareBlock(dbBlock);
     }
 
     const blockHash = await bitcoinApi.$getBlockHash(height);
-    const block = await bitcoinApi.$getBlock(blockHash);
+    const block = BitcoinApi.convertBlock(await bitcoinClient.getBlock(blockHash));
     const transactions = await this.$getTransactionsExtended(blockHash, block.height, true);
     const blockExtended = await this.$getBlockExtended(block, transactions);
 
     await blocksRepository.$saveBlockInDatabase(blockExtended);
 
-    return blockExtended;
+    return this.prepareBlock(blockExtended);
   }
 
-  public async $getBlocksExtras(fromHeight: number): Promise<BlockExtended[]> {
+  public async $getBlocksExtras(fromHeight: number, limit: number = 15): Promise<BlockExtended[]> {
+    // Note - This API is breaking if indexing is not available. For now it is okay because we only
+    // use it for the mining pages, and mining pages should not be available if indexing is turned off.
+    // I'll need to fix it before we refactor the block(s) related pages
     try {
       loadingIndicators.setProgress('blocks', 0);
 
@@ -360,10 +373,10 @@ class Blocks {
       }
 
       let nextHash = startFromHash;
-      for (let i = 0; i < 10 && currentHeight >= 0; i++) {
+      for (let i = 0; i < limit && currentHeight >= 0; i++) {
         let block = this.getBlocks().find((b) => b.height === currentHeight);
         if (!block && Common.indexingEnabled()) {
-          block = this.prepareBlock(await this.$indexBlock(currentHeight));
+          block = await this.$indexBlock(currentHeight);
         } else if (!block) {
           block = this.prepareBlock(await bitcoinApi.$getBlock(nextHash));
         }
@@ -383,24 +396,25 @@ class Blocks {
   private prepareBlock(block: any): BlockExtended {
     return <BlockExtended>{
       id: block.id ?? block.hash, // hash for indexed block
-      timestamp: block?.timestamp ?? block?.blockTimestamp, // blockTimestamp for indexed block
-      height: block?.height,
-      version: block?.version,
-      bits: block?.bits,
-      nonce: block?.nonce,
-      difficulty: block?.difficulty,
-      merkle_root: block?.merkle_root,
-      tx_count: block?.tx_count,
-      size: block?.size,
-      weight: block?.weight,
-      previousblockhash: block?.previousblockhash,
+      timestamp: block.timestamp ?? block.blockTimestamp, // blockTimestamp for indexed block
+      height: block.height,
+      version: block.version,
+      bits: block.bits,
+      nonce: block.nonce,
+      difficulty: block.difficulty,
+      merkle_root: block.merkle_root,
+      tx_count: block.tx_count,
+      size: block.size,
+      weight: block.weight,
+      previousblockhash: block.previousblockhash,
       extras: {
-        medianFee: block?.medianFee,
-        feeRange: block?.feeRange ?? [], // TODO
-        reward: block?.reward,
+        medianFee: block.medianFee ?? block.median_fee ?? block.extras?.medianFee,
+        feeRange: block.feeRange ?? block.fee_range ?? block?.extras?.feeSpan,
+        reward: block.reward ?? block?.extras?.reward,
+        totalFees: block.totalFees ?? block?.fees ?? block?.extras.totalFees,
         pool: block?.extras?.pool ?? (block?.pool_id ? {
-          id: block?.pool_id,
-          name: block?.pool_name,
+          id: block.pool_id,
+          name: block.pool_name,
         } : undefined),
       }
     };

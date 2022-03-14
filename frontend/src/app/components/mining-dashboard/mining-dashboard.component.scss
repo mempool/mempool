@@ -28,6 +28,9 @@
 .card-body.pool-ranking {
   padding: 1.25rem 0.25rem 0.75rem 0.25rem;
 }
+.card-text {
+  font-size: 22px;
+}
 
 #blockchain-container {
   position: relative;
@@ -56,50 +59,57 @@
   padding-bottom: 3px;
 }
 
-.fee-estimation-container {
+.reward-container {
   display: flex;
-  justify-content: space-between;
-  @media (min-width: 376px) {
-    flex-direction: row;
+  flex-direction: row;
+  justify-content: space-around;
+  height: 76px;
+  .shared-block {
+    color: #ffffff66;
+    font-size: 12px;
   }
   .item {
-    max-width: 150px;
-    margin: 0;
-    width: -webkit-fill-available;
-    @media (min-width: 376px) {
-      margin: 0 auto 0px;
-    }
-    &:first-child{
+    display: table-cell;
+    padding: 0 5px;
+    width: 100%;
+    &:nth-child(1) {
       display: none;
       @media (min-width: 485px) {
-        display: block;
+        display: table-cell;
       }
       @media (min-width: 768px) {
         display: none;
       }
       @media (min-width: 992px) {
-        display: block;
+        display: table-cell;
       }
     }
-    &:last-child {
-      margin-bottom: 0;
-    }
-    .card-text span {
-      color: #ffffff66;
-      font-size: 12px;
-      top: 0px;
-    }
-    .fee-text{
-      border-bottom: 1px solid #ffffff1c;
-      width: fit-content;
-      margin: auto;
-      line-height: 1.45;
-      padding: 0px 2px;
-    }
-    .fiat {
-      display: block;
-      font-size: 14px !important;
-    }
+  }
+  .card-text {
+    font-size: 22px;
+    margin-top: -9px;
+    position: relative;
+  }
+  .card-text.skeleton {
+    margin-top: 0px;
+  }
+}
+
+.more-padding {
+  padding: 18px;
+}
+
+.card-wrapper {
+  .card {
+    height: auto !important;
+  }
+  .card-body {
+    display: flex;
+    flex: inherit;
+    text-align: center;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 22px 20px;
   }
 }
 

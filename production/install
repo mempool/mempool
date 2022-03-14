@@ -269,7 +269,7 @@ ELEMENTS_ELECTRS_HOME=${ELEMENTS_HOME}/electrs
 
 MEMPOOL_REPO_URL=https://github.com/mempool/mempool
 MEMPOOL_REPO_NAME=mempool
-MEMPOOL_REPO_BRANCH=wiz/installer2
+MEMPOOL_REPO_BRANCH=master
 MEMPOOL_LATEST_RELEASE=v2.3.1
 
 BITCOIN_REPO_URL=https://github.com/bitcoin/bitcoin
@@ -326,7 +326,7 @@ FREEBSD_PKG=()
 FREEBSD_PKG+=(zsh sudo git screen curl wget calc neovim)
 FREEBSD_PKG+=(openssh-portable py38-pip rust llvm90)
 FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc libevent libtool pkgconf)
-FREEBSD_PKG+=(nginx rsync py38-certbot-nginx )
+FREEBSD_PKG+=(nginx rsync py38-certbot-nginx mariadb105-server)
 
 #############################
 ##### utility functions #####
@@ -819,8 +819,13 @@ osSudo "${ROOT_USER}" chown -R "${MEMPOOL_USER}:${MEMPOOL_GROUP}" "${MEMPOOL_HOM
 osSudo "${MEMPOOL_USER}" touch "${MEMPOOL_HOME}/.zshrc"
 
 echo "[*] Cloning Mempool repo from ${MEMPOOL_REPO_URL}"
+osSudo "${MEMPOOL_USER}" git config --global pull.rebase true
 osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
 osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}"
+osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-build-all upgrade
+osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-kill-all stop
+osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-start-all start
+osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-restart-all restart
 
 echo "[*] Installing nvm.sh from GitHub"
 osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
@@ -1255,6 +1260,48 @@ if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
     echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Liquid Testnet"
     osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
+
+if [ "${BISQ_ENABLE}" = ON ];then
+    echo "[*] Creating Mempool instance for Bisq"
+    osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
+    osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/bisq"
+
+    echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Bisq"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
+fi
+
+##### mariadb
+
+echo "[*] Adding MySQL configuration"
+case $OS in
+
+    FreeBSD)
+        osSudo "${ROOT_USER}" service mysql-server start
+    ;;
+    Debian)
+        osSudo "${ROOT_USER}" service mysql start
+    ;;
+esac
+
+mysql << _EOF_
+create database mempool;
+grant all on mempool.* to 'mempool'@'localhost' identified by 'mempool';
+
+create database mempool_testnet;
+grant all on mempool_testnet.* to 'mempool_testnet'@'localhost' identified by 'mempool_testnet';
+
+create database mempool_signet;
+grant all on mempool_signet.* to 'mempool_signet'@'localhost' identified by 'mempool_signet';
+
+create database mempool_liquid;
+grant all on mempool_liquid.* to 'mempool_liquid'@'localhost' identified by 'mempool_liquid';
+
+create database mempool_liquidtestnet;
+grant all on mempool_liquidtestnet.* to 'mempool_liquidtestnet'@'localhost' identified by 'mempool_liquidtestnet';
+
+create database mempool_bisq;
+grant all on mempool_bisq.* to 'mempool_bisq'@'localhost' identified by 'mempool_bisq';
+_EOF_
 
 ##### nginx
 

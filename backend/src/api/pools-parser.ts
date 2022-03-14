@@ -66,7 +66,7 @@ class PoolsParser {
     logger.debug(`Found ${poolNames.length} unique mining pools`);
 
     // Get existing pools from the db
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     let existingPools;
     try {
       [existingPools] = await connection.query<any>({ sql: 'SELECT * FROM pools;', timeout: 120000 });
@@ -152,7 +152,7 @@ class PoolsParser {
    * Manually add the 'unknown pool'
    */
   private async insertUnknownPool() {
-    const connection = await DB.pool.getConnection();
+    const connection = await DB.getConnection();
     try {
       const [rows]: any[] = await connection.query({ sql: 'SELECT name from pools where name="Unknown"', timeout: 120000 });
       if (rows.length === 0) {
