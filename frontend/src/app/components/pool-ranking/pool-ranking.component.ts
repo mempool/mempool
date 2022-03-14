@@ -117,7 +117,7 @@ export class PoolRankingComponent implements OnInit {
     if (this.isMobile() && this.widget) {
       edgeDistance = 0;
     } else if (this.isMobile() && !this.widget || this.widget) {
-      edgeDistance = 35;
+      edgeDistance = 10;
     }
 
     miningStats.pools.forEach((pool) => {
@@ -209,13 +209,13 @@ export class PoolRankingComponent implements OnInit {
     network = network.charAt(0).toUpperCase() + network.slice(1);
 
     let radius: any[] = ['20%', '80%'];
-    let top: any = undefined; let bottom = undefined; let height = undefined;
+    let top: number = 0; let height = undefined;
     if (this.isMobile() && this.widget) {
       top = -30;
       height = 270;
       radius = ['10%', '50%'];
     } else if (this.isMobile() && !this.widget) {
-      top = 0;
+      top = -40;
       height = 300;
       radius = ['10%', '50%'];
     } else if (this.widget) {
@@ -223,22 +223,12 @@ export class PoolRankingComponent implements OnInit {
       top = -20;
       height = 330;
     } else {
-      top = 35;
+      top = 0;
     }
 
     this.chartOptions = {
+      animation: false,
       color: chartColors,
-      title: {
-        text: this.widget ? '' : $localize`:@@mining.pool-chart-title:${network}:NETWORK: mining pools share`,
-        left: 'center',
-        textStyle: {
-          color: '#FFF',
-        },
-        subtextStyle: {
-          color: '#CCC',
-          fontStyle: 'italic',
-        }
-      },
       tooltip: {
         trigger: 'item',
         textStyle: {
@@ -249,7 +239,6 @@ export class PoolRankingComponent implements OnInit {
         {
           minShowLabelAngle: 3.6,
           top: top,
-          bottom: bottom,
           height: height,
           name: 'Mining pool',
           type: 'pie',
