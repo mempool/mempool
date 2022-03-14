@@ -25,6 +25,7 @@ import axios from 'axios';
 import mining from './api/mining';
 import BlocksRepository from './repositories/BlocksRepository';
 import HashratesRepository from './repositories/HashratesRepository';
+import difficultyAdjustment from './api/difficulty-adjustment';
 
 class Routes {
   constructor() {}
@@ -847,55 +848,7 @@ class Routes {
 
   public getDifficultyChange(req: Request, res: Response) {
     try {
-      const DATime = blocks.getLastDifficultyAdjustmentTime();
-      const previousRetarget = blocks.getPreviousDifficultyRetarget();
-      const blockHeight = blocks.getCurrentBlockHeight();
-
-      const now = new Date().getTime() / 1000;
-      const diff = now - DATime;
-      const blocksInEpoch = blockHeight % 2016;
-      const progressPercent = (blocksInEpoch >= 0) ? blocksInEpoch / 2016 * 100 : 100;
-      const remainingBlocks = 2016 - blocksInEpoch;
-      const nextRetargetHeight = blockHeight + remainingBlocks;
-
-      let difficultyChange = 0;
-      if (remainingBlocks < 1870) {
-        if (blocksInEpoch > 0) {
-          difficultyChange = (600 / (diff / blocksInEpoch ) - 1) * 100;
-        }
-        if (difficultyChange > 300) {
-          difficultyChange = 300;
-        }
-        if (difficultyChange < -75) {
-          difficultyChange = -75;
-        }
-      }
-
-      const timeAvgDiff = difficultyChange * 0.1;
-
-      let timeAvgMins = 10;
-      if (timeAvgDiff > 0) {
-        timeAvgMins -= Math.abs(timeAvgDiff);
-      } else {
-        timeAvgMins += Math.abs(timeAvgDiff);
-      }
-
-      const timeAvg = timeAvgMins * 60;
-      const remainingTime =  remainingBlocks * timeAvg;
-      const estimatedRetargetDate = remainingTime + now;
-
-      const result = {
-        progressPercent,
-        difficultyChange,
-        estimatedRetargetDate,
-        remainingBlocks,
-        remainingTime,
-        previousRetarget,
-        nextRetargetHeight,
-        timeAvg,
-      };
-      res.json(result);
-
+      res.json(difficultyAdjustment.getDifficultyAdjustment());
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

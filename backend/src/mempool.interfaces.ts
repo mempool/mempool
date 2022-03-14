@@ -197,3 +197,15 @@ export interface IBackendInfo {
   gitCommit: string;
   version: string;
 }
+
+export interface IDifficultyAdjustment {
+  progressPercent: number;
+  difficultyChange: number;
+  estimatedRetargetDate: number;
+  remainingBlocks: number;
+  remainingTime: number;
+  previousRetarget: number;
+  nextRetargetHeight: number;
+  timeAvg: number;
+  timeOffset: number;
+}

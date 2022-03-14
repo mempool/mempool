@@ -8,6 +8,7 @@ import { feeLevels, mempoolFeeColors } from 'src/app/app.constants';
 import { specialBlocks } from 'src/app/app.constants';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
 import { Location } from '@angular/common';
+import { DifficultyAdjustment } from 'src/app/interfaces/node-api.interface';
 
 @Component({
   selector: 'app-mempool-blocks',
@@ -20,7 +21,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   mempoolBlocks: MempoolBlock[] = [];
   mempoolEmptyBlocks: MempoolBlock[] = this.mountEmptyBlocks();
   mempoolBlocks$: Observable<MempoolBlock[]>;
-  timeAvg$: Observable<number>;
+  difficultyAdjustments$: Observable<DifficultyAdjustment>;
   loadingBlocks$: Observable<boolean>;
   blocksSubscription: Subscription;
 
@@ -123,40 +124,11 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
         })
       );
 
-    this.timeAvg$ = timer(0, 1000)
+    this.difficultyAdjustments$ = this.stateService.difficultyAdjustment$
       .pipe(
-        switchMap(() => combineLatest([
-          this.stateService.blocks$.pipe(map(([block]) => block)),
-          this.stateService.lastDifficultyAdjustment$
-        ])),
-        map(([block, DATime]) => {
+        map((da) => {
           this.now = new Date().getTime();
-          const now = new Date().getTime() / 1000;
-          const diff = now - DATime;
-          const blocksInEpoch = block.height % 2016;
-          let difficultyChange = 0;
-          if (blocksInEpoch > 0) {
-            difficultyChange = (600 / (diff / blocksInEpoch ) - 1) * 100;
-          }
-          const timeAvgDiff = difficultyChange * 0.1;
-
-          let timeAvgMins = 10;
-          if (timeAvgDiff > 0 ){
-            timeAvgMins -= Math.abs(timeAvgDiff);
-          } else {
-            timeAvgMins += Math.abs(timeAvgDiff);
-          }
-
-          // testnet difficulty is set to 1 after 20 minutes of no blockSize
-          // therefore the time between blocks will always be below 20 minutes (1200s)
-          if (this.stateService.network === 'testnet' && now - block.timestamp + timeAvgMins * 60 > 1200) {
-            this.timeOffset = -Math.min(now - block.timestamp, 1200) * 1000;
-            timeAvgMins = 20;
-          } else {
-            this.timeOffset = 0;
-          }
-
-          return timeAvgMins * 60 * 1000;
+          return da;
         })
       );
 

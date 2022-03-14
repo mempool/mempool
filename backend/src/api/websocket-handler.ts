@@ -12,6 +12,7 @@ import loadingIndicators from './loading-indicators';
 import config from '../config';
 import transactionUtils from './transaction-utils';
 import rbfCache from './rbf-cache';
+import difficultyAdjustment from './difficulty-adjustment';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
@@ -191,14 +192,13 @@ class WebsocketHandler {
     return {
       'mempoolInfo': memPool.getMempoolInfo(),
       'vBytesPerSecond': memPool.getVBytesPerSecond(),
-      'lastDifficultyAdjustment': blocks.getLastDifficultyAdjustmentTime(),
-      'previousRetarget': blocks.getPreviousDifficultyRetarget(),
       'blocks': _blocks,
       'conversions': fiatConversion.getConversionRates(),
       'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
       'transactions': memPool.getLatestTransactions(),
       'backendInfo': backendInfo.getBackendInfo(),
       'loadingIndicators': loadingIndicators.getLoadingIndicators(),
+      'da': difficultyAdjustment.getDifficultyAdjustment(),
       ...this.extraInitProperties
     };
   }
@@ -234,6 +234,7 @@ class WebsocketHandler {
     const mempoolInfo = memPool.getMempoolInfo();
     const vBytesPerSecond = memPool.getVBytesPerSecond();
     const rbfTransactions = Common.findRbfTransactions(newTransactions, deletedTransactions);
+    const da = difficultyAdjustment.getDifficultyAdjustment();
     memPool.handleRbfTransactions(rbfTransactions);
 
     this.wss.clients.forEach(async (client: WebSocket) => {
@@ -247,6 +248,7 @@ class WebsocketHandler {
         response['mempoolInfo'] = mempoolInfo;
         response['vBytesPerSecond'] = vBytesPerSecond;
         response['transactions'] = newTransactions.slice(0, 6).map((tx) => Common.stripTransaction(tx));
+        response['da'] = da;
       }
 
       if (client['want-mempool-blocks']) {
@@ -410,8 +412,7 @@ class WebsocketHandler {
       const response = {
         'block': block,
         'mempoolInfo': memPool.getMempoolInfo(),
-        'lastDifficultyAdjustment': blocks.getLastDifficultyAdjustmentTime(),
-        'previousRetarget': blocks.getPreviousDifficultyRetarget(),
+        'da': difficultyAdjustment.getDifficultyAdjustment(),
       };
 
       if (mBlocks && client['want-mempool-blocks']) {
