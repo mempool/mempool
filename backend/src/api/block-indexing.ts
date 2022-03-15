@@ -39,7 +39,7 @@ class BlockIndexing {
 
       currentBlockHeight = currentBlockHeight - offsetStart;
       const lastBlockToIndex = Math.max(0, currentBlockHeight - offsetEnd);
-      const indexingBlockAmount = currentBlockHeight - lastBlockToIndex;
+      const indexingBlockAmount = offsetStart - offsetEnd;
 
       // const lastBlockToIndex = Math.max(0, currentBlockHeight - indexingBlockAmount + 1);
       logger.info(`Indexing blocks from #${currentBlockHeight} to #${lastBlockToIndex}`);
@@ -92,7 +92,7 @@ class BlockIndexing {
           });
           batchRPC.push({
             method: 'getblockstats',
-            params: [blocks[blockHeight].hash],
+            params: [blocks[blockHeight].hash, ["feerate_percentiles","minfeerate","maxfeerate","totalfee","avgfee","avgfeerate"]],
             id: `stats-${blockHeight}`,
           });
         }
@@ -131,7 +131,7 @@ class BlockIndexing {
         for (const height in blocks) {
           batchRPC.push({
             method: 'getrawtransaction',
-            params: [blocks[height]['coinbaseTxId'], 1],
+            params: [blocks[height]['coinbaseTxId'], 1, blocks[height]['id']],
             id: `${blocks[height]['height']}`,
           });
         }

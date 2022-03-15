@@ -184,7 +184,7 @@ class Server {
 
     try {
       if (this.indexingWorkers.length === 0) {
-        const workerCount = 20;
+        const workerCount = 4;
         for (let i = 0; i < workerCount; ++i) {
           const offsetStart = i * (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT / workerCount);
           const offsetEnd = (i + 1) * (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT / workerCount) - 1;
