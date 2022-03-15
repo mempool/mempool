@@ -22,7 +22,7 @@ class DifficultyAdjustmentApi {
     let difficultyChange = 0;
     if (remainingBlocks < 1870) {
       if (blocksInEpoch > 0) {
-        difficultyChange = (600 / (diff / blocksInEpoch ) - 1) * 100;
+        difficultyChange = (600 / (diff / blocksInEpoch) - 1) * 100;
       }
       if (difficultyChange > 300) {
         difficultyChange = 300;
@@ -32,22 +32,18 @@ class DifficultyAdjustmentApi {
       }
     }
 
-    const timeAvgDiff = difficultyChange * 0.1;
+    let timeAvgMins = blocksInEpoch ? diff / blocksInEpoch / 60 : 10;
 
-    let timeAvgMins = 10;
-
-    if (timeAvgDiff > 0) {
-      timeAvgMins -= Math.abs(timeAvgDiff);
-    } else {
-      timeAvgMins += Math.abs(timeAvgDiff);
-    }
-
-    // Testnet difficulty is set to 1 after 20 minutes of no blockSize,
+    // Testnet difficulty is set to 1 after 20 minutes of no blocks,
     // therefore the time between blocks will always be below 20 minutes (1200s).
     let timeOffset = 0;
-    if (config.MEMPOOL.NETWORK === 'testnet' && now - latestBlock.timestamp + timeAvgMins * 60 > 1200) {
-      timeOffset = -Math.min(now - latestBlock.timestamp, 1200) * 1000;
-      timeAvgMins = 20;
+    if (config.MEMPOOL.NETWORK === 'testnet') {
+      if (timeAvgMins > 20) {
+        timeAvgMins = 20;
+      }
+      if (now - latestBlock.timestamp + timeAvgMins * 60 > 1200) {
+        timeOffset = -Math.min(now - latestBlock.timestamp, 1200) * 1000;
+      }
     }
 
     const timeAvg = timeAvgMins * 60 * 1000 ;
