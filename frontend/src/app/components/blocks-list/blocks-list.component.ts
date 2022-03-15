@@ -47,7 +47,7 @@ export class BlocksList implements OnInit {
             .pipe(
               tap(blocks => {
                 if (this.blocksCount === undefined) {
-                  this.blocksCount = blocks[0].height;
+                  this.blocksCount = blocks[0].height + 1;
                 }
                 this.isLoading = false;
               }),
@@ -77,7 +77,7 @@ export class BlocksList implements OnInit {
             this.lastPage = this.page;
             return blocks[0];
           }
-          this.blocksCount = Math.max(this.blocksCount, blocks[1][0].height);
+          this.blocksCount = Math.max(this.blocksCount, blocks[1][0].height) + 1;
           // @ts-ignore: Need to add an extra field for the template
           blocks[1][0].extras.pool.logo = `./resources/mining-pools/` +
             blocks[1][0].extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
@@ -89,7 +89,7 @@ export class BlocksList implements OnInit {
   }
 
   pageChange(page: number) {
-    this.fromHeightSubject.next(this.blocksCount - (page - 1) * 15);
+    this.fromHeightSubject.next((this.blocksCount - 1) - (page - 1) * 15);
   }
 
   trackByBlock(index: number, block: BlockExtended) {
