@@ -1,5 +1,5 @@
 import config from '../../config';
-import * as bitcoin from '@mempool/bitcoin';
+const bitcoin = require('../../rpc-api/index');
 import { BitcoinRpcCredentials } from './bitcoin-api-abstract-factory';
 
 const nodeRpcCredentials: BitcoinRpcCredentials = {
