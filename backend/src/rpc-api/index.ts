@@ -16,7 +16,7 @@ Client.prototype.cmd = function () {
   var args = [].slice.call(arguments)
   var cmd = args.shift()
 
-  callRpc(cmd, args, this.rpc)
+  return callRpc(cmd, args, this.rpc)
 }
 
 // ===----------------------------------------------------------------------===//

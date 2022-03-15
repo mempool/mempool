@@ -7,10 +7,53 @@ class BlocksRepository {
   /**
    * Save indexed block data in the database
    */
+   public async $saveBlocks(blocks: BlockExtended[]) {
+    let connection;
+  
+    try {
+      connection = await DB.getConnection();
+  
+      let query = `INSERT INTO blocks(
+        height,           hash,                blockTimestamp, size,
+        weight,           tx_count,            coinbase_raw,   difficulty,
+        pool_id,          fees,                fee_span,       median_fee,
+        reward,           version,             bits,           nonce,
+        merkle_root,      previous_block_hash, avg_fee,        avg_fee_rate
+      ) VALUES `;
+  
+      for (const block of blocks) {
+        query += `(${block.height}, "${block.id}", FROM_UNIXTIME(${block.timestamp}), ${block.size},
+          ${block.weight}, ${block.tx_count}, "${connection.escape(block.extras.coinbaseRaw)}", ${block.difficulty},
+          ${block.extras.pool?.id}, ${block.extras.totalFees}, ${JSON.stringify(block.extras.feeRange)}, ${block.extras.medianFee},
+          ${block.extras.reward}, ${block.version}, "${block.bits}", ${block.nonce},
+          "${block.merkle_root}", "${block.previousblockhash}", ${block.extras.avgFee}, ${block.extras.avgFeeRate}),`;
+      }
+  
+      query = query.slice(0, -1);
+  
+      await connection.query(query);
+      connection.release();
+    } catch (e: any) {
+      connection.release();
+      if (e.errno === 1062) { // ER_DUP_ENTRY
+        logger.debug(`$saveBlockInDatabase() - Block ??? has already been indexed, ignoring`);
+      } else {
+        connection.release();
+        logger.err('$saveBlockInDatabase() error' + (e instanceof Error ? e.message : e));
+        throw e;
+      }
+    }
+  }
+
+  /**
+   * Save one indexed block data in the database
+   */
   public async $saveBlockInDatabase(block: BlockExtended) {
-    const connection = await DB.getConnection();
+    let connection;
 
     try {
+      connection = await DB.getConnection();
+
       const query = `INSERT INTO blocks(
         height,           hash,                blockTimestamp, size,
         weight,           tx_count,            coinbase_raw,   difficulty,

@@ -18,7 +18,7 @@ JsonRPC.prototype.call = function (method, params) {
       requestJSON = []
       method.forEach(function (batchCall, i) {
         requestJSON.push({
-          id: time + '-' + i,
+          id: batchCall.id,
           method: batchCall.method,
           params: batchCall.params
         })
@@ -131,7 +131,14 @@ JsonRPC.prototype.call = function (method, params) {
 
         // iterate over each response, normally there will be just one
         // unless a batch rpc call response is being processed
+        const results = [];
         decoded.forEach(function (decodedResponse, i) {
+          if (Array.isArray(method)) { // Batch RPC
+            // @ts-ignore
+            results.push(decodedResponse)
+            return;
+          }
+
           if (decodedResponse.hasOwnProperty('error') && decodedResponse.error != null) {
             if (reject) {
               err = new Error(decodedResponse.error.message || '')
@@ -141,8 +148,7 @@ JsonRPC.prototype.call = function (method, params) {
               reject(err)
             }
           } else if (decodedResponse.hasOwnProperty('result')) {
-            // @ts-ignore
-            resolve(decodedResponse.result, response.headers)
+            resolve(decodedResponse.result)
           } else {
             if (reject) {
               err = new Error(decodedResponse.error.message || '')
@@ -152,7 +158,10 @@ JsonRPC.prototype.call = function (method, params) {
               reject(err)
             }
           }
-        })
+        });
+        if (Array.isArray(method)) { // Batch RPC
+          resolve(results);
+        }
       })
     })
     request.end(requestJSON);
