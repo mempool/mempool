@@ -112,6 +112,10 @@ li.nav-item {
   float: right;
 }
 
+h3 {
+  margin: 2rem 0 0 0;
+}
+
 .endpoint-container:before {
 	display: block;
  	content: " ";
@@ -183,29 +187,48 @@ li.nav-item {
 
   .doc-content {
     width: 100%;
+    margin-top: -20px;
+    float: unset;
+  }
+
+  .endpoint-container {
+    position: relative;
+    overflow: hidden;
+    height: auto;
+    transition: 0.5s height ease;
   }
 
   .endpoint-container .section-header {
-    margin: 40px 0 70px 0;
+    margin: 0;
+    font-size: 18px;
+    z-index: 1;
   }
 
   .endpoint-container .section-header span {
-    float: none;
-    position: absolute;
-    top: unset;
-    left: 0;
-    bottom: -50px;
+    display: none;
   }
 
   .endpoint-container:before {
-    height: 30px;
-    margin-top: -12px;
+    height: 5px;
+    margin-top: 10px;
   }
 
+  .endpoint-container .endpoint-content {
+    width: 100%;
+    position: absolute;
+    top: -10000px;
+    opacity: 0;
+    transition: 0.5s opacity ease;
+  }
 }
 
 @media (min-width: 992px) {
+
   .hide-on-desktop {
+    display: none;
+  }
+
+  h3 {
     display: none;
   }
 }
