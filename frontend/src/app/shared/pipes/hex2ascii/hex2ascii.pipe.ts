@@ -15,7 +15,7 @@ export class Hex2asciiPipe implements PipeTransform {
     if (!hex) {
       return '';
     }
-    let bytes: number[] = [];
+    const bytes: number[] = [];
     for (let i = 0; i < hex.length; i += 2) {
       bytes.push(parseInt(hex.substr(i, 2), 16));
     }

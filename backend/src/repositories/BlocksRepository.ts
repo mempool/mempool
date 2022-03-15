@@ -32,7 +32,7 @@ class BlocksRepository {
         block.size,
         block.weight,
         block.tx_count,
-        block.extras.coinbaseRaw,
+        connection.escape(block.extras.coinbaseRaw),
         block.difficulty,
         block.extras.pool?.id, // Should always be set to something
         block.extras.totalFees,
@@ -56,7 +56,7 @@ class BlocksRepository {
         logger.debug(`$saveBlockInDatabase() - Block ${block.height} has already been indexed, ignoring`);
       } else {
         connection.release();
-        logger.err('$saveBlockInDatabase() error' + (e instanceof Error ? e.message : e));
+        logger.err('$saveBlockInDatabase() error: ' + (e instanceof Error ? e.message : e));
         throw e;
       }
     }
