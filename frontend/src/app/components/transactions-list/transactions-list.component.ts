@@ -111,7 +111,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
           .map((v: Vin) => v.prevout.value || 0)
           .reduce((a: number, b: number) => a + b, 0);
 
-        tx['addressValue'] = addressIn || -addressOut;
+        tx['addressValue'] = addressIn - addressOut;
       }
 
       observableObject[i] = this.electrsApiService.getOutspends$(tx.txid);
