@@ -14,14 +14,14 @@ class BitcoinApi implements AbstractBitcoinApi {
     this.bitcoindClient = bitcoinClient;
   }
 
-  $getRawTransaction(txId: string, skipConversion = false, addPrevout = false): Promise<IEsploraApi.Transaction> {
+  $getRawTransaction(txId: string, skipConversion = false, addPrevout = false, blockHash?: string): Promise<IEsploraApi.Transaction> {
     // If the transaction is in the mempool we already converted and fetched the fee. Only prevouts are missing
     const txInMempool = mempool.getMempool()[txId];
     if (txInMempool && addPrevout) {
       return this.$addPrevouts(txInMempool);
     }
 
-    return this.bitcoindClient.getRawTransaction(txId, true)
+    return this.bitcoindClient.getRawTransaction(txId, true, blockHash)
       .then((transaction: IBitcoinApi.Transaction) => {
         if (skipConversion) {
           transaction.vout.forEach((vout) => {
