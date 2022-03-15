@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { SeoService } from 'src/app/services/seo.service';
 import { StateService } from 'src/app/services/state.service';
+import { formatNumber } from '@angular/common';
 import { Observable } from 'rxjs';
 
 @Component({
