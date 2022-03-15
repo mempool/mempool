@@ -109,7 +109,7 @@ class Blocks {
     blockExtended.extras.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
     blockExtended.extras.coinbaseTx = transactionUtils.stripCoinbaseTransaction(transactions[0]);
 
-    const coinbaseRaw: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(transactions[0].txid, true);
+    const coinbaseRaw: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(transactions[0].txid, true, false, block.id);
     blockExtended.extras.coinbaseRaw = coinbaseRaw.hex;
 
     if (block.height === 0) {
@@ -119,7 +119,9 @@ class Blocks {
       blockExtended.extras.avgFee = 0;
       blockExtended.extras.avgFeeRate = 0;
     } else {
-      const stats = await bitcoinClient.getBlockStats(block.id);
+      const stats = await bitcoinClient.getBlockStats(block.id, [
+        'feerate_percentiles', 'minfeerate', 'maxfeerate', 'totalfee', 'avgfee', 'avgfeerate'
+      ]);
       blockExtended.extras.medianFee = stats.feerate_percentiles[2]; // 50th percentiles
       blockExtended.extras.feeRange = [stats.minfeerate, stats.feerate_percentiles, stats.maxfeerate].flat();
       blockExtended.extras.totalFees = stats.totalfee;
