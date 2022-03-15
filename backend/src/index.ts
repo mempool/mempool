@@ -28,12 +28,16 @@ import icons from './api/liquid/icons';
 import { Common } from './api/common';
 import mining from './api/mining';
 import HashratesRepository from './repositories/HashratesRepository';
+import { Worker } from 'worker_threads';
+import blockIndexing from './api/block-indexing';
 
 class Server {
   private wss: WebSocket.Server | undefined;
   private server: http.Server | undefined;
   private app: Express;
   private currentBackendRetryInterval = 5;
+
+  private indexingWorkers: any[] = [];
 
   constructor() {
     this.app = express();
@@ -179,9 +183,18 @@ class Server {
     }
 
     try {
-      blocks.$generateBlockDatabase();
-      await mining.$generateNetworkHashrateHistory();
-      await mining.$generatePoolHashrateHistory();
+      if (this.indexingWorkers.length === 0) {
+        const workerCount = 20;
+        for (let i = 0; i < workerCount; ++i) {
+          const offsetStart = i * (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT / workerCount);
+          const offsetEnd = (i + 1) * (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT / workerCount) - 1;
+          this.indexingWorkers.push(new Worker('./dist/api/block-indexing.js', {
+            workerData: { offsetStart, offsetEnd }
+          }));
+        }
+      }
+      // await mining.$generateNetworkHashrateHistory();
+      // await mining.$generatePoolHashrateHistory();
     } catch (e) {
       logger.err(`Unable to run indexing right now, trying again later. ` + e);
     }
