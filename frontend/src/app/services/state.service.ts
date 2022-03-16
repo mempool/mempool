@@ -111,6 +111,10 @@ export class StateService {
     const browserWindowEnv = browserWindow.__env || {};
     this.env = Object.assign(defaultEnv, browserWindowEnv);
 
+    if (defaultEnv.BASE_MODULE !== 'mempool') {
+      this.env.MINING_DASHBOARD = false;
+    }
+
     if (this.isBrowser) {
       this.setNetworkBasedonUrl(window.location.pathname);
       this.isTabHidden$ = fromEvent(document, 'visibilitychange').pipe(map(() => this.isHidden()), shareReplay());
