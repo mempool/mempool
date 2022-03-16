@@ -3,8 +3,8 @@
   <div *ngIf="poolStats$ | async as poolStats; else loadingMain">
     <div style="display:flex">
       <img width="50" height="50" src="{{ poolStats['logo'] }}"
-        onError="this.src = './resources/mining-pools/default.svg'" class="mr-3">
-      <h1 class="m-0 mb-2">{{ poolStats.pool.name }}</h1>
+        onError="this.src = './resources/mining-pools/default.svg'" class="mr-3 mb-3">
+      <h1 class="m-0 pt-1 pt-md-0">{{ poolStats.pool.name }}</h1>
     </div>
 
     <div class="box">
@@ -59,15 +59,15 @@
     <div class="spinner-border text-light"></div>
   </div>
 
-  <table *ngIf="blocks$ | async as blocks" class="table table-borderless" [alwaysCallback]="true" infiniteScroll
+  <table class="table table-borderless" [alwaysCallback]="true" infiniteScroll
     [infiniteScrollDistance]="1.5" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50"
     (scrolled)="loadMore()">
     <thead>
       <th class="height" i18n="latest-blocks.height">Height</th>
       <th class="timestamp" i18n="latest-blocks.timestamp">Timestamp</th>
       <th class="mined" i18n="latest-blocks.mined">Mined</th>
-      <th class="coinbase text-left" i18n="latest-blocks.coinbase">
-        Coinbase</th>
+      <th class="coinbase text-left" i18n="latest-blocks.scriptsig">
+        ScriptSig</th>
       <th class="reward text-right" i18n="latest-blocks.reward">
         Reward</th>
       <th class="fees text-right" i18n="latest-blocks.fees">Fees</th>
