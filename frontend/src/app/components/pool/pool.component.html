@@ -1,11 +1,11 @@
-<div class="container">
+<div class="container-xl">
 
   <div *ngIf="poolStats$ | async as poolStats; else loadingMain">
-    <h1 class="m-0 mb-2">
+    <div style="display:flex">
       <img width="50" height="50" src="{{ poolStats['logo'] }}"
         onError="this.src = './resources/mining-pools/default.svg'" class="mr-3">
-      {{ poolStats.pool.name }}
-    </h1>
+      <h1 class="m-0 mb-2">{{ poolStats.pool.name }}</h1>
+    </div>
 
     <div class="box">
       <div class="row">
@@ -63,27 +63,44 @@
     [infiniteScrollDistance]="1.5" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50"
     (scrolled)="loadMore()">
     <thead>
-      <th style="width: 15%;" i18n="latest-blocks.height">Height</th>
-      <th class="d-none d-md-block" style="width: 20%;" i18n="latest-blocks.timestamp">Timestamp</th>
-      <th style="width: 20%;" i18n="latest-blocks.mined">Mined</th>
-      <th class="text-right" style="width: 10%; padding-right: 30px" i18n="latest-blocks.reward">Reward</th>
-      <th class="d-none d-lg-block text-right" style="width: 15%; padding-right: 40px"
-        i18n="latest-blocks.transactions">
-        Transactions</th>
-      <th style="width: 20%;" i18n="latest-blocks.size">Size</th>
+      <th class="height" i18n="latest-blocks.height">Height</th>
+      <th class="timestamp" i18n="latest-blocks.timestamp">Timestamp</th>
+      <th class="mined" i18n="latest-blocks.mined">Mined</th>
+      <th class="coinbase text-left" i18n="latest-blocks.coinbase">
+        Coinbase</th>
+      <th class="reward text-right" i18n="latest-blocks.reward">
+        Reward</th>
+      <th class="fees text-right" i18n="latest-blocks.fees">Fees</th>
+      <th class="txs text-right" i18n="latest-blocks.transactions">Txs</th>
+      <th class="size" i18n="latest-blocks.size">Size</th>
     </thead>
-    <tbody>
-      <tr *ngFor="let block of blocks">
-        <td><a [routerLink]="['/block' | relativeUrl, block.id]">{{ block.height }}</a></td>
-        <td class="d-none d-md-block">&lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}</td>
-        <td>
+    <tbody *ngIf="blocks$ | async as blocks; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
+      <tr *ngFor="let block of blocks; let i= index; trackBy: trackByBlock">
+        <td class="height">
+          <a [routerLink]="['/block' | relativeUrl, block.height]">{{ block.height
+            }}</a>
+        </td>
+        <td class="timestamp">
+          &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
+        </td>
+        <td class="mined">
           <app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since>
         </td>
-        <td class="text-right" style="padding-right: 30px">
-          <app-amount [satoshis]="block['reward']" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
+        <td class="coinbase">
+          <span class="badge badge-secondary scriptmessage longer">
+            {{ block.extras.coinbaseRaw | hex2ascii }}
+          </span>
         </td>
-        <td class="d-none d-lg-block text-right" style="padding-right: 40px">{{ block.tx_count | number }}</td>
-        <td>
+        <td class="reward text-right">
+          <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-2"></app-amount>
+        </td>
+        <td class="fees text-right">
+          <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-2"></app-amount>
+        </td>
+        <td class="txs text-right">
+          {{ block.tx_count | number }}
+        </td>
+        <td class="size">
           <div class="progress">
             <div class="progress-bar progress-mempool" role="progressbar"
               [ngStyle]="{'width': (block.weight / stateService.env.BLOCK_WEIGHT_UNITS)*100 + '%' }"></div>
@@ -92,6 +109,37 @@
         </td>
       </tr>
     </tbody>
+    <ng-template #skeleton>
+      <tbody>
+        <tr *ngFor="let item of skeletonLines">
+          <td class="height">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="pool text-left">
+            <img width="0" height="25" style="opacity: 0">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="timestamp">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="mined">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="reward text-right">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="fees text-right">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="txs text-right">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="size">
+            <span class="skeleton-loader"></span>
+          </td>
+        </tr>
+      </tbody>
+    </ng-template>
   </table>
 
 </div>
