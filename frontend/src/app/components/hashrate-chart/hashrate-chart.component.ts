@@ -117,7 +117,7 @@ export class HashrateChartComponent implements OnInit {
                 };
               }),
               retryWhen((errors) => errors.pipe(
-                  delay(60000)
+                delay(60000)
               ))
             );
         }),
@@ -134,8 +134,8 @@ export class HashrateChartComponent implements OnInit {
       const yyyy = lastBlock.getFullYear();
       title = {
         textStyle: {
-            color: 'grey',
-            fontSize: 15
+          color: 'grey',
+          fontSize: 15
         },
         text: `Indexing in progess - ${yyyy}-${mm}-${dd}`,
         left: 'center',
@@ -176,24 +176,36 @@ export class HashrateChartComponent implements OnInit {
           align: 'left',
         },
         borderColor: '#000',
-        formatter: function (data) {
+        formatter: function (ticks) {
+          let hashrateString = '';
+          let difficultyString = '';
           let hashratePowerOfTen: any = selectPowerOfTen(1);
-          let hashrate = data[0].data[1];
-          let difficultyPowerOfTen = hashratePowerOfTen;
-          let difficulty = data[1].data[1];
 
-          if (this.isMobile()) {
-            hashratePowerOfTen = selectPowerOfTen(data[0].data[1]);
-            hashrate = Math.round(data[0].data[1] / hashratePowerOfTen.divider);
-            difficultyPowerOfTen = selectPowerOfTen(data[1].data[1]);
-            difficulty = Math.round(data[1].data[1] / difficultyPowerOfTen.divider);
+          for (const tick of ticks) {
+            if (tick.seriesIndex === 0) { // Hashrate
+              let hashrate = tick.data[1];
+              if (this.isMobile()) {
+                hashratePowerOfTen = selectPowerOfTen(tick.data[1]);
+                hashrate = Math.round(tick.data[1] / hashratePowerOfTen.divider);
+              }
+              hashrateString = `${tick.marker} ${tick.seriesName}: ${formatNumber(hashrate, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s`;
+            } else if (tick.seriesIndex === 1) { // Difficulty
+              let difficultyPowerOfTen = hashratePowerOfTen;
+              let difficulty = tick.data[1];
+              if (this.isMobile()) {
+                difficultyPowerOfTen = selectPowerOfTen(tick.data[1]);
+                difficulty = Math.round(tick.data[1] / difficultyPowerOfTen.divider);
+              }
+              difficultyString = `${tick.marker} ${tick.seriesName}: ${formatNumber(difficulty, this.locale, '1.2-2')} ${difficultyPowerOfTen.unit}`;
+            }
           }
 
-          const date = new Date(data[0].data[0]).toLocaleDateString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
+          const date = new Date(ticks[0].data[0]).toLocaleDateString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
+
           return `
             <b style="color: white; margin-left: 18px">${date}</b><br>
-            <span>${data[0].marker} ${data[0].seriesName}: ${formatNumber(hashrate, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s</span><br>
-            <span>${data[1].marker} ${data[1].seriesName}: ${formatNumber(difficulty, this.locale, '1.2-2')} ${difficultyPowerOfTen.unit}</span>
+            <span>${hashrateString}</span><br>
+            <span>${difficultyString}</span>
           `;
         }.bind(this)
       },
