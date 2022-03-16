@@ -102,6 +102,7 @@ export interface BlockExtension {
   feeRange?: number[];
   reward?: number;
   coinbaseTx?: Transaction;
+  coinbaseRaw?: string;
   matchRate?: number;
   pool?: {
     id: number;

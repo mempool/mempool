@@ -108,9 +108,7 @@ class Blocks {
     const blockExtended: BlockExtended = Object.assign({ extras: {} }, block);
     blockExtended.extras.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
     blockExtended.extras.coinbaseTx = transactionUtils.stripCoinbaseTransaction(transactions[0]);
-
-    const coinbaseRaw: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(transactions[0].txid, true, false, block.id);
-    blockExtended.extras.coinbaseRaw = coinbaseRaw.hex;
+    blockExtended.extras.coinbaseRaw = blockExtended.extras.coinbaseTx.vin[0].scriptsig;
 
     if (block.height === 0) {
       blockExtended.extras.medianFee = 0; // 50th percentiles
@@ -410,6 +408,7 @@ class Blocks {
       weight: block.weight,
       previousblockhash: block.previousblockhash,
       extras: {
+        coinbaseRaw: block.coinbase_raw ?? block.extras.coinbaseRaw,
         medianFee: block.medianFee ?? block.median_fee ?? block.extras?.medianFee,
         feeRange: block.feeRange ?? block.fee_range ?? block?.extras?.feeSpan,
         reward: block.reward ?? block?.extras?.reward,

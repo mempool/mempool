@@ -56,7 +56,7 @@ class BlocksRepository {
         logger.debug(`$saveBlockInDatabase() - Block ${block.height} has already been indexed, ignoring`);
       } else {
         connection.release();
-        logger.err('$saveBlockInDatabase() error' + (e instanceof Error ? e.message : e));
+        logger.err('$saveBlockInDatabase() error: ' + (e instanceof Error ? e.message : e));
         throw e;
       }
     }
