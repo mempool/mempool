@@ -14,7 +14,7 @@
             <tbody>
               <tr>
                 <td class="label">Tags</td>
-                <td class="text-truncate">
+                <td class="text-truncate" *ngIf="poolStats.pool.regexes.length else nodata">
                   <div class="scrollable">
                     {{ poolStats.pool.regexes }}
                   </div>
@@ -22,15 +22,15 @@
               </tr>
               <tr>
                 <td class="label">Addresses</td>
-                <td class="text-truncate" *ngIf="poolStats.pool.addresses.length else noaddress">
+                <td class="text-truncate" *ngIf="poolStats.pool.addresses.length else nodata">
                   <div class="scrollable">
                     <a *ngFor="let address of poolStats.pool.addresses"
                       [routerLink]="['/address' | relativeUrl, address]">{{
                       address }}<br></a>
                   </div>
                 </td>
-                <ng-template #noaddress>
-                  <td>~</td>
+                <ng-template #nodata>
+                  <td class="right-mobile">~</td>
                 </ng-template>
               </tr>
             </tbody>
@@ -168,7 +168,7 @@
                     <div class="skeleton-loader"></div>
                   </div>
                 </td>
-                <ng-template #noaddress>
+                <ng-template #nodata>
                   <td>~</td>
                 </ng-template>
               </tr>

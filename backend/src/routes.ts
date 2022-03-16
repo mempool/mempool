@@ -553,7 +553,7 @@ class Routes {
     try {
       const poolBlocks = await BlocksRepository.$getBlocksByPool(
         parseInt(req.params.poolId, 10),
-        parseInt(req.params.height, 10) ?? null,
+        req.params.height === undefined ? undefined : parseInt(req.params.height, 10),
       );
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
