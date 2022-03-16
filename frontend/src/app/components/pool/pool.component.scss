@@ -131,3 +131,9 @@ div.scrollable {
 	width: auto;
   text-align: left;
 }
+
+.right-mobile {
+  @media (max-width: 450px) {
+    text-align: right;
+  }
+}

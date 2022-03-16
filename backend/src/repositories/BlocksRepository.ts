@@ -235,7 +235,7 @@ class BlocksRepository {
   /**
    * Get blocks mined by a specific mining pool
    */
-  public async $getBlocksByPool(poolId: number, startHeight: number | null = null): Promise<object[]> {
+  public async $getBlocksByPool(poolId: number, startHeight: number | undefined = undefined): Promise<object[]> {
     const params: any[] = [];
     let query = ` SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
       previous_block_hash as previousblockhash
@@ -243,7 +243,7 @@ class BlocksRepository {
       WHERE pool_id = ?`;
     params.push(poolId);
 
-    if (startHeight) {
+    if (startHeight !== undefined) {
       query += ` AND height < ?`;
       params.push(startHeight);
     }
