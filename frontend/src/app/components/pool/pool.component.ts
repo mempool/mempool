@@ -31,6 +31,7 @@ export class PoolComponent implements OnInit {
   poolStats$: Observable<PoolStat>;
   blocks$: Observable<BlockExtended[]>;
   isLoading = true;
+  skeletonLines: number[] = [...Array(5).keys()];
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -133,7 +134,7 @@ export class PoolComponent implements OnInit {
           align: 'left',
         },
         borderColor: '#000',
-        formatter: function (data) {
+        formatter: function(data) {
           let hashratePowerOfTen: any = selectPowerOfTen(1);
           let hashrate = data[0].data[1];
 
@@ -154,11 +155,10 @@ export class PoolComponent implements OnInit {
       },
       yAxis: [
         {
-          min: function (value) {
+          min: (value) => {
             return value.min * 0.9;
           },
           type: 'value',
-          name: 'Hashrate',
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val) => {
