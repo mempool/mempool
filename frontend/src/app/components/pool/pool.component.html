@@ -9,7 +9,7 @@
 
     <div class="box">
       <div class="row">
-        <div class="col-lg-7">
+        <div class="col-lg-9">
           <table class="table table-borderless table-striped" style="table-layout: fixed;">
             <tbody>
               <tr>
@@ -36,7 +36,7 @@
             </tbody>
           </table>
         </div>
-        <div class="col-lg-5">
+        <div class="col-lg-3">
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
@@ -115,14 +115,13 @@
           <td class="height">
             <span class="skeleton-loader"></span>
           </td>
-          <td class="pool text-left">
-            <img width="0" height="25" style="opacity: 0">
-            <span class="skeleton-loader"></span>
-          </td>
           <td class="timestamp">
             <span class="skeleton-loader"></span>
           </td>
           <td class="mined">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="coinbase">
             <span class="skeleton-loader"></span>
           </td>
           <td class="reward text-right">
@@ -134,7 +133,7 @@
           <td class="txs text-right">
             <span class="skeleton-loader"></span>
           </td>
-          <td class="size">
+          <td class="size text-right">
             <span class="skeleton-loader"></span>
           </td>
         </tr>
@@ -146,10 +145,10 @@
 
 <ng-template #loadingMain>
   <div>
-    <h1 class="m-0 mb-2">
-      <img width="50" height="50" src="./resources/mining-pools/default.svg" class="mr-3">
-      <div class="skeleton-loader"></div>
-    </h1>
+    <div style="display:flex">
+      <img width="50" height="50" src="./resources/mining-pools/default.svg" class="mr-3 mb-3">
+      <h1 class="m-0 pt-1 pt-md-0"><div class="skeleton-loader"></div></h1>
+    </div>
 
     <div class="box">
       <div class="row">
@@ -157,7 +156,13 @@
           <table class="table table-borderless table-striped" style="table-layout: fixed;">
             <tbody>
               <tr>
-                <td class="col-4 col-lg-3">Addresses</td>
+                <td class="label">Tags</td>
+                <td class="text-truncate">
+                  <div class="skeleton-loader"></div>
+                </td>
+              </tr>
+              <tr>
+                <td class="label">Addresses</td>
                 <td class="text-truncate">
                   <div class="scrollable">
                     <div class="skeleton-loader"></div>
@@ -167,12 +172,6 @@
                   <td>~</td>
                 </ng-template>
               </tr>
-              <tr>
-                <td class="col-4 col-lg-3">Coinbase Tags</td>
-                <td class="text-truncate">
-                  <div class="skeleton-loader"></div>
-                </td>
-              </tr>
             </tbody>
           </table>
         </div>
@@ -180,14 +179,14 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td class="col-4 col-lg-8">Mined Blocks</td>
-                <td class="text-left">
+                <td class="label">Mined Blocks</td>
+                <td class="text-truncate">
                   <div class="skeleton-loader"></div>
                 </td>
               </tr>
               <tr>
-                <td class="col-4 col-lg-8">Empty Blocks</td>
-                <td class="text-left">
+                <td class="label">Empty Blocks</td>
+                <td class="text-truncate">
                   <div class="skeleton-loader"></div>
                 </td>
               </tr>
