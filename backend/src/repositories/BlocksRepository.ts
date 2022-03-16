@@ -2,6 +2,7 @@ import { BlockExtended, PoolTag } from '../mempool.interfaces';
 import { DB } from '../database';
 import logger from '../logger';
 import { Common } from '../api/common';
+import { prepareBlock } from '../utils/blocks-utils';
 
 class BlocksRepository {
   /**
@@ -153,7 +154,6 @@ class BlocksRepository {
       query += ` blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
     }
 
-    // logger.debug(query);
     const connection = await DB.getConnection();
     try {
       const [rows] = await connection.query(query, params);
@@ -169,10 +169,10 @@ class BlocksRepository {
 
   /**
    * Get blocks count between two dates
-   * @param poolId 
+   * @param poolId
    * @param from - The oldest timestamp
    * @param to - The newest timestamp
-   * @returns 
+   * @returns
    */
   public async $blockCountBetweenTimestamp(poolId: number | null, from: number, to: number): Promise<number> {
     const params: any[] = [];
@@ -193,7 +193,6 @@ class BlocksRepository {
     }
     query += ` blockTimestamp BETWEEN FROM_UNIXTIME('${from}') AND FROM_UNIXTIME('${to}')`;
 
-    // logger.debug(query);
     const connection = await DB.getConnection();
     try {
       const [rows] = await connection.query(query, params);
@@ -216,7 +215,6 @@ class BlocksRepository {
       ORDER BY height
       LIMIT 1;`;
 
-    // logger.debug(query);
     const connection = await DB.getConnection();
     try {
       const [rows]: any[] = await connection.query(query);
@@ -237,14 +235,15 @@ class BlocksRepository {
   /**
    * Get blocks mined by a specific mining pool
    */
-  public async $getBlocksByPool(poolId: number, startHeight: number | null = null): Promise<object[]> {
+  public async $getBlocksByPool(poolId: number, startHeight: number | undefined = undefined): Promise<object[]> {
     const params: any[] = [];
-    let query = `SELECT height, hash as id, tx_count, size, weight, pool_id, UNIX_TIMESTAMP(blockTimestamp) as timestamp, reward
+    let query = ` SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
+      previous_block_hash as previousblockhash
       FROM blocks
       WHERE pool_id = ?`;
     params.push(poolId);
 
-    if (startHeight) {
+    if (startHeight !== undefined) {
       query += ` AND height < ?`;
       params.push(startHeight);
     }
@@ -252,17 +251,17 @@ class BlocksRepository {
     query += ` ORDER BY height DESC
       LIMIT 10`;
 
-    // logger.debug(query);
     const connection = await DB.getConnection();
     try {
       const [rows] = await connection.query(query, params);
       connection.release();
 
-      for (const block of <object[]>rows) {
-        delete block['blockTimestamp'];
+      const blocks: BlockExtended[] = [];
+      for (let block of <object[]>rows) {
+        blocks.push(prepareBlock(block));
       }
 
-      return <object[]>rows;
+      return blocks;
     } catch (e) {
       connection.release();
       logger.err('$getBlocksByPool() error' + (e instanceof Error ? e.message : e));
@@ -314,7 +313,7 @@ class BlocksRepository {
     let query = `
       SELECT
       *
-      FROM 
+      FROM
       (
         SELECT
         UNIX_TIMESTAMP(blockTimestamp) as timestamp, difficulty, height,
@@ -322,7 +321,7 @@ class BlocksRepository {
           IF(@prevStatus := YT.difficulty, @rn := 1, @rn := 1)
         ) AS rn
         FROM blocks YT
-        CROSS JOIN 
+        CROSS JOIN
         (
           SELECT @prevStatus := -1, @rn := 1
         ) AS var
