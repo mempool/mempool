@@ -6,7 +6,7 @@ import logger from '../logger';
 const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 class DatabaseMigration {
-  private static currentVersion = 14;
+  private static currentVersion = 15;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
 
