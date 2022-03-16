@@ -32,7 +32,7 @@ class BlocksRepository {
         block.size,
         block.weight,
         block.tx_count,
-        connection.escape(block.extras.coinbaseRaw),
+        block.extras.coinbaseRaw,
         block.difficulty,
         block.extras.pool?.id, // Should always be set to something
         block.extras.totalFees,

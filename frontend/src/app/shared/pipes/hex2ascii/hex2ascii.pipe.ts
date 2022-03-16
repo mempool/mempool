@@ -19,7 +19,7 @@ export class Hex2asciiPipe implements PipeTransform {
     for (let i = 0; i < hex.length; i += 2) {
       bytes.push(parseInt(hex.substr(i, 2), 16));
     }
-    return new TextDecoder('utf8').decode(Uint8Array.from(bytes));
+    return new TextDecoder('utf8').decode(Uint8Array.from(bytes)).replace(/\uFFFD/g, '').replace(/\\0/g, '');
   }
 
 }
