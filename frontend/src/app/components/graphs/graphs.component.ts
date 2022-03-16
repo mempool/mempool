@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import { StateService } from "src/app/services/state.service";
 
 @Component({
   selector: 'app-graphs',
@@ -6,7 +7,7 @@ import { Component, OnInit } from "@angular/core";
   styleUrls: ['./graphs.component.scss'],
 })
 export class GraphsComponent implements OnInit {
-  constructor() { }
+  constructor(public stateService: StateService) { }
 
   ngOnInit(): void {
 
