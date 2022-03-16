@@ -108,7 +108,7 @@ class Blocks {
     const blockExtended: BlockExtended = Object.assign({ extras: {} }, block);
     blockExtended.extras.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
     blockExtended.extras.coinbaseTx = transactionUtils.stripCoinbaseTransaction(transactions[0]);
-    blockExtended.extras.coinbaseRaw = transactionUtils.hex2ascii(blockExtended.extras.coinbaseTx.vin[0].scriptsig);
+    blockExtended.extras.coinbaseRaw = blockExtended.extras.coinbaseTx.vin[0].scriptsig;
 
     if (block.height === 0) {
       blockExtended.extras.medianFee = 0; // 50th percentiles

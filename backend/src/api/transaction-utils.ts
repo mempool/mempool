@@ -45,21 +45,12 @@ class TransactionUtils {
     return transactionExtended;
   }
 
-  public hex2ascii(hex: string): string {
-    const opPush = hex.split(' ').filter((_, i, a) => i > 0 && /^OP_PUSH/.test(a[i - 1]));
-
-    if (opPush[0]) {
-      hex = opPush[0];
-    }
-
-    if (!hex) {
-      return '';
-    }
-    const bytes: number[] = [];
+  public hex2ascii(hex: string) {
+    let str = '';
     for (let i = 0; i < hex.length; i += 2) {
-      bytes.push(parseInt(hex.substr(i, 2), 16));
+      str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
     }
-    return new TextDecoder('utf8').decode(Uint8Array.from(bytes));
+    return str;
   }
 }
 

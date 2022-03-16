@@ -175,12 +175,6 @@ class DatabaseMigration {
         await this.$executeQuery(connection, 'ALTER TABLE `hashrates` MODIFY `pool_id` SMALLINT UNSIGNED NOT NULL DEFAULT "0"');
       }
 
-      if (databaseSchemaVersion < 15 && isBitcoin === true) {
-        logger.warn(`'blocks' table has been truncated. Re-indexing from scratch.`);
-        await this.$executeQuery(connection, 'TRUNCATE blocks;'); // Need to re-index
-        await this.$executeQuery(connection, 'ALTER TABLE `blocks` MODIFY `coinbase_raw` TEXT COLLATE "utf8mb4_general_ci" NULL ');
-      }
-
       connection.release();
     } catch (e) {
       connection.release();
