@@ -30,7 +30,7 @@
                   onError="this.src = './resources/mining-pools/default.svg'">
                 <span class="pool-name">{{ block.extras.pool.name }}</span>
               </a>
-              <span class="tooltiptext">{{ block.extras.coinbaseRaw | hex2ascii }}</span>
+              <span class="tooltiptext badge badge-secondary scriptmessage">{{ block.extras.coinbaseRaw | hex2ascii }}</span>
             </div>
           </td>
           <td class="timestamp" *ngIf="!widget">
