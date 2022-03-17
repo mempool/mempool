@@ -110,14 +110,22 @@
             <table class="table lastest-blocks-table">
               <thead>
                 <th class="table-cell-height" i18n="dashboard.latest-blocks.height">Height</th>
-                <th class="table-cell-mined" i18n="dashboard.latest-blocks.mined">Mined</th>
+                <th *ngIf="!stateService.env.MINING_DASHBOARD" class="table-cell-mined" i18n="dashboard.latest-blocks.mined">Mined</th>
+                <th *ngIf="stateService.env.MINING_DASHBOARD" class="table-cell-mined pl-lg-4" i18n="mining.pool-name">Pool</th>
                 <th class="table-cell-transaction-count" i18n="dashboard.latest-blocks.transaction-count">TXs</th>
                 <th class="table-cell-size" i18n="dashboard.latest-blocks.size">Size</th>
               </thead>
               <tbody>
                 <tr *ngFor="let block of blocks$ | async; let i = index; trackBy: trackByBlock">
                   <td class="table-cell-height" ><a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
-                  <td class="table-cell-mined" ><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since></td>
+                  <td *ngIf="!stateService.env.MINING_DASHBOARD" class="table-cell-mined" ><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since></td>
+                  <td *ngIf="stateService.env.MINING_DASHBOARD" class="table-cell-mined pl-lg-4">
+                    <a class="clear-link" [routerLink]="[('/mining/pool/' + block.extras.pool.id) | relativeUrl]">
+                      <img width="20" height="20" src="{{ block.extras.pool['logo'] }}"
+                        onError="this.src = './resources/mining-pools/default.svg'">
+                      <span class="pool-name">{{ block.extras.pool.name }}</span>
+                    </a>
+                  </td>
                   <td class="table-cell-transaction-count">{{ block.tx_count | number }}</td>
                   <td class="table-cell-size">
                     <div class="progress">
@@ -128,7 +136,7 @@
                 </tr>
               </tbody>
             </table>
-            <div class=""><a href="" [routerLink]="['/blocks' | relativeUrl]" i18n="dashboard.view-all">View all &raquo;</a></div>
+            <div class=""><a href="" [routerLink]="[(stateService.env.MINING_DASHBOARD ? '/mining/blocks' : '/blocks') | relativeUrl]" i18n="dashboard.view-all">View all &raquo;</a></div>
           </div>
         </div>
       </div>
