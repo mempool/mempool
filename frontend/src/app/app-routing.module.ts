@@ -294,7 +294,7 @@ let routes: Routes = [
       },
       {
         path: '**',
-        redirectTo: ''
+        redirectTo: '/testnet'
       },
     ]
   },
@@ -430,7 +430,7 @@ let routes: Routes = [
       },
       {
         path: '**',
-        redirectTo: ''
+        redirectTo: '/signet'
       },
     ]
   },
@@ -738,7 +738,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
   },
   {
     path: '**',
-    redirectTo: ''
+    redirectTo: '/testnet'
   }];
 }
 
