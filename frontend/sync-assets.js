@@ -36,7 +36,7 @@ function download(filename, url) {
 function downloadMiningPoolLogos() {
   const options = {
     host: 'api.github.com',
-    path: '/repos/mempool/mining-pools/contents/',
+    path: '/repos/mempool/mining-pool-logos/contents/',
     method: 'GET',
     headers: {'user-agent': 'node.js'}
   };
@@ -62,7 +62,7 @@ function downloadMiningPoolLogos() {
   })
 }
 
-const poolsJsonUrl = 'https://raw.githubusercontent.com/btccom/Blockchain-Known-Pools/master/pools.json';
+const poolsJsonUrl = 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json';
 let assetsJsonUrl = 'https://raw.githubusercontent.com/mempool/asset_registry_db/master/index.json';
 let assetsMinimalJsonUrl = 'https://raw.githubusercontent.com/mempool/asset_registry_db/master/index.minimal.json';
 
