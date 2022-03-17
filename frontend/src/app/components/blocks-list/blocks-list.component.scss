@@ -34,8 +34,9 @@ td {
 }
 .pool.widget {
   width: 40%;
+  padding-left: 30px;
   @media (max-width: 576px) {
-    padding-left: 30px;
+    padding-left: 40px;
     width: 60%;
   }
 }
@@ -121,4 +122,35 @@ td {
   @media (max-width: 450px) {
     display: none;
   }
+}
+
+/* Tooltip text */
+.tooltip-custom {
+  position: relative; 
+}
+
+.tooltip-custom .tooltiptext {
+  visibility: hidden;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  top: -40px;
+  left: 0;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip-custom:hover .tooltiptext {
+  visibility: visible;
+}
+
+.scriptmessage {
+  overflow: hidden;
+	display: inline-block;
+	text-overflow: ellipsis;
+	vertical-align: middle;
+	max-width: 50vw;
+  text-align: left;
 }

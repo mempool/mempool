@@ -1,20 +1,20 @@
-<div class="container">
+<div class="container-xl">
 
   <div *ngIf="poolStats$ | async as poolStats; else loadingMain">
-    <h1 class="m-0 mb-2">
+    <div style="display:flex">
       <img width="50" height="50" src="{{ poolStats['logo'] }}"
-        onError="this.src = './resources/mining-pools/default.svg'" class="mr-3">
-      {{ poolStats.pool.name }}
-    </h1>
+        onError="this.src = './resources/mining-pools/default.svg'" class="mr-3 mb-3">
+      <h1 class="m-0 pt-1 pt-md-0">{{ poolStats.pool.name }}</h1>
+    </div>
 
     <div class="box">
       <div class="row">
-        <div class="col-lg-7">
+        <div class="col-lg-9">
           <table class="table table-borderless table-striped" style="table-layout: fixed;">
             <tbody>
               <tr>
                 <td class="label">Tags</td>
-                <td class="text-truncate">
+                <td class="text-truncate" *ngIf="poolStats.pool.regexes.length else nodata">
                   <div class="scrollable">
                     {{ poolStats.pool.regexes }}
                   </div>
@@ -22,21 +22,21 @@
               </tr>
               <tr>
                 <td class="label">Addresses</td>
-                <td class="text-truncate" *ngIf="poolStats.pool.addresses.length else noaddress">
+                <td class="text-truncate" *ngIf="poolStats.pool.addresses.length else nodata">
                   <div class="scrollable">
                     <a *ngFor="let address of poolStats.pool.addresses"
                       [routerLink]="['/address' | relativeUrl, address]">{{
                       address }}<br></a>
                   </div>
                 </td>
-                <ng-template #noaddress>
-                  <td>~</td>
+                <ng-template #nodata>
+                  <td class="right-mobile">~</td>
                 </ng-template>
               </tr>
             </tbody>
           </table>
         </div>
-        <div class="col-lg-5">
+        <div class="col-lg-3">
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
@@ -59,31 +59,48 @@
     <div class="spinner-border text-light"></div>
   </div>
 
-  <table *ngIf="blocks$ | async as blocks" class="table table-borderless" [alwaysCallback]="true" infiniteScroll
+  <table class="table table-borderless" [alwaysCallback]="true" infiniteScroll
     [infiniteScrollDistance]="1.5" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50"
     (scrolled)="loadMore()">
     <thead>
-      <th style="width: 15%;" i18n="latest-blocks.height">Height</th>
-      <th class="d-none d-md-block" style="width: 20%;" i18n="latest-blocks.timestamp">Timestamp</th>
-      <th style="width: 20%;" i18n="latest-blocks.mined">Mined</th>
-      <th class="text-right" style="width: 10%; padding-right: 30px" i18n="latest-blocks.reward">Reward</th>
-      <th class="d-none d-lg-block text-right" style="width: 15%; padding-right: 40px"
-        i18n="latest-blocks.transactions">
-        Transactions</th>
-      <th style="width: 20%;" i18n="latest-blocks.size">Size</th>
+      <th class="height" i18n="latest-blocks.height">Height</th>
+      <th class="timestamp" i18n="latest-blocks.timestamp">Timestamp</th>
+      <th class="mined" i18n="latest-blocks.mined">Mined</th>
+      <th class="coinbase text-left" i18n="latest-blocks.coinbasetag">
+        Coinbase Tag</th>
+      <th class="reward text-right" i18n="latest-blocks.reward">
+        Reward</th>
+      <th class="fees text-right" i18n="latest-blocks.fees">Fees</th>
+      <th class="txs text-right" i18n="latest-blocks.transactions">Txs</th>
+      <th class="size" i18n="latest-blocks.size">Size</th>
     </thead>
-    <tbody>
-      <tr *ngFor="let block of blocks">
-        <td><a [routerLink]="['/block' | relativeUrl, block.id]">{{ block.height }}</a></td>
-        <td class="d-none d-md-block">&lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}</td>
-        <td>
+    <tbody *ngIf="blocks$ | async as blocks; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
+      <tr *ngFor="let block of blocks; let i= index; trackBy: trackByBlock">
+        <td class="height">
+          <a [routerLink]="['/block' | relativeUrl, block.height]">{{ block.height
+            }}</a>
+        </td>
+        <td class="timestamp">
+          &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
+        </td>
+        <td class="mined">
           <app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since>
         </td>
-        <td class="text-right" style="padding-right: 30px">
-          <app-amount [satoshis]="block['reward']" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
+        <td class="coinbase">
+          <span class="badge badge-secondary scriptmessage longer">
+            {{ block.extras.coinbaseRaw | hex2ascii }}
+          </span>
         </td>
-        <td class="d-none d-lg-block text-right" style="padding-right: 40px">{{ block.tx_count | number }}</td>
-        <td>
+        <td class="reward text-right">
+          <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-2"></app-amount>
+        </td>
+        <td class="fees text-right">
+          <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-2"></app-amount>
+        </td>
+        <td class="txs text-right">
+          {{ block.tx_count | number }}
+        </td>
+        <td class="size">
           <div class="progress">
             <div class="progress-bar progress-mempool" role="progressbar"
               [ngStyle]="{'width': (block.weight / stateService.env.BLOCK_WEIGHT_UNITS)*100 + '%' }"></div>
@@ -92,16 +109,46 @@
         </td>
       </tr>
     </tbody>
+    <ng-template #skeleton>
+      <tbody>
+        <tr *ngFor="let item of skeletonLines">
+          <td class="height">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="timestamp">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="mined">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="coinbase">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="reward text-right">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="fees text-right">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="txs text-right">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="size text-right">
+            <span class="skeleton-loader"></span>
+          </td>
+        </tr>
+      </tbody>
+    </ng-template>
   </table>
 
 </div>
 
 <ng-template #loadingMain>
   <div>
-    <h1 class="m-0 mb-2">
-      <img width="50" height="50" src="./resources/mining-pools/default.svg" class="mr-3">
-      <div class="skeleton-loader"></div>
-    </h1>
+    <div style="display:flex">
+      <img width="50" height="50" src="./resources/mining-pools/default.svg" class="mr-3 mb-3">
+      <h1 class="m-0 pt-1 pt-md-0"><div class="skeleton-loader"></div></h1>
+    </div>
 
     <div class="box">
       <div class="row">
@@ -109,21 +156,21 @@
           <table class="table table-borderless table-striped" style="table-layout: fixed;">
             <tbody>
               <tr>
-                <td class="col-4 col-lg-3">Addresses</td>
+                <td class="label">Tags</td>
+                <td class="text-truncate">
+                  <div class="skeleton-loader"></div>
+                </td>
+              </tr>
+              <tr>
+                <td class="label">Addresses</td>
                 <td class="text-truncate">
                   <div class="scrollable">
                     <div class="skeleton-loader"></div>
                   </div>
                 </td>
-                <ng-template #noaddress>
+                <ng-template #nodata>
                   <td>~</td>
                 </ng-template>
-              </tr>
-              <tr>
-                <td class="col-4 col-lg-3">Coinbase Tags</td>
-                <td class="text-truncate">
-                  <div class="skeleton-loader"></div>
-                </td>
               </tr>
             </tbody>
           </table>
@@ -132,14 +179,14 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td class="col-4 col-lg-8">Mined Blocks</td>
-                <td class="text-left">
+                <td class="label">Mined Blocks</td>
+                <td class="text-truncate">
                   <div class="skeleton-loader"></div>
                 </td>
               </tr>
               <tr>
-                <td class="col-4 col-lg-8">Empty Blocks</td>
-                <td class="text-left">
+                <td class="label">Empty Blocks</td>
+                <td class="text-truncate">
                   <div class="skeleton-loader"></div>
                 </td>
               </tr>

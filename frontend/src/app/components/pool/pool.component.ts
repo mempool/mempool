@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } 
 import { ActivatedRoute } from '@angular/router';
 import { EChartsOption, graphic } from 'echarts';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { distinctUntilChanged, map, switchMap, tap, toArray } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended, PoolStat } from 'src/app/interfaces/node-api.interface';
 import { ApiService } from 'src/app/services/api.service';
 import { StateService } from 'src/app/services/state.service';
@@ -31,6 +31,7 @@ export class PoolComponent implements OnInit {
   poolStats$: Observable<PoolStat>;
   blocks$: Observable<BlockExtended[]>;
   isLoading = true;
+  skeletonLines: number[] = [...Array(5).keys()];
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -39,8 +40,7 @@ export class PoolComponent implements OnInit {
     height: 'auto',
   };
 
-  fromHeight: number = -1;
-  fromHeightSubject: BehaviorSubject<number> = new BehaviorSubject(this.fromHeight);
+  loadMoreSubject: BehaviorSubject<undefined> = new BehaviorSubject(undefined);
 
   blocks: BlockExtended[] = [];
   poolId: number = undefined;
@@ -66,12 +66,9 @@ export class PoolComponent implements OnInit {
                 this.prepareChartOptions(data.hashrates.map(val => [val.timestamp * 1000, val.avgHashrate]));
                 return poolId;
               }),
-            )
+            );
         }),
         switchMap(() => {
-          if (this.blocks.length === 0) {
-            this.fromHeightSubject.next(undefined);
-          }
           return this.apiService.getPoolStats$(this.poolId);
         }),
         map((poolStats) => {
@@ -88,17 +85,16 @@ export class PoolComponent implements OnInit {
         })
       );
 
-    this.blocks$ = this.fromHeightSubject
+    this.blocks$ = this.loadMoreSubject
       .pipe(
-        distinctUntilChanged(),
-        switchMap((fromHeight) => {
-          return this.apiService.getPoolBlocks$(this.poolId, fromHeight);
+        switchMap((flag) => {
+          return this.apiService.getPoolBlocks$(this.poolId, this.blocks[this.blocks.length - 1]?.height);
         }),
         tap((newBlocks) => {
           this.blocks = this.blocks.concat(newBlocks);
         }),
         map(() => this.blocks)
-      )
+      );
   }
 
   prepareChartOptions(data) {
@@ -133,18 +129,18 @@ export class PoolComponent implements OnInit {
           align: 'left',
         },
         borderColor: '#000',
-        formatter: function (data) {
+        formatter: function(ticks: any[]) {
           let hashratePowerOfTen: any = selectPowerOfTen(1);
-          let hashrate = data[0].data[1];
+          let hashrate = ticks[0].data[1];
 
           if (this.isMobile()) {
-            hashratePowerOfTen = selectPowerOfTen(data[0].data[1]);
-            hashrate = Math.round(data[0].data[1] / hashratePowerOfTen.divider);
+            hashratePowerOfTen = selectPowerOfTen(ticks[0].data[1]);
+            hashrate = Math.round(ticks[0].data[1] / hashratePowerOfTen.divider);
           }
 
           return `
-            <b style="color: white; margin-left: 18px">${data[0].axisValueLabel}</b><br>
-            <span>${data[0].marker} ${data[0].seriesName}: ${formatNumber(hashrate, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s</span><br>
+            <b style="color: white; margin-left: 18px">${ticks[0].axisValueLabel}</b><br>
+            <span>${ticks[0].marker} ${ticks[0].seriesName}: ${formatNumber(hashrate, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s</span><br>
           `;
         }.bind(this)
       },
@@ -154,11 +150,10 @@ export class PoolComponent implements OnInit {
       },
       yAxis: [
         {
-          min: function (value) {
+          min: (value) => {
             return value.min * 0.9;
           },
           type: 'value',
-          name: 'Hashrate',
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val) => {
@@ -192,7 +187,7 @@ export class PoolComponent implements OnInit {
   }
 
   loadMore() {
-    this.fromHeightSubject.next(this.blocks[this.blocks.length - 1]?.height);
+    this.loadMoreSubject.next(undefined);
   }
 
   trackByBlock(index: number, block: BlockExtended) {

@@ -1,5 +1,6 @@
-.progress {
-  background-color: #2d3348;
+.container-xl {
+  max-width: 1400px;
+  padding-bottom: 100px;
 }
 
 @media (min-width: 768px) {
@@ -39,28 +40,100 @@ div.scrollable {
   max-height: 75px;
 }
 
-.skeleton-loader {
-  width: 100%;
-  max-width: 90px;
-}
-
-.table {
-  margin: 0px auto;
-  max-width: 900px;
-}
-
 .box {
-  padding-bottom: 0px;
+  padding-bottom: 5px;
 }
 
 .label {
-  max-width: 50px;
   width: 30%;
 }
 
 .data {
-  text-align: center;
-  @media (max-width: 767.98px) {
+  text-align: left;
+  padding-left: 25%;
+  @media (max-width: 991px) {
+    padding-left: 12px;
+  }
+  @media (max-width: 450px) {
+    text-align: right;
+  }
+}
+
+.progress {
+  background-color: #2d3348;
+}
+
+.coinbase {
+  width: 20%;
+  @media (max-width: 875px) {
+    display: none;
+  }
+}
+
+.height {
+  width: 10%;
+}
+
+.timestamp {
+  @media (max-width: 875px) {
+    padding-left: 50px;
+  }
+  @media (max-width: 650px) {
+    display: none;
+  }
+}
+
+.mined {
+  width: 13%;
+  @media (max-width: 1100px) {
+    display: none;
+  }
+}
+
+.txs {
+  padding-right: 40px;
+  @media (max-width: 1100px) {
+    padding-right: 10px;
+  }
+  @media (max-width: 875px) {
+    padding-right: 50px;
+  }
+  @media (max-width: 567px) {
+    padding-right: 10px;
+  }
+}
+
+.fees {
+  width: 0%;  
+}
+
+.size {
+  width: 12%;
+  @media (max-width: 1000px) {
+    width: 15%;
+  }
+  @media (max-width: 875px) {
+    width: 20%;
+  }
+  @media (max-width: 650px) {
+    width: 20%;
+  }
+  @media (max-width: 450px) {
+    display: none;
+  }
+}
+
+.scriptmessage {
+	overflow: hidden;
+	display: inline-block;
+	text-overflow: ellipsis;
+	vertical-align: middle;
+	width: auto;
+  text-align: left;
+}
+
+.right-mobile {
+  @media (max-width: 450px) {
     text-align: right;
   }
 }

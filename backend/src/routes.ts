@@ -553,7 +553,7 @@ class Routes {
     try {
       const poolBlocks = await BlocksRepository.$getBlocksByPool(
         parseInt(req.params.poolId, 10),
-        parseInt(req.params.height, 10) ?? null,
+        req.params.height === undefined ? undefined : parseInt(req.params.height, 10),
       );
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
@@ -659,7 +659,8 @@ class Routes {
 
   public async getBlocksExtras(req: Request, res: Response) {
     try {
-      res.json(await blocks.$getBlocksExtras(parseInt(req.params.height, 10), 15));
+      const height = req.params.height === undefined ? undefined : parseInt(req.params.height, 10);
+      res.json(await blocks.$getBlocksExtras(height, 15));
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
