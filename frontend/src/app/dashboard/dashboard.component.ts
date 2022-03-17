@@ -149,6 +149,15 @@ export class DashboardComponent implements OnInit {
           }
           acc.unshift(block);
           acc = acc.slice(0, 6);
+
+          if (this.stateService.env.MINING_DASHBOARD === true) {
+            for (const block of acc) {
+              // @ts-ignore: Need to add an extra field for the template
+              block.extras.pool.logo = `./resources/mining-pools/` +
+                block.extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
+            }
+          }
+
           return acc;
         }, []),
       );
