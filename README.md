@@ -90,7 +90,7 @@ JSON:
     "MEMPOOL_BLOCKS_AMOUNT": 8,
     "PRICE_FEED_UPDATE_INTERVAL": 600,
     "USE_SECOND_NODE_FOR_MINFEE": false,
-    "EXTERNAL_ASSETS": ["https://mempool.space/resources/pools.json"],
+    "EXTERNAL_ASSETS": ["https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json"],
     "STDOUT_LOG_MIN_PRIORITY": "info"
   },
 ```
