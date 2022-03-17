@@ -128,7 +128,7 @@
                 </tr>
               </tbody>
             </table>
-            <div class=""><a href="" [routerLink]="['/blocks' | relativeUrl]" i18n="dashboard.view-all">View all &raquo;</a></div>
+            <div class=""><a href="" [routerLink]="[(stateService.env.MINING_DASHBOARD ? '/mining/blocks' : '/blocks') | relativeUrl]" i18n="dashboard.view-all">View all &raquo;</a></div>
           </div>
         </div>
       </div>
