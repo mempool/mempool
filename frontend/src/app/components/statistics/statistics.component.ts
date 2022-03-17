@@ -45,7 +45,7 @@ export class StatisticsComponent implements OnInit {
     private route: ActivatedRoute,
     private websocketService: WebsocketService,
     private apiService: ApiService,
-    private stateService: StateService,
+    public stateService: StateService,
     private seoService: SeoService,
     private storageService: StorageService,
   ) { }

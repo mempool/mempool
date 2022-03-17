@@ -24,11 +24,14 @@
               }}</a>
           </td>
           <td class="pool text-left" [class]="widget ? 'widget' : ''">
-            <a class="clear-link" [routerLink]="[('/mining/pool/' + block.extras.pool.id) | relativeUrl]">
-              <img width="25" height="25" src="{{ block.extras.pool['logo'] }}"
-                onError="this.src = './resources/mining-pools/default.svg'">
-              <span class="pool-name">{{ block.extras.pool.name }}</span>
-            </a>
+            <div class="tooltip-custom">
+              <a class="clear-link" [routerLink]="[('/mining/pool/' + block.extras.pool.id) | relativeUrl]">
+                <img width="25" height="25" src="{{ block.extras.pool['logo'] }}"
+                  onError="this.src = './resources/mining-pools/default.svg'">
+                <span class="pool-name">{{ block.extras.pool.name }}</span>
+              </a>
+              <span class="tooltiptext badge badge-secondary scriptmessage">{{ block.extras.coinbaseRaw | hex2ascii }}</span>
+            </div>
           </td>
           <td class="timestamp" *ngIf="!widget">
             &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}

@@ -1,4 +1,4 @@
-<ul ngbNav #nav="ngbNav" class="nav-pills mb-3" style="padding: 0px 35px">
+<ul ngbNav #nav="ngbNav" class="nav-pills mb-3" style="padding: 0px 35px" *ngIf="stateService.env.MINING_DASHBOARD">
   <div class="d-inline-flex flex-wrap menu">
     <li ngbNavItem class="menu-li">
       <a routerLinkActive="active" [routerLink]="['/graphs/mempool' | relativeUrl]" ngbNavLink>Mempool</a>
