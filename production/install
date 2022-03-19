@@ -837,6 +837,9 @@ osSudo "${ROOT_USER}" mkdir -p /usr/local/etc/newsyslog.conf.d
 osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/newsyslog-mempool-backend.conf" /usr/local/etc/syslog.d/newsyslog-mempool-backend.conf
 osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/newsyslog-mempool-nginx.conf" /usr/local/etc/syslog.d/newsyslog-mempool-nginx.conf
 
+echo "[*] Installing Mempool crontab"
+osSudo "${ROOT_USER}" crontab -u "${MEMPOOL_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/mempool.crontab"
+
 echo "[*] Installing nvm.sh from GitHub"
 osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
 
