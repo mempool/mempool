@@ -326,7 +326,7 @@ FREEBSD_PKG=()
 FREEBSD_PKG+=(zsh sudo git screen curl wget calc neovim)
 FREEBSD_PKG+=(openssh-portable py38-pip rust llvm90)
 FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc libevent libtool pkgconf)
-FREEBSD_PKG+=(nginx rsync py38-certbot-nginx mariadb105-server)
+FREEBSD_PKG+=(nginx rsync py38-certbot-nginx mariadb105-server keybase)
 
 #############################
 ##### utility functions #####
