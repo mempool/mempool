@@ -440,6 +440,8 @@ osCertbotDryRun()
 
 zfsCreateFilesystems()
 {
+    zfs create -o "mountpoint=/backup" "${ZPOOL}/backup"
+
     zfs create -o "mountpoint=${ELEMENTS_HOME}" "${ZPOOL}/elements"
     zfs create -o "mountpoint=${BITCOIN_HOME}" "${ZPOOL}/bitcoin"
     zfs create -o "mountpoint=${ELECTRS_HOME}" "${ZPOOL}/electrs"
@@ -816,6 +818,7 @@ id "${MEMPOOL_USER}"
 echo "[*] Creating Mempool data folder"
 osSudo "${ROOT_USER}" mkdir -p "${MEMPOOL_HOME}"
 osSudo "${ROOT_USER}" chown -R "${MEMPOOL_USER}:${MEMPOOL_GROUP}" "${MEMPOOL_HOME}"
+osSudo "${ROOT_USER}" chown -R "${MEMPOOL_USER}:${MEMPOOL_GROUP}" /backup
 osSudo "${MEMPOOL_USER}" touch "${MEMPOOL_HOME}/.zshrc"
 
 echo "[*] Cloning Mempool repo from ${MEMPOOL_REPO_URL}"
