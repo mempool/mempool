@@ -827,6 +827,16 @@ osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-kill-all stop
 osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-start-all start
 osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-restart-all restart
 
+echo "[*] Installing syslog configuration"
+osSudo "${ROOT_USER}" mkdir -p /usr/local/etc/syslog.d
+osSudo "${ROOT_USER}" install -c -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/mempool-logger" /usr/local/bin/mempool-logger
+osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/syslog.conf" /usr/local/etc/syslog.d/mempool.conf
+
+echo "[*] Installing newsyslog configuration"
+osSudo "${ROOT_USER}" mkdir -p /usr/local/etc/newsyslog.conf.d
+osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/newsyslog-mempool-backend.conf" /usr/local/etc/syslog.d/newsyslog-mempool-backend.conf
+osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/newsyslog-mempool-nginx.conf" /usr/local/etc/syslog.d/newsyslog-mempool-nginx.conf
+
 echo "[*] Installing nvm.sh from GitHub"
 osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
 
