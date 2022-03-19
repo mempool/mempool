@@ -1,6 +1,7 @@
 #!/usr/local/bin/zsh
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:$HOME/bin
 HOSTNAME=$(hostname)
+LOCATION=$(hostname|cut -d . -f2)
 LOCKFILE="${HOME}/lock"
 REF=$(echo "${1:=origin/master}"|sed -e 's!:!/!')
 
@@ -102,6 +103,6 @@ for target in mainnet liquid bisq;do
 done
 
 echo "${HOSTNAME} updated to \`${REF}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel general mempool.dev
-echo "${HOSTNAME} updated to \`${REF}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel general mempool.ops
+echo "${HOSTNAME} updated to \`${REF}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel general "mempool.ops.${LOCATION}"
 
 exit 0
