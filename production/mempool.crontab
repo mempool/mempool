@@ -1,0 +1,3 @@
+@reboot sleep 10 ; $HOME/start
+37 13 * * * sleep 30 ; /backup/backup >/dev/null 2>&1 &
+@reboot sleep 180 ; /mempool/mempool/production/nginx-cache-warmer >/dev/null 2>&1 &
