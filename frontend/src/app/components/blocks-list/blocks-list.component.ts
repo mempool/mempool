@@ -34,7 +34,9 @@ export class BlocksList implements OnInit {
   }
 
   ngOnInit(): void {
-    this.websocketService.want(['blocks']);
+    if (!this.widget) {
+      this.websocketService.want(['blocks']);
+    }
 
     this.skeletonLines = this.widget === true ? [...Array(5).keys()] : [...Array(15).keys()];
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
