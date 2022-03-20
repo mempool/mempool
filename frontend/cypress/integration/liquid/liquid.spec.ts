@@ -84,8 +84,8 @@ describe('Liquid', () => {
         cy.visit(`${basePath}/tx/fe764f7bedfc2a37b29d9c8aef67d64a57d253a6b11c5a55555cfd5826483a58`);
         cy.waitForSkeletonGone();
         //TODO: Change to an element id so we don't assert on a string
-        cy.get('#table-tx-vin').should('contain', 'Peg-in');
-        cy.get('#table-tx-vin a').click().then(() => {
+        cy.get('.table-tx-vin').should('contain', 'Peg-in');
+        cy.get('.table-tx-vin a').click().then(() => {
           cy.waitForSkeletonGone();
           if (baseModule === 'liquid') {
             cy.url().should('eq', 'https://mempool.space/tx/f148c0d854db4174ea420655235f910543f0ec3680566dcfdf84fb0a1697b592');
@@ -99,7 +99,7 @@ describe('Liquid', () => {
       it('loads peg out addresses', () => {
         cy.visit(`${basePath}/tx/ecf6eba04ffb3946faa172343c87162df76f1a57b07b0d6dc6ad956b13376dc8`);
         cy.waitForSkeletonGone();
-        cy.get('#table-tx-vout a').first().click().then(() => {
+        cy.get('.table-tx-vout a').first().click().then(() => {
           cy.waitForSkeletonGone();
           if (baseModule === 'liquid') {
             cy.url().should('eq', 'https://mempool.space/address/1BxoGcMg14oaH3CwHD2hF4gU9VcfgX5yoR');
@@ -149,57 +149,57 @@ describe('Liquid', () => {
       it('show unblinded TX', () => {
         cy.visit(`${basePath}/tx/f2f41c0850e8e7e3f1af233161fd596662e67c11ef10ed15943884186fbb7f46#blinded=100000,6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d,0ab9f70650f16b1db8dfada05237f7d0d65191c3a13183da8a2ddddfbde9a2ad,fd98b2edc5530d76acd553f206a431f4c1fab27e10e290ad719582af878e98fc,2364760,6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d,90c7a43b15b905bca045ca42a01271cfe71d2efe3133f4197792c24505cb32ed,12eb5959d9293b8842e7dd8bc9aa9639fd3fd031c5de3ba911adeca94eb57a3a`);
         cy.waitForSkeletonGone();
-        cy.get('#table-tx-vin tr:nth-child(1) .amount').should('contain.text', '0.02465000 L-BTC');
-        cy.get('#table-tx-vin tr').should('have.class', 'assetBox');
-        cy.get('#table-tx-vout tr:nth-child(1) .amount').should('contain.text', '0.00100000 L-BTC');
-        cy.get('#table-tx-vout tr:nth-child(2) .amount').should('contain.text', '0.02364760 L-BTC');
-        cy.get('#table-tx-vout tr').should('have.class', 'assetBox');
+        cy.get('.table-tx-vin tr:nth-child(1) .amount').should('contain.text', '0.02465000 L-BTC');
+        cy.get('.table-tx-vin tr').should('have.class', 'assetBox');
+        cy.get('.table-tx-vout tr:nth-child(1) .amount').should('contain.text', '0.00100000 L-BTC');
+        cy.get('.table-tx-vout tr:nth-child(2) .amount').should('contain.text', '0.02364760 L-BTC');
+        cy.get('.table-tx-vout tr').should('have.class', 'assetBox');
       });
 
       it('show empty unblinded TX', () => {
         cy.visit(`${basePath}/tx/f2f41c0850e8e7e3f1af233161fd596662e67c11ef10ed15943884186fbb7f46#blinded=`);
         cy.waitForSkeletonGone();
-        cy.get('#table-tx-vin tr:nth-child(1)').should('have.class', '');
-        cy.get('#table-tx-vin tr:nth-child(1) .amount').should('contain.text', 'Confidential');
-        cy.get('#table-tx-vout tr:nth-child(1)').should('have.class', '');
-        cy.get('#table-tx-vout tr:nth-child(2)').should('have.class', '');
-        cy.get('#table-tx-vout tr:nth-child(1) .amount').should('contain.text', 'Confidential');
-        cy.get('#table-tx-vout tr:nth-child(2) .amount').should('contain.text', 'Confidential');
+        cy.get('.table-tx-vin tr:nth-child(1)').should('have.class', '');
+        cy.get('.table-tx-vin tr:nth-child(1) .amount').should('contain.text', 'Confidential');
+        cy.get('.table-tx-vout tr:nth-child(1)').should('have.class', '');
+        cy.get('.table-tx-vout tr:nth-child(2)').should('have.class', '');
+        cy.get('.table-tx-vout tr:nth-child(1) .amount').should('contain.text', 'Confidential');
+        cy.get('.table-tx-vout tr:nth-child(2) .amount').should('contain.text', 'Confidential');
       });
 
       it('show invalid unblinded TX hex', () => {
         cy.visit(`${basePath}/tx/f2f41c0850e8e7e3f1af233161fd596662e67c11ef10ed15943884186fbb7f46#blinded=123`);
         cy.waitForSkeletonGone();
-        cy.get('#table-tx-vin tr').should('have.class', '');
-        cy.get('#table-tx-vout tr').should('have.class', '');
+        cy.get('.table-tx-vin tr').should('have.class', '');
+        cy.get('.table-tx-vout tr').should('have.class', '');
         cy.get('.error-unblinded').contains('Error: Invalid blinding data (invalid hex)');
       });
 
       it('show first unblinded vout', () => {
         cy.visit(`${basePath}/tx/f2f41c0850e8e7e3f1af233161fd596662e67c11ef10ed15943884186fbb7f46#blinded=100000,6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d,0ab9f70650f16b1db8dfada05237f7d0d65191c3a13183da8a2ddddfbde9a2ad,fd98b2edc5530d76acd553f206a431f4c1fab27e10e290ad719582af878e98fc`);
         cy.waitForSkeletonGone();
-        cy.get('#table-tx-vout tr:nth-child(1)').should('have.class', 'assetBox');
-        cy.get('#table-tx-vout tr:nth-child(1) .amount').should('contain.text', '0.00100000 L-BTC');
+        cy.get('.table-tx-vout tr:nth-child(1)').should('have.class', 'assetBox');
+        cy.get('.table-tx-vout tr:nth-child(1) .amount').should('contain.text', '0.00100000 L-BTC');
       });
 
       it('show second unblinded vout', () => {
         cy.visit(`${basePath}/tx/f2f41c0850e8e7e3f1af233161fd596662e67c11ef10ed15943884186fbb7f46#blinded=2364760,6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d,90c7a43b15b905bca045ca42a01271cfe71d2efe3133f4197792c24505cb32ed,12eb5959d9293b8842e7dd8bc9aa9639fd3fd031c5de3ba911adeca94eb57a3a`);
-        cy.get('#table-tx-vout tr:nth-child(2').should('have.class', 'assetBox');
-        cy.get('#table-tx-vout tr:nth-child(2) .amount').should('contain.text', '0.02364760 L-BTC');
+        cy.get('.table-tx-vout tr:nth-child(2').should('have.class', 'assetBox');
+        cy.get('.table-tx-vout tr:nth-child(2) .amount').should('contain.text', '0.02364760 L-BTC');
       });
 
       it('show invalid error unblinded TX', () => {
         cy.visit(`${basePath}/tx/f2f41c0850e8e7e3f1af233161fd596662e67c11ef10ed15943884186fbb7f46#blinded=100000,6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d,0ab9f70650f16b1db8dfada05237f7d0d65191c3a13183da8a2ddddfbde9a2ad,fd98b2edc5530d76acd553f206a431f4c1fab27e10e290ad719582af878e98fc,2364760,6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d,90c7a43b15b905bca045ca42a01271cfe71d2efe3133f4197792c24505cb32ed,12eb5959d9293b8842e7dd8bc9aa9639fd3fd031c5de3ba911adeca94eb57a3c`);
         cy.waitForSkeletonGone();
-        cy.get('#table-tx-vout tr').should('have.class', 'assetBox');
+        cy.get('.table-tx-vout tr').should('have.class', 'assetBox');
         cy.get('.error-unblinded').contains('Error: Invalid blinding data.');
       });
 
       it('shows asset peg in/out and burn transactions', () => {
         cy.visit(`${basePath}/assets/asset/6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`);
         cy.waitForSkeletonGone();
-        cy.get('#table-tx-vout tr').not('.assetBox');
-        cy.get('#table-tx-vin tr').not('.assetBox');
+        cy.get('.table-tx-vout tr').not('.assetBox');
+        cy.get('.table-tx-vin tr').not('.assetBox');
       });
 
       it('prevents regressing issue #644', () => {
