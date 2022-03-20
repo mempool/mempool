@@ -8,6 +8,7 @@
     "API_URL_PREFIX": "/api/v1/",
     "CLEAR_PROTECTION_MINUTES": 5,
     "POLL_RATE_MS": 2000,
+    "INDEXING_BLOCKS_AMOUNT": -1,
     "USE_SECOND_NODE_FOR_MINFEE": true
   },
   "SYSLOG" : {
