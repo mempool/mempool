@@ -1,0 +1,1 @@
+@reboot sleep 120 ; /usr/local/bin/bitcoind >/dev/null 2>&1
