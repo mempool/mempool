@@ -13,12 +13,12 @@
     <div class="clearfix"></div>
   </div>
 
-  <div class="header-bg box" infiniteScroll [alwaysCallback]="true" [infiniteScrollDistance]="2" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50" (scrolled)="onScroll()">
+  <div class="header-bg box" infiniteScroll [alwaysCallback]="true" [infiniteScrollDistance]="2" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50" (scrolled)="onScroll()" [attr.data-cy]="'tx-' + i">
 
     <div *ngIf="errorUnblinded" class="error-unblinded">{{ errorUnblinded }}</div>
     <div class="row">
       <div class="col">
-        <table class="table table-borderless smaller-text table-sm" id="table-tx-vin">
+        <table class="table table-borderless smaller-text table-sm table-tx-vin">
           <tbody>
             <ng-template ngFor let-vin [ngForOf]="tx['@vinLimit'] ? ((tx.vin.length>12)?tx.vin.slice(0, 10): tx.vin.slice(0, 12)) : tx.vin" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="{
@@ -143,7 +143,7 @@
       </div>
       <div class="w-100 d-block d-md-none"></div>
       <div class="col mobile-bottomcol">
-        <table class="table table-borderless smaller-text table-sm"  id="table-tx-vout">
+        <table class="table table-borderless smaller-text table-sm table-tx-vout">
           <tbody>
             <ng-template ngFor let-vout let-vindex="index" [ngForOf]="tx['@voutLimit'] && !outputIndex ? ((tx.vout.length > 12) ? tx.vout.slice(0, 10) : tx.vout.slice(0, 12)) : tx.vout" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="{

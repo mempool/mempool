@@ -171,6 +171,50 @@ describe('Mainnet', () => {
 
     });
 
+    describe('address highlighting', () => {
+      it('highlights single input addresses', () => {
+        const address = '1wiz32gbHZwMzJCRHMGehJuBgsMTPdaCa';
+        cy.visit(`/address/${address}`);
+        cy.waitForSkeletonGone();
+        cy.get('[data-cy="tx-0"] .table-tx-vin .highlight').should('exist');
+        cy.get('[data-cy="tx-0"] .table-tx-vin .highlight').invoke('text').should('contain', `${address}`);
+      });
+
+      it('highlights multiple input addresses', () => {
+        const address = '1wiz1rtKFBA58qjb582WF5KAFg9mWCuZV';
+        cy.visit(`/address/${address}`);
+        cy.waitForSkeletonGone();
+        cy.get('[data-cy="tx-2"] .table-tx-vin .highlight').should('exist');
+        cy.get('[data-cy="tx-2"] .table-tx-vin .highlight').its('length').should('equal', 2);
+        cy.get('[data-cy="tx-2"] .table-tx-vin .highlight').invoke('text').should('contain', `${address}`);
+      });
+
+      it.only('highlights both input and output addresses in the same transaction', () => {
+        const address = 'bc1q03u63r6hm7a3v6em58zdqtp446w2pw30nm63mv';
+        cy.visit(`/address/${address}`);
+        cy.waitForSkeletonGone();
+        cy.get('[data-cy="tx-1"] .table-tx-vin .highlight').should('exist');
+        cy.get('[data-cy="tx-1"] .table-tx-vout .highlight').should('exist');
+      });
+
+      it('highlights single output addresses', () => {
+        const address = '1wiz32gbHZwMzJCRHMGehJuBgsMTPdaCa';
+        cy.visit(`/address/${address}`);
+        cy.waitForSkeletonGone();
+        cy.get('[data-cy="tx-1"] .table-tx-vout .highlight').should('exist');
+        cy.get('[data-cy="tx-1"] .table-tx-vout .highlight').invoke('text').should('contain', `${address}`);
+      });
+
+      it('highlights multiple output addresses', () => {
+        const address = '1F3Q3sQmiGsWSqK5K6T9tYnX8yqzYRgQbe';
+        cy.visit(`/address/${address}`);
+        cy.waitForSkeletonGone();
+        cy.get('[data-cy="tx-1"] .table-tx-vout .highlight').should('exist');
+        cy.get('[data-cy="tx-1"] .table-tx-vout .highlight').its('length').should('equal', 2);
+        cy.get('[data-cy="tx-1"] .table-tx-vout .highlight').invoke('text').should('contain', `${address}`);
+      });
+    });
+
     describe('blocks navigation', () => {
 
       describe('keyboard events', () => {
