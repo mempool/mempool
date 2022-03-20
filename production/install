@@ -265,6 +265,12 @@ ELECTRS_HOME=/electrs
 # elements electrs source/binaries
 ELEMENTS_ELECTRS_HOME=${ELEMENTS_HOME}/electrs
 
+# minfee user/group
+MINFEE_USER=minfee
+MINFEE_GROUP=minfee
+# minfee core data folder, needs about 30GB
+MINFEE_HOME=/minfee
+
 ##### git repo settings, shouldn't need changing
 
 MEMPOOL_REPO_URL=https://github.com/mempool/mempool
@@ -444,6 +450,7 @@ zfsCreateFilesystems()
 
     zfs create -o "mountpoint=${ELEMENTS_HOME}" "${ZPOOL}/elements"
     zfs create -o "mountpoint=${BITCOIN_HOME}" "${ZPOOL}/bitcoin"
+    zfs create -o "mountpoint=${MINFEE_HOME}" "${ZPOOL}/minfee"
     zfs create -o "mountpoint=${ELECTRS_HOME}" "${ZPOOL}/electrs"
     zfs create -o "mountpoint=${MEMPOOL_HOME}" "${ZPOOL}/mempool"
     zfs create -o "mountpoint=${MYSQL_HOME}" "${ZPOOL}/mysql"
@@ -891,6 +898,14 @@ if [ "${BITCOIN_INSTALL}" = ON ];then
     osUserCreate -d "${BITCOIN_HOME}" -g "${BITCOIN_GROUP}" -G "${TOR_GROUP}" -n "${BITCOIN_USER}"
     osSudo "${ROOT_USER}" chsh -s `which zsh` "${BITCOIN_USER}"
 
+    echo "[*] Creating Bitcoin minfee user with Tor access"
+    osGroupCreate "${MINFEE_GROUP}"
+    osUserCreate -d "${MINFEE_HOME}" -g "${MINFEE_GROUP}" -G "${TOR_GROUP}" -n "${MINFEE_USER}"
+    osSudo "${ROOT_USER}" chown -R "${MINFEE_USER}:${MINFEE_GROUP}" "${MINFEE_HOME}"
+    osSudo "${ROOT_USER}" chsh -s `which zsh` "${MINFEE_USER}"
+    osSudo "${MINFEE_USER}" touch "${MINFEE_HOME}/.zshrc"
+    osSudo "${MINFEE_USER}" ln -s . .bitcoin
+
     echo "[*] Creating Bitcoin data folder"
     osSudo "${ROOT_USER}" mkdir -p "${BITCOIN_HOME}"
     osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_HOME}"
@@ -915,9 +930,14 @@ if [ "${BITCOIN_INSTALL}" = ON ];then
     echo "[*] Installing Bitcoin configuration"
     osSudo "${ROOT_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.conf" "${BITCOIN_HOME}/bitcoin.conf"
 
-    echo "[*] Installing Bitcoin Mainnet RPC credentials"
+    echo "[*] Installing Bitcoin minfee configuration"
+    osSudo "${ROOT_USER}" install -c -o "${MINFEE_USER}" -g "${MINFEE_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.minfee.conf" "${MINFEE_HOME}/bitcoin.conf"
+
+    echo "[*] Installing Bitcoin RPC credentials"
     osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_HOME}/bitcoin.conf"
     osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_HOME}/bitcoin.conf"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${MINFEE_HOME}/bitcoin.conf"
+    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${MINFEE_HOME}/bitcoin.conf"
 fi
 
 #########################
@@ -1150,6 +1170,7 @@ if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
     echo "[*] Installing Bitcoin crontab"
     # FIXME: must only crontab enabled daemons
     osSudo "${ROOT_USER}" crontab -u "${BITCOIN_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.crontab"
+    osSudo "${ROOT_USER}" crontab -u "${MINFEE_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/minfee.crontab"
 
     echo "[*] Configuring Bitcoin Mainnet RPC credentials in electrs start script"
     osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-mainnet"
