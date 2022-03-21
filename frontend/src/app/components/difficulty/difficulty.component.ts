@@ -63,10 +63,8 @@ export class DifficultyComponent implements OnInit {
           colorPreviousAdjustments = '#ffffff66';
         }
 
-        const timeAvgMins = da.timeAvg;
-        const now = new Date().getTime() / 1000;
         const blocksUntilHalving = 210000 - (block.height % 210000);
-        const timeUntilHalving = (blocksUntilHalving * timeAvgMins * 60 * 1000) + (now * 1000);
+        const timeUntilHalving = new Date().getTime() + (blocksUntilHalving * 600000);
 
         const data = {
           base: `${da.progressPercent.toFixed(2)}%`,
