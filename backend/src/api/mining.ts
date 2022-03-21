@@ -113,12 +113,16 @@ class Mining {
           continue;
         }
 
-        const blockStats: any = await BlocksRepository.$blockCountBetweenTimestamp(
-          null, fromTimestamp, toTimestamp);
-        if (blockStats.blockCount === 0) { // We are done indexing, no blocks left
+        // Check if we have blocks for the previous week (which mean that the week
+        // we are currently indexing has complete data)
+        const blockStatsPreviousWeek: any = await BlocksRepository.$blockCountBetweenTimestamp(
+          null, fromTimestamp - 604800, toTimestamp - 604800);
+        if (blockStatsPreviousWeek.blockCount === 0) { // We are done indexing
           break;
         }
 
+        const blockStats: any = await BlocksRepository.$blockCountBetweenTimestamp(
+          null, fromTimestamp, toTimestamp);
         const lastBlockHashrate = await bitcoinClient.getNetworkHashPs(blockStats.blockCount,
           blockStats.lastBlockHeight);
 
@@ -207,12 +211,16 @@ class Mining {
           continue;
         }
 
-        const blockStats: any = await BlocksRepository.$blockCountBetweenTimestamp(
-          null, fromTimestamp, toTimestamp);
-        if (blockStats.blockCount === 0) { // We are done indexing, no blocks left
+        // Check if we have blocks for the previous day (which mean that the day
+        // we are currently indexing has complete data)
+        const blockStatsPreviousDay: any = await BlocksRepository.$blockCountBetweenTimestamp(
+          null, fromTimestamp - 86400, toTimestamp - 86400);
+        if (blockStatsPreviousDay.blockCount === 0) { // We are done indexing
           break;
         }
 
+        const blockStats: any = await BlocksRepository.$blockCountBetweenTimestamp(
+          null, fromTimestamp, toTimestamp);
         const lastBlockHashrate = await bitcoinClient.getNetworkHashPs(blockStats.blockCount,
           blockStats.lastBlockHeight);
 
