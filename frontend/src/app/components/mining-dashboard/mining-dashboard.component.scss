@@ -59,42 +59,6 @@
   padding-bottom: 3px;
 }
 
-.reward-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  height: 76px;
-  .shared-block {
-    color: #ffffff66;
-    font-size: 12px;
-  }
-  .item {
-    display: table-cell;
-    padding: 0 5px;
-    width: 100%;
-    &:nth-child(1) {
-      display: none;
-      @media (min-width: 485px) {
-        display: table-cell;
-      }
-      @media (min-width: 768px) {
-        display: none;
-      }
-      @media (min-width: 992px) {
-        display: table-cell;
-      }
-    }
-  }
-  .card-text {
-    font-size: 22px;
-    margin-top: -9px;
-    position: relative;
-  }
-  .card-text.skeleton {
-    margin-top: 0px;
-  }
-}
-
 .more-padding {
   padding: 18px;
 }

@@ -1,0 +1,51 @@
+<div class="reward-container" *ngIf="$rewardStats | async as rewardStats; else loadingReward">
+  <div class="item">
+    <h5 class="card-title" i18n="mining.rewards">Miners Reward</h5>
+    <div class="card-text">
+      <app-amount [satoshis]="rewardStats.totalReward" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
+      <div class="symbol">in the past 144 blocks</div>
+    </div>
+  </div>
+  <div class="item">
+    <h5 class="card-title" i18n="mining.rewards-per-tx">Reward Per Tx</h5>
+    <div class="card-text">
+      {{ rewardStats.rewardPerTx | amountShortener }}
+      <span class="symbol">sats/tx</span>
+      <div class="symbol">in the past 144 blocks</div>
+    </div>
+  </div>
+  <div class="item">
+    <h5 class="card-title" i18n="mining.average-fee">Average Fee</h5>
+    <div class="card-text">
+      {{ rewardStats.feePerTx | amountShortener}}
+      <span class="symbol">sats/tx</span>
+      <div class="symbol">in the past 144 blocks</div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingReward>
+  <div class="reward-container">
+    <div class="item">
+      <h5 class="card-title" i18n="mining.rewards">Miners Reward</h5>
+      <div class="card-text skeleton">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="mining.rewards-per-tx">Reward Per Tx</h5>
+      <div class="card-text skeleton">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="mining.average-fee">Average Fee</h5>
+      <div class="card-text skeleton">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+  </div>
+</ng-template>
