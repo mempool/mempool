@@ -1,9 +1,9 @@
 <div class="container-xl">
 
   <div *ngIf="poolStats$ | async as poolStats; else loadingMain">
-    <div style="display:flex">
+    <div style="display:flex" class="mb-3">
       <img width="50" height="50" src="{{ poolStats['logo'] }}"
-        onError="this.src = './resources/mining-pools/default.svg'" class="mr-3 mb-3">
+        onError="this.src = './resources/mining-pools/default.svg'" class="mr-3">
       <h1 class="m-0 pt-1 pt-md-0">{{ poolStats.pool.name }}</h1>
     </div>
 
@@ -111,7 +111,7 @@
     </tbody>
     <ng-template #skeleton>
       <tbody>
-        <tr *ngFor="let item of skeletonLines">
+        <tr *ngFor="let item of [1,2,3,4,5]">
           <td class="height">
             <span class="skeleton-loader"></span>
           </td>
@@ -145,15 +145,15 @@
 
 <ng-template #loadingMain>
   <div>
-    <div style="display:flex">
-      <img width="50" height="50" src="./resources/mining-pools/default.svg" class="mr-3 mb-3">
-      <h1 class="m-0 pt-1 pt-md-0"><div class="skeleton-loader"></div></h1>
+    <div class="mb-3" style="display:flex; position: relative">
+      <div class="skeleton-loader mr-3" style="width: 50px; height: 50px"></div>
+      <h1 class="m-0 pt-1 pt-md-0"><div class="skeleton-loader" style="position: absolute; top: 32%; width: 150px; height: 20px"></div></h1>
     </div>
 
     <div class="box">
       <div class="row">
         <div class="col-lg-9">
-          <table class="table table-borderless table-striped" style="table-layout: fixed;">
+          <table class="table table-borderless table-striped">
             <tbody>
               <tr>
                 <td class="label">Tags</td>
@@ -176,7 +176,7 @@
           </table>
         </div>
         <div class="col-lg-3">
-          <table class="table table-borderless table-striped">
+          <table class="table table-borderless table-striped" >
             <tbody>
               <tr>
                 <td class="label">Mined Blocks</td>
