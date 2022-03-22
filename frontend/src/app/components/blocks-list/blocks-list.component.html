@@ -91,7 +91,7 @@
     </table>
 
     <ngb-pagination *ngIf="!widget" class="pagination-container float-right mt-2" [class]="isLoading ? 'disabled' : ''"
-      [collectionSize]="blocksCount" [rotate]="true" [maxSize]="5" [pageSize]="15" [(page)]="page"
+      [collectionSize]="blocksCount" [rotate]="true" [maxSize]="maxSize" [pageSize]="15" [(page)]="page"
       (pageChange)="pageChange(page)" [boundaryLinks]="true" [ellipses]="false">
     </ngb-pagination>
   </div>
