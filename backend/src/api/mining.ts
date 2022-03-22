@@ -92,11 +92,11 @@ class Mining {
 
       const indexedTimestamp = await HashratesRepository.$getWeeklyHashrateTimestamps();
       const hashrates: any[] = [];
-      const genesisTimestamp = 1231006505; // bitcoin-cli getblock 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
+      const genesisTimestamp = 1231006505000; // bitcoin-cli getblock 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
 
       const lastMonday = new Date(now.setDate(now.getDate() - (now.getDay() + 6) % 7));
       const lastMondayMidnight = this.getDateMidnight(lastMonday);
-      let toTimestamp = Math.round((lastMondayMidnight.getTime() - 604800000));
+      let toTimestamp = lastMondayMidnight.getTime();
 
       const totalWeekIndexed = (await BlocksRepository.$blockCount(null, null)) / 1008;
       let indexedThisRun = 0;
@@ -116,7 +116,7 @@ class Mining {
         // Check if we have blocks for the previous week (which mean that the week
         // we are currently indexing has complete data)
         const blockStatsPreviousWeek: any = await BlocksRepository.$blockCountBetweenTimestamp(
-          null, fromTimestamp - 604800000, toTimestamp - 604800000);
+          null, (fromTimestamp - 604800000) / 1000, (toTimestamp - 604800000) / 1000);
         if (blockStatsPreviousWeek.blockCount === 0) { // We are done indexing
           break;
         }
@@ -191,7 +191,7 @@ class Mining {
       logger.info(`Indexing network daily hashrate`);
 
       const indexedTimestamp = (await HashratesRepository.$getNetworkDailyHashrate(null)).map(hashrate => hashrate.timestamp);
-      const genesisTimestamp = 1231006505; // bitcoin-cli getblock 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
+      const genesisTimestamp = 1231006505000; // bitcoin-cli getblock 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
       const lastMidnight = this.getDateMidnight(new Date());
       let toTimestamp = Math.round(lastMidnight.getTime());
       const hashrates: any[] = [];
@@ -214,7 +214,7 @@ class Mining {
         // Check if we have blocks for the previous day (which mean that the day
         // we are currently indexing has complete data)
         const blockStatsPreviousDay: any = await BlocksRepository.$blockCountBetweenTimestamp(
-          null, fromTimestamp - 86400000, toTimestamp - 86400000);
+          null, (fromTimestamp - 86400000) / 1000, (toTimestamp - 86400000) / 1000);
         if (blockStatsPreviousDay.blockCount === 0) { // We are done indexing
           break;
         }
