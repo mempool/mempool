@@ -3,15 +3,15 @@
     <h5 class="card-title" i18n="mining.rewards">Miners Reward</h5>
     <div class="card-text">
       <app-amount [satoshis]="rewardStats.totalReward" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
-      <div class="symbol">in the past 144 blocks</div>
+      <div class="symbol" i18n="rewardStats.totalReward-desc">were rewarded to miners</div>
     </div>
   </div>
   <div class="item">
     <h5 class="card-title" i18n="mining.rewards-per-tx">Reward Per Tx</h5>
     <div class="card-text">
       {{ rewardStats.rewardPerTx | amountShortener }}
-      <span class="symbol">sats/tx</span>
-      <div class="symbol">in the past 144 blocks</div>
+      <span class="symbol" i18n="mining.sats-per-tx">sats/tx</span>
+      <div class="symbol" i18n="mining.rewards-per-tx-desc">miners reward / tx count</div>
     </div>
   </div>
   <div class="item">
@@ -19,7 +19,7 @@
     <div class="card-text">
       {{ rewardStats.feePerTx | amountShortener}}
       <span class="symbol">sats/tx</span>
-      <div class="symbol">in the past 144 blocks</div>
+      <div class="symbol" i18n="mining.average-fee-desc">were paid per tx</div>
     </div>
   </div>
 </div>
