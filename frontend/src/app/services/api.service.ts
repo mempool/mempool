@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators, PoolsStats, PoolStat, BlockExtended } from '../interfaces/node-api.interface';
+import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators, PoolsStats, PoolStat, BlockExtended, RewardStats } from '../interfaces/node-api.interface';
 import { Observable } from 'rxjs';
 import { StateService } from './state.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
@@ -173,5 +173,9 @@ export class ApiService {
         this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/hashrate/pools` +
         (interval !== undefined ? `/${interval}` : '')
       );
+  }
+
+  getRewardStats$(blockCount: number = 144): Observable<RewardStats> {
+    return this.httpClient.get<RewardStats>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/reward-stats/${blockCount}`);
   }
 }
