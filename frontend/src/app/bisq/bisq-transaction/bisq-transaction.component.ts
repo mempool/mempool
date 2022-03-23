@@ -23,7 +23,6 @@ export class BisqTransactionComponent implements OnInit, OnDestroy {
   txId: string;
   price: number;
   isLoading = true;
-  isLoadingTx = true;
   error = null;
   subscription: Subscription;
 
@@ -43,7 +42,6 @@ export class BisqTransactionComponent implements OnInit, OnDestroy {
     this.subscription = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         this.isLoading = true;
-        this.isLoadingTx = true;
         this.error = null;
         document.body.scrollTo(0, 0);
         this.txId = params.get('id') || '';
@@ -94,19 +92,29 @@ export class BisqTransactionComponent implements OnInit, OnDestroy {
         }
 
         this.bisqTx = tx;
-        this.isLoading = false;
 
         return this.electrsApiService.getTransaction$(this.txId);
       }),
     )
-    .subscribe((tx) => {
-      this.isLoadingTx = false;
+    .subscribe((tx: Transaction) => {
+      this.isLoading = false;
 
       if (!tx) {
         return;
       }
 
       this.tx = tx;
+
+      try {
+        for (let i = 0; i < this.bisqTx.outputs.length; i++) {
+          this.bisqTx.outputs[i].address = tx.vout[i].scriptpubkey_address;
+        }
+        for (let i = 0; i < this.bisqTx.inputs.length; i++) {
+          this.bisqTx.inputs[i].address = tx.vin[i].prevout.scriptpubkey_address;
+        }
+      } catch (e) {
+        console.log(e);
+      }
     },
     (error) => {
       this.error = error;
