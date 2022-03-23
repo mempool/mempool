@@ -115,3 +115,9 @@ export interface BlockExtension {
 export interface BlockExtended extends Block {
   extras?: BlockExtension;
 }
+
+export interface RewardStats {
+  totalReward: number;
+  totalFee: number;
+  totalTx: number;
+}

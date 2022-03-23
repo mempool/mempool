@@ -209,3 +209,9 @@ export interface IDifficultyAdjustment {
   timeAvg: number;
   timeOffset: number;
 }
+
+export interface RewardStats {
+  totalReward: number;
+  totalFee: number;
+  totalTx: number;
+}
