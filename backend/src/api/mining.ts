@@ -186,7 +186,7 @@ class Mining {
     }
 
     // We only run this once a day
-    const latestTimestamp = await HashratesRepository.$getLatestRunTimestamp('last_hashrates_indexing');
+    const latestTimestamp = await HashratesRepository.$getLatestRunTimestamp('last_hashrates_indexing') * 1000;
     const now = new Date().getTime();
     if (now - latestTimestamp < 86400000) {
       return;
