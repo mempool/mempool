@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { EChartsOption, graphic } from 'echarts';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, timer } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended, PoolStat } from 'src/app/interfaces/node-api.interface';
 import { ApiService } from 'src/app/services/api.service';
@@ -13,14 +13,6 @@ import { formatNumber } from '@angular/common';
   selector: 'app-pool',
   templateUrl: './pool.component.html',
   styleUrls: ['./pool.component.scss'],
-  styles: [`
-    .loadingGraphs {
-      position: absolute;
-      top: 50%;
-      left: calc(50% - 15px);
-      z-index: 100;
-    }
-  `],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PoolComponent implements OnInit {
@@ -31,7 +23,6 @@ export class PoolComponent implements OnInit {
   poolStats$: Observable<PoolStat>;
   blocks$: Observable<BlockExtended[]>;
   isLoading = true;
-  skeletonLines: number[] = [...Array(5).keys()];
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -40,10 +31,10 @@ export class PoolComponent implements OnInit {
     height: 'auto',
   };
 
-  loadMoreSubject: BehaviorSubject<undefined> = new BehaviorSubject(undefined);
-
   blocks: BlockExtended[] = [];
   poolId: number = undefined;
+
+  loadMoreSubject: BehaviorSubject<number> = new BehaviorSubject(this.poolId);
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -59,6 +50,7 @@ export class PoolComponent implements OnInit {
         switchMap((poolId: any) => {
           this.isLoading = true;
           this.poolId = poolId;
+          this.loadMoreSubject.next(this.poolId);
           return this.apiService.getPoolHashrate$(this.poolId)
             .pipe(
               switchMap((data) => {
@@ -88,6 +80,9 @@ export class PoolComponent implements OnInit {
     this.blocks$ = this.loadMoreSubject
       .pipe(
         switchMap((flag) => {
+          if (this.poolId === undefined) {
+            return [];
+          }
           return this.apiService.getPoolBlocks$(this.poolId, this.blocks[this.blocks.length - 1]?.height);
         }),
         tap((newBlocks) => {
@@ -187,7 +182,7 @@ export class PoolComponent implements OnInit {
   }
 
   loadMore() {
-    this.loadMoreSubject.next(undefined);
+    this.loadMoreSubject.next(this.poolId);
   }
 
   trackByBlock(index: number, block: BlockExtended) {

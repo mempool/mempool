@@ -354,6 +354,9 @@ class BlocksRepository {
     }
   }
 
+  /**
+   * Return oldest blocks height
+   */
   public async $getOldestIndexedBlockHeight(): Promise<number> {
     const connection = await DB.getConnection();
     try {
@@ -364,6 +367,29 @@ class BlocksRepository {
     } catch (e) {
       connection.release();
       logger.err('$getOldestIndexedBlockHeight() error' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Get general block stats
+   */
+  public async $getBlockStats(blockCount: number): Promise<any> {
+    let connection;
+    try {
+      connection = await DB.getConnection();
+
+      // We need to use a subquery
+      const query = `SELECT SUM(reward) as totalReward, SUM(fees) as totalFee, SUM(tx_count) as totalTx
+        FROM (SELECT reward, fees, tx_count FROM blocks ORDER by height DESC LIMIT ${blockCount}) as sub`;
+
+      const [rows]: any = await connection.query(query);
+      connection.release();
+ 
+      return rows[0];
+    } catch (e) {
+      connection.release();
+      logger.err('$getBlockStats() error: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }

@@ -3,6 +3,7 @@ import { EChartsOption } from 'echarts';
 import { OnChanges } from '@angular/core';
 import { StorageService } from 'src/app/services/storage.service';
 import { formatterXAxis, formatterXAxisLabel } from 'src/app/shared/graphs.utils';
+import { formatNumber } from '@angular/common';
 
 @Component({
   selector: 'app-incoming-transactions-graph',
@@ -116,7 +117,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
               itemFormatted += `<div class="item">
                 <div class="indicator-container">${colorSpan(item.color)}</div>
                 <div class="grow"></div>
-                <div class="value">${item.value[1]} <span class="symbol">vB/s</span></div>
+                <div class="value">${formatNumber(item.value[1], this.locale, '1.0-0')}<span class="symbol">vB/s</span></div>
               </div>`;
             }
           });
