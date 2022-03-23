@@ -34,10 +34,9 @@ class BackendInfo {
     } else {
       try {
         const gitRevParse = spawnSync('git', ['rev-parse', '--short', 'HEAD']);
-
         if (!gitRevParse.error) {
-          this.gitCommitHash = gitRevParse.stdout.toString('utf-8').replace(/[\n\r\s]+$/, '');
-          console.log(`mempool revision ${this.gitCommitHash}`);
+          const output = gitRevParse.stdout.toString('utf-8').replace(/[\n\r\s]+$/, '');
+          this.gitCommitHash = output ? output : '?';
         } else if (gitRevParse.error.code === 'ENOENT') {
           console.log('git not found, cannot parse git hash');
           this.gitCommitHash = '?';
