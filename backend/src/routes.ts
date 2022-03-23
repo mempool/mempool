@@ -935,6 +935,15 @@ class Routes {
       res.status(500).end();
     }
   }
+
+  public async $getRewardStats(req: Request, res: Response) {
+    try {
+      const response = await mining.$getRewardStats(parseInt(req.params.blockCount))
+      res.json(response);
+    } catch (e) {
+      res.status(500).end();
+    }
+  }
 }
 
 export default new Routes();
