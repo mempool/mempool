@@ -78,6 +78,7 @@ import { ShortenStringPipe } from './shared/pipes/shorten-string-pipe/shorten-st
 import { GraphsComponent } from './components/graphs/graphs.component';
 import { DifficultyAdjustmentsTable } from './components/difficulty-adjustments-table/difficulty-adjustments-table.components';
 import { BlocksList } from './components/blocks-list/blocks-list.component';
+import { RewardStatsComponent } from './components/reward-stats/reward-stats.component';
 import { DataCyDirective } from './data-cy.directive';
 
 @NgModule({
@@ -139,6 +140,7 @@ import { DataCyDirective } from './data-cy.directive';
     DifficultyAdjustmentsTable,
     BlocksList,
     DataCyDirective,
+    RewardStatsComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),

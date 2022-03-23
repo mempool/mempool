@@ -1,4 +1,4 @@
-import { PoolInfo, PoolStats } from '../mempool.interfaces';
+import { PoolInfo, PoolStats, RewardStats } from '../mempool.interfaces';
 import BlocksRepository from '../repositories/BlocksRepository';
 import PoolsRepository from '../repositories/PoolsRepository';
 import HashratesRepository from '../repositories/HashratesRepository';
@@ -68,6 +68,13 @@ class Mining {
       blockCount: blockCount,
       emptyBlocks: emptyBlocksCount.length > 0 ? emptyBlocksCount[0]['count'] : 0,
     };
+  }
+
+  /**
+   * Get miner reward stats
+   */
+  public async $getRewardStats(blockCount: number): Promise<RewardStats> {
+    return await BlocksRepository.$getBlockStats(blockCount);
   }
 
   /**
