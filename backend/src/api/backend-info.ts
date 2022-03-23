@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import logger from '../logger';
 import { IBackendInfo } from '../mempool.interfaces';
+const { spawnSync } = require('child_process');
 
 class BackendInfo {
   private gitCommitHash = '';
@@ -27,10 +28,23 @@ class BackendInfo {
   }
 
   private setLatestCommitHash(): void {
-    try {
-      this.gitCommitHash = fs.readFileSync('../.git/refs/heads/master').toString().trim();
-    } catch (e) {
-      logger.err('Could not load git commit info: ' + (e instanceof Error ? e.message : e));
+    //TODO: share this logic with `generate-config.js`
+    if (process.env.DOCKER_COMMIT_HASH) {
+      this.gitCommitHash = process.env.DOCKER_COMMIT_HASH;
+    } else {
+      try {
+        const gitRevParse = spawnSync('git', ['rev-parse', '--short', 'HEAD']);
+        if (!gitRevParse.error) {
+          const output = gitRevParse.stdout.toString('utf-8').replace(/[\n\r\s]+$/, '');
+          this.gitCommitHash = output ? output : '?';
+        } else if (gitRevParse.error.code === 'ENOENT') {
+          console.log('git not found, cannot parse git hash');
+          this.gitCommitHash = '?';
+        }
+      } catch (e: any) {
+        console.log('Could not load git commit info: ' + e.message);
+        this.gitCommitHash = '?';
+      }
     }
   }
 
