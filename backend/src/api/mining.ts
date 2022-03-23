@@ -154,7 +154,7 @@ class Mining {
         await HashratesRepository.$saveHashrates(hashrates);
         hashrates.length = 0;
 
-        const elapsedSeconds = Math.max(1, Math.round((new Date().getTime()) - startedAt));
+        const elapsedSeconds = Math.max(1, Math.round((new Date().getTime()) - startedAt)) / 1000;
         if (elapsedSeconds > 1) {
           const weeksPerSeconds = (indexedThisRun / elapsedSeconds).toFixed(2);
           const formattedDate = new Date(fromTimestamp).toUTCString();
@@ -244,7 +244,7 @@ class Mining {
           hashrates.length = 0;
         }
 
-        const elapsedSeconds = Math.max(1, Math.round(new Date().getTime() - startedAt));
+        const elapsedSeconds = Math.max(1, Math.round(new Date().getTime() - startedAt)) / 1000;
         if (elapsedSeconds > 1) {
           const daysPerSeconds = (indexedThisRun / elapsedSeconds).toFixed(2);
           const formattedDate = new Date(fromTimestamp).toUTCString();
