@@ -33,6 +33,7 @@ do for url in / \
 	'/api/v1/mining/hashrate/pools/2y' \
 	'/api/v1/mining/hashrate/pools/3y' \
 	'/api/v1/mining/hashrate/pools/all' \
+	'/api/v1/mining/reward-stats/144' \
 
 	do
 		curl -s "https://${hostname}${url}" >/dev/null
