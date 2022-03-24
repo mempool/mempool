@@ -128,6 +128,10 @@ let routes: Routes = [
         component: DocsComponent
       },
       {
+        path: 'docs/faq',
+        component: DocsComponent
+      },
+      {
         path: 'docs/api',
         redirectTo: 'docs/api/rest'
       },

@@ -12,6 +12,7 @@ export class DocsComponent implements OnInit {
   activeTab = 0;
   env: Env;
   showWebSocketTab = true;
+  showFaqTab = true;
 
   constructor(
     private route: ActivatedRoute,
@@ -20,8 +21,16 @@ export class DocsComponent implements OnInit {
 
   ngOnInit(): void {
     const url = this.route.snapshot.url;
-    this.activeTab = ( url[2].path === "rest" ) ? 0 : 1;
+    if( url[1].path === "faq" ) {
+        this.activeTab = 0;
+    } else if( url[2].path === "rest" ) {
+        this.activeTab = 1;    
+    } else {
+        this.activeTab = 2;
+    }
+    
     this.env = this.stateService.env;
     this.showWebSocketTab = ( ! ( ( this.env.BASE_MODULE === "bisq" ) || ( this.stateService.network === "bisq" ) || ( this.stateService.network === "liquidtestnet" ) ) );
+    this.showFaqTab = ( ( this.stateService.network === "" ) || ( this.stateService.network === "signet" ) || ( this.stateService.network === "testnet" ) ) ? true : false;
   }
 }
