@@ -137,7 +137,7 @@ let routes: Routes = [
       },
       {
         path: 'docs',
-        redirectTo: 'docs/api/rest'
+        redirectTo: 'docs/faq'
       },
       {
         path: 'api',
@@ -284,7 +284,7 @@ let routes: Routes = [
           },
           {
             path: 'docs',
-            redirectTo: 'docs/api/rest'
+            redirectTo: 'docs/faq'
           },
           {
             path: 'api',
@@ -424,7 +424,7 @@ let routes: Routes = [
           },
           {
             path: 'docs',
-            redirectTo: 'docs/api/rest'
+            redirectTo: 'docs/faq'
           },
           {
             path: 'api',
