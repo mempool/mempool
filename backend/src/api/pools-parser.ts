@@ -8,6 +8,7 @@ interface Pool {
   link: string;
   regexes: string[];
   addresses: string[];
+  slug: string;
 }
 
 class PoolsParser {
@@ -42,6 +43,7 @@ class PoolsParser {
         'link': (<Pool>coinbaseTags[i][1]).link,
         'regexes': [coinbaseTags[i][0]],
         'addresses': [],
+        'slug': ''
       });
     }
     logger.debug('Parse payout_addresses');
@@ -52,6 +54,7 @@ class PoolsParser {
         'link': (<Pool>addressesTags[i][1]).link,
         'regexes': [],
         'addresses': [addressesTags[i][0]],
+        'slug': ''
       });
     }
 
@@ -90,14 +93,15 @@ class PoolsParser {
       }
 
       const finalPoolName = poolNames[i].replace(`'`, `''`); // To support single quote in names when doing db queries
+      const slug = poolsJson['slugs'][poolNames[i]];
 
       if (existingPools.find((pool) => pool.name === poolNames[i]) !== undefined) {
-        logger.debug(`Update '${finalPoolName}' mining pool`);
         finalPoolDataUpdate.push({
           'name': finalPoolName,
           'link': match[0].link,
           'regexes': allRegexes,
           'addresses': allAddresses,
+          'slug': slug
         });
       } else {
         logger.debug(`Add '${finalPoolName}' mining pool`);
@@ -106,6 +110,7 @@ class PoolsParser {
           'link': match[0].link,
           'regexes': allRegexes,
           'addresses': allAddresses,
+          'slug': slug
         });
       }
     }
@@ -126,7 +131,8 @@ class PoolsParser {
       updateQueries.push(`
         UPDATE pools
         SET name='${finalPoolDataUpdate[i].name}', link='${finalPoolDataUpdate[i].link}',
-        regexes='${JSON.stringify(finalPoolDataUpdate[i].regexes)}', addresses='${JSON.stringify(finalPoolDataUpdate[i].addresses)}'
+        regexes='${JSON.stringify(finalPoolDataUpdate[i].regexes)}', addresses='${JSON.stringify(finalPoolDataUpdate[i].addresses)}',
+        slug='${finalPoolDataUpdate[i].slug}'
         WHERE name='${finalPoolDataUpdate[i].name}'
       ;`);
     }
@@ -156,11 +162,17 @@ class PoolsParser {
     try {
       const [rows]: any[] = await connection.query({ sql: 'SELECT name from pools where name="Unknown"', timeout: 120000 });
       if (rows.length === 0) {
-        logger.debug('Manually inserting "Unknown" mining pool into the databse');
         await connection.query({
           sql: `INSERT INTO pools(name, link, regexes, addresses)
-          VALUES("Unknown", "https://learnmeabitcoin.com/technical/coinbase-transaction", "[]", "[]");
+          VALUES("Unknown", "https://learnmeabitcoin.com/technical/coinbase-transaction", "[]", "[]", "unknown");
         `});
+      } else {
+        await connection.query(`UPDATE pools
+          SET name='Unknown', link='https://learnmeabitcoin.com/technical/coinbase-transaction',
+          regexes='[]', addresses='[]',
+          slug='unknown'
+          WHERE name='Unknown'
+        `)        
       }
     } catch (e) {
       logger.err('Unable to insert "Unknown" mining pool');
