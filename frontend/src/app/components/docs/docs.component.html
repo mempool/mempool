@@ -4,9 +4,9 @@
     <h2 i18n="documentation.title">Documentation</h2>
 
     <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav-tabs">
-    
+
       <li [ngbNavItem]="0" *ngIf="showFaqTab">
-        <a ngbNavLink routerLink="/docs/faq">FAQ</a>
+        <a ngbNavLink [routerLink]="['/docs/faq' | relativeUrl]">FAQ</a>
         <ng-template ngbNavContent>
 
           <p>FAQ placeholder</p>
@@ -15,7 +15,7 @@
       </li>
 
       <li [ngbNavItem]="1">
-        <a ngbNavLink routerLink="/docs/api/rest">API - REST</a>
+        <a ngbNavLink [routerLink]="['/docs/api/rest' | relativeUrl]">API - REST</a>
         <ng-template ngbNavContent>
 
           <app-api-docs [restTabActivated]="true"></app-api-docs>
@@ -24,7 +24,7 @@
       </li>
 
       <li [ngbNavItem]="2" *ngIf="showWebSocketTab">
-        <a ngbNavLink routerLink="/docs/api/websocket">API - WebSocket</a>
+        <a ngbNavLink [routerLink]="['/docs/api/websocket' | relativeUrl]">API - WebSocket</a>
         <ng-template ngbNavContent>
 
           <app-api-docs [restTabActivated]="false"></app-api-docs>

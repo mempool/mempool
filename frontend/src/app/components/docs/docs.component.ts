@@ -24,13 +24,13 @@ export class DocsComponent implements OnInit {
     if( url[1].path === "faq" ) {
         this.activeTab = 0;
     } else if( url[2].path === "rest" ) {
-        this.activeTab = 1;    
+        this.activeTab = 1;
     } else {
         this.activeTab = 2;
     }
-    
+
     this.env = this.stateService.env;
-    this.showWebSocketTab = ( ! ( ( this.env.BASE_MODULE === "bisq" ) || ( this.stateService.network === "bisq" ) || ( this.stateService.network === "liquidtestnet" ) ) );
-    this.showFaqTab = ( ( this.stateService.network === "" ) || ( this.stateService.network === "signet" ) || ( this.stateService.network === "testnet" ) ) ? true : false;
+    this.showWebSocketTab = ( ! ( ( this.stateService.network === "bisq" ) || ( this.stateService.network === "liquidtestnet" ) ) );
+    this.showFaqTab = ( this.env.BASE_MODULE === 'mempool' ) ? true : false;
   }
 }
