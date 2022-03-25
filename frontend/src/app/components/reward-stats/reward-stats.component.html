@@ -17,7 +17,7 @@
       <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip"
         ngbTooltip="Average miners' reward per transaction in the past 144 blocks" placement="bottom">
         <div class="fee-text">
-          {{ rewardStats.rewardPerTx | amountShortener }}
+          {{ rewardStats.rewardPerTx | amountShortener: 2 }}
           <span i18n="shared.sat-vbyte|sat/vB">sats/tx</span>
         </div>
         <span class="fiat">
@@ -29,7 +29,7 @@
       <h5 class="card-title" i18n="mining.average-fee">Average Fee</h5>
       <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip"
         ngbTooltip="Fee paid on average for each transaction in the past 144 blocks" placement="bottom">
-        <div class="fee-text">{{ rewardStats.feePerTx | amountShortener }}
+        <div class="fee-text">{{ rewardStats.feePerTx | amountShortener: 2 }}
           <span i18n="shared.sat-vbyte|sat/vB">sats/tx</span>
         </div>
         <span class="fiat">

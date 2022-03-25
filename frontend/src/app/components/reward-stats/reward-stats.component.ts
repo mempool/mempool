@@ -24,11 +24,10 @@ export class RewardStatsComponent implements OnInit {
           return this.apiService.getRewardStats$()
             .pipe(
               map((stats) => {
-                const precision = 100;
                 return {
                   totalReward: stats.totalReward,
-                  rewardPerTx: Math.round((stats.totalReward / stats.totalTx) * precision) / precision,
-                  feePerTx: Math.round((stats.totalFee / stats.totalTx) * precision) / precision,
+                  rewardPerTx: stats.totalReward / stats.totalTx,
+                  feePerTx: stats.totalFee / stats.totalTx,
                 };
               })
             );
