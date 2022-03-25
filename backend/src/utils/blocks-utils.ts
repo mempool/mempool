@@ -23,6 +23,7 @@ export function prepareBlock(block: any): BlockExtended {
       pool: block?.extras?.pool ?? (block?.pool_id ? {
         id: block.pool_id,
         name: block.pool_name,
+        slug: block.pool_slug,
       } : undefined),
     }
   };
