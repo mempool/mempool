@@ -46,6 +46,9 @@ div.scrollable {
 
 .label {
   width: 35%;
+  @media (max-width: 767.98px) {
+    font-weight: bold;
+  }
 }
 
 .data {
@@ -132,12 +135,6 @@ div.scrollable {
   text-align: left;
 }
 
-.right-mobile {
-  @media (max-width: 450px) {
-    text-align: right;
-  }
-}
-
 .skeleton-loader {
   max-width: 200px;
 }
@@ -150,4 +147,12 @@ div.scrollable {
   @media (max-width: 992px) {
     top: 600px;
   }
+}
+
+.small-button {
+  height: 20px;
+  transform: translateY(-20px);
+  font-size: 10px;
+  padding-top: 0;
+  padding-bottom: 0;
 }
