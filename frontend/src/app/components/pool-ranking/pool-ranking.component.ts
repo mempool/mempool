@@ -10,6 +10,7 @@ import { StorageService } from '../..//services/storage.service';
 import { MiningService, MiningStats } from '../../services/mining.service';
 import { StateService } from '../../services/state.service';
 import { chartColors, poolsColor } from 'src/app/app.constants';
+import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
   selector: 'app-pool-ranking',
@@ -284,7 +285,8 @@ export class PoolRankingComponent implements OnInit {
         return;
       }
       this.zone.run(() => {
-        this.router.navigate(['/mining/pool/', e.data.data]);
+        const url = new RelativeUrlPipe(this.stateService).transform(`/mining/pool/${e.data.data}`);
+        this.router.navigate([url]);
       });
     });
   }
