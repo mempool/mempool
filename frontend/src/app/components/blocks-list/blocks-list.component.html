@@ -25,7 +25,7 @@
           </td>
           <td class="pool text-left" [class]="widget ? 'widget' : ''">
             <div class="tooltip-custom">
-              <a class="clear-link" [routerLink]="[('/mining/pool/' + block.extras.pool.id) | relativeUrl]">
+              <a class="clear-link" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.id]">
                 <img width="25" height="25" src="{{ block.extras.pool['logo'] }}"
                   onError="this.src = './resources/mining-pools/default.svg'">
                 <span class="pool-name">{{ block.extras.pool.name }}</span>
