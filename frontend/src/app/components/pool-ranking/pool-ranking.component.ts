@@ -28,8 +28,6 @@ export class PoolRankingComponent implements OnInit {
   chartOptions: EChartsOption = {};
   chartInitOptions = {
     renderer: 'svg',
-    width: 'auto',
-    height: 'auto',
   };
   chartInstance: any = undefined;
 
