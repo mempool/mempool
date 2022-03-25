@@ -33,8 +33,6 @@ export class HashrateChartComponent implements OnInit {
   chartOptions: EChartsOption = {};
   chartInitOptions = {
     renderer: 'svg',
-    width: 'auto',
-    height: 'auto',
   };
 
   hashrateObservable$: Observable<any>;

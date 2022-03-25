@@ -27,8 +27,6 @@ export class PoolComponent implements OnInit {
   chartOptions: EChartsOption = {};
   chartInitOptions = {
     renderer: 'svg',
-    width: 'auto',
-    height: 'auto',
   };
 
   blocks: BlockExtended[] = [];
