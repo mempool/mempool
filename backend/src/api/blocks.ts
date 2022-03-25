@@ -137,7 +137,8 @@ class Blocks {
       }
       blockExtended.extras.pool = {
         id: pool.id,
-        name: pool.name
+        name: pool.name,
+        slug: pool.slug,
       };
     }
 

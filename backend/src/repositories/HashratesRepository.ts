@@ -120,8 +120,11 @@ class HashratesRepository {
   /**
    * Returns a pool hashrate history
    */
-   public async $getPoolWeeklyHashrate(poolId: number): Promise<any[]> {
-    const connection = await DB.getConnection();
+   public async $getPoolWeeklyHashrate(slug: string): Promise<any[]> {
+    const pool = await PoolsRepository.$getPool(slug);
+    if (!pool) {
+      throw new Error(`This mining pool does not exist`);
+    }
 
     // Find hashrate boundaries
     let query = `SELECT MIN(hashrate_timestamp) as firstTimestamp, MAX(hashrate_timestamp) as lastTimestamp
@@ -134,8 +137,11 @@ class HashratesRepository {
       firstTimestamp: '1970-01-01',
       lastTimestamp: '9999-01-01'
     };
+
+    let connection;
     try {
-      const [rows]: any[] = await connection.query(query, [poolId]);
+      connection = await DB.getConnection();
+      const [rows]: any[] = await connection.query(query, [pool.id]);
       boundaries = rows[0];
       connection.release();
     } catch (e) {
@@ -152,7 +158,7 @@ class HashratesRepository {
       ORDER by hashrate_timestamp`;
 
     try {
-      const [rows]: any[] = await connection.query(query, [boundaries.firstTimestamp, boundaries.lastTimestamp, poolId]);
+      const [rows]: any[] = await connection.query(query, [boundaries.firstTimestamp, boundaries.lastTimestamp, pool.id]);
       connection.release();
 
       return rows;
