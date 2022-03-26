@@ -4411,3 +4411,177 @@ export const restApiDocsData = [
   },
 ];
 
+export const faqData = [
+  {
+    type: "category",
+    category: "basics",
+    fragment: "basics",
+    title: "Basics",
+    showConditions: bitcoinNetworks
+  },
+  {
+    type: "endpoint",
+    category: "basics",
+    showConditions: bitcoinNetworks,
+    fragment: "what-is-a-mempool",
+    title: "What is a mempool?",
+    answer: '<p>A mempool (short for "memory pool") is a data structure that holds the queue of pending and unconfirmed transactions for a cryptocurrency network node. Every node on the network has its own mempool, which may contain different transactions.</p>'
+  },
+  {
+    type: "endpoint",
+    category: "basics",
+    showConditions: bitcoinNetworks,
+    fragment: "what-is-a-mempool-explorer",
+    title: "What is a mempool explorer?",
+    answer: '<p>A mempool explorer is a tool that enables you to explore a node’s mempool, by visualizing the transactions contained within it, and allowing you to search and view those pending transactions, as well as general information about the node’s mempool. </p><p>The mempool.space website invented the concept of visualizing a Bitcoin node’s mempool as <b>projected blocks</b>, which are visible on the left side of our main dashboard, and the inspiration for our half-filled block logo.</p>'
+  },
+  {
+    type: "endpoint",
+    category: "basics",
+    showConditions: bitcoinNetworks,
+    fragment: "what-is-a-blockchain",
+    title: "What is a blockchain?",
+    answer: "<p>A blockchain is the distributed ledger that records the transactions for a cryptocurrency network. Miners amend the blockchain ledger by mining new blocks.</p>"
+  },
+  {
+    type: "endpoint",
+    category: "basics",
+    showConditions: bitcoinNetworks,
+    fragment: "what-is-a-block-explorer",
+    title: "What is a block explorer?",
+    answer: "<p>A block explorer is a tool that enables you to explore the blockchain of a cryptocurrency  for real-time and historical information about a blockchain, including data related to blocks, transactions, addresses, and more.</p>"
+  },
+  {
+    type: "endpoint",
+    category: "basics",
+    showConditions: bitcoinNetworks,
+    fragment: "what-is-mining",
+    title: "What is mining?",
+    answer: "Because reasons."
+  },
+  {
+    type: "endpoint",
+    category: "basics",
+    showConditions: bitcoinNetworks,
+    fragment: "what-are-mining-pools",
+    title: "What are mining pools?",
+    answer: "Because reasons."
+  },
+  {
+    type: "category",
+    category: "help",
+    fragment: "help-stuck-transaction",
+    title: "Help! My transaction is stuck",
+    showConditions: bitcoinNetworks
+  },
+  {
+    type: "endpoint",
+    category: "help",
+    showConditions: bitcoinNetworks,
+    fragment: "why-is-transaction-stuck-in-the-mempool",
+    title: "Why is my transaction stuck in the mempool?",
+    answer: "<p>Miners decide which transactions get included into the blocks they mine, and so they usually prioritize the transactions which pay them the highest transaction fees, measured in sats per virtual byte. This means to get confirmed sooner, you need to pay a higher fee.</p>"
+  },
+  {
+    type: "endpoint",
+    category: "help",
+    showConditions: bitcoinNetworks,
+    fragment: "how-to-get-transaction-confirmed-quickly",
+    title: "How can I get my transaction confirmed quickly?",
+    answer: "<p>If your wallet supports RBF, and your transaction was created with RBF enabled, you can bump the fee higher.</p><p>If your wallet does not support RBF, you can increase the effective fee rate of your transaction by spending its change output using a higher fee. This is called CPFP.</p>"
+  },
+  {
+    type: "endpoint",
+    category: "help",
+    showConditions: bitcoinNetworks,
+    fragment: "how-prevent-stuck-transaction-in-future",
+    title: "How can I prevent a transaction from getting stuck in the future?",
+    answer: "<p>You must use an adequate fee rate. Also consider using RBF if your wallet supports it so that you can bump the fee rate if needed.</p>"
+  },
+  {
+    type: "category",
+    category: "using",
+    fragment: "using-this-website",
+    title: "Using this website",
+    showConditions: bitcoinNetworks
+  },
+  {
+    type: "endpoint",
+    category: "how-to",
+    showConditions: bitcoinNetworks,
+    fragment: "looking-up-transactions",
+    title: "How can I look up a transaction?",
+    answer: "Because reasons."
+  },
+  {
+    type: "endpoint",
+    category: "how-to",
+    showConditions: bitcoinNetworks,
+    fragment: "looking-up-addresses",
+    title: "How can I look up an address?",
+    answer: "Because reasons."
+  },
+  {
+    type: "endpoint",
+    category: "how-to",
+    showConditions: bitcoinNetworks,
+    fragment: "looking-up-blocks",
+    title: "How can I look up a block?",
+    answer: "Because reasons."
+  },
+  {
+    type: "endpoint",
+    category: "how-to",
+    showConditions: bitcoinNetworks,
+    fragment: "looking-up-fee-estimates",
+    title: "How can I look up fee estimates?",
+    answer: "Because reasons."
+  },
+  {
+    type: "endpoint",
+    category: "how-to",
+    showConditions: bitcoinNetworks,
+    fragment: "looking-up-historical-trends",
+    title: "How can I explore historical trends?",
+    answer: "Because reasons."
+  },
+  {
+    type: "category",
+    category: "advanced",
+    fragment: "advanced",
+    title: "Advanced",
+    showConditions: bitcoinNetworks
+  },
+  {
+    type: "endpoint",
+    category: "advanced",
+    showConditions: bitcoinNetworks,
+    fragment: "who-runs-this-website",
+    title: "Who runs this website?",
+    answer: "Because reasons."
+  },
+  {
+    type: "endpoint",
+    category: "advanced",
+    showConditions: bitcoinNetworks,
+    fragment: "host-my-own-instance-on-raspberry-pi",
+    title: "How can I host my own instance on a Raspberry Pi?",
+    answer: "Because reasons."
+  },
+  {
+    type: "endpoint",
+    category: "advanced",
+    showConditions: bitcoinNetworks,
+    fragment: "host-my-own-instance-on-linux-server",
+    title: "How can I host my own instance on a Linux server?",
+    answer: "Because reasons."
+  },
+  {
+    type: "endpoint",
+    category: "advanced",
+    showConditions: bitcoinNetworks,
+    fragment: "install-mempool-with-docker",
+    title: "Can I install Mempool using Docker?",
+    answer: "Because reasons."
+  }
+];

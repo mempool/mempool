@@ -152,6 +152,14 @@ h3 {
   float: right;
 }
 
+.endpoint-container .section-header table {
+  width: 100%;
+}
+
+.endpoint-container .section-header table td:first-child {
+  padding-right: 24px;
+}
+
 #doc-nav-mobile {
   position: fixed;
   top: 20px;
