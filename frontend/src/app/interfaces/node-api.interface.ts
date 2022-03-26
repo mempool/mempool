@@ -71,6 +71,7 @@ export interface SinglePoolStats {
   lastEstimatedHashrate: string;
   emptyBlockRatio: string;
   logo: string;
+  slug: string;
 }
 export interface PoolsStats {
   blockCount: number;
@@ -107,6 +108,7 @@ export interface BlockExtension {
   pool?: {
     id: number;
     name: string;
+    slug: string;
   }
 
   stage?: number; // Frontend only

@@ -3,6 +3,7 @@ import { DB } from '../database';
 import logger from '../logger';
 import { Common } from '../api/common';
 import { prepareBlock } from '../utils/blocks-utils';
+import PoolsRepository from './PoolsRepository';
 
 class BlocksRepository {
   /**
@@ -235,13 +236,18 @@ class BlocksRepository {
   /**
    * Get blocks mined by a specific mining pool
    */
-  public async $getBlocksByPool(poolId: number, startHeight: number | undefined = undefined): Promise<object[]> {
+  public async $getBlocksByPool(slug: string, startHeight: number | undefined = undefined): Promise<object[]> {
+    const pool = await PoolsRepository.$getPool(slug);
+    if (!pool) {
+      throw new Error(`This mining pool does not exist`);
+    }
+
     const params: any[] = [];
     let query = ` SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
       previous_block_hash as previousblockhash
       FROM blocks
       WHERE pool_id = ?`;
-    params.push(poolId);
+    params.push(pool.id);
 
     if (startHeight !== undefined) {
       query += ` AND height < ?`;
@@ -277,7 +283,7 @@ class BlocksRepository {
     try {
       const [rows]: any[] = await connection.query(`
         SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
-        pools.id as pool_id, pools.name as pool_name, pools.link as pool_link,
+        pools.id as pool_id, pools.name as pool_name, pools.link as pool_link, pools.slug as pool_slug,
         pools.addresses as pool_addresses, pools.regexes as pool_regexes,
         previous_block_hash as previousblockhash
         FROM blocks

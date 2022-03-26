@@ -158,7 +158,7 @@ export class PoolRankingComponent implements OnInit {
             }
           }
         },
-        data: pool.poolId,
+        data: pool.slug,
       } as PieSeriesOption);
     });
 
