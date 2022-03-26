@@ -9,7 +9,7 @@
         <a ngbNavLink [routerLink]="['/docs/faq' | relativeUrl]">FAQ</a>
         <ng-template ngbNavContent>
 
-          <p>FAQ placeholder</p>
+          <app-api-docs [whichTab]="'faq'"></app-api-docs>
 
         </ng-template>
       </li>
@@ -18,7 +18,7 @@
         <a ngbNavLink [routerLink]="['/docs/api/rest' | relativeUrl]">API - REST</a>
         <ng-template ngbNavContent>
 
-          <app-api-docs [restTabActivated]="true"></app-api-docs>
+          <app-api-docs [whichTab]="'rest'"></app-api-docs>
 
         </ng-template>
       </li>
@@ -27,7 +27,7 @@
         <a ngbNavLink [routerLink]="['/docs/api/websocket' | relativeUrl]">API - WebSocket</a>
         <ng-template ngbNavContent>
 
-          <app-api-docs [restTabActivated]="false"></app-api-docs>
+          <app-api-docs [whichTab]="'websocket'"></app-api-docs>
 
         </ng-template>
       </li>

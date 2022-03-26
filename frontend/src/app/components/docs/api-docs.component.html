@@ -1,10 +1,32 @@
 <ng-container *ngIf="{ val: network$ | async } as network">
   <div class="container-xl text-left">
-
-    <div id="restAPI" *ngIf="restTabActivated">
+  
+    <div id="faq" *ngIf="whichTab === 'faq'">
 
       <div id="doc-nav-desktop" class="hide-on-mobile" [ngClass]="desktopDocsNavPosition">
-        <app-api-docs-nav (navLinkClickEvent)="anchorLinkClick( $event )" [network]="{ val: network$ | async }"></app-api-docs-nav>
+        <app-api-docs-nav (navLinkClickEvent)="anchorLinkClick( $event )" [network]="{ val: network$ | async }" [whichTab]="whichTab"></app-api-docs-nav>
+      </div>
+
+      <div class="doc-content">
+
+        <div *ngFor="let item of faq">
+          <h3 *ngIf="item.type === 'category'">{{ item.title }}</h3>
+          <div *ngIf="item.type !== 'category'" class="endpoint-container" id="{{ item.fragment }}">
+            <a class="section-header" (click)="anchorLinkClick( $event )" [routerLink]="['./']" fragment="{{ item.fragment }}"><table><tr><td>{{ item.title }}</td><td><span>{{ item.category }}</span></td></tr></table></a>
+            <div class="endpoint-content">
+              <div class="endpoint" [innerHTML]="item.answer"></div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      
+    </div>
+
+    <div id="restAPI" *ngIf="whichTab === 'rest'">
+
+      <div id="doc-nav-desktop" class="hide-on-mobile" [ngClass]="desktopDocsNavPosition">
+        <app-api-docs-nav (navLinkClickEvent)="anchorLinkClick( $event )" [network]="{ val: network$ | async }" [whichTab]="whichTab"></app-api-docs-nav>
       </div>
 
       <div class="doc-content">
@@ -65,7 +87,7 @@
       </div>
     </div>
 
-    <div id="websocketAPI" *ngIf="!restTabActivated && ( network.val !== 'bisq' )">
+    <div id="websocketAPI" *ngIf="( whichTab === 'websocket' ) && ( network.val !== 'bisq' )">
       <div class="api-category">
         <div class="websocket">
           <div class="endpoint">

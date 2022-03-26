@@ -4,7 +4,7 @@ import { Observable, merge, of } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
 import { tap } from 'rxjs/operators';
 import { ActivatedRoute } from "@angular/router";
-import { restApiDocsData, wsApiDocsData } from './api-docs-data';
+import { faqData, restApiDocsData, wsApiDocsData } from './api-docs-data';
 
 @Component({
   selector: 'app-api-docs',
@@ -18,8 +18,9 @@ export class ApiDocsComponent implements OnInit {
   env: Env;
   code: any;
   baseNetworkUrl = '';
-  @Input() restTabActivated: Boolean;
+  @Input() whichTab: string;
   desktopDocsNavPosition = "relative";
+  faq: any[];
   restDocs: any[];
   wsDocs: any;
   screenWidth: number;
@@ -62,6 +63,7 @@ export class ApiDocsComponent implements OnInit {
 
     this.hostname = `${document.location.protocol}//${this.hostname}`;
 
+    this.faq = faqData;
     this.restDocs = restApiDocsData;
     this.wsDocs = wsApiDocsData;
 
@@ -79,7 +81,7 @@ export class ApiDocsComponent implements OnInit {
   }
 
   openEndpointContainer( targetId ) {
-    if( ( window.innerWidth <= 992 ) && this.restTabActivated && targetId ) {
+    if( ( window.innerWidth <= 992 ) && ( ( this.whichTab === 'rest' ) || ( this.whichTab === 'faq' ) ) && targetId ) {
       const endpointContainerEl = document.querySelector<HTMLElement>( "#" + targetId );
       const endpointContentEl = document.querySelector<HTMLElement>( "#" + targetId + " .endpoint-content" );
       const endPointContentElHeight = endpointContentEl.clientHeight;
