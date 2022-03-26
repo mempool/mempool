@@ -6,6 +6,7 @@ export interface PoolTag {
   link: string;
   regexes: string; // JSON array
   addresses: string; // JSON array
+  slug: string;
 }
 
 export interface PoolInfo {
@@ -13,6 +14,7 @@ export interface PoolInfo {
   name: string;
   link: string;
   blockCount: number;
+  slug: string;
 }
 
 export interface PoolStats extends PoolInfo {
@@ -87,6 +89,7 @@ export interface BlockExtension {
   pool?: {
     id: number;
     name: string;
+    slug: string;
   };
   avgFee?: number;
   avgFeeRate?: number;
