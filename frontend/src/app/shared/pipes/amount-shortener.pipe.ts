@@ -5,11 +5,12 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class AmountShortenerPipe implements PipeTransform {
   transform(num: number, ...args: number[]): unknown {
+    const digits = args[0] || 1;
+
     if (num < 1000) {
-      return num;
+      return num.toFixed(digits);
     }
 
-    const digits = args[0] || 1;
     const lookup = [
       { value: 1, symbol: '' },
       { value: 1e3, symbol: 'k' },

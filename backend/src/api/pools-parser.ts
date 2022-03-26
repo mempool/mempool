@@ -12,6 +12,8 @@ interface Pool {
 }
 
 class PoolsParser {
+  slugWarnFlag = false;
+
   /**
    * Parse the pools.json file, consolidate the data and dump it into the database
    */
@@ -93,7 +95,22 @@ class PoolsParser {
       }
 
       const finalPoolName = poolNames[i].replace(`'`, `''`); // To support single quote in names when doing db queries
-      const slug = poolsJson['slugs'][poolNames[i]];
+
+      let slug: string | undefined;
+      try {
+        slug = poolsJson['slugs'][poolNames[i]];
+      } catch (e) {
+        if (this.slugWarnFlag === false) {
+          logger.warn(`pools.json does not seem to contain the 'slugs' object`);
+          this.slugWarnFlag = true;
+        }
+      }
+
+      if (slug === undefined) {
+        // Only keep alphanumerical
+        slug = poolNames[i].replace(/[^a-z0-9]/gi,'').toLowerCase();
+        logger.debug(`No slug found for '${poolNames[i]}', generating it => '${slug}'`);
+      }
 
       if (existingPools.find((pool) => pool.name === poolNames[i]) !== undefined) {
         finalPoolDataUpdate.push({
