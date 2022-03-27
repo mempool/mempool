@@ -56,6 +56,7 @@ import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, fa
 import { ApiDocsComponent } from './components/docs/api-docs.component';
 import { DocsComponent } from './components/docs/docs.component';
 import { ApiDocsNavComponent } from './components/docs/api-docs-nav.component';
+import { NoSanitizePipe } from './shared/pipes/no-sanitize.pipe';
 import { CodeTemplateComponent } from './components/docs/code-template.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
@@ -119,6 +120,7 @@ import { DataCyDirective } from './data-cy.directive';
     DashboardComponent,
     DifficultyComponent,
     ApiDocsComponent,
+    NoSanitizePipe,
     CodeTemplateComponent,
     TermsOfServiceComponent,
     PrivacyPolicyComponent,
