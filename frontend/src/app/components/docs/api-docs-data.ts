@@ -4425,7 +4425,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "what-is-a-mempool",
     title: "What is a mempool?",
-    answer: '<p>A mempool (short for "memory pool") is a data structure that holds the queue of pending and unconfirmed transactions for a cryptocurrency network node. Every node on the network has its own mempool, which may contain different transactions.</p>'
+    answer: "<p>A mempool (short for \"memory pool\") holds the queue of pending and unconfirmed transactions for a cryptocurrency network node. There is no one global mempool: every node on the network maintains its own mempool, so different nodes may hold different transactions in their mempools.</p>"
   },
   {
     type: "endpoint",
@@ -4433,7 +4433,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "what-is-a-mempool-explorer",
     title: "What is a mempool explorer?",
-    answer: '<p>A mempool explorer is a tool that enables you to explore a node’s mempool, by visualizing the transactions contained within it, and allowing you to search and view those pending transactions, as well as general information about the node’s mempool. </p><p>The mempool.space website invented the concept of visualizing a Bitcoin node’s mempool as <b>projected blocks</b>, which are visible on the left side of our main dashboard, and the inspiration for our half-filled block logo.</p>'
+    answer: "<p>A mempool explorer is a tool that enables you to explore a node's mempool by visualizing its transactions, searching and viewing those transactions, and viewing aggregate and historical data about a node's mempool. </p><p>The mempool.space website invented the concept of visualizing a Bitcoin node's mempool as <b>projected blocks</b>. These blocks are the inspiration for our half-filled block logo.</p><p>Here's a snapshot of this visualization (which you can find on <a href='/'>the main dashboard</a>) as of block 729,131 in March 2022. Projected blocks are on the left, and confirmed blocks are on the right.</p>"
   },
   {
     type: "endpoint",
@@ -4441,7 +4441,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "what-is-a-blockchain",
     title: "What is a blockchain?",
-    answer: "<p>A blockchain is the distributed ledger that records the transactions for a cryptocurrency network. Miners amend the blockchain ledger by mining new blocks.</p>"
+    answer: "<p>A blockchain is a distributed ledger that records the transactions for a cryptocurrency network. Miners amend the blockchain ledger by mining new blocks.</p>"
   },
   {
     type: "endpoint",
@@ -4449,7 +4449,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "what-is-a-block-explorer",
     title: "What is a block explorer?",
-    answer: "<p>A block explorer is a tool that enables you to explore the blockchain of a cryptocurrency  for real-time and historical information about a blockchain, including data related to blocks, transactions, addresses, and more.</p>"
+    answer: "<p>A block explorer is a tool that enables you to explore real-time and historical information about the blockchain of a cryptocurrency. This includes data related to blocks, transactions, addresses, and more.</p>"
   },
   {
     type: "endpoint",
@@ -4457,7 +4457,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "what-is-mining",
     title: "What is mining?",
-    answer: "Because reasons."
+    answer: "Mining is the process by which unconfirmed transactions are confirmed. Miners select unconfirmed transactions from their mempools and arrange them into a block such that they solve a particular math problem.</p><p>The first miner on the network that finds a suitable block gets all the transaction fees from the transactions in that block. As a result, miners tend to prioritize transactions with higher transaction fees.</p>"
   },
   {
     type: "endpoint",
@@ -4465,7 +4465,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "what-are-mining-pools",
     title: "What are mining pools?",
-    answer: "Because reasons."
+    answer: "Mining pools are groups of miners that combine their computational power in order to increase the probability of finding new blocks."
   },
   {
     type: "category",
@@ -4480,15 +4480,15 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "why-is-transaction-stuck-in-the-mempool",
     title: "Why is my transaction stuck in the mempool?",
-    answer: "<p>Miners decide which transactions get included into the blocks they mine, and so they usually prioritize the transactions which pay them the highest transaction fees, measured in sats per virtual byte. This means to get confirmed sooner, you need to pay a higher fee.</p>"
+    answer: "<p>Miners decide which transactions are included in the blocks they mine, so they usually prioritize transactions which pay them the highest transaction fees (transaction fees are measured in sats per virtual byte, or sat/vB). If your transcation is stuck in the mempool, your transaction probably has a lower transaction fee relative to other transactions currently in the mempool.</p>"
   },
   {
     type: "endpoint",
     category: "help",
     showConditions: bitcoinNetworks,
     fragment: "how-to-get-transaction-confirmed-quickly",
-    title: "How can I get my transaction confirmed quickly?",
-    answer: "<p>If your wallet supports RBF, and your transaction was created with RBF enabled, you can bump the fee higher.</p><p>If your wallet does not support RBF, you can increase the effective fee rate of your transaction by spending its change output using a higher fee. This is called CPFP.</p>"
+    title: "How can I get my transaction confirmed more quickly?",
+    answer: "<p>If your wallet supports RBF, and if your transaction was created with RBF enabled, you can bump the fee higher.</p><p>Otherwise, if your wallet does not support RBF, you can increase the effective fee rate of your transaction by spending its change output using a higher fee. This is called CPFP.</p>"
   },
   {
     type: "endpoint",
@@ -4496,7 +4496,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "how-prevent-stuck-transaction-in-future",
     title: "How can I prevent a transaction from getting stuck in the future?",
-    answer: "<p>You must use an adequate fee rate. Also consider using RBF if your wallet supports it so that you can bump the fee rate if needed.</p>"
+    answer: "<p>You must use an adequate transaction fee commensurate with how quickly you need the transaction to be confirmed. Also consider using RBF if your wallet supports it so that you can bump the fee rate if needed.</p>"
   },
   {
     type: "category",
@@ -4558,7 +4558,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "who-runs-this-website",
     title: "Who runs this website?",
-    answer: "Because reasons."
+    answer: "The official mempool.space website is operated by The Mempool Open Source Project. See more information <a href='/about'>on our About page</a>. There are also many unofficial instances of this website operated by individual members of the Bitcoin community."
   },
   {
     type: "endpoint",
@@ -4566,7 +4566,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "host-my-own-instance-on-raspberry-pi",
     title: "How can I host my own instance on a Raspberry Pi?",
-    answer: "Because reasons."
+    answer: "We support one-click installation on a number of Raspberry Pi fullnode distros including Umbrel, RaspiBlitz, MyNode, and RoninDojo."
   },
   {
     type: "endpoint",
@@ -4574,7 +4574,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "host-my-own-instance-on-linux-server",
     title: "How can I host my own instance on a Linux server?",
-    answer: "Because reasons."
+    answer: "You can manually install mempool on your own Linux server, but this requires advanced sysadmin skills since you will be manually configuring everything. We do not provide support for manual deployments."
   },
   {
     type: "endpoint",
@@ -4582,6 +4582,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "install-mempool-with-docker",
     title: "Can I install Mempool using Docker?",
-    answer: "Because reasons."
+    answer: "Yes, we publish Docker images (or you can build your own), and provide <a href='https://github.com/mempool/mempool/tree/master/docker' target='_blank'>an example docker-compose template</a>."
   }
 ];
