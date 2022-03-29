@@ -108,7 +108,7 @@ class PoolsParser {
 
       if (slug === undefined) {
         // Only keep alphanumerical
-        slug = poolNames[i].replace(/[^a-z0-9]/gi,'').toLowerCase();
+        slug = poolNames[i].replace(/[^a-z0-9]/gi, '').toLowerCase();
         logger.debug(`No slug found for '${poolNames[i]}', generating it => '${slug}'`);
       }
 
@@ -180,7 +180,7 @@ class PoolsParser {
       const [rows]: any[] = await connection.query({ sql: 'SELECT name from pools where name="Unknown"', timeout: 120000 });
       if (rows.length === 0) {
         await connection.query({
-          sql: `INSERT INTO pools(name, link, regexes, addresses)
+          sql: `INSERT INTO pools(name, link, regexes, addresses, slug)
           VALUES("Unknown", "https://learnmeabitcoin.com/technical/coinbase-transaction", "[]", "[]", "unknown");
         `});
       } else {
@@ -189,7 +189,7 @@ class PoolsParser {
           regexes='[]', addresses='[]',
           slug='unknown'
           WHERE name='Unknown'
-        `)        
+        `);
       }
     } catch (e) {
       logger.err('Unable to insert "Unknown" mining pool');
