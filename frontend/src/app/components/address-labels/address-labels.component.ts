@@ -14,12 +14,7 @@ export class AddressLabelsComponent implements OnInit {
   @Input() vin: Vin;
   @Input() vout: Vout;
 
-  multisig = false;
-  multisigM: number;
-  multisigN: number;
-
-  lightning = null;
-  liquid = null;
+  label?: string;
 
   constructor(
     stateService: StateService,
@@ -39,47 +34,46 @@ export class AddressLabelsComponent implements OnInit {
     if (this.vin.inner_witnessscript_asm) {
       if (this.vin.inner_witnessscript_asm.indexOf('OP_DEPTH OP_PUSHNUM_12 OP_EQUAL OP_IF OP_PUSHNUM_11') === 0) {
         if (this.vin.witness.length > 11) {
-          this.liquid = 'Peg Out';
+          this.label = 'Liquid Peg Out';
         } else {
-          this.liquid = 'Emergency Peg Out';
+          this.label = 'Emergency Liquid Peg Out';
         }
         return;
       }
 
       const topElement = this.vin.witness[this.vin.witness.length - 2];
-      // https://github.com/lightning/bolts/blob/master/03-transactions.md#commitment-transaction-outputs
       if (/^OP_IF OP_PUSHBYTES_33 \w{66} OP_ELSE OP_PUSHBYTES_(1 \w{2}|2 \w{4}) OP_CSV OP_DROP OP_PUSHBYTES_33 \w{66} OP_ENDIF OP_CHECKSIG$/.test(this.vin.inner_witnessscript_asm)) {
+        // https://github.com/lightning/bolts/blob/master/03-transactions.md#commitment-transaction-outputs
         if (topElement === '01') {
           // top element is '01' to get in the revocation path
-          this.lightning = 'Revoked Force Close';
+          this.label = 'Revoked Lightning Force Close';
         } else {
           // top element is '', this is a delayed to_local output
-          this.lightning = 'Force Close';
+          this.label = 'Lightning Force Close';
         }
-      // https://github.com/lightning/bolts/blob/master/03-transactions.md#offered-htlc-outputs
+        return;
       } else if (/^OP_DUP OP_HASH160 OP_PUSHBYTES_20 \w{40} OP_EQUAL OP_IF OP_CHECKSIG OP_ELSE OP_PUSHBYTES_33 \w{66} OP_SWAP OP_SIZE OP_PUSHBYTES_1 20 OP_EQUAL OP_NOTIF OP_DROP OP_PUSHNUM_2 OP_SWAP OP_PUSHBYTES_33 \w{66} OP_PUSHNUM_2 OP_CHECKMULTISIG OP_ELSE OP_HASH160 OP_PUSHBYTES_20 \w{40} OP_EQUALVERIFY OP_CHECKSIG OP_ENDIF (OP_PUSHNUM_1 OP_CHECKSEQUENCEVERIFY OP_DROP |)OP_ENDIF$/.test(this.vin.inner_witnessscript_asm)) {
+        // https://github.com/lightning/bolts/blob/master/03-transactions.md#offered-htlc-outputs
         if (topElement.length === 66) {
           // top element is a public key
-          this.lightning = 'Revoked HTLC';
+          this.label = 'Revoked Lightning HTLC';
         } else if (topElement) {
           // top element is a preimage
-          this.lightning = 'HTLC';
+          this.label = 'Lightning HTLC';
         } else {
           // top element is '' to get in the multisig path of the script
-          this.lightning = 'Expired HTLC';
+          this.label = 'Expired Lightning HTLC';
         }
-      // https://github.com/lightning/bolts/blob/master/03-transactions.md#to_local_anchor-and-to_remote_anchor-output-option_anchors
+        return;
       } else if (/^OP_PUSHBYTES_33 \w{66} OP_CHECKSIG OP_IFDUP OP_NOTIF OP_PUSHNUM_16 OP_CSV OP_ENDIF$/.test(this.vin.inner_witnessscript_asm)) {
+        // https://github.com/lightning/bolts/blob/master/03-transactions.md#to_local_anchor-and-to_remote_anchor-output-option_anchors
         if (topElement) {
           // top element is a signature
-          this.lightning = 'Anchor';
+          this.label = 'Lightning Anchor';
         } else {
           // top element is '', it has been swept after 16 blocks
-          this.lightning = 'Swept Anchor';
+          this.label = 'Swept Lightning Anchor';
         }
-      }
-
-      if (this.lightning) {
         return;
       }
 
@@ -120,9 +114,7 @@ export class AddressLabelsComponent implements OnInit {
     }
     const m = parseInt(opM.match(/[0-9]+/)[0], 10);
 
-    this.multisig = true;
-    this.multisigM = m;
-    this.multisigN = n;
+    this.label = `multisig ${m} of ${n}`;
   }
 
   handleVout() {
