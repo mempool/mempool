@@ -1,5 +1,7 @@
 #!/usr/bin/env zsh
 hostname=$(hostname)
+slugs=(`curl -sSL https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json | jq -r '.slugs[]'`)
+
 while true
 do for url in / \
 	'/api/v1/statistics/2h' \
@@ -39,7 +41,6 @@ do for url in / \
 		curl -s "https://${hostname}${url}" >/dev/null
 	done
 
-	slugs=$(cat pools.json | jq -r .slugs[])
 	for slug in $slugs
 	do
 		curl -s "https://${hostname}/api/v1/mining/pool/${slug}/hashrate" >/dev/null
