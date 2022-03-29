@@ -33,7 +33,8 @@ class Mining {
         link: poolInfo.link,
         blockCount: poolInfo.blockCount,
         rank: rank++,
-        emptyBlocks: emptyBlocksCount.length > 0 ? emptyBlocksCount[0]['count'] : 0
+        emptyBlocks: emptyBlocksCount.length > 0 ? emptyBlocksCount[0]['count'] : 0,
+        slug: poolInfo.slug,
       };
       poolsStats.push(poolStat);
     });
@@ -54,14 +55,14 @@ class Mining {
   /**
    * Get all mining pool stats for a pool
    */
-  public async $getPoolStat(poolId: number): Promise<object> {
-    const pool = await PoolsRepository.$getPool(poolId);
+  public async $getPoolStat(slug: string): Promise<object> {
+    const pool = await PoolsRepository.$getPool(slug);
     if (!pool) {
       throw new Error(`This mining pool does not exist`);
     }
 
-    const blockCount: number = await BlocksRepository.$blockCount(poolId);
-    const emptyBlocksCount = await BlocksRepository.$countEmptyBlocks(poolId);
+    const blockCount: number = await BlocksRepository.$blockCount(pool.id);
+    const emptyBlocksCount = await BlocksRepository.$countEmptyBlocks(pool.id);
 
     return {
       pool: pool,

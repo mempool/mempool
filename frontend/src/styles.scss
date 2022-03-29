@@ -66,6 +66,11 @@ body {
 .container-xl {
   padding-bottom: 60px;
 }
+.full-height {
+  @media (max-width: 767.98px) {
+    min-height: 100vh;
+  }
+}
 
 :focus {
   outline: none !important;
@@ -653,10 +658,6 @@ h1, h2, h3 {
 
 .mt-2-5, .my-2-5 {
   margin-top: 0.75rem !important;
-}
-
-.tooltip-inner {
-  max-width: inherit;
 }
 
 .alert-mempool {

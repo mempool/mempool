@@ -9,7 +9,7 @@ class PoolsRepository {
    */
   public async $getPools(): Promise<PoolTag[]> {
     const connection = await DB.getConnection();
-    const [rows] = await connection.query('SELECT id, name, addresses, regexes FROM pools;');
+    const [rows] = await connection.query('SELECT id, name, addresses, regexes, slug FROM pools;');
     connection.release();
     return <PoolTag[]>rows;
   }
@@ -19,7 +19,7 @@ class PoolsRepository {
    */
   public async $getUnknownPool(): Promise<PoolTag> {
     const connection = await DB.getConnection();
-    const [rows] = await connection.query('SELECT id, name FROM pools where name = "Unknown"');
+    const [rows] = await connection.query('SELECT id, name, slug FROM pools where name = "Unknown"');
     connection.release();
     return <PoolTag>rows[0];
   }
@@ -30,7 +30,7 @@ class PoolsRepository {
   public async $getPoolsInfo(interval: string | null = null): Promise<PoolInfo[]> {
     interval = Common.getSqlInterval(interval);
 
-    let query = `SELECT COUNT(height) as blockCount, pool_id as poolId, pools.name as name, pools.link as link
+    let query = `SELECT COUNT(height) as blockCount, pool_id as poolId, pools.name as name, pools.link as link, slug
       FROM blocks
       JOIN pools on pools.id = pool_id`;
 
@@ -80,16 +80,17 @@ class PoolsRepository {
   /**
    * Get mining pool statistics for one pool
    */
-   public async $getPool(poolId: any): Promise<object> {
+   public async $getPool(slug: string): Promise<PoolTag> {
     const query = `
       SELECT *
       FROM pools
-      WHERE pools.id = ?`;
+      WHERE pools.slug = ?`;
 
-    // logger.debug(query);
-    const connection = await DB.getConnection();
+    let connection;
     try {
-      const [rows] = await connection.query(query, [poolId]);
+      connection = await DB.getConnection();
+
+      const [rows] = await connection.query(query, [slug]);
       connection.release();
 
       rows[0].regexes = JSON.parse(rows[0].regexes);
