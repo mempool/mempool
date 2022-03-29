@@ -22,22 +22,22 @@
     <span i18n="mining.mining-pool-share">Hashrate & Difficulty</span>
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(hashrateObservable$ | async) as hashrates">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
-        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 90">
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 90" [attr.data-cy]="'3m'">
           <input ngbButton type="radio" [value]="'3m'"> 3M
         </label>
-        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 180">
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 180" [attr.data-cy]="'6m'">
           <input ngbButton type="radio" [value]="'6m'"> 6M
         </label>
-        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 365">
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 365" [attr.data-cy]="'1y'">
           <input ngbButton type="radio" [value]="'1y'"> 1Y
         </label>
-        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 730">
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 730" [attr.data-cy]="'2y'">
           <input ngbButton type="radio" [value]="'2y'"> 2Y
         </label>
-        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 1095">
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 1095" [attr.data-cy]="'3y'">
           <input ngbButton type="radio" [value]="'3y'"> 3Y
         </label>
-        <label ngbButtonLabel class="btn-primary btn-sm">
+        <label ngbButtonLabel class="btn-primary btn-sm" [attr.data-cy]="'all'">
           <input ngbButton type="radio" [value]="'all'"> ALL
         </label>
       </div>
@@ -49,7 +49,7 @@
   <div class="text-center loadingGraphs" *ngIf="isLoading">
     <div class="spinner-border text-light"></div>
   </div>
-  
+
 </div>
 
 <ng-template #loadingStats>
