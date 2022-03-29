@@ -85,7 +85,7 @@ let routes: Routes = [
             path: 'pool',
             children: [
               {
-                path: ':poolId',
+                path: ':slug',
                 component: PoolComponent,
               },
             ]
@@ -227,7 +227,7 @@ let routes: Routes = [
                 path: 'pool',
                 children: [
                   {
-                    path: ':poolId',
+                    path: ':slug',
                     component: PoolComponent,
                   },
                 ]
@@ -363,7 +363,7 @@ let routes: Routes = [
                 path: 'pool',
                 children: [
                   {
-                    path: ':poolId',
+                    path: ':slug',
                     component: PoolComponent,
                   },
                 ]
