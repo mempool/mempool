@@ -118,5 +118,6 @@ export class AddressLabelsComponent implements OnInit {
   }
 
   handleVout() {
+    this.detectMultisig(this.vout.scriptpubkey_asm);
   }
 }
