@@ -119,7 +119,7 @@ describe('Mainnet - Mining Features', () => {
           });
         });
 
-        it('updates the chart and tabular data when changing the date filters', () => {
+        it.skip('updates the chart and tabular data when changing the date filters', () => {
           cy.intercept('/api/v1/mining/pools/**').as('pools');
           cy.intercept('/api/v1/blocks-extras').as('blocks-extras');
           cy.intercept('/api/v1/mining/reward-stats/144').as('reward-stats');
@@ -218,7 +218,7 @@ describe('Mainnet - Mining Features', () => {
             cy.waitForSkeletonGone();
           });
 
-          it('updates the chart when changing the date filters', () => {
+          it.skip('updates the chart when changing the date filters', () => {
             cy.visit('/graphs/mining/hashrate-difficulty');
             cy.waitForSkeletonGone();
             const filters = ['3m', '6m', '1y', '2y', '3y', 'all'];
