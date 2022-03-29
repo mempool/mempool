@@ -132,17 +132,17 @@ export class ApiService {
     );
   }
 
-  getPoolStats$(poolId: number): Observable<PoolStat> {
-    return this.httpClient.get<PoolStat>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${poolId}`);
+  getPoolStats$(slug: string): Observable<PoolStat> {
+    return this.httpClient.get<PoolStat>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${slug}`);
   }
 
-  getPoolHashrate$(poolId: number): Observable<any> {
-    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${poolId}/hashrate`);
+  getPoolHashrate$(slug: string): Observable<any> {
+    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${slug}/hashrate`);
   }
 
-  getPoolBlocks$(poolId: number, fromHeight: number): Observable<BlockExtended[]> {
+  getPoolBlocks$(slug: string, fromHeight: number): Observable<BlockExtended[]> {
     return this.httpClient.get<BlockExtended[]>(
-        this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${poolId}/blocks` +
+        this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${slug}/blocks` +
         (fromHeight !== undefined ? `/${fromHeight}` : '')
       );
   }

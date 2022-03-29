@@ -30,9 +30,9 @@ export class PoolComponent implements OnInit {
   };
 
   blocks: BlockExtended[] = [];
-  poolId: number = undefined;
+  slug: string = undefined;
 
-  loadMoreSubject: BehaviorSubject<number> = new BehaviorSubject(this.poolId);
+  loadMoreSubject: BehaviorSubject<string> = new BehaviorSubject(this.slug);
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -43,23 +43,23 @@ export class PoolComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.poolStats$ = this.route.params.pipe(map((params) => params.poolId))
+    this.poolStats$ = this.route.params.pipe(map((params) => params.slug))
       .pipe(
-        switchMap((poolId: any) => {
+        switchMap((slug: any) => {
           this.isLoading = true;
-          this.poolId = poolId;
-          this.loadMoreSubject.next(this.poolId);
-          return this.apiService.getPoolHashrate$(this.poolId)
+          this.slug = slug;
+          this.loadMoreSubject.next(this.slug);
+          return this.apiService.getPoolHashrate$(this.slug)
             .pipe(
               switchMap((data) => {
                 this.isLoading = false;
                 this.prepareChartOptions(data.hashrates.map(val => [val.timestamp * 1000, val.avgHashrate]));
-                return poolId;
+                return slug;
               }),
             );
         }),
         switchMap(() => {
-          return this.apiService.getPoolStats$(this.poolId);
+          return this.apiService.getPoolStats$(this.slug);
         }),
         map((poolStats) => {
           let regexes = '"';
@@ -78,10 +78,10 @@ export class PoolComponent implements OnInit {
     this.blocks$ = this.loadMoreSubject
       .pipe(
         switchMap((flag) => {
-          if (this.poolId === undefined) {
+          if (this.slug === undefined) {
             return [];
           }
-          return this.apiService.getPoolBlocks$(this.poolId, this.blocks[this.blocks.length - 1]?.height);
+          return this.apiService.getPoolBlocks$(this.slug, this.blocks[this.blocks.length - 1]?.height);
         }),
         tap((newBlocks) => {
           this.blocks = this.blocks.concat(newBlocks);
@@ -180,7 +180,7 @@ export class PoolComponent implements OnInit {
   }
 
   loadMore() {
-    this.loadMoreSubject.next(this.poolId);
+    this.loadMoreSubject.next(this.slug);
   }
 
   trackByBlock(index: number, block: BlockExtended) {
