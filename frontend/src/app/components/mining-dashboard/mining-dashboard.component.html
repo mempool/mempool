@@ -3,7 +3,7 @@
   <div class="row row-cols-1 row-cols-md-2">
 
     <!-- Temporary stuff here - Will be moved to a component once we have more useful data to show -->
-    <div class="col">
+    <div class="col" [attr.data-cy]="'reward-stats'">
       <div class="main-title">
         <span i18n="mining.reward-stats">Reward stats</span>&nbsp;
         <span style="font-size: xx-small" i18n="mining.144-blocks">(144 blocks)</span>
@@ -18,7 +18,7 @@
     </div>
 
     <!-- difficulty adjustment -->
-    <div class="col">
+    <div class="col" [attr.data-cy]="'difficulty-adjustment'">
       <div class="main-title" i18n="dashboard.difficulty-adjustment">Difficulty Adjustment</div>
       <div class="card" style="height: 123px">
         <app-difficulty [showTitle]="false" [showProgress]="false" [showHalving]="true"></app-difficulty>
@@ -26,7 +26,7 @@
     </div>
 
     <!-- pool distribution -->
-    <div class="col">
+    <div class="col" [attr.data-cy]="'pool-distribution'">
       <div class="card" style="height: 385px">
         <div class="card-body">
           <app-pool-ranking [widget]=true></app-pool-ranking>
@@ -37,7 +37,7 @@
     </div>
 
     <!-- hashrate -->
-    <div class="col">
+    <div class="col" [attr.data-cy]="'hashrate-graph'">
       <div class="card" style="height: 385px">
         <div class="card-body">
           <app-hashrate-chart [widget]=true></app-hashrate-chart>
@@ -48,7 +48,7 @@
     </div>
 
     <!-- Latest blocks -->
-    <div class="col">
+    <div class="col" [attr.data-cy]="'latest-blocks'">
       <div class="card" style="height: 385px">
         <div class="card-body">
           <h5 class="card-title">
@@ -62,7 +62,7 @@
     </div>
 
     <!-- Difficult adjustments -->
-    <div class="col">
+    <div class="col" [attr.data-cy]="'difficulty-adjustments-table'">
       <div class="card" style="height: 385px">
         <div class="card-body">
           <h5 class="card-title">
