@@ -9,44 +9,104 @@
 
     <div class="box">
       <div class="row">
+
         <div class="col-lg-9">
           <table class="table table-borderless table-striped" style="table-layout: fixed;">
             <tbody>
-              <tr>
-                <td class="label">Tags</td>
-                <td class="text-truncate" *ngIf="poolStats.pool.regexes.length else nodata">
-                  <div class="scrollable">
+
+              <!-- Regexes desktop -->
+              <tr *ngIf="!isMobile()">
+                <td class="label" i18n="mining.tags">Tags</td>
+                <td *ngIf="poolStats.pool.regexes.length else nodata">
+                  {{ poolStats.pool.regexes }}
+                </td>
+              </tr>
+
+              <!-- Regexes mobile -->
+              <tr *ngIf="isMobile()">
+                <td colspan=2>
+                  <span i18n="mining.tags" class="label">Tags</span>
+                  <div *ngIf="poolStats.pool.regexes.length else nodata" class="overflow-auto">
                     {{ poolStats.pool.regexes }}
                   </div>
                 </td>
               </tr>
-              <tr>
-                <td class="label">Addresses</td>
-                <td class="text-truncate" *ngIf="poolStats.pool.addresses.length else nodata">
-                  <div class="scrollable">
-                    <a *ngFor="let address of poolStats.pool.addresses"
+
+              <!-- Addresses desktop -->
+              <tr *ngIf="!isMobile()">
+                <td class="label" i18n="mining.addresses">Addresses</td>
+                <td *ngIf="poolStats.pool.addresses.length else nodata" style="padding-bottom: 0;">
+                  <a [routerLink]="['/address' | relativeUrl, poolStats.pool.addresses[0]]" class="first-address">
+                    {{ poolStats.pool.addresses[0] }}
+                  </a>
+                  <button *ngIf="poolStats.pool.addresses.length >= 2" style="transform: translateY(-3px);"
+                    type="button" class="btn btn-outline-info btn-sm float-right" (click)="collapse.toggle()"
+                    [attr.aria-expanded]="!gfg" aria-controls="collapseExample">
+                    <span i18n="show-all">Show all</span> ({{ poolStats.pool.addresses.length }})
+                  </button>
+                  <div #collapse="ngbCollapse" [(ngbCollapse)]="gfg">
+                    <a *ngFor="let address of poolStats.pool.addresses | slice: 1"
                       [routerLink]="['/address' | relativeUrl, address]">{{
                       address }}<br></a>
                   </div>
                 </td>
-                <ng-template #nodata>
-                  <td class="right-mobile">~</td>
-                </ng-template>
+              </tr>
+
+              <!-- Addresses mobile -->
+              <tr *ngIf="isMobile()">
+                <td colspan=2>
+                  <span class="label" i18n="mining.addresses">Addresses</span>
+                  <div *ngIf="poolStats.pool.addresses.length else nodatamobile">
+                    <button *ngIf="poolStats.pool.addresses.length >= 2" type="button"
+                      class="btn btn-outline-info btn-sm float-right small-button" (click)="collapse.toggle()"
+                      [attr.aria-expanded]="!gfg" aria-controls="collapseExample">
+                      <span i18n="show-all">Show all</span> ({{ poolStats.pool.addresses.length }})
+                    </button>
+                    <a [routerLink]="['/address' | relativeUrl, poolStats.pool.addresses[0]]">
+                      {{ poolStats.pool.addresses[0] | shortenString: 40 }}
+                    </a>
+                    <div #collapse="ngbCollapse" [(ngbCollapse)]="gfg" style="width: 100%">
+                      <a *ngFor="let address of poolStats.pool.addresses | slice: 1"
+                        [routerLink]="['/address' | relativeUrl, address]">{{
+                        address | shortenString: 40 }}<br></a>
+                    </div>
+                  </div>
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
+
         <div class="col-lg-3">
           <table class="table table-borderless table-striped">
             <tbody>
-              <tr>
-                <td class="label">Mined Blocks</td>
+
+              <!-- Mined blocks desktop -->
+              <tr *ngIf="!isMobile()">
+                <td class="label" i18n="mining.mined-blocks">Mined Blocks</td>
                 <td class="data">{{ formatNumber(poolStats.blockCount, this.locale, '1.0-0') }}</td>
               </tr>
-              <tr>
-                <td class="label">Empty Blocks</td>
+              <!-- Mined blocks desktop -->
+              <tr *ngIf="isMobile()">
+                <td colspan=2>
+                  <span class="label" i18n="mining.mined-blocks">Mined Blocks</span>
+                  <div>{{ formatNumber(poolStats.blockCount, this.locale, '1.0-0') }}</div>
+                </td>
+              </tr>
+
+              <!-- Empty blocks desktop -->
+              <tr *ngIf="!isMobile()">
+                <td class="label" i18n="mining.empty-blocks">Empty Blocks</td>
                 <td class="data">{{ formatNumber(poolStats.emptyBlocks, this.locale, '1.0-0') }}</td>
               </tr>
+              <!-- Empty blocks mobile -->
+              <tr *ngIf="isMobile()">
+                <td colspan="2">
+                  <span class="label" i18n="mining.empty-blocks">Blocks</span>
+                  <div>{{ formatNumber(poolStats.emptyBlocks, this.locale, '1.0-0') }}</div>
+                </td>
+              </tr>
+
             </tbody>
           </table>
         </div>
@@ -54,14 +114,20 @@
     </div>
   </div>
 
+  <ng-template #nodata>
+    <td>~</td>
+  </ng-template>
+  <ng-template #nodatamobile>
+    <div>~</div>
+  </ng-template>
+
   <div class="chart" echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
   <div class="text-center loadingGraphs" *ngIf="isLoading">
     <div class="spinner-border text-light"></div>
   </div>
 
-  <table class="table table-borderless" [alwaysCallback]="true" infiniteScroll
-    [infiniteScrollDistance]="1.5" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50"
-    (scrolled)="loadMore()">
+  <table class="table table-borderless" [alwaysCallback]="true" infiniteScroll [infiniteScrollDistance]="1.5"
+    [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50" (scrolled)="loadMore()">
     <thead>
       <th class="height" i18n="latest-blocks.height">Height</th>
       <th class="timestamp" i18n="latest-blocks.timestamp">Timestamp</th>
@@ -147,7 +213,9 @@
   <div>
     <div class="mb-3" style="display:flex; position: relative">
       <div class="skeleton-loader mr-3" style="width: 50px; height: 50px"></div>
-      <h1 class="m-0 pt-1 pt-md-0"><div class="skeleton-loader" style="position: absolute; top: 32%; width: 150px; height: 20px"></div></h1>
+      <h1 class="m-0 pt-1 pt-md-0">
+        <div class="skeleton-loader" style="position: absolute; top: 32%; width: 150px; height: 20px"></div>
+      </h1>
     </div>
 
     <div class="box">
@@ -155,41 +223,88 @@
         <div class="col-lg-9">
           <table class="table table-borderless table-striped">
             <tbody>
-              <tr>
-                <td class="label">Tags</td>
-                <td class="text-truncate">
+
+              <!-- Regexes desktop -->
+              <tr *ngIf="!isMobile()">
+                <td class="label" i18n="mining.tags">Tags</td>
+                <td>
                   <div class="skeleton-loader"></div>
                 </td>
               </tr>
-              <tr>
-                <td class="label">Addresses</td>
-                <td class="text-truncate">
-                  <div class="scrollable">
+
+              <!-- Regexes mobile -->
+              <tr *ngIf="isMobile()">
+                <td colspan=2>
+                  <span class="label" i18n="mining.tags">Tags</span>
+                  <div class="overflow-auto">
                     <div class="skeleton-loader"></div>
                   </div>
+                </td>
+              </tr>
+
+              <!-- Addresses desktop -->
+              <tr *ngIf="!isMobile()">
+                <td class="label" i18n="mining.addresses">Addresses</td>
+                <td>
+                  <div class="skeleton-loader"></div>
                 </td>
                 <ng-template #nodata>
                   <td>~</td>
                 </ng-template>
               </tr>
+
+              <!-- Addresses mobile -->
+              <tr *ngIf="isMobile()">
+                <td colspan=2>
+                  <span class="label" i18n="mining.addresses">Addresses</span>
+                  <div>
+                    <div class="skeleton-loader"></div>
+                  </div>
+                </td>
+              </tr>
+
             </tbody>
           </table>
         </div>
+
         <div class="col-lg-3">
-          <table class="table table-borderless table-striped" >
+          <table class="table table-borderless table-striped">
             <tbody>
-              <tr>
-                <td class="label">Mined Blocks</td>
-                <td class="text-truncate">
+
+              <!-- Mined blocks desktop -->
+              <tr *ngIf="!isMobile()">
+                <td class="label" i18n="mining.mined-blocks">Mined Blocks</td>
+                <td class="data">
                   <div class="skeleton-loader"></div>
                 </td>
               </tr>
-              <tr>
-                <td class="label">Empty Blocks</td>
-                <td class="text-truncate">
+              <!-- Mined blocks desktop -->
+              <tr *ngIf="isMobile()">
+                <td colspan=2>
+                  <span class="label" i18n="mining.mined-blocks">Mined Blocks</span>
+                  <div>
+                    <div class="skeleton-loader"></div>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Empty blocks desktop -->
+              <tr *ngIf="!isMobile()">
+                <td class="label" i18n="mining.empty-blocks">Empty Blocks</td>
+                <td class="data">
                   <div class="skeleton-loader"></div>
                 </td>
               </tr>
+              <!-- Empty blocks mobile -->
+              <tr *ngIf="isMobile()">
+                <td colspan="2">
+                  <span class="label" i18n="mining.empty-blocks">Blocks</span>
+                  <div>
+                    <div class="skeleton-loader"></div>
+                  </div>
+                </td>
+              </tr>
+
             </tbody>
           </table>
         </div>

@@ -19,6 +19,8 @@ export class PoolComponent implements OnInit {
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
 
+  gfg = true;
+  
   formatNumber = formatNumber;
   poolStats$: Observable<PoolStat>;
   blocks$: Observable<BlockExtended[]>;
