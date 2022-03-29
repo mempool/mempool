@@ -39,12 +39,11 @@ do for url in / \
 		curl -s "https://${hostname}${url}" >/dev/null
 	done
 
-	counter=1
-	while [ $counter -le 134 ]
+	slugs=$(cat pools.json | jq -r .slugs[])
+	for slug in $slugs
 	do
-		curl -s "https://${hostname}/api/v1/mining/pool/${counter}/hashrate" >/dev/null
-		curl -s "https://${hostname}/api/v1/mining/pool/${counter}" >/dev/null
-		((counter++))
+		curl -s "https://${hostname}/api/v1/mining/pool/${slug}/hashrate" >/dev/null
+		curl -s "https://${hostname}/api/v1/mining/pool/${slug}" >/dev/null
 	done
 
 	sleep 10
