@@ -172,6 +172,34 @@ export class PoolComponent implements OnInit {
           },
         },
       ],
+      dataZoom: [{
+        type: 'inside',
+        realtime: true,
+        zoomLock: true,
+        maxSpan: 100,
+        minSpan: 10,
+        moveOnMouseMove: false,
+      }, {
+        fillerColor: '#aaaaff15',
+        borderColor: '#ffffff88',
+        showDetail: false,
+        show: true,
+        type: 'slider',
+        brushSelect: false,
+        realtime: true,
+        bottom: 0,
+        left: 20,
+        right: 15,
+        selectedDataBackground: {          
+          lineStyle: {
+            color: '#fff',
+            opacity: 0.45,
+          },
+          areaStyle: {
+            opacity: 0,
+          },          
+        },
+      }],
     };
   }
 
