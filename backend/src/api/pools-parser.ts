@@ -135,10 +135,11 @@ class PoolsParser {
     logger.debug(`Update pools table now`);
 
     // Add new mining pools into the database
-    let queryAdd: string = 'INSERT INTO pools(name, link, regexes, addresses) VALUES ';
+    let queryAdd: string = 'INSERT INTO pools(name, link, regexes, addresses, slug) VALUES ';
     for (let i = 0; i < finalPoolDataAdd.length; ++i) {
       queryAdd += `('${finalPoolDataAdd[i].name}', '${finalPoolDataAdd[i].link}',
-      '${JSON.stringify(finalPoolDataAdd[i].regexes)}', '${JSON.stringify(finalPoolDataAdd[i].addresses)}'),`;
+      '${JSON.stringify(finalPoolDataAdd[i].regexes)}', '${JSON.stringify(finalPoolDataAdd[i].addresses)}',
+      ${JSON.stringify(finalPoolDataAdd[i].slug)}),`;
     }
     queryAdd = queryAdd.slice(0, -1) + ';';
 
