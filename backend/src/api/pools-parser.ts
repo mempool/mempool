@@ -12,6 +12,8 @@ interface Pool {
 }
 
 class PoolsParser {
+  slugWarnFlag = false;
+
   /**
    * Parse the pools.json file, consolidate the data and dump it into the database
    */
@@ -93,7 +95,22 @@ class PoolsParser {
       }
 
       const finalPoolName = poolNames[i].replace(`'`, `''`); // To support single quote in names when doing db queries
-      const slug = poolsJson['slugs'][poolNames[i]];
+
+      let slug: string | undefined;
+      try {
+        slug = poolsJson['slugs'][poolNames[i]];
+      } catch (e) {
+        if (this.slugWarnFlag === false) {
+          logger.warn(`pools.json does not seem to contain the 'slugs' object`);
+          this.slugWarnFlag = true;
+        }
+      }
+
+      if (slug === undefined) {
+        // Only keep alphanumerical
+        slug = poolNames[i].replace(/[^a-z0-9]/gi, '').toLowerCase();
+        logger.debug(`No slug found for '${poolNames[i]}', generating it => '${slug}'`);
+      }
 
       if (existingPools.find((pool) => pool.name === poolNames[i]) !== undefined) {
         finalPoolDataUpdate.push({
@@ -118,10 +135,11 @@ class PoolsParser {
     logger.debug(`Update pools table now`);
 
     // Add new mining pools into the database
-    let queryAdd: string = 'INSERT INTO pools(name, link, regexes, addresses) VALUES ';
+    let queryAdd: string = 'INSERT INTO pools(name, link, regexes, addresses, slug) VALUES ';
     for (let i = 0; i < finalPoolDataAdd.length; ++i) {
       queryAdd += `('${finalPoolDataAdd[i].name}', '${finalPoolDataAdd[i].link}',
-      '${JSON.stringify(finalPoolDataAdd[i].regexes)}', '${JSON.stringify(finalPoolDataAdd[i].addresses)}'),`;
+      '${JSON.stringify(finalPoolDataAdd[i].regexes)}', '${JSON.stringify(finalPoolDataAdd[i].addresses)}',
+      ${JSON.stringify(finalPoolDataAdd[i].slug)}),`;
     }
     queryAdd = queryAdd.slice(0, -1) + ';';
 
@@ -163,7 +181,7 @@ class PoolsParser {
       const [rows]: any[] = await connection.query({ sql: 'SELECT name from pools where name="Unknown"', timeout: 120000 });
       if (rows.length === 0) {
         await connection.query({
-          sql: `INSERT INTO pools(name, link, regexes, addresses)
+          sql: `INSERT INTO pools(name, link, regexes, addresses, slug)
           VALUES("Unknown", "https://learnmeabitcoin.com/technical/coinbase-transaction", "[]", "[]", "unknown");
         `});
       } else {
@@ -172,7 +190,7 @@ class PoolsParser {
           regexes='[]', addresses='[]',
           slug='unknown'
           WHERE name='Unknown'
-        `)        
+        `);
       }
     } catch (e) {
       logger.err('Unable to insert "Unknown" mining pool');
