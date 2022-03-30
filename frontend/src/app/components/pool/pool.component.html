@@ -26,7 +26,7 @@
               <tr *ngIf="isMobile()">
                 <td colspan=2>
                   <span i18n="mining.tags" class="label">Tags</span>
-                  <div *ngIf="poolStats.pool.regexes.length else nodata" class="overflow-auto">
+                  <div *ngIf="poolStats.pool.regexes.length else nodatamobile" class="overflow-auto">
                     {{ poolStats.pool.regexes }}
                   </div>
                 </td>
@@ -102,7 +102,7 @@
               <!-- Empty blocks mobile -->
               <tr *ngIf="isMobile()">
                 <td colspan="2">
-                  <span class="label" i18n="mining.empty-blocks">Blocks</span>
+                  <span class="label" i18n="mining.empty-blocks">Empty Blocks</span>
                   <div>{{ formatNumber(poolStats.emptyBlocks, this.locale, '1.0-0') }}</div>
                 </td>
               </tr>
@@ -298,7 +298,7 @@
               <!-- Empty blocks mobile -->
               <tr *ngIf="isMobile()">
                 <td colspan="2">
-                  <span class="label" i18n="mining.empty-blocks">Blocks</span>
+                  <span class="label" i18n="mining.empty-blocks">Empty Blocks</span>
                   <div>
                     <div class="skeleton-loader"></div>
                   </div>
