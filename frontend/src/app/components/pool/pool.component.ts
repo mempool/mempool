@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } 
 import { ActivatedRoute } from '@angular/router';
 import { EChartsOption, graphic } from 'echarts';
 import { BehaviorSubject, Observable, timer } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { distinctUntilChanged, map, share, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended, PoolStat } from 'src/app/interfaces/node-api.interface';
 import { ApiService } from 'src/app/services/api.service';
 import { StateService } from 'src/app/services/state.service';
@@ -34,7 +34,7 @@ export class PoolComponent implements OnInit {
   blocks: BlockExtended[] = [];
   slug: string = undefined;
 
-  loadMoreSubject: BehaviorSubject<string> = new BehaviorSubject(this.slug);
+  loadMoreSubject: BehaviorSubject<number> = new BehaviorSubject(this.blocks[this.blocks.length - 1]?.height);
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -50,7 +50,6 @@ export class PoolComponent implements OnInit {
         switchMap((slug: any) => {
           this.isLoading = true;
           this.slug = slug;
-          this.loadMoreSubject.next(this.slug);
           return this.apiService.getPoolHashrate$(this.slug)
             .pipe(
               switchMap((data) => {
@@ -62,6 +61,9 @@ export class PoolComponent implements OnInit {
         }),
         switchMap((slug) => {
           return this.apiService.getPoolStats$(slug);
+        }),
+        tap(() => {
+          this.loadMoreSubject.next(this.blocks[this.blocks.length - 1]?.height);
         }),
         map((poolStats) => {
           let regexes = '"';
@@ -79,6 +81,7 @@ export class PoolComponent implements OnInit {
 
     this.blocks$ = this.loadMoreSubject
       .pipe(
+        distinctUntilChanged(),
         switchMap((flag) => {
           if (this.slug === undefined) {
             return [];
@@ -88,7 +91,8 @@ export class PoolComponent implements OnInit {
         tap((newBlocks) => {
           this.blocks = this.blocks.concat(newBlocks);
         }),
-        map(() => this.blocks)
+        map(() => this.blocks),
+        share(),
       );
   }
 
@@ -210,7 +214,7 @@ export class PoolComponent implements OnInit {
   }
 
   loadMore() {
-    this.loadMoreSubject.next(this.slug);
+    this.loadMoreSubject.next(this.blocks[this.blocks.length - 1]?.height);
   }
 
   trackByBlock(index: number, block: BlockExtended) {
