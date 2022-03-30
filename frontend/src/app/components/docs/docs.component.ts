@@ -23,5 +23,10 @@ export class DocsComponent implements OnInit {
     this.activeTab = ( url[2].path === "rest" ) ? 0 : 1;
     this.env = this.stateService.env;
     this.showWebSocketTab = ( ! ( ( this.env.BASE_MODULE === "bisq" ) || ( this.stateService.network === "bisq" ) || ( this.stateService.network === "liquidtestnet" ) ) );
+    document.querySelector<HTMLElement>( "html" ).style.scrollBehavior = "smooth";
+  }
+
+  ngOnDestroy(): void {
+    document.querySelector<HTMLElement>( "html" ).style.scrollBehavior = "auto";
   }
 }
