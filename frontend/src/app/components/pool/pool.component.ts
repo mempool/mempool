@@ -20,7 +20,7 @@ export class PoolComponent implements OnInit {
   @Input() left: number | string = 75;
 
   gfg = true;
-  
+
   formatNumber = formatNumber;
   poolStats$: Observable<PoolStat>;
   blocks$: Observable<BlockExtended[]>;
@@ -56,12 +56,12 @@ export class PoolComponent implements OnInit {
               switchMap((data) => {
                 this.isLoading = false;
                 this.prepareChartOptions(data.hashrates.map(val => [val.timestamp * 1000, val.avgHashrate]));
-                return slug;
+                return [slug];
               }),
             );
         }),
-        switchMap(() => {
-          return this.apiService.getPoolStats$(this.slug);
+        switchMap((slug) => {
+          return this.apiService.getPoolStats$(slug);
         }),
         map((poolStats) => {
           let regexes = '"';
@@ -124,7 +124,7 @@ export class PoolComponent implements OnInit {
           align: 'left',
         },
         borderColor: '#000',
-        formatter: function(ticks: any[]) {
+        formatter: function (ticks: any[]) {
           let hashratePowerOfTen: any = selectPowerOfTen(1);
           let hashrate = ticks[0].data[1];
 
@@ -192,14 +192,14 @@ export class PoolComponent implements OnInit {
         bottom: 0,
         left: 20,
         right: 15,
-        selectedDataBackground: {          
+        selectedDataBackground: {
           lineStyle: {
             color: '#fff',
             opacity: 0.45,
           },
           areaStyle: {
             opacity: 0,
-          },          
+          },
         },
       }],
     };
