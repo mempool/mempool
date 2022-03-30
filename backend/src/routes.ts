@@ -576,18 +576,6 @@ class Routes {
     }
   }
 
-  public async $getHistoricalDifficulty(req: Request, res: Response) {
-    try {
-      const stats = await BlocksRepository.$getBlocksDifficulty(req.params.interval ?? null);
-      res.header('Pragma', 'public');
-      res.header('Cache-control', 'public');
-      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
-      res.json(stats);
-    } catch (e) {
-      res.status(500).send(e instanceof Error ? e.message : e);
-    }
-  }
-
   public async $getPoolsHistoricalHashrate(req: Request, res: Response) {
     try {
       const hashrates = await HashratesRepository.$getPoolsWeeklyHashrate(req.params.interval ?? null);
