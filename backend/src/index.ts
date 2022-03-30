@@ -306,8 +306,6 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:slug/blocks/:height', routes.$getPoolBlocks)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:slug', routes.$getPool)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:slug/:interval', routes.$getPool)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty', routes.$getHistoricalDifficulty)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty/:interval', routes.$getHistoricalDifficulty)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/hashrate/pools', routes.$getPoolsHistoricalHashrate)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/hashrate/pools/:interval', routes.$getPoolsHistoricalHashrate)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/hashrate', routes.$getHistoricalHashrate)
