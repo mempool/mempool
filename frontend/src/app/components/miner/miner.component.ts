@@ -46,7 +46,7 @@ export class MinerComponent implements OnChanges {
             this.miner = pools.payout_addresses[vout.scriptpubkey_address].name;
             this.title = $localize`:@@miner-identified-by-payout:Identified by payout address: '${vout.scriptpubkey_address}:PAYOUT_ADDRESS:'`;
             const pool = pools.payout_addresses[vout.scriptpubkey_address];
-            if (this.stateService.env.MINING_DASHBOARD && pools.slugs[pool.name] !== undefined) {
+            if (this.stateService.env.MINING_DASHBOARD && pools.slugs && pools.slugs[pool.name] !== undefined) {
               this.url = this.relativeUrlPipe.transform(`/mining/pool/${pools.slugs[pool.name]}`);
               this.target = '';
             } else {
@@ -62,7 +62,7 @@ export class MinerComponent implements OnChanges {
               const pool = pools.coinbase_tags[tag];
               this.miner = pool.name;
               this.title = $localize`:@@miner-identified-by-coinbase:Identified by coinbase tag: '${tag}:TAG:'`;
-              if (this.stateService.env.MINING_DASHBOARD && pools.slugs[pool.name] !== undefined) {
+              if (this.stateService.env.MINING_DASHBOARD && pools.slugs && pools.slugs[pool.name] !== undefined) {
                 this.url = this.relativeUrlPipe.transform(`/mining/pool/${pools.slugs[pool.name]}`);
                 this.target = '';
               } else {
