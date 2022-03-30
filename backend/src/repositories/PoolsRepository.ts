@@ -1,4 +1,5 @@
 import { Common } from '../api/common';
+import config from '../config';
 import { DB } from '../database';
 import logger from '../logger';
 import { PoolInfo, PoolTag } from '../mempool.interfaces';
@@ -94,7 +95,11 @@ class PoolsRepository {
       connection.release();
 
       rows[0].regexes = JSON.parse(rows[0].regexes);
-      rows[0].addresses = JSON.parse(rows[0].addresses);
+      if (['testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
+        rows[0].addresses = []; // pools.json only contains mainnet addresses
+      } else {
+        rows[0].addresses = JSON.parse(rows[0].addresses);
+      }
 
       return rows[0];
     } catch (e) {
