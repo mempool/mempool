@@ -36,6 +36,7 @@ do for url in / \
 	'/api/v1/mining/hashrate/pools/3y' \
 	'/api/v1/mining/hashrate/pools/all' \
 	'/api/v1/mining/reward-stats/144' \
+	'/api/v1/mining/blocks-extras' \
 
 	do
 		curl -s "https://${hostname}${url}" >/dev/null
@@ -43,8 +44,9 @@ do for url in / \
 
 	for slug in $slugs
 	do
-		curl -s "https://${hostname}/api/v1/mining/pool/${slug}/hashrate" >/dev/null
 		curl -s "https://${hostname}/api/v1/mining/pool/${slug}" >/dev/null
+		curl -s "https://${hostname}/api/v1/mining/pool/${slug}/hashrate" >/dev/null
+		curl -s "https://${hostname}/api/v1/mining/pool/${slug}/blocks" >/dev/null
 	done
 
 	sleep 10
