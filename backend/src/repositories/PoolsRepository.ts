@@ -94,7 +94,7 @@ class PoolsRepository {
       connection.release();
 
       if (rows.length < 1) {
-        logger.debug(`$getPool(): slug ${slug} does not match any known pool`);
+        logger.debug(`$getPool(): slug does not match any known pool`);
         return null;
       }
 
