@@ -26,7 +26,7 @@
           <td class="pool text-left" [class]="widget ? 'widget' : ''">
             <div class="tooltip-custom">
               <a class="clear-link" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]">
-                <img width="25" height="25" src="{{ block.extras.pool['logo'] }}"
+                <img width="23" height="23" src="{{ block.extras.pool['logo'] }}"
                   onError="this.src = './resources/mining-pools/default.svg'">
                 <span class="pool-name">{{ block.extras.pool.name }}</span>
               </a>
@@ -64,7 +64,7 @@
               <span class="skeleton-loader"></span>
             </td>
             <td class="pool text-left" [class]="widget ? 'widget' : ''">
-              <img width="0" height="25" style="opacity: 0">
+              <img width="25" height="25" style="opacity: 0">
               <span class="skeleton-loader"></span>
             </td>
             <td class="timestamp" *ngIf="!widget">

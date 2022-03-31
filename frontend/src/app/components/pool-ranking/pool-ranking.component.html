@@ -63,8 +63,12 @@
   </div>
 
   <div [class]="!widget ? 'bottom-padding' : 'pb-0'" class="container pb-lg-0">
-    <div [class]="widget ? 'chart-widget' : 'chart'" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
-      (chartInit)="onChartInit($event)"></div>
+    <div>
+      <div [class]="widget ? 'chart-widget' : 'chart'" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+        (chartInit)="onChartInit($event)">
+      </div>
+    </div>
+
     <div class="text-center loadingGraphs" *ngIf="isLoading">
       <div class="spinner-border text-light"></div>
     </div>

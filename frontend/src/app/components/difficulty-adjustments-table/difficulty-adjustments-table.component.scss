@@ -1,4 +1,4 @@
-.latest-transactions {
+.latest-adjustments {
   width: 100%;
   text-align: left;
   table-layout:fixed;
@@ -7,34 +7,8 @@
   }
   td {
     width: 25%;
-  }
-  .table-cell-satoshis {
-    display: none;
-    text-align: right;
-    @media (min-width: 576px) {
-      display: table-cell;
+    @media (max-width: 376px) {
+      padding: 0.85rem;
     }
-    @media (min-width: 768px) {
-      display: none;
-    }
-    @media (min-width: 1100px) {
-      display: table-cell;
-    }
-  }
-  .table-cell-fiat {
-    display: none;
-    text-align: right;
-    @media (min-width: 485px) {
-      display: table-cell;
-    }
-    @media (min-width: 768px) {
-      display: none;
-    }
-    @media (min-width: 992px) {
-      display: table-cell;
-    }
-  }
-  .table-cell-fees {
-    text-align: right;
   }
 }
