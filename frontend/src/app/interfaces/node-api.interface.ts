@@ -119,6 +119,8 @@ export interface BlockExtended extends Block {
 }
 
 export interface RewardStats {
+  startBlock: number;
+  endBlock: number;
   totalReward: number;
   totalFee: number;
   totalTx: number;
