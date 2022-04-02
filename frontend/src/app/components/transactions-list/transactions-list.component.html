@@ -155,6 +155,9 @@
                     <span class="d-block d-lg-none">{{ vout.scriptpubkey_address | shortenString : 16 }}</span>
                     <span class="d-none d-lg-block">{{ vout.scriptpubkey_address | shortenString : 35 }}</span>
                   </a>
+                  <div>
+                    <app-address-labels [vout]="vout"></app-address-labels>
+                  </div>
                   <ng-template #scriptpubkey_type>
                     <ng-template [ngIf]="vout.pegout" [ngIfElse]="defaultscriptpubkey_type">
                       <ng-container i18n="transactions-list.peg-out-to">Peg-out to <ng-container *ngTemplateOutlet="pegOutLink"></ng-container></ng-container>
