@@ -386,10 +386,14 @@ class BlocksRepository {
       connection = await DB.getConnection();
 
       // We need to use a subquery
-      const query = `SELECT SUM(reward) as totalReward, SUM(fees) as totalFee, SUM(tx_count) as totalTx
-        FROM (SELECT reward, fees, tx_count FROM blocks ORDER by height DESC LIMIT ${blockCount}) as sub`;
+      const query = `
+        SELECT MIN(height) as startBlock, MAX(height) as endBlock, SUM(reward) as totalReward, SUM(fees) as totalFee, SUM(tx_count) as totalTx
+        FROM
+          (SELECT height, reward, fees, tx_count FROM blocks
+          ORDER by height DESC
+          LIMIT ?) as sub`;
 
-      const [rows]: any = await connection.query(query);
+      const [rows]: any = await connection.query(query, [blockCount]);
       connection.release();
  
       return rows[0];
