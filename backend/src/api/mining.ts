@@ -86,14 +86,20 @@ class Mining {
       return;
     }
 
-    this.weeklyHashrateIndexingStarted = true;
-
-    // We only run this once a week
-    const latestTimestamp = await HashratesRepository.$getLatestRunTimestamp('last_weekly_hashrates_indexing') * 1000;
     const now = new Date();
-    if (now.getTime() - latestTimestamp < 604800000) {
+
+    try {
+      this.weeklyHashrateIndexingStarted = true;
+
+      // We only run this once a week
+      const latestTimestamp = await HashratesRepository.$getLatestRunTimestamp('last_weekly_hashrates_indexing') * 1000;
+      if (now.getTime() - latestTimestamp < 604800000) {
+        this.weeklyHashrateIndexingStarted = false;
+        return;
+      }
+    } catch (e) {
       this.weeklyHashrateIndexingStarted = false;
-      return;
+      throw e;
     }
 
     try {
@@ -187,14 +193,20 @@ class Mining {
       return;
     }
 
-    this.hashrateIndexingStarted = true;
-
-    // We only run this once a day
-    const latestTimestamp = await HashratesRepository.$getLatestRunTimestamp('last_hashrates_indexing') * 1000;
     const now = new Date().getTime();
-    if (now - latestTimestamp < 86400000) {
+
+    try {
+      this.hashrateIndexingStarted = true;
+
+      // We only run this once a day
+      const latestTimestamp = await HashratesRepository.$getLatestRunTimestamp('last_hashrates_indexing') * 1000;
+      if (now - latestTimestamp < 86400000) {
+        this.hashrateIndexingStarted = false;
+        return;
+      }
+    } catch (e) {
       this.hashrateIndexingStarted = false;
-      return;
+      throw e;
     }
 
     try {
