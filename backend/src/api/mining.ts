@@ -86,16 +86,17 @@ class Mining {
       return;
     }
 
+    this.weeklyHashrateIndexingStarted = true;
+
     // We only run this once a week
     const latestTimestamp = await HashratesRepository.$getLatestRunTimestamp('last_weekly_hashrates_indexing') * 1000;
     const now = new Date();
     if (now.getTime() - latestTimestamp < 604800000) {
+      this.weeklyHashrateIndexingStarted = false;
       return;
     }
 
     try {
-      this.weeklyHashrateIndexingStarted = true;
-
       logger.info(`Indexing mining pools weekly hashrates`);
 
       const indexedTimestamp = await HashratesRepository.$getWeeklyHashrateTimestamps();
@@ -186,16 +187,17 @@ class Mining {
       return;
     }
 
+    this.hashrateIndexingStarted = true;
+
     // We only run this once a day
     const latestTimestamp = await HashratesRepository.$getLatestRunTimestamp('last_hashrates_indexing') * 1000;
     const now = new Date().getTime();
     if (now - latestTimestamp < 86400000) {
+      this.hashrateIndexingStarted = false;
       return;
     }
 
     try {
-      this.hashrateIndexingStarted = true;
-
       logger.info(`Indexing network daily hashrate`);
 
       const indexedTimestamp = (await HashratesRepository.$getNetworkDailyHashrate(null)).map(hashrate => hashrate.timestamp);
