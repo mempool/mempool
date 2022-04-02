@@ -155,7 +155,7 @@ export class HashrateChartPoolsComponent implements OnInit {
       grid: {
         right: this.right,
         left: this.left,
-        bottom: this.widget ? 30 : 60,
+        bottom: this.widget ? 30 : 70,
         top: this.widget || this.isMobile() ? 10 : 50,
       },
       tooltip: {
@@ -218,7 +218,6 @@ export class HashrateChartPoolsComponent implements OnInit {
         type: 'slider',
         brushSelect: false,
         realtime: true,
-        bottom: 0,
         left: 20,
         right: 15,
         selectedDataBackground: {
