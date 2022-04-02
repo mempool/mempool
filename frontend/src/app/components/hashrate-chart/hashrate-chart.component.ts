@@ -155,10 +155,10 @@ export class HashrateChartComponent implements OnInit {
         '#D81B60',
       ],
       grid: {
-        top: 30,
+        top: 20,
+        bottom: this.widget ? 30 : 70,
         right: this.right,
         left: this.left,
-        bottom: this.widget ? 30 : this.isMobile() ? 90 : 60,
       },
       tooltip: {
         show: !this.isMobile() || !this.widget,
@@ -174,7 +174,7 @@ export class HashrateChartComponent implements OnInit {
           align: 'left',
         },
         borderColor: '#000',
-        formatter: function (ticks) {
+        formatter: (ticks) => {
           let hashrateString = '';
           let difficultyString = '';
           let hashratePowerOfTen: any = selectPowerOfTen(1);
@@ -205,7 +205,7 @@ export class HashrateChartComponent implements OnInit {
             <span>${hashrateString}</span><br>
             <span>${difficultyString}</span>
           `;
-        }.bind(this)
+        }
       },
       xAxis: data.hashrates.length === 0 ? undefined : {
         type: 'time',
@@ -239,7 +239,7 @@ export class HashrateChartComponent implements OnInit {
       },
       yAxis: data.hashrates.length === 0 ? undefined : [
         {
-          min: function (value) {
+          min: (value) => {
             return value.min * 0.9;
           },
           type: 'value',
@@ -256,7 +256,7 @@ export class HashrateChartComponent implements OnInit {
           }
         },
         {
-          min: function (value) {
+          min: (value) => {
             return value.min * 0.9;
           },
           type: 'value',
@@ -266,7 +266,7 @@ export class HashrateChartComponent implements OnInit {
             formatter: (val) => {
               const selectedPowerOfTen: any = selectPowerOfTen(val);
               const newVal = Math.round(val / selectedPowerOfTen.divider);
-              return `${newVal} ${selectedPowerOfTen.unit}`
+              return `${newVal} ${selectedPowerOfTen.unit}`;
             }
           },
           splitLine: {
@@ -310,7 +310,6 @@ export class HashrateChartComponent implements OnInit {
         type: 'slider',
         brushSelect: false,
         realtime: true,
-        bottom: this.isMobile() ? 30 : 0,
         left: 20,
         right: 15,
         selectedDataBackground: {

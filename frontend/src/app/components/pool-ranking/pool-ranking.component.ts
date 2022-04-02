@@ -201,30 +201,6 @@ export class PoolRankingComponent implements OnInit {
   }
 
   prepareChartOptions(miningStats) {
-    let network = this.stateService.network;
-    if (network === '') {
-      network = 'bitcoin';
-    }
-    network = network.charAt(0).toUpperCase() + network.slice(1);
-
-    let radius: any[] = ['20%', '80%'];
-    let top: number = 0; let height = undefined;
-    if (this.isMobile() && this.widget) {
-      top = -30;
-      height = 270;
-      radius = ['10%', '50%'];
-    } else if (this.isMobile() && !this.widget) {
-      top = -40;
-      height = 300;
-      radius = ['10%', '50%'];
-    } else if (this.widget) {
-      radius = ['15%', '60%'];
-      top = -20;
-      height = 330;
-    } else {
-      top = 0;
-    }
-
     this.chartOptions = {
       animation: false,
       color: chartColors,
@@ -237,11 +213,9 @@ export class PoolRankingComponent implements OnInit {
       series: [
         {
           minShowLabelAngle: 3.6,
-          top: top,
-          height: height,
           name: 'Mining pool',
           type: 'pie',
-          radius: radius,
+          radius: ['20%', '80%'],
           data: this.generatePoolsChartSerieData(miningStats),
           labelLine: {
             lineStyle: {
