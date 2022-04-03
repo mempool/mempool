@@ -328,15 +328,16 @@ class BitcoinApi implements AbstractBitcoinApi {
       } else {
         const opcode = bitcoinjs.script.toASM([ op ]);
         if (opcode && op < 0xfd) {
-          if (opcode === 'OP_1NEGATE') {
+          if (op === 0x4f) {
             b.push('OP_PUSHNUM_NEG1');
-          } else if (/^OP_(\d+)$/.test(opcode) && opcode !== 'OP_0') {
+          } else if (/^OP_(\d+)$/.test(opcode) && op !== 0x00) {
             b.push(opcode.replace(/^OP_(\d+)$/, 'OP_PUSHNUM_$1'));
+          } else if (op === 0xb1) {
+            b.push('OP_CLTV');
+          } else if (op === 0xb2) {
+            b.push('OP_CSV');
           } else {
-            b.push(opcode
-              .replace('OP_CHECKSEQUENCEVERIFY', 'OP_CSV')
-              .replace('OP_CHECKLOCKTIMEVERIFY', 'OP_CLTV')
-            );
+            b.push(opcode);
           }
         } else {
           b.push('OP_RETURN_' + op);
