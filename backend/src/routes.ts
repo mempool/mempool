@@ -545,7 +545,11 @@ class Routes {
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(stats);
     } catch (e) {
-      res.status(500).send(e instanceof Error ? e.message : e);
+      if (e instanceof Error && e.message.indexOf('This mining pool does not exist') > -1) {
+        res.status(404).send(e.message);
+      } else {
+        res.status(500).send(e instanceof Error ? e.message : e);
+      }
     }
   }
 
@@ -560,7 +564,11 @@ class Routes {
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(poolBlocks);
     } catch (e) {
-      res.status(500).send(e instanceof Error ? e.message : e);
+      if (e instanceof Error && e.message.indexOf('This mining pool does not exist') > -1) {
+        res.status(404).send(e.message);
+      } else {
+        res.status(500).send(e instanceof Error ? e.message : e);
+      }
     }
   }
 
@@ -604,7 +612,11 @@ class Routes {
         hashrates: hashrates,
       });
     } catch (e) {
-      res.status(500).send(e instanceof Error ? e.message : e);
+      if (e instanceof Error && e.message.indexOf('This mining pool does not exist') > -1) {
+        res.status(404).send(e.message);
+      } else {
+        res.status(500).send(e instanceof Error ? e.message : e);
+      }
     }
   }
 

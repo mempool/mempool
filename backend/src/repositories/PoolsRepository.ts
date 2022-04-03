@@ -81,7 +81,7 @@ class PoolsRepository {
   /**
    * Get mining pool statistics for one pool
    */
-   public async $getPool(slug: string): Promise<PoolTag> {
+   public async $getPool(slug: string): Promise<PoolTag | null> {
     const query = `
       SELECT *
       FROM pools
@@ -93,6 +93,11 @@ class PoolsRepository {
 
       const [rows] = await connection.query(query, [slug]);
       connection.release();
+
+      if (rows.length < 1) {
+        logger.debug(`$getPool(): slug does not match any known pool`);
+        return null;
+      }
 
       rows[0].regexes = JSON.parse(rows[0].regexes);
       if (['testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
