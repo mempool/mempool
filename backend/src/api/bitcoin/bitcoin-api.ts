@@ -212,6 +212,7 @@ class BitcoinApi implements AbstractBitcoinApi {
       'witness_v0_scripthash': 'v0_p2wsh',
       'witness_v1_taproot': 'v1_p2tr',
       'nonstandard': 'nonstandard',
+      'multisig': 'multisig',
       'nulldata': 'op_return'
     };
 
@@ -294,15 +295,30 @@ class BitcoinApi implements AbstractBitcoinApi {
     const b: string[] = [];
     a.forEach((chunk) => {
       if (chunk.substr(0, 3) === 'OP_') {
-        chunk = chunk.replace(/^OP_(\d+)/, 'OP_PUSHNUM_$1');
+        chunk = chunk.replace(/^OP_(\d+)$/, 'OP_PUSHNUM_$1');
         chunk = chunk.replace('OP_CHECKSEQUENCEVERIFY', 'OP_CSV');
+        chunk = chunk.replace('OP_CHECKLOCKTIMEVERIFY', 'OP_CLTV');
         b.push(chunk);
       } else {
         chunk = chunk.replace('[ALL]', '01');
         if (chunk === '0') {
           b.push('OP_0');
+        } else if (chunk.match(/^[^0]\d*$/)) {
+          const chunkInt = parseInt(chunk, 10);
+          if (chunkInt < 0) {
+            b.push('OP_PUSHNUM_NEG' + -chunkInt);
+          } else {
+            b.push('OP_PUSHNUM_' + chunk);
+          }
         } else {
-          b.push('OP_PUSHBYTES_' + Math.round(chunk.length / 2) + ' ' + chunk);
+          const dataLength = Math.round(chunk.length / 2);
+          if (dataLength > 255) {
+            b.push('OP_PUSHDATA2' + ' ' + chunk);
+          } else if (dataLength > 75) {
+            b.push('OP_PUSHDATA1' + ' ' + chunk);
+          } else {
+            b.push('OP_PUSHBYTES_' + dataLength + ' ' + chunk);
+          }
         }
       }
     });
