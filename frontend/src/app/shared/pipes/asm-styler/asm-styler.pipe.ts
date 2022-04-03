@@ -264,6 +264,7 @@ export class AsmStylerPipe implements PipeTransform {
       case 'LESSTHAN':
       case 'GREATERTHAN':
       case 'LESSTHANOREQUAL':
+      case 'GREATERTHANOREQUAL':
       case 'MIN':
       case 'MAX':
       case 'WITHIN':
@@ -279,12 +280,12 @@ export class AsmStylerPipe implements PipeTransform {
       case 'CHECKSIG':
       case 'CHECKSIGVERIFY':
       case 'CHECKMULTISIG':
-      case 'CHCEKMULTISIGVERIFY':
+      case 'CHECKMULTISIGVERIFY':
         style = 'crypto';
         break;
 
-      case 'CHECKLOCKTIMEVERIFY':
-      case 'CHECKSEQUENCEVERIFY':
+      case 'CLTV':
+      case 'CSV':
         style = 'locktime';
         break;
 
