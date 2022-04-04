@@ -281,6 +281,7 @@ export class AsmStylerPipe implements PipeTransform {
       case 'CHECKSIGVERIFY':
       case 'CHECKMULTISIG':
       case 'CHECKMULTISIGVERIFY':
+      case 'CHECKSIGADD':
         style = 'crypto';
         break;
 

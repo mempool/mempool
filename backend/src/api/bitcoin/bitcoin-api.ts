@@ -326,21 +326,27 @@ class BitcoinApi implements AbstractBitcoinApi {
         b.push(data.toString('hex'));
         i += data.length;
       } else {
-        const opcode = bitcoinjs.script.toASM([ op ]);
-        if (opcode && op < 0xfd) {
-          if (op === 0x4f) {
-            b.push('OP_PUSHNUM_NEG1');
-          } else if (/^OP_(\d+)$/.test(opcode) && op !== 0x00) {
-            b.push(opcode.replace(/^OP_(\d+)$/, 'OP_PUSHNUM_$1'));
-          } else if (op === 0xb1) {
-            b.push('OP_CLTV');
-          } else if (op === 0xb2) {
-            b.push('OP_CSV');
-          } else {
-            b.push(opcode);
-          }
+        if (op === 0x00) {
+          b.push('OP_0');
+        } else if (op === 0x4f) {
+          b.push('OP_PUSHNUM_NEG1');
+        } else if (op === 0xb1) {
+          b.push('OP_CLTV');
+        } else if (op === 0xb2) {
+          b.push('OP_CSV');
+        } else if (op === 0xba) {
+          b.push('OP_CHECKSIGADD');
         } else {
-          b.push('OP_RETURN_' + op);
+          const opcode = bitcoinjs.script.toASM([ op ]);
+          if (opcode && op < 0xfd) {
+            if (/^OP_(\d+)$/.test(opcode)) {
+              b.push(opcode.replace(/^OP_(\d+)$/, 'OP_PUSHNUM_$1'));
+            } else {
+              b.push(opcode);
+            }
+          } else {
+            b.push('OP_RETURN_' + op);
+          }
         }
         i += 1;
       }
