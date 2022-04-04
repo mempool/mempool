@@ -45,8 +45,8 @@ class Mining {
     const blockCount: number = await BlocksRepository.$blockCount(null, interval);
     poolsStatistics['blockCount'] = blockCount;
 
-    const blockHeightTip = await bitcoinClient.getBlockCount();
-    const lastBlockHashrate = await bitcoinClient.getNetworkHashPs(144, blockHeightTip);
+    const totalBlock24h: number = await BlocksRepository.$blockCount(null, '24h');
+    const lastBlockHashrate = await bitcoinClient.getNetworkHashPs(totalBlock24h);
     poolsStatistics['lastEstimatedHashrate'] = lastBlockHashrate;
 
     return poolsStatistics;
@@ -62,12 +62,30 @@ class Mining {
     }
 
     const blockCount: number = await BlocksRepository.$blockCount(pool.id);
-    const emptyBlocksCount = await BlocksRepository.$countEmptyBlocks(pool.id);
+    const totalBlock: number = await BlocksRepository.$blockCount(null, null);
+
+    const blockCount24h: number = await BlocksRepository.$blockCount(pool.id, '24h');
+    const totalBlock24h: number = await BlocksRepository.$blockCount(null, '24h');
+
+    const blockCount1w: number = await BlocksRepository.$blockCount(pool.id, '1w');
+    const totalBlock1w: number = await BlocksRepository.$blockCount(null, '1w');
+
+    const currentEstimatedkHashrate = await bitcoinClient.getNetworkHashPs(totalBlock24h);
 
     return {
       pool: pool,
-      blockCount: blockCount,
-      emptyBlocks: emptyBlocksCount.length > 0 ? emptyBlocksCount[0]['count'] : 0,
+      blockCount: {
+        'all': blockCount,
+        '24h': blockCount24h,
+        '1w': blockCount1w,
+      },
+      blockShare: {
+        'all': blockCount / totalBlock,
+        '24h': blockCount24h / totalBlock24h,
+        '1w': blockCount1w / totalBlock1w,
+      },
+      estimatedHashrate: currentEstimatedkHashrate * (blockCount24h / totalBlock24h),
+      reportedHashrate: null,
     };
   }
 

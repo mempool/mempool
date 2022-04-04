@@ -1,5 +1,6 @@
 <div class="container-xl">
 
+  <!-- Pool overview -->
   <div *ngIf="poolStats$ | async as poolStats; else loadingMain">
     <div style="display:flex" class="mb-3">
       <img width="50" height="50" src="{{ poolStats['logo'] }}"
@@ -10,22 +11,21 @@
     <div class="box">
       <div class="row">
 
-        <div class="col-lg-9">
-          <table class="table table-borderless table-striped" style="table-layout: fixed;">
+        <div class="col-lg-6">
+          <table class="table table-borderless table-striped taller" style="table-layout: fixed;">
             <tbody>
 
               <!-- Regexes desktop -->
-              <tr *ngIf="!isMobile()">
+              <tr *ngIf="!isMobile()" class="taller-row">
                 <td class="label" i18n="mining.tags">Tags</td>
-                <td *ngIf="poolStats.pool.regexes.length else nodata">
-                  {{ poolStats.pool.regexes }}
+                <td *ngIf="poolStats.pool.regexes.length else nodata" style="vertical-align: middle">
+                  <div class="scrollable">{{ poolStats.pool.regexes }}</div>
                 </td>
               </tr>
-
               <!-- Regexes mobile -->
               <tr *ngIf="isMobile()">
                 <td colspan=2>
-                  <span i18n="mining.tags" class="label">Tags</span>
+                  <span class="label" i18n="mining.tags">Tags</span>
                   <div *ngIf="poolStats.pool.regexes.length else nodatamobile" class="overflow-auto">
                     {{ poolStats.pool.regexes }}
                   </div>
@@ -33,17 +33,17 @@
               </tr>
 
               <!-- Addresses desktop -->
-              <tr *ngIf="!isMobile()">
-                <td class="label" i18n="mining.addresses">Addresses</td>
-                <td *ngIf="poolStats.pool.addresses.length else nodata" style="padding-bottom: 0;">
-                  <a [routerLink]="['/address' | relativeUrl, poolStats.pool.addresses[0]]" class="first-address">
-                    {{ poolStats.pool.addresses[0] }}
-                  </a>
-                  <button *ngIf="poolStats.pool.addresses.length >= 2" style="transform: translateY(-3px);"
-                    type="button" class="btn btn-outline-info btn-sm float-right" (click)="collapse.toggle()"
+              <tr *ngIf="!isMobile()" class="taller-row">
+                <td class="label addresses" i18n="mining.addresses">Addresses</td>
+                <td *ngIf="poolStats.pool.addresses.length else nodata" style="padding-top: 25px">
+                  <button *ngIf="poolStats.pool.addresses.length >= 2" type="button"
+                    class="btn btn-outline-info btn-sm float-right small-button" (click)="collapse.toggle()"
                     [attr.aria-expanded]="!gfg" aria-controls="collapseExample">
                     <span i18n="show-all">Show all</span> ({{ poolStats.pool.addresses.length }})
                   </button>
+                  <a [routerLink]="['/address' | relativeUrl, poolStats.pool.addresses[0]]" class="first-address">
+                    {{ poolStats.pool.addresses[0] }}
+                  </a>
                   <div #collapse="ngbCollapse" [(ngbCollapse)]="gfg">
                     <a *ngFor="let address of poolStats.pool.addresses | slice: 1"
                       [routerLink]="['/address' | relativeUrl, address]">{{
@@ -51,7 +51,6 @@
                   </div>
                 </td>
               </tr>
-
               <!-- Addresses mobile -->
               <tr *ngIf="isMobile()">
                 <td colspan=2>
@@ -77,105 +76,192 @@
           </table>
         </div>
 
-        <div class="col-lg-3">
+        <div class="col-lg-6">
           <table class="table table-borderless table-striped">
             <tbody>
 
-              <!-- Mined blocks desktop -->
-              <tr *ngIf="!isMobile()">
-                <td class="label" i18n="mining.mined-blocks">Mined Blocks</td>
-                <td class="data">{{ formatNumber(poolStats.blockCount, this.locale, '1.0-0') }}</td>
+              <!-- Hashrate desktop -->
+              <tr *ngIf="!isMobile()" class="taller-row">
+                <td class="label" i18n="mining.hashrate-24h">Hashrate (24h)</td>
+                <td class="data">
+                  <table class="table table-xs table-data">
+                    <thead>
+                      <tr>
+                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.estimated">Estimated
+                        </th>
+                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.reported">Reported
+                        </th>
+                        <th scope="col" class="block-count-title" style="width: 26%" i18n="mining.luck">Luck</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <td>{{ poolStats.estimatedHashrate | amountShortener : 1 : 'H/s' }}</td>
+                      <ng-template *ngIf="poolStats.luck; else noreported">
+                        <td>{{ poolStats.reportedHashrate | amountShortener : 1 : 'H/s' }}</td>
+                        <td>{{ formatNumber(poolStats.luck, this.locale, '1.2-2') }}%</td>
+                      </ng-template>
+                    </tbody>
+                  </table>
+                </td>
               </tr>
-              <!-- Mined blocks desktop -->
+              <!-- Hashrate mobile -->
               <tr *ngIf="isMobile()">
-                <td colspan=2>
-                  <span class="label" i18n="mining.mined-blocks">Mined Blocks</span>
-                  <div>{{ formatNumber(poolStats.blockCount, this.locale, '1.0-0') }}</div>
+                <td colspan="2">
+                  <span class="label" i18n="mining.hashrate-24h">Hashrate (24h)</span>
+                  <table class="table table-xs table-data">
+                    <thead>
+                      <tr>
+                        <th scope="col" class="block-count-title" style="width: 33%" i18n="mining.estimated">Estimated
+                        </th>
+                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.reported">Reported
+                        </th>
+                        <th scope="col" class="block-count-title" style="width: 30%" i18n="mining.luck">Luck</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <td>{{ poolStats.estimatedHashrate | amountShortener : 1 : 'H/s' }}</td>
+                      <ng-template *ngIf="poolStats.luck; else noreported">
+                        <td>{{ poolStats.reportedHashrate | amountShortener : 1 : 'H/s' }}</td>
+                        <td>{{ formatNumber(poolStats.luck, this.locale, '1.2-2') }}%</td>
+                      </ng-template>
+                    </tbody>
+                  </table>
                 </td>
               </tr>
 
-              <!-- Empty blocks desktop -->
-              <tr *ngIf="!isMobile()">
-                <td class="label" i18n="mining.empty-blocks">Empty Blocks</td>
-                <td class="data">{{ formatNumber(poolStats.emptyBlocks, this.locale, '1.0-0') }}</td>
+              <ng-template #noreported>
+                <td>~</td>
+                <td>~</td>
+              </ng-template>
+
+              <!-- Mined blocks desktop -->
+              <tr *ngIf="!isMobile()" class="taller-row">
+                <td class="label" i18n="mining.mined-blocks">Mined Blocks</td>
+                <td class="data">
+                  <table class="table table-xs table-data">
+                    <thead>
+                      <tr>
+                        <th scope="col" class="block-count-title" style="width: 37%" i18n="24h">24h</th>
+                        <th scope="col" class="block-count-title" style="width: 37%" i18n="1w">1w</th>
+                        <th scope="col" class="block-count-title" style="width: 26%" i18n="all">All</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <td>{{ formatNumber(poolStats.blockCount['24h'], this.locale, '1.0-0') }} ({{ formatNumber(100 * poolStats.blockShare['24h'], this.locale, '1.0-0') }}%)</td>
+                      <td>{{ formatNumber(poolStats.blockCount['1w'], this.locale, '1.0-0') }} ({{ formatNumber(100 * poolStats.blockShare['1w'], this.locale, '1.0-0') }}%)</td>
+                      <td>{{ formatNumber(poolStats.blockCount['all'], this.locale, '1.0-0') }} ({{ formatNumber(100 * poolStats.blockShare['all'], this.locale, '1.0-0') }}%)</td>
+                    </tbody>
+                  </table>
+                </td>
               </tr>
-              <!-- Empty blocks mobile -->
+              <!-- Mined blocks mobile -->
               <tr *ngIf="isMobile()">
-                <td colspan="2">
-                  <span class="label" i18n="mining.empty-blocks">Empty Blocks</span>
-                  <div>{{ formatNumber(poolStats.emptyBlocks, this.locale, '1.0-0') }}</div>
+                <td colspan=2>
+                  <span class="label" i18n="mining.mined-blocks">Mined Blocks</span>
+                  <table class="table table-xs table-data">
+                    <thead>
+                      <tr>
+                        <th scope="col" class="block-count-title" style="width: 33%" i18n="24h">24h</th>
+                        <th scope="col" class="block-count-title" style="width: 37%" i18n="1w">1w</th>
+                        <th scope="col" class="block-count-title" style="width: 30%" i18n="all">All</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <td>{{ formatNumber(poolStats.blockCount['24h'], this.locale, '1.0-0') }} ({{ formatNumber(100 * poolStats.blockShare['24h'], this.locale, '1.0-0') }}%)</td>
+                      <td>{{ formatNumber(poolStats.blockCount['1w'], this.locale, '1.0-0') }} ({{ formatNumber(100 * poolStats.blockShare['1w'], this.locale, '1.0-0') }}%)</td>
+                      <td>{{ formatNumber(poolStats.blockCount['all'], this.locale, '1.0-0') }} ({{ formatNumber(100 * poolStats.blockShare['all'], this.locale, '1.0-0') }}%)</td>
+                    </tbody>
+                  </table>
                 </td>
               </tr>
 
             </tbody>
           </table>
         </div>
+
       </div>
     </div>
   </div>
 
   <ng-template #nodata>
-    <td>~</td>
+    <td class="taller-row" style="vertical-align: middle">~</td>
   </ng-template>
   <ng-template #nodatamobile>
     <div>~</div>
   </ng-template>
 
+  <!-- Hashrate chart -->
   <div class="chart" echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
   <div class="text-center loadingGraphs" *ngIf="isLoading">
     <div class="spinner-border text-light"></div>
   </div>
 
+  <!-- Blocks list -->
   <table class="table table-borderless" [alwaysCallback]="true" infiniteScroll [infiniteScrollDistance]="1.5"
     [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50" (scrolled)="loadMore()">
-    <thead>
-      <th class="height" i18n="latest-blocks.height">Height</th>
-      <th class="timestamp" i18n="latest-blocks.timestamp">Timestamp</th>
-      <th class="mined" i18n="latest-blocks.mined">Mined</th>
-      <th class="coinbase text-left" i18n="latest-blocks.coinbasetag">
-        Coinbase Tag</th>
-      <th class="reward text-right" i18n="latest-blocks.reward">
-        Reward</th>
-      <th class="fees text-right" i18n="latest-blocks.fees">Fees</th>
-      <th class="txs text-right" i18n="latest-blocks.transactions">Txs</th>
-      <th class="size" i18n="latest-blocks.size">Size</th>
-    </thead>
-    <tbody *ngIf="blocks$ | async as blocks; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
-      <tr *ngFor="let block of blocks; let i= index; trackBy: trackByBlock">
-        <td class="height">
-          <a [routerLink]="['/block' | relativeUrl, block.height]">{{ block.height
-            }}</a>
-        </td>
-        <td class="timestamp">
-          &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
-        </td>
-        <td class="mined">
-          <app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since>
-        </td>
-        <td class="coinbase">
-          <span class="badge badge-secondary scriptmessage longer">
-            {{ block.extras.coinbaseRaw | hex2ascii }}
-          </span>
-        </td>
-        <td class="reward text-right">
-          <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-2"></app-amount>
-        </td>
-        <td class="fees text-right">
-          <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-2"></app-amount>
-        </td>
-        <td class="txs text-right">
-          {{ block.tx_count | number }}
-        </td>
-        <td class="size">
-          <div class="progress">
-            <div class="progress-bar progress-mempool" role="progressbar"
-              [ngStyle]="{'width': (block.weight / stateService.env.BLOCK_WEIGHT_UNITS)*100 + '%' }"></div>
-            <div class="progress-text" [innerHTML]="block.size | bytes: 2"></div>
-          </div>
-        </td>
-      </tr>
-    </tbody>
+    <ng-container *ngIf="blocks$ | async as blocks; else skeleton">
+      <thead *ngIf="blocks.length > 0">
+        <th class="height" i18n="latest-blocks.height">Height</th>
+        <th class="timestamp" i18n="latest-blocks.timestamp">Timestamp</th>
+        <th class="mined" i18n="latest-blocks.mined">Mined</th>
+        <th class="coinbase text-left" i18n="latest-blocks.coinbasetag">
+          Coinbase Tag</th>
+        <th class="reward text-right" i18n="latest-blocks.reward">
+          Reward</th>
+        <th class="fees text-right" i18n="latest-blocks.fees">Fees</th>
+        <th class="txs text-right" i18n="latest-blocks.transactions">Txs</th>
+        <th class="size" i18n="latest-blocks.size">Size</th>
+      </thead>
+      <tbody [style]="isLoading ? 'opacity: 0.75' : ''">
+        <tr *ngFor="let block of blocks; let i= index; trackBy: trackByBlock">
+          <td class="height">
+            <a [routerLink]="['/block' | relativeUrl, block.height]">{{ block.height
+              }}</a>
+          </td>
+          <td class="timestamp">
+            &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
+          </td>
+          <td class="mined">
+            <app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since>
+          </td>
+          <td class="coinbase">
+            <span class="badge badge-secondary scriptmessage longer">
+              {{ block.extras.coinbaseRaw | hex2ascii }}
+            </span>
+          </td>
+          <td class="reward text-right">
+            <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-2"></app-amount>
+          </td>
+          <td class="fees text-right">
+            <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-2"></app-amount>
+          </td>
+          <td class="txs text-right">
+            {{ block.tx_count | number }}
+          </td>
+          <td class="size">
+            <div class="progress">
+              <div class="progress-bar progress-mempool" role="progressbar"
+                [ngStyle]="{'width': (block.weight / stateService.env.BLOCK_WEIGHT_UNITS)*100 + '%' }"></div>
+              <div class="progress-text" [innerHTML]="block.size | bytes: 2"></div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </ng-container>
+
     <ng-template #skeleton>
+      <thead>
+        <th class="height" i18n="latest-blocks.height">Height</th>
+        <th class="timestamp" i18n="latest-blocks.timestamp">Timestamp</th>
+        <th class="mined" i18n="latest-blocks.mined">Mined</th>
+        <th class="coinbase text-left" i18n="latest-blocks.coinbasetag">
+          Coinbase Tag</th>
+        <th class="reward text-right" i18n="latest-blocks.reward">
+          Reward</th>
+        <th class="fees text-right" i18n="latest-blocks.fees">Fees</th>
+        <th class="txs text-right" i18n="latest-blocks.transactions">Txs</th>
+        <th class="size" i18n="latest-blocks.size">Size</th>
+      </thead>
       <tbody>
         <tr *ngFor="let item of [1,2,3,4,5]">
           <td class="height">
@@ -209,6 +295,7 @@
 
 </div>
 
+<!-- Main table skeleton -->
 <ng-template #loadingMain>
   <div>
     <div class="mb-3" style="display:flex; position: relative">
@@ -220,18 +307,18 @@
 
     <div class="box">
       <div class="row">
-        <div class="col-lg-9">
-          <table class="table table-borderless table-striped">
+
+        <div class="col-lg-6">
+          <table class="table table-borderless table-striped taller" style="table-layout: fixed;">
             <tbody>
 
               <!-- Regexes desktop -->
-              <tr *ngIf="!isMobile()">
+              <tr *ngIf="!isMobile()" class="taller-row">
                 <td class="label" i18n="mining.tags">Tags</td>
-                <td>
+                <td style="vertical-align: middle">
                   <div class="skeleton-loader"></div>
                 </td>
               </tr>
-
               <!-- Regexes mobile -->
               <tr *ngIf="isMobile()">
                 <td colspan=2>
@@ -243,71 +330,149 @@
               </tr>
 
               <!-- Addresses desktop -->
-              <tr *ngIf="!isMobile()">
+              <tr *ngIf="!isMobile()" class="taller-row">
                 <td class="label" i18n="mining.addresses">Addresses</td>
-                <td>
+                <td style="vertical-align: middle;">
                   <div class="skeleton-loader"></div>
+                  <div #collapse="ngbCollapse" [(ngbCollapse)]="gfg">
+                    <div class="skeleton-loader"></div>
+                  </div>
                 </td>
-                <ng-template #nodata>
-                  <td>~</td>
-                </ng-template>
               </tr>
-
               <!-- Addresses mobile -->
               <tr *ngIf="isMobile()">
                 <td colspan=2>
                   <span class="label" i18n="mining.addresses">Addresses</span>
                   <div>
                     <div class="skeleton-loader"></div>
+                    <div #collapse="ngbCollapse" [(ngbCollapse)]="gfg" style="width: 100%">
+                      <div class="skeleton-loader"></div>
+                    </div>
                   </div>
                 </td>
               </tr>
-
             </tbody>
           </table>
         </div>
 
-        <div class="col-lg-3">
+        <div class="col-lg-6">
           <table class="table table-borderless table-striped">
             <tbody>
 
-              <!-- Mined blocks desktop -->
-              <tr *ngIf="!isMobile()">
-                <td class="label" i18n="mining.mined-blocks">Mined Blocks</td>
+              <!-- Hashrate desktop -->
+              <tr *ngIf="!isMobile()" class="taller-row">
+                <td class="label" i18n="mining.hashrate-24h">Hashrate (24h)</td>
                 <td class="data">
-                  <div class="skeleton-loader"></div>
+                  <table class="table table-xs table-data text-center">
+                    <thead>
+                      <tr>
+                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.estimated">Estimated
+                        </th>
+                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.reported">Reported
+                        </th>
+                        <th scope="col" class="block-count-title" style="width: 26%" i18n="mining.luck">Luck</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <td>
+                        <div class="skeleton-loader data"></div>
+                      </td>
+                      <td>
+                        <div class="skeleton-loader data"></div>
+                      </td>
+                      <td>
+                        <div class="skeleton-loader data"></div>
+                      </td>
+                    </tbody>
+                  </table>
                 </td>
               </tr>
-              <!-- Mined blocks desktop -->
+              <!-- Hashrate mobile -->
               <tr *ngIf="isMobile()">
-                <td colspan=2>
-                  <span class="label" i18n="mining.mined-blocks">Mined Blocks</span>
-                  <div>
-                    <div class="skeleton-loader"></div>
-                  </div>
+                <td colspan="2">
+                  <span class="label" i18n="mining.hashrate-24h">Hashrate (24h)</span>
+                  <table class="table table-xs table-data text-center">
+                    <thead>
+                      <tr>
+                        <th scope="col" class="block-count-title" style="width: 33%" i18n="mining.estimated">Estimated
+                        </th>
+                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.reported">Reported
+                        </th>
+                        <th scope="col" class="block-count-title" style="width: 30%" i18n="mining.luck">Luck</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <td>
+                        <div class="skeleton-loader data"></div>
+                      </td>
+                      <td>
+                        <div class="skeleton-loader data"></div>
+                      </td>
+                      <td>
+                        <div class="skeleton-loader data"></div>
+                      </td>
+                    </tbody>
+                  </table>
                 </td>
               </tr>
 
-              <!-- Empty blocks desktop -->
-              <tr *ngIf="!isMobile()">
-                <td class="label" i18n="mining.empty-blocks">Empty Blocks</td>
+              <!-- Mined blocks desktop -->
+              <tr *ngIf="!isMobile()" class="taller-row">
+                <td class="label" i18n="mining.mined-blocks">Mined Blocks</td>
                 <td class="data">
-                  <div class="skeleton-loader"></div>
+                  <table class="table table-xs table-data text-center">
+                    <thead>
+                      <tr>
+                        <th scope="col" class="block-count-title" style="width: 37%" i18n="24h">24h</th>
+                        <th scope="col" class="block-count-title" style="width: 37%" i18n="1w">1w</th>
+                        <th scope="col" class="block-count-title" style="width: 26%" i18n="all">All</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <td>
+                        <div class="skeleton-loader data"></div>
+                      </td>
+                      <td>
+                        <div class="skeleton-loader data"></div>
+                      </td>
+                      <td>
+                        <div class="skeleton-loader data"></div>
+                      </td>
+                    </tbody>
+                  </table>
                 </td>
               </tr>
-              <!-- Empty blocks mobile -->
+              <!-- Mined blocks mobile -->
               <tr *ngIf="isMobile()">
-                <td colspan="2">
-                  <span class="label" i18n="mining.empty-blocks">Empty Blocks</span>
-                  <div>
-                    <div class="skeleton-loader"></div>
-                  </div>
+                <td colspan=2>
+                  <span class="label" i18n="mining.mined-blocks">Mined Blocks</span>
+                  <table class="table table-xs table-data text-center">
+                    <thead>
+                      <tr>
+                        <th scope="col" class="block-count-title" style="width: 33%" i18n="24h">24h</th>
+                        <th scope="col" class="block-count-title" style="width: 37%" i18n="1w">1w</th>
+                        <th scope="col" class="block-count-title" style="width: 30%" i18n="all">All</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <td>
+                        <div class="skeleton-loader data"></div>
+                      </td>
+                      <td>
+                        <div class="skeleton-loader data"></div>
+                      </td>
+                      <td>
+                        <div class="skeleton-loader data"></div>
+                      </td>
+                    </tbody>
+                  </table>
                 </td>
               </tr>
 
             </tbody>
           </table>
         </div>
+
       </div>
     </div>
   </div>
