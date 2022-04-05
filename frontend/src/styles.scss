@@ -698,6 +698,16 @@ th {
     margin-right: 0px;
     text-align: right;
   }
+
+  .nav-pills {
+    @extend .nav-pills;
+    display: inline-block;
+  }
+
+  .description {
+    direction: rtl;
+  }
+
   .dropdown {
     margin-right: 1rem;
     margin-left: 0;
@@ -712,10 +722,27 @@ th {
     left: 0px;
     right: auto;
   }
-  .fa-arrow-alt-circle-right {
-    @extend .fa-arrow-alt-circle-right;
+  .fa-circle-right {
+    @extend .fa-circle-right;
     -webkit-transform: scaleX(-1);
     transform: scaleX(-1);
+  }
+
+  .btn.ml-2 {
+    margin-right: 0.5rem !important;
+  }
+
+  .pool-name {
+    @extend .pool-name;
+    padding-right: 10px;
+  }
+
+  .endpoint-container {
+    @extend .endpoint-container;
+    .section-header {
+      @extend .section-header;
+      text-align: left;
+    }
   }
 
   .table td {
@@ -803,6 +830,14 @@ th {
 
   .container-graph {
     @extend .container-graph;
+    .formRadioGroup {
+      @extend .formRadioGroup;
+      direction: ltr;
+    }
+  }
+
+  .full-container {
+    @extend .full-container;
     .formRadioGroup {
       @extend .formRadioGroup;
       direction: ltr;
