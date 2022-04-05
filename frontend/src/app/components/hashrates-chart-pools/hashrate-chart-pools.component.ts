@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import { Observable } from 'rxjs';
 import { delay, map, retryWhen, share, startWith, switchMap, tap } from 'rxjs/operators';
@@ -32,6 +32,8 @@ export class HashrateChartPoolsComponent implements OnInit {
   chartInitOptions = {
     renderer: 'svg',
   };
+
+  @HostBinding('attr.dir') dir = 'ltr';
 
   hashrateObservable$: Observable<any>;
   isLoading = true;
