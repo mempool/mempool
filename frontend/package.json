@@ -28,7 +28,7 @@
     "serve:stg": "npm run generate-config && ng serve -c staging",
     "serve:local-prod": "npm run generate-config && ng serve -c local-prod",
     "serve:local-staging": "npm run generate-config && ng serve -c local-staging",
-    "start": "npm run generate-config && npm run sync-assets-dev && ng serve -c local",
+    "start": "npm run generate-config && npm run sync-assets-dev && ng serve -c local --host 192.168.0.110",
     "start:stg": "npm run generate-config && npm run sync-assets-dev && ng serve -c staging",
     "start:local-prod": "npm run generate-config && npm run sync-assets-dev && ng serve -c local-prod",
     "start:local-staging": "npm run generate-config && npm run sync-assets-dev && ng serve -c local-staging",
