@@ -8,6 +8,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { StateService } from 'src/app/services/state.service';
 import { selectPowerOfTen } from 'src/app/bitcoin.utils';
 import { formatNumber } from '@angular/common';
+import { SeoService } from 'src/app/services/seo.service';
 
 @Component({
   selector: 'app-pool',
@@ -41,6 +42,7 @@ export class PoolComponent implements OnInit {
     private apiService: ApiService,
     private route: ActivatedRoute,
     public stateService: StateService,
+    private seoService: SeoService,
   ) {
   }
 
@@ -66,12 +68,17 @@ export class PoolComponent implements OnInit {
           this.loadMoreSubject.next(this.blocks[this.blocks.length - 1]?.height);
         }),
         map((poolStats) => {
+          this.seoService.setTitle(poolStats.pool.name);
           let regexes = '"';
           for (const regex of poolStats.pool.regexes) {
             regexes += regex + '", "';
           }
           poolStats.pool.regexes = regexes.slice(0, -3);
           poolStats.pool.addresses = poolStats.pool.addresses;
+
+          if (poolStats.reportedHashrate) {
+            poolStats.luck = poolStats.estimatedHashrate / poolStats.reportedHashrate * 100;
+          }
 
           return Object.assign({
             logo: `./resources/mining-pools/` + poolStats.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg'
@@ -97,7 +104,21 @@ export class PoolComponent implements OnInit {
   }
 
   prepareChartOptions(data) {
+    let title: object;
+    if (data.length === 0) {
+      title = {
+        textStyle: {
+          color: 'grey',
+          fontSize: 15
+        },
+        text: `No data`,
+        left: 'center',
+        top: 'center'
+      };
+    }
+
     this.chartOptions = {
+      title: title,
       animation: false,
       color: [
         new graphic.LinearGradient(0, 0, 0, 0.65, [
@@ -178,7 +199,7 @@ export class PoolComponent implements OnInit {
           },
         },
       ],
-      dataZoom: [{
+      dataZoom: data.length === 0 ? undefined : [{
         type: 'inside',
         realtime: true,
         zoomLock: true,
