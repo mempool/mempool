@@ -263,6 +263,10 @@ export class WebsocketService {
       this.stateService.difficultyAdjustment$.next(response.da);
     }
 
+    if (response.uid) {
+      this.stateService.setWebSocketUid(response.uid);
+    }
+
     if (response.backendInfo) {
       this.stateService.backendInfo$.next(response.backendInfo);
 

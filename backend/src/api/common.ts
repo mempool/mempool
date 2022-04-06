@@ -1,5 +1,6 @@
 import { CpfpInfo, TransactionExtended, TransactionStripped } from '../mempool.interfaces';
 import config from '../config';
+import * as crypto from 'crypto';
 export class Common {
   static nativeAssetId = config.MEMPOOL.NETWORK === 'liquidtestnet' ?
     '144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49'
@@ -83,6 +84,10 @@ export class Common {
          resolve();
        }, ms);
     });
+  }
+
+  static randomString(length: number): string {
+    return crypto.randomBytes(length).toString('hex');
   }
 
   static shuffleArray(array: any[]) {

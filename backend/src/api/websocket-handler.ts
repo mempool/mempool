@@ -34,6 +34,7 @@ class WebsocketHandler {
     }
 
     this.wss.on('connection', (client: WebSocket) => {
+      client['uid'] = Common.randomString(10);
       client.on('error', logger.info);
       client.on('message', async (message: string) => {
         try {
@@ -115,7 +116,10 @@ class WebsocketHandler {
             if (!_blocks) {
               return;
             }
-            client.send(JSON.stringify(this.getInitData(_blocks)));
+            client.send(JSON.stringify({
+              'uid': client['uid'],
+              ...this.getInitData(_blocks)
+            }));
           }
 
           if (parsedMessage.action === 'ping') {

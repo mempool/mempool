@@ -51,8 +51,9 @@ import { FeesBoxComponent } from './components/fees-box/fees-box.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DifficultyComponent } from './components/difficulty/difficulty.component';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
-  faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown, faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl } from '@fortawesome/free-solid-svg-icons';
+import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase,
+  faExchangeAlt, faInfoCircle, faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown,
+  faSortUp, faAngleDoubleUp, faChevronDown, faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl } from '@fortawesome/free-solid-svg-icons';
 import { ApiDocsComponent } from './components/docs/api-docs.component';
 import { DocsComponent } from './components/docs/docs.component';
 import { ApiDocsNavComponent } from './components/docs/api-docs-nav.component';
@@ -62,6 +63,7 @@ import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-poli
 import { TrademarkPolicyComponent } from './components/trademark-policy/trademark-policy.component';
 import { StorageService } from './services/storage.service';
 import { HttpCacheInterceptor } from './services/http-cache.interceptor';
+import { WebsocketUidInterceptor } from './services/websocket-uid.interceptor';
 import { LanguageService } from './services/language.service';
 import { SponsorComponent } from './components/sponsor/sponsor.component';
 import { PushTransactionComponent } from './components/push-transaction/push-transaction.component';
@@ -166,7 +168,8 @@ import { DataCyDirective } from './data-cy.directive';
     StorageService,
     LanguageService,
     ShortenStringPipe,
-    { provide: HTTP_INTERCEPTORS, useClass: HttpCacheInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: HttpCacheInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: WebsocketUidInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })

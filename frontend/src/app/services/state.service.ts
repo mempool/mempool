@@ -72,6 +72,7 @@ export class StateService {
   blockVSize: number;
   env: Env;
   latestBlockHeight = -1;
+  webSocketId = '';
 
   networkChanged$ = new ReplaySubject<string>(1);
   blocks$: ReplaySubject<[BlockExtended, boolean]>;
@@ -216,5 +217,13 @@ export class StateService {
 
   isLiquid() {
     return this.network === 'liquid' || this.network === 'liquidtestnet';
+  }
+
+  setWebSocketUid(uid: string) {
+    this.webSocketId = uid;
+  }
+
+  getWebSocketUid(): string {
+    return this.webSocketId;
   }
 }

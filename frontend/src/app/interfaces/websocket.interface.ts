@@ -21,6 +21,7 @@ export interface WebsocketResponse {
   loadingIndicators?: ILoadingIndicators;
   backendInfo?: IBackendInfo;
   da?: DifficultyAdjustment;
+  uid?: string;
   'track-tx'?: string;
   'track-address'?: string;
   'track-asset'?: string;
