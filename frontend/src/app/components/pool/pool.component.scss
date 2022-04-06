@@ -50,6 +50,9 @@ div.scrollable {
 
 .box {
   padding-bottom: 5px;
+  @media (min-width: 767.98px) {
+    min-height: 187px;
+  }
 }
 
 .label {
@@ -170,6 +173,10 @@ div.scrollable {
   font-size: 10px;
   padding-top: 0;
   padding-bottom: 0;
+  outline: none;
+  box-shadow: none;
+}
+.small-button.mobile {
   transform: translateY(-20px);
   @media (min-width: 767.98px) {
     transform: translateY(-17px);

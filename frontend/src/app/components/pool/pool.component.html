@@ -36,18 +36,22 @@
               <tr *ngIf="!isMobile()" class="taller-row">
                 <td class="label addresses" i18n="mining.addresses">Addresses</td>
                 <td *ngIf="poolStats.pool.addresses.length else nodata" style="padding-top: 25px">
-                  <button *ngIf="poolStats.pool.addresses.length >= 2" type="button"
-                    class="btn btn-outline-info btn-sm float-right small-button" (click)="collapse.toggle()"
-                    [attr.aria-expanded]="!gfg" aria-controls="collapseExample">
-                    <span i18n="show-all">Show all</span> ({{ poolStats.pool.addresses.length }})
-                  </button>
                   <a [routerLink]="['/address' | relativeUrl, poolStats.pool.addresses[0]]" class="first-address">
                     {{ poolStats.pool.addresses[0] }}
                   </a>
-                  <div #collapse="ngbCollapse" [(ngbCollapse)]="gfg">
-                    <a *ngFor="let address of poolStats.pool.addresses | slice: 1"
-                      [routerLink]="['/address' | relativeUrl, address]">{{
-                      address }}<br></a>
+                  <div>
+                    <div #collapse="ngbCollapse" [(ngbCollapse)]="gfg">
+                      <a *ngFor="let address of poolStats.pool.addresses | slice: 1"
+                        [routerLink]="['/address' | relativeUrl, address]">{{
+                        address }}<br></a>
+                    </div>
+                    <button *ngIf="poolStats.pool.addresses.length >= 2" type="button"
+                      class="btn btn-sm btn-primary small-button" (click)="collapse.toggle()"
+                      [attr.aria-expanded]="!gfg" aria-controls="collapseExample">
+                      <div *ngIf="gfg"><span i18n="show-all">Show all</span> ({{ poolStats.pool.addresses.length }})
+                      </div>
+                      <span *ngIf="!gfg" i18n="hide">Hide</span>
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -57,7 +61,7 @@
                   <span class="label" i18n="mining.addresses">Addresses</span>
                   <div *ngIf="poolStats.pool.addresses.length else nodatamobile">
                     <button *ngIf="poolStats.pool.addresses.length >= 2" type="button"
-                      class="btn btn-outline-info btn-sm float-right small-button" (click)="collapse.toggle()"
+                      class="btn btn-sm btn-primary float-right small-button mobile" (click)="collapse.toggle()"
                       [attr.aria-expanded]="!gfg" aria-controls="collapseExample">
                       <span i18n="show-all">Show all</span> ({{ poolStats.pool.addresses.length }})
                     </button>
@@ -147,9 +151,12 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <td>{{ formatNumber(poolStats.blockCount['24h'], this.locale, '1.0-0') }} ({{ formatNumber(100 * poolStats.blockShare['24h'], this.locale, '1.0-0') }}%)</td>
-                      <td>{{ formatNumber(poolStats.blockCount['1w'], this.locale, '1.0-0') }} ({{ formatNumber(100 * poolStats.blockShare['1w'], this.locale, '1.0-0') }}%)</td>
-                      <td>{{ formatNumber(poolStats.blockCount['all'], this.locale, '1.0-0') }} ({{ formatNumber(100 * poolStats.blockShare['all'], this.locale, '1.0-0') }}%)</td>
+                      <td>{{ formatNumber(poolStats.blockCount['24h'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
+                        poolStats.blockShare['24h'], this.locale, '1.0-0') }}%)</td>
+                      <td>{{ formatNumber(poolStats.blockCount['1w'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
+                        poolStats.blockShare['1w'], this.locale, '1.0-0') }}%)</td>
+                      <td>{{ formatNumber(poolStats.blockCount['all'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
+                        poolStats.blockShare['all'], this.locale, '1.0-0') }}%)</td>
                     </tbody>
                   </table>
                 </td>
@@ -167,9 +174,12 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <td>{{ formatNumber(poolStats.blockCount['24h'], this.locale, '1.0-0') }} ({{ formatNumber(100 * poolStats.blockShare['24h'], this.locale, '1.0-0') }}%)</td>
-                      <td>{{ formatNumber(poolStats.blockCount['1w'], this.locale, '1.0-0') }} ({{ formatNumber(100 * poolStats.blockShare['1w'], this.locale, '1.0-0') }}%)</td>
-                      <td>{{ formatNumber(poolStats.blockCount['all'], this.locale, '1.0-0') }} ({{ formatNumber(100 * poolStats.blockShare['all'], this.locale, '1.0-0') }}%)</td>
+                      <td>{{ formatNumber(poolStats.blockCount['24h'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
+                        poolStats.blockShare['24h'], this.locale, '1.0-0') }}%)</td>
+                      <td>{{ formatNumber(poolStats.blockCount['1w'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
+                        poolStats.blockShare['1w'], this.locale, '1.0-0') }}%)</td>
+                      <td>{{ formatNumber(poolStats.blockCount['all'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
+                        poolStats.blockShare['all'], this.locale, '1.0-0') }}%)</td>
                     </tbody>
                   </table>
                 </td>
