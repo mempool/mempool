@@ -47,7 +47,7 @@ class PoolsUpdater {
       logger.notice('PoolsUpdater completed');
 
     } catch (e) {
-      this.lastRun = now - oneWeek - oneDay; // Try again in 24h
+      this.lastRun = now - (oneWeek - oneDay); // Try again in 24h instead of waiting next week
       logger.err('PoolsUpdater failed. Will try again in 24h. Error: ' + e);
     }
   }
@@ -113,7 +113,7 @@ class PoolsUpdater {
   /**
    * Http request wrapper
    */
-  private async query(path): Promise<string> {
+  private query(path): Promise<string> {
     return new Promise((resolve, reject) => {
       const options = {
         host: 'api.github.com',
@@ -124,7 +124,7 @@ class PoolsUpdater {
 
       logger.debug('Querying: api.github.com' + path);
 
-      https.get(options, (response) => {
+      const request = https.get(options, (response) => {
         const chunks_of_data: any[] = [];
         response.on('data', (fragments) => {
           chunks_of_data.push(fragments);
@@ -136,6 +136,11 @@ class PoolsUpdater {
           reject(error);
         });
       });
+
+      request.on('error', (error) => {
+        logger.err('Query failed with error: ' + error);
+        reject(error);
+      })
     });
   }
 }
