@@ -17,20 +17,8 @@ class PoolsParser {
   /**
    * Parse the pools.json file, consolidate the data and dump it into the database
    */
-  public async migratePoolsJson() {
+  public async migratePoolsJson(poolsJson: object) {
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
-      return;
-    }
-
-    logger.debug('Importing pools.json to the database, open ./pools.json');
-
-    let poolsJson: object = {};
-    try {
-      const fileContent: string = readFileSync('./pools.json', 'utf8');
-      poolsJson = JSON.parse(fileContent);
-    } catch (e) {
-      logger.err('Unable to open ./pools.json, does the file exist?');
-      await this.insertUnknownPool();
       return;
     }
 
