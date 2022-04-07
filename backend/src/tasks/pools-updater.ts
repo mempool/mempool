@@ -18,8 +18,11 @@ class PoolsUpdater {
       return;
     }
 
+    const oneWeek = 604800;
+    const oneDay = 86400;
+
     const now = new Date().getTime() / 1000;
-    if (now - this.lastRun < 604800) { // Execute the PoolsUpdate only once a week, or upon restart
+    if (now - this.lastRun < oneWeek) { // Execute the PoolsUpdate only once a week, or upon restart
       return;
     }
 
@@ -44,7 +47,8 @@ class PoolsUpdater {
       logger.notice('PoolsUpdater completed');
 
     } catch (e) {
-      logger.err('PoolsUpdater failed. Error: ' + e);
+      this.lastRun = now - oneWeek - oneDay; // Try again in 24h
+      logger.err('PoolsUpdater failed. Will try again in 24h. Error: ' + e);
     }
   }
 
