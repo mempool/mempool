@@ -135,6 +135,12 @@ class Blocks {
       } else {
         pool = await poolsRepository.$getUnknownPool();
       }
+
+      if (!pool) { // Something is wrong with the pools table, ignore pool indexing
+        logger.err('Unable to find pool, nor getting the unknown pool. Is the "pools" table empty?');
+        return blockExtended;
+      }
+
       blockExtended.extras.pool = {
         id: pool.id,
         name: pool.name,
