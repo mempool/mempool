@@ -439,6 +439,35 @@ class BlocksRepository {
 
     connection.release();
   }
+
+  /**
+   * Get the historical averaged block reward and total fees
+   */
+  public async $getHistoricalBlockFees(div: number, interval: string | null): Promise<any> {
+    let connection;
+    try {
+      connection = await DB.getConnection();
+
+      let query = `SELECT CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
+        CAST(AVG(fees) as INT) as avg_fees
+        FROM blocks`;
+
+      if (interval !== null) {
+        query += ` WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+      }
+
+      query += ` GROUP BY UNIX_TIMESTAMP(blockTimestamp) DIV ${div}`;
+
+      const [rows]: any = await connection.query(query);
+      connection.release();
+
+      return rows;
+    } catch (e) {
+      connection.release();
+      logger.err('$getHistoricalBlockFees() error: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
 }
 
 export default new BlocksRepository();

@@ -5,12 +5,35 @@ import HashratesRepository from '../repositories/HashratesRepository';
 import bitcoinClient from './bitcoin/bitcoin-client';
 import logger from '../logger';
 import blocks from './blocks';
+import { Common } from './common';
 
 class Mining {
   hashrateIndexingStarted = false;
   weeklyHashrateIndexingStarted = false;
 
   constructor() {
+  }
+
+  /**
+   * Get historical block reward and total fee
+   */
+  public async $getHistoricalBlockFees(interval: string | null = null): Promise<any> {
+    let timeRange: number;
+    switch (interval) {
+      case '3y': timeRange = 43200; break; // 12h
+      case '2y': timeRange = 28800; break; // 8h
+      case '1y': timeRange = 28800; break; // 8h
+      case '6m': timeRange = 10800; break; // 3h
+      case '3m': timeRange = 7200; break; // 2h
+      case '1m': timeRange = 1800; break; // 30min
+      case '1w': timeRange = 300; break; // 5min
+      case '24h': timeRange = 1; break;
+      default: timeRange = 86400; break; // 24h
+    }
+
+    interval = Common.getSqlInterval(interval);
+
+    return await BlocksRepository.$getHistoricalBlockFees(timeRange, interval);
   }
 
   /**
