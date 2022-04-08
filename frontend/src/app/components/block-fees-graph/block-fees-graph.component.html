@@ -1,27 +1,18 @@
 <div [class]="widget === false ? 'full-container' : ''">
 
-  <div *ngIf="widget">
-    <div class="pool-distribution" *ngIf="(hashrateObservable$ | async) as hashrates; else loadingStats">
-      <div class="item">
-        <h5 class="card-title" i18n="mining.hashrate">Hashrate</h5>
-        <p class="card-text">
-          {{ hashrates.currentHashrate | amountShortener }}
-          <span class="symbol">hashes/sec</span>
-        </p>
-      </div>
-      <div class="item">
-        <h5 class="card-title" i18n="master-page.blocks">Difficulty</h5>
-        <p class="card-text">
-          {{ hashrates.currentDifficulty | amountShortener }}
-        </p>
-      </div>
-    </div>
-  </div>
-
   <div class="card-header mb-0 mb-md-4" [style]="widget ? 'display:none' : ''">
-    <span i18n="mining.hashrate-difficulty">Hashrate & Difficulty</span>
-    <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(hashrateObservable$ | async) as hashrates">
+    <span i18n="mining.block-fees">Block fees</span>
+    <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(statsObservable$ | async) as hashrates">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 1">
+          <input ngbButton type="radio" [value]="'24h'"> 24h
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 7">
+          <input ngbButton type="radio" [value]="'1w'"> 1W
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 30">
+          <input ngbButton type="radio" [value]="'1m'"> 1M
+        </label>
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 90">
           <input ngbButton type="radio" [value]="'3m'"> 3M
         </label>
