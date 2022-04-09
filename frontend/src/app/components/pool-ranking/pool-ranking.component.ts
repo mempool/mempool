@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, NgZone, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, NgZone, OnInit, HostBinding } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from 'echarts';
@@ -30,6 +30,8 @@ export class PoolRankingComponent implements OnInit {
     renderer: 'svg',
   };
   chartInstance: any = undefined;
+
+  @HostBinding('attr.dir') dir = 'ltr';
 
   miningStatsObservable$: Observable<MiningStats>;
 
