@@ -27,6 +27,7 @@ import icons from './api/liquid/icons';
 import { Common } from './api/common';
 import mining from './api/mining';
 import HashratesRepository from './repositories/HashratesRepository';
+import BlocksRepository from './repositories/BlocksRepository';
 import poolsUpdater from './tasks/pools-updater';
 
 class Server {
@@ -179,6 +180,10 @@ class Server {
 
     try {
       await poolsUpdater.updatePoolsJson();
+      if (blocks.reindexFlag) {
+        await BlocksRepository.$deleteBlocks(10);
+        await HashratesRepository.$deleteLastEntries();
+      }
       blocks.$generateBlockDatabase();
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();

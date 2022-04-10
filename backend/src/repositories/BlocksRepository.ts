@@ -10,9 +10,11 @@ class BlocksRepository {
    * Save indexed block data in the database
    */
   public async $saveBlockInDatabase(block: BlockExtended) {
-    const connection = await DB.getConnection();
+    let connection;
 
     try {
+      connection = await DB.getConnection();
+
       const query = `INSERT INTO blocks(
         height,           hash,                blockTimestamp, size,
         weight,           tx_count,            coinbase_raw,   difficulty,
@@ -72,8 +74,9 @@ class BlocksRepository {
       return [];
     }
 
-    const connection = await DB.getConnection();
+    let connection;
     try {
+      connection = await DB.getConnection();
       const [rows]: any[] = await connection.query(`
         SELECT height
         FROM blocks
@@ -118,8 +121,9 @@ class BlocksRepository {
 
     query += ` GROUP by pools.id`;
 
-    const connection = await DB.getConnection();
+    let connection;
     try {
+      connection = await DB.getConnection();
       const [rows] = await connection.query(query, params);
       connection.release();
 
@@ -155,8 +159,9 @@ class BlocksRepository {
       query += ` blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
     }
 
-    const connection = await DB.getConnection();
+    let connection;
     try {
+      connection = await DB.getConnection();
       const [rows] = await connection.query(query, params);
       connection.release();
 
@@ -194,8 +199,9 @@ class BlocksRepository {
     }
     query += ` blockTimestamp BETWEEN FROM_UNIXTIME('${from}') AND FROM_UNIXTIME('${to}')`;
 
-    const connection = await DB.getConnection();
+    let connection;
     try {
+      connection = await DB.getConnection();
       const [rows] = await connection.query(query, params);
       connection.release();
 
@@ -216,8 +222,9 @@ class BlocksRepository {
       ORDER BY height
       LIMIT 1;`;
 
-    const connection = await DB.getConnection();
+    let connection;
     try {
+      connection = await DB.getConnection();
       const [rows]: any[] = await connection.query(query);
       connection.release();
 
@@ -257,8 +264,9 @@ class BlocksRepository {
     query += ` ORDER BY height DESC
       LIMIT 10`;
 
-    const connection = await DB.getConnection();
+    let connection;
     try {
+      connection = await DB.getConnection();
       const [rows] = await connection.query(query, params);
       connection.release();
 
@@ -279,8 +287,9 @@ class BlocksRepository {
    * Get one block by height
    */
   public async $getBlockByHeight(height: number): Promise<object | null> {
-    const connection = await DB.getConnection();
+    let connection;
     try {
+      connection = await DB.getConnection();
       const [rows]: any[] = await connection.query(`
         SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
         pools.id as pool_id, pools.name as pool_name, pools.link as pool_link, pools.slug as pool_slug,
@@ -309,8 +318,6 @@ class BlocksRepository {
    */
   public async $getBlocksDifficulty(interval: string | null): Promise<object[]> {
     interval = Common.getSqlInterval(interval);
-
-    const connection = await DB.getConnection();
 
     // :D ... Yeah don't ask me about this one https://stackoverflow.com/a/40303162
     // Basically, using temporary user defined fields, we are able to extract all
@@ -344,14 +351,17 @@ class BlocksRepository {
       ORDER BY t.height
     `;
 
+    let connection;
     try {
+      connection = await DB.getConnection();
       const [rows]: any[] = await connection.query(query);
       connection.release();
 
-      for (let row of rows) {
+      for (const row of rows) {
         delete row['rn'];
       }
 
+      connection.release();
       return rows;
     } catch (e) {
       connection.release();
@@ -385,6 +395,49 @@ class BlocksRepository {
       logger.err('$getBlockStats() error: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
+  }
+
+  /*
+   * Check if the last 10 blocks chain is valid
+   */
+  public async $validateRecentBlocks(): Promise<boolean> {
+    let connection;
+
+    try {
+      connection = await DB.getConnection();
+      const [lastBlocks] = await connection.query(`SELECT height, hash, previous_block_hash FROM blocks ORDER BY height DESC LIMIT 10`);
+      connection.release();
+
+      for (let i = 0; i < lastBlocks.length - 1; ++i) {
+        if (lastBlocks[i].previous_block_hash !== lastBlocks[i + 1].hash) {
+          logger.notice(`Chain divergence detected at block ${lastBlocks[i].height}, re-indexing most recent data`);
+          return false;
+        }
+      }
+
+      return true;
+    } catch (e) {
+      connection.release();
+
+      return true; // Don't do anything if there is a db error
+    }
+  }
+
+  /**
+   * Delete $count blocks from the database
+   */
+  public async $deleteBlocks(count: number) {
+    let connection;
+
+    try {
+      connection = await DB.getConnection();
+      logger.debug(`Delete ${count} most recent indexed blocks from the database`);
+      await connection.query(`DELETE FROM blocks ORDER BY height DESC LIMIT ${count};`);
+    } catch (e) {
+      logger.err('$deleteBlocks() error' + (e instanceof Error ? e.message : e));
+    }
+
+    connection.release();
   }
 }
 
