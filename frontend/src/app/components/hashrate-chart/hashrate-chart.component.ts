@@ -227,6 +227,9 @@ export class HashrateChartComponent implements OnInit {
       xAxis: data.hashrates.length === 0 ? undefined : {
         type: 'time',
         splitNumber: (this.isMobile() || this.widget) ? 5 : 10,
+        axisLabel: {
+          hideOverlap: true,
+        }
       },
       legend: (this.widget || data.hashrates.length === 0) ? undefined : {
         data: [
@@ -265,7 +268,7 @@ export class HashrateChartComponent implements OnInit {
             formatter: (val) => {
               const selectedPowerOfTen: any = selectPowerOfTen(val);
               const newVal = Math.round(val / selectedPowerOfTen.divider);
-              return `${newVal} ${selectedPowerOfTen.unit}H/s`
+              return `${newVal} ${selectedPowerOfTen.unit}H/s`;
             }
           },
           splitLine: {
@@ -293,6 +296,7 @@ export class HashrateChartComponent implements OnInit {
       ],
       series: data.hashrates.length === 0 ? [] : [
         {
+          zlevel: 0,
           name: 'Hashrate',
           showSymbol: false,
           symbol: 'none',
@@ -303,6 +307,7 @@ export class HashrateChartComponent implements OnInit {
           },
         },
         {
+          zlevel: 1,
           yAxisIndex: 1,
           name: 'Difficulty',
           showSymbol: false,
