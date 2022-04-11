@@ -1,27 +1,17 @@
-<div [class]="widget === false ? 'full-container' : ''">
-
-  <div *ngIf="widget">
-    <div class="pool-distribution" *ngIf="(hashrateObservable$ | async) as hashrates; else loadingStats">
-      <div class="item">
-        <h5 class="card-title" i18n="mining.hashrate">Hashrate</h5>
-        <p class="card-text">
-          {{ hashrates.currentHashrate | amountShortener }}
-          <span class="symbol">hashes/sec</span>
-        </p>
-      </div>
-      <div class="item">
-        <h5 class="card-title" i18n="master-page.blocks">Difficulty</h5>
-        <p class="card-text">
-          {{ hashrates.currentDifficulty | amountShortener }}
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <div class="card-header mb-0 mb-md-4" [style]="widget ? 'display:none' : ''">
-    <span i18n="mining.hashrate-difficulty">Hashrate & Difficulty</span>
-    <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(hashrateObservable$ | async) as stats">
+<div class="full-container">
+  <div class="card-header mb-0 mb-md-4">
+    <span i18n="mining.block-fees">Block fees</span>
+    <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(statsObservable$ | async) as stats">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.availableTimespanDay >= 1">
+          <input ngbButton type="radio" [value]="'24h'" fragment="24h"> 24h
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.availableTimespanDay >= 3">
+          <input ngbButton type="radio" [value]="'3d'" fragment="3d"> 3D
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.availableTimespanDay >= 7">
+          <input ngbButton type="radio" [value]="'1w'" fragment="1w"> 1W
+        </label>
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.availableTimespanDay >= 30">
           <input ngbButton type="radio" [value]="'1m'" fragment="1m"> 1M
         </label>
@@ -47,7 +37,7 @@
     </form>
   </div>
 
-  <div [class]="!widget ? 'chart' : 'chart-widget'" echarts [initOpts]="chartInitOptions" [options]="chartOptions">
+  <div class="chart" echarts [initOpts]="chartInitOptions" [options]="chartOptions">
   </div>
   <div class="text-center loadingGraphs" *ngIf="isLoading">
     <div class="spinner-border text-light"></div>

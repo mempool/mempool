@@ -7,6 +7,8 @@ import { SeoService } from 'src/app/services/seo.service';
 import { formatNumber } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { selectPowerOfTen } from 'src/app/bitcoin.utils';
+import { StorageService } from 'src/app/services/storage.service';
+import { MiningService } from 'src/app/services/mining.service';
 
 @Component({
   selector: 'app-hashrate-chart',
@@ -28,6 +30,7 @@ export class HashrateChartComponent implements OnInit {
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
 
+  miningWindowPreference: string;
   radioGroupForm: FormGroup;
 
   chartOptions: EChartsOption = {};
@@ -47,20 +50,32 @@ export class HashrateChartComponent implements OnInit {
     private apiService: ApiService,
     private formBuilder: FormBuilder,
     private cd: ChangeDetectorRef,
+    private storageService: StorageService,
+    private miningService: MiningService
   ) {
-    this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
-    this.radioGroupForm.controls.dateSpan.setValue('1y');
   }
 
   ngOnInit(): void {
-    if (!this.widget) {
+    let firstRun = true;
+
+    if (this.widget) {
+      this.miningWindowPreference = '1y';
+    } else {
       this.seoService.setTitle($localize`:@@mining.hashrate-difficulty:Hashrate and Difficulty`);
+      this.miningWindowPreference = this.miningService.getDefaultTimespan('1m');
     }
+    this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
+    this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
     this.hashrateObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
       .pipe(
-        startWith('1y'),
+        startWith(this.miningWindowPreference),
         switchMap((timespan) => {
+          if (!this.widget && !firstRun) {
+            this.storageService.setValue('miningWindowPreference', timespan);
+          }
+          firstRun = false;
+          this.miningWindowPreference = timespan;
           this.isLoading = true;
           return this.apiService.getHistoricalHashrate$(timespan)
             .pipe(
