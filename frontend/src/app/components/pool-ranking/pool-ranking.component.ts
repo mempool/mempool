@@ -214,6 +214,7 @@ export class PoolRankingComponent implements OnInit {
       },
       series: [
         {
+          zlevel: 0,
           minShowLabelAngle: 3.6,
           name: 'Mining pool',
           type: 'pie',
