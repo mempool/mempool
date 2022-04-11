@@ -19,9 +19,9 @@ import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PoolRankingComponent implements OnInit {
-  @Input() widget: boolean = false;
+  @Input() widget = false;
 
-  poolsWindowPreference: string;
+  miningWindowPreference: string;
   radioGroupForm: FormGroup;
 
   isLoading = true;
@@ -48,13 +48,13 @@ export class PoolRankingComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.widget) {
-      this.poolsWindowPreference = '1w';
+      this.miningWindowPreference = '1w';
     } else {
       this.seoService.setTitle($localize`:@@mining.mining-pools:Mining Pools`);
-      this.poolsWindowPreference = this.storageService.getValue('poolsWindowPreference') ? this.storageService.getValue('poolsWindowPreference') : '1w';
+      this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
     }
-    this.radioGroupForm = this.formBuilder.group({ dateSpan: this.poolsWindowPreference });
-    this.radioGroupForm.controls.dateSpan.setValue(this.poolsWindowPreference);
+    this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
+    this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
     // When...
     this.miningStatsObservable$ = combineLatest([
@@ -67,12 +67,12 @@ export class PoolRankingComponent implements OnInit {
       // ...or we change the timespan
       this.radioGroupForm.get('dateSpan').valueChanges
         .pipe(
-          startWith(this.poolsWindowPreference), // (trigger when the page loads)
+          startWith(this.miningWindowPreference), // (trigger when the page loads)
           tap((value) => {
             if (!this.widget) {
-              this.storageService.setValue('poolsWindowPreference', value);
+              this.storageService.setValue('miningWindowPreference', value);
             }
-            this.poolsWindowPreference = value;
+            this.miningWindowPreference = value;
           })
         )
     ])
@@ -80,7 +80,7 @@ export class PoolRankingComponent implements OnInit {
       .pipe(
         switchMap(() => {
           this.isLoading = true;
-          return this.miningService.getMiningStats(this.poolsWindowPreference)
+          return this.miningService.getMiningStats(this.miningWindowPreference)
             .pipe(
               catchError((e) => of(this.getEmptyMiningStat()))
             );
@@ -150,7 +150,7 @@ export class PoolRankingComponent implements OnInit {
           },
           borderColor: '#000',
           formatter: () => {
-            if (this.poolsWindowPreference === '24h') {
+            if (this.miningWindowPreference === '24h') {
               return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
                 pool.lastEstimatedHashrate.toString() + ' PH/s' +
                 `<br>` + pool.blockCount.toString() + ` blocks`;
@@ -186,7 +186,7 @@ export class PoolRankingComponent implements OnInit {
         },
         borderColor: '#000',
         formatter: () => {
-          if (this.poolsWindowPreference === '24h') {
+          if (this.miningWindowPreference === '24h') {
             return `<b style="color: white">${'Other'} (${totalShareOther.toFixed(2)}%)</b><br>` +
               totalEstimatedHashrateOther.toString() + ' PH/s' +
               `<br>` + totalBlockOther.toString() + ` blocks`;

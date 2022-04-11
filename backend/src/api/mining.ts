@@ -27,6 +27,7 @@ class Mining {
       case '3m': timeRange = 7200; break; // 2h
       case '1m': timeRange = 1800; break; // 30min
       case '1w': timeRange = 300; break; // 5min
+      case '3d': timeRange = 1; break;
       case '24h': timeRange = 1; break;
       default: timeRange = 86400; break; // 24h
     }
