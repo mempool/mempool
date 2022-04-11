@@ -168,6 +168,20 @@ export class ApiService {
       );
   }
 
+  getHistoricalBlockFees$(interval: string | undefined) : Observable<any> {
+    return this.httpClient.get<any[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/fees` +
+      (interval !== undefined ? `/${interval}` : '')
+    );
+  }
+
+  getHistoricalBlockRewards$(interval: string | undefined) : Observable<any> {
+    return this.httpClient.get<any[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/rewards` +
+      (interval !== undefined ? `/${interval}` : '')
+    );
+  }
+
   getRewardStats$(blockCount: number = 144): Observable<RewardStats> {
     return this.httpClient.get<RewardStats>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/reward-stats/${blockCount}`);
   }

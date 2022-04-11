@@ -22,12 +22,13 @@ import loadingIndicators from './api/loading-indicators';
 import mempool from './api/mempool';
 import elementsParser from './api/liquid/elements-parser';
 import databaseMigration from './api/database-migration';
-import poolsParser from './api/pools-parser';
 import syncAssets from './sync-assets';
 import icons from './api/liquid/icons';
 import { Common } from './api/common';
 import mining from './api/mining';
 import HashratesRepository from './repositories/HashratesRepository';
+import BlocksRepository from './repositories/BlocksRepository';
+import poolsUpdater from './tasks/pools-updater';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -99,7 +100,6 @@ class Server {
         await databaseMigration.$initializeOrMigrateDatabase();
         if (Common.indexingEnabled()) {
           await this.$resetHashratesIndexingState();
-          await poolsParser.migratePoolsJson();
         }
       } catch (e) {
         throw new Error(e instanceof Error ? e.message : 'Error');
@@ -179,6 +179,11 @@ class Server {
     }
 
     try {
+      await poolsUpdater.updatePoolsJson();
+      if (blocks.reindexFlag) {
+        await BlocksRepository.$deleteBlocks(10);
+        await HashratesRepository.$deleteLastEntries();
+      }
       blocks.$generateBlockDatabase();
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();
@@ -311,6 +316,8 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/hashrate', routes.$getHistoricalHashrate)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/hashrate/:interval', routes.$getHistoricalHashrate)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/reward-stats/:blockCount', routes.$getRewardStats)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fees/:interval', routes.$getHistoricalBlockFees)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/rewards/:interval', routes.$getHistoricalBlockRewards)
       ;
     }
 

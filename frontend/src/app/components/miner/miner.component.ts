@@ -27,6 +27,11 @@ export class MinerComponent implements OnChanges {
 
   ngOnChanges() {
     this.miner = '';
+    if (this.stateService.env.MINING_DASHBOARD) {
+      this.miner = 'Unknown';
+      this.url = this.relativeUrlPipe.transform(`/mining/pool/unknown`);
+      this.target = '';
+    }
     this.loading = true;
     this.findMinerFromCoinbase();
   }

@@ -157,6 +157,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
       },
       series: [
         {
+          zlevel: 0,
           data: this.data.series[0],
           type: 'line',
           smooth: false,

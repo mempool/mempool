@@ -25,7 +25,7 @@ class BitcoinApi implements AbstractBitcoinApi {
       .then((transaction: IBitcoinApi.Transaction) => {
         if (skipConversion) {
           transaction.vout.forEach((vout) => {
-            vout.value = vout.value * 100000000;
+            vout.value = Math.round(vout.value * 100000000);
           });
           return transaction;
         }
@@ -143,7 +143,7 @@ class BitcoinApi implements AbstractBitcoinApi {
 
     esploraTransaction.vout = transaction.vout.map((vout) => {
       return {
-        value: vout.value * 100000000,
+        value: Math.round(vout.value * 100000000),
         scriptpubkey: vout.scriptPubKey.hex,
         scriptpubkey_address: vout.scriptPubKey && vout.scriptPubKey.address ? vout.scriptPubKey.address
           : vout.scriptPubKey.addresses ? vout.scriptPubKey.addresses[0] : '',
@@ -236,7 +236,7 @@ class BitcoinApi implements AbstractBitcoinApi {
     } else {
       mempoolEntry = await this.$getMempoolEntry(transaction.txid);
     }
-    transaction.fee = mempoolEntry.fees.base * 100000000;
+    transaction.fee = Math.round(mempoolEntry.fees.base * 100000000);
     return transaction;
   }
 

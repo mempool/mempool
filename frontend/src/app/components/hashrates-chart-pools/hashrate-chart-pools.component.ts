@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import { Observable } from 'rxjs';
 import { delay, map, retryWhen, share, startWith, switchMap, tap } from 'rxjs/operators';
@@ -6,6 +6,8 @@ import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { poolsColor } from 'src/app/app.constants';
+import { StorageService } from 'src/app/services/storage.service';
+import { MiningService } from 'src/app/services/mining.service';
 
 @Component({
   selector: 'app-hashrate-chart-pools',
@@ -22,16 +24,18 @@ import { poolsColor } from 'src/app/app.constants';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HashrateChartPoolsComponent implements OnInit {
-  @Input() widget = false;
   @Input() right: number | string = 45;
   @Input() left: number | string = 25;
 
+  miningWindowPreference: string;
   radioGroupForm: FormGroup;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
     renderer: 'svg',
   };
+
+  @HostBinding('attr.dir') dir = 'ltr';
 
   hashrateObservable$: Observable<any>;
   isLoading = true;
@@ -42,20 +46,29 @@ export class HashrateChartPoolsComponent implements OnInit {
     private apiService: ApiService,
     private formBuilder: FormBuilder,
     private cd: ChangeDetectorRef,
+    private storageService: StorageService,
+    private miningService: MiningService
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
   }
 
   ngOnInit(): void {
-    if (!this.widget) {
-      this.seoService.setTitle($localize`:@@mining.pools-historical-dominance:Pools Historical Dominance`);
-    }
+    let firstRun = true;
+
+    this.seoService.setTitle($localize`:@@mining.pools-historical-dominance:Pools Historical Dominance`);
+    this.miningWindowPreference = this.miningService.getDefaultTimespan('1m');
+    this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
+    this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
     this.hashrateObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
       .pipe(
-        startWith('1y'),
+        startWith(this.miningWindowPreference),
         switchMap((timespan) => {
+          if (!firstRun) {
+            this.storageService.setValue('miningWindowPreference', timespan);
+          }
+          firstRun = false;
           this.isLoading = true;
           return this.apiService.getHistoricalPoolsHashrate$(timespan)
             .pipe(
@@ -73,6 +86,7 @@ export class HashrateChartPoolsComponent implements OnInit {
                 const legends = [];
                 for (const name in grouped) {
                   series.push({
+                    zlevel: 0,
                     stack: 'Total',
                     name: name,
                     showSymbol: false,
@@ -82,7 +96,7 @@ export class HashrateChartPoolsComponent implements OnInit {
                     lineStyle: { width: 0 },
                     areaStyle: { opacity: 1 },
                     smooth: true,
-                    color: poolsColor[name.replace(/[^a-zA-Z0-9]/g, "").toLowerCase()],
+                    color: poolsColor[name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()],
                     emphasis: {
                       disabled: true,
                       scale: false,
@@ -155,11 +169,11 @@ export class HashrateChartPoolsComponent implements OnInit {
       grid: {
         right: this.right,
         left: this.left,
-        bottom: this.widget ? 30 : 70,
-        top: this.widget || this.isMobile() ? 10 : 50,
+        bottom: 70,
+        top: this.isMobile() ? 10 : 50,
       },
       tooltip: {
-        show: !this.isMobile() || !this.widget,
+        show: !this.isMobile(),
         trigger: 'axis',
         axisPointer: {
           type: 'line'
@@ -186,9 +200,12 @@ export class HashrateChartPoolsComponent implements OnInit {
       },
       xAxis: data.series.length === 0 ? undefined : {
         type: 'time',
-        splitNumber: (this.isMobile() || this.widget) ? 5 : 10,
+        splitNumber: this.isMobile() ? 5 : 10,
+        axisLabel: {
+          hideOverlap: true,
+        }
       },
-      legend: (this.isMobile() || this.widget || data.series.length === 0) ? undefined : {
+      legend: (this.isMobile() || data.series.length === 0) ? undefined : {
         data: data.legends
       },
       yAxis: data.series.length === 0 ? undefined : {
@@ -205,7 +222,7 @@ export class HashrateChartPoolsComponent implements OnInit {
         min: 0,
       },
       series: data.series,
-      dataZoom: this.widget ? null : [{
+      dataZoom: [{
         type: 'inside',
         realtime: true,
         zoomLock: true,
