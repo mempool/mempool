@@ -167,6 +167,9 @@ export class PoolComponent implements OnInit {
       xAxis: {
         type: 'time',
         splitNumber: (this.isMobile()) ? 5 : 10,
+        axisLabel: {
+          hideOverlap: true,
+        }
       },
       yAxis: [
         {
@@ -189,6 +192,7 @@ export class PoolComponent implements OnInit {
       ],
       series: [
         {
+          zlevel: 0,
           name: 'Hashrate',
           showSymbol: false,
           symbol: 'none',
