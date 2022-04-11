@@ -1,25 +1,27 @@
-<ul ngbNav #nav="ngbNav" class="nav-pills mb-3" style="padding: 0px 35px" *ngIf="stateService.env.MINING_DASHBOARD">
-  <div class="d-inline-flex flex-wrap menu">
-    <li ngbNavItem class="menu-li">
-      <a routerLinkActive="active" [routerLink]="['/graphs/mempool' | relativeUrl]" ngbNavLink>Mempool</a>
-    </li>
-    <li ngbNavItem class="menu-li">
-      <a routerLinkActive="active" [routerLink]="['/graphs/mining/pools' | relativeUrl]" ngbNavLink i18n="mining.pools">
+<div class="mb-3 d-flex menu" style="padding: 0px 35px;">
+  <a routerLinkActive="active" class="btn btn-primary w-50 mr-1"
+    [routerLink]="['/graphs/mempool' | relativeUrl]">Mempool</a>
+  <div ngbDropdown *ngIf="stateService.env.MINING_DASHBOARD" class="w-50">
+    <button class="btn btn-primary w-100" id="dropdownBasic1" ngbDropdownToggle i18n="mining">Mining</button>
+    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+      <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/mining/pools' | relativeUrl]"
+        i18n="mining.pools">
         Pools ranking
       </a>
-    </li>
-    <li ngbNavItem class="menu-li">
-      <a routerLinkActive="active" [routerLink]="['/graphs/mining/pools-dominance' | relativeUrl]" ngbNavLink i18n="mining.pools-dominance">
+      <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/mining/pools-dominance' | relativeUrl]"
+        i18n="mining.pools-dominance">
         Pools dominance
       </a>
-    </li>
-    <li ngbNavItem class="menu-li">
-      <a routerLinkActive="active" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" ngbNavLink
-        i18n="mining.hashrate-difficulty">
+      <a class="dropdown-item" routerLinkActive="active"
+        [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" i18n="mining.hashrate-difficulty">
         Hashrate & Difficulty
       </a>
-    </li>
+      <a class="dropdown-item" routerLinkActive="active"
+        [routerLink]="['/graphs/mining/block-fees' | relativeUrl]" i18n="mining.block-fees">
+        Block Fees
+      </a>
+    </div>
   </div>
-</ul>
+</div>
 
 <router-outlet></router-outlet>

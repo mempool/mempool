@@ -37,6 +37,16 @@ do for url in / \
 	'/api/v1/mining/hashrate/pools/all' \
 	'/api/v1/mining/reward-stats/144' \
 	'/api/v1/mining/blocks-extras' \
+	'/api/v1/mining/blocks/fees/24h' \
+	'/api/v1/mining/blocks/fees/3d' \
+	'/api/v1/mining/blocks/fees/1w' \
+	'/api/v1/mining/blocks/fees/1m' \
+	'/api/v1/mining/blocks/fees/3m' \
+	'/api/v1/mining/blocks/fees/6m' \
+	'/api/v1/mining/blocks/fees/1y' \
+	'/api/v1/mining/blocks/fees/2y' \
+	'/api/v1/mining/blocks/fees/3y' \
+	'/api/v1/mining/blocks/fees/all' \
 
 	do
 		curl -s "https://${hostname}${url}" >/dev/null
