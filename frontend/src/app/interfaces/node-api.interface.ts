@@ -93,8 +93,19 @@ export interface PoolInfo {
 }
 export interface PoolStat {
   pool: PoolInfo;
-  blockCount: number;
-  emptyBlocks: number;
+  blockCount: {
+    all: number,
+    '24h': number,
+    '1w': number,
+  };
+  blockShare: {
+    all: number,
+    '24h': number,
+    '1w': number,
+  };
+  estimatedHashrate: number;
+  reportedHashrate: number;
+  luck?: number;
 }
 
 export interface BlockExtension {

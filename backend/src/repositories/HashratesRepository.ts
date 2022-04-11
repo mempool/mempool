@@ -169,6 +169,9 @@ class HashratesRepository {
     }
   }
 
+  /**
+   * Set latest run timestamp
+   */
   public async $setLatestRunTimestamp(key: string, val: any = null) {
     const connection = await DB.getConnection();
     const query = `UPDATE state SET number = ? WHERE name = ?`;
@@ -181,6 +184,9 @@ class HashratesRepository {
     }
   }
 
+  /**
+   * Get latest run timestamp
+   */
   public async $getLatestRunTimestamp(key: string): Promise<number> {
     const connection = await DB.getConnection();
     const query = `SELECT number FROM state WHERE name = ?`;
@@ -198,6 +204,29 @@ class HashratesRepository {
       logger.err('$setLatestRunTimestamp() error' + (e instanceof Error ? e.message : e));
       throw e;
     }
+  }
+
+  /**
+   * Delete most recent data points for re-indexing
+   */
+  public async $deleteLastEntries() {
+    logger.debug(`Delete latest hashrates data points from the database`);
+
+    let connection;
+    try {
+      connection = await DB.getConnection();
+      const [rows] = await connection.query(`SELECT MAX(hashrate_timestamp) as timestamp FROM hashrates GROUP BY type`);
+      for (const row of rows) {
+        await connection.query(`DELETE FROM hashrates WHERE hashrate_timestamp = ?`, [row.timestamp]);
+      }
+      // Re-run the hashrate indexing to fill up missing data
+      await this.$setLatestRunTimestamp('last_hashrates_indexing', 0);
+      await this.$setLatestRunTimestamp('last_weekly_hashrates_indexing', 0);
+    } catch (e) {
+      logger.err('$deleteLastEntries() error' + (e instanceof Error ? e.message : e));
+    }
+
+    connection.release();
   }
 }
 
