@@ -34,6 +34,7 @@ import { MiningStartComponent } from './components/mining-start/mining-start.com
 import { GraphsComponent } from './components/graphs/graphs.component';
 import { BlocksList } from './components/blocks-list/blocks-list.component';
 import { BlockFeesGraphComponent } from './components/block-fees-graph/block-fees-graph.component';
+import { BlockRewardsGraphComponent } from './components/block-rewards-graph/block-rewards-graph.component';
 
 let routes: Routes = [
   {
@@ -121,6 +122,10 @@ let routes: Routes = [
           {
             path: 'mining/block-fees',
             component: BlockFeesGraphComponent,
+          },
+          {
+            path: 'mining/block-rewards',
+            component: BlockRewardsGraphComponent,
           }
         ],
       },
@@ -255,6 +260,10 @@ let routes: Routes = [
               {
                 path: 'mining/block-fees',
                 component: BlockFeesGraphComponent,
+              },
+              {
+                path: 'mining/block-rewards',
+                component: BlockRewardsGraphComponent,
               }
             ]
           },
@@ -383,6 +392,10 @@ let routes: Routes = [
               {
                 path: 'mining/block-fees',
                 component: BlockFeesGraphComponent,
+              },
+              {
+                path: 'mining/block-rewards',
+                component: BlockRewardsGraphComponent,
               }
             ]
           },
