@@ -86,6 +86,7 @@ export class HashrateChartPoolsComponent implements OnInit {
                 const legends = [];
                 for (const name in grouped) {
                   series.push({
+                    zlevel: 0,
                     stack: 'Total',
                     name: name,
                     showSymbol: false,
@@ -95,7 +96,7 @@ export class HashrateChartPoolsComponent implements OnInit {
                     lineStyle: { width: 0 },
                     areaStyle: { opacity: 1 },
                     smooth: true,
-                    color: poolsColor[name.replace(/[^a-zA-Z0-9]/g, "").toLowerCase()],
+                    color: poolsColor[name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()],
                     emphasis: {
                       disabled: true,
                       scale: false,
@@ -199,7 +200,10 @@ export class HashrateChartPoolsComponent implements OnInit {
       },
       xAxis: data.series.length === 0 ? undefined : {
         type: 'time',
-        splitNumber: (this.isMobile()) ? 5 : 10,
+        splitNumber: this.isMobile() ? 5 : 10,
+        axisLabel: {
+          hideOverlap: true,
+        }
       },
       legend: (this.isMobile() || data.series.length === 0) ? undefined : {
         data: data.legends
