@@ -1,0 +1,135 @@
+.card-header {
+  border-bottom: 0;
+  font-size: 18px;
+  @media (min-width: 465px) {
+    font-size: 20px;
+  }
+}
+
+.main-title {
+  position: relative;
+  color: #ffffff91;
+  margin-top: -13px;
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 500;
+  text-align: center;
+  padding-bottom: 3px;
+}
+
+.full-container {
+  padding: 0px 15px;
+  width: 100%;
+  min-height: 500px;
+  height: calc(100% - 150px);
+  @media (max-width: 992px) {
+    height: 100%;
+    padding-bottom: 100px;
+  };
+}
+
+.chart {
+  width: 100%;
+  height: 100%;
+  padding-bottom: 20px;
+  padding-right: 10px;
+  @media (max-width: 992px) {
+    padding-bottom: 25px;
+  }
+  @media (max-width: 829px) {
+    padding-bottom: 50px;
+  }
+  @media (max-width: 767px) {
+    padding-bottom: 25px;
+  }
+  @media (max-width: 629px) {
+    padding-bottom: 55px;
+  }
+  @media (max-width: 567px) {
+    padding-bottom: 55px;
+  }
+}
+.chart-widget {
+  width: 100%;
+  height: 100%;
+  max-height: 270px;
+}
+
+.formRadioGroup {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  @media (min-width: 1130px) {
+    position: relative;
+    top: -65px;
+  }
+  @media (min-width: 830px) and (max-width: 1130px) {
+    position: relative;
+    top: 0px;
+  }
+  @media (min-width: 830px) {
+    flex-direction: row;
+    float: right;
+    margin-top: 0px;
+  }
+  .btn-sm {
+    font-size: 9px;
+    @media (min-width: 830px) {
+      font-size: 14px;
+    }
+  }
+}
+
+.pool-distribution {
+  min-height: 56px;
+  display: block;
+  @media (min-width: 485px) {
+    display: flex;
+    flex-direction: row;
+  }
+  h5 {
+    margin-bottom: 10px;
+  }
+  .item {
+    width: 50%;
+    display: inline-block;
+    margin: 0px auto 20px;
+    &:nth-child(2) {
+      order: 2;
+      @media (min-width: 485px) {
+        order: 3;
+      }
+    }
+    &:nth-child(3) {
+      order: 3;
+      @media (min-width: 485px) {
+        order: 2;
+        display: block;
+      }
+      @media (min-width: 768px) {
+        display: none;
+      }
+      @media (min-width: 992px) {
+        display: block;
+      }
+    }
+    .card-title {
+      font-size: 1rem;
+      color: #4a68b9;
+    }
+    .card-text {
+      font-size: 18px;
+      span {
+        color: #ffffff66;
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+.skeleton-loader {
+  width: 100%;
+  display: block;
+  max-width: 80px;
+  margin: 15px auto 3px;
+}
