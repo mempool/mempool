@@ -18,23 +18,20 @@ class Mining {
    * Get historical block reward and total fee
    */
   public async $getHistoricalBlockFees(interval: string | null = null): Promise<any> {
-    let timeRange: number;
-    switch (interval) {
-      case '3y': timeRange = 43200; break; // 12h
-      case '2y': timeRange = 28800; break; // 8h
-      case '1y': timeRange = 28800; break; // 8h
-      case '6m': timeRange = 10800; break; // 3h
-      case '3m': timeRange = 7200; break; // 2h
-      case '1m': timeRange = 1800; break; // 30min
-      case '1w': timeRange = 300; break; // 5min
-      case '3d': timeRange = 1; break;
-      case '24h': timeRange = 1; break;
-      default: timeRange = 86400; break; // 24h
-    }
+    return await BlocksRepository.$getHistoricalBlockFees(
+      this.getTimeRange(interval),
+      Common.getSqlInterval(interval)
+    );
+  }
 
-    interval = Common.getSqlInterval(interval);
-
-    return await BlocksRepository.$getHistoricalBlockFees(timeRange, interval);
+  /**
+   * Get historical block rewards
+   */
+  public async $getHistoricalBlockRewards(interval: string | null = null): Promise<any> {
+    return await BlocksRepository.$getHistoricalBlockRewards(
+      this.getTimeRange(interval),
+      Common.getSqlInterval(interval)
+    );
   }
 
   /**
@@ -344,6 +341,21 @@ class Mining {
     date.setUTCMilliseconds(0);
 
     return date;
+  }
+
+  private getTimeRange(interval: string | null): number {
+    switch (interval) {
+      case '3y': return 43200; // 12h
+      case '2y': return 28800; // 8h
+      case '1y': return 28800; // 8h
+      case '6m': return 10800; // 3h
+      case '3m': return 7200; // 2h
+      case '1m': return 1800; // 30min
+      case '1w': return 300; // 5min
+      case '3d': return 1;
+      case '24h': return 1;
+      default: return 86400; // 24h
+    }
   }
 }
 
