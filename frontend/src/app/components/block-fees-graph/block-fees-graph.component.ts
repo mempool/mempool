@@ -7,6 +7,8 @@ import { SeoService } from 'src/app/services/seo.service';
 import { formatNumber } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { formatterXAxisLabel } from 'src/app/shared/graphs.utils';
+import { StorageService } from 'src/app/services/storage.service';
+import { MiningService } from 'src/app/services/mining.service';
 
 @Component({
   selector: 'app-block-fees-graph',
@@ -24,10 +26,10 @@ import { formatterXAxisLabel } from 'src/app/shared/graphs.utils';
 })
 export class BlockFeesGraphComponent implements OnInit {
   @Input() tableOnly = false;
-  @Input() widget = false;
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
 
+  miningWindowPreference: string;
   radioGroupForm: FormGroup;
 
   chartOptions: EChartsOption = {};
@@ -44,21 +46,25 @@ export class BlockFeesGraphComponent implements OnInit {
     @Inject(LOCALE_ID) public locale: string,
     private seoService: SeoService,
     private apiService: ApiService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private storageService: StorageService,
+    private miningService: MiningService
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
   }
 
   ngOnInit(): void {
-    if (!this.widget) {
-      this.seoService.setTitle($localize`:@@mining.block-fees:Block Fees`);
-    }
+    this.seoService.setTitle($localize`:@@mining.block-fees:Block Fees`);
+    this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
+    this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
+    this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
     this.statsObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
       .pipe(
-        startWith('1y'),
+        startWith(this.miningWindowPreference),
         switchMap((timespan) => {
+          this.storageService.setValue('miningWindowPreference', timespan);
           this.timespan = timespan;
           this.isLoading = true;
           return this.apiService.getHistoricalBlockFees$(timespan)
@@ -103,7 +109,7 @@ export class BlockFeesGraphComponent implements OnInit {
         left: this.left,
       },
       tooltip: {
-        show: !this.isMobile() || !this.widget,
+        show: !this.isMobile(),
         trigger: 'axis',
         axisPointer: {
           type: 'line'
@@ -161,7 +167,7 @@ export class BlockFeesGraphComponent implements OnInit {
           },
         },
       ],
-      dataZoom: this.widget ? null : [{
+      dataZoom: [{
         type: 'inside',
         realtime: true,
         zoomLock: true,
