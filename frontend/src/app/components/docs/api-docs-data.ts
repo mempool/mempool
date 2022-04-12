@@ -4433,7 +4433,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "what-is-a-mempool-explorer",
     title: "What is a mempool explorer?",
-    answer: "<p>A mempool explorer is a tool that enables you to explore a node's mempool by visualizing its transactions, searching and viewing those transactions, and viewing aggregate and historical data about a node's mempool. </p><p>The mempool.space website invented the concept of visualizing a Bitcoin node's mempool as <b>projected blocks</b>. These blocks are the inspiration for our half-filled block logo.</p><p>Here's a snapshot of this visualization (which you can find on <a href='/'>the main dashboard</a>) as of block 729,131 in March 2022. Projected blocks are on the left, and confirmed blocks are on the right.</p>"
+    answer: "<p>A mempool explorer is a tool that enables you to view real-time and historical information about a node's mempool, visualize its transactions, and search and view those transactions.</p><p>The mempool.space website invented the concept of visualizing a Bitcoin node's mempool as <b>projected blocks</b>. These blocks are the inspiration for our half-filled block logo.</p><p>Here's a snapshot of this visualization (which you can find on <a href='/'>the main dashboard</a>) as of block 729,556 in March 2022. Projected blocks are on the left of the dotted white line, and confirmed blocks are on the right.</p><iframe id='mempool-blocks' style='width: 100%;height: 275px;border: none' src='./resources/mempool-blocks.html' scrolling='no'></iframe>"
   },
   {
     type: "endpoint",
@@ -4457,7 +4457,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "what-is-mining",
     title: "What is mining?",
-    answer: "Mining is the process by which unconfirmed transactions are confirmed. Miners select unconfirmed transactions from their mempools and arrange them into a block such that they solve a particular math problem.</p><p>The first miner on the network that finds a suitable block gets all the transaction fees from the transactions in that block. As a result, miners tend to prioritize transactions with higher transaction fees.</p>"
+    answer: "Mining is the process by which unconfirmed transactions in a mempool are confirmed into a block on a blockchain. Miners select unconfirmed transactions from their mempools and arrange them into a block such that they solve a particular math problem.</p><p>The first miner on the network to find a suitable block earns all the transaction fees from the transactions in that block. As a result, miners tend to prioritize transactions with higher transaction fees.</p>"
   },
   {
     type: "endpoint",
@@ -4478,9 +4478,9 @@ export const faqData = [
     type: "endpoint",
     category: "help",
     showConditions: bitcoinNetworks,
-    fragment: "why-is-transaction-stuck-in-the-mempool",
+    fragment: "why-is-transaction-stuck-in-mempool",
     title: "Why is my transaction stuck in the mempool?",
-    answer: "<p>Miners decide which transactions are included in the blocks they mine, so they usually prioritize transactions which pay them the highest transaction fees (transaction fees are measured in sats per virtual byte, or sat/vB). If your transcation is stuck in the mempool, your transaction probably has a lower transaction fee relative to other transactions currently in the mempool.</p>"
+    answer: "<p>Miners decide which transactions are included in the blocks they mine, so they usually prioritize transactions which pay them the highest transaction fees (transaction fees are measured in sats per virtual byte, or sat/vB). If it's been a while and your transcation hasn't been confirmed, your transaction probably has a lower transaction fee relative to other transactions currently in the mempool.</p>"
   },
   {
     type: "endpoint",
@@ -4494,7 +4494,7 @@ export const faqData = [
     type: "endpoint",
     category: "help",
     showConditions: bitcoinNetworks,
-    fragment: "how-prevent-stuck-transaction-in-future",
+    fragment: "how-prevent-stuck-transaction",
     title: "How can I prevent a transaction from getting stuck in the future?",
     answer: "<p>You must use an adequate transaction fee commensurate with how quickly you need the transaction to be confirmed. Also consider using RBF if your wallet supports it so that you can bump the fee rate if needed.</p>"
   },
@@ -4511,7 +4511,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "looking-up-transactions",
     title: "How can I look up a transaction?",
-    answer: "Because reasons."
+    answer: "Search for the transaction ID in the search box at the top-right of this website."
   },
   {
     type: "endpoint",
@@ -4519,7 +4519,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "looking-up-addresses",
     title: "How can I look up an address?",
-    answer: "Because reasons."
+    answer: "Search for the address in the search box at the top-right of this website."
   },
   {
     type: "endpoint",
@@ -4527,7 +4527,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "looking-up-blocks",
     title: "How can I look up a block?",
-    answer: "Because reasons."
+    answer: "Search for the block number (or block hash) in the search box at the top-right of this website."
   },
   {
     type: "endpoint",
@@ -4535,7 +4535,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "looking-up-fee-estimates",
     title: "How can I look up fee estimates?",
-    answer: "Because reasons."
+    answer: "<p>See real-time fee estimates on <a href='/'>the main dashboard</a>.</p><p>Low priority is suggested for confirmation within 6 blocks (~1 hour), Medium priority is suggested for confirmation within 3 blocks (~30 minutes), and High priority is suggested for confirmation in the next block (~10 minutes).</p>"
   },
   {
     type: "endpoint",
@@ -4543,7 +4543,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "looking-up-historical-trends",
     title: "How can I explore historical trends?",
-    answer: "Because reasons."
+    answer: "See the <a href='/graphs'>graphs page</a> for aggregate trends over time: mempool size over time and incoming transaction velocity over time."
   },
   {
     type: "category",
@@ -4558,21 +4558,21 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "who-runs-this-website",
     title: "Who runs this website?",
-    answer: "The official mempool.space website is operated by The Mempool Open Source Project. See more information <a href='/about'>on our About page</a>. There are also many unofficial instances of this website operated by individual members of the Bitcoin community."
+    answer: "The official mempool.space website is operated by The Mempool Open Source Project. See more information on our <a href='/about'>About page</a>. There are also many unofficial instances of this website operated by individual members of the Bitcoin community."
   },
   {
     type: "endpoint",
     category: "advanced",
     showConditions: bitcoinNetworks,
-    fragment: "host-my-own-instance-on-raspberry-pi",
+    fragment: "host-my-own-instance-raspberry-pi",
     title: "How can I host my own instance on a Raspberry Pi?",
-    answer: "We support one-click installation on a number of Raspberry Pi fullnode distros including Umbrel, RaspiBlitz, MyNode, and RoninDojo."
+    answer: "We support one-click installation on a number of Raspberry Pi full-node distros including Umbrel, RaspiBlitz, MyNode, and RoninDojo."
   },
   {
     type: "endpoint",
     category: "advanced",
     showConditions: bitcoinNetworks,
-    fragment: "host-my-own-instance-on-linux-server",
+    fragment: "host-my-own-instance-linux-server",
     title: "How can I host my own instance on a Linux server?",
     answer: "You can manually install mempool on your own Linux server, but this requires advanced sysadmin skills since you will be manually configuring everything. We do not provide support for manual deployments."
   },
