@@ -4411,3 +4411,177 @@ export const restApiDocsData = [
   },
 ];
 
+export const faqData = [
+  {
+    type: "category",
+    category: "basics",
+    fragment: "basics",
+    title: "Basics",
+    showConditions: bitcoinNetworks
+  },
+  {
+    type: "endpoint",
+    category: "basics",
+    showConditions: bitcoinNetworks,
+    fragment: "what-is-a-mempool",
+    title: "What is a mempool?",
+    answer: "<p>A mempool (short for \"memory pool\") holds the queue of pending and unconfirmed transactions for a cryptocurrency network node. There is no one global mempool: every node on the network maintains its own mempool, so different nodes may hold different transactions in their mempools.</p>"
+  },
+  {
+    type: "endpoint",
+    category: "basics",
+    showConditions: bitcoinNetworks,
+    fragment: "what-is-a-mempool-explorer",
+    title: "What is a mempool explorer?",
+    answer: "<p>A mempool explorer is a tool that enables you to view real-time and historical information about a node's mempool, visualize its transactions, and search and view those transactions.</p><p>The mempool.space website invented the concept of visualizing a Bitcoin node's mempool as <b>projected blocks</b>. These blocks are the inspiration for our half-filled block logo.</p><p>Projected blocks are on the left of the dotted white line, and confirmed blocks are on the right.</p>"
+  },
+  {
+    type: "endpoint",
+    category: "basics",
+    showConditions: bitcoinNetworks,
+    fragment: "what-is-a-blockchain",
+    title: "What is a blockchain?",
+    answer: "<p>A blockchain is a distributed ledger that records the transactions for a cryptocurrency network. Miners amend the blockchain ledger by mining new blocks.</p>"
+  },
+  {
+    type: "endpoint",
+    category: "basics",
+    showConditions: bitcoinNetworks,
+    fragment: "what-is-a-block-explorer",
+    title: "What is a block explorer?",
+    answer: "<p>A block explorer is a tool that enables you to explore real-time and historical information about the blockchain of a cryptocurrency. This includes data related to blocks, transactions, addresses, and more.</p>"
+  },
+  {
+    type: "endpoint",
+    category: "basics",
+    showConditions: bitcoinNetworks,
+    fragment: "what-is-mining",
+    title: "What is mining?",
+    answer: "Mining is the process by which unconfirmed transactions in a mempool are confirmed into a block on a blockchain. Miners select unconfirmed transactions from their mempools and arrange them into a block such that they solve a particular math problem.</p><p>The first miner on the network to find a suitable block earns all the transaction fees from the transactions in that block. As a result, miners tend to prioritize transactions with higher transaction fees.</p>"
+  },
+  {
+    type: "endpoint",
+    category: "basics",
+    showConditions: bitcoinNetworks,
+    fragment: "what-are-mining-pools",
+    title: "What are mining pools?",
+    answer: "Mining pools are groups of miners that combine their computational power in order to increase the probability of finding new blocks."
+  },
+  {
+    type: "category",
+    category: "help",
+    fragment: "help-stuck-transaction",
+    title: "Help! My transaction is stuck",
+    showConditions: bitcoinNetworks
+  },
+  {
+    type: "endpoint",
+    category: "help",
+    showConditions: bitcoinNetworks,
+    fragment: "why-is-transaction-stuck-in-mempool",
+    title: "Why is my transaction stuck in the mempool?",
+    answer: "<p>Miners decide which transactions are included in the blocks they mine, so they usually prioritize transactions which pay them the highest transaction fees (transaction fees are measured in sats per virtual byte, or sat/vB). If it's been a while and your transcation hasn't been confirmed, your transaction probably has a lower transaction fee relative to other transactions currently in the mempool.</p>"
+  },
+  {
+    type: "endpoint",
+    category: "help",
+    showConditions: bitcoinNetworks,
+    fragment: "how-to-get-transaction-confirmed-quickly",
+    title: "How can I get my transaction confirmed more quickly?",
+    answer: "<p>If your wallet supports RBF, and if your transaction was created with RBF enabled, you can bump the fee higher.</p><p>Otherwise, if your wallet does not support RBF, you can increase the effective fee rate of your transaction by spending its change output using a higher fee. This is called CPFP.</p>"
+  },
+  {
+    type: "endpoint",
+    category: "help",
+    showConditions: bitcoinNetworks,
+    fragment: "how-prevent-stuck-transaction",
+    title: "How can I prevent a transaction from getting stuck in the future?",
+    answer: "<p>You must use an adequate transaction fee commensurate with how quickly you need the transaction to be confirmed. Also consider using RBF if your wallet supports it so that you can bump the fee rate if needed.</p>"
+  },
+  {
+    type: "category",
+    category: "using",
+    fragment: "using-this-website",
+    title: "Using this website",
+    showConditions: bitcoinNetworks
+  },
+  {
+    type: "endpoint",
+    category: "how-to",
+    showConditions: bitcoinNetworks,
+    fragment: "looking-up-transactions",
+    title: "How can I look up a transaction?",
+    answer: "Search for the transaction ID in the search box at the top-right of this website."
+  },
+  {
+    type: "endpoint",
+    category: "how-to",
+    showConditions: bitcoinNetworks,
+    fragment: "looking-up-addresses",
+    title: "How can I look up an address?",
+    answer: "Search for the address in the search box at the top-right of this website."
+  },
+  {
+    type: "endpoint",
+    category: "how-to",
+    showConditions: bitcoinNetworks,
+    fragment: "looking-up-blocks",
+    title: "How can I look up a block?",
+    answer: "Search for the block number (or block hash) in the search box at the top-right of this website."
+  },
+  {
+    type: "endpoint",
+    category: "how-to",
+    showConditions: bitcoinNetworks,
+    fragment: "looking-up-fee-estimates",
+    title: "How can I look up fee estimates?",
+    answer: "<p>See real-time fee estimates on <a href='/'>the main dashboard</a>.</p><p>Low priority is suggested for confirmation within 6 blocks (~1 hour), Medium priority is suggested for confirmation within 3 blocks (~30 minutes), and High priority is suggested for confirmation in the next block (~10 minutes).</p>"
+  },
+  {
+    type: "endpoint",
+    category: "how-to",
+    showConditions: bitcoinNetworks,
+    fragment: "looking-up-historical-trends",
+    title: "How can I explore historical trends?",
+    answer: "See the <a href='/graphs'>graphs page</a> for aggregate trends over time: mempool size over time and incoming transaction velocity over time."
+  },
+  {
+    type: "category",
+    category: "advanced",
+    fragment: "advanced",
+    title: "Advanced",
+    showConditions: bitcoinNetworks
+  },
+  {
+    type: "endpoint",
+    category: "advanced",
+    showConditions: bitcoinNetworks,
+    fragment: "who-runs-this-website",
+    title: "Who runs this website?",
+    answer: "The official mempool.space website is operated by The Mempool Open Source Project. See more information on our <a href='/about'>About page</a>. There are also many unofficial instances of this website operated by individual members of the Bitcoin community."
+  },
+  {
+    type: "endpoint",
+    category: "advanced",
+    showConditions: bitcoinNetworks,
+    fragment: "host-my-own-instance-raspberry-pi",
+    title: "How can I host my own instance on a Raspberry Pi?",
+    answer: "We support one-click installation on a number of Raspberry Pi full-node distros including Umbrel, RaspiBlitz, MyNode, and RoninDojo."
+  },
+  {
+    type: "endpoint",
+    category: "advanced",
+    showConditions: bitcoinNetworks,
+    fragment: "host-my-own-instance-linux-server",
+    title: "How can I host my own instance on a Linux server?",
+    answer: "You can manually install mempool on your own Linux server, but this requires advanced sysadmin skills since you will be manually configuring everything. We do not provide support for manual deployments."
+  },
+  {
+    type: "endpoint",
+    category: "advanced",
+    showConditions: bitcoinNetworks,
+    fragment: "install-mempool-with-docker",
+    title: "Can I install Mempool using Docker?",
+    answer: "Yes, we publish Docker images (or you can build your own), and provide <a href='https://github.com/mempool/mempool/tree/master/docker' target='_blank'>an example docker-compose template</a>."
+  }
+];
