@@ -32,5 +32,10 @@ export class DocsComponent implements OnInit {
     this.env = this.stateService.env;
     this.showWebSocketTab = ( ! ( ( this.stateService.network === "bisq" ) || ( this.stateService.network === "liquidtestnet" ) ) );
     this.showFaqTab = ( this.env.BASE_MODULE === 'mempool' ) ? true : false;
+    document.querySelector<HTMLElement>( "html" ).style.scrollBehavior = "smooth";
+  }
+
+  ngOnDestroy(): void {
+    document.querySelector<HTMLElement>( "html" ).style.scrollBehavior = "auto";
   }
 }
