@@ -1,4 +1,5 @@
 import { Common } from '../api/common';
+import config from '../config';
 import { DB } from '../database';
 import logger from '../logger';
 import { PoolInfo, PoolTag } from '../mempool.interfaces';
@@ -9,7 +10,7 @@ class PoolsRepository {
    */
   public async $getPools(): Promise<PoolTag[]> {
     const connection = await DB.getConnection();
-    const [rows] = await connection.query('SELECT id, name, addresses, regexes FROM pools;');
+    const [rows] = await connection.query('SELECT id, name, addresses, regexes, slug FROM pools;');
     connection.release();
     return <PoolTag[]>rows;
   }
@@ -19,7 +20,7 @@ class PoolsRepository {
    */
   public async $getUnknownPool(): Promise<PoolTag> {
     const connection = await DB.getConnection();
-    const [rows] = await connection.query('SELECT id, name FROM pools where name = "Unknown"');
+    const [rows] = await connection.query('SELECT id, name, slug FROM pools where name = "Unknown"');
     connection.release();
     return <PoolTag>rows[0];
   }
@@ -30,7 +31,7 @@ class PoolsRepository {
   public async $getPoolsInfo(interval: string | null = null): Promise<PoolInfo[]> {
     interval = Common.getSqlInterval(interval);
 
-    let query = `SELECT COUNT(height) as blockCount, pool_id as poolId, pools.name as name, pools.link as link
+    let query = `SELECT COUNT(height) as blockCount, pool_id as poolId, pools.name as name, pools.link as link, slug
       FROM blocks
       JOIN pools on pools.id = pool_id`;
 
@@ -80,20 +81,30 @@ class PoolsRepository {
   /**
    * Get mining pool statistics for one pool
    */
-   public async $getPool(poolId: any): Promise<object> {
+   public async $getPool(slug: string): Promise<PoolTag | null> {
     const query = `
       SELECT *
       FROM pools
-      WHERE pools.id = ?`;
+      WHERE pools.slug = ?`;
 
-    // logger.debug(query);
-    const connection = await DB.getConnection();
+    let connection;
     try {
-      const [rows] = await connection.query(query, [poolId]);
+      connection = await DB.getConnection();
+
+      const [rows] = await connection.query(query, [slug]);
       connection.release();
 
+      if (rows.length < 1) {
+        logger.debug(`$getPool(): slug does not match any known pool`);
+        return null;
+      }
+
       rows[0].regexes = JSON.parse(rows[0].regexes);
-      rows[0].addresses = JSON.parse(rows[0].addresses);
+      if (['testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
+        rows[0].addresses = []; // pools.json only contains mainnet addresses
+      } else {
+        rows[0].addresses = JSON.parse(rows[0].addresses);
+      }
 
       return rows[0];
     } catch (e) {

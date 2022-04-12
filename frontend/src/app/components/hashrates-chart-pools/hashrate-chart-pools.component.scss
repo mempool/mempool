@@ -20,19 +20,18 @@
 .full-container {
   padding: 0px 15px;
   width: 100%;
-  height: calc(100% - 140px);
-  @media (max-width: 991px) {
-    height: calc(100% - 190px);
-  };
-  @media (max-width: 575px) {
-    height: calc(100% - 235px);
+  min-height: 500px;
+  height: calc(100% - 150px);
+  @media (max-width: 992px) {
+    height: 100%;
+    padding-bottom: 100px;
   };
 }
 
 .chart {
   width: 100%;
   height: 100%;
-  padding-bottom: 25px;
+  padding-bottom: 20px;
   padding-right: 10px;
   @media (max-width: 992px) {
     padding-bottom: 25px;
@@ -42,12 +41,6 @@
   }
   @media (max-width: 767px) {
     padding-bottom: 50px;
-  }
-  @media (max-width: 629px) {
-    padding-bottom: 85px;
-  }
-  @media (max-width: 567px) {
-    padding-bottom: 85px;
   }
 }
 .chart-widget {

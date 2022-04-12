@@ -71,6 +71,7 @@ export interface SinglePoolStats {
   lastEstimatedHashrate: string;
   emptyBlockRatio: string;
   logo: string;
+  slug: string;
 }
 export interface PoolsStats {
   blockCount: number;
@@ -92,8 +93,19 @@ export interface PoolInfo {
 }
 export interface PoolStat {
   pool: PoolInfo;
-  blockCount: number;
-  emptyBlocks: number;
+  blockCount: {
+    all: number,
+    '24h': number,
+    '1w': number,
+  };
+  blockShare: {
+    all: number,
+    '24h': number,
+    '1w': number,
+  };
+  estimatedHashrate: number;
+  reportedHashrate: number;
+  luck?: number;
 }
 
 export interface BlockExtension {
@@ -107,6 +119,7 @@ export interface BlockExtension {
   pool?: {
     id: number;
     name: string;
+    slug: string;
   }
 
   stage?: number; // Frontend only
@@ -117,6 +130,8 @@ export interface BlockExtended extends Block {
 }
 
 export interface RewardStats {
+  startBlock: number;
+  endBlock: number;
   totalReward: number;
   totalFee: number;
   totalTx: number;

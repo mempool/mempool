@@ -2,12 +2,13 @@ import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } 
 import { ActivatedRoute } from '@angular/router';
 import { EChartsOption, graphic } from 'echarts';
 import { BehaviorSubject, Observable, timer } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { distinctUntilChanged, map, share, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended, PoolStat } from 'src/app/interfaces/node-api.interface';
 import { ApiService } from 'src/app/services/api.service';
 import { StateService } from 'src/app/services/state.service';
 import { selectPowerOfTen } from 'src/app/bitcoin.utils';
 import { formatNumber } from '@angular/common';
+import { SeoService } from 'src/app/services/seo.service';
 
 @Component({
   selector: 'app-pool',
@@ -19,6 +20,8 @@ export class PoolComponent implements OnInit {
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
 
+  gfg = true;
+
   formatNumber = formatNumber;
   poolStats$: Observable<PoolStat>;
   blocks$: Observable<BlockExtended[]>;
@@ -27,49 +30,55 @@ export class PoolComponent implements OnInit {
   chartOptions: EChartsOption = {};
   chartInitOptions = {
     renderer: 'svg',
-    width: 'auto',
-    height: 'auto',
   };
 
   blocks: BlockExtended[] = [];
-  poolId: number = undefined;
+  slug: string = undefined;
 
-  loadMoreSubject: BehaviorSubject<number> = new BehaviorSubject(this.poolId);
+  loadMoreSubject: BehaviorSubject<number> = new BehaviorSubject(this.blocks[this.blocks.length - 1]?.height);
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
     private apiService: ApiService,
     private route: ActivatedRoute,
     public stateService: StateService,
+    private seoService: SeoService,
   ) {
   }
 
   ngOnInit(): void {
-    this.poolStats$ = this.route.params.pipe(map((params) => params.poolId))
+    this.poolStats$ = this.route.params.pipe(map((params) => params.slug))
       .pipe(
-        switchMap((poolId: any) => {
+        switchMap((slug: any) => {
           this.isLoading = true;
-          this.poolId = poolId;
-          this.loadMoreSubject.next(this.poolId);
-          return this.apiService.getPoolHashrate$(this.poolId)
+          this.slug = slug;
+          return this.apiService.getPoolHashrate$(this.slug)
             .pipe(
               switchMap((data) => {
                 this.isLoading = false;
                 this.prepareChartOptions(data.hashrates.map(val => [val.timestamp * 1000, val.avgHashrate]));
-                return poolId;
+                return [slug];
               }),
             );
         }),
-        switchMap(() => {
-          return this.apiService.getPoolStats$(this.poolId);
+        switchMap((slug) => {
+          return this.apiService.getPoolStats$(slug);
+        }),
+        tap(() => {
+          this.loadMoreSubject.next(this.blocks[this.blocks.length - 1]?.height);
         }),
         map((poolStats) => {
+          this.seoService.setTitle(poolStats.pool.name);
           let regexes = '"';
           for (const regex of poolStats.pool.regexes) {
             regexes += regex + '", "';
           }
           poolStats.pool.regexes = regexes.slice(0, -3);
           poolStats.pool.addresses = poolStats.pool.addresses;
+
+          if (poolStats.reportedHashrate) {
+            poolStats.luck = poolStats.estimatedHashrate / poolStats.reportedHashrate * 100;
+          }
 
           return Object.assign({
             logo: `./resources/mining-pools/` + poolStats.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg'
@@ -79,21 +88,37 @@ export class PoolComponent implements OnInit {
 
     this.blocks$ = this.loadMoreSubject
       .pipe(
+        distinctUntilChanged(),
         switchMap((flag) => {
-          if (this.poolId === undefined) {
+          if (this.slug === undefined) {
             return [];
           }
-          return this.apiService.getPoolBlocks$(this.poolId, this.blocks[this.blocks.length - 1]?.height);
+          return this.apiService.getPoolBlocks$(this.slug, this.blocks[this.blocks.length - 1]?.height);
         }),
         tap((newBlocks) => {
           this.blocks = this.blocks.concat(newBlocks);
         }),
-        map(() => this.blocks)
+        map(() => this.blocks),
+        share(),
       );
   }
 
   prepareChartOptions(data) {
+    let title: object;
+    if (data.length === 0) {
+      title = {
+        textStyle: {
+          color: 'grey',
+          fontSize: 15
+        },
+        text: `No data`,
+        left: 'center',
+        top: 'center'
+      };
+    }
+
     this.chartOptions = {
+      title: title,
       animation: false,
       color: [
         new graphic.LinearGradient(0, 0, 0, 0.65, [
@@ -124,7 +149,7 @@ export class PoolComponent implements OnInit {
           align: 'left',
         },
         borderColor: '#000',
-        formatter: function(ticks: any[]) {
+        formatter: function (ticks: any[]) {
           let hashratePowerOfTen: any = selectPowerOfTen(1);
           let hashrate = ticks[0].data[1];
 
@@ -142,6 +167,9 @@ export class PoolComponent implements OnInit {
       xAxis: {
         type: 'time',
         splitNumber: (this.isMobile()) ? 5 : 10,
+        axisLabel: {
+          hideOverlap: true,
+        }
       },
       yAxis: [
         {
@@ -164,6 +192,7 @@ export class PoolComponent implements OnInit {
       ],
       series: [
         {
+          zlevel: 0,
           name: 'Hashrate',
           showSymbol: false,
           symbol: 'none',
@@ -174,6 +203,34 @@ export class PoolComponent implements OnInit {
           },
         },
       ],
+      dataZoom: data.length === 0 ? undefined : [{
+        type: 'inside',
+        realtime: true,
+        zoomLock: true,
+        maxSpan: 100,
+        minSpan: 10,
+        moveOnMouseMove: false,
+      }, {
+        fillerColor: '#aaaaff15',
+        borderColor: '#ffffff88',
+        showDetail: false,
+        show: true,
+        type: 'slider',
+        brushSelect: false,
+        realtime: true,
+        bottom: 0,
+        left: 20,
+        right: 15,
+        selectedDataBackground: {
+          lineStyle: {
+            color: '#fff',
+            opacity: 0.45,
+          },
+          areaStyle: {
+            opacity: 0,
+          },
+        },
+      }],
     };
   }
 
@@ -182,7 +239,7 @@ export class PoolComponent implements OnInit {
   }
 
   loadMore() {
-    this.loadMoreSubject.next(this.poolId);
+    this.loadMoreSubject.next(this.blocks[this.blocks.length - 1]?.height);
   }
 
   trackByBlock(index: number, block: BlockExtended) {
