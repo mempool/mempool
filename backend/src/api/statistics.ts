@@ -155,7 +155,6 @@ class Statistics {
   }
 
   private async $createZeroedStatistic(): Promise<number | undefined> {
-    const connection = await DB.getConnection();
     try {
       const query = `INSERT INTO statistics(
               added,
@@ -206,17 +205,14 @@ class Statistics {
             )
             VALUES (NOW(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)`;
-      const [result]: any = await connection.query(query);
-      connection.release();
+      const [result]: any = await DB.query(query);
       return result.insertId;
     } catch (e) {
-      connection.release();
       logger.err('$create() error' + (e instanceof Error ? e.message : e));
     }
   }
 
   private async $create(statistics: Statistic): Promise<number | undefined> {
-    const connection = await DB.getConnection();
     try {
       const query = `INSERT INTO statistics(
               added,
@@ -314,11 +310,9 @@ class Statistics {
         statistics.vsize_1800,
         statistics.vsize_2000,
       ];
-      const [result]: any = await connection.query(query, params);
-      connection.release();
+      const [result]: any = await DB.query(query, params);
       return result.insertId;
     } catch (e) {
-      connection.release();
       logger.err('$create() error' + (e instanceof Error ? e.message : e));
     }
   }
@@ -421,10 +415,8 @@ class Statistics {
 
   private async $get(id: number): Promise<OptimizedStatistic | undefined> {
     try {
-      const connection = await DB.getConnection();
       const query = `SELECT *, UNIX_TIMESTAMP(added) as added FROM statistics WHERE id = ?`;
-      const [rows] = await connection.query<any>(query, [id]);
-      connection.release();
+      const [rows] = await DB.query(query, [id]);
       if (rows[0]) {
         return this.mapStatisticToOptimizedStatistic([rows[0]])[0];
       }
@@ -435,11 +427,9 @@ class Statistics {
 
   public async $list2H(): Promise<OptimizedStatistic[]> {
     try {
-      const connection = await DB.getConnection();
       const query = `SELECT *, UNIX_TIMESTAMP(added) as added FROM statistics ORDER BY statistics.added DESC LIMIT 120`;
-      const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
-      connection.release();
-      return this.mapStatisticToOptimizedStatistic(rows);
+      const [rows] = await DB.query({ sql: query, timeout: this.queryTimeout });
+      return this.mapStatisticToOptimizedStatistic(rows as Statistic[]);
     } catch (e) {
       logger.err('$list2H() error' + (e instanceof Error ? e.message : e));
       return [];
@@ -448,11 +438,9 @@ class Statistics {
 
   public async $list24H(): Promise<OptimizedStatistic[]> {
     try {
-      const connection = await DB.getConnection();
       const query = `SELECT *, UNIX_TIMESTAMP(added) as added FROM statistics ORDER BY statistics.added DESC LIMIT 1440`;
-      const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
-      connection.release();
-      return this.mapStatisticToOptimizedStatistic(rows);
+      const [rows] = await DB.query({ sql: query, timeout: this.queryTimeout });
+      return this.mapStatisticToOptimizedStatistic(rows as Statistic[]);
     } catch (e) {
       logger.err('$list24h() error' + (e instanceof Error ? e.message : e));
       return [];
@@ -461,11 +449,9 @@ class Statistics {
 
   public async $list1W(): Promise<OptimizedStatistic[]> {
     try {
-      const connection = await DB.getConnection();
       const query = this.getQueryForDaysAvg(300, '1 WEEK'); // 5m interval
-      const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
-      connection.release();
-      return this.mapStatisticToOptimizedStatistic(rows);
+      const [rows] = await DB.query({ sql: query, timeout: this.queryTimeout });
+      return this.mapStatisticToOptimizedStatistic(rows as Statistic[]);
     } catch (e) {
       logger.err('$list1W() error' + (e instanceof Error ? e.message : e));
       return [];
@@ -474,11 +460,9 @@ class Statistics {
 
   public async $list1M(): Promise<OptimizedStatistic[]> {
     try {
-      const connection = await DB.getConnection();
       const query = this.getQueryForDaysAvg(1800, '1 MONTH'); // 30m interval
-      const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
-      connection.release();
-      return this.mapStatisticToOptimizedStatistic(rows);
+      const [rows] = await DB.query({ sql: query, timeout: this.queryTimeout });
+      return this.mapStatisticToOptimizedStatistic(rows as Statistic[]);
     } catch (e) {
       logger.err('$list1M() error' + (e instanceof Error ? e.message : e));
       return [];
@@ -487,11 +471,9 @@ class Statistics {
 
   public async $list3M(): Promise<OptimizedStatistic[]> {
     try {
-      const connection = await DB.getConnection();
       const query = this.getQueryForDaysAvg(7200, '3 MONTH'); // 2h interval
-      const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
-      connection.release();
-      return this.mapStatisticToOptimizedStatistic(rows);
+      const [rows] = await DB.query({ sql: query, timeout: this.queryTimeout });
+      return this.mapStatisticToOptimizedStatistic(rows as Statistic[]);
     } catch (e) {
       logger.err('$list3M() error' + (e instanceof Error ? e.message : e));
       return [];
@@ -500,11 +482,9 @@ class Statistics {
 
   public async $list6M(): Promise<OptimizedStatistic[]> {
     try {
-      const connection = await DB.getConnection();
-      const query = this.getQueryForDaysAvg(10800, '6 MONTH'); // 3h interval 
-      const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
-      connection.release();
-      return this.mapStatisticToOptimizedStatistic(rows);
+      const query = this.getQueryForDaysAvg(10800, '6 MONTH'); // 3h interval
+      const [rows] = await DB.query({ sql: query, timeout: this.queryTimeout });
+      return this.mapStatisticToOptimizedStatistic(rows as Statistic[]);
     } catch (e) {
       logger.err('$list6M() error' + (e instanceof Error ? e.message : e));
       return [];
@@ -513,11 +493,9 @@ class Statistics {
 
   public async $list1Y(): Promise<OptimizedStatistic[]> {
     try {
-      const connection = await DB.getConnection();
       const query = this.getQueryForDays(28800, '1 YEAR'); // 8h interval
-      const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
-      connection.release();
-      return this.mapStatisticToOptimizedStatistic(rows);
+      const [rows] = await DB.query({ sql: query, timeout: this.queryTimeout });
+      return this.mapStatisticToOptimizedStatistic(rows as Statistic[]);
     } catch (e) {
       logger.err('$list1Y() error' + (e instanceof Error ? e.message : e));
       return [];
@@ -526,11 +504,9 @@ class Statistics {
 
   public async $list2Y(): Promise<OptimizedStatistic[]> {
     try {
-      const connection = await DB.getConnection();
-      const query = this.getQueryForDays(28800, "2 YEAR"); // 8h interval
-      const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
-      connection.release();
-      return this.mapStatisticToOptimizedStatistic(rows);
+      const query = this.getQueryForDays(28800, '2 YEAR'); // 8h interval
+      const [rows] = await DB.query({ sql: query, timeout: this.queryTimeout });
+      return this.mapStatisticToOptimizedStatistic(rows as Statistic[]);
     } catch (e) {
       logger.err('$list2Y() error' + (e instanceof Error ? e.message : e));
       return [];
@@ -539,11 +515,9 @@ class Statistics {
 
   public async $list3Y(): Promise<OptimizedStatistic[]> {
     try {
-      const connection = await DB.getConnection();
-      const query = this.getQueryForDays(43200, "3 YEAR"); // 12h interval
-      const [rows] = await connection.query<any>({ sql: query, timeout: this.queryTimeout });
-      connection.release();
-      return this.mapStatisticToOptimizedStatistic(rows);
+      const query = this.getQueryForDays(43200, '3 YEAR'); // 12h interval
+      const [rows] = await DB.query({ sql: query, timeout: this.queryTimeout });
+      return this.mapStatisticToOptimizedStatistic(rows as Statistic[]);
     } catch (e) {
       logger.err('$list3Y() error' + (e instanceof Error ? e.message : e));
       return [];

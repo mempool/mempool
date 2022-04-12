@@ -188,7 +188,7 @@ class Server {
         await BlocksRepository.$deleteBlocks(10);
         await HashratesRepository.$deleteLastEntries();
       }
-      blocks.$generateBlockDatabase();
+      await blocks.$generateBlockDatabase();
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();
     } catch (e) {
