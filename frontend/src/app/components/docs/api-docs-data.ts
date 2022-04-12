@@ -4433,7 +4433,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "what-is-a-mempool-explorer",
     title: "What is a mempool explorer?",
-    answer: "<p>A mempool explorer is a tool that enables you to view real-time and historical information about a node's mempool, visualize its transactions, and search and view those transactions.</p><p>The mempool.space website invented the concept of visualizing a Bitcoin node's mempool as <b>projected blocks</b>. These blocks are the inspiration for our half-filled block logo.</p><p>Here's a snapshot of this visualization (which you can find on <a href='/'>the main dashboard</a>) as of block 729,556 in March 2022. Projected blocks are on the left of the dotted white line, and confirmed blocks are on the right.</p><iframe id='mempool-blocks' style='width: 100%;height: 275px;border: none' src='./resources/mempool-blocks.html' scrolling='no'></iframe>"
+    answer: "<p>A mempool explorer is a tool that enables you to view real-time and historical information about a node's mempool, visualize its transactions, and search and view those transactions.</p><p>The mempool.space website invented the concept of visualizing a Bitcoin node's mempool as <b>projected blocks</b>. These blocks are the inspiration for our half-filled block logo.</p><p>Projected blocks are on the left of the dotted white line, and confirmed blocks are on the right.</p>"
   },
   {
     type: "endpoint",
