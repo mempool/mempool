@@ -23,6 +23,7 @@ class Blocks {
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
   private blockIndexingStarted = false;
   public blockIndexingCompleted = false;
+  public reindexFlag = true; // Always re-index the latest indexed data in case the node went offline with an invalid block tip (reorg)
 
   constructor() { }
 
@@ -135,9 +136,16 @@ class Blocks {
       } else {
         pool = await poolsRepository.$getUnknownPool();
       }
+
+      if (!pool) { // Something is wrong with the pools table, ignore pool indexing
+        logger.err('Unable to find pool, nor getting the unknown pool. Is the "pools" table empty?');
+        return blockExtended;
+      }
+
       blockExtended.extras.pool = {
         id: pool.id,
-        name: pool.name
+        name: pool.name,
+        slug: pool.slug,
       };
     }
 
@@ -182,9 +190,11 @@ class Blocks {
    * [INDEXING] Index all blocks metadata for the mining dashboard
    */
   public async $generateBlockDatabase() {
-    if (this.blockIndexingStarted) {
+    if (this.blockIndexingStarted && !this.reindexFlag) {
       return;
     }
+
+    this.reindexFlag = false;
 
     const blockchainInfo = await bitcoinClient.getBlockchainInfo();
     if (blockchainInfo.blocks !== blockchainInfo.headers) { // Wait for node to sync
@@ -192,6 +202,7 @@ class Blocks {
     }
 
     this.blockIndexingStarted = true;
+    this.blockIndexingCompleted = false;
 
     try {
       let currentBlockHeight = blockchainInfo.blocks;
@@ -309,6 +320,12 @@ class Blocks {
 
       if (Common.indexingEnabled()) {
         await blocksRepository.$saveBlockInDatabase(blockExtended);
+
+        // If the last 10 blocks chain is not valid, re-index them (reorg)
+        const chainValid = await blocksRepository.$validateRecentBlocks();
+        if (!chainValid) {
+          this.reindexFlag = true;
+        }
       }
 
       if (block.height % 2016 === 0) {

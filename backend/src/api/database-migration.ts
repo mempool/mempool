@@ -6,7 +6,7 @@ import logger from '../logger';
 const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 class DatabaseMigration {
-  private static currentVersion = 16;
+  private static currentVersion = 17;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
 
@@ -178,6 +178,10 @@ class DatabaseMigration {
       if (databaseSchemaVersion < 16 && isBitcoin === true) {
         logger.warn(`'hashrates' table has been truncated. Re-indexing from scratch.`);
         await this.$executeQuery(connection, 'TRUNCATE hashrates;'); // Need to re-index because we changed timestamps
+      }
+
+      if (databaseSchemaVersion < 17 && isBitcoin === true) {
+        await this.$executeQuery(connection, 'ALTER TABLE `pools` ADD `slug` CHAR(50) NULL');
       }
 
       connection.release();

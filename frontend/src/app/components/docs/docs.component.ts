@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostBinding } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Env, StateService } from 'src/app/services/state.service';
 
@@ -13,6 +13,8 @@ export class DocsComponent implements OnInit {
   env: Env;
   showWebSocketTab = true;
   showFaqTab = true;
+
+  @HostBinding('attr.dir') dir = 'ltr';
 
   constructor(
     private route: ActivatedRoute,
@@ -32,6 +34,7 @@ export class DocsComponent implements OnInit {
     this.env = this.stateService.env;
     this.showWebSocketTab = ( ! ( ( this.stateService.network === "bisq" ) || ( this.stateService.network === "liquidtestnet" ) ) );
     this.showFaqTab = ( this.env.BASE_MODULE === 'mempool' ) ? true : false;
+    
     document.querySelector<HTMLElement>( "html" ).style.scrollBehavior = "smooth";
   }
 

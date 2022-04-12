@@ -3,15 +3,18 @@ import { DB } from '../database';
 import logger from '../logger';
 import { Common } from '../api/common';
 import { prepareBlock } from '../utils/blocks-utils';
+import PoolsRepository from './PoolsRepository';
 
 class BlocksRepository {
   /**
    * Save indexed block data in the database
    */
   public async $saveBlockInDatabase(block: BlockExtended) {
-    const connection = await DB.getConnection();
+    let connection;
 
     try {
+      connection = await DB.getConnection();
+
       const query = `INSERT INTO blocks(
         height,           hash,                blockTimestamp, size,
         weight,           tx_count,            coinbase_raw,   difficulty,
@@ -71,8 +74,9 @@ class BlocksRepository {
       return [];
     }
 
-    const connection = await DB.getConnection();
+    let connection;
     try {
+      connection = await DB.getConnection();
       const [rows]: any[] = await connection.query(`
         SELECT height
         FROM blocks
@@ -117,8 +121,9 @@ class BlocksRepository {
 
     query += ` GROUP by pools.id`;
 
-    const connection = await DB.getConnection();
+    let connection;
     try {
+      connection = await DB.getConnection();
       const [rows] = await connection.query(query, params);
       connection.release();
 
@@ -154,8 +159,9 @@ class BlocksRepository {
       query += ` blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
     }
 
-    const connection = await DB.getConnection();
+    let connection;
     try {
+      connection = await DB.getConnection();
       const [rows] = await connection.query(query, params);
       connection.release();
 
@@ -193,8 +199,9 @@ class BlocksRepository {
     }
     query += ` blockTimestamp BETWEEN FROM_UNIXTIME('${from}') AND FROM_UNIXTIME('${to}')`;
 
-    const connection = await DB.getConnection();
+    let connection;
     try {
+      connection = await DB.getConnection();
       const [rows] = await connection.query(query, params);
       connection.release();
 
@@ -215,8 +222,9 @@ class BlocksRepository {
       ORDER BY height
       LIMIT 1;`;
 
-    const connection = await DB.getConnection();
+    let connection;
     try {
+      connection = await DB.getConnection();
       const [rows]: any[] = await connection.query(query);
       connection.release();
 
@@ -235,13 +243,18 @@ class BlocksRepository {
   /**
    * Get blocks mined by a specific mining pool
    */
-  public async $getBlocksByPool(poolId: number, startHeight: number | undefined = undefined): Promise<object[]> {
+  public async $getBlocksByPool(slug: string, startHeight: number | undefined = undefined): Promise<object[]> {
+    const pool = await PoolsRepository.$getPool(slug);
+    if (!pool) {
+      throw new Error(`This mining pool does not exist`);
+    }
+
     const params: any[] = [];
     let query = ` SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
       previous_block_hash as previousblockhash
       FROM blocks
       WHERE pool_id = ?`;
-    params.push(poolId);
+    params.push(pool.id);
 
     if (startHeight !== undefined) {
       query += ` AND height < ?`;
@@ -251,8 +264,9 @@ class BlocksRepository {
     query += ` ORDER BY height DESC
       LIMIT 10`;
 
-    const connection = await DB.getConnection();
+    let connection;
     try {
+      connection = await DB.getConnection();
       const [rows] = await connection.query(query, params);
       connection.release();
 
@@ -273,11 +287,12 @@ class BlocksRepository {
    * Get one block by height
    */
   public async $getBlockByHeight(height: number): Promise<object | null> {
-    const connection = await DB.getConnection();
+    let connection;
     try {
+      connection = await DB.getConnection();
       const [rows]: any[] = await connection.query(`
         SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
-        pools.id as pool_id, pools.name as pool_name, pools.link as pool_link,
+        pools.id as pool_id, pools.name as pool_name, pools.link as pool_link, pools.slug as pool_slug,
         pools.addresses as pool_addresses, pools.regexes as pool_regexes,
         previous_block_hash as previousblockhash
         FROM blocks
@@ -303,8 +318,6 @@ class BlocksRepository {
    */
   public async $getBlocksDifficulty(interval: string | null): Promise<object[]> {
     interval = Common.getSqlInterval(interval);
-
-    const connection = await DB.getConnection();
 
     // :D ... Yeah don't ask me about this one https://stackoverflow.com/a/40303162
     // Basically, using temporary user defined fields, we are able to extract all
@@ -338,35 +351,21 @@ class BlocksRepository {
       ORDER BY t.height
     `;
 
+    let connection;
     try {
+      connection = await DB.getConnection();
       const [rows]: any[] = await connection.query(query);
       connection.release();
 
-      for (let row of rows) {
+      for (const row of rows) {
         delete row['rn'];
       }
 
+      connection.release();
       return rows;
     } catch (e) {
       connection.release();
       logger.err('$getBlocksDifficulty() error' + (e instanceof Error ? e.message : e));
-      throw e;
-    }
-  }
-
-  /**
-   * Return oldest blocks height
-   */
-  public async $getOldestIndexedBlockHeight(): Promise<number> {
-    const connection = await DB.getConnection();
-    try {
-      const [rows]: any[] = await connection.query(`SELECT MIN(height) as minHeight FROM blocks`);
-      connection.release();
-
-      return rows[0].minHeight;
-    } catch (e) {
-      connection.release();
-      logger.err('$getOldestIndexedBlockHeight() error' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -380,16 +379,121 @@ class BlocksRepository {
       connection = await DB.getConnection();
 
       // We need to use a subquery
-      const query = `SELECT SUM(reward) as totalReward, SUM(fees) as totalFee, SUM(tx_count) as totalTx
-        FROM (SELECT reward, fees, tx_count FROM blocks ORDER by height DESC LIMIT ${blockCount}) as sub`;
+      const query = `
+        SELECT MIN(height) as startBlock, MAX(height) as endBlock, SUM(reward) as totalReward, SUM(fees) as totalFee, SUM(tx_count) as totalTx
+        FROM
+          (SELECT height, reward, fees, tx_count FROM blocks
+          ORDER by height DESC
+          LIMIT ?) as sub`;
 
-      const [rows]: any = await connection.query(query);
+      const [rows]: any = await connection.query(query, [blockCount]);
       connection.release();
  
       return rows[0];
     } catch (e) {
       connection.release();
       logger.err('$getBlockStats() error: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /*
+   * Check if the last 10 blocks chain is valid
+   */
+  public async $validateRecentBlocks(): Promise<boolean> {
+    let connection;
+
+    try {
+      connection = await DB.getConnection();
+      const [lastBlocks] = await connection.query(`SELECT height, hash, previous_block_hash FROM blocks ORDER BY height DESC LIMIT 10`);
+      connection.release();
+
+      for (let i = 0; i < lastBlocks.length - 1; ++i) {
+        if (lastBlocks[i].previous_block_hash !== lastBlocks[i + 1].hash) {
+          logger.notice(`Chain divergence detected at block ${lastBlocks[i].height}, re-indexing most recent data`);
+          return false;
+        }
+      }
+
+      return true;
+    } catch (e) {
+      connection.release();
+
+      return true; // Don't do anything if there is a db error
+    }
+  }
+
+  /**
+   * Delete $count blocks from the database
+   */
+  public async $deleteBlocks(count: number) {
+    let connection;
+
+    try {
+      connection = await DB.getConnection();
+      logger.debug(`Delete ${count} most recent indexed blocks from the database`);
+      await connection.query(`DELETE FROM blocks ORDER BY height DESC LIMIT ${count};`);
+    } catch (e) {
+      logger.err('$deleteBlocks() error' + (e instanceof Error ? e.message : e));
+    }
+
+    connection.release();
+  }
+
+  /**
+   * Get the historical averaged block reward and total fees
+   */
+  public async $getHistoricalBlockFees(div: number, interval: string | null): Promise<any> {
+    let connection;
+    try {
+      connection = await DB.getConnection();
+
+      let query = `SELECT CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
+        CAST(AVG(fees) as INT) as avg_fees
+        FROM blocks`;
+
+      if (interval !== null) {
+        query += ` WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+      }
+
+      query += ` GROUP BY UNIX_TIMESTAMP(blockTimestamp) DIV ${div}`;
+
+      const [rows]: any = await connection.query(query);
+      connection.release();
+
+      return rows;
+    } catch (e) {
+      connection.release();
+      logger.err('$getHistoricalBlockFees() error: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Get the historical averaged block rewards
+   */
+   public async $getHistoricalBlockRewards(div: number, interval: string | null): Promise<any> {
+    let connection;
+    try {
+      connection = await DB.getConnection();
+
+      let query = `SELECT CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
+        CAST(AVG(reward) as INT) as avg_rewards
+        FROM blocks`;
+
+      if (interval !== null) {
+        query += ` WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+      }
+
+      query += ` GROUP BY UNIX_TIMESTAMP(blockTimestamp) DIV ${div}`;
+
+      const [rows]: any = await connection.query(query);
+      connection.release();
+
+      return rows;
+    } catch (e) {
+      connection.release();
+      logger.err('$getHistoricalBlockRewards() error: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }

@@ -81,6 +81,8 @@ import { DifficultyAdjustmentsTable } from './components/difficulty-adjustments-
 import { BlocksList } from './components/blocks-list/blocks-list.component';
 import { RewardStatsComponent } from './components/reward-stats/reward-stats.component';
 import { DataCyDirective } from './data-cy.directive';
+import { BlockFeesGraphComponent } from './components/block-fees-graph/block-fees-graph.component';
+import { BlockRewardsGraphComponent } from './components/block-rewards-graph/block-rewards-graph.component';
 
 @NgModule({
   declarations: [
@@ -143,6 +145,8 @@ import { DataCyDirective } from './data-cy.directive';
     BlocksList,
     DataCyDirective,
     RewardStatsComponent,
+    BlockFeesGraphComponent,
+    BlockRewardsGraphComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),

@@ -20,12 +20,11 @@
 .full-container {
   padding: 0px 15px;
   width: 100%;
-  height: calc(100% - 170px);
+  min-height: 500px;
+  height: calc(100% - 150px);
   @media (max-width: 992px) {
-    height: calc(100% - 220px);
-  };
-  @media (max-width: 575px) {
-    height: calc(100% - 260px);
+    height: 100%;
+    padding-bottom: 100px;
   };
 }
 
@@ -93,17 +92,8 @@
   }
   .item {
     width: 50%;
-    margin: 0px auto 10px;
     display: inline-block;
-    @media (min-width: 485px) {
-      margin: 0px auto 10px;
-    }
-    @media (min-width: 785px) {
-      margin: 0px auto 0px;
-    }
-    &:last-child {
-      margin: 0px auto 0px;
-    }
+    margin: 0px auto 20px;
     &:nth-child(2) {
       order: 2;
       @media (min-width: 485px) {

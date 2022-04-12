@@ -31,6 +31,14 @@
   }
 }
 
+.chart {
+  margin-bottom: 20px;
+  @media (max-width: 768px) {
+    margin-bottom: 10px;
+  }
+  height: 400px;
+}
+
 div.scrollable {
   width: 100%;
   height: 100%;
@@ -42,16 +50,30 @@ div.scrollable {
 
 .box {
   padding-bottom: 5px;
+  @media (min-width: 767.98px) {
+    min-height: 187px;
+  }
 }
 
 .label {
-  width: 35%;
+  width: 25%;
+  @media (min-width: 767.98px) {
+    vertical-align: middle;
+  }
+  @media (max-width: 767.98px) {
+    font-weight: bold;
+  }
+}
+.label.addresses {
+  vertical-align: top;
+  padding-top: 25px;
 }
 
 .data {
-  text-align: left;
-  padding-left: 25%;
-  @media (max-width: 991px) {
+  text-align: right;
+  padding-left: 5%;
+  @media (max-width: 992px) {
+    text-align: left;
     padding-left: 12px;
   }
   @media (max-width: 450px) {
@@ -103,10 +125,6 @@ div.scrollable {
   }
 }
 
-.fees {
-  width: 0%;  
-}
-
 .size {
   width: 12%;
   @media (max-width: 1000px) {
@@ -132,15 +150,13 @@ div.scrollable {
   text-align: left;
 }
 
-.right-mobile {
-  @media (max-width: 450px) {
-    text-align: right;
-  }
-}
-
 .skeleton-loader {
   max-width: 200px;
 }
+.skeleton-loader.data {
+  max-width: 70px;
+}
+
 
 .loadingGraphs {
   position: absolute;
@@ -150,4 +166,42 @@ div.scrollable {
   @media (max-width: 992px) {
     top: 600px;
   }
+}
+
+.small-button {
+  height: 20px;
+  font-size: 10px;
+  padding-top: 0;
+  padding-bottom: 0;
+  outline: none;
+  box-shadow: none;
+}
+.small-button.mobile {
+  transform: translateY(-20px);
+  @media (min-width: 767.98px) {
+    transform: translateY(-17px);
+  }
+}
+
+.block-count-title {
+  color: #4a68b9;
+  font-size: 14px;
+  text-align: left;
+  @media (max-width: 767.98px) {
+    text-align: center;
+  }
+}
+
+.table-data tr {
+  background-color: transparent;
+}
+.table-data td {
+  text-align: left;
+  @media (max-width: 767.98px) {
+    text-align: center;
+  }
+}
+
+.taller-row {
+  height: 75px;
 }
