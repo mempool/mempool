@@ -9,12 +9,12 @@
 
       <div class="doc-content">
 
-        <div *ngFor="let item of faq">
+        <div class="doc-item-container" *ngFor="let item of faq">
           <h3 *ngIf="item.type === 'category'">{{ item.title }}</h3>
           <div *ngIf="item.type !== 'category'" class="endpoint-container" id="{{ item.fragment }}">
-            <a class="section-header" (click)="anchorLinkClick( $event )" [routerLink]="['./']" fragment="{{ item.fragment }}"><table><tr><td>{{ item.title }}</td><td><span>{{ item.category }}</span></td></tr></table></a>
+            <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick( $event )" [routerLink]="['./']" fragment="{{ item.fragment }}"><table><tr><td>{{ item.title }}</td><td><span>{{ item.category }}</span></td></tr></table></a>
             <div class="endpoint-content">
-              <div class="endpoint" [innerHTML]="item.answer"></div>
+              <div class="endpoint" [innerHTML]="item.answer | noSanitize"></div>
             </div>
           </div>
         </div>
@@ -33,10 +33,10 @@
 
         <p class="hide-on-mobile no-bottom-space">Reference for the {{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} <ng-container i18n="api-docs.title">API service</ng-container>.</p>
 
-        <div *ngFor="let item of restDocs">
+        <div class="doc-item-container" *ngFor="let item of restDocs">
           <h3 *ngIf="( item.type === 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )">{{ item.title }}</h3>
           <div *ngIf="( item.type !== 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )" class="endpoint-container" id="{{ item.fragment }}">
-            <a class="section-header" (click)="anchorLinkClick( $event )" [routerLink]="['./']" fragment="{{ item.fragment }}">{{ item.title }} <span>{{ item.category }}</span></a>
+            <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick( $event )" [routerLink]="['./']" fragment="{{ item.fragment }}">{{ item.title }} <span>{{ item.category }}</span></a>
             <div class="endpoint-content">
               <div class="endpoint">
                 <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>

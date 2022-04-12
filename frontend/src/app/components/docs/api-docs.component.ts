@@ -34,7 +34,9 @@ export class ApiDocsComponent implements OnInit {
   ngAfterViewInit() {
     const that = this;
     setTimeout( () => {
-      this.openEndpointContainer( this.route.snapshot.fragment );
+      if( this.route.snapshot.fragment ) {
+        this.openEndpointContainer( this.route.snapshot.fragment );
+      }
       window.addEventListener('scroll', function() {
         that.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
       });
@@ -73,7 +75,16 @@ export class ApiDocsComponent implements OnInit {
   }
 
   anchorLinkClick( event: any ) {
-    const targetId = event.target.hash.substring(1);
+    let targetId = "";
+    if( event.target.nodeName === "A" ) {
+      targetId = event.target.hash.substring(1);
+    } else {
+      let element = event.target;
+      while( element.nodeName !== "A" ) {
+        element = element.parentElement;
+      }
+      targetId = element.hash.substring(1);
+    }
     if( this.route.snapshot.fragment === targetId ) {
       document.getElementById( targetId ).scrollIntoView();
     }
@@ -81,6 +92,7 @@ export class ApiDocsComponent implements OnInit {
   }
 
   openEndpointContainer( targetId ) {
+    const tabHeaderHeight = document.getElementById( targetId + "-tab-header" ).scrollHeight;
     if( ( window.innerWidth <= 992 ) && ( ( this.whichTab === 'rest' ) || ( this.whichTab === 'faq' ) ) && targetId ) {
       const endpointContainerEl = document.querySelector<HTMLElement>( "#" + targetId );
       const endpointContentEl = document.querySelector<HTMLElement>( "#" + targetId + " .endpoint-content" );
@@ -92,8 +104,8 @@ export class ApiDocsComponent implements OnInit {
         endpointContentEl.style.opacity = "0";
         endpointContentEl.classList.remove( "open" );
       } else {
-        endpointContainerEl.style.height = endPointContentElHeight + 90 + "px";
-        endpointContentEl.style.top = "90px";
+        endpointContainerEl.style.height = endPointContentElHeight + tabHeaderHeight + 28 + "px";
+        endpointContentEl.style.top = tabHeaderHeight + 28 + "px";
         endpointContentEl.style.opacity = "1";
         endpointContentEl.classList.add( "open" );
       }

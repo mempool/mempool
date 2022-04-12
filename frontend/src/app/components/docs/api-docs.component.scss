@@ -239,4 +239,8 @@ h3 {
   h3 {
     display: none;
   }
+  
+  .doc-item-container:last-of-type .endpoint-container {
+    margin-bottom: 4rem;
+  }
 }
