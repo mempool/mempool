@@ -1,6 +1,6 @@
 <ng-container *ngIf="{ val: network$ | async } as network">
   <div class="container-xl text-left">
-  
+
     <div id="faq" *ngIf="whichTab === 'faq'">
 
       <div id="doc-nav-desktop" class="hide-on-mobile" [ngClass]="desktopDocsNavPosition">
@@ -15,12 +15,15 @@
             <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick( $event )" [routerLink]="['./']" fragment="{{ item.fragment }}"><table><tr><td>{{ item.title }}</td><td><span>{{ item.category }}</span></td></tr></table></a>
             <div class="endpoint-content">
               <div class="endpoint" [innerHTML]="item.answer | noSanitize"></div>
+              <div class="blockchain-wrapper" *ngIf="item.fragment === 'what-is-a-mempool-explorer'">
+                <app-blockchain></app-blockchain>
+              </div>
             </div>
           </div>
         </div>
-        
+
       </div>
-      
+
     </div>
 
     <div id="restAPI" *ngIf="whichTab === 'rest'">

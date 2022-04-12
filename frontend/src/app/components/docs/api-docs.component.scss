@@ -187,6 +187,16 @@ h3 {
   border-radius: 0.5rem 0.5rem 0 0;
 }
 
+.blockchain-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: auto;
+  scrollbar-width: none;
+}
+.blockchain-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
 @media (max-width: 992px) {
 
   .hide-on-mobile {
@@ -239,7 +249,7 @@ h3 {
   h3 {
     display: none;
   }
-  
+
   .doc-item-container:last-of-type .endpoint-container {
     margin-bottom: 4rem;
   }
