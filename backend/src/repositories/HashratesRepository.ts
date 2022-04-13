@@ -27,7 +27,7 @@ class HashratesRepository {
       connection.release();
     } catch (e: any) {
       connection.release();
-      logger.err('$saveHashrateInDatabase() error' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot save indexed hashrate into db. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -56,7 +56,7 @@ class HashratesRepository {
       return rows;
     } catch (e) {
       connection.release();
-      logger.err('$getNetworkDailyHashrate() error' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot fetch network hashrate history. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -76,7 +76,7 @@ class HashratesRepository {
       return rows.map(row => row.timestamp);
     } catch (e) {
       connection.release();
-      logger.err('$getWeeklyHashrateTimestamps() error' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot retreive indexed weekly hashrate timestamps. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -112,7 +112,7 @@ class HashratesRepository {
       return rows;
     } catch (e) {
       connection.release();
-      logger.err('$getPoolsWeeklyHashrate() error' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot fetch weekly pools hashrate history. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -146,7 +146,7 @@ class HashratesRepository {
       connection.release();
     } catch (e) {
       connection.release();
-      logger.err('$getPoolWeeklyHashrate() error' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot fetch hashrate start/end timestamps for this pool. Reason: ' + (e instanceof Error ? e.message : e));
     }
 
     // Get hashrates entries between boundaries
@@ -164,7 +164,7 @@ class HashratesRepository {
       return rows;
     } catch (e) {
       connection.release();
-      logger.err('$getPoolWeeklyHashrate() error' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot fetch pool hashrate history for this pool. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -181,6 +181,8 @@ class HashratesRepository {
       connection.release();
     } catch (e) {
       connection.release();
+      logger.err(`Cannot set last indexing timestamp for ${key}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
     }
   }
 
@@ -201,7 +203,7 @@ class HashratesRepository {
       return rows[0]['number'];
     } catch (e) {
       connection.release();
-      logger.err('$setLatestRunTimestamp() error' + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot retreive last indexing timestamp for ${key}. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -210,7 +212,7 @@ class HashratesRepository {
    * Delete most recent data points for re-indexing
    */
   public async $deleteLastEntries() {
-    logger.debug(`Delete latest hashrates data points from the database`);
+    logger.info(`Delete latest hashrates data points from the database`);
 
     let connection;
     try {
@@ -223,7 +225,7 @@ class HashratesRepository {
       await this.$setLatestRunTimestamp('last_hashrates_indexing', 0);
       await this.$setLatestRunTimestamp('last_weekly_hashrates_indexing', 0);
     } catch (e) {
-      logger.err('$deleteLastEntries() error' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot delete latest hashrates data points. Reason: ' + (e instanceof Error ? e.message : e));
     }
 
     connection.release();

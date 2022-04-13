@@ -42,7 +42,6 @@ class PoolsRepository {
     query += ` GROUP BY pool_id
       ORDER BY COUNT(height) DESC`;
 
-    // logger.debug(query);
     const connection = await DB.getConnection();
     try {
       const [rows] = await connection.query(query);
@@ -51,7 +50,7 @@ class PoolsRepository {
       return <PoolInfo[]>rows;
     } catch (e) {
       connection.release();
-      logger.err('$getPoolsInfo() error' + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot generate pools stats. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -73,7 +72,7 @@ class PoolsRepository {
       return <PoolInfo[]>rows;
     } catch (e) {
       connection.release();
-      logger.err('$getPoolsInfoBetween() error' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot generate pools blocks count. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -95,7 +94,7 @@ class PoolsRepository {
       connection.release();
 
       if (rows.length < 1) {
-        logger.debug(`$getPool(): slug does not match any known pool`);
+        logger.debug(`This slug does not match any known pool`);
         return null;
       }
 
@@ -109,7 +108,7 @@ class PoolsRepository {
       return rows[0];
     } catch (e) {
       connection.release();
-      logger.err('$getPool() error' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot get pool from db. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }

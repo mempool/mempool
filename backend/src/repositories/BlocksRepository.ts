@@ -56,11 +56,11 @@ class BlocksRepository {
       connection.release();
     } catch (e: any) {
       connection.release();
-      if (e.errno === 1062) { // ER_DUP_ENTRY
+      if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
         logger.debug(`$saveBlockInDatabase() - Block ${block.height} has already been indexed, ignoring`);
       } else {
         connection.release();
-        logger.err('$saveBlockInDatabase() error: ' + (e instanceof Error ? e.message : e));
+        logger.err('Cannot save indexed block into db. Reason: ' + (e instanceof Error ? e.message : e));
         throw e;
       }
     }
@@ -93,7 +93,7 @@ class BlocksRepository {
       return missingBlocksHeights;
     } catch (e) {
       connection.release();
-      logger.err('$getMissingBlocksBetweenHeights() error' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot retrieve blocks list to index. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -130,7 +130,7 @@ class BlocksRepository {
       return rows;
     } catch (e) {
       connection.release();
-      logger.err('$getEmptyBlocks() error' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot count empty blocks. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -168,7 +168,7 @@ class BlocksRepository {
       return <number>rows[0].blockCount;
     } catch (e) {
       connection.release();
-      logger.err('$blockCount() error' + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot count blocks for this pool (using offset). Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -208,7 +208,7 @@ class BlocksRepository {
       return <number>rows[0];
     } catch (e) {
       connection.release();
-      logger.err('$blockCountBetweenTimestamp() error' + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot count blocks for this pool (using timestamps). Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -235,7 +235,7 @@ class BlocksRepository {
       return <number>rows[0].blockTimestamp;
     } catch (e) {
       connection.release();
-      logger.err('$oldestBlockTimestamp() error' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot get oldest indexed block timestamp. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -278,7 +278,7 @@ class BlocksRepository {
       return blocks;
     } catch (e) {
       connection.release();
-      logger.err('$getBlocksByPool() error' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot get blocks for this pool. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -308,7 +308,7 @@ class BlocksRepository {
       return rows[0];
     } catch (e) {
       connection.release();
-      logger.err('$getBlockByHeight() error' + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot get indexed block ${height}. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -365,7 +365,7 @@ class BlocksRepository {
       return rows;
     } catch (e) {
       connection.release();
-      logger.err('$getBlocksDifficulty() error' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot generate difficulty history. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -392,7 +392,7 @@ class BlocksRepository {
       return rows[0];
     } catch (e) {
       connection.release();
-      logger.err('$getBlockStats() error: ' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot generate reward stats. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -410,7 +410,7 @@ class BlocksRepository {
 
       for (let i = 0; i < lastBlocks.length - 1; ++i) {
         if (lastBlocks[i].previous_block_hash !== lastBlocks[i + 1].hash) {
-          logger.notice(`Chain divergence detected at block ${lastBlocks[i].height}, re-indexing most recent data`);
+          logger.warn(`Chain divergence detected at block ${lastBlocks[i].height}, re-indexing most recent data`);
           return false;
         }
       }
@@ -427,21 +427,21 @@ class BlocksRepository {
    * Delete $count blocks from the database
    */
   public async $deleteBlocks(count: number) {
+    logger.info(`Delete ${count} most recent indexed blocks from the database`);
     let connection;
 
     try {
       connection = await DB.getConnection();
-      logger.debug(`Delete ${count} most recent indexed blocks from the database`);
       await connection.query(`DELETE FROM blocks ORDER BY height DESC LIMIT ${count};`);
     } catch (e) {
-      logger.err('$deleteBlocks() error' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot delete recent indexed blocks. Reason: ' + (e instanceof Error ? e.message : e));
     }
 
     connection.release();
   }
 
   /**
-   * Get the historical averaged block reward and total fees
+   * Get the historical averaged block fees
    */
   public async $getHistoricalBlockFees(div: number, interval: string | null): Promise<any> {
     let connection;
@@ -464,7 +464,7 @@ class BlocksRepository {
       return rows;
     } catch (e) {
       connection.release();
-      logger.err('$getHistoricalBlockFees() error: ' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot generate block fees history. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -493,7 +493,7 @@ class BlocksRepository {
       return rows;
     } catch (e) {
       connection.release();
-      logger.err('$getHistoricalBlockRewards() error: ' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot generate block rewards history. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
