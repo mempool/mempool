@@ -64,7 +64,7 @@ class PoolsParser {
     try {
       [existingPools] = await connection.query<any>({ sql: 'SELECT * FROM pools;', timeout: 120000 });
     } catch (e) {
-      logger.err('Unable to get existing pools from the database, skipping pools.json import');
+      logger.err('Cannot get existing pools from the database, skipping pools.json import');
       connection.release();
       return;
     }
@@ -97,7 +97,7 @@ class PoolsParser {
       if (slug === undefined) {
         // Only keep alphanumerical
         slug = poolNames[i].replace(/[^a-z0-9]/gi, '').toLowerCase();
-        logger.debug(`No slug found for '${poolNames[i]}', generating it => '${slug}'`);
+        logger.warn(`No slug found for '${poolNames[i]}', generating it => '${slug}'`);
       }
 
       if (existingPools.find((pool) => pool.name === poolNames[i]) !== undefined) {
@@ -155,7 +155,7 @@ class PoolsParser {
       logger.info('Mining pools.json import completed');
     } catch (e) {
       connection.release();
-      logger.err(`Unable to import pools in the database!`);
+      logger.err(`Unable to import pools in the database`);
       throw e;
     }
   }
