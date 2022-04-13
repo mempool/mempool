@@ -1,7 +1,7 @@
 const https = require('https');
 import poolsParser from '../api/pools-parser';
 import config from '../config';
-import { DB } from '../database';
+import DB from '../database';
 import logger from '../logger';
 
 /**

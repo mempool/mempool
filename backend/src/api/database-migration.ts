@@ -1,5 +1,5 @@
 import config from '../config';
-import { DB } from '../database';
+import DB from '../database';
 import logger from '../logger';
 
 const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));

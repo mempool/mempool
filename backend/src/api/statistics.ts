@@ -1,5 +1,5 @@
 import memPool from './mempool';
-import { DB } from '../database';
+import DB from '../database';
 import logger from '../logger';
 
 import { Statistic, TransactionExtended, OptimizedStatistic } from '../mempool.interfaces';

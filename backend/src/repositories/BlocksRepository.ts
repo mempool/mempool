@@ -1,5 +1,5 @@
-import { BlockExtended, PoolTag } from '../mempool.interfaces';
-import { DB } from '../database';
+import { BlockExtended } from '../mempool.interfaces';
+import DB from '../database';
 import logger from '../logger';
 import { Common } from '../api/common';
 import { prepareBlock } from '../utils/blocks-utils';
