@@ -1,5 +1,4 @@
-import { readFileSync } from 'fs';
-import { DB } from '../database';
+import DB from '../database';
 import logger from '../logger';
 import config from '../config';
 

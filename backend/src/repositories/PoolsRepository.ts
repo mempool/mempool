@@ -1,6 +1,6 @@
 import { Common } from '../api/common';
 import config from '../config';
-import { DB } from '../database';
+import DB from '../database';
 import logger from '../logger';
 import { PoolInfo, PoolTag } from '../mempool.interfaces';
 

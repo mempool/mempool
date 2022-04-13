@@ -2,7 +2,7 @@ import { IBitcoinApi } from '../bitcoin/bitcoin-api.interface';
 import bitcoinClient from '../bitcoin/bitcoin-client';
 import bitcoinSecondClient from '../bitcoin/bitcoin-second-client';
 import { Common } from '../common';
-import { DB } from '../../database';
+import DB from '../../database';
 import logger from '../../logger';
 
 class ElementsParser {
