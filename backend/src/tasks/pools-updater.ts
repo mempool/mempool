@@ -1,8 +1,8 @@
 const https = require('https');
-import poolsParser from "../api/pools-parser";
-import config from "../config";
-import { DB } from "../database";
-import logger from "../logger";
+import poolsParser from '../api/pools-parser';
+import config from '../config';
+import DB from '../database';
+import logger from '../logger';
 
 /**
  * Maintain the most recent version of pools.json
@@ -48,7 +48,7 @@ class PoolsUpdater {
 
     } catch (e) {
       this.lastRun = now - (oneWeek - oneDay); // Try again in 24h instead of waiting next week
-      logger.err('PoolsUpdater failed. Will try again in 24h. Error: ' + e);
+      logger.err('PoolsUpdater failed. Will try again in 24h. Reason: '  + (e instanceof Error ? e.message : e));
     }
   }
 
@@ -64,15 +64,11 @@ class PoolsUpdater {
    * Fetch our latest pools.json sha from the db
    */
   private async updateDBSha(githubSha: string) {
-    let connection;
     try {
-      connection = await DB.getConnection();
-      await connection.query('DELETE FROM state where name="pools_json_sha"');
-      await connection.query(`INSERT INTO state VALUES('pools_json_sha', NULL, '${githubSha}')`);
-      connection.release();
+      await DB.query('DELETE FROM state where name="pools_json_sha"');
+      await DB.query(`INSERT INTO state VALUES('pools_json_sha', NULL, '${githubSha}')`);
     } catch (e) {
-      logger.err('Unable save github pools.json sha into the DB, error: ' + e);
-      connection.release();
+      logger.err('Cannot save github pools.json sha into the db. Reason: '  + (e instanceof Error ? e.message : e));
       return undefined;
     }
   }
@@ -81,15 +77,11 @@ class PoolsUpdater {
    * Fetch our latest pools.json sha from the db
    */
   private async getShaFromDb(): Promise<string | undefined> {
-    let connection;
     try {
-      connection = await DB.getConnection();
-      const [rows] = await connection.query('SELECT string FROM state WHERE name="pools_json_sha"');
-      connection.release();
+      const [rows]: any[] = await DB.query('SELECT string FROM state WHERE name="pools_json_sha"');
       return (rows.length > 0 ? rows[0].string : undefined);
     } catch (e) {
-      logger.err('Unable fetch pools.json sha from DB, error: ' + e);
-      connection.release();
+      logger.err('Cannot fetch pools.json sha from db. Reason: '  + (e instanceof Error ? e.message : e));
       return undefined;
     }
   }
@@ -106,7 +98,7 @@ class PoolsUpdater {
       }
     }
 
-    logger.err('Unable to find latest pools.json sha from github');
+    logger.err('Cannot to find latest pools.json sha from github api response');
     return undefined;
   }
 
@@ -138,9 +130,9 @@ class PoolsUpdater {
       });
 
       request.on('error', (error) => {
-        logger.err('Query failed with error: ' + error);
+        logger.err('Github API query failed. Reason: '  + error);
         reject(error);
-      })
+      });
     });
   }
 }

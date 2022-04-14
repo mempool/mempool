@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { restApiDocsData } from './api-docs-data';
+import { faqData } from './api-docs-data';
 
 @Component({
   selector: 'app-api-docs-nav',
@@ -9,13 +10,18 @@ import { restApiDocsData } from './api-docs-data';
 export class ApiDocsNavComponent implements OnInit {
 
   @Input() network: any;
+  @Input() whichTab: string;
   @Output() navLinkClickEvent: EventEmitter<any> = new EventEmitter();
-  restDocs: any[];
+  tabData: any[];
 
   constructor() { }
 
   ngOnInit(): void {
-    this.restDocs = restApiDocsData;
+    if( this.whichTab === 'rest' ) {
+      this.tabData = restApiDocsData;
+    } else if( this.whichTab = 'faq' ) {
+      this.tabData = faqData;
+    }
   }
   
   navLinkClick( event ) {

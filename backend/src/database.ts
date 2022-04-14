@@ -1,51 +1,51 @@
 import config from './config';
-import { createPool, PoolConnection } from 'mysql2/promise';
+import { createPool, Pool, PoolConnection } from 'mysql2/promise';
 import logger from './logger';
 import { PoolOptions } from 'mysql2/typings/mysql';
 
-export class DB {
-  static poolConfig = ():PoolOptions => {
-    let poolConfig:PoolOptions = {
-      port: config.DATABASE.PORT,
-      database: config.DATABASE.DATABASE,
-      user: config.DATABASE.USERNAME,
-      password: config.DATABASE.PASSWORD,
-      connectionLimit: 10,
-      supportBigNumbers: true,
-      timezone: '+00:00',
-    }
-
-    if (config.DATABASE.SOCKET !== "") {
-      poolConfig.socketPath = config.DATABASE.SOCKET;
+ class DB {
+  constructor() {
+    if (config.DATABASE.SOCKET !== '') {
+      this.poolConfig.socketPath = config.DATABASE.SOCKET;
     } else {
-      poolConfig.host = config.DATABASE.HOST;
+      this.poolConfig.host = config.DATABASE.HOST;
     }
-
-    return poolConfig;
   }
-  
-  static pool = createPool(DB.poolConfig());
+  private pool: Pool | null = null;
+  private poolConfig: PoolOptions = {
+    port: config.DATABASE.PORT,
+    database: config.DATABASE.DATABASE,
+    user: config.DATABASE.USERNAME,
+    password: config.DATABASE.PASSWORD,
+    connectionLimit: 10,
+    supportBigNumbers: true,
+    timezone: '+00:00',
+  };
 
-  static connectionsReady: number[] = [];
+  public async query(query, params?) {
+    const pool = await this.getPool();
+    return pool.query(query, params);
+  }
 
-  static async getConnection() {
-    const connection: PoolConnection = await DB.pool.getConnection();
-    const connectionId = connection['connection'].connectionId;
-    if (!DB.connectionsReady.includes(connectionId)) {
-      await connection.query(`SET time_zone='+00:00';`);
-      this.connectionsReady.push(connectionId);
+  public async checkDbConnection() {
+    try {
+      await this.query('SELECT ?', [1]);
+      logger.info('Database connection established.');
+    } catch (e) {
+      logger.err('Could not connect to database: ' + (e instanceof Error ? e.message : e));
+      process.exit(1);
     }
-    return connection;
+  }
+
+  private async getPool(): Promise<Pool> {
+    if (this.pool === null) {
+      this.pool = createPool(this.poolConfig);
+      this.pool.on('connection', function (newConnection: PoolConnection) {
+        newConnection.query(`SET time_zone='+00:00'`);
+      });
+    }
+    return this.pool;
   }
 }
 
-export async function checkDbConnection() {
-  try {
-    const connection = await DB.getConnection();
-    logger.info('Database connection established.');
-    connection.release();
-  } catch (e) {
-    logger.err('Could not connect to database: ' + (e instanceof Error ? e.message : e));
-    process.exit(1);
-  }
-}
+export default new DB();
