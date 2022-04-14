@@ -1,5 +1,4 @@
-import { readFileSync } from 'fs';
-import { DB } from '../database';
+import DB from '../database';
 import logger from '../logger';
 import config from '../config';
 
@@ -59,13 +58,11 @@ class PoolsParser {
     logger.debug(`Found ${poolNames.length} unique mining pools`);
 
     // Get existing pools from the db
-    const connection = await DB.getConnection();
     let existingPools;
     try {
-      [existingPools] = await connection.query<any>({ sql: 'SELECT * FROM pools;', timeout: 120000 });
+      [existingPools] = await DB.query({ sql: 'SELECT * FROM pools;', timeout: 120000 });
     } catch (e) {
       logger.err('Cannot get existing pools from the database, skipping pools.json import');
-      connection.release();
       return;
     }
 
@@ -145,17 +142,15 @@ class PoolsParser {
 
     try {
       if (finalPoolDataAdd.length > 0) {
-        await connection.query<any>({ sql: queryAdd, timeout: 120000 });
+        await DB.query({ sql: queryAdd, timeout: 120000 });
       }
       for (const query of updateQueries) {
-        await connection.query<any>({ sql: query, timeout: 120000 });
+        await DB.query({ sql: query, timeout: 120000 });
       }
       await this.insertUnknownPool();
-      connection.release();
       logger.info('Mining pools.json import completed');
     } catch (e) {
-      connection.release();
-      logger.err(`Unable to import pools in the database`);
+      logger.err(`Cannot import pools in the database`);
       throw e;
     }
   }
@@ -164,16 +159,15 @@ class PoolsParser {
    * Manually add the 'unknown pool'
    */
   private async insertUnknownPool() {
-    const connection = await DB.getConnection();
     try {
-      const [rows]: any[] = await connection.query({ sql: 'SELECT name from pools where name="Unknown"', timeout: 120000 });
+      const [rows]: any[] = await DB.query({ sql: 'SELECT name from pools where name="Unknown"', timeout: 120000 });
       if (rows.length === 0) {
-        await connection.query({
+        await DB.query({
           sql: `INSERT INTO pools(name, link, regexes, addresses, slug)
           VALUES("Unknown", "https://learnmeabitcoin.com/technical/coinbase-transaction", "[]", "[]", "unknown");
         `});
       } else {
-        await connection.query(`UPDATE pools
+        await DB.query(`UPDATE pools
           SET name='Unknown', link='https://learnmeabitcoin.com/technical/coinbase-transaction',
           regexes='[]', addresses='[]',
           slug='unknown'
@@ -183,8 +177,6 @@ class PoolsParser {
     } catch (e) {
       logger.err('Unable to insert "Unknown" mining pool');
     }
-
-    connection.release();
   }
 }
 
