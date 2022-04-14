@@ -4,7 +4,7 @@
 
 <ng-template #done>
   <ng-template [ngIf]="miner" [ngIfElse]="unknownMiner">
-    <a placement="bottom" [ngbTooltip]="title" [href]="url" target="_blank" class="badge badge-primary">{{ miner }}</a>
+    <a placement="bottom" [ngbTooltip]="title" [href]="url" [target]="target" class="badge badge-primary">{{ miner }}</a>
   </ng-template>
   <ng-template #unknownMiner>
     <span class="badge badge-secondary" i18n="miner.tag.unknown-miner">Unknown</span>

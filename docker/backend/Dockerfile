@@ -1,5 +1,8 @@
 FROM node:16.10.0-buster-slim AS builder
 
+ARG commitHash
+ENV DOCKER_COMMIT_HASH=${commitHash}
+
 WORKDIR /build
 COPY . .
 

@@ -19,37 +19,40 @@
   </div>
 
   <div class="card-header mb-0 mb-md-4" [style]="widget ? 'display:none' : ''">
-    <span i18n="mining.mining-pool-share">Hashrate & Difficulty</span>
-    <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(hashrateObservable$ | async) as hashrates">
+    <span i18n="mining.hashrate-difficulty">Hashrate & Difficulty</span>
+    <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(hashrateObservable$ | async) as stats">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
-        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 90">
-          <input ngbButton type="radio" [value]="'3m'"> 3M
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.availableTimespanDay >= 30">
+          <input ngbButton type="radio" [value]="'1m'" fragment="1m"> 1M
         </label>
-        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 180">
-          <input ngbButton type="radio" [value]="'6m'"> 6M
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.availableTimespanDay >= 90">
+          <input ngbButton type="radio" [value]="'3m'" fragment="3m"> 3M
         </label>
-        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 365">
-          <input ngbButton type="radio" [value]="'1y'"> 1Y
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.availableTimespanDay >= 180">
+          <input ngbButton type="radio" [value]="'6m'" fragment="6m"> 6M
         </label>
-        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 730">
-          <input ngbButton type="radio" [value]="'2y'"> 2Y
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.availableTimespanDay >= 365">
+          <input ngbButton type="radio" [value]="'1y'" fragment="1y"> 1Y
         </label>
-        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="hashrates.availableTimespanDay >= 1095">
-          <input ngbButton type="radio" [value]="'3y'"> 3Y
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.availableTimespanDay >= 730">
+          <input ngbButton type="radio" [value]="'2y'" fragment="2y"> 2Y
         </label>
-        <label ngbButtonLabel class="btn-primary btn-sm">
-          <input ngbButton type="radio" [value]="'all'"> ALL
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.availableTimespanDay >= 1095">
+          <input ngbButton type="radio" [value]="'3y'" fragment="3y"> 3Y
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.availableTimespanDay > 1095">
+          <input ngbButton type="radio" [value]="'all'" fragment="all"> ALL
         </label>
       </div>
     </form>
   </div>
 
-  <div [class]="!widget ? 'chart' : 'chart-widget'"
-    echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
+  <div [class]="!widget ? 'chart' : 'chart-widget'" echarts [initOpts]="chartInitOptions" [options]="chartOptions">
+  </div>
   <div class="text-center loadingGraphs" *ngIf="isLoading">
     <div class="spinner-border text-light"></div>
   </div>
-  
+
 </div>
 
 <ng-template #loadingStats>

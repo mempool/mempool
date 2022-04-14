@@ -51,9 +51,9 @@ if (process.env.DOCKER_COMMIT_HASH) {
 } else {
   try {
     const gitRevParse = spawnSync('git', ['rev-parse', '--short', 'HEAD']);
-  
     if (!gitRevParse.error) {
-      gitCommitHash = gitRevParse.stdout.toString('utf-8').replace(/[\n\r\s]+$/, '');
+      const output = gitRevParse.stdout.toString('utf-8').replace(/[\n\r\s]+$/, '');
+      gitCommitHash = output ? output : '?';
       console.log(`mempool revision ${gitCommitHash}`);
     } else if (gitRevParse.error.code === 'ENOENT') {
       console.log('git not found, cannot parse git hash');

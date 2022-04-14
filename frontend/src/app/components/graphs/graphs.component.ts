@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { StateService } from "src/app/services/state.service";
+import { WebsocketService } from "src/app/services/websocket.service";
 
 @Component({
   selector: 'app-graphs',
@@ -7,9 +8,12 @@ import { StateService } from "src/app/services/state.service";
   styleUrls: ['./graphs.component.scss'],
 })
 export class GraphsComponent implements OnInit {
-  constructor(public stateService: StateService) { }
+  constructor(
+    public stateService: StateService,
+    private websocketService: WebsocketService
+  ) { }
 
   ngOnInit(): void {
-
+    this.websocketService.want(['blocks']);
   }
 }

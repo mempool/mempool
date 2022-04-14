@@ -111,7 +111,10 @@
                         <td style="text-align: left;" [innerHTML]="vin.inner_redeemscript_asm | asmStyler"></td>
                       </tr>
                       <tr *ngIf="vin.inner_witnessscript_asm">
-                        <td i18n="transactions-list.p2wsh-witness-script">P2WSH witness script</td>
+                        <td *ngIf="vin.prevout && vin.prevout.scriptpubkey_type == 'v1_p2tr'; else p2wsh" i18n="transactions-list.p2tr-tapscript">P2TR tapscript</td>
+                        <ng-template #p2wsh>
+                          <td i18n="transactions-list.p2wsh-witness-script">P2WSH witness script</td>
+                        </ng-template>
                         <td style="text-align: left;" [innerHTML]="vin.inner_witnessscript_asm | asmStyler"></td>
                       </tr>
                       <tr>
@@ -155,6 +158,9 @@
                     <span class="d-block d-lg-none">{{ vout.scriptpubkey_address | shortenString : 16 }}</span>
                     <span class="d-none d-lg-block">{{ vout.scriptpubkey_address | shortenString : 35 }}</span>
                   </a>
+                  <div>
+                    <app-address-labels [vout]="vout"></app-address-labels>
+                  </div>
                   <ng-template #scriptpubkey_type>
                     <ng-template [ngIf]="vout.pegout" [ngIfElse]="defaultscriptpubkey_type">
                       <ng-container i18n="transactions-list.peg-out-to">Peg-out to <ng-container *ngTemplateOutlet="pegOutLink"></ng-container></ng-container>

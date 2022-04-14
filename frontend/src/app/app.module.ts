@@ -56,6 +56,7 @@ import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, fa
 import { ApiDocsComponent } from './components/docs/api-docs.component';
 import { DocsComponent } from './components/docs/docs.component';
 import { ApiDocsNavComponent } from './components/docs/api-docs-nav.component';
+import { NoSanitizePipe } from './shared/pipes/no-sanitize.pipe';
 import { CodeTemplateComponent } from './components/docs/code-template.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
@@ -80,6 +81,8 @@ import { DifficultyAdjustmentsTable } from './components/difficulty-adjustments-
 import { BlocksList } from './components/blocks-list/blocks-list.component';
 import { RewardStatsComponent } from './components/reward-stats/reward-stats.component';
 import { DataCyDirective } from './data-cy.directive';
+import { BlockFeesGraphComponent } from './components/block-fees-graph/block-fees-graph.component';
+import { BlockRewardsGraphComponent } from './components/block-rewards-graph/block-rewards-graph.component';
 
 @NgModule({
   declarations: [
@@ -119,6 +122,7 @@ import { DataCyDirective } from './data-cy.directive';
     DashboardComponent,
     DifficultyComponent,
     ApiDocsComponent,
+    NoSanitizePipe,
     CodeTemplateComponent,
     TermsOfServiceComponent,
     PrivacyPolicyComponent,
@@ -141,6 +145,8 @@ import { DataCyDirective } from './data-cy.directive';
     BlocksList,
     DataCyDirective,
     RewardStatsComponent,
+    BlockFeesGraphComponent,
+    BlockRewardsGraphComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),

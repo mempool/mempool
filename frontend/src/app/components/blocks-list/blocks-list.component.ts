@@ -22,6 +22,7 @@ export class BlocksList implements OnInit {
   paginationMaxSize: number;
   page = 1;
   lastPage = 1;
+  maxSize = window.innerWidth <= 767.98 ? 3 : 5;
   blocksCount: number;
   fromHeightSubject: BehaviorSubject<number> = new BehaviorSubject(this.fromBlockHeight);
   skeletonLines: number[] = [];

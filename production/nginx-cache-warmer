@@ -1,5 +1,7 @@
 #!/usr/bin/env zsh
 hostname=$(hostname)
+slugs=(`curl -sSL https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json | jq -r '.slugs[]'`)
+
 while true
 do for url in / \
 	'/api/v1/statistics/2h' \
@@ -34,17 +36,37 @@ do for url in / \
 	'/api/v1/mining/hashrate/pools/3y' \
 	'/api/v1/mining/hashrate/pools/all' \
 	'/api/v1/mining/reward-stats/144' \
+	'/api/v1/mining/blocks-extras' \
+	'/api/v1/mining/blocks/fees/24h' \
+	'/api/v1/mining/blocks/fees/3d' \
+	'/api/v1/mining/blocks/fees/1w' \
+	'/api/v1/mining/blocks/fees/1m' \
+	'/api/v1/mining/blocks/fees/3m' \
+	'/api/v1/mining/blocks/fees/6m' \
+	'/api/v1/mining/blocks/fees/1y' \
+	'/api/v1/mining/blocks/fees/2y' \
+	'/api/v1/mining/blocks/fees/3y' \
+	'/api/v1/mining/blocks/fees/all' \
+	'/api/v1/mining/blocks/rewards/24h' \
+	'/api/v1/mining/blocks/rewards/3d' \
+	'/api/v1/mining/blocks/rewards/1w' \
+	'/api/v1/mining/blocks/rewards/1m' \
+	'/api/v1/mining/blocks/rewards/3m' \
+	'/api/v1/mining/blocks/rewards/6m' \
+	'/api/v1/mining/blocks/rewards/1y' \
+	'/api/v1/mining/blocks/rewards/2y' \
+	'/api/v1/mining/blocks/rewards/3y' \
+	'/api/v1/mining/blocks/rewards/all' \
 
 	do
 		curl -s "https://${hostname}${url}" >/dev/null
 	done
 
-	counter=1
-	while [ $counter -le 134 ]
+	for slug in $slugs
 	do
-		curl -s "https://${hostname}/api/v1/mining/pool/${counter}/hashrate" >/dev/null
-		curl -s "https://${hostname}/api/v1/mining/pool/${counter}" >/dev/null
-		((counter++))
+		curl -s "https://${hostname}/api/v1/mining/pool/${slug}" >/dev/null
+		curl -s "https://${hostname}/api/v1/mining/pool/${slug}/hashrate" >/dev/null
+		curl -s "https://${hostname}/api/v1/mining/pool/${slug}/blocks" >/dev/null
 	done
 
 	sleep 10

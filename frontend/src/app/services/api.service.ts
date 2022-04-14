@@ -132,17 +132,17 @@ export class ApiService {
     );
   }
 
-  getPoolStats$(poolId: number): Observable<PoolStat> {
-    return this.httpClient.get<PoolStat>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${poolId}`);
+  getPoolStats$(slug: string): Observable<PoolStat> {
+    return this.httpClient.get<PoolStat>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${slug}`);
   }
 
-  getPoolHashrate$(poolId: number): Observable<any> {
-    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${poolId}/hashrate`);
+  getPoolHashrate$(slug: string): Observable<any> {
+    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${slug}/hashrate`);
   }
 
-  getPoolBlocks$(poolId: number, fromHeight: number): Observable<BlockExtended[]> {
+  getPoolBlocks$(slug: string, fromHeight: number): Observable<BlockExtended[]> {
     return this.httpClient.get<BlockExtended[]>(
-        this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${poolId}/blocks` +
+        this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${slug}/blocks` +
         (fromHeight !== undefined ? `/${fromHeight}` : '')
       );
   }
@@ -152,13 +152,6 @@ export class ApiService {
       this.apiBaseUrl + this.apiBasePath + `/api/v1/blocks-extras` +
       (from !== undefined ? `/${from}` : ``)
     );
-  }
-
-  getHistoricalDifficulty$(interval: string | undefined): Observable<any> {
-    return this.httpClient.get<any[]>(
-        this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/difficulty` +
-        (interval !== undefined ? `/${interval}` : '')
-      );
   }
 
   getHistoricalHashrate$(interval: string | undefined): Observable<any> {
@@ -173,6 +166,20 @@ export class ApiService {
         this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/hashrate/pools` +
         (interval !== undefined ? `/${interval}` : '')
       );
+  }
+
+  getHistoricalBlockFees$(interval: string | undefined) : Observable<any> {
+    return this.httpClient.get<any[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/fees` +
+      (interval !== undefined ? `/${interval}` : '')
+    );
+  }
+
+  getHistoricalBlockRewards$(interval: string | undefined) : Observable<any> {
+    return this.httpClient.get<any[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/rewards` +
+      (interval !== undefined ? `/${interval}` : '')
+    );
   }
 
   getRewardStats$(blockCount: number = 144): Observable<RewardStats> {

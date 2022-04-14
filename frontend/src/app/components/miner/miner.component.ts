@@ -1,6 +1,8 @@
 import { Component, Input, OnChanges, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { AssetsService } from 'src/app/services/assets.service';
 import { Transaction } from 'src/app/interfaces/electrs.interface';
+import { StateService } from 'src/app/services/state.service';
+import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
   selector: 'app-miner',
@@ -13,15 +15,23 @@ export class MinerComponent implements OnChanges {
   miner = '';
   title = '';
   url = '';
+  target = '_blank';
   loading = true;
 
   constructor(
     private assetsService: AssetsService,
     private cd: ChangeDetectorRef,
+    public stateService: StateService,
+    private relativeUrlPipe: RelativeUrlPipe,
   ) { }
 
   ngOnChanges() {
     this.miner = '';
+    if (this.stateService.env.MINING_DASHBOARD) {
+      this.miner = 'Unknown';
+      this.url = this.relativeUrlPipe.transform(`/mining/pool/unknown`);
+      this.target = '';
+    }
     this.loading = true;
     this.findMinerFromCoinbase();
   }
@@ -40,7 +50,13 @@ export class MinerComponent implements OnChanges {
         if (pools.payout_addresses[vout.scriptpubkey_address]) {
             this.miner = pools.payout_addresses[vout.scriptpubkey_address].name;
             this.title = $localize`:@@miner-identified-by-payout:Identified by payout address: '${vout.scriptpubkey_address}:PAYOUT_ADDRESS:'`;
-            this.url = pools.payout_addresses[vout.scriptpubkey_address].link;
+            const pool = pools.payout_addresses[vout.scriptpubkey_address];
+            if (this.stateService.env.MINING_DASHBOARD && pools.slugs && pools.slugs[pool.name] !== undefined) {
+              this.url = this.relativeUrlPipe.transform(`/mining/pool/${pools.slugs[pool.name]}`);
+              this.target = '';
+            } else {
+              this.url = pool.link;
+            }
             break;
         }
 
@@ -48,9 +64,15 @@ export class MinerComponent implements OnChanges {
           if (pools.coinbase_tags.hasOwnProperty(tag)) {
             const coinbaseAscii = this.hex2ascii(this.coinbaseTransaction.vin[0].scriptsig);
             if (coinbaseAscii.indexOf(tag) > -1) {
-              this.miner = pools.coinbase_tags[tag].name;
+              const pool = pools.coinbase_tags[tag];
+              this.miner = pool.name;
               this.title = $localize`:@@miner-identified-by-coinbase:Identified by coinbase tag: '${tag}:TAG:'`;
-              this.url = pools.coinbase_tags[tag].link;
+              if (this.stateService.env.MINING_DASHBOARD && pools.slugs && pools.slugs[pool.name] !== undefined) {
+                this.url = this.relativeUrlPipe.transform(`/mining/pool/${pools.slugs[pool.name]}`);
+                this.target = '';
+              } else {
+                this.url = pool.link;
+              }
               break;
             }
           }

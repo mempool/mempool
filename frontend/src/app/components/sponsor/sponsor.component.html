@@ -1,5 +1,9 @@
-<div class="container-xl sponsor-page">
-   
+<div class="container-xl">
+
+   <img [src]="'./resources/mempool-space-logo.png'" height="35" width="140" class="logo">
+
+   <div class="sponsor-page">
+
    <h1 i18n="sponsor.title">Sponsor</h1>
 
    <p *ngIf="!sponsorsEnabled; else sponsorForm">
@@ -21,7 +25,7 @@
                   </div>
                </div>
 
-               <div class="card" (click)="setSelection(0.01)" [class.shiny-border]="donationForm.get('selection').value === 0.01">
+               <div class="card middle-card" (click)="setSelection(0.01)" [class.shiny-border]="donationForm.get('selection').value === 0.01">
                   <div class="card-header">Community Sponsor</div>
                   <div class="card-body">
                   <h5 class="card-title">1M <span class="symbol">sats</span></h5>
@@ -149,5 +153,5 @@
          Order ID <span>{{ donationObj.id }}</span>
       </div>
    </div>
-
+</div>
 </div>

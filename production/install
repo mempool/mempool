@@ -321,7 +321,7 @@ LIQUIDTESTNET_ASSET_REGISTRY_DB_NAME=asset_registry_testnet_db
 # packages needed for mempool ecosystem
 DEBIAN_PKG=()
 DEBIAN_PKG+=(zsh vim curl screen openssl python3)
-DEBIAN_PKG+=(build-essential git git-lfs clang cmake)
+DEBIAN_PKG+=(build-essential git git-lfs clang cmake jq)
 DEBIAN_PKG+=(autotools-dev autoconf automake pkg-config bsdmainutils)
 DEBIAN_PKG+=(libevent-dev libdb-dev libssl-dev libtool-dev autotools-dev)
 DEBIAN_PKG+=(libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-test-dev libboost-thread-dev)
@@ -330,7 +330,7 @@ DEBIAN_PKG+=(nodejs npm mariadb-server nginx-core python-certbot-nginx rsync ufw
 # packages needed for mempool ecosystem
 FREEBSD_PKG=()
 FREEBSD_PKG+=(zsh sudo git screen curl wget calc neovim)
-FREEBSD_PKG+=(openssh-portable py38-pip rust llvm90)
+FREEBSD_PKG+=(openssh-portable py38-pip rust llvm90 jq)
 FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc libevent libtool pkgconf)
 FREEBSD_PKG+=(nginx rsync py38-certbot-nginx mariadb105-server keybase)
 
