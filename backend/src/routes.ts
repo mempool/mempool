@@ -539,20 +539,24 @@ class Routes {
 
   public async $getPool(req: Request, res: Response) {
     try {
-      const stats = await mining.$getPoolStat(parseInt(req.params.poolId, 10));
+      const stats = await mining.$getPoolStat(req.params.slug);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(stats);
     } catch (e) {
-      res.status(500).send(e instanceof Error ? e.message : e);
+      if (e instanceof Error && e.message.indexOf('This mining pool does not exist') > -1) {
+        res.status(404).send(e.message);
+      } else {
+        res.status(500).send(e instanceof Error ? e.message : e);
+      }
     }
   }
 
   public async $getPoolBlocks(req: Request, res: Response) {
     try {
       const poolBlocks = await BlocksRepository.$getBlocksByPool(
-        parseInt(req.params.poolId, 10),
+        req.params.slug,
         req.params.height === undefined ? undefined : parseInt(req.params.height, 10),
       );
       res.header('Pragma', 'public');
@@ -560,7 +564,11 @@ class Routes {
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(poolBlocks);
     } catch (e) {
-      res.status(500).send(e instanceof Error ? e.message : e);
+      if (e instanceof Error && e.message.indexOf('This mining pool does not exist') > -1) {
+        res.status(404).send(e.message);
+      } else {
+        res.status(500).send(e instanceof Error ? e.message : e);
+      }
     }
   }
 
@@ -570,18 +578,6 @@ class Routes {
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
-      res.json(stats);
-    } catch (e) {
-      res.status(500).send(e instanceof Error ? e.message : e);
-    }
-  }
-
-  public async $getHistoricalDifficulty(req: Request, res: Response) {
-    try {
-      const stats = await BlocksRepository.$getBlocksDifficulty(req.params.interval ?? null);
-      res.header('Pragma', 'public');
-      res.header('Cache-control', 'public');
-      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
       res.json(stats);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
@@ -606,7 +602,7 @@ class Routes {
 
   public async $getPoolHistoricalHashrate(req: Request, res: Response) {
     try {
-      const hashrates = await HashratesRepository.$getPoolWeeklyHashrate(parseInt(req.params.poolId, 10));
+      const hashrates = await HashratesRepository.$getPoolWeeklyHashrate(req.params.slug);
       const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
@@ -616,7 +612,11 @@ class Routes {
         hashrates: hashrates,
       });
     } catch (e) {
-      res.status(500).send(e instanceof Error ? e.message : e);
+      if (e instanceof Error && e.message.indexOf('This mining pool does not exist') > -1) {
+        res.status(404).send(e.message);
+      } else {
+        res.status(500).send(e instanceof Error ? e.message : e);
+      }
     }
   }
 
@@ -632,6 +632,38 @@ class Routes {
         oldestIndexedBlockTimestamp: oldestIndexedBlockTimestamp,
         hashrates: hashrates,
         difficulty: difficulty,
+      });
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  public async $getHistoricalBlockFees(req: Request, res: Response) {
+    try {
+      const blockFees = await mining.$getHistoricalBlockFees(req.params.interval ?? null);
+      const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.json({
+        oldestIndexedBlockTimestamp: oldestIndexedBlockTimestamp,
+        blockFees: blockFees,
+      });
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  public async $getHistoricalBlockRewards(req: Request, res: Response) {
+    try {
+      const blockRewards = await mining.$getHistoricalBlockRewards(req.params.interval ?? null);
+      const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.json({
+        oldestIndexedBlockTimestamp: oldestIndexedBlockTimestamp,
+        blockRewards: blockRewards,
       });
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);

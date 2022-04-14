@@ -1,17 +1,5 @@
 <span
-  *ngIf="multisig"
+  *ngIf="label"
   class="badge badge-pill badge-warning"
   i18n="address-labels.multisig"
->multisig {{ multisigM }} of {{ multisigN }}</span>
-
-<span
-  *ngIf="lightning"
-  class="badge badge-pill badge-warning"
-  i18n="address-labels.upper-layer-peg-out"
->Lightning {{ lightning }}</span>
-
-<span
-  *ngIf="liquid"
-  class="badge badge-pill badge-warning"
-  i18n="address-labels.upper-layer-peg-out"
->Liquid {{ liquid }}</span>
+>{{ label }}</span>

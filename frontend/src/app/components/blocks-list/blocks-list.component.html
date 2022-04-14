@@ -1,4 +1,4 @@
-<div class="container-xl" [class]="widget ? 'widget' : ''">
+<div class="container-xl" [class]="widget ? 'widget' : 'full-height'">
   <h1 *ngIf="!widget" class="float-left" i18n="latest-blocks.blocks">Blocks</h1>
 
   <div class="clearfix"></div>
@@ -25,8 +25,8 @@
           </td>
           <td class="pool text-left" [class]="widget ? 'widget' : ''">
             <div class="tooltip-custom">
-              <a class="clear-link" [routerLink]="[('/mining/pool/' + block.extras.pool.id) | relativeUrl]">
-                <img width="25" height="25" src="{{ block.extras.pool['logo'] }}"
+              <a class="clear-link" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]">
+                <img width="23" height="23" src="{{ block.extras.pool['logo'] }}"
                   onError="this.src = './resources/mining-pools/default.svg'">
                 <span class="pool-name">{{ block.extras.pool.name }}</span>
               </a>
@@ -64,7 +64,7 @@
               <span class="skeleton-loader"></span>
             </td>
             <td class="pool text-left" [class]="widget ? 'widget' : ''">
-              <img width="0" height="25" style="opacity: 0">
+              <img width="25" height="25" style="opacity: 0">
               <span class="skeleton-loader"></span>
             </td>
             <td class="timestamp" *ngIf="!widget">
@@ -91,7 +91,7 @@
     </table>
 
     <ngb-pagination *ngIf="!widget" class="pagination-container float-right mt-2" [class]="isLoading ? 'disabled' : ''"
-      [collectionSize]="blocksCount" [rotate]="true" [maxSize]="5" [pageSize]="15" [(page)]="page"
+      [collectionSize]="blocksCount" [rotate]="true" [maxSize]="maxSize" [pageSize]="15" [(page)]="page"
       (pageChange)="pageChange(page)" [boundaryLinks]="true" [ellipses]="false">
     </ngb-pagination>
   </div>

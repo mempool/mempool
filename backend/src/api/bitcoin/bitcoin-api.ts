@@ -25,7 +25,7 @@ class BitcoinApi implements AbstractBitcoinApi {
       .then((transaction: IBitcoinApi.Transaction) => {
         if (skipConversion) {
           transaction.vout.forEach((vout) => {
-            vout.value = vout.value * 100000000;
+            vout.value = Math.round(vout.value * 100000000);
           });
           return transaction;
         }
@@ -143,11 +143,11 @@ class BitcoinApi implements AbstractBitcoinApi {
 
     esploraTransaction.vout = transaction.vout.map((vout) => {
       return {
-        value: vout.value * 100000000,
+        value: Math.round(vout.value * 100000000),
         scriptpubkey: vout.scriptPubKey.hex,
         scriptpubkey_address: vout.scriptPubKey && vout.scriptPubKey.address ? vout.scriptPubKey.address
           : vout.scriptPubKey.addresses ? vout.scriptPubKey.addresses[0] : '',
-        scriptpubkey_asm: vout.scriptPubKey.asm ? this.convertScriptSigAsm(vout.scriptPubKey.asm) : '',
+        scriptpubkey_asm: vout.scriptPubKey.asm ? this.convertScriptSigAsm(vout.scriptPubKey.hex) : '',
         scriptpubkey_type: this.translateScriptPubKeyType(vout.scriptPubKey.type),
       };
     });
@@ -157,7 +157,7 @@ class BitcoinApi implements AbstractBitcoinApi {
         is_coinbase: !!vin.coinbase,
         prevout: null,
         scriptsig: vin.scriptSig && vin.scriptSig.hex || vin.coinbase || '',
-        scriptsig_asm: vin.scriptSig && this.convertScriptSigAsm(vin.scriptSig.asm) || '',
+        scriptsig_asm: vin.scriptSig && this.convertScriptSigAsm(vin.scriptSig.hex) || '',
         sequence: vin.sequence,
         txid: vin.txid || '',
         vout: vin.vout || 0,
@@ -212,6 +212,7 @@ class BitcoinApi implements AbstractBitcoinApi {
       'witness_v0_scripthash': 'v0_p2wsh',
       'witness_v1_taproot': 'v1_p2tr',
       'nonstandard': 'nonstandard',
+      'multisig': 'multisig',
       'nulldata': 'op_return'
     };
 
@@ -235,7 +236,7 @@ class BitcoinApi implements AbstractBitcoinApi {
     } else {
       mempoolEntry = await this.$getMempoolEntry(transaction.txid);
     }
-    transaction.fee = mempoolEntry.fees.base * 100000000;
+    transaction.fee = Math.round(mempoolEntry.fees.base * 100000000);
     return transaction;
   }
 
@@ -289,23 +290,68 @@ class BitcoinApi implements AbstractBitcoinApi {
     return transaction;
   }
 
-  private convertScriptSigAsm(str: string): string {
-    const a = str.split(' ');
+  private convertScriptSigAsm(hex: string): string {
+    const buf = Buffer.from(hex, 'hex');
+
     const b: string[] = [];
-    a.forEach((chunk) => {
-      if (chunk.substr(0, 3) === 'OP_') {
-        chunk = chunk.replace(/^OP_(\d+)/, 'OP_PUSHNUM_$1');
-        chunk = chunk.replace('OP_CHECKSEQUENCEVERIFY', 'OP_CSV');
-        b.push(chunk);
-      } else {
-        chunk = chunk.replace('[ALL]', '01');
-        if (chunk === '0') {
-          b.push('OP_0');
+
+    let i = 0;
+    while (i < buf.length) {
+      const op = buf[i];
+      if (op >= 0x01 && op <= 0x4e) {
+        i++;
+        let push: number;
+        if (op === 0x4c) {
+          push = buf.readUInt8(i);
+          b.push('OP_PUSHDATA1');
+          i += 1;
+        } else if (op === 0x4d) {
+          push = buf.readUInt16LE(i);
+          b.push('OP_PUSHDATA2');
+          i += 2;
+        } else if (op === 0x4e) {
+          push = buf.readUInt32LE(i);
+          b.push('OP_PUSHDATA4');
+          i += 4;
         } else {
-          b.push('OP_PUSHBYTES_' + Math.round(chunk.length / 2) + ' ' + chunk);
+          push = op;
+          b.push('OP_PUSHBYTES_' + push);
         }
+
+        const data = buf.slice(i, i + push);
+        if (data.length !== push) {
+          break;
+        }
+
+        b.push(data.toString('hex'));
+        i += data.length;
+      } else {
+        if (op === 0x00) {
+          b.push('OP_0');
+        } else if (op === 0x4f) {
+          b.push('OP_PUSHNUM_NEG1');
+        } else if (op === 0xb1) {
+          b.push('OP_CLTV');
+        } else if (op === 0xb2) {
+          b.push('OP_CSV');
+        } else if (op === 0xba) {
+          b.push('OP_CHECKSIGADD');
+        } else {
+          const opcode = bitcoinjs.script.toASM([ op ]);
+          if (opcode && op < 0xfd) {
+            if (/^OP_(\d+)$/.test(opcode)) {
+              b.push(opcode.replace(/^OP_(\d+)$/, 'OP_PUSHNUM_$1'));
+            } else {
+              b.push(opcode);
+            }
+          } else {
+            b.push('OP_RETURN_' + op);
+          }
+        }
+        i += 1;
       }
-    });
+    }
+
     return b.join(' ');
   }
 
@@ -316,21 +362,21 @@ class BitcoinApi implements AbstractBitcoinApi {
 
     if (vin.prevout.scriptpubkey_type === 'p2sh') {
       const redeemScript = vin.scriptsig_asm.split(' ').reverse()[0];
-      vin.inner_redeemscript_asm = this.convertScriptSigAsm(bitcoinjs.script.toASM(Buffer.from(redeemScript, 'hex')));
+      vin.inner_redeemscript_asm = this.convertScriptSigAsm(redeemScript);
       if (vin.witness && vin.witness.length > 2) {
         const witnessScript = vin.witness[vin.witness.length - 1];
-        vin.inner_witnessscript_asm = this.convertScriptSigAsm(bitcoinjs.script.toASM(Buffer.from(witnessScript, 'hex')));
+        vin.inner_witnessscript_asm = this.convertScriptSigAsm(witnessScript);
       }
     }
 
     if (vin.prevout.scriptpubkey_type === 'v0_p2wsh' && vin.witness) {
       const witnessScript = vin.witness[vin.witness.length - 1];
-      vin.inner_witnessscript_asm = this.convertScriptSigAsm(bitcoinjs.script.toASM(Buffer.from(witnessScript, 'hex')));
+      vin.inner_witnessscript_asm = this.convertScriptSigAsm(witnessScript);
     }
 
     if (vin.prevout.scriptpubkey_type === 'v1_p2tr' && vin.witness && vin.witness.length > 1) {
       const witnessScript = vin.witness[vin.witness.length - 2];
-      vin.inner_witnessscript_asm = this.convertScriptSigAsm(bitcoinjs.script.toASM(Buffer.from(witnessScript, 'hex')));
+      vin.inner_witnessscript_asm = this.convertScriptSigAsm(witnessScript);
     }
   }
 

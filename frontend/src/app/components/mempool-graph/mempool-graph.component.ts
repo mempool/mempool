@@ -122,6 +122,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       if (index >= this.feeLimitIndex) {
         newColors.push(this.chartColorsOrdered[index]);
         seriesGraph.push({
+          zlevel: 0,
           name: this.feeLevelsOrdered[index],
           type: 'line',
           stack: 'fees',

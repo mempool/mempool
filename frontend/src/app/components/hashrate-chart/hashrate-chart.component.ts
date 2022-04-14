@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
 import { EChartsOption, graphic } from 'echarts';
 import { Observable } from 'rxjs';
 import { delay, map, retryWhen, share, startWith, switchMap, tap } from 'rxjs/operators';
@@ -7,6 +7,8 @@ import { SeoService } from 'src/app/services/seo.service';
 import { formatNumber } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { selectPowerOfTen } from 'src/app/bitcoin.utils';
+import { StorageService } from 'src/app/services/storage.service';
+import { MiningService } from 'src/app/services/mining.service';
 
 @Component({
   selector: 'app-hashrate-chart',
@@ -28,14 +30,15 @@ export class HashrateChartComponent implements OnInit {
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
 
+  miningWindowPreference: string;
   radioGroupForm: FormGroup;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
     renderer: 'svg',
-    width: 'auto',
-    height: 'auto',
   };
+
+  @HostBinding('attr.dir') dir = 'ltr';
 
   hashrateObservable$: Observable<any>;
   isLoading = true;
@@ -47,20 +50,32 @@ export class HashrateChartComponent implements OnInit {
     private apiService: ApiService,
     private formBuilder: FormBuilder,
     private cd: ChangeDetectorRef,
+    private storageService: StorageService,
+    private miningService: MiningService
   ) {
-    this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
-    this.radioGroupForm.controls.dateSpan.setValue('1y');
   }
 
   ngOnInit(): void {
-    if (!this.widget) {
+    let firstRun = true;
+
+    if (this.widget) {
+      this.miningWindowPreference = '1y';
+    } else {
       this.seoService.setTitle($localize`:@@mining.hashrate-difficulty:Hashrate and Difficulty`);
+      this.miningWindowPreference = this.miningService.getDefaultTimespan('1m');
     }
+    this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
+    this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
     this.hashrateObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
       .pipe(
-        startWith('1y'),
+        startWith(this.miningWindowPreference),
         switchMap((timespan) => {
+          if (!this.widget && !firstRun) {
+            this.storageService.setValue('miningWindowPreference', timespan);
+          }
+          firstRun = false;
+          this.miningWindowPreference = timespan;
           this.isLoading = true;
           return this.apiService.getHistoricalHashrate$(timespan)
             .pipe(
@@ -157,10 +172,10 @@ export class HashrateChartComponent implements OnInit {
         '#D81B60',
       ],
       grid: {
-        top: 30,
+        top: 20,
+        bottom: this.widget ? 30 : 70,
         right: this.right,
         left: this.left,
-        bottom: this.widget ? 30 : this.isMobile() ? 90 : 60,
       },
       tooltip: {
         show: !this.isMobile() || !this.widget,
@@ -176,7 +191,7 @@ export class HashrateChartComponent implements OnInit {
           align: 'left',
         },
         borderColor: '#000',
-        formatter: function (ticks) {
+        formatter: (ticks) => {
           let hashrateString = '';
           let difficultyString = '';
           let hashratePowerOfTen: any = selectPowerOfTen(1);
@@ -207,11 +222,14 @@ export class HashrateChartComponent implements OnInit {
             <span>${hashrateString}</span><br>
             <span>${difficultyString}</span>
           `;
-        }.bind(this)
+        }
       },
       xAxis: data.hashrates.length === 0 ? undefined : {
         type: 'time',
         splitNumber: (this.isMobile() || this.widget) ? 5 : 10,
+        axisLabel: {
+          hideOverlap: true,
+        }
       },
       legend: (this.widget || data.hashrates.length === 0) ? undefined : {
         data: [
@@ -241,7 +259,7 @@ export class HashrateChartComponent implements OnInit {
       },
       yAxis: data.hashrates.length === 0 ? undefined : [
         {
-          min: function (value) {
+          min: (value) => {
             return value.min * 0.9;
           },
           type: 'value',
@@ -250,7 +268,7 @@ export class HashrateChartComponent implements OnInit {
             formatter: (val) => {
               const selectedPowerOfTen: any = selectPowerOfTen(val);
               const newVal = Math.round(val / selectedPowerOfTen.divider);
-              return `${newVal} ${selectedPowerOfTen.unit}H/s`
+              return `${newVal} ${selectedPowerOfTen.unit}H/s`;
             }
           },
           splitLine: {
@@ -258,7 +276,7 @@ export class HashrateChartComponent implements OnInit {
           }
         },
         {
-          min: function (value) {
+          min: (value) => {
             return value.min * 0.9;
           },
           type: 'value',
@@ -268,7 +286,7 @@ export class HashrateChartComponent implements OnInit {
             formatter: (val) => {
               const selectedPowerOfTen: any = selectPowerOfTen(val);
               const newVal = Math.round(val / selectedPowerOfTen.divider);
-              return `${newVal} ${selectedPowerOfTen.unit}`
+              return `${newVal} ${selectedPowerOfTen.unit}`;
             }
           },
           splitLine: {
@@ -278,6 +296,7 @@ export class HashrateChartComponent implements OnInit {
       ],
       series: data.hashrates.length === 0 ? [] : [
         {
+          zlevel: 0,
           name: 'Hashrate',
           showSymbol: false,
           symbol: 'none',
@@ -288,6 +307,7 @@ export class HashrateChartComponent implements OnInit {
           },
         },
         {
+          zlevel: 1,
           yAxisIndex: 1,
           name: 'Difficulty',
           showSymbol: false,
@@ -312,7 +332,6 @@ export class HashrateChartComponent implements OnInit {
         type: 'slider',
         brushSelect: false,
         realtime: true,
-        bottom: this.isMobile() ? 30 : 0,
         left: 20,
         right: 15,
         selectedDataBackground: {

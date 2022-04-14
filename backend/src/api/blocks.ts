@@ -23,6 +23,7 @@ class Blocks {
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
   private blockIndexingStarted = false;
   public blockIndexingCompleted = false;
+  public reindexFlag = true; // Always re-index the latest indexed data in case the node went offline with an invalid block tip (reorg)
 
   constructor() { }
 
@@ -74,9 +75,12 @@ class Blocks {
           transactions.push(tx);
           transactionsFetched++;
         } catch (e) {
-          logger.debug('Error fetching block tx: ' + (e instanceof Error ? e.message : e));
           if (i === 0) {
-            throw new Error('Failed to fetch Coinbase transaction: ' + txIds[i]);
+            const msg = `Cannot fetch coinbase tx ${txIds[i]}. Reason: ` + (e instanceof Error ? e.message : e); 
+            logger.err(msg);
+            throw new Error(msg);
+          } else {
+            logger.err(`Cannot fetch tx ${txIds[i]}. Reason: ` + (e instanceof Error ? e.message : e));
           }
         }
       }
@@ -135,9 +139,16 @@ class Blocks {
       } else {
         pool = await poolsRepository.$getUnknownPool();
       }
+
+      if (!pool) { // We should never have this situation in practise
+        logger.warn(`Cannot assign pool to block ${blockExtended.height} and 'unknown' pool does not exist. Check your "pools" table entries`);
+        return blockExtended;
+      }
+
       blockExtended.extras.pool = {
         id: pool.id,
-        name: pool.name
+        name: pool.name,
+        slug: pool.slug,
       };
     }
 
@@ -182,9 +193,11 @@ class Blocks {
    * [INDEXING] Index all blocks metadata for the mining dashboard
    */
   public async $generateBlockDatabase() {
-    if (this.blockIndexingStarted) {
+    if (this.blockIndexingStarted && !this.reindexFlag) {
       return;
     }
+
+    this.reindexFlag = false;
 
     const blockchainInfo = await bitcoinClient.getBlockchainInfo();
     if (blockchainInfo.blocks !== blockchainInfo.headers) { // Wait for node to sync
@@ -192,6 +205,7 @@ class Blocks {
     }
 
     this.blockIndexingStarted = true;
+    this.blockIndexingCompleted = false;
 
     try {
       let currentBlockHeight = blockchainInfo.blocks;
@@ -203,11 +217,12 @@ class Blocks {
 
       const lastBlockToIndex = Math.max(0, currentBlockHeight - indexingBlockAmount + 1);
 
-      logger.info(`Indexing blocks from #${currentBlockHeight} to #${lastBlockToIndex}`);
+      logger.debug(`Indexing blocks from #${currentBlockHeight} to #${lastBlockToIndex}`);
 
       const chunkSize = 10000;
       let totaIndexed = await blocksRepository.$blockCount(null, null);
       let indexedThisRun = 0;
+      let newlyIndexed = 0;
       const startedAt = new Date().getTime() / 1000;
       let timer = new Date().getTime() / 1000;
 
@@ -217,12 +232,11 @@ class Blocks {
         const missingBlockHeights: number[] = await blocksRepository.$getMissingBlocksBetweenHeights(
           currentBlockHeight, endBlock);
         if (missingBlockHeights.length <= 0) {
-          logger.debug(`No missing blocks between #${currentBlockHeight} to #${endBlock}`);
           currentBlockHeight -= chunkSize;
           continue;
         }
 
-        logger.debug(`Indexing ${missingBlockHeights.length} blocks from #${currentBlockHeight} to #${endBlock}`);
+        logger.info(`Indexing ${missingBlockHeights.length} blocks from #${currentBlockHeight} to #${endBlock}`);
 
         for (const blockHeight of missingBlockHeights) {
           if (blockHeight < lastBlockToIndex) {
@@ -244,14 +258,16 @@ class Blocks {
           const block = BitcoinApi.convertBlock(await bitcoinClient.getBlock(blockHash));
           const transactions = await this.$getTransactionsExtended(blockHash, block.height, true, true);
           const blockExtended = await this.$getBlockExtended(block, transactions);
+
+          newlyIndexed++;
           await blocksRepository.$saveBlockInDatabase(blockExtended);
         }
 
         currentBlockHeight -= chunkSize;
       }
-      logger.info('Block indexing completed');
+      logger.info(`Indexed ${newlyIndexed} blocks`);
     } catch (e) {
-      logger.err('An error occured in $generateBlockDatabase(). Trying again later. ' + e);
+      logger.err('Block indexing failed. Trying again later. Reason: ' + (e instanceof Error ? e.message : e));
       this.blockIndexingStarted = false;
       return;
     }
@@ -309,6 +325,12 @@ class Blocks {
 
       if (Common.indexingEnabled()) {
         await blocksRepository.$saveBlockInDatabase(blockExtended);
+
+        // If the last 10 blocks chain is not valid, re-index them (reorg)
+        const chainValid = await blocksRepository.$validateRecentBlocks();
+        if (!chainValid) {
+          this.reindexFlag = true;
+        }
       }
 
       if (block.height % 2016 === 0) {
