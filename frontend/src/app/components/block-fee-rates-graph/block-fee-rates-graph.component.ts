@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, NgZone, OnInit } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
@@ -10,6 +10,9 @@ import { formatterXAxis } from 'src/app/shared/graphs.utils';
 import { StorageService } from 'src/app/services/storage.service';
 import { MiningService } from 'src/app/services/mining.service';
 import { selectPowerOfTen } from 'src/app/bitcoin.utils';
+import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
+import { StateService } from 'src/app/services/state.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-block-fee-rates-graph',
@@ -41,6 +44,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
   isLoading = true;
   formatNumber = formatNumber;
   timespan = '';
+  chartInstance: any = undefined;
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -48,7 +52,10 @@ export class BlockFeeRatesGraphComponent implements OnInit {
     private apiService: ApiService,
     private formBuilder: FormBuilder,
     private storageService: StorageService,
-    private miningService: MiningService
+    private miningService: MiningService,
+    private stateService: StateService,
+    private router: Router,
+    private zone: NgZone,
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
@@ -249,6 +256,25 @@ export class BlockFeeRatesGraphComponent implements OnInit {
         },
       }],
     };
+  }
+
+  onChartInit(ec) {
+    if (this.chartInstance !== undefined) {
+      return;
+    }
+
+    this.chartInstance = ec;
+    this.chartInstance.on('click', (e) => {
+      if (e.data.data === 9999) { // "Other"
+        return;
+      }
+      this.zone.run(() => {
+        if (['24h', '3d'].includes(this.timespan)) {
+          const url = new RelativeUrlPipe(this.stateService).transform(`/block/${e.data[2]}`);
+          this.router.navigate([url]);
+        }
+      });
+    });
   }
 
   isMobile() {
