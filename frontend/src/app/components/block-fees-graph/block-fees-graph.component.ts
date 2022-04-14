@@ -25,7 +25,6 @@ import { MiningService } from 'src/app/services/mining.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlockFeesGraphComponent implements OnInit {
-  @Input() tableOnly = false;
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
 
@@ -150,8 +149,12 @@ export class BlockFeesGraphComponent implements OnInit {
             }
           },
           splitLine: {
-            show: false,
-          }
+            lineStyle: {
+              type: 'dotted',
+              color: '#ffffff66',
+              opacity: 0.25,
+            }
+          },
         },
       ],
       series: [
