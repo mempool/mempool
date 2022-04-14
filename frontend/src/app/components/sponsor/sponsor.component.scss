@@ -15,8 +15,8 @@
 }
 
 .card {
-  width: 220px;
-  height: 200px;
+  width: 240px;
+  height: 220px;
   background-color: #1d1f31;
   border: 2px solid #1d1f31;
   cursor: pointer;
@@ -46,7 +46,9 @@
   &:hover {
     background-color: #5058926b;
     border: 2px solid #505892;
-    transform: scale(1.11) translateY(-10px);
+    transform: scale(1.1) translateY(-10px);
+    margin-top: 70px;
+
     .card-header {
       background-color: #505892;
     }
@@ -54,7 +56,7 @@
 }
 
 .donation-form {
-  max-width: 240px;
+  max-width: 280px;
   margin: auto;
   button {
     width: 100%;
@@ -72,13 +74,27 @@
   justify-content: center;
 }
 
+.middle-card {
+  width: 280px;
+  height: 260px;
+  margin-top: 40px;
+  &:hover {
+    margin-top: 50px;
+  }
+}
+
 .shiny-border {
   background-color: #5058926b;
   border: 2px solid #505892;
-  transform: scale(1.11) translateY(-10px);            
+  transform: scale(1.1) translateY(-10px);
+  margin-top: 70px;
   box-shadow: 0px 0px 100px #9858ff52;
   .card-header {
     background-color: #505892;
+  }
+
+  &.middle-card {
+    margin-top: 50px;
   }
 }
 
@@ -106,4 +122,16 @@
       margin-left: 10px;
     }
   }
+}
+
+.logo {
+  margin: 30px;
+}
+
+.card-body {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  height: 100%;
 }

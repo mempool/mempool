@@ -170,10 +170,6 @@ let routes: Routes = [
         children: [],
         component: AddressComponent
       },
-      {
-        path: 'sponsor',
-        component: SponsorComponent,
-      },
     ],
   },
   {
@@ -457,6 +453,10 @@ let routes: Routes = [
     component: StatusViewComponent
   },
   {
+    path: 'sponsor',
+    component: SponsorComponent,
+  },
+  {
     path: '**',
     redirectTo: ''
   },
@@ -586,10 +586,6 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
         path: 'trademark-policy',
         component: TrademarkPolicyComponent
       },
-      {
-        path: 'sponsor',
-        component: SponsorComponent,
-      },
     ],
   },
   {
@@ -701,10 +697,6 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
           {
             path: 'trademark-policy',
             component: TrademarkPolicyComponent
-          },
-          {
-            path: 'sponsor',
-            component: SponsorComponent,
           },
         ],
       },
