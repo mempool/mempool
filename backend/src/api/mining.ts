@@ -15,7 +15,7 @@ class Mining {
   }
 
   /**
-   * Get historical block reward and total fee
+   * Get historical block total fee
    */
   public async $getHistoricalBlockFees(interval: string | null = null): Promise<any> {
     return await BlocksRepository.$getHistoricalBlockFees(
@@ -29,6 +29,16 @@ class Mining {
    */
   public async $getHistoricalBlockRewards(interval: string | null = null): Promise<any> {
     return await BlocksRepository.$getHistoricalBlockRewards(
+      this.getTimeRange(interval),
+      Common.getSqlInterval(interval)
+    );
+  }
+
+  /**
+   * Get historical block fee rates percentiles
+   */
+   public async $getHistoricalBlockFeeRates(interval: string | null = null): Promise<any> {
+    return await BlocksRepository.$getHistoricalBlockFeeRates(
       this.getTimeRange(interval),
       Common.getSqlInterval(interval)
     );

@@ -670,6 +670,22 @@ class Routes {
     }
   }
 
+  public async $getHistoricalBlockFeeRates(req: Request, res: Response) {
+    try {
+      const blockFees = await mining.$getHistoricalBlockFeeRates(req.params.interval ?? null);
+      const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.json({
+        oldestIndexedBlockTimestamp: oldestIndexedBlockTimestamp,
+        blockFees: blockFees,
+      });
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
   public async getBlock(req: Request, res: Response) {
     try {
       const result = await bitcoinApi.$getBlock(req.params.hash);
