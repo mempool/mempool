@@ -1,7 +1,7 @@
 import { Currencies, OffersData, TradesData, Depth, Currency, Interval, HighLowOpenClose,
   Markets, Offers, Offer, BisqTrade, MarketVolume, Tickers, Ticker, SummarizedIntervals, SummarizedInterval } from './interfaces';
 
-import * as datetime from 'locutus/php/datetime';
+const strtotime = require('./strtotime');
 
 class BisqMarketsApi {
   private cryptoCurrencyData: Currency[] = [];
@@ -312,7 +312,7 @@ class BisqMarketsApi {
 
   getTickerFromMarket(market: string): Ticker | null {
     let ticker: Ticker;
-    const timestamp_from = datetime.strtotime('-24 hour');
+    const timestamp_from = strtotime('-24 hour');
     const timestamp_to = new Date().getTime() / 1000;
     const trades = this.getTradesByCriteria(market, timestamp_to, timestamp_from,
       undefined, undefined, undefined, 'asc', Number.MAX_SAFE_INTEGER);
@@ -638,13 +638,13 @@ class BisqMarketsApi {
         case 'half_day':
             return (ts - (ts % (3600 * 12)));
         case 'day':
-            return datetime.strtotime('midnight today', ts);
+            return strtotime('midnight today', ts);
         case 'week':
-            return datetime.strtotime('midnight sunday last week', ts);
+            return strtotime('midnight sunday last week', ts);
         case 'month':
-            return datetime.strtotime('midnight first day of this month', ts);
+            return strtotime('midnight first day of this month', ts);
         case 'year':
-            return datetime.strtotime('midnight first day of january', ts);
+            return strtotime('midnight first day of january', ts);
         default:
             throw new Error('Unsupported interval: ' + interval);
     }
