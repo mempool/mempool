@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@mempool/electrum-client": "^1.1.7",
-    "@types/ws": "8.2.2",
+    "@types/ws": "8.5.3",
     "axios": "0.24.0",
     "bitcoinjs-lib": "6.0.1",
     "crypto-js": "^4.0.0",
