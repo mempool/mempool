@@ -75,9 +75,12 @@ class Blocks {
           transactions.push(tx);
           transactionsFetched++;
         } catch (e) {
-          logger.debug('Error fetching block tx: ' + (e instanceof Error ? e.message : e));
           if (i === 0) {
-            throw new Error('Failed to fetch Coinbase transaction: ' + txIds[i]);
+            const msg = `Cannot fetch coinbase tx ${txIds[i]}. Reason: ` + (e instanceof Error ? e.message : e); 
+            logger.err(msg);
+            throw new Error(msg);
+          } else {
+            logger.err(`Cannot fetch tx ${txIds[i]}. Reason: ` + (e instanceof Error ? e.message : e));
           }
         }
       }
@@ -137,8 +140,8 @@ class Blocks {
         pool = await poolsRepository.$getUnknownPool();
       }
 
-      if (!pool) { // Something is wrong with the pools table, ignore pool indexing
-        logger.err('Unable to find pool, nor getting the unknown pool. Is the "pools" table empty?');
+      if (!pool) { // We should never have this situation in practise
+        logger.warn(`Cannot assign pool to block ${blockExtended.height} and 'unknown' pool does not exist. Check your "pools" table entries`);
         return blockExtended;
       }
 
@@ -214,11 +217,12 @@ class Blocks {
 
       const lastBlockToIndex = Math.max(0, currentBlockHeight - indexingBlockAmount + 1);
 
-      logger.info(`Indexing blocks from #${currentBlockHeight} to #${lastBlockToIndex}`);
+      logger.debug(`Indexing blocks from #${currentBlockHeight} to #${lastBlockToIndex}`);
 
       const chunkSize = 10000;
       let totaIndexed = await blocksRepository.$blockCount(null, null);
       let indexedThisRun = 0;
+      let newlyIndexed = 0;
       const startedAt = new Date().getTime() / 1000;
       let timer = new Date().getTime() / 1000;
 
@@ -228,12 +232,11 @@ class Blocks {
         const missingBlockHeights: number[] = await blocksRepository.$getMissingBlocksBetweenHeights(
           currentBlockHeight, endBlock);
         if (missingBlockHeights.length <= 0) {
-          logger.debug(`No missing blocks between #${currentBlockHeight} to #${endBlock}`);
           currentBlockHeight -= chunkSize;
           continue;
         }
 
-        logger.debug(`Indexing ${missingBlockHeights.length} blocks from #${currentBlockHeight} to #${endBlock}`);
+        logger.info(`Indexing ${missingBlockHeights.length} blocks from #${currentBlockHeight} to #${endBlock}`);
 
         for (const blockHeight of missingBlockHeights) {
           if (blockHeight < lastBlockToIndex) {
@@ -255,14 +258,16 @@ class Blocks {
           const block = BitcoinApi.convertBlock(await bitcoinClient.getBlock(blockHash));
           const transactions = await this.$getTransactionsExtended(blockHash, block.height, true, true);
           const blockExtended = await this.$getBlockExtended(block, transactions);
+
+          newlyIndexed++;
           await blocksRepository.$saveBlockInDatabase(blockExtended);
         }
 
         currentBlockHeight -= chunkSize;
       }
-      logger.info('Block indexing completed');
+      logger.info(`Indexed ${newlyIndexed} blocks`);
     } catch (e) {
-      logger.err('An error occured in $generateBlockDatabase(). Trying again later. ' + e);
+      logger.err('Block indexing failed. Trying again later. Reason: ' + (e instanceof Error ? e.message : e));
       this.blockIndexingStarted = false;
       return;
     }

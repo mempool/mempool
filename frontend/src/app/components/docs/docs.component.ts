@@ -1,6 +1,7 @@
 import { Component, OnInit, HostBinding } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Env, StateService } from 'src/app/services/state.service';
+import { WebsocketService } from 'src/app/services/websocket.service';
 
 @Component({
   selector: 'app-docs',
@@ -12,19 +13,31 @@ export class DocsComponent implements OnInit {
   activeTab = 0;
   env: Env;
   showWebSocketTab = true;
+  showFaqTab = true;
 
   @HostBinding('attr.dir') dir = 'ltr';
 
   constructor(
     private route: ActivatedRoute,
     private stateService: StateService,
+    private websocket: WebsocketService,
   ) { }
 
   ngOnInit(): void {
+    this.websocket.want(['blocks']);
     const url = this.route.snapshot.url;
-    this.activeTab = ( url[2].path === "rest" ) ? 0 : 1;
+    if( url[1].path === "faq" ) {
+        this.activeTab = 0;
+    } else if( url[2].path === "rest" ) {
+        this.activeTab = 1;
+    } else {
+        this.activeTab = 2;
+    }
+
     this.env = this.stateService.env;
-    this.showWebSocketTab = ( ! ( ( this.env.BASE_MODULE === "bisq" ) || ( this.stateService.network === "bisq" ) || ( this.stateService.network === "liquidtestnet" ) ) );
+    this.showWebSocketTab = ( ! ( ( this.stateService.network === "bisq" ) || ( this.stateService.network === "liquidtestnet" ) ) );
+    this.showFaqTab = ( this.env.BASE_MODULE === 'mempool' ) ? true : false;
+
     document.querySelector<HTMLElement>( "html" ).style.scrollBehavior = "smooth";
   }
 

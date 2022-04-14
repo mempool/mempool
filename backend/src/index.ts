@@ -5,7 +5,7 @@ import * as WebSocket from 'ws';
 import * as cluster from 'cluster';
 import axios from 'axios';
 
-import { checkDbConnection, DB } from './database';
+import DB from './database';
 import config from './config';
 import routes from './routes';
 import blocks from './api/blocks';
@@ -89,11 +89,11 @@ class Server {
     diskCache.loadMempoolCache();
 
     if (config.DATABASE.ENABLED) {
-      await checkDbConnection();
+      await DB.checkDbConnection();
       try {
         if (process.env.npm_config_reindex != undefined) { // Re-index requests
           const tables = process.env.npm_config_reindex.split(',');
-          logger.warn(`Indexed data for "${process.env.npm_config_reindex}" tables will be erased in 5 seconds from now (using '--reindex') ...`);
+          logger.warn(`Indexed data for "${process.env.npm_config_reindex}" tables will be erased in 5 seconds (using '--reindex')`);
           await Common.sleep(5000);
           await databaseMigration.$truncateIndexedData(tables);
         }
@@ -169,8 +169,12 @@ class Server {
   }
 
   async $resetHashratesIndexingState() {
-    await HashratesRepository.$setLatestRunTimestamp('last_hashrates_indexing', 0);
-    await HashratesRepository.$setLatestRunTimestamp('last_weekly_hashrates_indexing', 0);
+    try {
+      await HashratesRepository.$setLatestRunTimestamp('last_hashrates_indexing', 0);
+      await HashratesRepository.$setLatestRunTimestamp('last_weekly_hashrates_indexing', 0);
+    } catch (e) {
+      logger.err(`Cannot reset hashrate indexing timestamps. Reason: ` + (e instanceof Error ? e.message : e));
+    }
   }
 
   async $runIndexingWhenReady() {
@@ -184,11 +188,11 @@ class Server {
         await BlocksRepository.$deleteBlocks(10);
         await HashratesRepository.$deleteLastEntries();
       }
-      blocks.$generateBlockDatabase();
+      await blocks.$generateBlockDatabase();
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();
     } catch (e) {
-      logger.err(`Unable to run indexing right now, trying again later. ` + e);
+      logger.err(`Indexing failed, trying again later. Reason: ` + (e instanceof Error ? e.message : e));
     }
   }
 

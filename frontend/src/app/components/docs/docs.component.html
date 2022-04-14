@@ -5,20 +5,29 @@
 
     <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav-tabs">
 
-      <li [ngbNavItem]="0">
-        <a ngbNavLink routerLink="../rest">API - REST</a>
+      <li [ngbNavItem]="0" *ngIf="showFaqTab">
+        <a ngbNavLink [routerLink]="['/docs/faq' | relativeUrl]">FAQ</a>
         <ng-template ngbNavContent>
 
-          <app-api-docs [restTabActivated]="true"></app-api-docs>
+          <app-api-docs [whichTab]="'faq'"></app-api-docs>
 
         </ng-template>
       </li>
 
-      <li [ngbNavItem]="1" *ngIf="showWebSocketTab">
-        <a ngbNavLink routerLink="../websocket">API - WebSocket</a>
+      <li [ngbNavItem]="1">
+        <a ngbNavLink [routerLink]="['/docs/api/rest' | relativeUrl]">API - REST</a>
         <ng-template ngbNavContent>
 
-          <app-api-docs [restTabActivated]="false"></app-api-docs>
+          <app-api-docs [whichTab]="'rest'"></app-api-docs>
+
+        </ng-template>
+      </li>
+
+      <li [ngbNavItem]="2" *ngIf="showWebSocketTab">
+        <a ngbNavLink [routerLink]="['/docs/api/websocket' | relativeUrl]">API - WebSocket</a>
+        <ng-template ngbNavContent>
+
+          <app-api-docs [whichTab]="'websocket'"></app-api-docs>
 
         </ng-template>
       </li>
