@@ -1,6 +1,6 @@
 import { Common } from '../api/common';
 import config from '../config';
-import { DB } from '../database';
+import DB from '../database';
 import logger from '../logger';
 import { PoolInfo, PoolTag } from '../mempool.interfaces';
 
@@ -9,9 +9,7 @@ class PoolsRepository {
    * Get all pools tagging info
    */
   public async $getPools(): Promise<PoolTag[]> {
-    const connection = await DB.getConnection();
-    const [rows] = await connection.query('SELECT id, name, addresses, regexes, slug FROM pools;');
-    connection.release();
+    const [rows] = await DB.query('SELECT id, name, addresses, regexes, slug FROM pools;');
     return <PoolTag[]>rows;
   }
 
@@ -19,9 +17,7 @@ class PoolsRepository {
    * Get unknown pool tagging info
    */
   public async $getUnknownPool(): Promise<PoolTag> {
-    const connection = await DB.getConnection();
-    const [rows] = await connection.query('SELECT id, name, slug FROM pools where name = "Unknown"');
-    connection.release();
+    const [rows] = await DB.query('SELECT id, name, slug FROM pools where name = "Unknown"');
     return <PoolTag>rows[0];
   }
 
@@ -42,16 +38,11 @@ class PoolsRepository {
     query += ` GROUP BY pool_id
       ORDER BY COUNT(height) DESC`;
 
-    // logger.debug(query);
-    const connection = await DB.getConnection();
     try {
-      const [rows] = await connection.query(query);
-      connection.release();
-
+      const [rows] = await DB.query(query);
       return <PoolInfo[]>rows;
     } catch (e) {
-      connection.release();
-      logger.err('$getPoolsInfo() error' + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot generate pools stats. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -65,15 +56,11 @@ class PoolsRepository {
       LEFT JOIN blocks on pools.id = blocks.pool_id AND blocks.blockTimestamp BETWEEN FROM_UNIXTIME(?) AND FROM_UNIXTIME(?)
       GROUP BY pools.id`;
 
-    const connection = await DB.getConnection();
     try {
-      const [rows] = await connection.query(query, [from, to]);
-      connection.release();
-
+      const [rows] = await DB.query(query, [from, to]);
       return <PoolInfo[]>rows;
     } catch (e) {
-      connection.release();
-      logger.err('$getPoolsInfoBetween() error' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot generate pools blocks count. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -87,15 +74,11 @@ class PoolsRepository {
       FROM pools
       WHERE pools.slug = ?`;
 
-    let connection;
     try {
-      connection = await DB.getConnection();
-
-      const [rows] = await connection.query(query, [slug]);
-      connection.release();
+      const [rows]: any[] = await DB.query(query, [slug]);
 
       if (rows.length < 1) {
-        logger.debug(`$getPool(): slug does not match any known pool`);
+        logger.debug(`This slug does not match any known pool`);
         return null;
       }
 
@@ -108,8 +91,7 @@ class PoolsRepository {
 
       return rows[0];
     } catch (e) {
-      connection.release();
-      logger.err('$getPool() error' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot get pool from db. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }

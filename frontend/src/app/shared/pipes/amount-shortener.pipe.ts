@@ -4,8 +4,9 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'amountShortener'
 })
 export class AmountShortenerPipe implements PipeTransform {
-  transform(num: number, ...args: number[]): unknown {
+  transform(num: number, ...args: any[]): unknown {
     const digits = args[0] || 1;
+    const unit = args[1] || undefined;
 
     if (num < 1000) {
       return num.toFixed(digits);
@@ -21,7 +22,12 @@ export class AmountShortenerPipe implements PipeTransform {
       { value: 1e18, symbol: 'E' }
     ];
     const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
-    var item = lookup.slice().reverse().find((item) => num >= item.value);
-    return item ? (num / item.value).toFixed(digits).replace(rx, '$1') + item.symbol : '0';
+    const item = lookup.slice().reverse().find((item) => num >= item.value);
+
+    if (unit !== undefined) {
+      return item ? (num / item.value).toFixed(digits).replace(rx, '$1') + ' ' + item.symbol + unit : '0';
+    } else {
+      return item ? (num / item.value).toFixed(digits).replace(rx, '$1') + item.symbol : '0';
+    }
   }
 }

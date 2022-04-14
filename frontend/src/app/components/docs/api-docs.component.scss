@@ -152,6 +152,14 @@ h3 {
   float: right;
 }
 
+.endpoint-container .section-header table {
+  width: 100%;
+}
+
+.endpoint-container .section-header table td:first-child {
+  padding-right: 24px;
+}
+
 #doc-nav-mobile {
   position: fixed;
   top: 20px;
@@ -177,6 +185,16 @@ h3 {
   color: #fff;
   border-color: #105fb0;
   border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.blockchain-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: auto;
+  scrollbar-width: none;
+}
+.blockchain-wrapper::-webkit-scrollbar {
+  display: none;
 }
 
 @media (max-width: 992px) {
@@ -230,5 +248,9 @@ h3 {
 
   h3 {
     display: none;
+  }
+
+  .doc-item-container:last-of-type .endpoint-container {
+    margin-bottom: 4rem;
   }
 }

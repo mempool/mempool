@@ -55,7 +55,7 @@
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="miningStats.availableTimespanDay >= 1095">
           <input ngbButton type="radio" [value]="'3y'" fragment="3y"> 3Y
         </label>
-        <label ngbButtonLabel class="btn-primary btn-sm">
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="miningStats.availableTimespanDay > 1095">
           <input ngbButton type="radio" [value]="'all'" fragment="all"> ALL
         </label>
       </div>
@@ -79,7 +79,7 @@
           <th class="d-none d-md-block" i18n="mining.rank">Rank</th>
           <th class=""></th>
           <th class="" i18n="mining.pool-name">Pool</th>
-          <th class="" *ngIf="this.poolsWindowPreference === '24h'" i18n="mining.hashrate">Hashrate</th>
+          <th class="" *ngIf="this.miningWindowPreference === '24h'" i18n="mining.hashrate">Hashrate</th>
           <th class="" i18n="master-page.blocks">Blocks</th>
           <th class="d-none d-md-block" i18n="mining.empty-blocks">Empty Blocks</th>
         </tr>
@@ -90,7 +90,7 @@
           <td class="text-right"><img width="25" height="25" src="{{ pool.logo }}"
               onError="this.src = './resources/mining-pools/default.svg'"></td>
           <td class=""><a [routerLink]="[('/mining/pool/' + pool.slug) | relativeUrl]">{{ pool.name }}</a></td>
-          <td class="" *ngIf="this.poolsWindowPreference === '24h' && !isLoading">{{ pool.lastEstimatedHashrate }} {{
+          <td class="" *ngIf="this.miningWindowPreference === '24h' && !isLoading">{{ pool.lastEstimatedHashrate }} {{
             miningStats.miningUnits.hashrateUnit }}</td>
           <td class="">{{ pool['blockText'] }}</td>
           <td class="d-none d-md-block">{{ pool.emptyBlocks }} ({{ pool.emptyBlockRatio }}%)</td>
@@ -99,7 +99,7 @@
           <td class="d-none d-md-block"></td>
           <td class="text-right"></td>
           <td class="" i18n="mining.all-miners"><b>All miners</b></td>
-          <td class="" *ngIf="this.poolsWindowPreference === '24h'"><b>{{ miningStats.lastEstimatedHashrate}} {{
+          <td class="" *ngIf="this.miningWindowPreference === '24h'"><b>{{ miningStats.lastEstimatedHashrate}} {{
               miningStats.miningUnits.hashrateUnit }}</b></td>
           <td class=""><b>{{ miningStats.blockCount }}</b></td>
           <td class="d-none d-md-block"><b>{{ miningStats.totalEmptyBlock }} ({{ miningStats.totalEmptyBlockRatio

@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 import { PoolsStats, SinglePoolStats } from '../interfaces/node-api.interface';
 import { ApiService } from '../services/api.service';
 import { StateService } from './state.service';
+import { StorageService } from './storage.service';
 
 export interface MiningUnits {
   hashrateDivider: number;
@@ -28,8 +29,12 @@ export class MiningService {
   constructor(
     private stateService: StateService,
     private apiService: ApiService,
+    private storageService: StorageService,
   ) { }
 
+  /**
+   * Generate pool ranking stats
+   */
   public getMiningStats(interval: string): Observable<MiningStats> {
     return this.apiService.listPools$(interval).pipe(
       map(pools => this.generateMiningStats(pools))
@@ -61,6 +66,20 @@ export class MiningService {
       hashrateDivider: Math.pow(10, selectedPower),
       hashrateUnit: powerTable[selectedPower],
     };
+  }
+
+  /**
+   * Get the default selection timespan, cap with `min`
+   */
+  public getDefaultTimespan(min: string): string {
+    const timespans = [
+      '24h', '3d', '1w', '1m', '3m', '6m', '1y', '2y', '3y', 'all'
+    ];
+    const preference = this.storageService.getValue('miningWindowPreference') ?? '1w';
+    if (timespans.indexOf(preference) < timespans.indexOf(min)) {
+      return min;
+    }
+    return preference;
   }
 
   private generateMiningStats(stats: PoolsStats): MiningStats {

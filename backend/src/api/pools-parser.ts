@@ -1,5 +1,4 @@
-import { readFileSync } from 'fs';
-import { DB } from '../database';
+import DB from '../database';
 import logger from '../logger';
 import config from '../config';
 
@@ -17,20 +16,8 @@ class PoolsParser {
   /**
    * Parse the pools.json file, consolidate the data and dump it into the database
    */
-  public async migratePoolsJson() {
+  public async migratePoolsJson(poolsJson: object) {
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
-      return;
-    }
-
-    logger.debug('Importing pools.json to the database, open ./pools.json');
-
-    let poolsJson: object = {};
-    try {
-      const fileContent: string = readFileSync('./pools.json', 'utf8');
-      poolsJson = JSON.parse(fileContent);
-    } catch (e) {
-      logger.err('Unable to open ./pools.json, does the file exist?');
-      await this.insertUnknownPool();
       return;
     }
 
@@ -71,13 +58,11 @@ class PoolsParser {
     logger.debug(`Found ${poolNames.length} unique mining pools`);
 
     // Get existing pools from the db
-    const connection = await DB.getConnection();
     let existingPools;
     try {
-      [existingPools] = await connection.query<any>({ sql: 'SELECT * FROM pools;', timeout: 120000 });
+      [existingPools] = await DB.query({ sql: 'SELECT * FROM pools;', timeout: 120000 });
     } catch (e) {
-      logger.err('Unable to get existing pools from the database, skipping pools.json import');
-      connection.release();
+      logger.err('Cannot get existing pools from the database, skipping pools.json import');
       return;
     }
 
@@ -109,7 +94,7 @@ class PoolsParser {
       if (slug === undefined) {
         // Only keep alphanumerical
         slug = poolNames[i].replace(/[^a-z0-9]/gi, '').toLowerCase();
-        logger.debug(`No slug found for '${poolNames[i]}', generating it => '${slug}'`);
+        logger.warn(`No slug found for '${poolNames[i]}', generating it => '${slug}'`);
       }
 
       if (existingPools.find((pool) => pool.name === poolNames[i]) !== undefined) {
@@ -157,17 +142,15 @@ class PoolsParser {
 
     try {
       if (finalPoolDataAdd.length > 0) {
-        await connection.query<any>({ sql: queryAdd, timeout: 120000 });
+        await DB.query({ sql: queryAdd, timeout: 120000 });
       }
       for (const query of updateQueries) {
-        await connection.query<any>({ sql: query, timeout: 120000 });
+        await DB.query({ sql: query, timeout: 120000 });
       }
       await this.insertUnknownPool();
-      connection.release();
       logger.info('Mining pools.json import completed');
     } catch (e) {
-      connection.release();
-      logger.err(`Unable to import pools in the database!`);
+      logger.err(`Cannot import pools in the database`);
       throw e;
     }
   }
@@ -176,16 +159,15 @@ class PoolsParser {
    * Manually add the 'unknown pool'
    */
   private async insertUnknownPool() {
-    const connection = await DB.getConnection();
     try {
-      const [rows]: any[] = await connection.query({ sql: 'SELECT name from pools where name="Unknown"', timeout: 120000 });
+      const [rows]: any[] = await DB.query({ sql: 'SELECT name from pools where name="Unknown"', timeout: 120000 });
       if (rows.length === 0) {
-        await connection.query({
+        await DB.query({
           sql: `INSERT INTO pools(name, link, regexes, addresses, slug)
           VALUES("Unknown", "https://learnmeabitcoin.com/technical/coinbase-transaction", "[]", "[]", "unknown");
         `});
       } else {
-        await connection.query(`UPDATE pools
+        await DB.query(`UPDATE pools
           SET name='Unknown', link='https://learnmeabitcoin.com/technical/coinbase-transaction',
           regexes='[]', addresses='[]',
           slug='unknown'
@@ -195,8 +177,6 @@ class PoolsParser {
     } catch (e) {
       logger.err('Unable to insert "Unknown" mining pool');
     }
-
-    connection.release();
   }
 }
 
