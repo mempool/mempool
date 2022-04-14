@@ -37,7 +37,8 @@
     </form>
   </div>
 
-  <div class="chart" echarts [initOpts]="chartInitOptions" [options]="chartOptions">
+  <div class="chart" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+    (chartInit)="onChartInit($event)">
   </div>
   <div class="text-center loadingGraphs" *ngIf="isLoading">
     <div class="spinner-border text-light"></div>
