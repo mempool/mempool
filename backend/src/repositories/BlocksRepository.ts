@@ -387,7 +387,9 @@ class BlocksRepository {
    */
   public async $getHistoricalBlockFees(div: number, interval: string | null): Promise<any> {
     try {
-      let query = `SELECT CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
+      let query = `SELECT
+        CAST(AVG(height) as INT) as avg_height,
+        CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
         CAST(AVG(fees) as INT) as avg_fees
         FROM blocks`;
 
@@ -410,7 +412,9 @@ class BlocksRepository {
    */
    public async $getHistoricalBlockRewards(div: number, interval: string | null): Promise<any> {
     try {
-      let query = `SELECT CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
+      let query = `SELECT
+        CAST(AVG(height) as INT) as avg_height,
+        CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
         CAST(AVG(reward) as INT) as avg_rewards
         FROM blocks`;
 
@@ -436,7 +440,9 @@ class BlocksRepository {
     try {
       connection = await DB.getConnection();
 
-      let query = `SELECT CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
+      let query = `SELECT
+        CAST(AVG(height) as INT) as avg_height,
+        CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
         CAST(AVG(JSON_EXTRACT(fee_span, '$[0]')) as INT) as avg_fee_0,
         CAST(AVG(JSON_EXTRACT(fee_span, '$[1]')) as INT) as avg_fee_10,
         CAST(AVG(JSON_EXTRACT(fee_span, '$[2]')) as INT) as avg_fee_25,

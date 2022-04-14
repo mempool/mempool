@@ -290,8 +290,12 @@ export class HashrateChartComponent implements OnInit {
             }
           },
           splitLine: {
-            show: false,
-          }
+            lineStyle: {
+              type: 'dotted',
+              color: '#ffffff66',
+              opacity: 0.25,
+            }
+          },
         }
       ],
       series: data.hashrates.length === 0 ? [] : [

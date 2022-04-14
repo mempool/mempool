@@ -1,10 +1,9 @@
 export const formatterXAxis = (
   locale: string,
   windowPreference: string,
-  value: string
+  value: string | number
 ) => {
-
-  if(value.length === 0){
+  if (typeof value === 'string' && value.length === 0){
     return null;
   }
 
@@ -13,6 +12,7 @@ export const formatterXAxis = (
     case '2h':
       return date.toLocaleTimeString(locale, { hour: 'numeric', minute: 'numeric' });
     case '24h':
+    case '3d':
       return date.toLocaleTimeString(locale, { weekday: 'short', hour: 'numeric', minute: 'numeric' });
     case '1w':
     case '1m':
@@ -22,6 +22,7 @@ export const formatterXAxis = (
       return date.toLocaleTimeString(locale, { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' });
     case '2y':
     case '3y':
+    case 'all':
       return date.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' });
   }
 };
