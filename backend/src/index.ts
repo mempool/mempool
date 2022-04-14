@@ -5,7 +5,7 @@ import * as WebSocket from 'ws';
 import * as cluster from 'cluster';
 import axios from 'axios';
 
-import { checkDbConnection, DB } from './database';
+import DB from './database';
 import config from './config';
 import routes from './routes';
 import blocks from './api/blocks';
@@ -89,7 +89,7 @@ class Server {
     diskCache.loadMempoolCache();
 
     if (config.DATABASE.ENABLED) {
-      await checkDbConnection();
+      await DB.checkDbConnection();
       try {
         if (process.env.npm_config_reindex != undefined) { // Re-index requests
           const tables = process.env.npm_config_reindex.split(',');
@@ -188,7 +188,7 @@ class Server {
         await BlocksRepository.$deleteBlocks(10);
         await HashratesRepository.$deleteLastEntries();
       }
-      blocks.$generateBlockDatabase();
+      await blocks.$generateBlockDatabase();
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();
     } catch (e) {
