@@ -72,10 +72,11 @@ export class HashrateChartPoolsComponent implements OnInit {
           this.isLoading = true;
           return this.apiService.getHistoricalPoolsHashrate$(timespan)
             .pipe(
-              tap((data: any) => {
+              tap((response) => {
+                const hashrates = response.body;
                 // Prepare series (group all hashrates data point by pool)
                 const grouped = {};
-                for (const hashrate of data.hashrates) {
+                for (const hashrate of hashrates) {
                   if (!grouped.hasOwnProperty(hashrate.poolName)) {
                     grouped[hashrate.poolName] = [];
                   }
@@ -119,7 +120,6 @@ export class HashrateChartPoolsComponent implements OnInit {
                 this.prepareChartOptions({
                   legends: legends,
                   series: series,
-                  timestamp: data.oldestIndexedBlockTimestamp,
                 });
                 this.isLoading = false;
 
@@ -128,13 +128,10 @@ export class HashrateChartPoolsComponent implements OnInit {
                   throw new Error();
                 }
               }),
-              map((data: any) => {
-                const availableTimespanDay = (
-                  (new Date().getTime() / 1000) - (data.oldestIndexedBlockTimestamp)
-                ) / 3600 / 24;
+              map((response) => {
                 return {
-                  availableTimespanDay: availableTimespanDay,
-                };
+                  blockCount: parseInt(response.headers.get('x-total-count'), 10),
+                }
               }),
               retryWhen((errors) => errors.pipe(
                 delay(60000)

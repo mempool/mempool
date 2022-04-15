@@ -79,7 +79,8 @@ export class HashrateChartComponent implements OnInit {
           this.isLoading = true;
           return this.apiService.getHistoricalHashrate$(timespan)
             .pipe(
-              tap((data: any) => {
+              tap((response) => {
+                const data = response.body;
                 // We generate duplicated data point so the tooltip works nicely
                 const diffFixed = [];
                 let diffIndex = 1;
@@ -111,7 +112,6 @@ export class HashrateChartComponent implements OnInit {
                 this.prepareChartOptions({
                   hashrates: data.hashrates.map(val => [val.timestamp * 1000, val.avgHashrate]),
                   difficulty: diffFixed.map(val => [val.timestamp * 1000, val.difficulty]),
-                  timestamp: data.oldestIndexedBlockTimestamp,
                 });
                 this.isLoading = false;
 
@@ -120,13 +120,10 @@ export class HashrateChartComponent implements OnInit {
                   throw new Error();
                 }
               }),
-              map((data: any) => {
-                const availableTimespanDay = (
-                  (new Date().getTime() / 1000) - (data.oldestIndexedBlockTimestamp)
-                ) / 3600 / 24;
-
+              map((response) => {
+                const data = response.body;
                 return {
-                  availableTimespanDay: availableTimespanDay,
+                  blockCount: parseInt(response.headers.get('x-total-count'), 10),
                   currentDifficulty: Math.round(data.difficulty[data.difficulty.length - 1].difficulty * 100) / 100,
                   currentHashrate: data.hashrates[data.hashrates.length - 1].avgHashrate,
                 };

@@ -575,8 +575,10 @@ class Routes {
   public async $getPools(interval: string, req: Request, res: Response) {
     try {
       const stats = await miningStats.$getPoolsStats(interval);
+      const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
+      res.header('X-total-count', blockCount.toString());
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(stats);
     } catch (e) {
@@ -587,14 +589,12 @@ class Routes {
   public async $getPoolsHistoricalHashrate(req: Request, res: Response) {
     try {
       const hashrates = await HashratesRepository.$getPoolsWeeklyHashrate(req.params.interval ?? null);
-      const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
+      const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
+      res.header('X-total-count', blockCount.toString());
       res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
-      res.json({
-        oldestIndexedBlockTimestamp: oldestIndexedBlockTimestamp,
-        hashrates: hashrates,
-      });
+      res.json(hashrates);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
@@ -603,14 +603,12 @@ class Routes {
   public async $getPoolHistoricalHashrate(req: Request, res: Response) {
     try {
       const hashrates = await HashratesRepository.$getPoolWeeklyHashrate(req.params.slug);
-      const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
+      const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
+      res.header('X-total-count', blockCount.toString());
       res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
-      res.json({
-        oldestIndexedBlockTimestamp: oldestIndexedBlockTimestamp,
-        hashrates: hashrates,
-      });
+      res.json(hashrates);
     } catch (e) {
       if (e instanceof Error && e.message.indexOf('This mining pool does not exist') > -1) {
         res.status(404).send(e.message);
@@ -624,12 +622,12 @@ class Routes {
     try {
       const hashrates = await HashratesRepository.$getNetworkDailyHashrate(req.params.interval ?? null);
       const difficulty = await BlocksRepository.$getBlocksDifficulty(req.params.interval ?? null);
-      const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
+      const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
+      res.header('X-total-count', blockCount.toString());
       res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
       res.json({
-        oldestIndexedBlockTimestamp: oldestIndexedBlockTimestamp,
         hashrates: hashrates,
         difficulty: difficulty,
       });
@@ -641,14 +639,12 @@ class Routes {
   public async $getHistoricalBlockFees(req: Request, res: Response) {
     try {
       const blockFees = await mining.$getHistoricalBlockFees(req.params.interval ?? null);
-      const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
+      const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
+      res.header('X-total-count', blockCount.toString());
       res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
-      res.json({
-        oldestIndexedBlockTimestamp: oldestIndexedBlockTimestamp,
-        blockFees: blockFees,
-      });
+      res.json(blockFees);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
@@ -657,14 +653,12 @@ class Routes {
   public async $getHistoricalBlockRewards(req: Request, res: Response) {
     try {
       const blockRewards = await mining.$getHistoricalBlockRewards(req.params.interval ?? null);
-      const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
+      const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
+      res.header('X-total-count', blockCount.toString());
       res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
-      res.json({
-        oldestIndexedBlockTimestamp: oldestIndexedBlockTimestamp,
-        blockRewards: blockRewards,
-      });
+      res.json(blockRewards);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
@@ -970,7 +964,7 @@ class Routes {
 
   public async $getRewardStats(req: Request, res: Response) {
     try {
-      const response = await mining.$getRewardStats(parseInt(req.params.blockCount))
+      const response = await mining.$getRewardStats(parseInt(req.params.blockCount, 10));
       res.json(response);
     } catch (e) {
       res.status(500).end();
