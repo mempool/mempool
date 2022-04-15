@@ -6,7 +6,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { formatNumber } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { formatterXAxis } from 'src/app/shared/graphs.utils';
+import { formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from 'src/app/shared/graphs.utils';
 import { StorageService } from 'src/app/services/storage.service';
 import { MiningService } from 'src/app/services/mining.service';
 import { selectPowerOfTen } from 'src/app/bitcoin.utils';
@@ -152,7 +152,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
       grid: {
         right: this.right,
         left: this.left,
-        bottom: 70,
+        bottom: 80,
         top: this.isMobile() ? 10 : 50,
       },
       tooltip: {
@@ -189,17 +189,28 @@ export class BlockFeeRatesGraphComponent implements OnInit {
           return tooltip;
         }.bind(this)
       },
-      xAxis: data.series.length === 0 ? undefined : {
+      xAxis: data.series.length === 0 ? undefined :
+      {
+        name: formatterXAxisLabel(this.locale, this.timespan),
+        nameLocation: 'middle',
+        nameTextStyle: {
+          padding: [10, 0, 0, 0],
+        },
         type: 'category',
-        splitNumber: this.isMobile() ? 5 : 10,
+        boundaryGap: false,
+        axisLine: { onZero: true },
         axisLabel: {
+          formatter: val => formatterXAxisTimeCategory(this.locale, this.timespan, parseInt(val, 10)),
+          align: 'center',
+          fontSize: 11,
+          lineHeight: 12,
           hideOverlap: true,
-          formatter: val => formatterXAxis(this.locale, this.timespan, parseInt(val, 10)),
+          padding: [0, 5],
         },
       },
       legend: (data.series.length === 0) ? undefined : {
         data: data.legends,
-        selected: {
+        selected: JSON.parse(this.storageService.getValue('fee_rates_legend')) ?? {
           'Min': true,
           '10th': true,
           '25th': true,
@@ -207,7 +218,8 @@ export class BlockFeeRatesGraphComponent implements OnInit {
           '75th': true,
           '90th': true,
           'Max': false,
-        }
+        },
+        id: 4242,
       },
       yAxis: data.series.length === 0 ? undefined : {
         position: 'left',
@@ -216,7 +228,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
           formatter: (val) => {
             const selectedPowerOfTen: any = selectPowerOfTen(val);
             const newVal = Math.round(val / selectedPowerOfTen.divider);
-            return `${newVal}${selectedPowerOfTen.unit} sats/vB`;
+            return `${newVal}${selectedPowerOfTen.unit} s/vB`;
           },
         },
         splitLine: {
@@ -227,7 +239,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
           }
         },
         type: 'value',
-        max: () => this.timespan === 'all' ? 5000 : undefined,
+        max: (val) => this.timespan === 'all' ? Math.min(val.max, 5000) : undefined,
       },
       series: data.series,
       dataZoom: [{
@@ -235,7 +247,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
         realtime: true,
         zoomLock: true,
         maxSpan: 100,
-        minSpan: 10,
+        minSpan: 5,
         moveOnMouseMove: false,
       }, {
         showDetail: false,
@@ -264,6 +276,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
     }
 
     this.chartInstance = ec;
+
     this.chartInstance.on('click', (e) => {
       if (e.data.data === 9999) { // "Other"
         return;
@@ -274,6 +287,10 @@ export class BlockFeeRatesGraphComponent implements OnInit {
           this.router.navigate([url]);
         }
       });
+    });
+
+    this.chartInstance.on('legendselectchanged', (e) => {
+      this.storageService.setValue('fee_rates_legend', JSON.stringify(e.selected));
     });
   }
 

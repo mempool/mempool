@@ -175,7 +175,7 @@ export class BlockFeesGraphComponent implements OnInit {
         realtime: true,
         zoomLock: true,
         maxSpan: 100,
-        minSpan: 10,
+        minSpan: 5,
         moveOnMouseMove: false,
       }, {
         showDetail: false,
