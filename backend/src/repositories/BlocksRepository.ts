@@ -436,10 +436,7 @@ class BlocksRepository {
    * Get the historical averaged block fee rate percentiles
    */
    public async $getHistoricalBlockFeeRates(div: number, interval: string | null): Promise<any> {
-    let connection;
     try {
-      connection = await DB.getConnection();
-
       let query = `SELECT
         CAST(AVG(height) as INT) as avg_height,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
@@ -458,12 +455,9 @@ class BlocksRepository {
 
       query += ` GROUP BY UNIX_TIMESTAMP(blockTimestamp) DIV ${div}`;
 
-      const [rows]: any = await connection.query(query);
-      connection.release();
-
+      const [rows]: any = await DB.query(query);
       return rows;
     } catch (e) {
-      connection.release();
       logger.err('Cannot generate block fee rates history. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
