@@ -111,7 +111,11 @@ class Server {
     }
 
     if (Common.isLiquid()) {
-      icons.loadIcons();
+      try {
+        icons.loadIcons();
+      } catch (e) {
+        logger.err('Cannot load liquid icons. Ignoring. Reason: ' + (e instanceof Error ? e.message : e));
+      }
     }
 
     fiatConversion.startService();
