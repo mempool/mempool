@@ -1,0 +1,27 @@
+{
+  "MEMPOOL": {
+    "NETWORK": "mainnet",
+    "BACKEND": "lnd",
+    "HTTP_PORT": 8999,
+    "STDOUT_LOG_MIN_PRIORITY": "debug"
+  },
+  "SYSLOG": {
+    "ENABLED": false,
+    "HOST": "127.0.0.1",
+    "PORT": 514,
+    "MIN_PRIORITY": "info",
+    "FACILITY": "local7"
+  },
+  "LN_NODE_AUTH": {
+    "TSL_CERT_PATH": "",
+    "MACAROON_PATH": ""
+  },
+  "DATABASE": {
+    "HOST": "127.0.0.1",
+    "PORT": 3306,
+    "SOCKET": "/var/run/mysql/mysql.sock",
+    "DATABASE": "mempool",
+    "USERNAME": "mempool",
+    "PASSWORD": "mempool"
+  }
+}
