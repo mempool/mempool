@@ -195,6 +195,22 @@ class HashratesRepository {
       logger.err('Cannot delete latest hashrates data points. Reason: ' + (e instanceof Error ? e.message : e));
     }
   }
+  
+  /**
+   * Delete hashrates from the database from timestamp
+   */
+  public async $deleteHashratesFromTimestamp(timestamp: number) {
+    logger.info(`Delete newer hashrates from timestamp ${new Date(timestamp * 1000).toUTCString()} from the database`);
+
+    try {
+      await DB.query(`DELETE FROM hashrates WHERE hashrate_timestamp >= FROM_UNIXTIME(?)`, [timestamp]);
+      // Re-run the hashrate indexing to fill up missing data
+      await this.$setLatestRunTimestamp('last_hashrates_indexing', 0);
+      await this.$setLatestRunTimestamp('last_weekly_hashrates_indexing', 0);
+    } catch (e) {
+      logger.err('Cannot delete latest hashrates data points. Reason: ' + (e instanceof Error ? e.message : e));
+    }
+  }
 }
 
 export default new HashratesRepository();
