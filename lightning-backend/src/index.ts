@@ -2,6 +2,7 @@ import config from './config';
 import logger from './logger';
 import DB from './database';
 import lightningApi from './api/lightning-api-factory';
+import statsUpdater from './tasks/stats-updater';
 
 logger.notice(`Mempool Server is running on port ${config.MEMPOOL.HTTP_PORT}`);
 
@@ -13,8 +14,7 @@ class LightningServer {
   async init() {
     await DB.checkDbConnection();
 
-    const networkInfo = await lightningApi.getNetworkInfo();
-    logger.info(JSON.stringify(networkInfo));
+    statsUpdater.startService();
 
     const networkGraph = await lightningApi.getNetworkGraph();
     logger.info('Network graph channels: ' + networkGraph.channels.length);
