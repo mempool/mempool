@@ -332,14 +332,16 @@ class Blocks {
       if (Common.indexingEnabled()) {
         if (!fastForwarded) {
           const lastBlock = await blocksRepository.$getBlockByHeight(blockExtended.height - 1);
-          if (lastBlock !== null && blockExtended.id !== lastBlock['previousblockhash']) {
+          if (lastBlock !== null && blockExtended.previousblockhash !== lastBlock['hash']) {
             logger.warn(`Chain divergence detected at block ${lastBlock['height']}, re-indexing most recent data`);
-            await BlocksRepository.$deleteBlocksFrom(lastBlock['height'] - 2);
+            // We assume there won't be a reorg with more than 10 block depth
+            await BlocksRepository.$deleteBlocksFrom(lastBlock['height'] - 10);
             await HashratesRepository.$deleteLastEntries();
-            this.reindexFlag = true;
-          } else {
-            await blocksRepository.$saveBlockInDatabase(blockExtended);
+            for (let i = 10; i >= 0; --i) {
+              await this.$indexBlock(lastBlock['height'] - i);
+            }
           }
+          await blocksRepository.$saveBlockInDatabase(blockExtended);
         }
       }
 
