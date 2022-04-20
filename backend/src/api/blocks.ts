@@ -392,6 +392,12 @@ class Blocks {
    * Index a block by hash if it's missing from the database. Returns the block after indexing
    */
   public async $getBlock(hash: string): Promise<BlockExtended | IEsploraApi.Block> {
+    // Check the memory cache
+    const blockByHash = this.getBlocks().find((b) => b.id === hash);
+    if (blockByHash) {
+      return blockByHash;
+    }
+
     // Block has already been indexed
     if (Common.indexingEnabled()) {
       const dbBlock = await blocksRepository.$getBlockByHash(hash);
