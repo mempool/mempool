@@ -287,9 +287,38 @@ class BlocksRepository {
         return null;
       }
 
+      rows[0].fee_span = JSON.parse(rows[0].fee_span);
       return rows[0];
     } catch (e) {
       logger.err(`Cannot get indexed block ${height}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Get one block by hash
+   */
+  public async $getBlockByHash(hash: string): Promise<object | null> {
+    try {
+      const query = `
+        SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp, hash as id,
+        pools.id as pool_id, pools.name as pool_name, pools.link as pool_link, pools.slug as pool_slug,
+        pools.addresses as pool_addresses, pools.regexes as pool_regexes,
+        previous_block_hash as previousblockhash
+        FROM blocks
+        JOIN pools ON blocks.pool_id = pools.id
+        WHERE hash = '${hash}';
+      `;
+      const [rows]: any[] = await DB.query(query);
+
+      if (rows.length <= 0) {
+        return null;
+      }
+
+      rows[0].fee_span = JSON.parse(rows[0].fee_span);
+      return rows[0];
+    } catch (e) {
+      logger.err(`Cannot get indexed block ${hash}. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -457,7 +486,7 @@ class BlocksRepository {
   /**
    * Get the historical averaged block rewards
    */
-   public async $getHistoricalBlockRewards(div: number, interval: string | null): Promise<any> {
+  public async $getHistoricalBlockRewards(div: number, interval: string | null): Promise<any> {
     try {
       let query = `SELECT
         CAST(AVG(height) as INT) as avg_height,
