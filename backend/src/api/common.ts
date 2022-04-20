@@ -174,7 +174,7 @@ export class Common {
     return (
       ['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) &&
       config.DATABASE.ENABLED === true &&
-      config.MEMPOOL.INDEXING_BLOCKS_AMOUNT != 0
+      config.MEMPOOL.INDEXING_BLOCKS_AMOUNT !== 0
     );
   }
 }
