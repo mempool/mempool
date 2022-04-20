@@ -81,15 +81,26 @@
               <ng-template [ngIf]="fees !== undefined" [ngIfElse]="loadingFees">
                 <tr>
                   <td i18n="block.total-fees|Total fees in a block">Total fees</td>
-                  <td *ngIf="network !== 'liquid' && network !== 'liquidtestnet'; else liquidTotalFees"><app-amount [satoshis]="fees * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="fees * 100000000" digitsInfo="1.0-0"></app-fiat></span></td>
+                  <td *ngIf="network !== 'liquid' && network !== 'liquidtestnet'; else liquidTotalFees">
+                    <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
+                    <span class="fiat">
+                      <app-fiat [value]="block.extras.totalFees" digitsInfo="1.0-0"></app-fiat>
+                    </span>
+                  </td>
                   <ng-template #liquidTotalFees>
-                    <td><app-amount [satoshis]="fees * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount>&nbsp; <app-fiat [value]="fees * 100000000" digitsInfo="1.2-2"></app-fiat></td>
+                    <td>
+                      <app-amount [satoshis]="fees * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount>&nbsp; <app-fiat
+                        [value]="fees * 100000000" digitsInfo="1.2-2"></app-fiat>
+                    </td>
                   </ng-template>
                 </tr>
                 <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
                   <td i18n="block.subsidy-and-fees|Total subsidy and fees in a block">Subsidy + fees:</td>
                   <td>
-                    <app-amount [satoshis]="(blockSubsidy + fees) * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="(blockSubsidy + fees) * 100000000" digitsInfo="1.0-0"></app-fiat></span>
+                    <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
+                    <span class="fiat">
+                      <app-fiat [value]="(blockSubsidy + fees) * 100000000" digitsInfo="1.0-0"></app-fiat>
+                    </span>
                   </td>
                 </tr>
               </ng-template>

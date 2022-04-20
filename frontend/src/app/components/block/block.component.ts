@@ -206,13 +206,10 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.queryParamsSubscription.unsubscribe();
   }
 
+  // TODO - Refactor this.fees/this.reward for liquid because it is not
+  // used anymore on Bitcoin networks (we use block.extras directly)
   setBlockSubsidy() {
-    if (this.network === 'liquid' || this.network === 'liquidtestnet') {
-      this.blockSubsidy = 0;
-      return;
-    }
-    const halvings = Math.floor(this.block.height / 210000);
-    this.blockSubsidy = 50 * 2 ** -halvings;
+    this.blockSubsidy = 0;
   }
 
   pageChange(page: number, target: HTMLElement) {
