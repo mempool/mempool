@@ -179,7 +179,8 @@ class Blocks {
 
       const regexes: string[] = JSON.parse(pools[i].regexes);
       for (let y = 0; y < regexes.length; ++y) {
-        const match = asciiScriptSig.match(regexes[y]);
+        const regex = new RegExp(regexes[y], 'i');
+        const match = asciiScriptSig.match(regex);
         if (match !== null) {
           return pools[i];
         }
