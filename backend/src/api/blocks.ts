@@ -377,8 +377,6 @@ class Blocks {
     // use it for the mining pages, and mining pages should not be available if indexing is turned off.
     // I'll need to fix it before we refactor the block(s) related pages
     try {
-      loadingIndicators.setProgress('blocks', 0);
-
       let currentHeight = fromHeight !== undefined ? fromHeight : this.getCurrentBlockHeight();
       const returnBlocks: BlockExtended[] = [];
 
@@ -405,13 +403,11 @@ class Blocks {
         }
         returnBlocks.push(block);
         nextHash = block.previousblockhash;
-        loadingIndicators.setProgress('blocks', i / 10 * 100);
         currentHeight--;
       }
 
       return returnBlocks;
     } catch (e) {
-      loadingIndicators.setProgress('blocks', 100);
       throw e;
     }
   }
