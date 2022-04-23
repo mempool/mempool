@@ -79,7 +79,7 @@
                   <tr *ngFor="let group of featuredAssets">
                     <td class="asset-icon">
                       <a [routerLink]="['/assets/asset/' | relativeUrl, group.asset]">
-                        <img class="assetIcon" [src]="'https://liquid.network/api/v1/asset/' + group.asset + '/icon'">
+                        <img class="assetIcon" [src]="'/api/v1/asset/' + group.asset + '/icon'">
                       </a>
                     </td>
                     <td class="asset-title">
