@@ -26,6 +26,13 @@ export namespace ILightningApi {
 
   interface Policy {
     public_key: string;
+    base_fee_mtokens?: number;
+    cltv_delta?: number;
+    fee_rate?: number;
+    is_disabled?: boolean;
+    max_htlc_mtokens?: number;
+    min_htlc_mtokens?: number;
+    updated_at?: string;
   }
 
   export interface Node {
