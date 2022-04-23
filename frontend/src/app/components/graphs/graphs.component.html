@@ -17,6 +17,10 @@
         Hashrate & Difficulty
       </a>
       <a class="dropdown-item" routerLinkActive="active"
+        [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" i18n="mining.block-fee-rates">
+        Block Fee Rates
+      </a>
+      <a class="dropdown-item" routerLinkActive="active"
         [routerLink]="['/graphs/mining/block-fees' | relativeUrl]" i18n="mining.block-fees">
         Block Fees
       </a>
