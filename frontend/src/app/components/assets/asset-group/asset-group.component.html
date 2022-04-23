@@ -15,7 +15,7 @@
     <div *ngFor="let asset of group.assets">
       <div class="card">
         <a [routerLink]="['/assets/asset' | relativeUrl, asset.asset_id]">
-          <img class="assetIcon" [src]="'https://liquid.network/api/v1/asset/' + asset.asset_id + '/icon'">
+          <img class="assetIcon" [src]="'/api/v1/asset/' + asset.asset_id + '/icon'">
         </a>
         <div class="title">
           <a [routerLink]="['/assets/asset/' | relativeUrl, asset.asset_id]">{{ asset.name }}</a>
