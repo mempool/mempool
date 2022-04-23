@@ -1,8 +1,7 @@
 import config from '../config';
 import DB from '../database';
 import logger from '../logger';
-
-const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
+import { Common } from './common';
 
 class DatabaseMigration {
   private static currentVersion = 17;
@@ -25,7 +24,7 @@ class DatabaseMigration {
         await this.$createMigrationStateTable();
       } catch (e) {
         logger.err('MIGRATIONS: Unable to create `state` table, aborting in 10 seconds. ' + e);
-        await sleep(10000);
+        await Common.sleep$(10000);
         process.exit(-1);
       }
       logger.debug('MIGRATIONS: `state` table initialized.');
@@ -36,7 +35,7 @@ class DatabaseMigration {
       databaseSchemaVersion = await this.$getSchemaVersionFromDatabase();
     } catch (e) {
       logger.err('MIGRATIONS: Unable to get current database migration version, aborting in 10 seconds. ' + e);
-      await sleep(10000);
+      await Common.sleep$(10000);
       process.exit(-1);
     }
 
@@ -52,7 +51,7 @@ class DatabaseMigration {
       await this.$createMissingTablesAndIndexes(databaseSchemaVersion);
     } catch (e) {
       logger.err('MIGRATIONS: Unable to create required tables, aborting in 10 seconds. ' + e);
-      await sleep(10000);
+      await Common.sleep$(10000);
       process.exit(-1);
     }
 

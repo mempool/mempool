@@ -85,16 +85,16 @@ class Server {
 
     this.setUpWebsocketHandling();
 
-    await syncAssets.syncAssets();
+    await syncAssets.syncAssets$();
     diskCache.loadMempoolCache();
 
     if (config.DATABASE.ENABLED) {
       await DB.checkDbConnection();
       try {
-        if (process.env.npm_config_reindex != undefined) { // Re-index requests
+        if (process.env.npm_config_reindex !== undefined) { // Re-index requests
           const tables = process.env.npm_config_reindex.split(',');
           logger.warn(`Indexed data for "${process.env.npm_config_reindex}" tables will be erased in 5 seconds (using '--reindex')`);
-          await Common.sleep(5000);
+          await Common.sleep$(5000);
           await databaseMigration.$truncateIndexedData(tables);
         }
         await databaseMigration.$initializeOrMigrateDatabase();
