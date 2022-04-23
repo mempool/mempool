@@ -143,8 +143,10 @@ export function selectPowerOfTen(val: number) {
   };
 
   let selectedPowerOfTen;
-  if (val < powerOfTen.mega) {
+  if (val < powerOfTen.kilo) {
     selectedPowerOfTen = { divider: 1, unit: '' }; // no scaling
+  } else if (val < powerOfTen.mega) {
+    selectedPowerOfTen = { divider: powerOfTen.kilo, unit: 'k' };
   } else if (val < powerOfTen.giga) {
     selectedPowerOfTen = { divider: powerOfTen.mega, unit: 'M' };
   } else if (val < powerOfTen.terra) {

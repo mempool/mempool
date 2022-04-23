@@ -149,8 +149,12 @@ export class BlockRewardsGraphComponent implements OnInit {
             }
           },
           splitLine: {
-            show: false,
-          }
+            lineStyle: {
+              type: 'dotted',
+              color: '#ffffff66',
+              opacity: 0.25,
+            }
+          },
         },
       ],
       series: [
@@ -171,7 +175,7 @@ export class BlockRewardsGraphComponent implements OnInit {
         realtime: true,
         zoomLock: true,
         maxSpan: 100,
-        minSpan: 10,
+        minSpan: 5,
         moveOnMouseMove: false,
       }, {
         showDetail: false,
