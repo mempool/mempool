@@ -25,12 +25,16 @@ class LndApi implements AbstractLightningApi {
     }
   }
 
-  async getNetworkInfo(): Promise<ILightningApi.NetworkInfo> {
+  async $getNetworkInfo(): Promise<ILightningApi.NetworkInfo> {
     return await lnService.getNetworkInfo({ lnd: this.lnd });
   }
 
-  async getNetworkGraph(): Promise<ILightningApi.NetworkGraph> {
+  async $getNetworkGraph(): Promise<ILightningApi.NetworkGraph> {
     return await lnService.getNetworkGraph({ lnd: this.lnd });
+  }
+
+  async $getChanInfo(id: string): Promise<ILightningApi.Channel> {
+    return await lnService.getChannel({ lnd: this.lnd, id });
   }
 }
 
