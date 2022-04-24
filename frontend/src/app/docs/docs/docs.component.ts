@@ -1,7 +1,7 @@
 import { Component, OnInit, HostBinding } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Env, StateService } from 'src/app/services/state.service';
-import { WebsocketService } from 'src/app/services/websocket.service';
+import { Env, StateService } from '../../services/state.service';
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-docs',
@@ -26,9 +26,9 @@ export class DocsComponent implements OnInit {
   ngOnInit(): void {
     this.websocket.want(['blocks']);
     const url = this.route.snapshot.url;
-    if( url[1].path === "faq" ) {
+    if (url[0].path === "faq" ) {
         this.activeTab = 0;
-    } else if( url[2].path === "rest" ) {
+    } else if( url[1].path === "rest" ) {
         this.activeTab = 1;
     } else {
         this.activeTab = 2;
