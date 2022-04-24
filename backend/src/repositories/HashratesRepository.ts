@@ -102,7 +102,7 @@ class HashratesRepository {
   /**
    * Returns a pool hashrate history
    */
-   public async $getPoolWeeklyHashrate(slug: string): Promise<any[]> {
+  public async $getPoolWeeklyHashrate(slug: string): Promise<any[]> {
     const pool = await PoolsRepository.$getPool(slug);
     if (!pool) {
       throw new Error(`This mining pool does not exist`);

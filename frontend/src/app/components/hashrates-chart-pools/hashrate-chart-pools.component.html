@@ -4,25 +4,25 @@
     <span i18n="mining.pools-dominance">Mining pools dominance</span>
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(hashrateObservable$ | async) as stats">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
-        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.availableTimespanDay >= 30">
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.blockCount >= 4320">
           <input ngbButton type="radio" [value]="'1m'" fragment="1m"> 1M
         </label>
-        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.availableTimespanDay >= 90">
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.blockCount >= 12960">
           <input ngbButton type="radio" [value]="'3m'" fragment="3m"> 3M
         </label>
-        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.availableTimespanDay >= 180">
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.blockCount >= 25920">
           <input ngbButton type="radio" [value]="'6m'" fragment="6m"> 6M
         </label>
-        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.availableTimespanDay >= 365">
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.blockCount >= 52560">
           <input ngbButton type="radio" [value]="'1y'" fragment="1y"> 1Y
         </label>
-        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.availableTimespanDay >= 730">
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.blockCount >= 105120">
           <input ngbButton type="radio" [value]="'2y'" fragment="2y"> 2Y
         </label>
-        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.availableTimespanDay >= 1095">
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.blockCount >= 157680">
           <input ngbButton type="radio" [value]="'3y'" fragment="3y"> 3Y
         </label>
-        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.availableTimespanDay > 1095">
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.blockCount > 157680">
           <input ngbButton type="radio" [value]="'all'" fragment="all"> ALL
         </label>
       </div>

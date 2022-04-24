@@ -18,7 +18,7 @@ export interface MiningStats {
   totalEmptyBlockRatio: string;
   pools: SinglePoolStats[];
   miningUnits: MiningUnits;
-  availableTimespanDay: number;
+  totalBlockCount: number;
 }
 
 @Injectable({
@@ -37,7 +37,7 @@ export class MiningService {
    */
   public getMiningStats(interval: string): Observable<MiningStats> {
     return this.apiService.listPools$(interval).pipe(
-      map(pools => this.generateMiningStats(pools))
+      map(response => this.generateMiningStats(response))
     );
   }
 
@@ -82,7 +82,8 @@ export class MiningService {
     return preference;
   }
 
-  private generateMiningStats(stats: PoolsStats): MiningStats {
+  private generateMiningStats(response): MiningStats {
+    const stats: PoolsStats = response.body;
     const miningUnits = this.getMiningUnits();
     const hashrateDivider = miningUnits.hashrateDivider;
 
@@ -100,10 +101,6 @@ export class MiningService {
       };
     });
 
-    const availableTimespanDay = (
-      (new Date().getTime() / 1000) - (stats.oldestIndexedBlockTimestamp)
-    ) / 3600 / 24;
-
     return {
       lastEstimatedHashrate: (stats.lastEstimatedHashrate / hashrateDivider).toFixed(2),
       blockCount: stats.blockCount,
@@ -111,7 +108,7 @@ export class MiningService {
       totalEmptyBlockRatio: totalEmptyBlockRatio,
       pools: poolsStats,
       miningUnits: miningUnits,
-      availableTimespanDay: availableTimespanDay,
+      totalBlockCount: parseInt(response.headers.get('x-total-count'), 10),
     };
   }
 }
