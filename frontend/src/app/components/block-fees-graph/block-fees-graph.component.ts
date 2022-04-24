@@ -25,7 +25,6 @@ import { MiningService } from 'src/app/services/mining.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlockFeesGraphComponent implements OnInit {
-  @Input() tableOnly = false;
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
 
@@ -69,19 +68,15 @@ export class BlockFeesGraphComponent implements OnInit {
           this.isLoading = true;
           return this.apiService.getHistoricalBlockFees$(timespan)
             .pipe(
-              tap((data: any) => {
+              tap((response) => {
                 this.prepareChartOptions({
-                  blockFees: data.blockFees.map(val => [val.timestamp * 1000, val.avg_fees / 100000000]),
+                  blockFees: response.body.map(val => [val.timestamp * 1000, val.avg_fees / 100000000]),
                 });
                 this.isLoading = false;
               }),
-              map((data: any) => {
-                const availableTimespanDay = (
-                  (new Date().getTime() / 1000) - (data.oldestIndexedBlockTimestamp)
-                ) / 3600 / 24;
-
+              map((response) => {
                 return {
-                  availableTimespanDay: availableTimespanDay,
+                  blockCount: parseInt(response.headers.get('x-total-count'), 10),
                 };
               }),
             );
@@ -150,8 +145,12 @@ export class BlockFeesGraphComponent implements OnInit {
             }
           },
           splitLine: {
-            show: false,
-          }
+            lineStyle: {
+              type: 'dotted',
+              color: '#ffffff66',
+              opacity: 0.25,
+            }
+          },
         },
       ],
       series: [
@@ -172,7 +171,7 @@ export class BlockFeesGraphComponent implements OnInit {
         realtime: true,
         zoomLock: true,
         maxSpan: 100,
-        minSpan: 10,
+        minSpan: 5,
         moveOnMouseMove: false,
       }, {
         showDetail: false,
