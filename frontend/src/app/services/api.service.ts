@@ -125,10 +125,10 @@ export class ApiService {
     return this.httpClient.post<any>(this.apiBaseUrl + this.apiBasePath + '/api/tx', hexPayload, { responseType: 'text' as 'json'});
   }
 
-  listPools$(interval: string | undefined) : Observable<PoolsStats> {
-    return this.httpClient.get<PoolsStats>(
+  listPools$(interval: string | undefined) : Observable<any> {
+    return this.httpClient.get<any>(
       this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pools` +
-      (interval !== undefined ? `/${interval}` : '')
+      (interval !== undefined ? `/${interval}` : ''), { observe: 'response' }
     );
   }
 
@@ -157,27 +157,34 @@ export class ApiService {
   getHistoricalHashrate$(interval: string | undefined): Observable<any> {
     return this.httpClient.get<any[]>(
         this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/hashrate` +
-        (interval !== undefined ? `/${interval}` : '')
+        (interval !== undefined ? `/${interval}` : ''), { observe: 'response' }
       );
   }
 
   getHistoricalPoolsHashrate$(interval: string | undefined): Observable<any> {
     return this.httpClient.get<any[]>(
         this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/hashrate/pools` +
-        (interval !== undefined ? `/${interval}` : '')
+        (interval !== undefined ? `/${interval}` : ''), { observe: 'response' }
       );
   }
 
   getHistoricalBlockFees$(interval: string | undefined) : Observable<any> {
     return this.httpClient.get<any[]>(
       this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/fees` +
-      (interval !== undefined ? `/${interval}` : '')
+      (interval !== undefined ? `/${interval}` : ''), { observe: 'response' }
     );
   }
 
   getHistoricalBlockRewards$(interval: string | undefined) : Observable<any> {
     return this.httpClient.get<any[]>(
       this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/rewards` +
+      (interval !== undefined ? `/${interval}` : ''), { observe: 'response' }
+    );
+  }
+
+  getHistoricalBlockFeeRates$(interval: string | undefined) : Observable<any> {
+    return this.httpClient.get<any[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/fee-rates` +
       (interval !== undefined ? `/${interval}` : '')
     );
   }

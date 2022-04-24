@@ -64,7 +64,7 @@
         </div>
         <div class="w-100 d-block d-md-none"></div>
         <div class="col icon-holder">
-          <img *ngIf="!imageError; else defaultIcon" class="assetIcon" [src]="'https://liquid.network/api/v1/asset/' + asset.asset_id + '/icon'" (error)="imageError = true">
+          <img *ngIf="!imageError; else defaultIcon" class="assetIcon" [src]="'/api/v1/asset/' + asset.asset_id + '/icon'" (error)="imageError = true">
           <ng-template #defaultIcon>
             <fa-icon class="defaultIcon" [icon]="['fas', 'database']" [fixedWidth]="true" size="8x"></fa-icon>
           </ng-template>

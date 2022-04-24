@@ -179,7 +179,7 @@ export class StatisticsComponent implements OnInit {
     }
 
     // Find median value
-    const vBytes : number[] = [];
+    const vBytes: number[] = [];
     for (const stat of this.mempoolStats) {
       vBytes.push(stat.vbytes_per_second);
     }
