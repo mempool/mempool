@@ -387,7 +387,9 @@ class BlocksRepository {
    */
   public async $getHistoricalBlockFees(div: number, interval: string | null): Promise<any> {
     try {
-      let query = `SELECT CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
+      let query = `SELECT
+        CAST(AVG(height) as INT) as avg_height,
+        CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
         CAST(AVG(fees) as INT) as avg_fees
         FROM blocks`;
 
@@ -410,7 +412,9 @@ class BlocksRepository {
    */
    public async $getHistoricalBlockRewards(div: number, interval: string | null): Promise<any> {
     try {
-      let query = `SELECT CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
+      let query = `SELECT
+        CAST(AVG(height) as INT) as avg_height,
+        CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
         CAST(AVG(reward) as INT) as avg_rewards
         FROM blocks`;
 
@@ -424,6 +428,37 @@ class BlocksRepository {
       return rows;
     } catch (e) {
       logger.err('Cannot generate block rewards history. Reason: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Get the historical averaged block fee rate percentiles
+   */
+   public async $getHistoricalBlockFeeRates(div: number, interval: string | null): Promise<any> {
+    try {
+      let query = `SELECT
+        CAST(AVG(height) as INT) as avg_height,
+        CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
+        CAST(AVG(JSON_EXTRACT(fee_span, '$[0]')) as INT) as avg_fee_0,
+        CAST(AVG(JSON_EXTRACT(fee_span, '$[1]')) as INT) as avg_fee_10,
+        CAST(AVG(JSON_EXTRACT(fee_span, '$[2]')) as INT) as avg_fee_25,
+        CAST(AVG(JSON_EXTRACT(fee_span, '$[3]')) as INT) as avg_fee_50,
+        CAST(AVG(JSON_EXTRACT(fee_span, '$[4]')) as INT) as avg_fee_75,
+        CAST(AVG(JSON_EXTRACT(fee_span, '$[5]')) as INT) as avg_fee_90,
+        CAST(AVG(JSON_EXTRACT(fee_span, '$[6]')) as INT) as avg_fee_100
+      FROM blocks`;
+
+      if (interval !== null) {
+        query += ` WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+      }
+
+      query += ` GROUP BY UNIX_TIMESTAMP(blockTimestamp) DIV ${div}`;
+
+      const [rows]: any = await DB.query(query);
+      return rows;
+    } catch (e) {
+      logger.err('Cannot generate block fee rates history. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }

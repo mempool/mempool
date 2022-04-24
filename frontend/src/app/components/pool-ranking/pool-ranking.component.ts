@@ -276,7 +276,7 @@ export class PoolRankingComponent implements OnInit {
       totalEmptyBlock: 0,
       totalEmptyBlockRatio: '',
       pools: [],
-      availableTimespanDay: 0,
+      totalBlockCount: 0,
       miningUnits: {
         hashrateDivider: 1,
         hashrateUnit: '',
