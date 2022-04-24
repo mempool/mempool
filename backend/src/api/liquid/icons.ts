@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import config from '../../config';
 import logger from '../../logger';
 
 class Icons {

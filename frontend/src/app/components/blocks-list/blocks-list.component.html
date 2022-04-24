@@ -19,14 +19,14 @@
       </thead>
       <tbody *ngIf="blocks$ | async as blocks; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
         <tr *ngFor="let block of blocks; let i= index; trackBy: trackByBlock">
-          <td class="height " [class]="widget ? 'widget' : ''">
+          <td [class]="widget ? 'widget' : ''">
             <a [routerLink]="['/block' | relativeUrl, block.height]">{{ block.height
               }}</a>
           </td>
           <td class="pool text-left" [class]="widget ? 'widget' : ''">
             <div class="tooltip-custom">
               <a class="clear-link" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]">
-                <img width="23" height="23" src="{{ block.extras.pool['logo'] }}"
+                <img width="22" height="22" src="{{ block.extras.pool['logo'] }}"
                   onError="this.src = './resources/mining-pools/default.svg'">
                 <span class="pool-name">{{ block.extras.pool.name }}</span>
               </a>
@@ -61,26 +61,26 @@
         <tbody>
           <tr *ngFor="let item of skeletonLines">
             <td class="height" [class]="widget ? 'widget' : ''">
-              <span class="skeleton-loader"></span>
+              <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
             <td class="pool text-left" [class]="widget ? 'widget' : ''">
-              <img width="25" height="25" style="opacity: 0">
-              <span class="skeleton-loader"></span>
+              <img width="1" height="25" style="opacity: 0">
+              <span class="skeleton-loader" style="max-width: 125px"></span>
             </td>
             <td class="timestamp" *ngIf="!widget">
-              <span class="skeleton-loader"></span>
+              <span class="skeleton-loader" style="max-width: 150px"></span>
             </td>
             <td class="mined" *ngIf="!widget">
-              <span class="skeleton-loader"></span>
+              <span class="skeleton-loader" style="max-width: 125px"></span>
             </td>
             <td class="reward text-right" [class]="widget ? 'widget' : ''">
-              <span class="skeleton-loader"></span>
+              <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
             <td class="fees text-right" *ngIf="!widget">
-              <span class="skeleton-loader"></span>
+              <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
             <td class="txs text-right" [class]="widget ? 'widget' : ''">
-              <span class="skeleton-loader"></span>
+              <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
             <td class="size" *ngIf="!widget">
               <span class="skeleton-loader"></span>
