@@ -188,10 +188,6 @@ class Server {
 
     try {
       await poolsUpdater.updatePoolsJson();
-      if (blocks.reindexFlag) {
-        await BlocksRepository.$deleteBlocks(10);
-        await HashratesRepository.$deleteLastEntries();
-      }
       await blocks.$generateBlockDatabase();
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();

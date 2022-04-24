@@ -4,6 +4,7 @@ import logger from '../logger';
 import { Common } from '../api/common';
 import { prepareBlock } from '../utils/blocks-utils';
 import PoolsRepository from './PoolsRepository';
+import HashratesRepository from './HashratesRepository';
 
 class BlocksRepository {
   /**
@@ -370,15 +371,43 @@ class BlocksRepository {
   }
 
   /**
-   * Delete $count blocks from the database
+   * Check if the chain of block hash is valid and delete data from the stale branch if needed
    */
-  public async $deleteBlocks(count: number) {
-    logger.info(`Delete ${count} most recent indexed blocks from the database`);
+  public async $validateChain(): Promise<boolean> {
+    try {
+      const start = new Date().getTime();
+      const [blocks]: any[] = await DB.query(`SELECT height, hash, previous_block_hash,
+        UNIX_TIMESTAMP(blockTimestamp) as timestamp FROM blocks ORDER BY height`);
+
+      let currentHeight = 1;
+      while (currentHeight < blocks.length) {
+        if (blocks[currentHeight].previous_block_hash !== blocks[currentHeight - 1].hash) {
+          logger.warn(`Chain divergence detected at block ${blocks[currentHeight - 1].height}, re-indexing newer blocks and hashrates`);
+          await this.$deleteBlocksFrom(blocks[currentHeight - 1].height);
+          await HashratesRepository.$deleteHashratesFromTimestamp(blocks[currentHeight - 1].timestamp - 604800);
+          return false;
+        }
+        ++currentHeight;
+      }
+
+      logger.info(`${currentHeight} blocks hash validated in ${new Date().getTime() - start} ms`);
+      return true;
+    } catch (e) {
+      logger.err('Cannot validate chain of block hash. Reason: ' + (e instanceof Error ? e.message : e));
+      return true; // Don't do anything if there is a db error
+    }
+  }
+
+  /**
+   * Delete blocks from the database from blockHeight
+   */
+  public async $deleteBlocksFrom(blockHeight: number) {
+    logger.info(`Delete newer blocks from height ${blockHeight} from the database`);
 
     try {
-      await DB.query(`DELETE FROM blocks ORDER BY height DESC LIMIT ${count};`);
+      await DB.query(`DELETE FROM blocks where height >= ${blockHeight}`);
     } catch (e) {
-      logger.err('Cannot delete recent indexed blocks. Reason: ' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot delete indexed blocks. Reason: ' + (e instanceof Error ? e.message : e));
     }
   }
 
