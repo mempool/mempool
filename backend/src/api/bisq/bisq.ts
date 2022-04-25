@@ -157,8 +157,7 @@ class Bisq {
 
   private async loadBisqDumpFile(): Promise<void> {
     try {
-      const data = await this.loadData();
-      await this.loadBisqBlocksDump(data);
+      await this.loadData();
       this.buildIndex();
       this.calculateStats();
     } catch (e) {
@@ -241,36 +240,61 @@ class Bisq {
     };
   }
 
-  private async loadBisqBlocksDump(cacheData: string): Promise<void> {
-    const start = new Date().getTime();
-    if (cacheData && cacheData.length !== 0) {
-      logger.debug('Processing Bisq data dump...');
-      const data: BisqBlocks = await this.jsonParsePool.exec(cacheData);
-      if (data.blocks && data.blocks.length !== this.allBlocks.length) {
-        this.allBlocks = data.blocks;
-        this.allBlocks.reverse();
-        this.blocks = this.allBlocks.filter((block) => block.txs.length > 0);
-        this.latestBlockHeight = data.chainHeight;
-        const time = new Date().getTime() - start;
-        logger.debug('Bisq dump processed in ' + time + ' ms (worker thread)');
-      } else {
-        throw new Error(`Bisq dump didn't contain any blocks`);
-      }
+  private async loadData(): Promise<any> {
+    if (!fs.existsSync(Bisq.BLOCKS_JSON_FILE_PATH)) {
+      throw new Error(Bisq.BLOCKS_JSON_FILE_PATH + ` doesn't exist`);
     }
-  }
 
-  private loadData(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      if (!fs.existsSync(Bisq.BLOCKS_JSON_FILE_PATH)) {
-        return reject(Bisq.BLOCKS_JSON_FILE_PATH + ` doesn't exist`);
-      }
-      fs.readFile(Bisq.BLOCKS_JSON_FILE_PATH, 'utf8', (err, data) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(data);
-      });
+    const readline = require('readline');
+    const events = require('events');
+
+    const rl = readline.createInterface({
+      input: fs.createReadStream(Bisq.BLOCKS_JSON_FILE_PATH),
+      crlfDelay: Infinity
     });
+
+    let blockBuffer = '';
+    let readingBlock = false;
+    let lineCount = 1;
+    const start = new Date().getTime();
+
+    logger.debug('Processing Bisq data dump...');
+
+    rl.on('line', (line) => {
+      if (lineCount === 2) {
+        line = line.replace('  "chainHeight": ', '');
+        this.latestBlockHeight = parseInt(line, 10);
+      }
+
+      if (line === '    {') {
+        readingBlock = true;
+      } else if (line === '    },') {
+        blockBuffer += '}';
+        try {
+          const block: BisqBlock =  JSON.parse(blockBuffer);
+          this.allBlocks.push(block);
+          readingBlock = false;
+          blockBuffer = '';
+        } catch (e) {
+          logger.debug(blockBuffer);
+          throw Error(`Unable to parse Bisq data dump at line ${lineCount}` + (e instanceof Error ? e.message : e));
+        }
+      }
+
+      if (readingBlock === true) {
+        blockBuffer += line;
+      }
+
+      ++lineCount;
+    });
+
+    await events.once(rl, 'close');
+
+    this.allBlocks.reverse();
+    this.blocks = this.allBlocks.filter((block) => block.txs.length > 0);
+
+    const time = new Date().getTime() - start;
+    logger.debug('Bisq dump processed in ' + time + ' ms');
   }
 }
 
