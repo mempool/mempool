@@ -169,10 +169,10 @@ export class Common {
       default: return null;
     }
   }
-  
+
   static indexingEnabled(): boolean {
     return (
-      ['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) &&
+      ['mainnet', 'testnet', 'signet', 'regtest'].includes(config.MEMPOOL.NETWORK) &&
       config.DATABASE.ENABLED === true &&
       config.MEMPOOL.INDEXING_BLOCKS_AMOUNT !== 0
     );
