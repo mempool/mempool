@@ -134,24 +134,26 @@ class Blocks {
       blockExtended.extras.avgFeeRate = stats.avgfeerate;
     }
 
-    let pool: PoolTag;
-    if (blockExtended.extras?.coinbaseTx !== undefined) {
-      pool = await this.$findBlockMiner(blockExtended.extras?.coinbaseTx);
-    } else {
-      pool = await poolsRepository.$getUnknownPool();
-    }
+    if (['mainnet', 'testnet', 'signet', 'regtest'].includes(config.MEMPOOL.NETWORK)) {
+      let pool: PoolTag;
+      if (blockExtended.extras?.coinbaseTx !== undefined) {
+        pool = await this.$findBlockMiner(blockExtended.extras?.coinbaseTx);
+      } else {
+        pool = await poolsRepository.$getUnknownPool();
+      }
 
-    if (!pool) { // We should never have this situation in practise
-      logger.warn(`Cannot assign pool to block ${blockExtended.height} and 'unknown' pool does not exist. ` +
-        `Check your "pools" table entries`);
-      return blockExtended;
-    }
+      if (!pool) { // We should never have this situation in practise
+        logger.warn(`Cannot assign pool to block ${blockExtended.height} and 'unknown' pool does not exist. ` +
+          `Check your "pools" table entries`);
+        return blockExtended;
+      }
 
-    blockExtended.extras.pool = {
-      id: pool.id,
-      name: pool.name,
-      slug: pool.slug,
-    };
+      blockExtended.extras.pool = {
+        id: pool.id,
+        name: pool.name,
+        slug: pool.slug,
+      };
+    }
 
     return blockExtended;
   }
