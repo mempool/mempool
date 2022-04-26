@@ -5,6 +5,7 @@ interface IConfig {
     NETWORK: 'mainnet' | 'testnet' | 'signet';
     BACKEND: 'lnd' | 'cln' | 'ldk';
     HTTP_PORT: number;
+    API_URL_PREFIX: string;
     STDOUT_LOG_MIN_PRIORITY: 'emerg' | 'alert' | 'crit' | 'err' | 'warn' | 'notice' | 'info' | 'debug';
   };
   SYSLOG: {
@@ -33,6 +34,7 @@ const defaults: IConfig = {
     'NETWORK': 'mainnet',
     'BACKEND': 'lnd',
     'HTTP_PORT': 8999,
+    'API_URL_PREFIX': '/api/v1/',
     'STDOUT_LOG_MIN_PRIORITY': 'debug',
   },
   'SYSLOG': {
