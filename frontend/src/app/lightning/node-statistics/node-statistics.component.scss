@@ -1,0 +1,85 @@
+.card-title {
+  color: #4a68b9;
+  font-size: 10px;
+  margin-bottom: 4px;  
+  font-size: 1rem;
+}
+
+.card-text {
+  font-size: 22px;
+  span {
+    font-size: 11px;
+    position: relative;
+    top: -2px;
+    display: inline-flex;
+  }
+  .green-color {
+    display: block;
+  }
+}
+
+.fee-estimation-container {
+  display: flex;
+  justify-content: space-between;
+  @media (min-width: 376px) {
+    flex-direction: row;
+  }  
+  .item {
+    max-width: 150px;
+    margin: 0;
+    width: -webkit-fill-available;
+    @media (min-width: 376px) {
+      margin: 0 auto 0px;
+    }    
+    &:first-child{
+      display: none;
+      @media (min-width: 485px) {
+        display: block;
+      }    
+      @media (min-width: 768px) {
+        display: none;
+      }    
+      @media (min-width: 992px) {
+        display: block;
+      }    
+    }
+    &:last-child {
+      margin-bottom: 0;
+    }
+    .card-text span {
+      color: #ffffff66;
+      font-size: 12px;
+      top: 0px;
+    }
+    .fee-text{
+      border-bottom: 1px solid #ffffff1c;
+      width: fit-content;
+      margin: auto;
+      line-height: 1.45;
+      padding: 0px 2px;
+    }
+    .fiat {
+      display: block;
+      font-size: 14px !important;
+    }
+  }
+}
+
+.loading-container {
+  min-height: 76px;
+}
+
+.card-text {
+  .skeleton-loader {
+    width: 100%;
+    display: block;
+    &:first-child {
+      max-width: 90px;
+      margin: 15px auto 3px;
+    }
+    &:last-child {
+      margin: 10px auto 3px;
+      max-width: 55px;
+    }
+  }
+}

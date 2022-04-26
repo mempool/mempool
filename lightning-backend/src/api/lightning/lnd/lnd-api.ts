@@ -2,8 +2,8 @@ import { AbstractLightningApi } from '../lightning-api-abstract-factory';
 import { ILightningApi } from '../lightning-api.interface';
 import * as fs from 'fs';
 import * as lnService from 'ln-service';
-import config from '../../config';
-import logger from '../../logger';
+import config from '../../../config';
+import logger from '../../../logger';
 
 class LndApi implements AbstractLightningApi {
   private lnd: any;

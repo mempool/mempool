@@ -1,4 +1,4 @@
-import config from '../config';
+import config from '../../config';
 import { AbstractLightningApi } from './lightning-api-abstract-factory';
 import LndApi from './lnd/lnd-api';
 
