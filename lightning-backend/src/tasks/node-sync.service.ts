@@ -1,8 +1,8 @@
 
 import DB from '../database';
 import logger from '../logger';
-import lightningApi from '../api/lightning-api-factory';
-import { ILightningApi } from '../api/lightning-api.interface';
+import lightningApi from '../api/lightning/lightning-api-factory';
+import { ILightningApi } from '../api/lightning/lightning-api.interface';
 
 class NodeSyncService {
   constructor() {}

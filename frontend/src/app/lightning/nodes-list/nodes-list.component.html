@@ -1,0 +1,39 @@
+<div style="min-height: 295px">
+
+  <table class="table table-borderless">
+    <thead>
+      <th class="alias text-left" i18n="nodes.alias">Alias</th>
+      <th class="capacity text-right" i18n="node.capacity">Capacity</th>
+      <th class="channels text-right" i18n="node.channels">Channels</th>
+    </thead>
+    <tbody *ngIf="nodes$ | async as nodes; else skeleton">
+      <tr *ngFor="let node of nodes; let i = index;">
+        <td class="alias text-left">
+          <a [routerLink]="['/lightning/nodes/:public_key' | relativeUrl, node.public]">{{ node.alias }}</a>
+        </td>
+        <td class="capacity text-right">
+          <app-amount [satoshis]="node.capacity_left + node.capacity_right" digitsInfo="1.2-2"></app-amount>
+        </td>
+        <td class="channels text-right">
+          {{ node.channels_left + node.channels_right | number }}
+        </td>
+      </tr>
+    </tbody>
+    <ng-template #skeleton>
+      <tbody>
+        <tr *ngFor="let item of [1,2,3,4,5,6,7,8,9,10]">
+          <td class="alias text-left">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="capacity text-right">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="channels text-right">
+            <span class="skeleton-loader"></span>
+          </td>
+        </tr>
+      </tbody>
+    </ng-template>
+  </table>
+
+</div>

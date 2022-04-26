@@ -1,0 +1,80 @@
+.dashboard-container {
+  padding-bottom: 60px;
+  text-align: center;
+  margin-top: 0.5rem;
+  @media (min-width: 992px) {
+    padding-bottom: 0px;
+  }
+  .col {
+    margin-bottom: 1.5rem;
+  }
+}
+
+.card {
+  background-color: #1d1f31;
+}
+
+.card-title {
+  font-size: 1rem;
+  color: #4a68b9;
+}
+.card-title > a {
+  color: #4a68b9;
+}
+
+.card-body {
+  padding: 1.25rem 1rem 0.75rem 1rem;
+}
+.card-body.pool-ranking {
+  padding: 1.25rem 0.25rem 0.75rem 0.25rem;
+}
+.card-text {
+  font-size: 22px;
+}
+
+
+.main-title {
+  position: relative;
+  color: #ffffff91;
+  margin-top: -13px;
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 500;
+  text-align: center;
+  padding-bottom: 3px;
+}
+
+.more-padding {
+  padding: 18px;
+}
+
+.card-wrapper {
+  .card {
+    height: auto !important;
+  }
+  .card-body {
+    display: flex;
+    flex: inherit;
+    text-align: center;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 22px 20px;
+  }
+}
+
+.skeleton-loader {
+  width: 100%;
+  display: block;
+  &:first-child {
+    max-width: 90px;
+    margin: 15px auto 3px;
+  }
+  &:last-child {
+    margin: 10px auto 3px;
+    max-width: 55px;
+  }
+}
+
+.card-text {
+  font-size: 22px;
+}

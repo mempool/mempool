@@ -1,0 +1,64 @@
+<div class="fee-estimation-wrapper" *ngIf="statistics$ | async as statistics; else loadingReward">
+  <div class="fee-estimation-container">
+    <div class="item">
+      <h5 class="card-title" i18n="mining.rewards">Nodes</h5>
+      <div class="card-text" i18n-ngbTooltip="mining.rewards-desc"
+        ngbTooltip="Amount being paid to miners in the past 144 blocks" placement="bottom">
+        <div class="fee-text">
+          {{ statistics.latest.node_count | number }}
+        </div>
+        <span class="fiat">
+          <app-change [current]="statistics.latest.node_count" [previous]="statistics.previous.node_count"></app-change>
+        </span>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="mining.rewards-per-tx">Channels</h5>
+      <div class="card-text" i18n-ngbTooltip="mining.rewards-per-tx-desc"
+        ngbTooltip="Average miners' reward per transaction in the past 144 blocks" placement="bottom">
+        <div class="fee-text">
+          {{ statistics.latest.channel_count | number }}
+        </div>
+        <span class="fiat">
+          <app-change [current]="statistics.latest.channel_count" [previous]="statistics.previous.channel_count"></app-change>
+        </span>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="mining.average-fee">Average Channel</h5>
+      <div class="card-text" i18n-ngbTooltip="mining.average-fee"
+        ngbTooltip="Fee paid on average for each transaction in the past 144 blocks" placement="bottom">
+        <app-amount [satoshis]="statistics.latest.average_channel_size" digitsInfo="1.2-3"></app-amount>
+        <span class="fiat">
+          <app-change [current]="statistics.latest.average_channel_size" [previous]="statistics.previous.average_channel_size"></app-change>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingReward>
+  <div class="fee-estimation-container loading-container">
+    <div class="item">
+      <h5 class="card-title" i18n="mining.rewards">Nodes</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="mining.rewards-per-tx">Channels</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="mining.average-fee">Average Channel</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+  </div>
+</ng-template>

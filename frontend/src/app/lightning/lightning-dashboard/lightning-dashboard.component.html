@@ -1,0 +1,48 @@
+<div class="container-xl dashboard-container">
+
+  <div class="row row-cols-1 row-cols-md-2">
+
+    <div class="col">
+      <div class="main-title">
+        <span i18n="lightning.statistics-title">Nodes Statistics</span>&nbsp;
+      </div>
+      <div class="card-wrapper">
+        <div class="card" style="height: 123px">
+          <div class="card-body more-padding">
+            <app-node-statistics [statistics$]="statistics$"></app-node-statistics>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="main-title">
+        <span i18n="lightning.statistics-title">Channels Statistics</span>&nbsp;
+      </div>
+      <div class="card-wrapper">
+        
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Top Capacity Nodes</h5>
+          <app-nodes-list [nodes$]="nodesByCapacity$"></app-nodes-list>
+          <div><a [routerLink]="['/lightning/nodes' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Most Connected Nodes</h5>
+          <app-nodes-list [nodes$]="nodesByChannels$"></app-nodes-list>
+          <div><a [routerLink]="['/lightning/nodes' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

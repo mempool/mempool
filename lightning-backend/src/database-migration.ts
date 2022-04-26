@@ -76,6 +76,7 @@ class DatabaseMigration {
       await this.$executeQuery(this.getCreateStatisticsQuery(), await this.$checkIfTableExists('statistics'));
       await this.$executeQuery(this.getCreateNodesQuery(), await this.$checkIfTableExists('nodes'));
       await this.$executeQuery(this.getCreateChannelsQuery(), await this.$checkIfTableExists('channels'));
+      await this.$executeQuery(this.getCreateNodesStatsQuery(), await this.$checkIfTableExists('nodes_stats'));
     } catch (e) {
       throw e;
     }
@@ -204,28 +205,45 @@ class DatabaseMigration {
   private getCreateChannelsQuery(): string {
     return `CREATE TABLE IF NOT EXISTS channels (
       id varchar(15) NOT NULL,
-      capacity double unsigned NOT NULL,
+      capacity bigint(20) unsigned NOT NULL,
       transaction_id varchar(64) NOT NULL,
       transaction_vout int(11) NOT NULL,
-      updated_at datetime NOT NULL,
+      updated_at datetime DEFAULT NULL,
       node1_public_key varchar(66) NOT NULL,
-      node1_base_fee_mtokens double unsigned NULL,
-      node1_cltv_delta int(11) NULL,
-      node1_fee_rate int(11) NULL,
-      node1_is_disabled boolean NULL,
-      node1_max_htlc_mtokens double unsigned NULL,
-      node1_min_htlc_mtokens double unsigned NULL,
-      node1_updated_at datetime NULL,
+      node1_base_fee_mtokens bigint(20) unsigned DEFAULT NULL,
+      node1_cltv_delta int(11) DEFAULT NULL,
+      node1_fee_rate bigint(11) DEFAULT NULL,
+      node1_is_disabled tinyint(1) DEFAULT NULL,
+      node1_max_htlc_mtokens bigint(20) unsigned DEFAULT NULL,
+      node1_min_htlc_mtokens bigint(20) unsigned DEFAULT NULL,
+      node1_updated_at datetime DEFAULT NULL,
       node2_public_key varchar(66) NOT NULL,
-      node2_base_fee_mtokens double unsigned NULL,
-      node2_cltv_delta int(11) NULL,
-      node2_fee_rate int(11) NULL,
-      node2_is_disabled boolean NULL,
-      node2_max_htlc_mtokens double unsigned NULL,
-      node2_min_htlc_mtokens double unsigned NULL,
-      node2_updated_at datetime NULL,
-      CONSTRAINT PRIMARY KEY (id)
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+      node2_base_fee_mtokens bigint(20) unsigned DEFAULT NULL,
+      node2_cltv_delta int(11) DEFAULT NULL,
+      node2_fee_rate bigint(11) DEFAULT NULL,
+      node2_is_disabled tinyint(1) DEFAULT NULL,
+      node2_max_htlc_mtokens bigint(20) unsigned DEFAULT NULL,
+      node2_min_htlc_mtokens bigint(20) unsigned DEFAULT NULL,
+      node2_updated_at datetime DEFAULT NULL,
+      PRIMARY KEY (id),
+      KEY node1_public_key (node1_public_key),
+      KEY node2_public_key (node2_public_key),
+      KEY node1_public_key_2 (node1_public_key,node2_public_key)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateNodesStatsQuery(): string {
+    return `CREATE TABLE nodes_stats (
+      id int(11) unsigned NOT NULL AUTO_INCREMENT,
+      public_key varchar(66) NOT NULL DEFAULT '',
+      added date NOT NULL,
+      capacity_left bigint(11) unsigned DEFAULT NULL,
+      capacity_right bigint(11) unsigned DEFAULT NULL,
+      channels_left int(11) unsigned DEFAULT NULL,
+      channels_right int(11) unsigned DEFAULT NULL,
+      PRIMARY KEY (id),
+      KEY public_key (public_key)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 }
 

@@ -1,7 +1,7 @@
 
 import DB from '../database';
 import logger from '../logger';
-import lightningApi from '../api/lightning-api-factory';
+import lightningApi from '../api/lightning/lightning-api-factory';
 
 class LightningStatsUpdater {
   constructor() {}
@@ -19,12 +19,25 @@ class LightningStatsUpdater {
         this.$logLightningStats();
       }, 1000 * 60 * 60);
     }, difference);
+
+    // this.$logNodeStatsDaily();
+  }
+
+  private async $logNodeStatsDaily() {
+    const query = `SELECT nodes.public_key, COUNT(DISTINCT c1.id) AS channels_count_left, COUNT(DISTINCT c2.id) AS channels_count_right, SUM(DISTINCT c1.capacity) AS channels_capacity_left, SUM(DISTINCT c2.capacity) AS channels_capacity_right FROM nodes LEFT JOIN channels AS c1 ON c1.node1_public_key = nodes.public_key LEFT JOIN channels AS c2 ON c2.node2_public_key = nodes.public_key GROUP BY nodes.public_key`;
+    const [nodes]: any = await DB.query(query);
+
+    for (const node of nodes) {
+      await DB.query(
+        `INSERT INTO nodes_stats(public_key, added, capacity_left, capacity_right, channels_left, channels_right) VALUES (?, NOW(), ?, ?, ?, ?)`,
+        [node.public_key, node.channels_capacity_left, node.channels_capacity_right, node.channels_count_left, node.channels_count_right]);
+    }
   }
 
   private async $logLightningStats() {
-    const networkInfo = await lightningApi.$getNetworkInfo();
-
     try {
+      const networkInfo = await lightningApi.$getNetworkInfo();
+
       const query = `INSERT INTO statistics(
           added,
           channel_count,

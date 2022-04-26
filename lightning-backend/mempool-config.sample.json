@@ -2,7 +2,8 @@
   "MEMPOOL": {
     "NETWORK": "mainnet",
     "BACKEND": "lnd",
-    "HTTP_PORT": 8999,
+    "HTTP_PORT": 8899,
+    "API_URL_PREFIX": "/api/v1/",
     "STDOUT_LOG_MIN_PRIORITY": "debug"
   },
   "SYSLOG": {
