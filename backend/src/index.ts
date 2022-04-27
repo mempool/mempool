@@ -151,6 +151,7 @@ class Server {
           logger.debug(msg);
         }
       }
+      await poolsUpdater.updatePoolsJson();
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
       this.$runIndexingWhenReady();
@@ -187,7 +188,6 @@ class Server {
     }
 
     try {
-      await poolsUpdater.updatePoolsJson();
       await blocks.$generateBlockDatabase();
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();
