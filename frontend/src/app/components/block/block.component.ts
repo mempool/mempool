@@ -10,6 +10,7 @@ import { SeoService } from 'src/app/services/seo.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
 import { BlockExtended } from 'src/app/interfaces/node-api.interface';
+import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-block',
@@ -53,6 +54,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     private seoService: SeoService,
     private websocketService: WebsocketService,
     private relativeUrlPipe: RelativeUrlPipe,
+    private apiService: ApiService
   ) { }
 
   ngOnInit() {
@@ -122,7 +124,7 @@ export class BlockComponent implements OnInit, OnDestroy {
                   this.location.replaceState(
                     this.router.createUrlTree([(this.network ? '/' + this.network : '') + '/block/', hash]).toString()
                   );
-                  return this.electrsApiService.getBlock$(hash);
+                  return this.apiService.getBlock$(hash);
                 })
               );
           }
@@ -132,7 +134,7 @@ export class BlockComponent implements OnInit, OnDestroy {
             return of(blockInCache);
           }
 
-          return this.electrsApiService.getBlock$(blockHash);
+          return this.apiService.getBlock$(blockHash);
         }
       }),
       tap((block: BlockExtended) => {
