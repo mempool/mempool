@@ -15,22 +15,35 @@ class LightningStatsUpdater {
 
     setTimeout(() => {
       this.$logLightningStats();
+      this.$logNodeStatsDaily();
       setInterval(() => {
         this.$logLightningStats();
+        this.$logNodeStatsDaily();
       }, 1000 * 60 * 60);
     }, difference);
-
-    // this.$logNodeStatsDaily();
   }
 
   private async $logNodeStatsDaily() {
-    const query = `SELECT nodes.public_key, COUNT(DISTINCT c1.id) AS channels_count_left, COUNT(DISTINCT c2.id) AS channels_count_right, SUM(DISTINCT c1.capacity) AS channels_capacity_left, SUM(DISTINCT c2.capacity) AS channels_capacity_right FROM nodes LEFT JOIN channels AS c1 ON c1.node1_public_key = nodes.public_key LEFT JOIN channels AS c2 ON c2.node2_public_key = nodes.public_key GROUP BY nodes.public_key`;
-    const [nodes]: any = await DB.query(query);
+    const currentDate = new Date().toISOString().split('T')[0];
+    try {
+      const [state]: any = await DB.query(`SELECT string FROM state WHERE name = 'last_node_stats'`);
+      // Only store once per day
+      if (state[0] === currentDate) {
+        return;
+      }
 
-    for (const node of nodes) {
-      await DB.query(
-        `INSERT INTO nodes_stats(public_key, added, capacity_left, capacity_right, channels_left, channels_right) VALUES (?, NOW(), ?, ?, ?, ?)`,
-        [node.public_key, node.channels_capacity_left, node.channels_capacity_right, node.channels_count_left, node.channels_count_right]);
+      const query = `SELECT nodes.public_key, c1.channels_count_left, c2.channels_count_right, c1.channels_capacity_left, c2.channels_capacity_right FROM nodes LEFT JOIN (SELECT node1_public_key, COUNT(id) AS channels_count_left, SUM(capacity) AS channels_capacity_left FROM channels GROUP BY node1_public_key) c1 ON c1.node1_public_key = nodes.public_key LEFT JOIN (SELECT node2_public_key, COUNT(id) AS channels_count_right, SUM(capacity) AS channels_capacity_right FROM channels GROUP BY node2_public_key) c2 ON c2.node2_public_key = nodes.public_key`;
+      const [nodes]: any = await DB.query(query);
+
+      for (const node of nodes) {
+        await DB.query(
+          `INSERT INTO nodes_stats(public_key, added, capacity_left, capacity_right, channels_left, channels_right) VALUES (?, NOW(), ?, ?, ?, ?)`,
+          [node.public_key, node.channels_capacity_left, node.channels_capacity_right,
+            node.channels_count_left, node.channels_count_right]);
+      }
+      await DB.query(`UPDATE state SET string = ? WHERE name = 'last_node_stats'`, [currentDate]);
+    } catch (e) {
+      logger.err('$logNodeStatsDaily() error: ' + (e instanceof Error ? e.message : e));
     }
   }
 

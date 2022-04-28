@@ -8,6 +8,7 @@ import databaseMigration from './database-migration';
 import statsUpdater from './tasks/stats-updater.service';
 import nodeSyncService from './tasks/node-sync.service';
 import NodesRoutes from './api/nodes/nodes.routes';
+import ChannelsRoutes from './api/nodes/channels.routes';
 
 logger.notice(`Mempool Server is running on port ${config.MEMPOOL.HTTP_PORT}`);
 
@@ -46,6 +47,7 @@ class LightningServer {
     });
 
     const nodeRoutes = new NodesRoutes(this.app);
+    const channelsRoutes = new ChannelsRoutes(this.app);
   }
 }
 
