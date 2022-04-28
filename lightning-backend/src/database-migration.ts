@@ -125,6 +125,7 @@ class DatabaseMigration {
 
       // Set initial values
       await this.$executeQuery(`INSERT INTO state VALUES('schema_version', 0, NULL);`);
+      await this.$executeQuery(`INSERT INTO state VALUES('last_node_stats', 0, '1970-01-01');`);
     } catch (e) {
       throw e;
     }
