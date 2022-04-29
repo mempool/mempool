@@ -18,7 +18,9 @@ Mempool can be self-hosted on a wide variety of your own hardware, ranging from 
 
 The `docker` directory contains the Dockerfiles used to build and release the official images and a `docker-compose.yml` file that is intended for end users to run a Mempool instance with minimal effort.
 
-## bitcoind only configuration
+## bitcoind-only configuration
+
+> If you need the ability to do address lookups, please use the [bitcoind+electrum configuration](#bitcoindelectrum-configuration) instead.
 
 To run an instance with the default settings, use the following command:
 
@@ -51,14 +53,16 @@ You can check if the instance is running by visiting http://localhost - the grap
 
 ## bitcoind+electrum configuration
 
-In order to run with a `electrum` compatible server as the backend, in addition to the settings required for running with `bitcoind` above, you will need to make the following changes to the `docker-compose.yml` file:
+> This configuration gives you the ability to do address lookups.
+
+In order to add on an `electrum` compatible server, in addition to the settings required for running with `bitcoind` above, you will need to make the following changes to the `docker-compose.yml` file:
 
 - Under the `api` service, change the value of the `MEMPOOL_BACKEND` key from `none` to `electrum`:
 
 ```
   api:
     environment:
-      MEMPOOL_BACKEND: "none"
+      MEMPOOL_BACKEND: "electrum"
 ```
 
 - Under the `api` service, set the `ELECTRUM_HOST` and `ELECTRUM_PORT` keys to your Docker host IP address and set `ELECTRUM_TLS_ENABLED` to `false`:
@@ -70,6 +74,8 @@ In order to run with a `electrum` compatible server as the backend, in addition 
       ELECTRUM_PORT: "50002"
       ELECTRUM_TLS_ENABLED: "false"
 ```
+
+## Configuration overrides
 
 You can update any of the backend settings in the `mempool-config.json` file using the following environment variables to override them under the same `api` `environment` section.
 
