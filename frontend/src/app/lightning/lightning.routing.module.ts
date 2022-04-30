@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LightningDashboardComponent } from './lightning-dashboard/lightning-dashboard.component';
 import { NodeComponent } from './node/node.component';
+import { ChannelComponent } from './channel/channel.component';
 
 const routes: Routes = [
     {
@@ -11,6 +12,10 @@ const routes: Routes = [
     {
       path: 'node/:public_key',
       component: NodeComponent,
+    },
+    {
+      path: 'channel/:short_id',
+      component: ChannelComponent,
     },
     {
       path: '**',

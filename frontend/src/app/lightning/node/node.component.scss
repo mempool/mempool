@@ -1,0 +1,38 @@
+.qr-wrapper {
+  background-color: #FFF;
+  padding: 10px;
+  padding-bottom: 5px;
+  display: inline-block;
+}
+
+.qrcode-col {
+  margin: 20px auto 10px;
+  text-align: center;
+  @media (min-width: 992px){
+    margin: 0px auto 0px;
+  }
+}
+
+.tx-link {
+  display: flex;
+	flex-grow: 1;
+	@media (min-width: 650px) {
+    align-self: end;
+    margin-left: 15px;
+    margin-top: 0px;
+    margin-bottom: -3px;
+	}
+	@media (min-width: 768px) {
+    margin-bottom: 4px;
+    top: 1px;
+    position: relative;
+	}
+	@media (max-width: 768px) {
+	  order: 3;
+	}
+}
+
+.title-container {
+  display: flex;
+  flex-direction: row;
+}

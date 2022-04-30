@@ -1,1 +1,66 @@
-<p>node works!</p>
+<div class="container-xl" *ngIf="(node$ | async) as node">
+  <div class="title-container mb-2">
+    <h1 i18n="shared.address" class="mb-0">{{ node.alias }}</h1>
+    <span class="tx-link">
+      <a [routerLink]="['/lightning/node' | relativeUrl, node.public_key]" >
+        <span class="d-inline">{{ node.public_key | shortenString : 18 }}</span>
+      </a>
+      <app-clipboard [text]="node.public_key"></app-clipboard>
+    </span>
+  </div>
+
+  <div class="clearfix"></div>
+
+    <div class="box">
+
+      <div class="row">
+        <div class="col-md">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td i18n="address.total-received">First Seen</td>
+                <td>{{ node.first_seen | date:'yyyy-MM-dd HH:mm' }}</td>
+              </tr>
+              <tr>
+                <td i18n="address.total-sent">Updated At</td>
+                <td>{{ node.updated_at | date:'yyyy-MM-dd HH:mm' }}</td>
+              </tr>
+              <tr>
+                <td i18n="address.balance">Color</td>
+                <td><div [ngStyle]="{'color': node.color}">{{ node.color }}</div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="w-100 d-block d-md-none"></div>
+        <div class="col-md qrcode-col">
+          <div class="qr-wrapper">
+            <app-qrcode [data]="node.public_key"></app-qrcode>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    
+    <br>
+    <h2>Channels</h2>
+
+    <app-channels-list [publicKey]="node.public_key"></app-channels-list>
+
+    <!--
+
+    <br>
+    <div class="title-tx">
+      <h2 class="text-left">
+        <ng-template [ngIf]="!transactions?.length">&nbsp;</ng-template>
+        <ng-template i18n="X of X Address Transaction" [ngIf]="transactions?.length === 1">{{ (transactions?.length | number) || '?' }} of {{ txCount | number }} transaction</ng-template>
+        <ng-template i18n="X of X Address Transactions (Plural)" [ngIf]="transactions?.length > 1">{{ (transactions?.length | number) || '?' }} of {{ txCount | number }} transactions</ng-template>
+      </h2>
+    </div>
+
+    <app-transactions-list [transactions]="transactions" [showConfirmations]="true" [address]="address.address" (loadMore)="loadMore()"></app-transactions-list>
+    -->
+
+</div>
+
+<br>
