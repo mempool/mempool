@@ -125,7 +125,7 @@ export class HashrateChartComponent implements OnInit {
                 return {
                   blockCount: parseInt(response.headers.get('x-total-count'), 10),
                   currentDifficulty: Math.round(data.difficulty[data.difficulty.length - 1].difficulty * 100) / 100,
-                  currentHashrate: data.hashrates[data.hashrates.length - 1].avgHashrate,
+                  currentHashrate: data.currentHashrate
                 };
               }),
               retryWhen((errors) => errors.pipe(
