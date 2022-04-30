@@ -74,6 +74,7 @@ import { LoadingIndicatorComponent } from '../components/loading-indicator/loadi
 import { IndexingProgressComponent } from '../components/indexing-progress/indexing-progress.component';
 import { SvgImagesComponent } from '../components/svg-images/svg-images.component';
 import { ChangeComponent } from '../components/change/change.component';
+import { SatsComponent } from './components/sats/sats.component';
 
 @NgModule({
   declarations: [
@@ -142,6 +143,7 @@ import { ChangeComponent } from '../components/change/change.component';
     IndexingProgressComponent,
     SvgImagesComponent,
     ChangeComponent,
+    SatsComponent,
   ],
   imports: [
     CommonModule,
@@ -238,6 +240,7 @@ import { ChangeComponent } from '../components/change/change.component';
     IndexingProgressComponent,
     SvgImagesComponent,
     ChangeComponent,
+    SatsComponent
   ]
 })
 export class SharedModule {

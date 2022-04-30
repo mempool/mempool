@@ -15,12 +15,13 @@ class LightningStatsUpdater {
 
     setTimeout(() => {
       this.$logLightningStats();
-      this.$logNodeStatsDaily();
       setInterval(() => {
         this.$logLightningStats();
         this.$logNodeStatsDaily();
       }, 1000 * 60 * 60);
     }, difference);
+
+    this.$logNodeStatsDaily();
   }
 
   private async $logNodeStatsDaily() {
@@ -28,7 +29,7 @@ class LightningStatsUpdater {
     try {
       const [state]: any = await DB.query(`SELECT string FROM state WHERE name = 'last_node_stats'`);
       // Only store once per day
-      if (state[0] === currentDate) {
+      if (state[0].string === currentDate) {
         return;
       }
 
@@ -42,6 +43,7 @@ class LightningStatsUpdater {
             node.channels_count_left, node.channels_count_right]);
       }
       await DB.query(`UPDATE state SET string = ? WHERE name = 'last_node_stats'`, [currentDate]);
+      logger.debug('Daily node stats has updated.');
     } catch (e) {
       logger.err('$logNodeStatsDaily() error: ' + (e instanceof Error ? e.message : e));
     }
@@ -49,22 +51,26 @@ class LightningStatsUpdater {
 
   private async $logLightningStats() {
     try {
-      const networkInfo = await lightningApi.$getNetworkInfo();
+      const networkGraph = await lightningApi.$getNetworkGraph();
+      let total_capacity = 0;
+      for (const channel of networkGraph.channels) {
+        if (channel.capacity) {
+          total_capacity += channel.capacity;
+        }
+      }
 
       const query = `INSERT INTO statistics(
           added,
           channel_count,
           node_count,
-          total_capacity,
-          average_channel_size
+          total_capacity
         )
-        VALUES (NOW(), ?, ?, ?, ?)`;
+        VALUES (NOW(), ?, ?, ?)`;
 
       await DB.query(query, [
-        networkInfo.channel_count,
-        networkInfo.node_count,
-        networkInfo.total_capacity,
-        networkInfo.average_channel_size
+        networkGraph.channels.length,
+        networkGraph.nodes.length,
+        total_capacity,
       ]);
     } catch (e) {
       logger.err('$logLightningStats() error: ' + (e instanceof Error ? e.message : e));

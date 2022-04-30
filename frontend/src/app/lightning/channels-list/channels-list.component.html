@@ -1,0 +1,66 @@
+<div>
+
+  <table class="table table-borderless">
+    <thead>
+      <th class="alias text-left" i18n="nodes.alias">Node Alias</th>
+      <th class="channels text-right" i18n="channels.rate">Fee Rate</th>
+      <th class="capacity text-right" i18n="channels.id">Channel ID</th>
+      <th class="capacity text-right" i18n="nodes.capacity">Capacity</th>
+      <th class="alias text-right" i18n="channels.transaction">Transaction ID</th>
+    </thead>
+    <tbody *ngIf="channels$ | async as channels; else skeleton">
+      <tr *ngFor="let channel of channels; let i = index;">
+        <ng-template [ngIf]="channel.node2_public_key === publicKey" [ngIfElse]="right">
+          <td class="alias text-left">
+            <a [routerLink]="['/lightning/node' | relativeUrl, channel.node1_public_key]">{{ channel.alias_left }}</a>
+          </td>
+          <td class="capacity text-right">
+           {{ channel.node1_fee_rate / 10000 | number }}%
+          </td>
+        </ng-template>
+        <ng-template #right>
+          <td class="alias text-left" *ngIf="channel.node1_public_key === publicKey">
+            <a [routerLink]="['/lightning/node' | relativeUrl, channel.node2_public_key]">{{ channel.alias_right }}</a>
+          </td>
+          <td class="capacity text-right">
+            {{ channel.node2_fee_rate / 10000 | number }}%
+           </td>
+        </ng-template>
+        <td class="capacity text-right">
+          <a [routerLink]="['/lightning/channel' | relativeUrl, channel.id]">{{ channel.id }}</a>
+         </td>
+        <td class="capacity text-right">
+          <app-amount [satoshis]="channel.capacity" digitsInfo="1.2-2"></app-amount>
+        </td>
+        <td class="text-right">
+          <a [routerLink]="['/tx' | relativeUrl, channel.transaction_id + ':' + channel.transaction_vout]" >
+            <span>{{ channel.transaction_id | shortenString : 10 }}</span>
+          </a>
+          <app-clipboard [text]="channel.transaction_id"></app-clipboard>
+        </td>
+      </tr>
+    </tbody>
+    <ng-template #skeleton>
+      <tbody>
+        <tr *ngFor="let item of [1,2,3,4,5,6,7,8,9,10]">
+          <td class="alias text-left">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="capacity text-left">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="channels text-left">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="channels text-right">
+            <span class="skeleton-loader"></span>
+          </td>
+          <td class="channels text-right">
+            <span class="skeleton-loader"></span>
+          </td>
+        </tr>
+      </tbody>
+    </ng-template>
+  </table>
+
+</div>
