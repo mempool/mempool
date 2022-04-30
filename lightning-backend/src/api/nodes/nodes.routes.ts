@@ -1,14 +1,15 @@
 import config from '../../config';
 import { Express, Request, Response } from 'express';
 import nodesApi from './nodes.api';
-import channelsApi from './channels.api';
 class NodesRoutes {
-  constructor(app: Express) {
+  constructor() { }
+
+  public initRoutes(app: Express) {
     app
-      .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/latest', this.$getGeneralStats)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'nodes/top', this.$getTopNodes)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'nodes/:public_key', this.$getNode)
-    ;
+    .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/latest', this.$getGeneralStats)
+    .get(config.MEMPOOL.API_URL_PREFIX + 'nodes/top', this.$getTopNodes)
+    .get(config.MEMPOOL.API_URL_PREFIX + 'nodes/:public_key', this.$getNode)
+  ;
   }
 
   private async $getNode(req: Request, res: Response) {
@@ -47,4 +48,4 @@ class NodesRoutes {
   }
 }
 
-export default NodesRoutes;
+export default new NodesRoutes();

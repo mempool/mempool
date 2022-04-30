@@ -8,12 +8,16 @@ import { RouterModule } from '@angular/router';
 import { NodeStatisticsComponent } from './node-statistics/node-statistics.component';
 import { NodeComponent } from './node/node.component';
 import { LightningRoutingModule } from './lightning.routing.module';
+import { ChannelsListComponent } from './channels-list/channels-list.component';
+import { ChannelComponent } from './channel/channel.component';
 @NgModule({
   declarations: [
     LightningDashboardComponent,
     NodesListComponent,
     NodeStatisticsComponent,
     NodeComponent,
+    ChannelsListComponent,
+    ChannelComponent,
   ],
   imports: [
     CommonModule,

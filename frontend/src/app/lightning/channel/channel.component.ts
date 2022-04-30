@@ -5,14 +5,13 @@ import { switchMap } from 'rxjs/operators';
 import { LightningApiService } from '../lightning-api.service';
 
 @Component({
-  selector: 'app-node',
-  templateUrl: './node.component.html',
-  styleUrls: ['./node.component.scss'],
+  selector: 'app-channel',
+  templateUrl: './channel.component.html',
+  styleUrls: ['./channel.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NodeComponent implements OnInit {
-  node$: Observable<any>;
-  publicKey$: Observable<string>;
+export class ChannelComponent implements OnInit {
+  channel$: Observable<any>;
 
   constructor(
     private lightningApiService: LightningApiService,
@@ -20,10 +19,10 @@ export class NodeComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.node$ = this.activatedRoute.paramMap
+    this.channel$ = this.activatedRoute.paramMap
       .pipe(
         switchMap((params: ParamMap) => {
-          return this.lightningApiService.getNode$(params.get('public_key'));
+          return this.lightningApiService.getChannel$(params.get('short_id'));
         })
       );
   }
