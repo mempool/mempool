@@ -56,7 +56,7 @@ class DatabaseMigration {
     }
 
     if (DatabaseMigration.currentVersion > databaseSchemaVersion) {
-      logger.notice('MIGRATIONS: Upgrading datababse schema');
+      logger.notice('MIGRATIONS: Upgrading database schema');
       try {
         await this.$migrateTableSchemaFromVersion(databaseSchemaVersion);
         logger.notice(`MIGRATIONS: OK. Database schema have been migrated from version ${databaseSchemaVersion} to ${DatabaseMigration.currentVersion} (latest version)`);
