@@ -5,8 +5,7 @@
       <div class="item">
         <h5 class="card-title" i18n="mining.hashrate">Hashrate</h5>
         <p class="card-text">
-          {{ hashrates.currentHashrate | amountShortener }}
-          <span class="symbol">hashes/sec</span>
+          {{ hashrates.currentHashrate | amountShortener: 1 : 'H/s' }}
         </p>
       </div>
       <div class="item">
