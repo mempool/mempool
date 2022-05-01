@@ -3,6 +3,8 @@ import DB from '../database';
 import logger from '../logger';
 import lightningApi from '../api/lightning/lightning-api-factory';
 import { ILightningApi } from '../api/lightning/lightning-api.interface';
+import channelsApi from '../api/nodes/channels.api';
+import bitcoinClient from '../api/bitcoin/bitcoin-client';
 
 class NodeSyncService {
   constructor() {}
@@ -25,15 +27,35 @@ class NodeSyncService {
         await this.$saveNode(node);
       }
 
+      await this.$setChannelsInactive();
+
       for (const channel of networkGraph.channels) {
         await this.$saveChannel(channel);
+      }
+
+      await this.$scanForClosedChannels();
+
+    } catch (e) {
+      logger.err('$updateNodes() error: ' + (e instanceof Error ? e.message : e));
+    }
+  }
+
+  private async $scanForClosedChannels() {
+    try {
+      const channels = await channelsApi.$getChannelsByStatus(0);
+      for (const channel of channels) {
+        const outspends = await bitcoinClient.getTxOut(channel.transaction_id, channel.transaction_vout);
+        if (outspends === null) {
+          logger.debug('Marking channel: ' + channel.id + ' as closed.');
+          await DB.query(`UPDATE channels SET status = 2 WHERE id = ?`, [channel.id]);
+        }
       }
     } catch (e) {
       logger.err('$updateNodes() error: ' + (e instanceof Error ? e.message : e));
     }
   }
 
-  private async $saveChannel(channel: ILightningApi.Channel) {
+  private async $saveChannel(channel: ILightningApi.Channel): Promise<void> {
     try {
       const d = new Date(Date.parse(channel.updated_at));
       const query = `INSERT INTO channels
@@ -43,6 +65,7 @@ class NodeSyncService {
           transaction_id,
           transaction_vout,
           updated_at,
+          status,
           node1_public_key,
           node1_base_fee_mtokens,
           node1_cltv_delta,
@@ -60,10 +83,11 @@ class NodeSyncService {
           node2_min_htlc_mtokens,
           node2_updated_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
           capacity = ?,
           updated_at = ?,
+          status = 1,
           node1_public_key = ?,
           node1_base_fee_mtokens = ?,
           node1_cltv_delta = ?,
@@ -128,7 +152,15 @@ class NodeSyncService {
     }
   }
 
-  private async $saveNode(node: ILightningApi.Node) {
+  private async $setChannelsInactive(): Promise<void> {
+    try {
+      await DB.query(`UPDATE channels SET status = 0 WHERE status = 1`);
+    } catch (e) {
+      logger.err('$setChannelsInactive() error: ' + (e instanceof Error ? e.message : e));
+    }
+  }
+
+  private async $saveNode(node: ILightningApi.Node): Promise<void> {
     try {
       const updatedAt = this.utcDateToMysql(node.updated_at);
       const query = `INSERT INTO nodes(
