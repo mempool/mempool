@@ -17,6 +17,12 @@
     "TSL_CERT_PATH": "",
     "MACAROON_PATH": ""
   },
+  "CORE_RPC": {
+    "HOST": "127.0.0.1",
+    "PORT": 8332,
+    "USERNAME": "mempool",
+    "PASSWORD": "mempool"
+  },
   "DATABASE": {
     "HOST": "127.0.0.1",
     "PORT": 3306,
