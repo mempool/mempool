@@ -2,7 +2,9 @@
   <div class="mb-2">
     <h1 i18n="shared.address" class="mb-0">Channel <a [routerLink]="['/lightning/channel' | relativeUrl, channel.id]">{{ channel.id }}</a> <app-clipboard [text]="channel.id"></app-clipboard></h1>
     <div class="badges">
-      <span class="badge rounded-pill badge-success">Open</span>
+      <span class="badge rounded-pill badge-secondary" *ngIf="channel.status === 0">Inactive</span>
+      <span class="badge rounded-pill badge-success" *ngIf="channel.status === 1">Active</span>
+      <span class="badge rounded-pill badge-danger" *ngIf="channel.status === 2">Closed</span>
     </div>
   </div>
 
@@ -46,98 +48,95 @@
     </div>
 
     <br>
-    <h2>Peers</h2>
 
-    <div class="box">
-
-      <div class="row">
-        <div class="col-md">
-          <table class="table table-borderless table-striped">
-            <tbody>
-              <tr>
-                <td i18n="address.total-sent">Node</td>
-                <td>
-                  {{ channel.alias_left }}
-                  <br>
-                  <a [routerLink]="['/lightning/node' | relativeUrl, channel.node1_public_key]" >
-                    {{ channel.node1_public_key | shortenString : 18 }}
-                  </a>
-                  <app-clipboard [text]="channel.node1_public_key"></app-clipboard>
-                </td>
-              </tr>
-              <tr>
-                <td i18n="address.total-sent">Fee rate</td>
-                <td>
-                  {{ channel.node1_fee_rate / 10000 | number }}%
-                </td>
-              </tr>
-              <tr>
-                <td i18n="address.total-sent">Base fee</td>
-                <td>
-                  <app-sats [satoshis]="channel.node1_base_fee_mtokens / 1000"></app-sats>
-                </td>
-              </tr>
-              <tr>
-                <td i18n="address.total-sent">Min HTLC</td>
-                <td>
-                  <app-sats [satoshis]="channel.node1_min_htlc_mtokens / 1000"></app-sats>
-                </td>
-              </tr>
-              <tr>
-                <td i18n="address.total-sent">Max HTLC</td>
-                <td>
-                  <app-sats [satoshis]="channel.node1_max_htlc_mtokens / 1000"></app-sats>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+    <div class="row row-cols-1 row-cols-md-2">
+      <div class="col">
+        <div class="mb-2">
+          <h2 class="mb-0">{{ channel.alias_left }}</h2>
+          <a [routerLink]="['/lightning/node' | relativeUrl, channel.node1_public_key]" >
+            {{ channel.node1_public_key | shortenString : 18 }}
+          </a>
+          <app-clipboard [text]="channel.node1_public_key"></app-clipboard>
         </div>
-        <div class="w-100 d-block d-md-none"></div>
-        <div class="col-md">
-          <table class="table table-borderless table-striped">
-            <tbody>
-              <tr>
-                <td i18n="address.total-sent">Node</td>
-                <td>
-                  {{ channel.alias_right }}
-                  <br>
-                  <a [routerLink]="['/lightning/node' | relativeUrl, channel.node2_public_key]" >
-                    {{ channel.node2_public_key | shortenString : 18 }}
-                  </a>
-                  <app-clipboard [text]="channel.node1_public_key"></app-clipboard>
-                </td>
-              </tr>
-              <tr>
-                <td i18n="address.total-sent">Fee rate</td>
-                <td>
-                  {{ channel.node2_fee_rate / 10000 | number }}%
-                </td>
-              </tr>
-              <tr>
-                <td i18n="address.total-sent">Base fee</td>
-                <td>
-                  <app-sats [satoshis]="channel.node2_base_fee_mtokens / 1000"></app-sats>
-                </td>
-              </tr>
-              <tr>
-                <td i18n="address.total-sent">Min HTLC</td>
-                <td>
-                  <app-sats [satoshis]="channel.node2_min_htlc_mtokens / 1000"></app-sats>
-                </td>
-              </tr>
-              <tr>
-                <td i18n="address.total-sent">Max HTLC</td>
-                <td>
-                  <app-sats [satoshis]="channel.node2_max_htlc_mtokens / 1000"></app-sats>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="box">
+
+          <div class="row">
+            <div class="col-md">
+              <table class="table table-borderless table-striped">
+                <tbody>
+                  <tr>
+                    <td i18n="address.total-sent">Fee rate</td>
+                    <td>
+                      {{ channel.node1_fee_rate / 10000 | number }}%
+                    </td>
+                  </tr>
+                  <tr>
+                    <td i18n="address.total-sent">Base fee</td>
+                    <td>
+                      <app-sats [satoshis]="channel.node1_base_fee_mtokens / 1000"></app-sats>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td i18n="address.total-sent">Min HTLC</td>
+                    <td>
+                      <app-sats [satoshis]="channel.node1_min_htlc_mtokens / 1000"></app-sats>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td i18n="address.total-sent">Max HTLC</td>
+                    <td>
+                      <app-sats [satoshis]="channel.node1_max_htlc_mtokens / 1000"></app-sats>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
+      <div class="col">
+        <div class="mb-2">
+          <h2 class="mb-0">{{ channel.alias_right }}</h2>
+          <a [routerLink]="['/lightning/node' | relativeUrl, channel.node2_public_key]" >
+            {{ channel.node2_public_key | shortenString : 18 }}
+          </a>
+          <app-clipboard [text]="channel.node1_public_key"></app-clipboard>
+        </div>
+        <div class="box">
 
+          <div class="col-md">
+            <table class="table table-borderless table-striped">
+              <tbody>
+                <tr>
+                  <td i18n="address.total-sent">Fee rate</td>
+                  <td>
+                    {{ channel.node2_fee_rate / 10000 | number }}%
+                  </td>
+                </tr>
+                <tr>
+                  <td i18n="address.total-sent">Base fee</td>
+                  <td>
+                    <app-sats [satoshis]="channel.node2_base_fee_mtokens / 1000"></app-sats>
+                  </td>
+                </tr>
+                <tr>
+                  <td i18n="address.total-sent">Min HTLC</td>
+                  <td>
+                    <app-sats [satoshis]="channel.node2_min_htlc_mtokens / 1000"></app-sats>
+                  </td>
+                </tr>
+                <tr>
+                  <td i18n="address.total-sent">Max HTLC</td>
+                  <td>
+                    <app-sats [satoshis]="channel.node2_max_htlc_mtokens / 1000"></app-sats>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+      </div>
     </div>
-
+  </div>
 
 </div>
 

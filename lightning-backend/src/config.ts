@@ -19,6 +19,12 @@ interface IConfig {
     TSL_CERT_PATH: string;
     MACAROON_PATH: string;
   };
+  CORE_RPC: {
+    HOST: string;
+    PORT: number;
+    USERNAME: string;
+    PASSWORD: string;
+  };
   DATABASE: {
     HOST: string,
     SOCKET: string,
@@ -48,6 +54,12 @@ const defaults: IConfig = {
     'TSL_CERT_PATH': '',
     'MACAROON_PATH': '',
   },
+  'CORE_RPC': {
+    'HOST': '127.0.0.1',
+    'PORT': 8332,
+    'USERNAME': 'mempool',
+    'PASSWORD': 'mempool'
+  },
   'DATABASE': {
     'HOST': '127.0.0.1',
     'SOCKET': '',
@@ -62,6 +74,7 @@ class Config implements IConfig {
   MEMPOOL: IConfig['MEMPOOL'];
   SYSLOG: IConfig['SYSLOG'];
   LN_NODE_AUTH: IConfig['LN_NODE_AUTH'];
+  CORE_RPC: IConfig['CORE_RPC'];
   DATABASE: IConfig['DATABASE'];
 
   constructor() {
@@ -69,6 +82,7 @@ class Config implements IConfig {
     this.MEMPOOL = configs.MEMPOOL;
     this.SYSLOG = configs.SYSLOG;
     this.LN_NODE_AUTH = configs.LN_NODE_AUTH;
+    this.CORE_RPC = configs.CORE_RPC;
     this.DATABASE = configs.DATABASE;
   }
 
