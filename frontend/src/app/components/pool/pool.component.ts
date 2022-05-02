@@ -111,7 +111,7 @@ export class PoolComponent implements OnInit {
           color: 'grey',
           fontSize: 15
         },
-        text: `No data`,
+        text: `Indexing in progress`,
         left: 'center',
         top: 'center'
       };
@@ -164,14 +164,14 @@ export class PoolComponent implements OnInit {
           `;
         }.bind(this)
       },
-      xAxis: {
+      xAxis: data.length === 0 ? undefined : {
         type: 'time',
         splitNumber: (this.isMobile()) ? 5 : 10,
         axisLabel: {
           hideOverlap: true,
         }
       },
-      yAxis: [
+      yAxis: data.length === 0 ? undefined : [
         {
           min: (value) => {
             return value.min * 0.9;
@@ -190,7 +190,7 @@ export class PoolComponent implements OnInit {
           }
         },
       ],
-      series: [
+      series: data.length === 0 ? undefined : [
         {
           zlevel: 0,
           name: 'Hashrate',
