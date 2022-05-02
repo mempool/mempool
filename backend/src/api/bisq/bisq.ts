@@ -156,6 +156,7 @@ class Bisq {
   }
 
   private async loadBisqDumpFile(): Promise<void> {
+    this.allBlocks = [];
     try {
       await this.loadData();
       this.buildIndex();
