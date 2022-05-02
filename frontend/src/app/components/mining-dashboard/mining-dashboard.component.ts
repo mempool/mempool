@@ -1,8 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { map } from 'rxjs/operators';
 import { SeoService } from 'src/app/services/seo.service';
-import { StateService } from 'src/app/services/state.service';
-import { Observable } from 'rxjs';
 import { WebsocketService } from 'src/app/services/websocket.service';
 
 @Component({
@@ -12,8 +9,6 @@ import { WebsocketService } from 'src/app/services/websocket.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MiningDashboardComponent implements OnInit {
-  private blocks = [];
-
   constructor(
     private seoService: SeoService,
     private websocketService: WebsocketService,
