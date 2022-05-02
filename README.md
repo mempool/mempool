@@ -8,13 +8,24 @@ It is an open-source project developed and operated for the benefit of the Bitco
 
 ## Installation Methods
 
-Mempool can be self-hosted on a wide variety of your own hardware, ranging from a simple one-click installation on a Raspberry Pi distro, all the way to an advanced high availability cluster of powerful servers for a production instance. We support the following installation methods, ranked in order from simple to advanced:
+Mempool can be self-hosted on a wide variety of your own hardware, ranging from a simple one-click installation on a Raspberry Pi full-node distro all the way to a robust production instance on a powerful FreeBSD server. 
 
-1) One-click installation on: [Umbrel](https://github.com/getumbrel/umbrel), [RaspiBlitz](https://github.com/rootzoll/raspiblitz), [RoninDojo](https://code.samourai.io/ronindojo/RoninDojo), or [MyNode](https://github.com/mynodebtc/mynode).
-2) [Docker installation on Linux using docker-compose](https://github.com/mempool/mempool/tree/master/docker)
-3) [Manual installation on Linux or FreeBSD](https://github.com/mempool/mempool#manual-installation)
+We support the following installation methods, ranked in order from simple to advanced:
+
+1) [One-click installation on full-node distros](#one-click-installation)
+2) [Docker installation on Linux using docker-compose](#docker-installation)
+3) [Manual installation on Linux or FreeBSD](#manual-installation)
 4) [Production installation on a powerful FreeBSD server](https://github.com/mempool/mempool/tree/master/production)
-5) [High Availability cluster using powerful FreeBSD servers](https://github.com/mempool/mempool/tree/master/production#high-availability)
+
+<a id="one-click-installation"></a>
+### One-click installation on full-node distros
+
+Mempool can be conveniently installed on the following full-node distros: 
+- [Umbrel](https://github.com/getumbrel/umbrel)
+- [RaspiBlitz](https://github.com/rootzoll/raspiblitz)
+- [RoninDojo](https://code.samourai.io/ronindojo/RoninDojo)
+- [myNode](https://github.com/mynodebtc/mynode)
+- [Start9](https://github.com/Start9Labs/embassy-os)
 
 # Docker Installation
 
