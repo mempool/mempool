@@ -53,7 +53,7 @@
           <app-amount [satoshis]="channel.capacity" digitsInfo="1.2-2"></app-amount>
         </td>
         <td class="capacity text-right">
-          <a [routerLink]="['/lightning/channel' | relativeUrl, channel.id]">{{ channel.id }}</a>
+          <a [routerLink]="['/lightning/channel' | relativeUrl, channel.id]">{{ channel.short_id }}</a>
          </td>
       </tr>
     </tbody>

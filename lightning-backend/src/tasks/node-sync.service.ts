@@ -1,4 +1,4 @@
-
+import { chanNumber } from 'bolt07';
 import DB from '../database';
 import logger from '../logger';
 import lightningApi from '../api/lightning/lightning-api-factory';
@@ -71,11 +71,14 @@ class NodeSyncService {
   }
 
   private async $saveChannel(channel: ILightningApi.Channel): Promise<void> {
+    const fromChannel = chanNumber({ channel: channel.id }).number;
+
     try {
       const d = new Date(Date.parse(channel.updated_at));
       const query = `INSERT INTO channels
         (
           id,
+          short_id,
           capacity,
           transaction_id,
           transaction_vout,
@@ -98,7 +101,7 @@ class NodeSyncService {
           node2_min_htlc_mtokens,
           node2_updated_at
         )
-        VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
           capacity = ?,
           updated_at = ?,
@@ -122,6 +125,7 @@ class NodeSyncService {
         ;`;
 
       await DB.query(query, [
+        fromChannel,
         channel.id,
         channel.capacity,
         channel.transaction_id,

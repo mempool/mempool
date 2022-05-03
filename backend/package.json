@@ -34,6 +34,7 @@
     "@types/node": "^16.11.41",
     "axios": "~0.27.2",
     "bitcoinjs-lib": "6.0.1",
+    "bolt07": "^1.8.1",
     "crypto-js": "^4.0.0",
     "express": "^4.18.0",
     "mysql2": "2.3.3",
