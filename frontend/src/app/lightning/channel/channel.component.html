@@ -1,6 +1,6 @@
 <div class="container-xl" *ngIf="(channel$ | async) as channel">
   <div class="mb-2">
-    <h1 i18n="shared.address" class="mb-0">Channel <a [routerLink]="['/lightning/channel' | relativeUrl, channel.id]">{{ channel.id }}</a> <app-clipboard [text]="channel.id"></app-clipboard></h1>
+    <h1 i18n="shared.address" class="mb-0">Channel <a [routerLink]="['/lightning/channel' | relativeUrl, channel.id]">{{ channel.short_id }}</a> <app-clipboard [text]="channel.id"></app-clipboard></h1>
     <div class="badges">
       <span class="badge rounded-pill badge-secondary" *ngIf="channel.status === 0">Inactive</span>
       <span class="badge rounded-pill badge-success" *ngIf="channel.status === 1">Active</span>
