@@ -34,17 +34,11 @@ Mempool can be conveniently installed on the following full-node distros:
 
 The following instructions are for a manual installation on Linux or FreeBSD. You may need to change file and directory paths to match your OS.
 
-Dependencies:
+You will need [Bitcoin](https://github.com/bitcoin/bitcoin), [Electrum](https://github.com/romanz/electrs), [Node.js](https://github.com/nodejs/node), [MariaDB](https://github.com/mariadb/server), and [Nginx](https://github.com/nginx/nginx). Below, we walk through how to configure each of these.
 
-* [Bitcoin](https://github.com/bitcoin/bitcoin)
-* [Electrum](https://github.com/romanz/electrs)
-* [NodeJS](https://github.com/nodejs/node)
-* [MariaDB](https://github.com/mariadb/server)
-* [Nginx](https://github.com/nginx/nginx)
+#### 1. Get Latest Mempool Release
 
-#### Get Latest Mempool Release
-
-Clone the mempool repo, and checkout the latest release tag:
+Clone the Mempool repo, and checkout the latest release tag:
 
 ```bash
   git clone https://github.com/mempool/mempool
@@ -53,7 +47,7 @@ Clone the mempool repo, and checkout the latest release tag:
   git checkout $latestrelease
 ```
 
-#### Configure Bitcoin Core
+#### 2. Configure Bitcoin Core
 
 Enable RPC and txindex in `bitcoin.conf`:
 
@@ -63,7 +57,7 @@ Enable RPC and txindex in `bitcoin.conf`:
   txindex=1
 ```
 
-#### Get & Configure MySQL
+#### 3. Get & Configure MySQL
 
 Install MariaDB from your OS package manager:
 
@@ -76,7 +70,7 @@ Install MariaDB from your OS package manager:
   mysql.server start
 ```
 
-Create database and grant privileges:
+Create a database and grant privileges:
 
 ```bash
   MariaDB [(none)]> drop database mempool;
@@ -89,7 +83,7 @@ Create database and grant privileges:
   Query OK, 0 rows affected (0.00 sec)
 ```
 
-#### Build Mempool Backend
+#### 4. Build Mempool Backend
 
 Install mempool dependencies from npm and build the backend:
 
@@ -100,7 +94,7 @@ Install mempool dependencies from npm and build the backend:
   npm run build
 ```
 
-In the `backend` folder, make a copy of the sample config and modify it to fit your settings.
+In the `backend` folder, make a copy of the sample config:
 
 ```bash
   cp mempool-config.sample.json mempool-config.json
@@ -166,7 +160,7 @@ When it's running, you should see output like this:
   Updating mempool
 ```
 
-#### Build Mempool Frontend
+#### 5. Build Mempool Frontend
 
 Install the Mempool dependencies with npm and build the frontend:
 
@@ -183,7 +177,7 @@ Install the output into the nginx webroot folder:
   sudo rsync -av --delete dist/ /var/www/
 ```
 
-#### `nginx` + `certbot`
+#### 6. `nginx` + `certbot`
 
 Install the supplied `nginx.conf` and `nginx-mempool.conf` in `/etc/nginx`:
 
