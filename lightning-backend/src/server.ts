@@ -3,8 +3,8 @@ import * as express from 'express';
 import * as http from 'http';
 import logger from './logger';
 import config from './config';
-import nodesRoutes from './api/nodes/nodes.routes';
-import channelsRoutes from './api/nodes/channels.routes';
+import nodesRoutes from './api/explorer/nodes.routes';
+import channelsRoutes from './api/explorer/channels.routes';
 
 class Server {
   private server: http.Server | undefined;
