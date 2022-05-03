@@ -3,7 +3,7 @@ import DB from '../database';
 import logger from '../logger';
 import lightningApi from '../api/lightning/lightning-api-factory';
 import { ILightningApi } from '../api/lightning/lightning-api.interface';
-import channelsApi from '../api/nodes/channels.api';
+import channelsApi from '../api/explorer/channels.api';
 import bitcoinClient from '../api/bitcoin/bitcoin-client';
 
 class NodeSyncService {
@@ -33,6 +33,7 @@ class NodeSyncService {
         await this.$saveChannel(channel);
       }
 
+      await this.$findInactiveNodesAndChannels();
       await this.$scanForClosedChannels();
 
     } catch (e) {
@@ -40,7 +41,21 @@ class NodeSyncService {
     }
   }
 
-  private async $scanForClosedChannels() {
+  // Looking for channels whos nodes are inactive
+  private async $findInactiveNodesAndChannels(): Promise<void> {
+    try {
+      // @ts-ignore
+      const [channels]: [ILightningApi.Channel[]] = await DB.query(`SELECT channels.id FROM channels WHERE channels.status = 1 AND ((SELECT COUNT(*) FROM nodes WHERE nodes.public_key = channels.node1_public_key) = 0 OR (SELECT COUNT(*) FROM nodes WHERE nodes.public_key = channels.node2_public_key) = 0)`);
+
+      for (const channel of channels) {
+        await this.$updateChannelStatus(channel.id, 0);
+      }
+    } catch (e) {
+      logger.err('$findInactiveNodesAndChannels() error: ' + (e instanceof Error ? e.message : e));
+    }
+  }
+
+  private async $scanForClosedChannels(): Promise<void> {
     try {
       const channels = await channelsApi.$getChannelsByStatus(0);
       for (const channel of channels) {
@@ -149,6 +164,14 @@ class NodeSyncService {
       ]);
     } catch (e) {
       logger.err('$saveChannel() error: ' + (e instanceof Error ? e.message : e));
+    }
+  }
+
+  private async $updateChannelStatus(channelShortId: string, status: number): Promise<void> {
+    try {
+      await DB.query(`UPDATE channels SET status = ? WHERE id = ?`, [status, channelShortId]);
+    } catch (e) {
+      logger.err('$updateChannelStatus() error: ' + (e instanceof Error ? e.message : e));
     }
   }
 
