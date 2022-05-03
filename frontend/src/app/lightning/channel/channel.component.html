@@ -52,7 +52,7 @@
     <div class="row row-cols-1 row-cols-md-2">
       <div class="col">
         <div class="mb-2">
-          <h2 class="mb-0">{{ channel.alias_left }}</h2>
+          <h2 class="mb-0">{{ channel.alias_left || '?' }}</h2>
           <a [routerLink]="['/lightning/node' | relativeUrl, channel.node1_public_key]" >
             {{ channel.node1_public_key | shortenString : 18 }}
           </a>
@@ -96,7 +96,7 @@
       </div>
       <div class="col">
         <div class="mb-2">
-          <h2 class="mb-0">{{ channel.alias_right }}</h2>
+          <h2 class="mb-0">{{ channel.alias_right || '?' }}</h2>
           <a [routerLink]="['/lightning/node' | relativeUrl, channel.node2_public_key]" >
             {{ channel.node2_public_key | shortenString : 18 }}
           </a>
