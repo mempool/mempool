@@ -34,7 +34,7 @@ Mempool can be conveniently installed on the following full-node distros:
 
 The following instructions are for a manual installation on Linux or FreeBSD. You may need to change file and directory paths to match your OS.
 
-You will need [Bitcoin](https://github.com/bitcoin/bitcoin), [Electrum](https://github.com/romanz/electrs), [Node.js](https://github.com/nodejs/node), [MariaDB](https://github.com/mariadb/server), and [Nginx](https://github.com/nginx/nginx). Below, we walk through how to configure each of these.
+You will need [Bitcoin Core](https://github.com/bitcoin/bitcoin), [Electrum Server](https://github.com/romanz/electrs), [Node.js](https://github.com/nodejs/node), [MariaDB](https://github.com/mariadb/server), and [Nginx](https://github.com/nginx/nginx). Below, we walk through how to configure each of these.
 
 ### 1. Get Latest Mempool Release
 
