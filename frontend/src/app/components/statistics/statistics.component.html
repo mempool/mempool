@@ -4,6 +4,10 @@
       <div class="card mb-3">
         <div class="card-header">
           <i class="fa fa-area-chart"></i> <span i18n="statistics.memory-by-vBytes">Mempool by vBytes (sat/vByte)</span>
+          <button class="btn" style="position: absolute; right: 30px" (click)="onSaveChart('mempool')">
+            <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
+          </button>
+
           <form [formGroup]="radioGroupForm" class="formRadioGroup" [class]="stateService.env.MINING_DASHBOARD ? 'mining' : ''" (click)="saveGraphPreference()">
             <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
               <label ngbButtonLabel class="btn-primary btn-sm">
@@ -60,7 +64,7 @@
         </div>
         <div class="card-body">
           <div class="incoming-transactions-graph">
-            <app-mempool-graph
+            <app-mempool-graph #mempoolgraph
               dir="ltr"
               [template]="'advanced'"
               [limitFee]="500"
@@ -80,9 +84,13 @@
         <div class="card-header">
             <i class="fa fa-area-chart"></i> <span i18n="statistics.transaction-vbytes-per-second">Transaction vBytes per second (vB/s)</span>
         </div>
+        <button class="btn" style="position: absolute; right: 30px" (click)="onSaveChart('incoming')">
+          <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
+        </button>
+
         <div class="card-body">
           <div class="incoming-transactions-graph">
-            <app-incoming-transactions-graph
+            <app-incoming-transactions-graph #incominggraph
               [height]="500"
               [left]="65"
               [template]="'advanced'"
