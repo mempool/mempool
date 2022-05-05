@@ -238,10 +238,8 @@ class DatabaseMigration {
       id int(11) unsigned NOT NULL AUTO_INCREMENT,
       public_key varchar(66) NOT NULL DEFAULT '',
       added date NOT NULL,
-      capacity_left bigint(11) unsigned DEFAULT NULL,
-      capacity_right bigint(11) unsigned DEFAULT NULL,
-      channels_left int(11) unsigned DEFAULT NULL,
-      channels_right int(11) unsigned DEFAULT NULL,
+      capacity bigint(11) unsigned DEFAULT NULL,
+      channels int(11) unsigned DEFAULT NULL,
       PRIMARY KEY (id),
       KEY public_key (public_key)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;

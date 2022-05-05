@@ -26,18 +26,68 @@ class NodeSyncService {
       for (const node of networkGraph.nodes) {
         await this.$saveNode(node);
       }
+      logger.debug(`Nodes updated`);
 
       await this.$setChannelsInactive();
 
       for (const channel of networkGraph.channels) {
         await this.$saveChannel(channel);
       }
+      logger.debug(`Channels updated`);
 
       await this.$findInactiveNodesAndChannels();
+      logger.debug(`Inactive channels scan complete`);
+
       await this.$scanForClosedChannels();
+      logger.debug(`Closed channels scan complete`);
+
+      await this.$lookUpCreationDateFromChain();
+      logger.debug(`Channel creation dates scan complete`);
+
+      await this.$updateNodeFirstSeen();
+      logger.debug(`Node first seen dates scan complete`);
 
     } catch (e) {
       logger.err('$updateNodes() error: ' + (e instanceof Error ? e.message : e));
+    }
+  }
+
+  // This method look up the creation date of the earliest channel of the node
+  // and update the node to that date in order to get the earliest first seen date
+  private async $updateNodeFirstSeen() {
+    try {
+      const [nodes]: any[] = await DB.query(`SELECT nodes.public_key, UNIX_TIMESTAMP(nodes.first_seen) AS first_seen, (SELECT UNIX_TIMESTAMP(created) FROM channels WHERE channels.node1_public_key = nodes.public_key ORDER BY created ASC LIMIT 1) AS created1, (SELECT UNIX_TIMESTAMP(created) FROM channels WHERE channels.node2_public_key = nodes.public_key ORDER BY created ASC LIMIT 1) AS created2 FROM nodes`);
+      for (const node of nodes) {
+        let lowest = 0;
+        if (node.created1) {
+          if (node.created2 && node.created2 < node.created1) {
+            lowest = node.created2;
+          } else {
+            lowest = node.created1;
+          }
+        } else if (node.created2) {
+          lowest = node.created2;
+        }
+        if (lowest && lowest < node.first_seen) {
+          const query = `UPDATE nodes SET first_seen = FROM_UNIXTIME(?) WHERE public_key = ?`;
+          const params = [lowest, node.public_key];
+          await DB.query(query, params);
+        }
+      }
+    } catch (e) {
+      logger.err('$updateNodeFirstSeen() error: ' + (e instanceof Error ? e.message : e));
+    }
+  }
+
+  private async $lookUpCreationDateFromChain() {
+    try {
+      const channels = await channelsApi.$getChannelsWithoutCreatedDate();
+      for (const channel of channels) {
+        const transaction = await bitcoinClient.getRawTransaction(channel.transaction_id, 1);
+        await DB.query(`UPDATE channels SET created = FROM_UNIXTIME(?) WHERE channels.id = ?`, [transaction.blocktime, channel.id]);
+      }
+    } catch (e) {
+      logger.err('$setCreationDateFromChain() error: ' + (e instanceof Error ? e.message : e));
     }
   }
 
@@ -190,23 +240,27 @@ class NodeSyncService {
   private async $saveNode(node: ILightningApi.Node): Promise<void> {
     try {
       const updatedAt = this.utcDateToMysql(node.updated_at);
+      const sockets = node.sockets.join(', ');
       const query = `INSERT INTO nodes(
           public_key,
           first_seen,
           updated_at,
           alias,
-          color
+          color,
+          sockets
         )
-        VALUES (?, NOW(), ?, ?, ?) ON DUPLICATE KEY UPDATE updated_at = ?, alias = ?, color = ?;`;
+        VALUES (?, NOW(), ?, ?, ?, ?) ON DUPLICATE KEY UPDATE updated_at = ?, alias = ?, color = ?, sockets = ?;`;
 
       await DB.query(query, [
         node.public_key,
         updatedAt,
         node.alias,
         node.color,
+        sockets,
         updatedAt,
         node.alias,
         node.color,
+        sockets,
       ]);
     } catch (e) {
       logger.err('$saveNode() error: ' + (e instanceof Error ? e.message : e));
