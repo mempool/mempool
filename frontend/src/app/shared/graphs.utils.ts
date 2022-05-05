@@ -77,3 +77,12 @@ export const formatterXAxisTimeCategory = (
       return date.toLocaleDateString(locale, { year: 'numeric', month: 'long' });
   }
 };
+
+export const download = (href, name) => {
+  var a = document.createElement('a');
+  a.download = name;
+  a.href = href;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+};

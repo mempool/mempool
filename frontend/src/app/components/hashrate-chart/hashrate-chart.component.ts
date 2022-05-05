@@ -9,6 +9,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { selectPowerOfTen } from 'src/app/bitcoin.utils';
 import { StorageService } from 'src/app/services/storage.service';
 import { MiningService } from 'src/app/services/mining.service';
+import { download } from 'src/app/shared/graphs.utils';
 
 @Component({
   selector: 'app-hashrate-chart',
@@ -43,6 +44,8 @@ export class HashrateChartComponent implements OnInit {
   hashrateObservable$: Observable<any>;
   isLoading = true;
   formatNumber = formatNumber;
+  timespan = '';
+  chartInstance: any = undefined;
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -74,6 +77,7 @@ export class HashrateChartComponent implements OnInit {
           if (!this.widget && !firstRun) {
             this.storageService.setValue('miningWindowPreference', timespan);
           }
+          this.timespan = timespan;
           firstRun = false;
           this.miningWindowPreference = timespan;
           this.isLoading = true;
@@ -148,6 +152,7 @@ export class HashrateChartComponent implements OnInit {
     }
 
     this.chartOptions = {
+      backgroundColor: '#11131f',
       title: title,
       animation: false,
       color: [
@@ -340,7 +345,27 @@ export class HashrateChartComponent implements OnInit {
     };
   }
 
+  onChartInit(ec) {
+    this.chartInstance = ec;
+  }
+
   isMobile() {
     return (window.innerWidth <= 767.98);
+  }
+
+  onSaveChart() {
+    // @ts-ignore
+    const prevBottom = this.chartOptions.grid.bottom;
+    const now = new Date();
+    // @ts-ignore
+    this.chartOptions.grid.bottom = 30;
+    this.chartInstance.setOption(this.chartOptions);
+    download(this.chartInstance.getDataURL({
+      pixelRatio: 2,
+      excludeComponents: ['dataZoom'],
+    }), `hashrate-difficulty-${this.timespan}-${now.getTime() / 1000}`);
+    // @ts-ignore
+    this.chartOptions.grid.bottom = prevBottom;
+    this.chartInstance.setOption(this.chartOptions);
   }
 }

@@ -2,6 +2,10 @@
 
   <div class="card-header mb-0 mb-md-4">
     <span i18n="mining.block-rewards">Block rewards</span>
+    <button #saveChart class="btn" style="position: absolute; right: 30px" (click)="onSaveChart()">
+      <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
+    </button>
+
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(statsObservable$ | async) as stats">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.blockCount >= 144">
@@ -38,7 +42,8 @@
     </form>
   </div>
 
-  <div class="chart" echarts [initOpts]="chartInitOptions" [options]="chartOptions">
+  <div class="chart" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+    (chartInit)="onChartInit($event)">
   </div>
   <div class="text-center loadingGraphs" *ngIf="isLoading">
     <div class="spinner-border text-light"></div>
