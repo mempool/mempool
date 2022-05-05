@@ -12,6 +12,7 @@ import { LightningApiService } from '../lightning-api.service';
 })
 export class NodeComponent implements OnInit {
   node$: Observable<any>;
+  statistics$: Observable<any>;
   publicKey$: Observable<string>;
 
   constructor(
@@ -24,6 +25,13 @@ export class NodeComponent implements OnInit {
       .pipe(
         switchMap((params: ParamMap) => {
           return this.lightningApiService.getNode$(params.get('public_key'));
+        })
+      );
+
+    this.statistics$ = this.activatedRoute.paramMap
+      .pipe(
+        switchMap((params: ParamMap) => {
+          return this.lightningApiService.listNodeStats$(params.get('public_key'));
         })
       );
   }

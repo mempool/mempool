@@ -24,6 +24,17 @@ class ChannelsApi {
     }
   }
 
+  public async $getChannelsWithoutCreatedDate(): Promise<any[]> {
+    try {
+      const query = `SELECT * FROM channels WHERE created IS NULL`;
+      const [rows]: any = await DB.query(query);
+      return rows;
+    } catch (e) {
+      logger.err('$getChannelsWithoutCreatedDate error: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
   public async $getChannel(shortId: string): Promise<any> {
     try {
       const query = `SELECT n1.alias AS alias_left, n2.alias AS alias_right, channels.* FROM channels LEFT JOIN nodes AS n1 ON n1.public_key = channels.node1_public_key LEFT JOIN nodes AS n2 ON n2.public_key = channels.node2_public_key WHERE channels.id = ?`;

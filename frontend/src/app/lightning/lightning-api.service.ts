@@ -32,6 +32,10 @@ export class LightningApiService {
     return this.httpClient.get<any>(API_BASE_URL + '/statistics/latest');
   }
 
+  listNodeStats$(publicKey: string): Observable<any> {
+    return this.httpClient.get<any>(API_BASE_URL + '/nodes/' + publicKey + '/statistics');
+  }
+
   listTopNodes$(): Observable<any> {
     return this.httpClient.get<any>(API_BASE_URL + '/nodes/top');
   }
