@@ -15,6 +15,7 @@ export class NodeComponent implements OnInit {
   statistics$: Observable<any>;
   publicKey$: Observable<string>;
   selectedSocketIndex = 0;
+  qrCodeVisible = false;
 
   constructor(
     private lightningApiService: LightningApiService,
@@ -30,6 +31,9 @@ export class NodeComponent implements OnInit {
         map((node) => {
           const socketsObject = [];
           for (const socket of node.sockets.split(',')) {
+            if (socket === '') {
+              continue;
+            }
             let label = '';
             if (socket.match(/(?:[0-9]{1,3}\.){3}[0-9]{1,3}/)) {
               label = 'IPv4';

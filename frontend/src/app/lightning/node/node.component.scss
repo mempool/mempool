@@ -3,6 +3,21 @@
   padding: 10px;
   padding-bottom: 5px;
   display: inline-block;
+
+  
+  position: absolute;
+  bottom: 50px;
+  left: -175px;
+  z-index: 100;
+}
+
+.dropdownLabel {
+  min-width: 50px;
+  display: inline-block;
+}
+
+#inputGroupFileAddon04 {
+  position: relative;
 }
 
 .qrcode-col {

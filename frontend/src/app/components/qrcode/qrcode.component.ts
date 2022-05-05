@@ -1,11 +1,12 @@
-import { Component, Input, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import * as QRCode from 'qrcode';
 import { StateService } from 'src/app/services/state.service';
 
 @Component({
   selector: 'app-qrcode',
   templateUrl: './qrcode.component.html',
-  styleUrls: ['./qrcode.component.scss']
+  styleUrls: ['./qrcode.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QrcodeComponent implements AfterViewInit {
   @Input() data: string;
@@ -19,7 +20,18 @@ export class QrcodeComponent implements AfterViewInit {
     private stateService: StateService,
   ) { }
 
+  ngOnChanges() {
+    if (!this.canvas.nativeElement) {
+      return;
+    }
+    this.render();
+  }
+
   ngAfterViewInit() {
+    this.render();
+  }
+
+  render() {
     if (!this.stateService.isBrowser) {
       return;
     }
