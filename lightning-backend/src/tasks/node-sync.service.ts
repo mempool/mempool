@@ -240,7 +240,7 @@ class NodeSyncService {
   private async $saveNode(node: ILightningApi.Node): Promise<void> {
     try {
       const updatedAt = this.utcDateToMysql(node.updated_at);
-      const sockets = node.sockets.join(', ');
+      const sockets = node.sockets.join(',');
       const query = `INSERT INTO nodes(
           public_key,
           first_seen,

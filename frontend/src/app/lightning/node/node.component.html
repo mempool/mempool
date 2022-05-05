@@ -45,6 +45,24 @@
       </div>
 
     </div>
+
+    <br>
+
+    <div class="input-group mb-3">
+      <div class="d-inline-block" ngbDropdown #myDrop="ngbDropdown" *ngIf="node.socketsObject > 1; else noDropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" aria-expanded="false" ngbDropdownAnchor (focus)="myDrop.open()">{{ node.socketsObject[selectedSocketIndex].label }}</button>
+        <div ngbDropdownMenu aria-labelledby="dropdownManual">
+          <button *ngFor="let socket of node.socketsObject; let i = index;" ngbDropdownItem (click)="changeSocket(i)">{{ socket.label }}</button>
+        </div>
+      </div>
+      <ng-template #noDropdown>
+        <span class="input-group-text" id="basic-addon3">{{ node.socketsObject[selectedSocketIndex].label }}</span>
+      </ng-template>
+      <input type="text" class="form-control" aria-label="Text input with dropdown button" [value]="node.socketsObject[selectedSocketIndex].socket">
+      <button class="btn btn-secondary" type="button" id="inputGroupFileAddon04">
+        <app-clipboard [text]="node.socketsObject[selectedSocketIndex].socket"></app-clipboard>
+      </button>
+    </div>
     
     <br>
     <h2>Channels</h2>
