@@ -38,9 +38,7 @@
         </div>
         <div class="w-100 d-block d-md-none"></div>
         <div class="col-md qrcode-col">
-          <div class="qr-wrapper">
-            <app-qrcode [data]="node.public_key"></app-qrcode>
-          </div>
+          
         </div>
       </div>
 
@@ -48,9 +46,9 @@
 
     <br>
 
-    <div class="input-group mb-3">
-      <div class="d-inline-block" ngbDropdown #myDrop="ngbDropdown" *ngIf="node.socketsObject > 1; else noDropdown">
-        <button class="btn btn-secondary dropdown-toggle" type="button" aria-expanded="false" ngbDropdownAnchor (focus)="myDrop.open()">{{ node.socketsObject[selectedSocketIndex].label }}</button>
+    <div class="input-group mb-3" *ngIf="node.socketsObject.length">
+      <div class="d-inline-block" ngbDropdown #myDrop="ngbDropdown" *ngIf="node.socketsObject.length > 1; else noDropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" aria-expanded="false" ngbDropdownAnchor (focus)="myDrop.open()"><div class="dropdownLabel">{{ node.socketsObject[selectedSocketIndex].label }}</div></button>
         <div ngbDropdownMenu aria-labelledby="dropdownManual">
           <button *ngFor="let socket of node.socketsObject; let i = index;" ngbDropdownItem (click)="changeSocket(i)">{{ socket.label }}</button>
         </div>
@@ -59,7 +57,13 @@
         <span class="input-group-text" id="basic-addon3">{{ node.socketsObject[selectedSocketIndex].label }}</span>
       </ng-template>
       <input type="text" class="form-control" aria-label="Text input with dropdown button" [value]="node.socketsObject[selectedSocketIndex].socket">
-      <button class="btn btn-secondary" type="button" id="inputGroupFileAddon04">
+      <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04" (mouseover)="qrCodeVisible = true" (mouseout)="qrCodeVisible = false">
+        <fa-icon [icon]="['fas', 'qrcode']" [fixedWidth]="true"></fa-icon>
+        <div class="qr-wrapper" [hidden]="!qrCodeVisible">
+          <app-qrcode [size]="200" [data]="node.socketsObject[selectedSocketIndex].socket"></app-qrcode>
+        </div>
+      </button>
+      <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04">
         <app-clipboard [text]="node.socketsObject[selectedSocketIndex].socket"></app-clipboard>
       </button>
     </div>
