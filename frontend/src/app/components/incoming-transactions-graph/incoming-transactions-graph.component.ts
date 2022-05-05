@@ -2,7 +2,7 @@ import { Component, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnInit } 
 import { EChartsOption } from 'echarts';
 import { OnChanges } from '@angular/core';
 import { StorageService } from 'src/app/services/storage.service';
-import { formatterXAxis, formatterXAxisLabel } from 'src/app/shared/graphs.utils';
+import { download, formatterXAxis, formatterXAxisLabel } from 'src/app/shared/graphs.utils';
 import { formatNumber } from '@angular/common';
 
 @Component({
@@ -34,6 +34,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
     renderer: 'svg'
   };
   windowPreference: string;
+  chartInstance: any = undefined;
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
@@ -61,6 +62,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
 
   mountChart(): void {
     this.mempoolStatsChartOption = {
+      backgroundColor: '#11131f',
       grid: {
         height: this.height,
         right: this.right,
@@ -224,7 +226,27 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
     };
   }
 
+  onChartInit(ec) {
+    this.chartInstance = ec;
+  }
+
   isMobile() {
     return window.innerWidth <= 767.98;
+  }
+
+  onSaveChart(timespan) {
+    // @ts-ignore
+    const prevHeight = this.mempoolStatsChartOption.grid.height;
+    const now = new Date();
+    // @ts-ignore
+    this.mempoolStatsChartOption.grid.height = prevHeight + 20;
+    this.chartInstance.setOption(this.mempoolStatsChartOption);
+    download(this.chartInstance.getDataURL({
+      pixelRatio: 2,
+      excludeComponents: ['dataZoom'],
+    }), `incoming-vbytes-${timespan}-${now.getTime() / 1000}`);
+    // @ts-ignore
+    this.mempoolStatsChartOption.grid.height = prevHeight;
+    this.chartInstance.setOption(this.mempoolStatsChartOption);
   }
 }

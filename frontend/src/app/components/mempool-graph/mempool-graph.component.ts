@@ -1,12 +1,12 @@
 import { Component, OnInit, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnChanges } from '@angular/core';
 import { VbytesPipe } from 'src/app/shared/pipes/bytes-pipe/vbytes.pipe';
-import { formatNumber } from "@angular/common";
+import { formatNumber } from '@angular/common';
 import { OptimizedMempoolStats } from 'src/app/interfaces/node-api.interface';
 import { StateService } from 'src/app/services/state.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { EChartsOption } from 'echarts';
 import { feeLevels, chartColors } from 'src/app/app.constants';
-import { formatterXAxis, formatterXAxisLabel } from 'src/app/shared/graphs.utils';
+import { download, formatterXAxis, formatterXAxisLabel } from 'src/app/shared/graphs.utils';
 
 @Component({
   selector: 'app-mempool-graph',
@@ -45,6 +45,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   feeLevelsOrdered = [];
   chartColorsOrdered = chartColors;
   inverted: boolean;
+  chartInstance: any = undefined;
 
   constructor(
     private vbytesPipe: VbytesPipe,
@@ -83,6 +84,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           this.hoverIndexSerie = e.target.parent.parent.__ecComponentInfo.index;
       }
     });
+    this.chartInstance = myChart;
   }
 
   handleNewMempoolData(mempoolStats: OptimizedMempoolStats[]) {
@@ -99,7 +101,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   generateArray(mempoolStats: OptimizedMempoolStats[]) {
     const finalArray: number[][][] = [];
     let feesArray: number[][] = [];
-    let limitFeesTemplate = this.template === 'advanced' ? 26 : 20;
+    const limitFeesTemplate = this.template === 'advanced' ? 26 : 20;
     for (let index = limitFeesTemplate; index > -1; index--) {
       feesArray = [];
       mempoolStats.forEach((stats) => {
@@ -167,6 +169,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     }
 
     this.mempoolVsizeFeesOptions = {
+      backgroundColor: '#11131f',
       series: this.inverted ? [...seriesGraph].reverse() : seriesGraph,
       hover: true,
       color: this.inverted ? [...newColors].reverse() : newColors,
@@ -386,6 +389,22 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
   isMobile() {
     return window.innerWidth <= 767.98;
+  }
+
+  onSaveChart(timespan) {
+    // @ts-ignore
+    const prevHeight = this.mempoolVsizeFeesOptions.grid.height;
+    const now = new Date();
+    // @ts-ignore
+    this.mempoolVsizeFeesOptions.grid.height = prevHeight + 20;
+    this.chartInstance.setOption(this.mempoolVsizeFeesOptions);
+    download(this.chartInstance.getDataURL({
+      pixelRatio: 2,
+      excludeComponents: ['dataZoom'],
+    }), `mempool-graph-${timespan}-${now.getTime() / 1000}`);
+    // @ts-ignore
+    this.mempoolVsizeFeesOptions.grid.height = prevHeight;
+    this.chartInstance.setOption(this.mempoolVsizeFeesOptions);
   }
 }
 
