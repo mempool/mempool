@@ -8,6 +8,7 @@ class NodesRoutes {
     app
     .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/latest', this.$getGeneralStats)
     .get(config.MEMPOOL.API_URL_PREFIX + 'nodes/top', this.$getTopNodes)
+    .get(config.MEMPOOL.API_URL_PREFIX + 'nodes/:public_key/statistics', this.$getHistoricalNodeStats)
     .get(config.MEMPOOL.API_URL_PREFIX + 'nodes/:public_key', this.$getNode)
   ;
   }
@@ -20,6 +21,15 @@ class NodesRoutes {
         return;
       }
       res.json(node);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getHistoricalNodeStats(req: Request, res: Response) {
+    try {
+      const statistics = await nodesApi.$getNodeStats(req.params.public_key);
+      res.json(statistics);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

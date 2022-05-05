@@ -38,9 +38,9 @@ class LightningStatsUpdater {
 
       for (const node of nodes) {
         await DB.query(
-          `INSERT INTO nodes_stats(public_key, added, capacity_left, capacity_right, channels_left, channels_right) VALUES (?, NOW(), ?, ?, ?, ?)`,
-          [node.public_key, node.channels_capacity_left, node.channels_capacity_right,
-            node.channels_count_left, node.channels_count_right]);
+          `INSERT INTO nodes_stats(public_key, added, capacity, channels) VALUES (?, NOW(), ?, ?)`,
+          [node.public_key, (parseInt(node.channels_capacity_left || 0, 10)) + (parseInt(node.channels_capacity_right || 0, 10)),
+            node.channels_count_left + node.channels_count_right]);
       }
       await DB.query(`UPDATE state SET string = ? WHERE name = 'last_node_stats'`, [currentDate]);
       logger.debug('Daily node stats has updated.');
