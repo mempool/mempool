@@ -53,11 +53,11 @@
   }
 }
 .formRadioGroup.mining {
-  @media (min-width: 1130px) {
+  @media (min-width: 991px) {
     position: relative;
     top: -65px;
   }
-  @media (min-width: 830px) and (max-width: 1130px) {
+  @media (min-width: 830px) and (max-width: 991px) {
     position: relative;
     top: 0px;
   }
