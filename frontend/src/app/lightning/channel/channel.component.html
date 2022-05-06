@@ -17,8 +17,12 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
+                <td i18n="address.total-sent">Created</td>
+                <td><app-time-since [dateString]="channel.created"></app-time-since></td>
+              </tr>
+              <tr>
                 <td i18n="address.total-sent">Last update</td>
-                <td>{{ channel.updated_at | date:'yyyy-MM-dd HH:mm' }}</td>
+                <td><app-time-since [dateString]="channel.updated_at"></app-time-since></td>
               </tr>
               <tr>
                 <td i18n="address.total-sent">Transaction ID</td>
@@ -38,7 +42,7 @@
             <tbody>
               <tr>
                 <td i18n="address.total-received">Capacity</td>
-                <td><app-sats [satoshis]="channel.capacity"></app-sats></td>
+                <td><app-sats [satoshis]="channel.capacity"></app-sats>&nbsp; <app-fiat [value]="channel.capacity" digitsInfo="1.2-2"></app-fiat></td>
               </tr>
             </tbody>
           </table>
