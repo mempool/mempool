@@ -12,6 +12,7 @@ import { RelativeUrlPipe } from './pipes/relative-url/relative-url.pipe';
 import { ScriptpubkeyTypePipe } from './pipes/scriptpubkey-type-pipe/scriptpubkey-type.pipe';
 import { BytesPipe } from './pipes/bytes-pipe/bytes.pipe';
 import { WuBytesPipe } from './pipes/bytes-pipe/wubytes.pipe';
+import { BlockchainComponent } from '../components/blockchain/blockchain.component';
 import { TimeSinceComponent } from '../components/time-since/time-since.component';
 import { TimeUntilComponent } from '../components/time-until/time-until.component';
 import { ClipboardComponent } from '../components/clipboard/clipboard.component';
@@ -23,6 +24,11 @@ import { TxFeeRatingComponent } from '../components/tx-fee-rating/tx-fee-rating.
 import { ReactiveFormsModule } from '@angular/forms';
 import { LanguageSelectorComponent } from '../components/language-selector/language-selector.component';
 import { ColoredPriceDirective } from './directives/colored-price.directive';
+import { NoSanitizePipe } from './pipes/no-sanitize.pipe';
+import { MempoolBlocksComponent } from '../components/mempool-blocks/mempool-blocks.component';
+import { BlockchainBlocksComponent } from '../components/blockchain-blocks/blockchain-blocks.component';
+import { AmountComponent } from '../components/amount/amount.component';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -36,6 +42,7 @@ import { ColoredPriceDirective } from './directives/colored-price.directive';
     LanguageSelectorComponent,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
+    NoSanitizePipe,
     Hex2asciiPipe,
     AsmStylerPipe,
     AbsolutePipe,
@@ -47,9 +54,14 @@ import { ColoredPriceDirective } from './directives/colored-price.directive';
     Decimal2HexPipe,
     FeeRoundingPipe,
     ColoredPriceDirective,
+    BlockchainComponent,
+    MempoolBlocksComponent,
+    BlockchainBlocksComponent,
+    AmountComponent,
   ],
   imports: [
     CommonModule,
+    RouterModule,
     ReactiveFormsModule,
     NgbNavModule,
     NgbTooltipModule,
@@ -61,8 +73,10 @@ import { ColoredPriceDirective } from './directives/colored-price.directive';
   providers: [
     VbytesPipe,
     RelativeUrlPipe,
+    NoSanitizePipe,
   ],
   exports: [
+    RouterModule,
     NgbAccordionModule,
     NgbNavModule,
     CommonModule,
@@ -92,6 +106,11 @@ import { ColoredPriceDirective } from './directives/colored-price.directive';
     Decimal2HexPipe,
     FeeRoundingPipe,
     ColoredPriceDirective,
+    NoSanitizePipe,
+    BlockchainComponent,
+    MempoolBlocksComponent,
+    BlockchainBlocksComponent,
+    AmountComponent,
   ]
 })
 export class SharedModule {}
