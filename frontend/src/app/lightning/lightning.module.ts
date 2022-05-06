@@ -10,6 +10,7 @@ import { NodeComponent } from './node/node.component';
 import { LightningRoutingModule } from './lightning.routing.module';
 import { ChannelsListComponent } from './channels-list/channels-list.component';
 import { ChannelComponent } from './channel/channel.component';
+import { LightningWrapperComponent } from './lightning-wrapper/lightning-wrapper.component';
 @NgModule({
   declarations: [
     LightningDashboardComponent,
@@ -18,6 +19,7 @@ import { ChannelComponent } from './channel/channel.component';
     NodeComponent,
     ChannelsListComponent,
     ChannelComponent,
+    LightningWrapperComponent,
   ],
   imports: [
     CommonModule,
