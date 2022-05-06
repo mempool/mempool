@@ -630,6 +630,8 @@ class Routes {
       res.json({
         hashrates: hashrates,
         difficulty: difficulty,
+        currentHashrate: await bitcoinClient.getNetworkHashPs(),
+        currentDifficulty: await bitcoinClient.getDifficulty(),
       });
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
