@@ -2,9 +2,7 @@
 
 Mempool is the fully-featured mempool visualizer, explorer, and API service running at [mempool.space](https://mempool.space/). 
 
-It is an open-source project developed and operated for the benefit of the Bitcoin community, with a focus on the emerging transaction fee market that is evolving Bitcoin into a multi-layer ecosystem.
-
-![mempool](https://mempool.space/resources/screenshots/v2.3.0-dashboard.png)
+![mempool](https://mempool.space/resources/screenshots/v2.4.0-dashboard.png)
 
 # Installation Methods
 
