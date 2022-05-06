@@ -114,23 +114,15 @@ export class HashrateChartComponent implements OnInit {
                   difficulty: diffFixed.map(val => [val.timestamp * 1000, val.difficulty]),
                 });
                 this.isLoading = false;
-
-                if (data.hashrates.length === 0) {
-                  this.cd.markForCheck();
-                  throw new Error();
-                }
               }),
               map((response) => {
                 const data = response.body;
                 return {
                   blockCount: parseInt(response.headers.get('x-total-count'), 10),
-                  currentDifficulty: Math.round(data.difficulty[data.difficulty.length - 1].difficulty * 100) / 100,
-                  currentHashrate: data.hashrates[data.hashrates.length - 1].avgHashrate,
+                  currentDifficulty: data.currentDifficulty,
+                  currentHashrate: data.currentHashrate,
                 };
               }),
-              retryWhen((errors) => errors.pipe(
-                delay(60000)
-              ))
             );
         }),
         share()
