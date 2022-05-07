@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
-import { Env, StateService } from 'src/app/services/state.service';
+import { Env, StateService } from '../../services/state.service';
 import { Observable, merge, of } from 'rxjs';
-import { SeoService } from 'src/app/services/seo.service';
+import { SeoService } from '../../services/seo.service';
 import { tap } from 'rxjs/operators';
 import { ActivatedRoute } from "@angular/router";
 import { faqData, restApiDocsData, wsApiDocsData } from './api-docs-data';
