@@ -8,7 +8,7 @@ class ChannelsApi {
       const [rows]: any = await DB.query(query);
       return rows;
     } catch (e) {
-      logger.err('$getChannel error: ' + (e instanceof Error ? e.message : e));
+      logger.err('$getAllChannels error: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -19,7 +19,7 @@ class ChannelsApi {
       const [rows]: any = await DB.query(query, [status]);
       return rows;
     } catch (e) {
-      logger.err('$getChannel error: ' + (e instanceof Error ? e.message : e));
+      logger.err('$getChannelsByStatus error: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -42,6 +42,17 @@ class ChannelsApi {
       return rows[0];
     } catch (e) {
       logger.err('$getChannel error: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  public async $getChannelByTransactionId(transactionId: string): Promise<any> {
+    try {
+      const query = `SELECT n1.alias AS alias_left, n2.alias AS alias_right, channels.* FROM channels LEFT JOIN nodes AS n1 ON n1.public_key = channels.node1_public_key LEFT JOIN nodes AS n2 ON n2.public_key = channels.node2_public_key WHERE channels.transaction_id = ?`;
+      const [rows]: any = await DB.query(query, [transactionId]);
+      return rows[0];
+    } catch (e) {
+      logger.err('$getChannelByTransactionId error: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }

@@ -1,4 +1,13 @@
-<span
-  *ngIf="label"
-  class="badge badge-pill badge-warning"
->{{ label }}</span>
+<a *ngIf="channel; else default" [routerLink]="['/lightning/channel' | relativeUrl, channel.id]">
+  <span
+    *ngIf="label"
+    class="badge badge-pill badge-warning"
+  >{{ label }}</span>
+</a>
+
+<ng-template #default>
+  <span
+    *ngIf="label"
+    class="badge badge-pill badge-warning"
+  >{{ label }}</span>
+</ng-template>
