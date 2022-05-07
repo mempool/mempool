@@ -7,6 +7,7 @@ class ChannelsRoutes {
 
   public initRoutes(app: Express) {
     app
+      .get(config.MEMPOOL.API_URL_PREFIX + 'channels/txids', this.$getChannelsByTransactionIds)
       .get(config.MEMPOOL.API_URL_PREFIX + 'channels/:short_id', this.$getChannel)
       .get(config.MEMPOOL.API_URL_PREFIX + 'channels', this.$getChannels)
     ;
@@ -33,6 +34,29 @@ class ChannelsRoutes {
       }
         const channels = await channelsApi.$getChannelsForNode(req.query.public_key);
         res.json(channels);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getChannelsByTransactionIds(req: Request, res: Response) {
+    try {
+      if (!Array.isArray(req.query.txId)) {
+        res.status(500).send('Not an array');
+        return;
+      }
+      const txIds: string[] = [];
+      for (const _txId in req.query.txId) {
+        if (typeof req.query.txId[_txId] === 'string') {
+          txIds.push(req.query.txId[_txId].toString());
+        }
+      }
+      const channels: any[] = [];
+      for (const txId of txIds) {
+        const channel = await channelsApi.$getChannelByTransactionId(txId);
+        channels.push(channel);
+      }
+      res.json(channels);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

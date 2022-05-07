@@ -231,4 +231,13 @@ export class ApiService {
   getRewardStats$(blockCount: number = 144): Observable<RewardStats> {
     return this.httpClient.get<RewardStats>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/reward-stats/${blockCount}`);
   }
+
+  getChannelByTxIds$(txIds: string[]): Observable<any[]> {
+    let params = new HttpParams();
+    txIds.forEach((txId: string) => {
+      params = params.append('txId[]', txId);
+    });
+    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/lightning/api/v1/channels/txids/', { params });
+  }
+
 }
