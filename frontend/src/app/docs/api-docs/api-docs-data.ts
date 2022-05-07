@@ -4582,6 +4582,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "install-mempool-with-docker",
     title: "Can I install Mempool using Docker?",
-    answer: "Yes, we publish Docker images (or you can build your own). Check out <a href='https://github.com/mempool/mempool#docker-installation' target='_blank'>the documentation</a> for details."
+    answer: "Yes, we publish Docker images (or you can build your own). Check out <a href='https://github.com/mempool/mempool/tree/master/docker' target='_blank'>the documentation</a> for details."
   }
 ];
