@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, OnChanges } from '@angular/core';
 import { Vin, Vout } from '../../interfaces/electrs.interface';
 import { StateService } from 'src/app/services/state.service';
 
@@ -8,11 +8,12 @@ import { StateService } from 'src/app/services/state.service';
   styleUrls: ['./address-labels.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddressLabelsComponent implements OnInit {
+export class AddressLabelsComponent implements OnChanges {
   network = '';
 
   @Input() vin: Vin;
   @Input() vout: Vout;
+  @Input() channel: any;
 
   label?: string;
 
@@ -22,12 +23,18 @@ export class AddressLabelsComponent implements OnInit {
     this.network = stateService.network;
   }
 
-  ngOnInit() {
-    if (this.vin) {
+  ngOnChanges() {
+    if (this.channel) {
+      this.handleChannel();
+    } else if (this.vin) {
       this.handleVin();
     } else if (this.vout) {
       this.handleVout();
     }
+  }
+
+  handleChannel() {
+    this.label = `Channel open: ${this.channel.alias_left} <> ${this.channel.alias_right}`;
   }
 
   handleVin() {

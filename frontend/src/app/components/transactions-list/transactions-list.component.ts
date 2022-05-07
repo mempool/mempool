@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { StateService } from '../../services/state.service';
-import { Observable, forkJoin, ReplaySubject, BehaviorSubject, merge, Subscription } from 'rxjs';
+import { Observable, ReplaySubject, BehaviorSubject, merge, Subscription } from 'rxjs';
 import { Outspend, Transaction, Vin, Vout } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { environment } from 'src/environments/environment';
@@ -32,9 +32,11 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   latestBlock$: Observable<BlockExtended>;
   outspendsSubscription: Subscription;
   refreshOutspends$: ReplaySubject<string[]> = new ReplaySubject();
+  refreshChannels$: ReplaySubject<string[]> = new ReplaySubject();
   showDetails$ = new BehaviorSubject<boolean>(false);
   outspends: Outspend[][] = [];
   assetsMinimal: any;
+  channels: any[];
 
   constructor(
     public stateService: StateService,
@@ -73,7 +75,15 @@ export class TransactionsListComponent implements OnInit, OnChanges {
               };
             }
           }),
-        )
+        ),
+        this.refreshChannels$
+          .pipe(
+            switchMap((txIds) => this.apiService.getChannelByTxIds$(txIds)),
+            map((channels) => {
+              this.channels = channels;
+            }),
+          )
+        ,
     ).subscribe(() => this.ref.markForCheck());
   }
 
@@ -114,8 +124,9 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         tx['addressValue'] = addressIn - addressOut;
       }
     });
-
-    this.refreshOutspends$.next(this.transactions.map((tx) => tx.txid));
+    const txIds = this.transactions.map((tx) => tx.txid);
+    this.refreshOutspends$.next(txIds);
+    this.refreshChannels$.next(txIds);
   }
 
   onScroll() {
