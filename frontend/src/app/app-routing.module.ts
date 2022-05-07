@@ -14,7 +14,6 @@ import { AssetsNavComponent } from './components/assets/assets-nav/assets-nav.co
 import { StatusViewComponent } from './components/status-view/status-view.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LatestBlocksComponent } from './components/latest-blocks/latest-blocks.component';
-import { DocsComponent } from './components/docs/docs.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
 import { TrademarkPolicyComponent } from './components/trademark-policy/trademark-policy.component';
@@ -35,6 +34,7 @@ import { GraphsComponent } from './components/graphs/graphs.component';
 import { BlocksList } from './components/blocks-list/blocks-list.component';
 import { BlockFeesGraphComponent } from './components/block-fees-graph/block-fees-graph.component';
 import { BlockRewardsGraphComponent } from './components/block-rewards-graph/block-rewards-graph.component';
+import { BlockFeeRatesGraphComponent } from './components/block-fee-rates-graph/block-fee-rates-graph.component';
 
 let routes: Routes = [
   {
@@ -126,7 +126,11 @@ let routes: Routes = [
           {
             path: 'mining/block-rewards',
             component: BlockRewardsGraphComponent,
-          }
+          },
+          {
+            path: 'mining/block-fee-rates',
+            component: BlockFeeRatesGraphComponent,
+          },
         ],
       },
       {
@@ -134,24 +138,12 @@ let routes: Routes = [
         component: AboutComponent,
       },
       {
-        path: 'docs/api/:type',
-        component: DocsComponent
-      },
-      {
-        path: 'docs/faq',
-        component: DocsComponent
-      },
-      {
-        path: 'docs/api',
-        redirectTo: 'docs/api/rest'
-      },
-      {
         path: 'docs',
-        redirectTo: 'docs/faq'
+        loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
       },
       {
         path: 'api',
-        redirectTo: 'docs/api/rest'
+        loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
       },
       {
         path: 'terms-of-service',
@@ -264,7 +256,11 @@ let routes: Routes = [
               {
                 path: 'mining/block-rewards',
                 component: BlockRewardsGraphComponent,
-              }
+              },
+              {
+                path: 'mining/block-fee-rates',
+                component: BlockFeeRatesGraphComponent,
+              },
             ]
           },
           {
@@ -273,24 +269,12 @@ let routes: Routes = [
             component: AddressComponent
           },
           {
-            path: 'docs/api/:type',
-            component: DocsComponent
-          },
-          {
-            path: 'docs/faq',
-            component: DocsComponent
-          },
-          {
-            path: 'docs/api',
-            redirectTo: 'docs/api/rest'
-          },
-          {
             path: 'docs',
-            redirectTo: 'docs/faq'
+            loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
           },
           {
             path: 'api',
-            redirectTo: 'docs/api/rest'
+            loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
           },
         ],
       },
@@ -400,7 +384,11 @@ let routes: Routes = [
               {
                 path: 'mining/block-rewards',
                 component: BlockRewardsGraphComponent,
-              }
+              },
+              {
+                path: 'mining/block-fee-rates',
+                component: BlockFeeRatesGraphComponent,
+              },
             ]
           },
           {
@@ -409,24 +397,12 @@ let routes: Routes = [
             component: AddressComponent
           },
           {
-            path: 'docs/api/:type',
-            component: DocsComponent
-          },
-          {
-            path: 'docs/faq',
-            component: DocsComponent
-          },
-          {
-            path: 'docs/api',
-            redirectTo: 'docs/api/rest'
-          },
-          {
             path: 'docs',
-            redirectTo: 'docs/faq'
+            loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
           },
           {
             path: 'api',
-            redirectTo: 'docs/api/rest'
+            loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
           },
         ],
       },
@@ -555,20 +531,12 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
         ]
       },
       {
-        path: 'docs/api/:type',
-        component: DocsComponent
-      },
-      {
-        path: 'docs/api',
-        redirectTo: 'docs/api/rest'
-      },
-      {
         path: 'docs',
-        redirectTo: 'docs/api/rest'
+        loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
       },
       {
         path: 'api',
-        redirectTo: 'docs/api/rest'
+        loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
       },
       {
         path: 'about',
@@ -667,20 +635,12 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
             ]
           },
           {
-            path: 'docs/api/:type',
-            component: DocsComponent
-          },
-          {
-            path: 'docs/api',
-            redirectTo: 'docs/api/rest'
-          },
-          {
             path: 'docs',
-            redirectTo: 'docs/api/rest'
+            loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
           },
           {
             path: 'api',
-            redirectTo: 'docs/api/rest'
+            loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
           },
           {
             path: 'about',
@@ -730,7 +690,6 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
     scrollPositionRestoration: 'enabled',
     anchorScrolling: 'enabled'
   })],
-  exports: [RouterModule]
 })
 export class AppRoutingModule { }
 

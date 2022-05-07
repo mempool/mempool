@@ -32,7 +32,8 @@ export class DifficultyAdjustmentsTable implements OnInit {
   ngOnInit(): void {
     this.hashrateObservable$ = this.apiService.getHistoricalHashrate$('1y')
       .pipe(
-        map((data: any) => {
+        map((response) => {
+          const data = response.body;
           const availableTimespanDay = (
             (new Date().getTime() / 1000) - (data.oldestIndexedBlockTimestamp)
           ) / 3600 / 24;

@@ -13,6 +13,8 @@ import blocksRepository from '../repositories/BlocksRepository';
 import loadingIndicators from './loading-indicators';
 import BitcoinApi from './bitcoin/bitcoin-api';
 import { prepareBlock } from '../utils/blocks-utils';
+import BlocksRepository from '../repositories/BlocksRepository';
+import HashratesRepository from '../repositories/HashratesRepository';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -23,7 +25,7 @@ class Blocks {
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
   private blockIndexingStarted = false;
   public blockIndexingCompleted = false;
-  public reindexFlag = true; // Always re-index the latest indexed data in case the node went offline with an invalid block tip (reorg)
+  public reindexFlag = false;
 
   constructor() { }
 
@@ -179,7 +181,8 @@ class Blocks {
 
       const regexes: string[] = JSON.parse(pools[i].regexes);
       for (let y = 0; y < regexes.length; ++y) {
-        const match = asciiScriptSig.match(regexes[y]);
+        const regex = new RegExp(regexes[y], 'i');
+        const match = asciiScriptSig.match(regex);
         if (match !== null) {
           return pools[i];
         }
@@ -272,10 +275,13 @@ class Blocks {
       return;
     }
 
-    this.blockIndexingCompleted = true;
+    const chainValid = await BlocksRepository.$validateChain();
+    this.reindexFlag = !chainValid;
+    this.blockIndexingCompleted = chainValid;
   }
 
   public async $updateBlocks() {
+    let fastForwarded = false;
     const blockHeightTip = await bitcoinApi.$getBlockHeightTip();
 
     if (this.blocks.length === 0) {
@@ -287,6 +293,7 @@ class Blocks {
     if (blockHeightTip - this.currentBlockHeight > config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 2) {
       logger.info(`${blockHeightTip - this.currentBlockHeight} blocks since tip. Fast forwarding to the ${config.MEMPOOL.INITIAL_BLOCKS_AMOUNT} recent blocks`);
       this.currentBlockHeight = blockHeightTip - config.MEMPOOL.INITIAL_BLOCKS_AMOUNT;
+      fastForwarded = true;
     }
 
     if (!this.lastDifficultyAdjustmentTime) {
@@ -324,12 +331,18 @@ class Blocks {
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, transactions);
 
       if (Common.indexingEnabled()) {
-        await blocksRepository.$saveBlockInDatabase(blockExtended);
-
-        // If the last 10 blocks chain is not valid, re-index them (reorg)
-        const chainValid = await blocksRepository.$validateRecentBlocks();
-        if (!chainValid) {
-          this.reindexFlag = true;
+        if (!fastForwarded) {
+          const lastBlock = await blocksRepository.$getBlockByHeight(blockExtended.height - 1);
+          if (lastBlock !== null && blockExtended.previousblockhash !== lastBlock['hash']) {
+            logger.warn(`Chain divergence detected at block ${lastBlock['height']}, re-indexing most recent data`);
+            // We assume there won't be a reorg with more than 10 block depth
+            await BlocksRepository.$deleteBlocksFrom(lastBlock['height'] - 10);
+            await HashratesRepository.$deleteLastEntries();
+            for (let i = 10; i >= 0; --i) {
+              await this.$indexBlock(lastBlock['height'] - i);
+            }
+          }
+          await blocksRepository.$saveBlockInDatabase(blockExtended);
         }
       }
 
@@ -377,8 +390,6 @@ class Blocks {
     // use it for the mining pages, and mining pages should not be available if indexing is turned off.
     // I'll need to fix it before we refactor the block(s) related pages
     try {
-      loadingIndicators.setProgress('blocks', 0);
-
       let currentHeight = fromHeight !== undefined ? fromHeight : this.getCurrentBlockHeight();
       const returnBlocks: BlockExtended[] = [];
 
@@ -405,13 +416,11 @@ class Blocks {
         }
         returnBlocks.push(block);
         nextHash = block.previousblockhash;
-        loadingIndicators.setProgress('blocks', i / 10 * 100);
         currentHeight--;
       }
 
       return returnBlocks;
     } catch (e) {
-      loadingIndicators.setProgress('blocks', 100);
       throw e;
     }
   }

@@ -56,7 +56,7 @@ export class PoolComponent implements OnInit {
             .pipe(
               switchMap((data) => {
                 this.isLoading = false;
-                this.prepareChartOptions(data.hashrates.map(val => [val.timestamp * 1000, val.avgHashrate]));
+                this.prepareChartOptions(data.map(val => [val.timestamp * 1000, val.avgHashrate]));
                 return [slug];
               }),
             );

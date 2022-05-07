@@ -85,16 +85,16 @@ class Server {
 
     this.setUpWebsocketHandling();
 
-    await syncAssets.syncAssets();
+    await syncAssets.syncAssets$();
     diskCache.loadMempoolCache();
 
     if (config.DATABASE.ENABLED) {
       await DB.checkDbConnection();
       try {
-        if (process.env.npm_config_reindex != undefined) { // Re-index requests
+        if (process.env.npm_config_reindex !== undefined) { // Re-index requests
           const tables = process.env.npm_config_reindex.split(',');
           logger.warn(`Indexed data for "${process.env.npm_config_reindex}" tables will be erased in 5 seconds (using '--reindex')`);
-          await Common.sleep(5000);
+          await Common.sleep$(5000);
           await databaseMigration.$truncateIndexedData(tables);
         }
         await databaseMigration.$initializeOrMigrateDatabase();
@@ -111,7 +111,11 @@ class Server {
     }
 
     if (Common.isLiquid()) {
-      icons.loadIcons();
+      try {
+        icons.loadIcons();
+      } catch (e) {
+        logger.err('Cannot load liquid icons. Ignoring. Reason: ' + (e instanceof Error ? e.message : e));
+      }
     }
 
     fiatConversion.startService();
@@ -184,10 +188,6 @@ class Server {
 
     try {
       await poolsUpdater.updatePoolsJson();
-      if (blocks.reindexFlag) {
-        await BlocksRepository.$deleteBlocks(10);
-        await HashratesRepository.$deleteLastEntries();
-      }
       await blocks.$generateBlockDatabase();
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();
@@ -322,6 +322,7 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/reward-stats/:blockCount', routes.$getRewardStats)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fees/:interval', routes.$getHistoricalBlockFees)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/rewards/:interval', routes.$getHistoricalBlockRewards)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fee-rates/:interval', routes.$getHistoricalBlockFeeRates)
       ;
     }
 
