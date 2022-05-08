@@ -36,9 +36,14 @@ class LightningStatsUpdater {
       const query = `SELECT nodes.public_key, c1.channels_count_left, c2.channels_count_right, c1.channels_capacity_left, c2.channels_capacity_right FROM nodes LEFT JOIN (SELECT node1_public_key, COUNT(id) AS channels_count_left, SUM(capacity) AS channels_capacity_left FROM channels GROUP BY node1_public_key) c1 ON c1.node1_public_key = nodes.public_key LEFT JOIN (SELECT node2_public_key, COUNT(id) AS channels_count_right, SUM(capacity) AS channels_capacity_right FROM channels GROUP BY node2_public_key) c2 ON c2.node2_public_key = nodes.public_key`;
       const [nodes]: any = await DB.query(query);
 
+      // First run we won't have any nodes yet
+      if (nodes.length < 10) {
+        return;
+      }
+
       for (const node of nodes) {
         await DB.query(
-          `INSERT INTO nodes_stats(public_key, added, capacity, channels) VALUES (?, NOW(), ?, ?)`,
+          `INSERT INTO node_stats(public_key, added, capacity, channels) VALUES (?, NOW(), ?, ?)`,
           [node.public_key, (parseInt(node.channels_capacity_left || 0, 10)) + (parseInt(node.channels_capacity_right || 0, 10)),
             node.channels_count_left + node.channels_count_right]);
       }

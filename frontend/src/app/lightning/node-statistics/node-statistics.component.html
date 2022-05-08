@@ -4,8 +4,8 @@
       <h5 class="card-title" i18n="mining.average-fee">Capacity</h5>
       <div class="card-text" i18n-ngbTooltip="mining.average-fee"
         ngbTooltip="Percentage change past week" placement="bottom">
-        <app-amount [satoshis]="statistics.latest.total_capacity" digitsInfo="1.2-2"></app-amount>
-        <span class="fiat">
+        <app-amount [satoshis]="statistics.latest?.total_capacity" digitsInfo="1.2-2"></app-amount>
+        <span class="fiat" *ngIf="statistics.previous">
           <app-change [current]="statistics.latest.total_capacity" [previous]="statistics.previous.total_capacity"></app-change>
         </span>
       </div>
@@ -15,9 +15,9 @@
       <div class="card-text" i18n-ngbTooltip="mining.rewards-desc"
         ngbTooltip="Percentage change past week" placement="bottom">
         <div class="fee-text">
-          {{ statistics.latest.node_count | number }}
+          {{ statistics.latest?.node_count || 0 | number }}
         </div>
-        <span class="fiat">
+        <span class="fiat" *ngIf="statistics.previous">
           <app-change [current]="statistics.latest.node_count" [previous]="statistics.previous.node_count"></app-change>
         </span>
       </div>
@@ -27,9 +27,9 @@
       <div class="card-text" i18n-ngbTooltip="mining.rewards-per-tx-desc"
         ngbTooltip="Percentage change past week" placement="bottom">
         <div class="fee-text">
-          {{ statistics.latest.channel_count | number }}
+          {{ statistics.latest?.channel_count || 0 | number }}
         </div>
-        <span class="fiat">
+        <span class="fiat" *ngIf="statistics.previous">
           <app-change [current]="statistics.latest.channel_count" [previous]="statistics.previous.channel_count"></app-change>
         </span>
       </div>
