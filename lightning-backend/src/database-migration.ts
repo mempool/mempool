@@ -76,7 +76,7 @@ class DatabaseMigration {
       await this.$executeQuery(this.getCreateStatisticsQuery(), await this.$checkIfTableExists('statistics'));
       await this.$executeQuery(this.getCreateNodesQuery(), await this.$checkIfTableExists('nodes'));
       await this.$executeQuery(this.getCreateChannelsQuery(), await this.$checkIfTableExists('channels'));
-      await this.$executeQuery(this.getCreateNodesStatsQuery(), await this.$checkIfTableExists('nodes_stats'));
+      await this.$executeQuery(this.getCreateNodesStatsQuery(), await this.$checkIfTableExists('node_stats'));
     } catch (e) {
       throw e;
     }
@@ -187,8 +187,7 @@ class DatabaseMigration {
       channel_count int(11) NOT NULL,
       node_count int(11) NOT NULL,
       total_capacity double unsigned NOT NULL,
-      average_channel_size double unsigned NOT NULL,
-      CONSTRAINT PRIMARY KEY (id)
+      PRIMARY KEY (id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
@@ -197,26 +196,30 @@ class DatabaseMigration {
       public_key varchar(66) NOT NULL,
       first_seen datetime NOT NULL,
       updated_at datetime NOT NULL,
-      alias varchar(200) COLLATE utf8mb4_general_ci NOT NULL,
+      alias varchar(200) CHARACTER SET utf8mb4 NOT NULL,
       color varchar(200) NOT NULL,
-        CONSTRAINT PRIMARY KEY (public_key)
+      sockets text DEFAULT NULL,
+      PRIMARY KEY (public_key)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
   private getCreateChannelsQuery(): string {
     return `CREATE TABLE IF NOT EXISTS channels (
-      id varchar(15) NOT NULL,
+      id bigint(11) unsigned NOT NULL,
+      short_id varchar(15) NOT NULL DEFAULT '',
       capacity bigint(20) unsigned NOT NULL,
       transaction_id varchar(64) NOT NULL,
       transaction_vout int(11) NOT NULL,
       updated_at datetime DEFAULT NULL,
+      created datetime DEFAULT NULL,
+      status int(11) NOT NULL DEFAULT 0,
       node1_public_key varchar(66) NOT NULL,
       node1_base_fee_mtokens bigint(20) unsigned DEFAULT NULL,
       node1_cltv_delta int(11) DEFAULT NULL,
       node1_fee_rate bigint(11) DEFAULT NULL,
       node1_is_disabled tinyint(1) DEFAULT NULL,
       node1_max_htlc_mtokens bigint(20) unsigned DEFAULT NULL,
-      node1_min_htlc_mtokens bigint(20) unsigned DEFAULT NULL,
+      node1_min_htlc_mtokens bigint(20) DEFAULT NULL,
       node1_updated_at datetime DEFAULT NULL,
       node2_public_key varchar(66) NOT NULL,
       node2_base_fee_mtokens bigint(20) unsigned DEFAULT NULL,
@@ -229,18 +232,21 @@ class DatabaseMigration {
       PRIMARY KEY (id),
       KEY node1_public_key (node1_public_key),
       KEY node2_public_key (node2_public_key),
-      KEY node1_public_key_2 (node1_public_key,node2_public_key)
+      KEY status (status),
+      KEY short_id (short_id),
+      KEY transaction_id (transaction_id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
   private getCreateNodesStatsQuery(): string {
-    return `CREATE TABLE nodes_stats (
+    return `CREATE TABLE IF NOT EXISTS node_stats (
       id int(11) unsigned NOT NULL AUTO_INCREMENT,
       public_key varchar(66) NOT NULL DEFAULT '',
       added date NOT NULL,
-      capacity bigint(11) unsigned DEFAULT NULL,
-      channels int(11) unsigned DEFAULT NULL,
+      capacity bigint(20) unsigned NOT NULL DEFAULT 0,
+      channels int(11) unsigned NOT NULL DEFAULT 0,
       PRIMARY KEY (id),
+      UNIQUE KEY added (added,public_key),
       KEY public_key (public_key)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
