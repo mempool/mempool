@@ -15,7 +15,7 @@ class NodesApi {
 
   public async $getNodeStats(public_key: string): Promise<any> {
     try {
-      const query = `SELECT * FROM nodes_stats WHERE public_key = ? ORDER BY added DESC`;
+      const query = `SELECT * FROM node_stats WHERE public_key = ? ORDER BY added DESC`;
       const [rows]: any = await DB.query(query, [public_key]);
       return rows;
     } catch (e) {
@@ -26,7 +26,7 @@ class NodesApi {
 
   public async $getTopCapacityNodes(): Promise<any> {
     try {
-      const query = `SELECT nodes.*, nodes_stats.capacity, nodes_stats.channels FROM nodes LEFT JOIN nodes_stats ON nodes_stats.public_key = nodes.public_key ORDER BY nodes_stats.added DESC, nodes_stats.capacity DESC LIMIT 10`;
+      const query = `SELECT nodes.*, node_stats.capacity, node_stats.channels FROM nodes LEFT JOIN node_stats ON node_stats.public_key = nodes.public_key ORDER BY node_stats.added DESC, node_stats.capacity DESC LIMIT 10`;
       const [rows]: any = await DB.query(query);
       return rows;
     } catch (e) {
@@ -37,7 +37,7 @@ class NodesApi {
 
   public async $getTopChannelsNodes(): Promise<any> {
     try {
-      const query = `SELECT nodes.*, nodes_stats.capacity, nodes_stats.channels FROM nodes LEFT JOIN nodes_stats ON nodes_stats.public_key = nodes.public_key ORDER BY nodes_stats.added DESC, nodes_stats.channels DESC LIMIT 10`;
+      const query = `SELECT nodes.*, node_stats.capacity, node_stats.channels FROM nodes LEFT JOIN node_stats ON node_stats.public_key = nodes.public_key ORDER BY node_stats.added DESC, node_stats.channels DESC LIMIT 10`;
       const [rows]: any = await DB.query(query);
       return rows;
     } catch (e) {
