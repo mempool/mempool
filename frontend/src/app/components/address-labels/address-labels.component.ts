@@ -42,7 +42,7 @@ export class AddressLabelsComponent implements OnInit {
       }
 
       const topElement = this.vin.witness[this.vin.witness.length - 2];
-      if (/^OP_IF OP_PUSHBYTES_33 \w{66} OP_ELSE OP_PUSHBYTES_(1 \w{2}|2 \w{4}) OP_CSV OP_DROP OP_PUSHBYTES_33 \w{66} OP_ENDIF OP_CHECKSIG$/.test(this.vin.inner_witnessscript_asm)) {
+      if (/^OP_IF OP_PUSHBYTES_33 \w{66} OP_ELSE OP_PUSH(NUM_\d+|BYTES_(1 \w{2}|2 \w{4})) OP_CSV OP_DROP OP_PUSHBYTES_33 \w{66} OP_ENDIF OP_CHECKSIG$/.test(this.vin.inner_witnessscript_asm)) {
         // https://github.com/lightning/bolts/blob/master/03-transactions.md#commitment-transaction-outputs
         if (topElement === '01') {
           // top element is '01' to get in the revocation path
