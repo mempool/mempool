@@ -147,13 +147,13 @@ class HashratesRepository {
   /**
    * Set latest run timestamp
    */
-  public async $setLatestRunTimestamp(key: string, val: any = null) {
+  public async $setLatestRun(key: string, val: number) {
     const query = `UPDATE state SET number = ? WHERE name = ?`;
 
     try {
-      await DB.query(query, (val === null) ? [Math.round(new Date().getTime() / 1000), key] : [val, key]);
+      await DB.query(query, [val, key]);
     } catch (e) {
-      logger.err(`Cannot set last indexing timestamp for ${key}. Reason: ` + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot set last indexing run for ${key}. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -161,7 +161,7 @@ class HashratesRepository {
   /**
    * Get latest run timestamp
    */
-  public async $getLatestRunTimestamp(key: string): Promise<number> {
+  public async $getLatestRun(key: string): Promise<number> {
     const query = `SELECT number FROM state WHERE name = ?`;
 
     try {
@@ -172,7 +172,7 @@ class HashratesRepository {
       }
       return rows[0]['number'];
     } catch (e) {
-      logger.err(`Cannot retreive last indexing timestamp for ${key}. Reason: ` + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot retrieve last indexing run for ${key}. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -189,8 +189,8 @@ class HashratesRepository {
         await DB.query(`DELETE FROM hashrates WHERE hashrate_timestamp = ?`, [row.timestamp]);
       }
       // Re-run the hashrate indexing to fill up missing data
-      await this.$setLatestRunTimestamp('last_hashrates_indexing', 0);
-      await this.$setLatestRunTimestamp('last_weekly_hashrates_indexing', 0);
+      await this.$setLatestRun('last_hashrates_indexing', 0);
+      await this.$setLatestRun('last_weekly_hashrates_indexing', 0);
     } catch (e) {
       logger.err('Cannot delete latest hashrates data points. Reason: ' + (e instanceof Error ? e.message : e));
     }
@@ -205,8 +205,8 @@ class HashratesRepository {
     try {
       await DB.query(`DELETE FROM hashrates WHERE hashrate_timestamp >= FROM_UNIXTIME(?)`, [timestamp]);
       // Re-run the hashrate indexing to fill up missing data
-      await this.$setLatestRunTimestamp('last_hashrates_indexing', 0);
-      await this.$setLatestRunTimestamp('last_weekly_hashrates_indexing', 0);
+      await this.$setLatestRun('last_hashrates_indexing', 0);
+      await this.$setLatestRun('last_weekly_hashrates_indexing', 0);
     } catch (e) {
       logger.err('Cannot delete latest hashrates data points. Reason: ' + (e instanceof Error ? e.message : e));
     }
