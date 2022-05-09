@@ -1,14 +1,13 @@
 ---
 name: 🐛 Bug Report
-about: Report bugs or other issues to us on GitHub
+about: Report bugs (no support requests, please)
 ---
 
 <!--
    SUPPORT REQUESTS:
    This is for reporting bugs in Mempool, not for support requests. 
-   If you have a support request, please join our Keybase or Matrix:
-   https://keybase.io/team/mempool
-   https://matrix.to/#/#mempool:bitcoin.kyoto
+   If you have a support request, please reach out on Matrix:
+   https://matrix.to/#/#mempool.support:bitcoin.kyoto
 -->
 
 ### Description
