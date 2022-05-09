@@ -139,10 +139,13 @@ class Mining {
 
     try {
       this.weeklyHashrateIndexingStarted = true;
+      const lastestRunDate = await HashratesRepository.$getLatestRun('last_weekly_hashrates_indexing');
 
-      // We only run this once a week
-      const latestTimestamp = await HashratesRepository.$getLatestRunTimestamp('last_weekly_hashrates_indexing') * 1000;
-      if (now.getTime() - latestTimestamp < 604800000) {
+      // Run only if:
+      // * lastestRunDate is set to 0 (node backend restart, reorg)
+      // * we started a new week (around Monday midnight)
+      const runIndexing = lastestRunDate === 0 || now.getUTCDay() === 1 && lastestRunDate !== now.getUTCDate();
+      if (!runIndexing) {
         this.weeklyHashrateIndexingStarted = false;
         return;
       }
@@ -226,7 +229,7 @@ class Mining {
         ++totalIndexed;
       }
       this.weeklyHashrateIndexingStarted = false;
-      await HashratesRepository.$setLatestRunTimestamp('last_weekly_hashrates_indexing');
+      await HashratesRepository.$setLatestRun('last_weekly_hashrates_indexing', new Date().getUTCDate());
       if (newlyIndexed > 0) {
         logger.info(`Indexed ${newlyIndexed} pools weekly hashrate`);
       }
@@ -244,14 +247,13 @@ class Mining {
       return;
     }
 
-    const now = new Date().getTime();
-
     try {
       this.hashrateIndexingStarted = true;
 
-      // We only run this once a day
-      const latestTimestamp = await HashratesRepository.$getLatestRunTimestamp('last_hashrates_indexing') * 1000;
-      if (now - latestTimestamp < 86400000) {
+      // We only run this once a day around midnight
+      const latestRunDate = await HashratesRepository.$getLatestRun('last_hashrates_indexing');
+      const now = new Date().getUTCDate();
+      if (now === latestRunDate) {
         this.hashrateIndexingStarted = false;
         return;
       }
@@ -339,7 +341,7 @@ class Mining {
       newlyIndexed += hashrates.length;
       await HashratesRepository.$saveHashrates(hashrates);
 
-      await HashratesRepository.$setLatestRunTimestamp('last_hashrates_indexing');
+      await HashratesRepository.$setLatestRun('last_hashrates_indexing', new Date().getUTCDate());
       this.hashrateIndexingStarted = false;
       if (newlyIndexed > 0) {
         logger.info(`Indexed ${newlyIndexed} day of network hashrate`);
