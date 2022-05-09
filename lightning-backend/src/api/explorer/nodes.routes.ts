@@ -7,10 +7,20 @@ class NodesRoutes {
   public initRoutes(app: Express) {
     app
     .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/latest', this.$getGeneralStats)
+    .get(config.MEMPOOL.API_URL_PREFIX + 'nodes/search/:search', this.$searchNode)
     .get(config.MEMPOOL.API_URL_PREFIX + 'nodes/top', this.$getTopNodes)
     .get(config.MEMPOOL.API_URL_PREFIX + 'nodes/:public_key/statistics', this.$getHistoricalNodeStats)
     .get(config.MEMPOOL.API_URL_PREFIX + 'nodes/:public_key', this.$getNode)
   ;
+  }
+
+  private async $searchNode(req: Request, res: Response) {
+    try {
+      const nodes = await nodesApi.$searchNodeByPublicKeyOrAlias(req.params.search);
+      res.json(nodes);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
   }
 
   private async $getNode(req: Request, res: Response) {

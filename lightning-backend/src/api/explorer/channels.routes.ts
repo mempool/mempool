@@ -8,9 +8,19 @@ class ChannelsRoutes {
   public initRoutes(app: Express) {
     app
       .get(config.MEMPOOL.API_URL_PREFIX + 'channels/txids', this.$getChannelsByTransactionIds)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'channels/search/:search', this.$searchChannelsById)
       .get(config.MEMPOOL.API_URL_PREFIX + 'channels/:short_id', this.$getChannel)
       .get(config.MEMPOOL.API_URL_PREFIX + 'channels', this.$getChannels)
     ;
+  }
+
+  private async $searchChannelsById(req: Request, res: Response) {
+    try {
+      const channels = await channelsApi.$searchChannelsById(req.params.search);
+      res.json(channels);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
   }
 
   private async $getChannel(req: Request, res: Response) {
@@ -32,8 +42,8 @@ class ChannelsRoutes {
         res.status(501).send('Missing parameter: public_key');
         return;
       }
-        const channels = await channelsApi.$getChannelsForNode(req.query.public_key);
-        res.json(channels);
+      const channels = await channelsApi.$getChannelsForNode(req.query.public_key);
+      res.json(channels);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
@@ -51,12 +61,18 @@ class ChannelsRoutes {
           txIds.push(req.query.txId[_txId].toString());
         }
       }
-      const channels: any[] = [];
-      for (const txId of txIds) {
-        const channel = await channelsApi.$getChannelByTransactionId(txId);
-        channels.push(channel);
+      const channels = await channelsApi.$getChannelsByTransactionId(txIds);
+      const result: any[] = [];
+      for (const txid of txIds) {
+        const foundChannel = channels.find((channel) => channel.transaction_id === txid);
+        if (foundChannel) {
+          result.push(foundChannel);
+        } else {
+          result.push(null);
+        }
       }
-      res.json(channels);
+
+      res.json(result);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
