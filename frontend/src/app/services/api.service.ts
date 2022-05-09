@@ -240,4 +240,9 @@ export class ApiService {
     return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/lightning/api/v1/channels/txids/', { params });
   }
 
+  lightningSearch$(searchText: string): Observable<any[]> {
+    let params = new HttpParams().set('searchText', searchText);
+    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/lightning/api/v1/search', { params });
+  }
+
 }

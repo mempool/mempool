@@ -59,6 +59,18 @@ class NodesApi {
       throw e;
     }
   }
+
+  public async $searchNodeByPublicKeyOrAlias(search: string) {
+    try {
+      const searchStripped = search.replace('%', '') + '%';
+      const query = `SELECT public_key, alias, color FROM nodes WHERE public_key LIKE ? OR alias LIKE ? LIMIT 10`;
+      const [rows]: any = await DB.query(query, [searchStripped, searchStripped]);
+      return rows;
+    } catch (e) {
+      logger.err('$searchNodeByPublicKeyOrAlias error: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
 }
 
 export default new NodesApi();
