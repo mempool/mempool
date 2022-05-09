@@ -166,7 +166,6 @@ export class HashrateChartPoolsComponent implements OnInit {
     }
 
     this.chartOptions = {
-      backgroundColor: '#11131f',
       title: title,
       animation: false,
       grid: {
@@ -267,13 +266,15 @@ export class HashrateChartPoolsComponent implements OnInit {
     const now = new Date();
     // @ts-ignore
     this.chartOptions.grid.bottom = 30;
+    this.chartOptions.backgroundColor = '#11131f';
     this.chartInstance.setOption(this.chartOptions);
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,
       excludeComponents: ['dataZoom'],
-    }), `pools-dominance-${this.timespan}-${now.getTime() / 1000}`);
+    }), `pools-dominance-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
     // @ts-ignore
     this.chartOptions.grid.bottom = prevBottom;
+    this.chartOptions.backgroundColor = 'none';
     this.chartInstance.setOption(this.chartOptions);
   }
 }

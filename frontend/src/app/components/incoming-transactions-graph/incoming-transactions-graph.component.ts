@@ -62,7 +62,6 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
 
   mountChart(): void {
     this.mempoolStatsChartOption = {
-      backgroundColor: '#11131f',
       grid: {
         height: this.height,
         right: this.right,
@@ -240,13 +239,15 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
     const now = new Date();
     // @ts-ignore
     this.mempoolStatsChartOption.grid.height = prevHeight + 20;
+    this.mempoolStatsChartOption.backgroundColor = '#11131f';
     this.chartInstance.setOption(this.mempoolStatsChartOption);
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,
       excludeComponents: ['dataZoom'],
-    }), `incoming-vbytes-${timespan}-${now.getTime() / 1000}`);
+    }), `incoming-vbytes-${timespan}-${Math.round(now.getTime() / 1000)}.svg`);
     // @ts-ignore
     this.mempoolStatsChartOption.grid.height = prevHeight;
+    this.mempoolStatsChartOption.backgroundColor = 'none';
     this.chartInstance.setOption(this.mempoolStatsChartOption);
   }
 }

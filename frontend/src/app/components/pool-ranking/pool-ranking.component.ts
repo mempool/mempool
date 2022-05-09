@@ -207,7 +207,6 @@ export class PoolRankingComponent implements OnInit {
 
   prepareChartOptions(miningStats) {
     this.chartOptions = {
-      backgroundColor: '#11131f',
       animation: false,
       color: chartColors,
       tooltip: {
@@ -290,10 +289,14 @@ export class PoolRankingComponent implements OnInit {
 
   onSaveChart() {
     const now = new Date();
+    this.chartOptions.backgroundColor = '#11131f';
+    this.chartInstance.setOption(this.chartOptions);
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,
       excludeComponents: ['dataZoom'],
-    }), `pools-ranking-${this.timespan}-${now.getTime() / 1000}`);
+    }), `pools-ranking-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
+    this.chartOptions.backgroundColor = 'none';
+    this.chartInstance.setOption(this.chartOptions);
   }
 }
 

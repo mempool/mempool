@@ -147,7 +147,6 @@ export class BlockFeeRatesGraphComponent implements OnInit {
 
   prepareChartOptions(data) {
     this.chartOptions = {
-      backgroundColor: '#11131f',
       color: ['#D81B60', '#8E24AA', '#1E88E5', '#7CB342', '#FDD835', '#6D4C41', '#546E7A'],
       animation: false,
       grid: {
@@ -305,13 +304,15 @@ export class BlockFeeRatesGraphComponent implements OnInit {
     const now = new Date();
     // @ts-ignore
     this.chartOptions.grid.bottom = 40;
+    this.chartOptions.backgroundColor = '#11131f';
     this.chartInstance.setOption(this.chartOptions);
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,
       excludeComponents: ['dataZoom'],
-    }), `block-fee-rates-${this.timespan}-${now.getTime() / 1000}`);
+    }), `block-fee-rates-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
     // @ts-ignore
     this.chartOptions.grid.bottom = prevBottom;
+    this.chartOptions.backgroundColor = 'none';
     this.chartInstance.setOption(this.chartOptions);
   }
 }

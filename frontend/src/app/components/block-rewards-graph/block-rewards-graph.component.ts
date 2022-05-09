@@ -86,7 +86,6 @@ export class BlockRewardsGraphComponent implements OnInit {
 
   prepareChartOptions(data) {
     this.chartOptions = {
-      backgroundColor: '#11131f',
       animation: false,
       color: [
         new graphic.LinearGradient(0, 0, 0, 0.65, [
@@ -210,13 +209,15 @@ export class BlockRewardsGraphComponent implements OnInit {
     const now = new Date();
     // @ts-ignore
     this.chartOptions.grid.bottom = 40;
+    this.chartOptions.backgroundColor = '#11131f';
     this.chartInstance.setOption(this.chartOptions);
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,
       excludeComponents: ['dataZoom'],
-    }), `block-rewards-${this.timespan}-${now.getTime() / 1000}`);
+    }), `block-rewards-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
     // @ts-ignore
     this.chartOptions.grid.bottom = prevBottom;
+    this.chartOptions.backgroundColor = 'none';
     this.chartInstance.setOption(this.chartOptions);
   }
 }

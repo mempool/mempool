@@ -79,7 +79,7 @@ export const formatterXAxisTimeCategory = (
 };
 
 export const download = (href, name) => {
-  var a = document.createElement('a');
+  const a = document.createElement('a');
   a.download = name;
   a.href = href;
   document.body.appendChild(a);
