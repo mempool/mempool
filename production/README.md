@@ -77,32 +77,32 @@ tmpfs                                3.0G    1.9G    1.1G    63%    /bisq/statsn
 
 You'll probably need these:
 ```
-$ pkg install -y zsh sudo git screen curl wget neovim rsync nginx openssl openssh-portable py38-pip py38-certbot-nginx boost-libs autoconf automake gmake gcc libevent libtool pkgconf mariadb105-server mariadb105-client
+pkg install -y zsh sudo git screen curl wget neovim rsync nginx openssl openssh-portable py38-pip py38-certbot-nginx boost-libs autoconf automake gmake gcc libevent libtool pkgconf mariadb105-server mariadb105-client
 ```
 
 ### Node.js + npm
 
 Build Node.js and npm from source using `nvm`:
 ```
-$ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh
-$ source $HOME/.zshrc
-$ nvm install v16.10.0
-$ nvm alias default node
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh
+source $HOME/.zshrc
+nvm install v16.10.0
+nvm alias default node
 ```
 
 ### Rust
 
 Build Rust from latest source:
 ```
-$ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
 ### Tor
 
 Install Tor add Bitcoin to the `_tor` group:
 ```
-$ pkg install -y tor
-$ pw user mod bitcoin -G _tor
+pkg install -y tor
+pw user mod bitcoin -G _tor
 ```
 
 Then configure `/usr/local/etc/tor/torrc` as follows:
@@ -135,7 +135,7 @@ HiddenServiceVersion 3
 
 Build [Bitcoin Core](https://github.com/bitcoin/bitcoin) from source. Alternatively, install the OS packages:
 ```
-$ pkg install -y bitcoin-daemon bitcoin-utils
+pkg install -y bitcoin-daemon bitcoin-utils
 ```
 
 Configure your `bitcoin.conf` like this:
@@ -175,11 +175,11 @@ rpcbind=127.0.0.1:38332
 
 Build [Elements Core](https://github.com/ElementsProject/elements) from source:
 ```
-$ ./autogen.sh
-$ MAKE=gmake CC=cc CXX=c++ CPPFLAGS=-I/usr/local/include \
+./autogen.sh
+MAKE=gmake CC=cc CXX=c++ CPPFLAGS=-I/usr/local/include \
   ./configure --with-gui=no --disable-wallet
-$ gmake -j19
-$ gmake install
+gmake -j19
+gmake install
 ```
 
 Configure your `elements.conf` like this:
@@ -228,35 +228,35 @@ Start `elementsd` and wait for it to sync the Liquid blockchain.
 
 Install [Electrs](https://github.com/Blockstream/electrs) from source:
 ```
-$ git clone https://github.com/Blockstream/electrs
-$ cd electrs
-$ git checkout new-index
+git clone https://github.com/Blockstream/electrs
+cd electrs
+git checkout new-index
 ```
 
 You'll need one instance per network. Build and run them one at a time:
 ```
-$ ./electrs-start-mainnet
-$ ./electrs-start-testnet
-$ ./electrs-start-signet
-$ ./electrs-start-liquid
-$ ./electrs-start-liquidtestnet
+./electrs-start-mainnet
+./electrs-start-testnet
+./electrs-start-signet
+./electrs-start-liquid
+./electrs-start-liquidtestnet
 ```
 
 ### MariaDB
 
 Import the historical mempool fee database snapshot:
 ```
-$ mysql -u root
-mysql> create database mempool;
-mysql> grant all on mempool.* to 'mempool'@'localhost' identified by 'mempool';
-mysql> create database mempool_testnet;
-mysql> grant all on mempool_testnet.* to 'mempool_testnet'@'localhost' identified by 'mempool_testnet';
-mysql> create database mempool_signet;
-mysql> grant all on mempool_signet.* to 'mempool_signet'@'localhost' identified by 'mempool_signet';
-mysql> create database mempool_liquid;
-mysql> grant all on mempool_liquid.* to 'mempool_liquid'@'localhost' identified by 'mempool_liquid';
-mysql> create database mempool_liquidtestnet;
-mysql> grant all on mempool_liquidtestnet.* to 'mempool_liquidtestnet'@'localhost' identified by 'mempool_liquidtestnet';
+mysql -u root
+create database mempool;
+grant all on mempool.* to 'mempool'@'localhost' identified by 'mempool';
+create database mempool_testnet;
+grant all on mempool_testnet.* to 'mempool_testnet'@'localhost' identified by 'mempool_testnet';
+create database mempool_signet;
+grant all on mempool_signet.* to 'mempool_signet'@'localhost' identified by 'mempool_signet';
+create database mempool_liquid;
+grant all on mempool_liquid.* to 'mempool_liquid'@'localhost' identified by 'mempool_liquid';
+create database mempool_liquidtestnet;
+grant all on mempool_liquidtestnet.* to 'mempool_liquidtestnet'@'localhost' identified by 'mempool_liquidtestnet';
 ```
 
 
@@ -264,7 +264,7 @@ mysql> grant all on mempool_liquidtestnet.* to 'mempool_liquidtestnet'@'localhos
 
 Build bisq-statsnode normally and run using options like this:
 ```
-$ ./bisq-statsnode --dumpBlockchainData=true --dumpStatistics=true
+./bisq-statsnode --dumpBlockchainData=true --dumpStatistics=true
 ```
 
 If Bisq is happy, it should dump JSON files for Bisq Markets and BSQ data into `/bisq` for the Mempool backend to use.
@@ -273,33 +273,33 @@ If Bisq is happy, it should dump JSON files for Bisq Markets and BSQ data into `
 
 After all 3 electrs instances are fully indexed, install your 3 Mempool nodes:
 ```
-$ ./mempool-install-all
-$ ./mempool-upgrade-all
+./mempool-install-all
+./mempool-upgrade-all
 ```
 
 Finally, start your 3 Mempool backends:
 ```
-$ ./mempool-start-all
+./mempool-start-all
 ```
 
 ### Nginx
 
 Get an SSL certificate using `certbot`:
 ```
-$ certbot --nginx -d mempool.ninja
+certbot --nginx -d mempool.ninja
 ```
 
 Make a symlink from `/usr/local/etc/nginx/mempool` to `/mempool/mempool`, copy the `nginx.conf`, and edit as necessary. You probably only need to edit the top-level `nginx.conf` file.
 ```
-$ cd /usr/local/etc/nginx
-$ ln -s /mempool/mempool
-$ cp /mempool/mempool/nginx.conf .
-$ vi nginx.conf
+cd /usr/local/etc/nginx
+ln -s /mempool/mempool
+cp /mempool/mempool/nginx.conf .
+vi nginx.conf
 ```
 
 Restart `nginx`:
 ```
-$ service nginx restart
+service nginx restart
 ```
 
 ### Done
