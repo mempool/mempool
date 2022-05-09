@@ -169,7 +169,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     }
 
     this.mempoolVsizeFeesOptions = {
-      backgroundColor: '#11131f',
       series: this.inverted ? [...seriesGraph].reverse() : seriesGraph,
       hover: true,
       color: this.inverted ? [...newColors].reverse() : newColors,
@@ -397,13 +396,15 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     const now = new Date();
     // @ts-ignore
     this.mempoolVsizeFeesOptions.grid.height = prevHeight + 20;
+    this.mempoolVsizeFeesOptions.backgroundColor = '#11131f';
     this.chartInstance.setOption(this.mempoolVsizeFeesOptions);
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,
       excludeComponents: ['dataZoom'],
-    }), `mempool-graph-${timespan}-${now.getTime() / 1000}`);
+    }), `mempool-graph-${timespan}-${Math.round(now.getTime() / 1000)}.svg`);
     // @ts-ignore
     this.mempoolVsizeFeesOptions.grid.height = prevHeight;
+    this.mempoolVsizeFeesOptions.backgroundColor = 'none';
     this.chartInstance.setOption(this.mempoolVsizeFeesOptions);
   }
 }
