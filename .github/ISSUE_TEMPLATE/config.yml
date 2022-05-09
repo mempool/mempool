@@ -1,8 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: 💬 Need help? Chat with us on Matrix
-    url: https://matrix.to/#/#mempool:bitcoin.kyoto
-    about: For support requests or general questions
-  - name: 💬 Need help? Chat with us on Keybase
-    url: https://keybase.io/team/mempool
+  - name: 🙋 Need help? Chat with us on Matrix
+    url: https://matrix.to/#/#mempool.support:bitcoin.kyoto
     about: For support requests or general questions
