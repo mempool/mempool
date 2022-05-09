@@ -4583,5 +4583,13 @@ export const faqData = [
     fragment: "install-mempool-with-docker",
     title: "Can I install Mempool using Docker?",
     answer: "Yes, we publish Docker images (or you can build your own). Check out <a href='https://github.com/mempool/mempool/tree/master/docker' target='_blank'>the documentation</a> for details."
+  },
+  {
+    type: "endpoint",
+    category: "advanced",
+    showConditions: bitcoinNetworks,
+    fragment: "address-lookup-issues",
+    title: "Why do I get an error for certain address lookups on my Mempool instance?",
+    answer: "<p>Mempool uses an Electrum server to do address lookups. There are several implementations of the Electrum server protocol, and Mempool can use any of them.</p><p>But the implementation you use affects performance. <a href='https://github.com/romanz/electrs' target='_blank'>romanz/electrs</a> is a common choice for its low resource requirements, and most full-node distros use it. While this implementation works great for basic queries, it will struggle with queries to look up addresses with many transactions—especially when run on low-power hardware like a Raspberry Pi.</p><p>To remedy this, you will need to power Mempool with a more powerful Electrum server. Consider <a href='https://github.com/cculianu/Fulcrum' target='_blank'>Fulcrum</a>. Fulcrum requires more resources than romanz/electrs but can still run on a Raspberry Pi and handles heavy queries much more efficiently.</p><p>If you have stronger hardware, consider running <a href='https://github.com/Blockstream/electrs' target='_blank'>blockstream/electrs</a>, which is the backend <a href='https://mempool.space'>mempool.space</a> uses.</p>"
   }
 ];
