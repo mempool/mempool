@@ -138,7 +138,7 @@
             </ng-template>
             <tr *ngIf="tx.vin.length > 12 && tx['@vinLimit']">
               <td colspan="3" class="text-center">
-                <button class="btn btn-sm btn-primary mt-2" (click)="tx['@vinLimit'] = false;"><span i18n="transactions-list.load-all">Load all</span> ({{ tx.vin.length - 10 }})</button>
+                <button class="btn btn-sm btn-primary mt-2" (click)="tx['@vinLimit'] = false;"><span i18n="show-all">Show all</span> ({{ tx.vin.length - 10 }})</button>
               </td>
             </tr>
           </tbody>
@@ -232,7 +232,7 @@
                         <td style="text-align: left;">{{ vout.scriptpubkey }}</td>
                       </tr>
                       <tr *ngIf="vout.scriptpubkey_type == 'op_return'">
-                        <td>OP_RETURN <span i18n="transactions-list.vout.scriptpubkey-type.data">data</span></td>
+                        <td>OP_RETURN <span>data</span></td>
                         <td style="text-align: left;">{{ vout.scriptpubkey_asm | hex2ascii }}</td>
                       </tr>
                       <tr *ngIf="vout.scriptpubkey_type">
@@ -246,7 +246,7 @@
             </ng-template>
             <tr *ngIf="tx.vout.length > 12 && tx['@voutLimit'] && !outputIndex">
               <td colspan="3" class="text-center">
-                <button class="btn btn-sm btn-primary mt-2" (click)="tx['@voutLimit'] = false;"><span i18n="transactions-list.load-all">Load all</span> ({{ tx.vout.length - 10 }})</button>
+                <button class="btn btn-sm btn-primary mt-2" (click)="tx['@voutLimit'] = false;"><span i18n="show-all">Show all</span> ({{ tx.vout.length - 10 }})</button>
               </td>
             </tr>
           </tbody>

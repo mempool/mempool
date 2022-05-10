@@ -5,7 +5,7 @@
   <div *ngIf="widget">
     <div class="pool-distribution" *ngIf="(miningStatsObservable$ | async) as miningStats; else loadingReward">
       <div class="item">
-        <h5 class="card-title" i18n="mining.miners-luck">Pools luck (1w)</h5>
+        <h5 class="card-title" i18n="mining.miners-luck">Pools Luck (1w)</h5>
         <p class="card-text">
           {{ miningStats['minersLuck'] }}%
         </p>
@@ -17,7 +17,7 @@
         </p>
       </div>
       <div class="item">
-        <h5 class="card-title" i18n="mining.miners-count">Pools count (1w)</h5>
+        <h5 class="card-title" i18n="mining.miners-count">Pools Count (1w)</h5>
         <p class="card-text">
           {{ miningStats.pools.length }}
         </p>
@@ -26,11 +26,10 @@
   </div>
 
   <div class="card-header" *ngIf="!widget">
-    <span i18n="mining.mining-pool-share">Mining pools share</span>
+    <span i18n="mining.pools">Pools Ranking</span>
     <button class="btn" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
       <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
     </button>
-
     <form [formGroup]="radioGroupForm" class="formRadioGroup"
       *ngIf="!widget && (miningStatsObservable$ | async) as stats">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
@@ -62,7 +61,7 @@
           <input ngbButton type="radio" [value]="'3y'" fragment="3y"> 3Y
         </label>
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.totalBlockCount > 157680">
-          <input ngbButton type="radio" [value]="'all'" fragment="all"> ALL
+          <input ngbButton type="radio" [value]="'all'" fragment="all"><span i18n>All</span>
         </label>
       </div>
     </form>
@@ -87,7 +86,7 @@
           <th class="" i18n="mining.pool-name">Pool</th>
           <th class="" *ngIf="this.miningWindowPreference === '24h'" i18n="mining.hashrate">Hashrate</th>
           <th class="" i18n="master-page.blocks">Blocks</th>
-          <th class="d-none d-md-block" i18n="mining.empty-blocks">Empty Blocks</th>
+          <th class="d-none d-md-block" i18n="mining.empty-blocks">Empty blocks</th>
         </tr>
       </thead>
       <tbody *ngIf="(miningStatsObservable$ | async) as miningStats">
@@ -121,7 +120,7 @@
 <ng-template #loadingReward>
   <div class="pool-distribution">
     <div class="item">
-      <h5 class="card-title" i18n="mining.miners-luck">Pools luck (1w)</h5>
+      <h5 class="card-title" i18n="mining.miners-luck">Pools Luck (1w)</h5>
       <p class="card-text">
         <span class="skeleton-loader skeleton-loader-big"></span>
       </p>
@@ -133,7 +132,7 @@
       </p>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="mining.miners-count">Pools count (1w)</h5>
+      <h5 class="card-title" i18n="mining.miners-count">Pools Count (1w)</h5>
       <p class="card-text">
         <span class="skeleton-loader skeleton-loader-big"></span>
       </p>
