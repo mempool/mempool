@@ -136,16 +136,12 @@ export class HashrateChartComponent implements OnInit {
   prepareChartOptions(data) {
     let title: object;
     if (data.hashrates.length === 0) {
-      const lastBlock = new Date(data.timestamp * 1000);
-      const dd = String(lastBlock.getDate()).padStart(2, '0');
-      const mm = String(lastBlock.getMonth() + 1).padStart(2, '0'); // January is 0!
-      const yyyy = lastBlock.getFullYear();
       title = {
         textStyle: {
           color: 'grey',
           fontSize: 15
         },
-        text: `Indexing in progess - ${yyyy}-${mm}-${dd}`,
+        text: `Indexing in progess`,
         left: 'center',
         top: 'center'
       };

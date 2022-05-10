@@ -1,0 +1,3 @@
+<div *ngIf="this.indexingProgress$ | async as progress" class="sticky-loading">
+  <span *ngIf="progress >= 0" class="mr-auto badge badge-pill badge-warning">{{ this.label }} ({{ progress }}%)</span>
+</div>

@@ -189,6 +189,24 @@ class BlocksRepository {
   }
 
   /**
+   * Get blocks count for a period
+   */
+   public async $blockCountBetweenHeight(startHeight: number, endHeight: number): Promise<number> {
+    const params: any[] = [];
+    let query = `SELECT count(height) as blockCount
+      FROM blocks
+      WHERE height <= ${startHeight} AND height >= ${endHeight}`;
+
+    try {
+      const [rows] = await DB.query(query, params);
+      return <number>rows[0].blockCount;
+    } catch (e) {
+      logger.err(`Cannot count blocks for this pool (using offset). Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
    * Get the oldest indexed block
    */
   public async $oldestBlockTimestamp(): Promise<number> {
