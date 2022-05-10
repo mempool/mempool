@@ -25,6 +25,10 @@
 
   <div class="card-header" *ngIf="!widget">
     <span i18n="mining.mining-pool-share">Mining pools share</span>
+    <button class="btn" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
+      <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
+    </button>
+
     <form [formGroup]="radioGroupForm" class="formRadioGroup"
       *ngIf="!widget && (miningStatsObservable$ | async) as stats">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
