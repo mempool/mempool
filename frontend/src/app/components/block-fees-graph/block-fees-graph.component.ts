@@ -6,7 +6,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { formatNumber } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { formatterXAxisLabel } from 'src/app/shared/graphs.utils';
+import { download, formatterXAxisLabel } from 'src/app/shared/graphs.utils';
 import { StorageService } from 'src/app/services/storage.service';
 import { MiningService } from 'src/app/services/mining.service';
 
@@ -40,6 +40,7 @@ export class BlockFeesGraphComponent implements OnInit {
   isLoading = true;
   formatNumber = formatNumber;
   timespan = '';
+  chartInstance: any = undefined;
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -194,7 +195,29 @@ export class BlockFeesGraphComponent implements OnInit {
     };
   }
 
+  onChartInit(ec) {
+    this.chartInstance = ec;
+  }
+
   isMobile() {
     return (window.innerWidth <= 767.98);
+  }
+
+  onSaveChart() {
+    // @ts-ignore
+    const prevBottom = this.chartOptions.grid.bottom;
+    const now = new Date();
+    // @ts-ignore
+    this.chartOptions.grid.bottom = 40;
+    this.chartOptions.backgroundColor = '#11131f';
+    this.chartInstance.setOption(this.chartOptions);
+    download(this.chartInstance.getDataURL({
+      pixelRatio: 2,
+      excludeComponents: ['dataZoom'],
+    }), `block-fees-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
+    // @ts-ignore
+    this.chartOptions.grid.bottom = prevBottom;
+    this.chartOptions.backgroundColor = 'none';
+    this.chartInstance.setOption(this.chartOptions);
   }
 }

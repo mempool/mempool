@@ -48,7 +48,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { DifficultyComponent } from './components/difficulty/difficulty.component';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
-  faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown, faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl } from '@fortawesome/free-solid-svg-icons';
+  faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
+  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload } from '@fortawesome/free-solid-svg-icons';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
 import { TrademarkPolicyComponent } from './components/trademark-policy/trademark-policy.component';
@@ -75,6 +76,8 @@ import { DataCyDirective } from './data-cy.directive';
 import { BlockFeesGraphComponent } from './components/block-fees-graph/block-fees-graph.component';
 import { BlockRewardsGraphComponent } from './components/block-rewards-graph/block-rewards-graph.component';
 import { BlockFeeRatesGraphComponent } from './components/block-fee-rates-graph/block-fee-rates-graph.component';
+import { LoadingIndicatorComponent } from './components/loading-indicator/loading-indicator.component';
+import { IndexingProgressComponent } from './components/indexing-progress/indexing-progress.component';
 
 @NgModule({
   declarations: [
@@ -131,6 +134,8 @@ import { BlockFeeRatesGraphComponent } from './components/block-fee-rates-graph/
     BlockFeesGraphComponent,
     BlockRewardsGraphComponent,
     BlockFeeRatesGraphComponent,
+    LoadingIndicatorComponent,
+    IndexingProgressComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
@@ -195,5 +200,6 @@ export class AppModule {
     library.addIcons(faAngleLeft);
     library.addIcons(faBook);
     library.addIcons(faListUl);
+    library.addIcons(faDownload);
   }
 }

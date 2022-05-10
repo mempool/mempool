@@ -41,10 +41,10 @@ You will need [Bitcoin Core](https://github.com/bitcoin/bitcoin), [Electrum Serv
 Clone the Mempool repo, and checkout the latest release tag:
 
 ```bash
-$ git clone https://github.com/mempool/mempool
-$ cd mempool
-$ latestrelease=$(curl -s https://api.github.com/repos/mempool/mempool/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
-$ git checkout $latestrelease
+git clone https://github.com/mempool/mempool
+cd mempool
+latestrelease=$(curl -s https://api.github.com/repos/mempool/mempool/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
+git checkout $latestrelease
 ```
 
 ### 2. Configure Bitcoin Core
@@ -63,11 +63,11 @@ Install MariaDB from your OS package manager:
 
 ```bash
 # Debian, Ubuntu, etc.
-$ apt-get install mariadb-server mariadb-client
+apt-get install mariadb-server mariadb-client
 
 # macOS
-$ brew install mariadb
-$ mysql.server start
+brew install mariadb
+mysql.server start
 ```
 
 Create a database and grant privileges:
@@ -88,15 +88,15 @@ Query OK, 0 rows affected (0.00 sec)
 Install Mempool dependencies with npm and build the backend:
 
 ```bash
-$ cd backend
-$ npm install --prod
-$ npm run build
+cd backend
+npm install --prod
+npm run build
 ```
 
 In the `backend` folder, make a copy of the sample config:
 
 ```bash
-$ cp mempool-config.sample.json mempool-config.json
+cp mempool-config.sample.json mempool-config.json
 ```
 
 Edit `mempool-config.json` with your Bitcoin Core node RPC credentials:
@@ -133,7 +133,7 @@ Edit `mempool-config.json` with your Bitcoin Core node RPC credentials:
 Start the backend:
 
 ```bash
-$ npm run start
+npm run start
 ```
 
 When it's running, you should see output like this:
@@ -164,15 +164,15 @@ Updating mempool
 Install the Mempool dependencies with npm and build the frontend:
 
 ```bash
-$ cd frontend
-$ npm install --prod
-$ npm run build
+cd frontend
+npm install --prod
+npm run build
 ```
 
 Install the output into the nginx webroot folder:
 
 ```bash
-$ sudo rsync -av --delete dist/ /var/www/
+sudo rsync -av --delete dist/ /var/www/
 ```
 
 ### 6. `nginx` + `certbot`
@@ -181,13 +181,13 @@ Install the supplied `nginx.conf` and `nginx-mempool.conf` in `/etc/nginx`:
 
 ```bash
 # install nginx and certbot
-$ apt-get install -y nginx python3-certbot-nginx
+apt-get install -y nginx python3-certbot-nginx
 
 # install the mempool configuration for nginx
-$ cp nginx.conf nginx-mempool.conf /etc/nginx/
+cp nginx.conf nginx-mempool.conf /etc/nginx/
 
 # replace example.com with your domain name
-$ certbot --nginx -d example.com
+certbot --nginx -d example.com
 ```
 
 If everything went well, you should see the beautiful mempool :grin:
