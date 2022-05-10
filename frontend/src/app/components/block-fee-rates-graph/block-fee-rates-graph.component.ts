@@ -278,9 +278,6 @@ export class BlockFeeRatesGraphComponent implements OnInit {
     this.chartInstance = ec;
 
     this.chartInstance.on('click', (e) => {
-      if (e.data.data === 9999) { // "Other"
-        return;
-      }
       this.zone.run(() => {
         if (['24h', '3d'].includes(this.timespan)) {
           const url = new RelativeUrlPipe(this.stateService).transform(`/block/${e.data[2]}`);

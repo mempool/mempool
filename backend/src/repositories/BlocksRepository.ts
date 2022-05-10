@@ -509,6 +509,56 @@ class BlocksRepository {
       throw e;
     }
   }
+
+  /**
+   * Get the historical averaged block sizes
+   */
+   public async $getHistoricalBlockSizes(div: number, interval: string | null): Promise<any> {
+    try {
+      let query = `SELECT
+        CAST(AVG(height) as INT) as avg_height,
+        CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
+        CAST(AVG(size) as INT) as avg_size
+      FROM blocks`;
+
+      if (interval !== null) {
+        query += ` WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+      }
+
+      query += ` GROUP BY UNIX_TIMESTAMP(blockTimestamp) DIV ${div}`;
+
+      const [rows]: any = await DB.query(query);
+      return rows;
+    } catch (e) {
+      logger.err('Cannot generate block size and weight history. Reason: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Get the historical averaged block weights
+   */
+   public async $getHistoricalBlockWeights(div: number, interval: string | null): Promise<any> {
+    try {
+      let query = `SELECT
+        CAST(AVG(height) as INT) as avg_height,
+        CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
+        CAST(AVG(weight) as INT) as avg_weight
+      FROM blocks`;
+
+      if (interval !== null) {
+        query += ` WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+      }
+
+      query += ` GROUP BY UNIX_TIMESTAMP(blockTimestamp) DIV ${div}`;
+
+      const [rows]: any = await DB.query(query);
+      return rows;
+    } catch (e) {
+      logger.err('Cannot generate block size and weight history. Reason: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
 }
 
 export default new BlocksRepository();
