@@ -12,6 +12,7 @@ import { WebsocketService } from 'src/app/services/websocket.service';
 })
 export class LoadingIndicatorComponent implements OnInit {
   @Input() name: string;
+  @Input() label: string;
 
   public indexingProgress$: Observable<number>;
 
