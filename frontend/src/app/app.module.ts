@@ -78,6 +78,7 @@ import { BlockRewardsGraphComponent } from './components/block-rewards-graph/blo
 import { BlockFeeRatesGraphComponent } from './components/block-fee-rates-graph/block-fee-rates-graph.component';
 import { LoadingIndicatorComponent } from './components/loading-indicator/loading-indicator.component';
 import { IndexingProgressComponent } from './components/indexing-progress/indexing-progress.component';
+import { BlockSizesWeightsGraphComponent } from './components/block-sizes-weights-graph/block-sizes-weights-graph.component';
 
 @NgModule({
   declarations: [
@@ -136,6 +137,7 @@ import { IndexingProgressComponent } from './components/indexing-progress/indexi
     BlockFeeRatesGraphComponent,
     LoadingIndicatorComponent,
     IndexingProgressComponent,
+    BlockSizesWeightsGraphComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),

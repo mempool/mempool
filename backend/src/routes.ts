@@ -686,14 +686,14 @@ class Routes {
     try {
       const blockSizes = await mining.$getHistoricalBlockSizes(req.params.interval ?? null);
       const blockWeights = await mining.$getHistoricalBlockWeights(req.params.interval ?? null);
-      const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
+      const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
+      res.header('X-total-count', blockCount.toString());
       res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
       res.json({
-        oldestIndexedBlockTimestamp: oldestIndexedBlockTimestamp,
         sizes: blockSizes,
-        weigths: blockWeights
+        weights: blockWeights
       });
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);

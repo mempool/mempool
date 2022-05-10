@@ -189,6 +189,13 @@ export class ApiService {
     );
   }
 
+  getHistoricalBlockSizesAndWeights$(interval: string | undefined) : Observable<any> {
+    return this.httpClient.get<any[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/sizes-weights` +
+      (interval !== undefined ? `/${interval}` : ''), { observe: 'response' }
+    );
+  }
+
   getRewardStats$(blockCount: number = 144): Observable<RewardStats> {
     return this.httpClient.get<RewardStats>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/reward-stats/${blockCount}`);
   }
