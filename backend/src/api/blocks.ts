@@ -221,9 +221,10 @@ class Blocks {
       const lastBlockToIndex = Math.max(0, currentBlockHeight - indexingBlockAmount + 1);
 
       logger.debug(`Indexing blocks from #${currentBlockHeight} to #${lastBlockToIndex}`);
+      loadingIndicators.setProgress('block-indexing', 0);
 
       const chunkSize = 10000;
-      let totaIndexed = await blocksRepository.$blockCount(null, null);
+      let totalIndexed = await blocksRepository.$blockCountBetweenHeight(currentBlockHeight, lastBlockToIndex);
       let indexedThisRun = 0;
       let newlyIndexed = 0;
       const startedAt = new Date().getTime() / 1000;
@@ -246,16 +247,17 @@ class Blocks {
             break;
           }
           ++indexedThisRun;
-          ++totaIndexed;
+          ++totalIndexed;
           const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - timer));
           if (elapsedSeconds > 5 || blockHeight === lastBlockToIndex) {
             const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
             const blockPerSeconds = Math.max(1, Math.round(indexedThisRun / elapsedSeconds));
-            const progress = Math.round(totaIndexed / indexingBlockAmount * 100);
-            const timeLeft = Math.round((indexingBlockAmount - totaIndexed) / blockPerSeconds);
-            logger.debug(`Indexing block #${blockHeight} | ~${blockPerSeconds} blocks/sec | total: ${totaIndexed}/${indexingBlockAmount} (${progress}%) | elapsed: ${runningFor} seconds | left: ~${timeLeft} seconds`);
+            const progress = Math.round(totalIndexed / indexingBlockAmount * 10000) / 100;
+            const timeLeft = Math.round((indexingBlockAmount - totalIndexed) / blockPerSeconds);
+            logger.debug(`Indexing block #${blockHeight} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexingBlockAmount} (${progress}%) | elapsed: ${runningFor} seconds | left: ~${timeLeft} seconds`);
             timer = new Date().getTime() / 1000;
             indexedThisRun = 0;
+            loadingIndicators.setProgress('block-indexing', progress, false);
           }
           const blockHash = await bitcoinApi.$getBlockHash(blockHeight);
           const block = BitcoinApi.convertBlock(await bitcoinClient.getBlock(blockHash));
@@ -269,9 +271,11 @@ class Blocks {
         currentBlockHeight -= chunkSize;
       }
       logger.info(`Indexed ${newlyIndexed} blocks`);
+      loadingIndicators.setProgress('block-indexing', 100);
     } catch (e) {
       logger.err('Block indexing failed. Trying again later. Reason: ' + (e instanceof Error ? e.message : e));
       this.blockIndexingStarted = false;
+      loadingIndicators.setProgress('block-indexing', 100);
       return;
     }
 

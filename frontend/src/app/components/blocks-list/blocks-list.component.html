@@ -1,3 +1,5 @@
+<app-indexing-progress *ngIf="!widget"></app-indexing-progress>
+
 <div class="container-xl" [class]="widget ? 'widget' : 'full-height'">
   <h1 *ngIf="!widget" class="float-left" i18n="latest-blocks.blocks">Blocks</h1>
 
