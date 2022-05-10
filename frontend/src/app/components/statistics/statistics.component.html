@@ -3,14 +3,22 @@
     <div>
       <div class="card mb-3">
         <div class="card-header">
-          <i class="fa fa-area-chart"></i> <span i18n="statistics.memory-by-vBytes">Mempool by vBytes (sat/vByte)</span>
-          <form [formGroup]="radioGroupForm" class="formRadioGroup" [class]="stateService.env.MINING_DASHBOARD ? 'mining' : ''" (click)="saveGraphPreference()">
+          <i class="fa fa-area-chart"></i>
+          <span i18n="statistics.memory-by-vBytes">Mempool by vBytes (sat/vByte)</span>
+          <button class="btn" style="margin: 0 0 4px 0px" (click)="onSaveChart('mempool')">
+            <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
+          </button>
+
+          <form [formGroup]="radioGroupForm" class="formRadioGroup"
+            [class]="stateService.env.MINING_DASHBOARD ? 'mining' : ''" (click)="saveGraphPreference()">
             <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
               <label ngbButtonLabel class="btn-primary btn-sm">
-                <input ngbButton type="radio" [value]="'2h'" [routerLink]="['/graphs' | relativeUrl]" fragment="2h"> 2H (LIVE)
+                <input ngbButton type="radio" [value]="'2h'" [routerLink]="['/graphs' | relativeUrl]" fragment="2h"> 2H
+                (LIVE)
               </label>
               <label ngbButtonLabel class="btn-primary btn-sm">
-                <input ngbButton type="radio" [value]="'24h'" [routerLink]="['/graphs' | relativeUrl]" fragment="24h"> 24H
+                <input ngbButton type="radio" [value]="'24h'" [routerLink]="['/graphs' | relativeUrl]" fragment="24h">
+                24H
               </label>
               <label ngbButtonLabel class="btn-primary btn-sm">
                 <input ngbButton type="radio" [value]="'1w'" [routerLink]="['/graphs' | relativeUrl]" fragment="1w"> 1W
@@ -37,39 +45,37 @@
             <div class="small-buttons">
               <div ngbDropdown #myDrop="ngbDropdown">
                 <button class="btn btn-primary btn-sm" id="dropdownFees" ngbDropdownAnchor (click)="myDrop.toggle()">
-                  <fa-icon [icon]="['fas', 'filter']" [fixedWidth]="true" i18n-title="statistics.component-filter.title" title="Filter"></fa-icon>
+                  <fa-icon [icon]="['fas', 'filter']" [fixedWidth]="true" i18n-title="statistics.component-filter.title"
+                    title="Filter"></fa-icon>
                 </button>
                 <div class="dropdown-fees" ngbDropdownMenu aria-labelledby="dropdownFees">
                   <ul>
                     <ng-template ngFor let-feeData let-i="index" [ngForOf]="feeLevelDropdownData">
                       <ng-template [ngIf]="feeData.fee <= 400">
-                        <li (click)="filterFeeIndex = feeData.fee" [class]="filterFeeIndex > feeData.fee ? 'inactive' : ''">
+                        <li (click)="filterFeeIndex = feeData.fee"
+                          [class]="filterFeeIndex > feeData.fee ? 'inactive' : ''">
                           <span class="square" [ngStyle]="{'backgroundColor': feeData.color}"></span>
                           <span class="fee-text">{{ feeData.range }}</span>
-                      </li>
+                        </li>
                       </ng-template>
                     </ng-template>
                   </ul>
                 </div>
               </div>
 
-              <button (click)="invertGraph()" class="btn btn-primary btn-sm"><fa-icon [icon]="['fas', 'exchange-alt']" [rotate]="90" [fixedWidth]="true" i18n-title="statistics.component-invert.title" title="Invert"></fa-icon></button>
+              <button (click)="invertGraph()" class="btn btn-primary btn-sm">
+                <fa-icon [icon]="['fas', 'exchange-alt']" [rotate]="90" [fixedWidth]="true"
+                  i18n-title="statistics.component-invert.title" title="Invert"></fa-icon>
+              </button>
             </div>
           </form>
           <div class="spinner-border text-light bootstrap-spinner" *ngIf="spinnerLoading && mempoolStats.length"></div>
         </div>
         <div class="card-body">
           <div class="incoming-transactions-graph">
-            <app-mempool-graph
-              dir="ltr"
-              [template]="'advanced'"
-              [limitFee]="500"
-              [limitFilterFee]="filterFeeIndex"
-              [height]="500"
-              [left]="65"
-              [right]="10"
-              [data]="mempoolStats && mempoolStats.length ? mempoolStats : null"
-            ></app-mempool-graph>
+            <app-mempool-graph #mempoolgraph dir="ltr" [template]="'advanced'" [limitFee]="500"
+              [limitFilterFee]="filterFeeIndex" [height]="500" [left]="65" [right]="10"
+              [data]="mempoolStats && mempoolStats.length ? mempoolStats : null"></app-mempool-graph>
           </div>
         </div>
       </div>
@@ -78,16 +84,17 @@
     <div>
       <div class="card mb-3">
         <div class="card-header">
-            <i class="fa fa-area-chart"></i> <span i18n="statistics.transaction-vbytes-per-second">Transaction vBytes per second (vB/s)</span>
+          <i class="fa fa-area-chart"></i>
+          <span i18n="statistics.transaction-vbytes-per-second">Transaction vBytes per second (vB/s)</span>
+          <button class="btn" style="margin: 0 0 4px 0px" (click)="onSaveChart('incoming')">
+            <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
+          </button>
         </div>
+
         <div class="card-body">
           <div class="incoming-transactions-graph">
-            <app-incoming-transactions-graph
-              [height]="500"
-              [left]="65"
-              [template]="'advanced'"
-              [data]="mempoolTransactionsWeightPerSecondData"
-            ></app-incoming-transactions-graph>
+            <app-incoming-transactions-graph #incominggraph [height]="500" [left]="65" [template]="'advanced'"
+              [data]="mempoolTransactionsWeightPerSecondData"></app-incoming-transactions-graph>
           </div>
         </div>
       </div>

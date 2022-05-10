@@ -6,7 +6,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { formatNumber } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from 'src/app/shared/graphs.utils';
+import { download, formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from 'src/app/shared/graphs.utils';
 import { StorageService } from 'src/app/services/storage.service';
 import { MiningService } from 'src/app/services/mining.service';
 import { selectPowerOfTen } from 'src/app/bitcoin.utils';
@@ -296,5 +296,23 @@ export class BlockFeeRatesGraphComponent implements OnInit {
 
   isMobile() {
     return (window.innerWidth <= 767.98);
+  }
+
+  onSaveChart() {
+    // @ts-ignore
+    const prevBottom = this.chartOptions.grid.bottom;
+    const now = new Date();
+    // @ts-ignore
+    this.chartOptions.grid.bottom = 40;
+    this.chartOptions.backgroundColor = '#11131f';
+    this.chartInstance.setOption(this.chartOptions);
+    download(this.chartInstance.getDataURL({
+      pixelRatio: 2,
+      excludeComponents: ['dataZoom'],
+    }), `block-fee-rates-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
+    // @ts-ignore
+    this.chartOptions.grid.bottom = prevBottom;
+    this.chartOptions.backgroundColor = 'none';
+    this.chartInstance.setOption(this.chartOptions);
   }
 }

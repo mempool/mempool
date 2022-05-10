@@ -1,0 +1,18 @@
+.sticky-loading {
+  position: absolute;
+  right: 10px;
+  z-index: 100;
+  font-size: 14px;
+  @media (width >= 992px) {
+    left: 32px;
+    top: 55px;
+  }
+  @media (576px <= width < 992px ) {
+    left: 18px;
+    top: 55px;
+  }
+  @media (width <= 575px) {
+    left: 18px;
+    top: 100px;
+  }
+}
