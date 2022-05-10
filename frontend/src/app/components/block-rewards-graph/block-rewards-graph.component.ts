@@ -53,7 +53,7 @@ export class BlockRewardsGraphComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`:@@mining.block-reward:Block Reward`);
+    this.seoService.setTitle($localize`:@@8ba8fe810458280a83df7fdf4c614dfc1a826445:Block Rewards`);
     this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);

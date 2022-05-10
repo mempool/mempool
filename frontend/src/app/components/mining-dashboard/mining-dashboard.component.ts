@@ -13,7 +13,7 @@ export class MiningDashboardComponent implements OnInit {
     private seoService: SeoService,
     private websocketService: WebsocketService,
   ) {
-    this.seoService.setTitle($localize`:@@mining.mining-dashboard:Mining Dashboard`);
+    this.seoService.setTitle($localize`:@@a681a4e2011bb28157689dbaa387de0dd0aa0c11:Mining Dashboard`);
   }
 
   ngOnInit(): void {
