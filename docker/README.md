@@ -34,7 +34,7 @@ The IP address in the example above refers to Docker's default gateway IP addres
 Now, run:
 
 ```bash
-$ docker-compose up
+docker-compose up
 ```
 
 Your Mempool instance should be running at http://localhost. The graphs will be populated as new transactions are detected.
@@ -59,7 +59,7 @@ Of course, if your Docker host IP address is different, update accordingly.
 With `bitcoind` and Electrum Server set up, run Mempool with:
 
 ```bash
-$ docker-compose up
+docker-compose up
 ```
 
 ## Further Configuration
