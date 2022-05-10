@@ -682,6 +682,24 @@ class Routes {
     }
   }
 
+  public async $getHistoricalBlockSizeAndWeight(req: Request, res: Response) {
+    try {
+      const blockSizes = await mining.$getHistoricalBlockSizes(req.params.interval ?? null);
+      const blockWeights = await mining.$getHistoricalBlockWeights(req.params.interval ?? null);
+      const blockCount = await BlocksRepository.$blockCount(null, null);
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.header('X-total-count', blockCount.toString());
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.json({
+        sizes: blockSizes,
+        weights: blockWeights
+      });
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
   public async getBlock(req: Request, res: Response) {
     try {
       const result = await bitcoinApi.$getBlock(req.params.hash);
