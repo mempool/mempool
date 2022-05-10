@@ -1,4 +1,4 @@
-import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
+import { Component, OnInit, LOCALE_ID, Inject, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { of, merge} from 'rxjs';
@@ -12,6 +12,8 @@ import { StateService } from 'src/app/services/state.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { feeLevels, chartColors } from 'src/app/app.constants';
+import { MempoolGraphComponent } from '../mempool-graph/mempool-graph.component';
+import { IncomingTransactionsGraphComponent } from '../incoming-transactions-graph/incoming-transactions-graph.component';
 
 @Component({
   selector: 'app-statistics',
@@ -19,6 +21,9 @@ import { feeLevels, chartColors } from 'src/app/app.constants';
   styleUrls: ['./statistics.component.scss']
 })
 export class StatisticsComponent implements OnInit {
+  @ViewChild('mempoolgraph') mempoolGraph: MempoolGraphComponent;
+  @ViewChild('incominggraph') incomingGraph: IncomingTransactionsGraphComponent;
+
   network = '';
 
   loading = true;
@@ -38,6 +43,7 @@ export class StatisticsComponent implements OnInit {
   graphWindowPreference: string;
   inverted: boolean;
   feeLevelDropdownData = [];
+  timespan = '';
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
@@ -75,6 +81,7 @@ export class StatisticsComponent implements OnInit {
     )
     .pipe(
       switchMap(() => {
+        this.timespan = this.radioGroupForm.controls.dateSpan.value;
         this.spinnerLoading = true;
         if (this.radioGroupForm.controls.dateSpan.value === '2h') {
           this.websocketService.want(['blocks', 'live-2h-chart']);
@@ -193,6 +200,14 @@ export class StatisticsComponent implements OnInit {
     // Cap
     for (const stat of this.mempoolStats) {
       stat.vbytes_per_second = Math.min(median * capRatio, stat.vbytes_per_second);
+    }
+  }
+
+  onSaveChart(name) {
+    if (name === 'mempool') {
+      this.mempoolGraph.onSaveChart(this.timespan);
+    } else if (name === 'incoming') {
+      this.incomingGraph.onSaveChart(this.timespan);
     }
   }
 }

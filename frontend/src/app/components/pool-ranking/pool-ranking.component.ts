@@ -11,6 +11,7 @@ import { MiningService, MiningStats } from '../../services/mining.service';
 import { StateService } from '../../services/state.service';
 import { chartColors, poolsColor } from 'src/app/app.constants';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
+import { download } from 'src/app/shared/graphs.utils';
 
 @Component({
   selector: 'app-pool-ranking',
@@ -29,6 +30,7 @@ export class PoolRankingComponent implements OnInit {
   chartInitOptions = {
     renderer: 'svg',
   };
+  timespan = '';
   chartInstance: any = undefined;
 
   @HostBinding('attr.dir') dir = 'ltr';
@@ -69,6 +71,7 @@ export class PoolRankingComponent implements OnInit {
         .pipe(
           startWith(this.miningWindowPreference), // (trigger when the page loads)
           tap((value) => {
+            this.timespan = value;
             if (!this.widget) {
               this.storageService.setValue('miningWindowPreference', value);
             }
@@ -282,6 +285,18 @@ export class PoolRankingComponent implements OnInit {
         hashrateUnit: '',
       },
     };
+  }
+
+  onSaveChart() {
+    const now = new Date();
+    this.chartOptions.backgroundColor = '#11131f';
+    this.chartInstance.setOption(this.chartOptions);
+    download(this.chartInstance.getDataURL({
+      pixelRatio: 2,
+      excludeComponents: ['dataZoom'],
+    }), `pools-ranking-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
+    this.chartOptions.backgroundColor = 'none';
+    this.chartInstance.setOption(this.chartOptions);
   }
 }
 

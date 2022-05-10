@@ -8,6 +8,8 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { poolsColor } from 'src/app/app.constants';
 import { StorageService } from 'src/app/services/storage.service';
 import { MiningService } from 'src/app/services/mining.service';
+import { download } from 'src/app/shared/graphs.utils';
+import { time } from 'console';
 
 @Component({
   selector: 'app-hashrate-chart-pools',
@@ -39,6 +41,8 @@ export class HashrateChartPoolsComponent implements OnInit {
 
   hashrateObservable$: Observable<any>;
   isLoading = true;
+  timespan = '';
+  chartInstance: any = undefined;
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -68,6 +72,7 @@ export class HashrateChartPoolsComponent implements OnInit {
           if (!firstRun) {
             this.storageService.setValue('miningWindowPreference', timespan);
           }
+          this.timespan = timespan;
           firstRun = false;
           this.isLoading = true;
           return this.apiService.getHistoricalPoolsHashrate$(timespan)
@@ -247,7 +252,29 @@ export class HashrateChartPoolsComponent implements OnInit {
     };
   }
 
+  onChartInit(ec) {
+    this.chartInstance = ec;
+  }
+
   isMobile() {
     return (window.innerWidth <= 767.98);
+  }
+
+  onSaveChart() {
+    // @ts-ignore
+    const prevBottom = this.chartOptions.grid.bottom;
+    const now = new Date();
+    // @ts-ignore
+    this.chartOptions.grid.bottom = 30;
+    this.chartOptions.backgroundColor = '#11131f';
+    this.chartInstance.setOption(this.chartOptions);
+    download(this.chartInstance.getDataURL({
+      pixelRatio: 2,
+      excludeComponents: ['dataZoom'],
+    }), `pools-dominance-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
+    // @ts-ignore
+    this.chartOptions.grid.bottom = prevBottom;
+    this.chartOptions.backgroundColor = 'none';
+    this.chartInstance.setOption(this.chartOptions);
   }
 }
