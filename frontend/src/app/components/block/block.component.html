@@ -173,7 +173,7 @@
     </div>
     <div class="clearfix"></div>
 
-    <app-transactions-list [transactions]="transactions"></app-transactions-list>
+    <app-transactions-list [transactions]="transactions" [paginated]="true"></app-transactions-list>
 
     <ng-template [ngIf]="isLoadingTransactions">
       <div class="text-center mb-4" class="tx-skeleton">
