@@ -450,7 +450,7 @@
         <source>Height</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
-          <context context-type="linenumber">12,13</context>
+          <context context-type="linenumber">12,14</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
@@ -482,22 +482,13 @@
         </context-group>
         <note priority="1" from="description">Bisq block height header</note>
       </trans-unit>
-      <trans-unit id="bfa87f9724434e4245b30f2bdd11d97477048cd1" datatype="html">
+      <trans-unit id="a1daf43d26259bffdd5eb2d405c61583540b113b" datatype="html">
         <source>Confirmed</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
           <context context-type="linenumber">13,15</context>
         </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
-          <context context-type="linenumber">21,24</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">65,66</context>
-        </context-group>
-        <note priority="1" from="description">Transaction Confirmed state</note>
-        <note priority="1" from="meaning">transaction.confirmed</note>
+        <note priority="1" from="description">Bisq block confirmed time header</note>
       </trans-unit>
       <trans-unit id="add4cd82e3e38a3110fe67b3c7df56e9602644ee" datatype="html">
         <source>Transactions</source>
@@ -1163,6 +1154,19 @@
           <context context-type="linenumber">149,150</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="bfa87f9724434e4245b30f2bdd11d97477048cd1" datatype="html">
+        <source>Confirmed</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
+          <context context-type="linenumber">21,24</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">65,66</context>
+        </context-group>
+        <note priority="1" from="description">Transaction Confirmed state</note>
+        <note priority="1" from="meaning">transaction.confirmed</note>
+      </trans-unit>
       <trans-unit id="8411955056013208681" datatype="html">
         <source>Asset listing fee</source>
         <context-group purpose="location">
@@ -1417,6 +1421,13 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">50,53</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="address-label.multisig" datatype="html">
+        <source>Multisig <x id="multisigM" equiv-text="m"/>: of <x id="multisigN" equiv-text="n"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.ts</context>
+          <context context-type="linenumber">121</context>
         </context-group>
       </trans-unit>
       <trans-unit id="04ffd930e7a2dc086c952a3a51b42c836bf21cc1" datatype="html">
