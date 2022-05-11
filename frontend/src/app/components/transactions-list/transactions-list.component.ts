@@ -22,6 +22,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   @Input() showConfirmations = false;
   @Input() transactionPage = false;
   @Input() errorUnblinded = false;
+  @Input() paginated = false;
   @Input() outputIndex: number;
   @Input() address: string = '';
 
@@ -83,6 +84,9 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   ngOnChanges() {
     if (!this.transactions || !this.transactions.length) {
       return;
+    }
+    if (this.paginated) {
+      this.outspends = [];
     }
     if (this.outputIndex) {
       setTimeout(() => {
