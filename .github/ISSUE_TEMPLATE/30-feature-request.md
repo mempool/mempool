@@ -1,14 +1,13 @@
 ---
 name: ✨ Feature Request
-about: Request a feature or suggest other enhancements 💡
+about: Request a feature or suggest other enhancements
 ---
 
 <!--
    SUPPORT REQUESTS:
    This is for requesting features in Mempool, not for support requests. 
-   If you have a support request, please join our Keybase or Matrix:
-   https://keybase.io/team/mempool
-   https://matrix.to/#/#mempool:bitcoin.kyoto
+   If you have a support request, please reach out on Matrix:
+   https://matrix.to/#/#mempool.support:bitcoin.kyoto
 -->
 
 ### Description
