@@ -7,7 +7,7 @@
     "SPAWN_CLUSTER_PROCS": 0,
     "API_URL_PREFIX": "/api/v1/",
     "INDEXING_BLOCKS_AMOUNT": -1,
-    "POLL_RATE_MS": 2000
+    "POLL_RATE_MS": 1000
   },
   "SYSLOG" : {
     "MIN_PRIORITY": "debug"
