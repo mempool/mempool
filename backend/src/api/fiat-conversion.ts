@@ -43,7 +43,7 @@ class FiatConversion {
           agentOptions: {
             keepAlive: true,
           },
-          host: config.SOCKS5PROXY.HOST,
+          hostname: config.SOCKS5PROXY.HOST,
           port: config.SOCKS5PROXY.PORT
         };
 
