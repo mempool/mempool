@@ -60,7 +60,10 @@
                     </ng-container>
                     <ng-container *ngSwitchDefault>
                       <ng-template [ngIf]="!vin.prevout" [ngIfElse]="defaultAddress">
-                        <span>{{ vin.issuance ? 'Issuance' : 'UNKNOWN' }}</span>
+                        <span *ngIf="vin.lazy; else defaultNoPrevout" class="skeleton-loader"></span>
+                        <ng-template #defaultNoPrevout>
+                          <span>{{ vin.issuance ? 'Issuance' : 'UNKNOWN' }}</span>
+                        </ng-template>
                       </ng-template>
                       <ng-template #defaultAddress>
                         <a [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">
@@ -87,6 +90,7 @@
                     </ng-template>
                   </ng-template>
                   <ng-template #defaultOutput>
+                    <span *ngIf="vin.lazy" class="skeleton-loader"></span>
                     <app-amount *ngIf="vin.prevout" [satoshis]="vin.prevout.value"></app-amount>
                   </ng-template>
                 </td>
@@ -141,7 +145,7 @@
             </ng-template>
             <tr *ngIf="tx.vin.length > 12 && tx['@vinLimit']">
               <td colspan="3" class="text-center">
-                <button class="btn btn-sm btn-primary mt-2" (click)="tx['@vinLimit'] = false;"><span i18n="show-all">Show all</span> ({{ tx.vin.length - 10 }})</button>
+                <button class="btn btn-sm btn-primary mt-2" (click)="loadMoreInputs(tx);"><span i18n="show-all">Show all</span> ({{ tx.vin.length - 10 }})</button>
               </td>
             </tr>
           </tbody>
@@ -261,7 +265,7 @@
     </div>
 
     <div class="summary">
-      <div class="float-left mt-2-5" *ngIf="!transactionPage && !tx.vin[0].is_coinbase">
+      <div class="float-left mt-2-5" *ngIf="!transactionPage && !tx.vin[0].is_coinbase && tx.fee !== -1">
         {{ tx.fee / (tx.weight / 4) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span> <span class="d-none d-sm-inline-block">&nbsp;&ndash; {{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [value]="tx.fee"></app-fiat></span></span>
       </div>
 
