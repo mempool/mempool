@@ -33,6 +33,8 @@ export namespace IEsploraApi {
     // Elements
     is_pegin?: boolean;
     issuance?: Issuance;
+    // Custom
+    lazy?: boolean;
   }
 
   interface Issuance {
