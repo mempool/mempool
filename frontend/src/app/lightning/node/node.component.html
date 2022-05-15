@@ -18,6 +18,30 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
+                <td i18n="address.total-received">Total capacity</td>
+                <td>
+                  <app-sats [satoshis]="node.capacity"></app-sats>&nbsp; <app-fiat [value]="node.capacity" digitsInfo="1.0-0"></app-fiat>
+                </td>
+              </tr>
+              <tr>
+                <td i18n="address.total-sent">Total channels</td>
+                <td>
+                  {{ node.channel_count }}
+                </td>
+              </tr>
+              <tr>
+                <td i18n="address.total-received">Average channel size</td>
+                <td>
+                  <app-sats [satoshis]="node.channels_capacity_avg"></app-sats>&nbsp; <app-fiat [value]="node.channels_capacity_avg" digitsInfo="1.0-0"></app-fiat>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-md">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
                 <td i18n="address.total-received">First seen</td>
                 <td>
                   <app-time-since [dateString]="node.first_seen"></app-time-since>
@@ -35,10 +59,6 @@
               </tr>
             </tbody>
           </table>
-        </div>
-        <div class="w-100 d-block d-md-none"></div>
-        <div class="col-md qrcode-col">
-          
         </div>
       </div>
 
