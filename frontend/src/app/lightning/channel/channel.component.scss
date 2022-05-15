@@ -1,3 +1,41 @@
+.title-container {
+  display: flex;
+  flex-direction: row;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.tx-link {
+  display: flex;
+	flex-grow: 1;
+	@media (min-width: 650px) {
+    align-self: end;
+    margin-left: 15px;
+    margin-top: 0px;
+    margin-bottom: -3px;
+	}
+	@media (min-width: 768px) {
+    margin-bottom: 4px;
+    top: 1px;
+    position: relative;
+	}
+	@media (max-width: 768px) {
+	  order: 2;
+	}
+}
+
 .badges {
   font-size: 20px;
+}
+
+app-fiat {
+  display: block;
+  font-size: 13px;
+  @media (min-width: 768px) {
+    font-size: 14px;
+    display: inline-block;
+    margin-left: 10px;
+  }
 }

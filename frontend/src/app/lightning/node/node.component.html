@@ -1,10 +1,8 @@
 <div class="container-xl" *ngIf="(node$ | async) as node">
   <div class="title-container mb-2">
-    <h1 i18n="shared.address" class="mb-0">{{ node.alias }}</h1>
+    <h1 class="mb-0">{{ node.alias }}</h1>
     <span class="tx-link">
-      <a [routerLink]="['/lightning/node' | relativeUrl, node.public_key]" >
-        <span class="d-inline">{{ node.public_key | shortenString : 18 }}</span>
-      </a>
+      <a [routerLink]="['/lightning/node' | relativeUrl, node.public_key]">{{ node.public_key | shortenString : 12 }}</a>
       <app-clipboard [text]="node.public_key"></app-clipboard>
     </span>
   </div>
@@ -20,7 +18,7 @@
               <tr>
                 <td i18n="address.total-received">Total capacity</td>
                 <td>
-                  <app-sats [satoshis]="node.capacity"></app-sats>&nbsp; <app-fiat [value]="node.capacity" digitsInfo="1.0-0"></app-fiat>
+                  <app-sats [satoshis]="node.capacity"></app-sats><app-fiat [value]="node.capacity" digitsInfo="1.0-0"></app-fiat>
                 </td>
               </tr>
               <tr>
@@ -32,12 +30,13 @@
               <tr>
                 <td i18n="address.total-received">Average channel size</td>
                 <td>
-                  <app-sats [satoshis]="node.channels_capacity_avg"></app-sats>&nbsp; <app-fiat [value]="node.channels_capacity_avg" digitsInfo="1.0-0"></app-fiat>
+                  <app-sats [satoshis]="node.channels_capacity_avg"></app-sats><app-fiat [value]="node.channels_capacity_avg" digitsInfo="1.0-0"></app-fiat>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
+        <div class="w-100 d-block d-md-none"></div>
         <div class="col-md">
           <table class="table table-borderless table-striped">
             <tbody>
