@@ -4,8 +4,8 @@ import DB from '../../database';
 class NodesApi {
   public async $getNode(public_key: string): Promise<any> {
     try {
-      const query = `SELECT nodes.*, (SELECT COUNT(*) FROM channels WHERE channels.status < 2 AND (channels.node1_public_key = ? OR channels.node2_public_key = ?)) AS channel_count, (SELECT SUM(capacity) FROM channels WHERE channels.status < 2 AND (channels.node1_public_key = ? OR channels.node2_public_key = ?)) AS capacity FROM nodes WHERE public_key = ?`;
-      const [rows]: any = await DB.query(query, [public_key, public_key, public_key, public_key, public_key]);
+      const query = `SELECT nodes.*, (SELECT COUNT(*) FROM channels WHERE channels.status < 2 AND (channels.node1_public_key = ? OR channels.node2_public_key = ?)) AS channel_count, (SELECT SUM(capacity) FROM channels WHERE channels.status < 2 AND (channels.node1_public_key = ? OR channels.node2_public_key = ?)) AS capacity, (SELECT AVG(capacity) FROM channels WHERE status < 2 AND (node1_public_key = ? OR node2_public_key = ?)) AS channels_capacity_avg FROM nodes WHERE public_key = ?`;
+      const [rows]: any = await DB.query(query, [public_key, public_key, public_key, public_key, public_key, public_key, public_key]);
       return rows[0];
     } catch (e) {
       logger.err('$getNode error: ' + (e instanceof Error ? e.message : e));
