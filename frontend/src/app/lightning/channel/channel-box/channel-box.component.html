@@ -1,9 +1,15 @@
-<div class="mb-2">
-  <h2 class="mb-0">{{ channel.alias || '?' }}</h2>
-  <a [routerLink]="['/lightning/node' | relativeUrl, channel.public_key]" >
-    {{ channel.public_key | shortenString : 12 }}
-  </a>
-  <app-clipboard [text]="channel.node1_public_key"></app-clipboard>
+<div class="mb-2 box-top">
+  <div class="box-left">
+    <h2 class="mb-0">{{ channel.alias || '?' }}</h2>
+    <a [routerLink]="['/lightning/node' | relativeUrl, channel.public_key]" >
+      {{ channel.public_key | shortenString : 12 }}
+    </a>
+    <app-clipboard [text]="channel.node1_public_key"></app-clipboard>
+  </div>
+  <div class="box-right">
+    <div class="second-line">{{ channel.channels }} channels</div>
+    <div class="second-line"><app-amount [satoshis]="channel.capacity" digitsInfo="1.2-2"></app-amount></div>
+  </div>
 </div>
 <div class="box">
 
