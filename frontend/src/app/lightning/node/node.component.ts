@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
+import { SeoService } from 'src/app/services/seo.service';
 import { LightningApiService } from '../lightning-api.service';
 
 @Component({
@@ -20,6 +21,7 @@ export class NodeComponent implements OnInit {
   constructor(
     private lightningApiService: LightningApiService,
     private activatedRoute: ActivatedRoute,
+    private seoService: SeoService,
   ) { }
 
   ngOnInit(): void {
@@ -29,6 +31,8 @@ export class NodeComponent implements OnInit {
           return this.lightningApiService.getNode$(params.get('public_key'));
         }),
         map((node) => {
+          this.seoService.setTitle(`Node: ${node.alias}`);
+
           const socketsObject = [];
           for (const socket of node.sockets.split(',')) {
             if (socket === '') {

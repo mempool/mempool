@@ -66,9 +66,9 @@ export class SearchFormComponent implements OnInit {
           if (this.network === 'bisq' && text.match(/^(b)[^c]/i)) {
             return text.substr(1);
           }
-          return text;
+          return text.trim();
         }),
-        debounceTime(300),
+        debounceTime(250),
         distinctUntilChanged(),
         switchMap((text) => {
           if (!text.length) {
@@ -82,7 +82,10 @@ export class SearchFormComponent implements OnInit {
           }
           return zip(
             this.electrsApiService.getAddressesByPrefix$(text).pipe(catchError(() => of([]))),
-            this.apiService.lightningSearch$(text),
+            this.apiService.lightningSearch$(text).pipe(catchError(() => of({
+              nodes: [],
+              channels: [],
+            }))),
           );
         }),
         map((result: any[]) => {
