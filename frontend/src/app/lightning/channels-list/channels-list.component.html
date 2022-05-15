@@ -3,10 +3,10 @@
   <table class="table table-borderless">
     <thead>
       <th class="alias text-left" i18n="nodes.alias">Node Alias</th>
-      <th class="alias text-left" i18n="channels.transaction">Node ID</th>
-      <th class="alias text-left" i18n="nodes.alias">Status</th>
-      <th class="channels text-right" i18n="channels.rate">Fee Rate</th>
-      <th class="capacity text-right" i18n="nodes.capacity">Capacity</th>
+      <th class="alias text-left d-none d-md-table-cell" i18n="channels.transaction">Node ID</th>
+      <th class="alias text-left d-none d-md-table-cell" i18n="nodes.alias">Status</th>
+      <th class="channels text-right d-none d-md-table-cell" i18n="channels.rate">Fee Rate</th>
+      <th class="capacity text-right d-none d-md-table-cell" i18n="nodes.capacity">Capacity</th>
       <th class="capacity text-right" i18n="channels.id">Channel ID</th>
     </thead>
     <tbody *ngIf="channels$ | async as channels; else skeleton">
@@ -15,18 +15,18 @@
           <td class="alias text-left">
             {{ channel.alias_left || '?' }}
           </td>
-          <td class="text-left">
+          <td class="text-left d-none d-md-table-cell">
             <a [routerLink]="['/lightning/node' | relativeUrl, channel.node1_public_key]">
               <span>{{ channel.node1_public_key | shortenString : 10 }}</span>
             </a>
             <app-clipboard [text]="channel.node1_public_key"></app-clipboard>
           </td>
-          <td>
+          <td class="d-none d-md-table-cell">
             <span class="badge rounded-pill badge-secondary" *ngIf="channel.status === 0">Inactive</span>
             <span class="badge rounded-pill badge-success" *ngIf="channel.status === 1">Active</span>
             <span class="badge rounded-pill badge-danger" *ngIf="channel.status === 2">Closed</span>
           </td>
-          <td class="capacity text-right">
+          <td class="capacity text-right d-none d-md-table-cell">
            {{ channel.node1_fee_rate / 10000 | number }}%
           </td>
         </ng-template>
@@ -34,22 +34,22 @@
           <td class="alias text-left">
             {{ channel.alias_right || '?' }}
           </td>
-          <td class="text-left">
+          <td class="text-left d-none d-md-table-cell">
             <a [routerLink]="['/lightning/node' | relativeUrl, channel.node2_public_key]">
               <span>{{ channel.node2_public_key | shortenString : 10 }}</span>
             </a>
             <app-clipboard [text]="channel.node2_public_key"></app-clipboard>
           </td>
-          <td>
+          <td class="d-none d-md-table-cell">
             <span class="badge rounded-pill badge-secondary" *ngIf="channel.status === 0">Inactive</span>
             <span class="badge rounded-pill badge-success" *ngIf="channel.status === 1">Active</span>
             <span class="badge rounded-pill badge-danger" *ngIf="channel.status === 2">Closed</span>
           </td>
-          <td class="capacity text-right">
+          <td class="capacity text-right d-none d-md-table-cell">
             {{ channel.node2_fee_rate / 10000 | number }}%
            </td>
         </ng-template>
-        <td class="capacity text-right">
+        <td class="capacity text-right d-none d-md-table-cell">
           <app-amount [satoshis]="channel.capacity" digitsInfo="1.2-2"></app-amount>
         </td>
         <td class="capacity text-right">
@@ -66,13 +66,13 @@
           <td class="alias text-left">
             <span class="skeleton-loader"></span>
           </td>
-          <td class="capacity text-left">
+          <td class="capacity text-left d-none d-md-table-cell">
             <span class="skeleton-loader"></span>
           </td>
-          <td class="channels text-left">
+          <td class="channels text-left d-none d-md-table-cell">
             <span class="skeleton-loader"></span>
           </td>
-          <td class="channels text-right">
+          <td class="channels text-right d-none d-md-table-cell">
             <span class="skeleton-loader"></span>
           </td>
           <td class="channels text-right">
