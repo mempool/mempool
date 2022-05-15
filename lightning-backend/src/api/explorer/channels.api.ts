@@ -73,12 +73,35 @@ class ChannelsApi {
     }
   }
 
-  public async $getChannelsForNode(public_key: string): Promise<any> {
+  public async $getChannelsForNode(public_key: string, index: number, length: number, status: string): Promise<any[]> {
     try {
-      const query = `SELECT n1.alias AS alias_left, n2.alias AS alias_right, channels.*, ns1.channels AS channels_left, ns1.capacity AS capacity_left, ns2.channels AS channels_right, ns2.capacity AS capacity_right FROM channels LEFT JOIN nodes AS n1 ON n1.public_key = channels.node1_public_key LEFT JOIN nodes AS n2 ON n2.public_key = channels.node2_public_key LEFT JOIN node_stats AS ns1 ON ns1.public_key = channels.node1_public_key LEFT JOIN node_stats AS ns2 ON ns2.public_key = channels.node2_public_key WHERE (ns1.id = (SELECT MAX(id) FROM node_stats WHERE public_key = channels.node1_public_key) AND ns2.id = (SELECT MAX(id) FROM node_stats WHERE public_key = channels.node2_public_key)) AND (node1_public_key = ? OR node2_public_key = ?) ORDER BY channels.capacity DESC`;
-      const [rows]: any = await DB.query(query, [public_key, public_key]);
+      // Default active and inactive channels
+      let statusQuery = '< 2';
+      // Closed channels only
+      if (status === 'closed') {
+        statusQuery = '= 2';
+      }
+      const query = `SELECT n1.alias AS alias_left, n2.alias AS alias_right, channels.*, ns1.channels AS channels_left, ns1.capacity AS capacity_left, ns2.channels AS channels_right, ns2.capacity AS capacity_right FROM channels LEFT JOIN nodes AS n1 ON n1.public_key = channels.node1_public_key LEFT JOIN nodes AS n2 ON n2.public_key = channels.node2_public_key LEFT JOIN node_stats AS ns1 ON ns1.public_key = channels.node1_public_key LEFT JOIN node_stats AS ns2 ON ns2.public_key = channels.node2_public_key WHERE (ns1.id = (SELECT MAX(id) FROM node_stats WHERE public_key = channels.node1_public_key) AND ns2.id = (SELECT MAX(id) FROM node_stats WHERE public_key = channels.node2_public_key)) AND (node1_public_key = ? OR node2_public_key = ?) AND status ${statusQuery} ORDER BY channels.capacity DESC LIMIT ?, ?`;
+      const [rows]: any = await DB.query(query, [public_key, public_key, index, length]);
       const channels = rows.map((row) => this.convertChannel(row));
       return channels;
+    } catch (e) {
+      logger.err('$getChannelsForNode error: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  public async $getChannelsCountForNode(public_key: string, status: string): Promise<any> {
+    try {
+      // Default active and inactive channels
+      let statusQuery = '< 2';
+      // Closed channels only
+      if (status === 'closed') {
+        statusQuery = '= 2';
+      }
+      const query = `SELECT COUNT(*) AS count FROM channels WHERE (node1_public_key = ? OR node2_public_key = ?) AND status ${statusQuery}`;
+      const [rows]: any = await DB.query(query, [public_key, public_key]);
+      return rows[0]['count'];
     } catch (e) {
       logger.err('$getChannelsForNode error: ' + (e instanceof Error ? e.message : e));
       throw e;
@@ -91,7 +114,7 @@ class ChannelsApi {
       'short_id': channel.short_id,
       'capacity': channel.capacity,
       'transaction_id': channel.transaction_id,
-      'transaction_vout': channel.void,
+      'transaction_vout': channel.transaction_vout,
       'updated_at': channel.updated_at,
       'created': channel.created,
       'status': channel.status,

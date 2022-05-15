@@ -20,12 +20,14 @@ export class LightningApiService {
     return this.httpClient.get<any>(API_BASE_URL + '/channels/' + shortId);
   }
 
-  getChannelsByNodeId$(publicKey: string): Observable<any> {
+  getChannelsByNodeId$(publicKey: string, index: number = 0, status = 'open'): Observable<any> {
     let params = new HttpParams()
       .set('public_key', publicKey)
+      .set('index', index)
+      .set('status', status)
     ;
 
-    return this.httpClient.get<any>(API_BASE_URL + '/channels', { params });
+    return this.httpClient.get<any>(API_BASE_URL + '/channels', { params, observe: 'response' });
   }
 
   getLatestStatistics$(): Observable<any> {
