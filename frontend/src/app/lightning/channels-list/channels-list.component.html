@@ -1,44 +1,39 @@
-<div>
+<div *ngIf="channels$ | async as response; else skeleton">
+  <h2 class="float-left">Channels ({{ response.totalItems }})</h2>
+
+  <form [formGroup]="channelStatusForm" class="formRadioGroup float-right">
+    <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="status">
+      <label ngbButtonLabel class="btn-primary btn-sm">
+        <input ngbButton type="radio" [value]="'open'" fragment="open"> Open
+      </label>
+      <label ngbButtonLabel class="btn-primary btn-sm">
+        <input ngbButton type="radio" [value]="'closed'" fragment="closed"> Closed
+      </label>
+    </div>
+  </form>
+
   <table class="table table-borderless">
-    <thead>
-      <th class="alias text-left" i18n="nodes.alias">Node Alias</th>
-      <th class="alias text-left d-none d-md-table-cell" i18n="channels.transaction">&nbsp;</th>
-      <th class="alias text-left d-none d-md-table-cell" i18n="nodes.alias">Status</th>
-      <th class="channels text-left d-none d-md-table-cell" i18n="channels.rate">Fee Rate</th>
-      <th class="capacity text-right d-none d-md-table-cell" i18n="nodes.capacity">Capacity</th>
-      <th class="capacity text-left" i18n="channels.id">Channel ID</th>
-    </thead>
-    <tbody *ngIf="channels$ | async as channels; else skeleton">
-      <tr *ngFor="let channel of channels; let i = index;">
+    <ng-container *ngTemplateOutlet="tableHeader"></ng-container>
+    <tbody>
+      <tr *ngFor="let channel of response.channels; let i = index;">
         <ng-container *ngTemplateOutlet="tableTemplate; context: { $implicit: channel, node: channel.node_left.public_key === publicKey ? channel.node_right : channel.node_left }"></ng-container>
       </tr>
     </tbody>
-    <ng-template #skeleton>
-      <tbody>
-        <tr *ngFor="let item of [1,2,3,4,5,6,7,8,9,10]">
-          <td class="alias text-left" style="width: 370px;">
-            <span class="skeleton-loader"></span>
-          </td>
-          <td class="alias text-left">
-            <span class="skeleton-loader"></span>
-          </td>
-          <td class="capacity text-left d-none d-md-table-cell">
-            <span class="skeleton-loader"></span>
-          </td>
-          <td class="channels text-left d-none d-md-table-cell">
-            <span class="skeleton-loader"></span>
-          </td>
-          <td class="channels text-right d-none d-md-table-cell">
-            <span class="skeleton-loader"></span>
-          </td>
-          <td class="channels text-left">
-            <span class="skeleton-loader"></span>
-          </td>
-        </tr>
-      </tbody>
-    </ng-template>
   </table>
+  
+  <ngb-pagination class="pagination-container float-right" [size]="paginationSize" [collectionSize]="response.totalItems" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
 </div>
+  
+<ng-template #tableHeader>
+  <thead>
+    <th class="alias text-left" i18n="nodes.alias">Node Alias</th>
+    <th class="alias text-left d-none d-md-table-cell" i18n="channels.transaction">&nbsp;</th>
+    <th class="alias text-left d-none d-md-table-cell" i18n="nodes.alias">Status</th>
+    <th class="channels text-left d-none d-md-table-cell" i18n="channels.rate">Fee Rate</th>
+    <th class="capacity text-right d-none d-md-table-cell" i18n="nodes.capacity">Capacity</th>
+    <th class="capacity text-right" i18n="channels.id">Channel ID</th>
+  </thead>
+</ng-template>
 
 <ng-template #tableTemplate let-channel let-node="node">
   <td class="alias text-left">
@@ -50,7 +45,7 @@
       <app-clipboard [text]="node.public_key" size="small"></app-clipboard>
     </div>
   </td>
-  <td class="alias text-left">
+  <td class="alias text-left d-none d-md-table-cell">
     <div class="second-line">{{ node.channels }} channels</div>
     <div class="second-line"><app-amount [satoshis]="node.capacity" digitsInfo="1.2-2"></app-amount></div>
   </td>
@@ -65,7 +60,37 @@
   <td class="capacity text-right d-none d-md-table-cell">
     <app-amount [satoshis]="channel.capacity" digitsInfo="1.2-2"></app-amount>
   </td>
-  <td class="capacity text-left">
+  <td class="capacity text-right">
     <a [routerLink]="['/lightning/channel' | relativeUrl, channel.id]">{{ channel.short_id }}</a>
    </td>
+</ng-template>
+
+<ng-template #skeleton>
+  <h2 class="float-left">Channels</h2>
+
+  <table class="table table-borderless">
+  <ng-container *ngTemplateOutlet="tableHeader"></ng-container>
+  <tbody>
+    <tr *ngFor="let item of [1,2,3,4,5,6,7,8,9,10]">
+      <td class="alias text-left" style="width: 370px;">
+        <span class="skeleton-loader"></span>
+      </td>
+      <td class="alias text-left">
+        <span class="skeleton-loader"></span>
+      </td>
+      <td class="capacity text-left d-none d-md-table-cell">
+        <span class="skeleton-loader"></span>
+      </td>
+      <td class="channels text-left d-none d-md-table-cell">
+        <span class="skeleton-loader"></span>
+      </td>
+      <td class="channels text-right d-none d-md-table-cell">
+        <span class="skeleton-loader"></span>
+      </td>
+      <td class="channels text-left">
+        <span class="skeleton-loader"></span>
+      </td>
+    </tr>
+  </tbody>
+</table>
 </ng-template>
