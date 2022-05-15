@@ -5,7 +5,7 @@ import { Outspend, Transaction, Vin, Vout } from '../../interfaces/electrs.inter
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { environment } from 'src/environments/environment';
 import { AssetsService } from 'src/app/services/assets.service';
-import { map, tap, switchMap } from 'rxjs/operators';
+import { filter, map, tap, switchMap } from 'rxjs/operators';
 import { BlockExtended } from 'src/app/interfaces/node-api.interface';
 import { ApiService } from 'src/app/services/api.service';
 
@@ -78,6 +78,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         ),
         this.refreshChannels$
           .pipe(
+            filter(() => this.stateService.env.LIGHTNING),
             switchMap((txIds) => this.apiService.getChannelByTxIds$(txIds)),
             map((channels) => {
               this.channels = channels;

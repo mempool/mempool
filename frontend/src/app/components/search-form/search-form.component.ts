@@ -1,41 +1,40 @@
-import { Component, OnInit, ChangeDetectionStrategy, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, EventEmitter, Output, ViewChild, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AssetsService } from 'src/app/services/assets.service';
 import { StateService } from 'src/app/services/state.service';
-import { Observable, of, Subject, merge } from 'rxjs';
+import { Observable, of, Subject, merge, zip } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, filter, catchError, map } from 'rxjs/operators';
 import { ElectrsApiService } from 'src/app/services/electrs-api.service';
-import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
-import { ShortenStringPipe } from 'src/app/shared/pipes/shorten-string-pipe/shorten-string.pipe';
+import { ApiService } from 'src/app/services/api.service';
+import { SearchResultsComponent } from './search-results/search-results.component';
 
 @Component({
   selector: 'app-search-form',
   templateUrl: './search-form.component.html',
   styleUrls: ['./search-form.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchFormComponent implements OnInit {
   network = '';
   assets: object = {};
   isSearching = false;
-  typeaheadSearchFn: ((text: Observable<string>) => Observable<readonly any[]>);
-
+  typeAhead$: Observable<any>;
   searchForm: FormGroup;
-  isMobile = (window.innerWidth <= 767.98);
-  @Output() searchTriggered = new EventEmitter();
 
   regexAddress = /^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,100}|[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100})$/;
   regexBlockhash = /^[0]{8}[a-fA-F0-9]{56}$/;
   regexTransaction = /^([a-fA-F0-9]{64}):?(\d+)?$/;
   regexBlockheight = /^[0-9]+$/;
-
-  @ViewChild('instance', {static: true}) instance: NgbTypeahead;
   focus$ = new Subject<string>();
   click$ = new Subject<string>();
 
-  formatterFn = (address: string) => this.shortenStringPipe.transform(address, this.isMobile ? 33 : 40);
+  @Output() searchTriggered = new EventEmitter();
+  @ViewChild('searchResults') searchResults: SearchResultsComponent;
+  @HostListener('keydown', ['$event']) keydown($event) {
+    this.handleKeyDown($event);
+  }
 
   constructor(
     private formBuilder: FormBuilder,
@@ -43,12 +42,11 @@ export class SearchFormComponent implements OnInit {
     private assetsService: AssetsService,
     private stateService: StateService,
     private electrsApiService: ElectrsApiService,
+    private apiService: ApiService,
     private relativeUrlPipe: RelativeUrlPipe,
-    private shortenStringPipe: ShortenStringPipe,
   ) { }
 
   ngOnInit() {
-    this.typeaheadSearchFn = this.typeaheadSearch;
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     this.searchForm = this.formBuilder.group({
@@ -61,41 +59,61 @@ export class SearchFormComponent implements OnInit {
           this.assets = assets;
         });
     }
-  }
 
-  typeaheadSearch = (text$: Observable<string>) => {
-    const debouncedText$ = text$.pipe(
-      map((text) => {
-        if (this.network === 'bisq' && text.match(/^(b)[^c]/i)) {
-          return text.substr(1);
-        }
-        return text;
-      }),
-      debounceTime(200),
-      distinctUntilChanged()
-    );
-    const clicksWithClosedPopup$ = this.click$.pipe(filter(() => !this.instance.isPopupOpen()));
-    const inputFocus$ = this.focus$;
-
-    return merge(debouncedText$, inputFocus$, clicksWithClosedPopup$)
+    this.typeAhead$ = this.searchForm.get('searchText').valueChanges
       .pipe(
+        map((text) => {
+          if (this.network === 'bisq' && text.match(/^(b)[^c]/i)) {
+            return text.substr(1);
+          }
+          return text;
+        }),
+        debounceTime(300),
+        distinctUntilChanged(),
         switchMap((text) => {
           if (!text.length) {
-            return of([]);
+            return of([
+              [],
+              {
+                nodes: [],
+                channels: [],
+              }
+            ]);
           }
-          return this.electrsApiService.getAddressesByPrefix$(text).pipe(catchError(() => of([])));
+          return zip(
+            this.electrsApiService.getAddressesByPrefix$(text).pipe(catchError(() => of([]))),
+            this.apiService.lightningSearch$(text),
+          );
         }),
-        map((result: string[]) => {
+        map((result: any[]) => {
           if (this.network === 'bisq') {
-            return result.map((address: string) => 'B' + address);
+            return result[0].map((address: string) => 'B' + address);
           }
-          return result;
+          return {
+            addresses: result[0],
+            nodes: result[1].nodes,
+            channels: result[1].channels,
+            totalResults: result[0].length + result[1].nodes.length + result[1].channels.length,
+          };
         })
       );
-    }
+  }
+  handleKeyDown($event) {
+    this.searchResults.handleKeyDown($event);
+  }
 
   itemSelected() {
     setTimeout(() => this.search());
+  }
+
+  selectedResult(result: any) {
+    if (typeof result === 'string') {
+      this.navigate('/address/', result);
+    } else if (result.alias) {
+      this.navigate('/lightning/node/', result.public_key);
+    } else if (result.short_id) {
+      this.navigate('/lightning/channel/', result.id);
+    }
   }
 
   search() {

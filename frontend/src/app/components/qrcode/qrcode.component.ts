@@ -21,7 +21,7 @@ export class QrcodeComponent implements AfterViewInit {
   ) { }
 
   ngOnChanges() {
-    if (!this.canvas.nativeElement) {
+    if (!this.canvas || !this.canvas.nativeElement) {
       return;
     }
     this.render();
