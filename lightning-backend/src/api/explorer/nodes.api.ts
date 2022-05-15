@@ -63,7 +63,7 @@ class NodesApi {
   public async $searchNodeByPublicKeyOrAlias(search: string) {
     try {
       const searchStripped = search.replace('%', '') + '%';
-      const query = `SELECT public_key, alias, color FROM nodes WHERE public_key LIKE ? OR alias LIKE ? LIMIT 10`;
+      const query = `SELECT nodes.public_key, nodes.alias, node_stats.capacity FROM nodes LEFT JOIN node_stats ON node_stats.public_key = nodes.public_key WHERE nodes.public_key LIKE ? OR nodes.alias LIKE ? GROUP BY nodes.public_key ORDER BY node_stats.capacity DESC LIMIT 10`;
       const [rows]: any = await DB.query(query, [searchStripped, searchStripped]);
       return rows;
     } catch (e) {

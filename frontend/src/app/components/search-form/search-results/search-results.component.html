@@ -17,8 +17,8 @@
   </ng-template>
   <ng-template [ngIf]="results.channels.length">
     <div class="card-title">Lightning Channels</div>
-    <ng-template [class.active]="results.addresses.length + results.nodes.length + i === activeIdx" ngFor [ngForOf]="results.channels" let-channel let-i="index">
-      <button (click)="clickItem(results.addresses.length + results.nodes.length + i)" type="button" role="option" class="dropdown-item">
+    <ng-template ngFor [ngForOf]="results.channels" let-channel let-i="index">
+      <button (click)="clickItem(results.addresses.length + results.nodes.length + i)" [class.active]="results.addresses.length + results.nodes.length + i === activeIdx" type="button" role="option" class="dropdown-item">
         <ngb-highlight [result]="channel.short_id" [term]="searchTerm"></ngb-highlight> &nbsp;<span class="symbol">{{ channel.id }}</span>
       </button>
     </ng-template>
