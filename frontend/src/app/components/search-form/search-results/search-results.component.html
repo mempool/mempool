@@ -1,0 +1,26 @@
+<div class="dropdown-menu show" *ngIf="results" [hidden]="!results.addresses.length && !results.nodes.length && !results.channels.length">
+  <ng-template [ngIf]="results.addresses.length">
+    <div class="card-title">Bitcoin Addresses</div>
+    <ng-template ngFor [ngForOf]="results.addresses" let-address let-i="index">
+      <button (click)="clickItem(i)" [class.active]="i === activeIdx" type="button" role="option" class="dropdown-item">
+        <ngb-highlight [result]="address | shortenString : isMobile ? 25 : 36" [term]="searchTerm"></ngb-highlight>
+      </button>
+    </ng-template>
+  </ng-template>
+  <ng-template [ngIf]="results.nodes.length">
+    <div class="card-title">Lightning Nodes</div>
+    <ng-template ngFor [ngForOf]="results.nodes" let-node let-i="index">
+      <button (click)="clickItem(results.addresses.length + i)" [class.active]="results.addresses.length + i === activeIdx" [routerLink]="['/lightning/node' | relativeUrl, node.public_key]" type="button" role="option" class="dropdown-item">
+        <ngb-highlight [result]="node.alias" [term]="searchTerm"></ngb-highlight> &nbsp;<span class="symbol">{{ node.public_key | shortenString : 10 }}</span>
+      </button>
+    </ng-template>
+  </ng-template>
+  <ng-template [ngIf]="results.channels.length">
+    <div class="card-title">Lightning Channels</div>
+    <ng-template [class.active]="results.addresses.length + results.nodes.length + i === activeIdx" ngFor [ngForOf]="results.channels" let-channel let-i="index">
+      <button (click)="clickItem(results.addresses.length + results.nodes.length + i)" type="button" role="option" class="dropdown-item">
+        <ngb-highlight [result]="channel.short_id" [term]="searchTerm"></ngb-highlight> &nbsp;<span class="symbol">{{ channel.id }}</span>
+      </button>
+    </ng-template>
+  </ng-template>
+</div>

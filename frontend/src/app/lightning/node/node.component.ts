@@ -47,7 +47,6 @@ export class NodeComponent implements OnInit {
               socket: node.public_key + '@' + socket,
             });
           }
-          console.log(socketsObject);
           node.socketsObject = socketsObject;
           return node;
         }),
