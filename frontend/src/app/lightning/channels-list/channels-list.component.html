@@ -2,7 +2,7 @@
   <table class="table table-borderless">
     <thead>
       <th class="alias text-left" i18n="nodes.alias">Node Alias</th>
-      <th class="alias text-left d-none d-md-table-cell" i18n="channels.transaction">Node ID</th>
+      <th class="alias text-left d-none d-md-table-cell" i18n="channels.transaction">&nbsp;</th>
       <th class="alias text-left d-none d-md-table-cell" i18n="nodes.alias">Status</th>
       <th class="channels text-left d-none d-md-table-cell" i18n="channels.rate">Fee Rate</th>
       <th class="capacity text-right d-none d-md-table-cell" i18n="nodes.capacity">Capacity</th>
@@ -42,13 +42,17 @@
 
 <ng-template #tableTemplate let-channel let-node="node">
   <td class="alias text-left">
-    {{ node.alias || '?' }}
+    <div>{{ node.alias || '?' }}</div>
+    <div class="second-line">
+      <a [routerLink]="['/lightning/node' | relativeUrl, node.public_key]">
+        <span>{{ node.public_key | shortenString : 10 }}</span>
+      </a>
+      <app-clipboard [text]="node.public_key" size="small"></app-clipboard>
+    </div>
   </td>
-  <td class="text-left d-none d-md-table-cell">
-    <a [routerLink]="['/lightning/node' | relativeUrl, node.public_key]">
-      <span>{{ node.public_key | shortenString : 10 }}</span>
-    </a>
-    <app-clipboard [text]="node.public_key"></app-clipboard>
+  <td class="alias text-left">
+    <div class="second-line">{{ node.channels }} channels</div>
+    <div class="second-line"><app-amount [satoshis]="node.capacity" digitsInfo="1.2-2"></app-amount></div>
   </td>
   <td class="d-none d-md-table-cell">
     <span class="badge rounded-pill badge-secondary" *ngIf="channel.status === 0">Inactive</span>
