@@ -10,7 +10,7 @@ class ChannelsRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'channels/txids', this.$getChannelsByTransactionIds)
       .get(config.MEMPOOL.API_URL_PREFIX + 'channels/search/:search', this.$searchChannelsById)
       .get(config.MEMPOOL.API_URL_PREFIX + 'channels/:short_id', this.$getChannel)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'channels', this.$getChannels)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'channels', this.$getChannelsForNode)
     ;
   }
 
@@ -36,13 +36,18 @@ class ChannelsRoutes {
     }
   }
 
-  private async $getChannels(req: Request, res: Response) {
+  private async $getChannelsForNode(req: Request, res: Response) {
     try {
       if (typeof req.query.public_key !== 'string') {
         res.status(501).send('Missing parameter: public_key');
         return;
       }
-      const channels = await channelsApi.$getChannelsForNode(req.query.public_key);
+      const index = parseInt(typeof req.query.index === 'string' ? req.query.index : '0', 10) || 0;
+      const status: string = typeof req.query.status === 'string' ? req.query.status : '';
+      const length = 25;
+      const channels = await channelsApi.$getChannelsForNode(req.query.public_key, index, length, status);
+      const channelsCount = await channelsApi.$getChannelsCountForNode(req.query.public_key, status);
+      res.header('X-Total-Count', channelsCount.toString());
       res.json(channels);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
