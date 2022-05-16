@@ -68,6 +68,7 @@ import { HashrateChartPoolsComponent } from './components/hashrates-chart-pools/
 import { MiningStartComponent } from './components/mining-start/mining-start.component';
 import { AmountShortenerPipe } from './shared/pipes/amount-shortener.pipe';
 import { ShortenStringPipe } from './shared/pipes/shorten-string-pipe/shorten-string.pipe';
+import { CapAddressPipe } from './shared/pipes/cap-address-pipe/cap-address-pipe';
 import { GraphsComponent } from './components/graphs/graphs.component';
 import { DifficultyAdjustmentsTable } from './components/difficulty-adjustments-table/difficulty-adjustments-table.components';
 import { BlocksList } from './components/blocks-list/blocks-list.component';
@@ -163,6 +164,7 @@ import { BlockSizesWeightsGraphComponent } from './components/block-sizes-weight
     StorageService,
     LanguageService,
     ShortenStringPipe,
+    CapAddressPipe,
     { provide: HTTP_INTERCEPTORS, useClass: HttpCacheInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
