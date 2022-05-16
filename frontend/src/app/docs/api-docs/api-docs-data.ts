@@ -1,5 +1,6 @@
 const bitcoinNetworks = ["", "testnet", "signet"];
 const liquidNetworks = ["liquid", "liquidtestnet"];
+const miningTimeIntervals = "<code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>";
 
 const emptyCodeSample = {
   esModule: [],
@@ -1734,7 +1735,7 @@ export const restApiDocsData = [
     fragment: "get-block",
     title: "GET Block",
     description: {
-      default: "Returns details about a block. Available fields: <code>id</code>, <code>height</code>, <code>version</code>, <code>timestamp</code>, <code>bits</code>, <code>nonce</code>, <code>merkle_root</code>, <code>tx_count</code>, <code>size</code>, <code>weight</code>, and <code>previousblockhash</code>.",
+      default: "Returns details about a block.",
       liquid: "Returns details about a block. Available fields: <code>id</code>, <code>height</code>, <code>version</code>, <code>timestamp</code>, <code>bits</code>, <code>nonce</code>, <code>merkle_root</code>, <code>tx_count</code>, <code>size</code>, <code>weight</code>,<code>proof</code>, and <code>previousblockhash</code>."
     },
     urlString: "/block/:hash",
@@ -1764,19 +1765,54 @@ export const restApiDocsData = [
           commonJS: ['000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce'],
           curl: ['000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce'],
           response: `{
-  id: "000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce",
-  height: 363366,
-  version: 2,
-  timestamp: 1435766771,
-  tx_count: 494,
-  size: 286494,
-  weight: 1145976,
-  merkle_root: "9d3cb87bf05ebae366b4262ed5f768ce8c62fc385c3886c9cb097647b04b686c",
-  previousblockhash: "000000000000000010c545b6fa3ef1f7cf45a2a8760b1ee9f2e89673218207ce",
-  mediantime: 1435763435,
-  nonce: 2892644888,
-  bits: 404111758,
-  difficulty: 49402014931
+  "extras": {
+    "reward": 638307429,
+    "coinbaseTx": {
+      "vin": [
+        {
+          "scriptsig": "03ad3e0b2cfabe6d6df8fb5429a5de5fc2bd1bafffbc90d33c77eb73307d51931d247f21d7bccde51710000000f09f909f092f4632506f6f6c2f6b0000000000000000000000000000000000000000000000000000000000000000000000050086411100"
+        }
+      ],
+      "vout": [
+        {
+          "scriptpubkey_address": "1KFHE7w8BhaENAswwryaoccDb6qcT6DbYY",
+          "value": 638307429
+        }
+      ]
+    },
+    "coinbaseRaw": "03ad3e0b2cfabe6d6df8fb5429a5de5fc2bd1bafffbc90d33c77eb73307d51931d247f21d7bccde51710000000f09f909f092f4632506f6f6c2f6b0000000000000000000000000000000000000000000000000000000000000000000000050086411100",
+    "medianFee": 10,
+    "feeRange": [
+      1,
+      8,
+      9,
+      10,
+      15,
+      21,
+      348
+    ],
+    "totalFees": 13307429,
+    "avgFee": 5591,
+    "avgFeeRate": 13,
+    "pool": {
+      "id": 36,
+      "name": "F2Pool",
+      "slug": "f2pool"
+    },
+    "matchRate": 93
+  },
+  "id": "00000000000000000007566f8f035a1dc38b351e6f54778b311fe6dbabd79b46",
+  "height": 736941,
+  "version": 536870916,
+  "timestamp": 1652891466,
+  "bits": 386466234,
+  "nonce": 3514220842,
+  "difficulty": 31251101365711.12,
+  "merkle_root": "4a3072f98f60cbb639bb7f46180b8843d17c7502627ffb633db0ed86610cdd71",
+  "tx_count": 2381,
+  "size": 1709571,
+  "weight": 3997770,
+  "previousblockhash": "00000000000000000005ef14db0b4befcbbe1e9b8676eec67fcf810a899c4d5e"
 }`
         },
         codeSampleTestnet: {
@@ -2602,9 +2638,9 @@ export const restApiDocsData = [
     fragment: "get-blocks",
     title: "GET Blocks",
     description: {
-      default: "Returns the 10 newest blocks starting at the tip or at <code>:start_height</code> if specified."
+      default: "Returns details on the past 10 blocks. If <code>:startHeight</code> is specified, the past 10 blocks before (and including) <code>:startHeight</code> are returned."
     },
-    urlString: "/blocks[/:start_height]",
+    urlString: "/blocks[/:startHeight]",
     showConditions: bitcoinNetworks.concat(liquidNetworks).concat(["bisq"]),
     codeExample: {
       bisq: {
@@ -2649,14 +2685,14 @@ export const restApiDocsData = [
           commonJS: `
         const { %{0}: { blocks } } = mempoolJS();
 
-        const getBlocks = await blocks.getBlocks({ start_height: %{1} });
+        const getBlocks = await blocks.getBlocks({ startHeight: %{1} });
 
         document.getElementById("result").textContent = JSON.stringify(getBlocks, undefined, 2);
         `,
           esModule: `
   const { %{0}: { blocks } } = mempoolJS();
 
-  const getBlocks = await blocks.getBlocks({ start_height: %{1} });
+  const getBlocks = await blocks.getBlocks({ startHeight: %{1} });
   console.log(getBlocks);
           `,
         },
@@ -2769,6 +2805,1082 @@ export const restApiDocsData = [
   ...
 ]`
         },
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "blocks",
+    httpRequestMethod: "GET",
+    fragment: "get-blocks-extras",
+    title: "GET Blocks Extras",
+    description: {
+      default: "Returns details on the past 15 blocks with fee and mining details in an <code>extras</code> field. If <code>:startHeight</code> is specified, the past 15 blocks before (and including) <code>:startHeight</code> are returned."
+    },
+    urlString: "/blocks[/:startHeight]",
+    showConditions: bitcoinNetworks,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/blocks-extras/%{1}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['736915'],
+          response: `[
+  {
+    "extras": {
+      "reward": 629766074,
+      "coinbaseTx": {
+        "vin": [
+          {
+            "scriptsig": "03933e0b215c204d41524120506f6f6c205c00000000be82a250e5ef942790d2542ca87d0000"
+          }
+        ],
+        "vout": [
+          {
+            "scriptpubkey_address": "1A32KFEX7JNPmU1PVjrtiXRrTQcesT3Nf1",
+            "value": 629766074
+          }
+        ]
+      },
+      "coinbaseRaw": "03933e0b215c204d41524120506f6f6c205c00000000be82a250e5ef942790d2542ca87d0000",
+      "medianFee": 14,
+      "feeRange": [
+        1,
+        1,
+        4,
+        14,
+        15,
+        20,
+        364
+      ],
+      "totalFees": 4766074,
+      "avgFee": 5043,
+      "avgFeeRate": 14,
+      "pool": {
+        "id": 115,
+        "name": "MARA Pool",
+        "slug": "marapool"
+      },
+      "matchRate": 100
+    },
+    "id": "00000000000000000000a742ae476dbe2a58c48b193484945c52b05967f2d74c",
+    "height": 736915,
+    "version": 541065216,
+    "timestamp": 1652877171,
+    "bits": 386466234,
+    "nonce": 4069175824,
+    "difficulty": 31251101365711.12,
+    "merkle_root": "de54fd1adee9f010534e8efbf1244a01528e20dd283c8927026f5442c3e03459",
+    "tx_count": 946,
+    "size": 524907,
+    "weight": 1362339,
+    "previousblockhash": "000000000000000000070760a253405ca69498464d9f8e9fab2452cbbfc10cbe"
+  },
+  {
+    "extras": {
+      "reward": 638804415,
+      "coinbaseTx": {
+        "vin": [
+          {
+            "scriptsig": "03923e0bfabe6d6dc3e96cee3cb68ee52bd31fde8e1f4983a780ea836115788d81a559e03791071f01000000000000001065040008d708c7010000000000007a6d4683012f736c7573682f"
+          }
+        ],
+        "vout": [
+          {
+            "scriptpubkey_address": "1CK6KHY6MHgYvmRQ4PAafKYDrg1ejbH1cE",
+            "value": 638804415
+          }
+        ]
+      },
+      "coinbaseRaw": "03923e0bfabe6d6dc3e96cee3cb68ee52bd31fde8e1f4983a780ea836115788d81a559e03791071f01000000000000001065040008d708c7010000000000007a6d4683012f736c7573682f",
+      "medianFee": 14,
+      "feeRange": [
+        1,
+        1,
+        2,
+        14,
+        15,
+        20,
+        347
+      ],
+      "totalFees": 13804415,
+      "avgFee": 5287,
+      "avgFeeRate": 14,
+      "pool": {
+        "id": 43,
+        "name": "SlushPool",
+        "slug": "slushpool"
+      },
+      "matchRate": 100
+    },
+    "id": "000000000000000000070760a253405ca69498464d9f8e9fab2452cbbfc10cbe",
+    "height": 736914,
+    "version": 555696132,
+    "timestamp": 1652876939,
+    "bits": 386466234,
+    "nonce": 3839610443,
+    "difficulty": 31251101365711.12,
+    "merkle_root": "dc6d15f641e7af26dbaf3ee37203155f8053a8755e85f4955d11ea0c54008b16",
+    "tx_count": 2612,
+    "size": 1450209,
+    "weight": 3931749,
+    "previousblockhash": "00000000000000000002b5b2afc1c62e61e53f966b965a9a8ce99112e24066ae"
+  },
+  ...        
+]`,
+          codeSampleTestnet: emptyCodeSample,
+          codeSampleSignet: emptyCodeSample,
+          codeSampleLiquid: emptyCodeSample,
+          codeSampleLiquidTestnet: emptyCodeSample,
+          codeSampleBisq: emptyCodeSample,
+        }
+      }
+    }
+  },
+  {
+    type: "category",
+    category: "mining",
+    fragment: "mining",
+    title: "Mining",
+    showConditions: bitcoinNetworks
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-mining-pools",
+    title: "GET Mining Pools",
+    description: {
+      default: "Returns a list of all known mining pools ordered by blocks found over the specified trailing <code>:timePeriod</code>.</p><p>Leave <code>:timePeriod</code> unspecified to get all available data, or specify one of the following values: " + miningTimeIntervals + "."
+    },
+    urlString: "/v1/mining/pools/[:timePeriod]",
+    showConditions: bitcoinNetworks,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/pools/1w`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "pools": [
+  {
+    "poolId": 111,
+    "name": "Foundry USA",
+    "link": "https://foundrydigital.com/",
+    "blockCount": 194,
+    "rank": 1,
+    "emptyBlocks": 0,
+    "slug": "foundryusa"
+  },
+  {
+    "poolId": 36,
+    "name": "F2Pool",
+    "link": "https://www.f2pool.com/",
+    "blockCount": 154,
+    "rank": 2,
+    "emptyBlocks": 0,
+    "slug": "f2pool"
+  },
+  {
+    "poolId": 44,
+    "name": "AntPool",
+    "link": "https://www.antpool.com/",
+    "blockCount": 138,
+    "rank": 3,
+    "emptyBlocks": 0,
+    "slug": "antpool"
+  },
+  ...  
+  "oldestIndexedBlockTimestamp": 1231006505,
+  "blockCount": 1005,
+  "lastEstimatedHashrate": 230086716765559200000
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-mining-pool",
+    title: "GET Mining Pool",
+    description: {
+      default: "<p>Returns details about the specified mining pool.</p>"
+    },
+    urlString: "/v1/mining/pool/:slug",
+    showConditions: bitcoinNetworks,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/pool/slushpool`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "pool": {
+    "id": 43,
+    "name": "SlushPool",
+    "link": "https://slushpool.com/",
+    "addresses": [
+      "1CK6KHY6MHgYvmRQ4PAafKYDrg1ejbH1cE",
+      "1AqTMY7kmHZxBuLUR5wJjPFUvqGs23sesr"
+    ],
+    "regexes": [
+      "/slush/"
+    ],
+    "slug": "slushpool"
+  },
+  "blockCount": {
+    "all": 679,
+    "24h": 8,
+    "1w": 56
+  },
+  "blockShare": {
+    "all": 0.06015770355275981,
+    "24h": 0.05333333333333334,
+    "1w": 0.055666003976143144
+  },
+  "estimatedHashrate": 12448077385930390000,
+  "reportedHashrate": null
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-mining-pool-hashrates",
+    title: "GET Mining Pool Hashrates",
+    description: {
+      default: "<p>Returns average hashrates (and share of total hashrate) of mining pools active in the specified trailing <code>:timePeriod</code>, in descending order of hashrate.</p><p>Leave <code>:timePeriod</code> unspecified to get all available data, or specify any of the following time periods: " + miningTimeIntervals + ".</p>"
+    },
+    urlString: "/v1/mining/hashrate/pools/[:timePeriod]",
+    showConditions: bitcoinNetworks,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/hashrate/pools/1m`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+    "timestamp": 1650240000,
+    "avgHashrate": 38258816322322470000,
+    "share": 0.185366,
+    "poolName": "Foundry USA"
+  },
+  {
+    "timestamp": 1650240000,
+    "avgHashrate": 28996155528497033000,
+    "share": 0.140488,
+    "poolName": "F2Pool"
+  },
+  {
+    "timestamp": 1650240000,
+    "avgHashrate": 29801604293177496000,
+    "share": 0.14439,
+    "poolName": "AntPool"
+  },
+  {
+    "timestamp": 1650240000,
+    "avgHashrate": 21747116646372770000,
+    "share": 0.105366,
+    "poolName": "Poolin"
+  },
+  {
+    "timestamp": 1650240000,
+    "avgHashrate": 26579809234455600000,
+    "share": 0.12878,
+    "poolName": "Binance Pool"
+  },
+  {
+    "timestamp": 1650240000,
+    "avgHashrate": 19934856925841707000,
+    "share": 0.0965854,
+    "poolName": "ViaBTC"
+  },
+  {
+    "timestamp": 1650240000,
+    "avgHashrate": 11679007087866855000,
+    "share": 0.0565854,
+    "poolName": "SlushPool"
+  },
+  ...
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-mining-pool-hashrate",
+    title: "GET Mining Pool Hashrate",
+    description: {
+      default: "Returns all known hashrate data for the specified mining pool. Hashrate values are weekly averages."
+    },
+    urlString: "/v1/mining/pool/:slug/hashrate",
+    showConditions: bitcoinNetworks,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/pool/foundryusa/hashrate`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+    "timestamp": 1647216000,
+    "avgHashrate": 39126788325841880000,
+    "share": 0.195312,
+    "poolName": "Foundry USA"
+  },
+  {
+    "timestamp": 1647302400,
+    "avgHashrate": 42038778612166990000,
+    "share": 0.208941,
+    "poolName": "Foundry USA"
+  },
+  {
+    "timestamp": 1647820800,
+    "avgHashrate": 40677922193000910000,
+    "share": 0.196597,
+    "poolName": "Foundry USA"
+  },
+  {
+    "timestamp": 1647907200,
+    "avgHashrate": 40210989932016525000,
+    "share": 0.194707,
+    "poolName": "Foundry USA"
+  },
+  {
+    "timestamp": 1648425600,
+    "avgHashrate": 39336856807414260000,
+    "share": 0.194605,
+    "poolName": "Foundry USA"
+  },
+  {
+    "timestamp": 1648512000,
+    "avgHashrate": 39391244745360090000,
+    "share": 0.193487,
+    "poolName": "Foundry USA"
+  },
+  ...
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-mining-pool-blocks",
+    title: "GET Mining Pool Blocks",
+    description: {
+      default: "Returns past 10 blocks mined by the specified mining pool before the specified <code>:blockHeight</code>. If no <code>:blockHeight</code> is specified, the mining pool's 10 most recent blocks are returned."
+    },
+    urlString: "/v1/mining/pool/:slug/blocks/[:blockHeight]",
+    showConditions: bitcoinNetworks,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/pool/luxor/blocks/730000`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+    "id": "0000000000000000000572c6eb693c51b728593139079c613c8ea0bc6384e362",
+    "timestamp": 1648778242,
+    "height": 729910,
+    "version": 536895488,
+    "bits": 386521239,
+    "nonce": 1708647181,
+    "difficulty": 28587155782195.14,
+    "merkle_root": "729be37fb4b1bff0ca2e4b572e5dc3fb57e5aa57a8a400f8c89d4993d05c204f",
+    "tx_count": 1808,
+    "size": 1595444,
+    "weight": 3992846,
+    "previousblockhash": "00000000000000000000034e117bb9922da36adc6393fabfe9ed97c7bb38998c",
+    "extras": {
+      "coinbaseRaw": "0336230b315c20506f7765726564206279204c75786f722054656368205c000000002103a960b06341e200000e744596150000000000",
+      "medianFee": 1,
+      "reward": 628988802,
+      "totalFees": 3988802,
+      "pool": {
+        "id": 4
+      }
+    }
+  },
+  {
+    "id": "00000000000000000009b6d122d9e2299d2f9cda13274a9f024bebe52ef96a59",
+    "timestamp": 1648717740,
+    "height": 729820,
+    "version": 536870912,
+    "bits": 386521239,
+    "nonce": 1608169168,
+    "difficulty": 28587155782195.14,
+    "merkle_root": "4f67e65e8e5e554cd4a8d0f91aa63b5e8686817984eb8188af5fb39958263f5d",
+    "tx_count": 1425,
+    "size": 729585,
+    "weight": 1954155,
+    "previousblockhash": "000000000000000000006441657fa1eea37d68784ebd86dc1cd7f89251130f56",
+    "extras": {
+      "coinbaseRaw": "03dc220b315c20506f7765726564206279204c75786f722054656368205c00000000e5ae4908ac1f20df00000410c830000000000000",
+      "medianFee": 8,
+      "reward": 630138805,
+      "totalFees": 5138805,
+      "pool": {
+        "id": 4
+      }
+    }
+  },
+  {
+    "id": "0000000000000000000796834c03bd3be474bfa895146a58015f5ff325ef50c0",
+    "timestamp": 1648653948,
+    "height": 729714,
+    "version": 549453824,
+    "bits": 386547904,
+    "nonce": 883606929,
+    "difficulty": 27452707696466.39,
+    "merkle_root": "45593907e5fa0dee743d2f9194b0923a800cb6313e66221a86bf51df388e012c",
+    "tx_count": 1709,
+    "size": 1434271,
+    "weight": 3993013,
+    "previousblockhash": "000000000000000000000fbfac1a91cdeaf64d689f7673d02613da9d10bfb284",
+    "extras": {
+      "coinbaseRaw": "0372220b315c20506f7765726564206279204c75786f722054656368205c0000000063349a9b3d185fed000007e7092a000000000000",
+      "medianFee": 3,
+      "reward": 632350743,
+      "totalFees": 7350743,
+      "pool": {
+        "id": 4
+      }
+    }
+  },
+  ...
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-hashrate",
+    title: "GET Hashrate",
+    description: {
+      default: "<p>Returns network-wide hashrate and difficulty figures over the specified trailing <code>:timePeriod</code>:</p><ul><li>Current hashrate</li><li>Current difficulty</li><li>Historical daily average hashrates</li><li>Historical difficulty</li></ul><p>Valid values for <code>:timePeriod</code> are " + miningTimeIntervals + ". If no time interval is specified, all available data is returned.</p><p>Be sure that <code>INDEXING_BLOCKS_AMOUNT</code> is set properly in your backend config so that enough blocks are indexed to properly serve your request.</p>"
+    },
+    urlString: "/v1/mining/hashrate/[:timePeriod]",
+    showConditions: bitcoinNetworks,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/hashrate/3d`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "hashrates": [
+    {
+      "timestamp": 1652486400,
+      "avgHashrate": 236499762108771800000
+    },
+    {
+      "timestamp": 1652572800,
+      "avgHashrate": 217473276787331300000
+    },
+    {
+      "timestamp": 1652659200,
+      "avgHashrate": 189877203506913000000
+    }
+  ],
+  "difficulty": [
+    {
+      "timestamp": 1652468330,
+      "difficulty": 31251101365711.12,
+      "height": 736249
+    }
+  ],
+  "currentHashrate": 252033247355212300000,
+  "currentDifficulty": 31251101365711.12
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-reward-stats",
+    title: "GET Reward Stats",
+    description: {
+      default: "Returns block reward and total transactions confirmed for each of the past <code>blockCount</code> blocks."
+    },
+    urlString: "/v1/mining/reward-stats/:blockCount",
+    showConditions: bitcoinNetworks,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/reward-stats/100`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "startBlock": 736556,
+  "endBlock": 736655,
+  "totalReward": "63811748254",
+  "totalFee": "1311748254",
+  "totalTx": "164216"
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-block-fees",
+    title: "GET Block Fees",
+    description: {
+      default: "<p>Returns average total fees for blocks in the specified <code>:timePeriod</code>, ordered oldest to newest. <code>:timePeriod</code> can be any of the following: " + miningTimeIntervals + ".</p><p>For <code>24h</code> and <code>3d</code> time periods, every block is included and fee amounts are exact (not averages). For the <code>1w</code> time period, fees may be averages depending on how fast blocks were found around a particular timestamp. For other time periods, fees are averages.</p>"
+    },
+    urlString: "/v1/mining/blocks/fees/:timePeriod",
+    showConditions: bitcoinNetworks,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/blocks/fees/1w`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+    "avg_height": 735644,
+    "timestamp": 1652119111,
+    "avg_fees": 24212890
+  },
+  {
+    "avg_height": 735646,
+    "timestamp": 1652120252,
+    "avg_fees": 21655996
+  },
+  {
+    "avg_height": 735648,
+    "timestamp": 1652121214,
+    "avg_fees": 20678859
+  },
+  {
+    "avg_height": 735649,
+    "timestamp": 1652121757,
+    "avg_fees": 21020140
+  },
+  {
+    "avg_height": 735650,
+    "timestamp": 1652122367,
+    "avg_fees": 23064200
+  },
+  {
+    "avg_height": 735652,
+    "timestamp": 1652122893,
+    "avg_fees": 17620723
+  },
+  ...
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-block-rewards",
+    title: "GET Block Rewards",
+    description: {
+      default: "<p>Returns average block rewards for blocks in the specified <code>:timePeriod</code>, ordered oldest to newest. <code>:timePeriod</code> can be any of the following: " + miningTimeIntervals + ".</p><p>For <code>24h</code> and <code>3d</code> time periods, every block is included and block rewards are exact (not averages). For the <code>1w</code> time period, block rewards may be averages depending on how fast blocks were found around a particular timestamp. For other time periods, block rewards are averages.</p>"
+    },
+    urlString: "/v1/mining/blocks/rewards/:timePeriod",
+    showConditions: bitcoinNetworks,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/blocks/rewards/1d`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+    "avg_height": 599992,
+    "timestamp": 1571438412,
+    "avg_rewards": 1260530933
+  },
+  {
+    "avg_height": 600000,
+    "timestamp": 1571443398,
+    "avg_rewards": 1264314538
+  },
+  {
+    "avg_height": 725441,
+    "timestamp": 1646139035,
+    "avg_rewards": 637067563
+  },
+  {
+    "avg_height": 725585,
+    "timestamp": 1646222444,
+    "avg_rewards": 646519104
+  },
+  {
+    "avg_height": 725727,
+    "timestamp": 1646308374,
+    "avg_rewards": 638709605
+  },
+  ...
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-block-feerates",
+    title: "GET Block Feerates",
+    description: {
+      default: "Returns average feerate percentiles for blocks in the specified <code>:timePeriod</code>, ordered oldest to newest. <code>:timePeriod</code> can be any of the following: " + miningTimeIntervals + ".</p><p>For <code>24h</code> and <code>3d</code> time periods, every block is included and percentiles are exact (not averages). For the <code>1w</code> time period, percentiles may be averages depending on how fast blocks were found around a particular timestamp. For other time periods, percentiles are averages."
+    },
+    urlString: "/v1/mining/blocks/fee-rates/:timePeriod",
+    showConditions: bitcoinNetworks,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/blocks/fee-rates/1m`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "oldestIndexedBlockTimestamp": 1571434851,
+  "blockFeeRates": [
+    {
+      "avg_height": 732152,
+      "timestamp": 1650132959,
+      "avg_fee_0": 1,
+      "avg_fee_10": 2,
+      "avg_fee_25": 2,
+      "avg_fee_50": 3,
+      "avg_fee_75": 4,
+      "avg_fee_90": 8,
+      "avg_fee_100": 393
+    },
+    {
+      "avg_height": 732158,
+      "timestamp": 1650134432,
+      "avg_fee_0": 1,
+      "avg_fee_10": 1,
+      "avg_fee_25": 2,
+      "avg_fee_50": 4,
+      "avg_fee_75": 6,
+      "avg_fee_90": 10,
+      "avg_fee_100": 240
+    },
+    {
+      "avg_height": 732161,
+      "timestamp": 1650135818,
+      "avg_fee_0": 1,
+      "avg_fee_10": 1,
+      "avg_fee_25": 1,
+      "avg_fee_50": 2,
+      "avg_fee_75": 5,
+      "avg_fee_90": 8,
+      "avg_fee_100": 251
+    },
+    ...
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-sizes-weights",
+    title: "GET Block Sizes and Weights",
+    description: {
+      default: "<p>Returns average size (bytes) and average weight (weight units) for blocks in the specified <code>:timePeriod</code>, ordered oldest to newest. <code>:timePeriod</code> can be any of the following: " + miningTimeIntervals + ".</p><p>For <code>24h</code> and <code>3d</code> time periods, every block is included and figures are exact (not averages). For the <code>1w</code> time period, figures may be averages depending on how fast blocks were found around a particular timestamp. For other time periods, figures are averages.</p>"
+    },
+    urlString: "/v1/mining/blocks/sizes-weights/:timePeriod",
+    showConditions: bitcoinNetworks,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/blocks/sizes-weights/3y`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "sizes": [
+    {
+      "avg_height": 576650,
+      "timestamp": 1558212081,
+      "avg_size": 1271404
+    },
+    {
+      "avg_height": 576715,
+      "timestamp": 1558246272,
+      "avg_size": 1105893
+    },
+    {
+      "avg_height": 576797,
+      "timestamp": 1558289379,
+      "avg_size": 1141071
+    },
+    {
+      "avg_height": 576885,
+      "timestamp": 1558330184,
+      "avg_size": 1108166
+    },
+    ...
+  ],
+  "weights": [
+    {
+      "avg_height": 576650,
+      "timestamp": 1558212081,
+      "avg_weight": 3994002
+    },
+    {
+      "avg_height": 576715,
+      "timestamp": 1558246272,
+      "avg_weight": 3756312
+    },
+    {
+      "avg_height": 576797,
+      "timestamp": 1558289379,
+      "avg_weight": 3719625
+    },
+    {
+      "avg_height": 576885,
+      "timestamp": 1558330184,
+      "avg_weight": 3631381
+    },
+    ...
+  ]
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+
+  }
+]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
         codeSampleBisq: emptyCodeSample,
       }
     }
