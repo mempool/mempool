@@ -13,8 +13,7 @@
           Pool</th>
         <th class="timestamp" i18n="latest-blocks.timestamp" *ngIf="!widget">Timestamp</th>
         <th class="mined" i18n="latest-blocks.mined" *ngIf="!widget">Mined</th>
-        <th class="reward text-right" i18n="latest-blocks.reward" [class]="widget ? 'widget' : ''">
-          Reward</th>
+        <th class="reward text-right" i18n="latest-blocks.reward" [class]="widget ? 'widget' : ''">Reward</th>
         <th class="fees text-right" i18n="latest-blocks.fees" *ngIf="!widget">Fees</th>
         <th class="txs text-right" i18n="latest-blocks.transactions" [class]="widget ? 'widget' : ''">Txs</th>
         <th class="size" i18n="latest-blocks.size" *ngIf="!widget">Size</th>
@@ -42,10 +41,10 @@
             <app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since>
           </td>
           <td class="reward text-right" [class]="widget ? 'widget' : ''">
-            <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-2"></app-amount>
+            <app-amount [satoshis]="block.extras.reward" [noFiat]="true" digitsInfo="1.2-2"></app-amount>
           </td>
           <td class="fees text-right" *ngIf="!widget">
-            <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-2"></app-amount>
+            <app-amount [satoshis]="block.extras.totalFees" [noFiat]="true" digitsInfo="1.2-2"></app-amount>
           </td>
           <td class="txs text-right" [class]="widget ? 'widget' : ''">
             {{ block.tx_count | number }}
