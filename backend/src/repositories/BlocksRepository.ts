@@ -426,18 +426,28 @@ class BlocksRepository {
       const [blocks]: any[] = await DB.query(`SELECT height, hash, previous_block_hash,
         UNIX_TIMESTAMP(blockTimestamp) as timestamp FROM blocks ORDER BY height`);
 
-      let currentHeight = 1;
-      while (currentHeight < blocks.length) {
-        if (blocks[currentHeight].previous_block_hash !== blocks[currentHeight - 1].hash) {
-          logger.warn(`Chain divergence detected at block ${blocks[currentHeight - 1].height}, re-indexing newer blocks and hashrates`);
-          await this.$deleteBlocksFrom(blocks[currentHeight - 1].height);
-          await HashratesRepository.$deleteHashratesFromTimestamp(blocks[currentHeight - 1].timestamp - 604800);
+      let partialMsg = false;
+      let idx = 1;
+      while (idx < blocks.length) {
+        if (blocks[idx].height - 1 !== blocks[idx - 1].height) {
+          if (partialMsg === false) {
+            logger.info('Some blocks are not indexed, skipping missing blocks during chain validation');
+            partialMsg = true;
+          }
+          ++idx;
+          continue;
+        }
+
+        if (blocks[idx].previous_block_hash !== blocks[idx - 1].hash) {
+          logger.warn(`Chain divergence detected at block ${blocks[idx - 1].height}, re-indexing newer blocks and hashrates`);
+          await this.$deleteBlocksFrom(blocks[idx - 1].height);
+          await HashratesRepository.$deleteHashratesFromTimestamp(blocks[idx - 1].timestamp - 604800);
           return false;
         }
-        ++currentHeight;
+        ++idx;
       }
 
-      logger.info(`${currentHeight} blocks hash validated in ${new Date().getTime() - start} ms`);
+      logger.info(`${idx} blocks hash validated in ${new Date().getTime() - start} ms`);
       return true;
     } catch (e) {
       logger.err('Cannot validate chain of block hash. Reason: ' + (e instanceof Error ? e.message : e));
