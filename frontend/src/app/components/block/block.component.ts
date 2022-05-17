@@ -10,6 +10,7 @@ import { SeoService } from 'src/app/services/seo.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
 import { BlockExtended } from 'src/app/interfaces/node-api.interface';
+import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-block',
@@ -31,7 +32,6 @@ export class BlockComponent implements OnInit, OnDestroy {
   blockSubsidy: number;
   fees: number;
   paginationMaxSize: number;
-  coinbaseTx: Transaction;
   page = 1;
   itemsPerPage: number;
   txsLoadingStatus$: Observable<number>;
@@ -50,10 +50,11 @@ export class BlockComponent implements OnInit, OnDestroy {
     private location: Location,
     private router: Router,
     private electrsApiService: ElectrsApiService,
-    private stateService: StateService,
+    public stateService: StateService,
     private seoService: SeoService,
     private websocketService: WebsocketService,
     private relativeUrlPipe: RelativeUrlPipe,
+    private apiService: ApiService
   ) { }
 
   ngOnInit() {
@@ -88,7 +89,6 @@ export class BlockComponent implements OnInit, OnDestroy {
         const blockHash: string = params.get('id') || '';
         this.block = undefined;
         this.page = 1;
-        this.coinbaseTx = undefined;
         this.error = undefined;
         this.fees = undefined;
         this.stateService.markBlock$.next({});
@@ -124,7 +124,7 @@ export class BlockComponent implements OnInit, OnDestroy {
                   this.location.replaceState(
                     this.router.createUrlTree([(this.network ? '/' + this.network : '') + '/block/', hash]).toString()
                   );
-                  return this.electrsApiService.getBlock$(hash);
+                  return this.apiService.getBlock$(hash);
                 })
               );
           }
@@ -134,7 +134,7 @@ export class BlockComponent implements OnInit, OnDestroy {
             return of(blockInCache);
           }
 
-          return this.electrsApiService.getBlock$(blockHash);
+          return this.apiService.getBlock$(blockHash);
         }
       }),
       tap((block: BlockExtended) => {
@@ -145,7 +145,6 @@ export class BlockComponent implements OnInit, OnDestroy {
 
         this.seoService.setTitle($localize`:@@block.component.browser-title:Block ${block.height}:BLOCK_HEIGHT:: ${block.id}:BLOCK_ID:`);
         this.isLoadingBlock = false;
-        this.coinbaseTx = block?.extras?.coinbaseTx;
         this.setBlockSubsidy();
         if (block?.extras?.reward !== undefined) {
           this.fees = block.extras.reward / 100000000 - this.blockSubsidy;
@@ -166,9 +165,6 @@ export class BlockComponent implements OnInit, OnDestroy {
     .subscribe((transactions: Transaction[]) => {
       if (this.fees === undefined && transactions[0]) {
         this.fees = transactions[0].vout.reduce((acc: number, curr: Vout) => acc + curr.value, 0) / 100000000 - this.blockSubsidy;
-      }
-      if (!this.coinbaseTx && transactions[0]) {
-        this.coinbaseTx = transactions[0];
       }
       this.transactions = transactions;
       this.isLoadingTransactions = false;
@@ -212,13 +208,10 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.queryParamsSubscription.unsubscribe();
   }
 
+  // TODO - Refactor this.fees/this.reward for liquid because it is not
+  // used anymore on Bitcoin networks (we use block.extras directly)
   setBlockSubsidy() {
-    if (this.network === 'liquid' || this.network === 'liquidtestnet') {
-      this.blockSubsidy = 0;
-      return;
-    }
-    const halvings = Math.floor(this.block.height / 210000);
-    this.blockSubsidy = 50 * 2 ** -halvings;
+    this.blockSubsidy = 0;
   }
 
   pageChange(page: number, target: HTMLElement) {

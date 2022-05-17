@@ -155,7 +155,7 @@ Corresponding `docker-compose.yml` overrides:
     environment:
       ELECTRUM_HOST: ""
       ELECTRUM_PORT: ""
-      ELECTRUM_TLS: ""
+      ELECTRUM_TLS_ENABLED: ""
       ...
 ```
 
