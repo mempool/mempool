@@ -307,7 +307,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">168,169</context>
+          <context context-type="linenumber">190,191</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
@@ -331,7 +331,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">169,170</context>
+          <context context-type="linenumber">191,192</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
@@ -687,19 +687,19 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">35</context>
+          <context context-type="linenumber">33</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">45</context>
+          <context context-type="linenumber">43</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">56</context>
+          <context context-type="linenumber">54</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">67</context>
+          <context context-type="linenumber">65</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -967,7 +967,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">125,126</context>
+          <context context-type="linenumber">147,148</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
@@ -1424,7 +1424,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="address-label.multisig" datatype="html">
-        <source>Multisig <x id="multisigM" equiv-text="m"/>: of <x id="multisigN" equiv-text="n"/></source>
+        <source>Multisig <x id="multisigM" equiv-text="m"/> of <x id="multisigN" equiv-text="n"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.ts</context>
           <context context-type="linenumber">121</context>
@@ -1637,15 +1637,12 @@
           <context context-type="linenumber">75</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="a126cf4263ac9adfbdb0afdb8391fd82379f9b9e" datatype="html">
-        <source>Group of <x id="INTERPOLATION" equiv-text="{{ group.group.assets.length | number }}"/> assets</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/assets/asset-group/asset-group.component.html</context>
-          <context context-type="linenumber">6,9</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="e3f9fda25b281496fe296fb7e8228f59b50983ad" datatype="html">
         <source>Group of <x id="INTERPOLATION" equiv-text="{{ group.assets.length | number }}"/> assets</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/assets/asset-group/asset-group.component.html</context>
+          <context context-type="linenumber">8,9</context>
+        </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-featured/assets-featured.component.html</context>
           <context context-type="linenumber">9,10</context>
@@ -2102,11 +2099,11 @@
         <source>Total fees</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">83,84</context>
+          <context context-type="linenumber">83,85</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">98,100</context>
+          <context context-type="linenumber">109,111</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
@@ -2119,11 +2116,11 @@
         <source>Subsidy + fees:</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">90,92</context>
+          <context context-type="linenumber">98,100</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">102,106</context>
+          <context context-type="linenumber">113,117</context>
         </context-group>
         <note priority="1" from="description">Total subsidy and fees in a block</note>
         <note priority="1" from="meaning">block.subsidy-and-fees</note>
@@ -2132,7 +2129,7 @@
         <source>Miner</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">107,108</context>
+          <context context-type="linenumber">118,120</context>
         </context-group>
         <note priority="1" from="description">block.miner</note>
       </trans-unit>
@@ -2140,7 +2137,7 @@
         <source>Bits</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">129,131</context>
+          <context context-type="linenumber">151,153</context>
         </context-group>
         <note priority="1" from="description">block.bits</note>
       </trans-unit>
@@ -2148,7 +2145,7 @@
         <source>Merkle root</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">133,135</context>
+          <context context-type="linenumber">155,157</context>
         </context-group>
         <note priority="1" from="description">block.merkle-root</note>
       </trans-unit>
@@ -2156,7 +2153,7 @@
         <source>Difficulty</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">143,146</context>
+          <context context-type="linenumber">165,168</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-adjustments-table/difficulty-adjustments-table.component.html</context>
@@ -2176,7 +2173,7 @@
         <source>Nonce</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">147,149</context>
+          <context context-type="linenumber">169,171</context>
         </context-group>
         <note priority="1" from="description">block.nonce</note>
       </trans-unit>
@@ -2184,7 +2181,7 @@
         <source>Block Header Hex</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">151,152</context>
+          <context context-type="linenumber">173,174</context>
         </context-group>
         <note priority="1" from="description">block.header</note>
       </trans-unit>
@@ -2192,7 +2189,7 @@
         <source>Details</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">162,166</context>
+          <context context-type="linenumber">184,188</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
@@ -2205,7 +2202,7 @@
         <source>Error loading block data.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">256,266</context>
+          <context context-type="linenumber">278,288</context>
         </context-group>
         <note priority="1" from="description">block.error.loading-block-data</note>
       </trans-unit>
@@ -2716,28 +2713,6 @@
           <context context-type="linenumber">261</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="e5d8bb389c702588877f039d72178f219453a72d" datatype="html">
-        <source>Unknown</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/miner/miner.component.html</context>
-          <context context-type="linenumber">10</context>
-        </context-group>
-        <note priority="1" from="description">miner.tag.unknown-miner</note>
-      </trans-unit>
-      <trans-unit id="miner-identified-by-payout" datatype="html">
-        <source>Identified by payout address: &apos;<x id="PAYOUT_ADDRESS" equiv-text="vout.scriptpubkey_address"/>&apos;</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
-          <context context-type="linenumber">52</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="miner-identified-by-coinbase" datatype="html">
-        <source>Identified by coinbase tag: &apos;<x id="TAG" equiv-text="tag"/>&apos;</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/miner/miner.component.ts</context>
-          <context context-type="linenumber">69</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="26e78cd052d05a0c1a7db43fac8df52ec6950672" datatype="html">
         <source>Reward stats</source>
         <context-group purpose="location">
@@ -2758,7 +2733,7 @@
         <source>Latest blocks</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">54</context>
+          <context context-type="linenumber">52</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -2770,7 +2745,7 @@
         <source>Adjustments</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">65</context>
+          <context context-type="linenumber">63</context>
         </context-group>
         <note priority="1" from="description">dashboard.adjustments</note>
       </trans-unit>
@@ -2782,7 +2757,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
-          <context context-type="linenumber">123,125</context>
+          <context context-type="linenumber">124,126</context>
         </context-group>
         <note priority="1" from="description">mining.miners-luck</note>
       </trans-unit>
@@ -2794,7 +2769,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
-          <context context-type="linenumber">129,131</context>
+          <context context-type="linenumber">130,132</context>
         </context-group>
         <note priority="1" from="description">master-page.blocks</note>
       </trans-unit>
@@ -2806,7 +2781,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
-          <context context-type="linenumber">135,137</context>
+          <context context-type="linenumber">136,138</context>
         </context-group>
         <note priority="1" from="description">mining.miners-count</note>
       </trans-unit>
@@ -2826,12 +2801,11 @@
         </context-group>
         <note priority="1" from="description">mining.empty-blocks</note>
       </trans-unit>
-      <trans-unit id="55c1f4b364261abe14ee9f4023ad485070e75069" datatype="html">
-        <source><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="All miners&lt;/b&gt;&lt;/td&gt;
-          &lt;td class=&quot;&quot; *ngIf=&quot;this.miningWindowPreference === &apos;24h&apos;&quot;"/>All miners<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/></source>
+      <trans-unit id="d720761d772947b9a6a0ae3f1c68b2e7119259cf" datatype="html">
+        <source>All miners</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
-          <context context-type="linenumber">106,107</context>
+          <context context-type="linenumber">107,108</context>
         </context-group>
         <note priority="1" from="description">mining.all-miners</note>
       </trans-unit>
