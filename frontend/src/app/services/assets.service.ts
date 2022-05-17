@@ -14,7 +14,6 @@ export class AssetsService {
 
   getAssetsJson$: Observable<{ array: AssetExtended[]; objects: any}>;
   getAssetsMinimalJson$: Observable<any>;
-  getMiningPools$: Observable<any>;
 
   constructor(
     private httpClient: HttpClient,
@@ -66,6 +65,5 @@ export class AssetsService {
       }),
       shareReplay(1),
     );
-    this.getMiningPools$ = this.httpClient.get(apiBaseUrl + '/resources/pools.json').pipe(shareReplay(1));
   }
 }
