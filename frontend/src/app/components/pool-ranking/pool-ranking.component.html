@@ -92,8 +92,9 @@
       <tbody *ngIf="(miningStatsObservable$ | async) as miningStats">
         <tr *ngFor="let pool of miningStats.pools">
           <td class="d-none d-md-block">{{ pool.rank }}</td>
-          <td class="text-right"><img width="25" height="25" src="{{ pool.logo }}"
-              onError="this.src = './resources/mining-pools/default.svg'"></td>
+          <td class="text-right">
+            <img width="25" height="25" src="{{ pool.logo }}" [alt]="pool.name + ' mining pool logo'" onError="this.src = './resources/mining-pools/default.svg'">
+          </td>
           <td class=""><a [routerLink]="[('/mining/pool/' + pool.slug) | relativeUrl]">{{ pool.name }}</a></td>
           <td class="" *ngIf="this.miningWindowPreference === '24h' && !isLoading">{{ pool.lastEstimatedHashrate }} {{
             miningStats.miningUnits.hashrateUnit }}</td>

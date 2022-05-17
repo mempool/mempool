@@ -8,7 +8,7 @@
   <div style="min-height: 295px">
     <table class="table table-borderless">
       <thead>
-        <th class="height" [class]="widget ? 'widget' : ''" i18n="latest-blocks.height">Height</th>
+        <th class="height text-left" [class]="widget ? 'widget' : ''" i18n="latest-blocks.height">Height</th>
         <th class="pool text-left" [class]="widget ? 'widget' : ''" i18n="mining.pool-name">Pool</th>
         <th class="timestamp" i18n="latest-blocks.timestamp" *ngIf="!widget">Timestamp</th>
         <th class="mined" i18n="latest-blocks.mined" *ngIf="!widget">Mined</th>
@@ -19,7 +19,7 @@
       </thead>
       <tbody *ngIf="blocks$ | async as blocks; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
         <tr *ngFor="let block of blocks; let i= index; trackBy: trackByBlock">
-          <td [class]="widget ? 'widget' : ''">
+          <td class="text-left" [class]="widget ? 'widget' : ''">
             <a [routerLink]="['/block' | relativeUrl, block.height]">{{ block.height
               }}</a>
           </td>
@@ -27,7 +27,7 @@
             <div class="tooltip-custom">
               <a class="clear-link" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]">
                 <img width="22" height="22" src="{{ block.extras.pool['logo'] }}"
-                  onError="this.src = './resources/mining-pools/default.svg'">
+                  onError="this.src = './resources/mining-pools/default.svg'" [alt]="'Logo of ' + block.extras.pool.name + ' mining pool'">
                 <span class="pool-name">{{ block.extras.pool.name }}</span>
               </a>
               <span *ngIf="!widget" class="tooltiptext badge badge-secondary scriptmessage">{{ block.extras.coinbaseRaw | hex2ascii }}</span>
@@ -60,7 +60,7 @@
       <ng-template #skeleton>
         <tbody>
           <tr *ngFor="let item of skeletonLines">
-            <td class="height" [class]="widget ? 'widget' : ''">
+            <td class="height text-left" [class]="widget ? 'widget' : ''">
               <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
             <td class="pool text-left" [class]="widget ? 'widget' : ''">
