@@ -1299,7 +1299,7 @@ if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
     osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
 
-if [ "${BISQ_ENABLE}" = ON ];then
+if [ "${BISQ_INSTALL}" = ON ];then
     echo "[*] Creating Mempool instance for Bisq"
     osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
     osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/bisq"
