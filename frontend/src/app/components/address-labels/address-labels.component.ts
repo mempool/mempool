@@ -118,7 +118,7 @@ export class AddressLabelsComponent implements OnInit {
     }
     const m = parseInt(opM.match(/[0-9]+/)[0], 10);
 
-    this.label = $localize`:@@address-label.multisig:Multisig ${m}:multisigM:: of ${n}:multisigN:`
+    this.label = $localize`:@@address-label.multisig:Multisig ${m}:multisigM: of ${n}:multisigN:`
   }
 
   handleVout() {
