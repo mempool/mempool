@@ -153,13 +153,14 @@ export class PoolRankingComponent implements OnInit {
           },
           borderColor: '#000',
           formatter: () => {
+            const i = pool.blockCount.toString();
             if (this.miningWindowPreference === '24h') {
               return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
                 pool.lastEstimatedHashrate.toString() + ' PH/s' +
-                `<br>` + pool.blockCount.toString() + ` blocks`;
+                `<br>` + $localize`${i} blocks`;
             } else {
               return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
-                pool.blockCount.toString() + ` blocks`;
+                $localize`${i} blocks`;
             }
           }
         },

@@ -157,7 +157,7 @@ export class BlockRewardsGraphComponent implements OnInit {
       series: [
         {
           zlevel: 0,
-          name: 'Reward',
+          name: $localize`:@@12f86e6747a5ad39e62d3480ddc472b1aeab5b76:Reward`,
           showSymbol: false,
           symbol: 'none',
           data: data.blockRewards,

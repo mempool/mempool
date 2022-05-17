@@ -157,7 +157,7 @@ export class BlockFeesGraphComponent implements OnInit {
       series: [
         {
           zlevel: 0,
-          name: 'Fees',
+          name: $localize`:@@c20172223f84462032664d717d739297e5a9e2fe:Fees`,
           showSymbol: false,
           symbol: 'none',
           data: data.blockFees,
