@@ -276,7 +276,7 @@ MINFEE_HOME=/minfee
 MEMPOOL_REPO_URL=https://github.com/mempool/mempool
 MEMPOOL_REPO_NAME=mempool
 MEMPOOL_REPO_BRANCH=master
-MEMPOOL_LATEST_RELEASE=v2.3.1
+MEMPOOL_LATEST_RELEASE=master
 
 BITCOIN_REPO_URL=https://github.com/bitcoin/bitcoin
 BITCOIN_REPO_NAME=bitcoin
