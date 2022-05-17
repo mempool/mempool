@@ -30,8 +30,7 @@
       <div class="card graph-card">
         <div class="card-body pl-2 pr-2">
           <app-pool-ranking [widget]=true></app-pool-ranking>
-          <div class="mt-1"><a [routerLink]="['/graphs/mining/pools' | relativeUrl]" i18n="dashboard.view-more">View more
-              &raquo;</a></div>
+          <div class="mt-1"><a [routerLink]="['/graphs/mining/pools' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>
       </div>
     </div>
@@ -40,9 +39,8 @@
     <div class="col" style="margin-bottom: 1.47rem">
       <div class="card">
         <div class="card-body pl-lg-3 pr-lg-3 pl-2 pr-2">
-          <app-hashrate-chart [widget]=true></app-hashrate-chart>
-          <div class="mt-1"><a [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" i18n="dashboard.view-more">View more
-              &raquo;</a></div>
+          <app-hashrate-chart [widget]="true"></app-hashrate-chart>
+          <div class="mt-1"><a [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>
       </div>
     </div>
@@ -51,12 +49,9 @@
     <div class="col">
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title">
-            Latest blocks
-          </h5>
+          <h5 class="card-title" i18n="dashboard.latest-blocks">Latest blocks</h5>
           <app-blocks-list [widget]=true></app-blocks-list>
-          <div><a [routerLink]="['/mining/blocks' | relativeUrl]" i18n="dashboard.view-more">View
-              more &raquo;</a></div>
+          <div><a [routerLink]="['/mining/blocks' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>
       </div>
     </div>
@@ -65,12 +60,9 @@
     <div class="col">
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title">
-            Adjustments
-          </h5>
+          <h5 class="card-title" i18n="dashboard.adjustments">Adjustments</h5>
           <app-difficulty-adjustments-table></app-difficulty-adjustments-table>
-          <div><a [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" i18n="dashboard.view-more">View more
-              &raquo;</a></div>
+          <div><a [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>
       </div>
     </div>
