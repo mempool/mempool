@@ -82,11 +82,11 @@ pkg install -y zsh sudo git screen curl wget neovim rsync nginx openssl openssh-
 
 ### Node.js + npm
 
-Build Node.js v16.10 and npm v7 from source using `nvm`:
+Build Node.js v16.15 and npm v8 from source using `nvm`:
 ```
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh
 source $HOME/.zshrc
-nvm install v16.10.0
+nvm install v16.15.0
 nvm alias default node
 ```
 
