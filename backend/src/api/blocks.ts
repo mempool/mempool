@@ -404,7 +404,6 @@ class Blocks {
     if (Common.indexingEnabled()) {
       const dbBlock = await blocksRepository.$getBlockByHash(hash);
       if (dbBlock != null) {
-        logger.info('GET BLOCK: already indexed');
         return prepareBlock(dbBlock);
       }
     }
@@ -413,12 +412,10 @@ class Blocks {
 
     // Not Bitcoin network, return the block as it
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
-      logger.info('GET BLOCK: using bitcoin backend');
       return block;
     }
 
     // Bitcoin network, add our custom data on top
-    logger.info('GET BLOCK: index block on the fly');
     const transactions = await this.$getTransactionsExtended(hash, block.height, true);
     const blockExtended = await this.$getBlockExtended(block, transactions);
     if (Common.indexingEnabled()) {

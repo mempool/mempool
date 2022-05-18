@@ -62,7 +62,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`:@@mining.block-fee-rates:Block Fee Rates`);
+    this.seoService.setTitle($localize`:@@ed8e33059967f554ff06b4f5b6049c465b92d9b3:Block Fee Rates`);
     this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
