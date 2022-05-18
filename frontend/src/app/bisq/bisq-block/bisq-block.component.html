@@ -20,7 +20,7 @@
                 <td><a [routerLink]="['/block/' | relativeUrl, block.hash]" title="{{ block.hash }}">{{ block.hash | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="block.hash"></app-clipboard></td>
               </tr>
               <tr>
-                <td i18n="transaction.timestamp|Transaction Timestamp">Timestamp</td>
+                <td i18n="block.timestamp">Timestamp</td>
                 <td>
                   &lrm;{{ block.time | date:'yyyy-MM-dd HH:mm' }}
                   <div class="lg-inline">
@@ -83,7 +83,7 @@
                 <td><span class="skeleton-loader"></span></td>
               </tr>
               <tr>
-                <td i18n="transaction.timestamp|Transaction Timestamp">Timestamp</td>
+                <td i18n="block.timestamp">Timestamp</td>
                 <td><span class="skeleton-loader"></span></td>
               </tr>
           </table>

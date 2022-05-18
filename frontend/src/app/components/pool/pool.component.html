@@ -5,7 +5,7 @@
   <!-- Pool overview -->
   <div *ngIf="poolStats$ | async as poolStats; else loadingMain">
     <div style="display:flex" class="mb-3">
-      <img width="50" height="50" src="{{ poolStats['logo'] }}"
+      <img width="50" height="50" src="{{ poolStats['logo'] }}" [alt]="poolStats.pool.name + ' mining pool logo'"
         onError="this.src = './resources/mining-pools/default.svg'" class="mr-3">
       <h1 class="m-0 pt-1 pt-md-0">{{ poolStats.pool.name }}</h1>
     </div>
@@ -93,10 +93,8 @@
                   <table class="table table-xs table-data">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.estimated">Estimated
-                        </th>
-                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.reported">Reported
-                        </th>
+                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.estimated">Estimated</th>
+                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.reported">Reported</th>
                         <th scope="col" class="block-count-title" style="width: 26%" i18n="mining.luck">Luck</th>
                       </tr>
                     </thead>
@@ -117,10 +115,8 @@
                   <table class="table table-xs table-data">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title" style="width: 33%" i18n="mining.estimated">Estimated
-                        </th>
-                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.reported">Reported
-                        </th>
+                        <th scope="col" class="block-count-title" style="width: 33%" i18n="mining.estimated">Estimated</th>
+                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.reported">Reported</th>
                         <th scope="col" class="block-count-title" style="width: 30%" i18n="mining.luck">Luck</th>
                       </tr>
                     </thead>
@@ -142,7 +138,7 @@
 
               <!-- Mined blocks desktop -->
               <tr *ngIf="!isMobile()" class="taller-row">
-                <td class="label" i18n="mining.mined-blocks">Mined Blocks</td>
+                <td class="label" i18n="mining.mined-blocks">Mined blocks</td>
                 <td class="data">
                   <table class="table table-xs table-data">
                     <thead>
@@ -166,7 +162,7 @@
               <!-- Mined blocks mobile -->
               <tr *ngIf="isMobile()">
                 <td colspan=2>
-                  <span class="label" i18n="mining.mined-blocks">Mined Blocks</span>
+                  <span class="label" i18n="mining.mined-blocks">Mined blocks</span>
                   <table class="table table-xs table-data">
                     <thead>
                       <tr>
@@ -216,12 +212,10 @@
         <th class="height" i18n="latest-blocks.height">Height</th>
         <th class="timestamp" i18n="latest-blocks.timestamp">Timestamp</th>
         <th class="mined" i18n="latest-blocks.mined">Mined</th>
-        <th class="coinbase text-left" i18n="latest-blocks.coinbasetag">
-          Coinbase Tag</th>
-        <th class="reward text-right" i18n="latest-blocks.reward">
-          Reward</th>
+        <th class="coinbase text-left" i18n="latest-blocks.coinbasetag">Coinbase tag</th>
+        <th class="reward text-right" i18n="latest-blocks.reward">Reward</th>
         <th class="fees text-right" i18n="latest-blocks.fees">Fees</th>
-        <th class="txs text-right" i18n="latest-blocks.transactions">Txs</th>
+        <th class="txs text-right" i18n="dashboard.txs">TXs</th>
         <th class="size" i18n="latest-blocks.size">Size</th>
       </thead>
       <tbody [style]="isLoading ? 'opacity: 0.75' : ''">
@@ -266,12 +260,10 @@
         <th class="height" i18n="latest-blocks.height">Height</th>
         <th class="timestamp" i18n="latest-blocks.timestamp">Timestamp</th>
         <th class="mined" i18n="latest-blocks.mined">Mined</th>
-        <th class="coinbase text-left" i18n="latest-blocks.coinbasetag">
-          Coinbase Tag</th>
-        <th class="reward text-right" i18n="latest-blocks.reward">
-          Reward</th>
+        <th class="coinbase text-left" i18n="latest-blocks.coinbasetag">Coinbase tag</th>
+        <th class="reward text-right" i18n="latest-blocks.reward">Reward</th>
         <th class="fees text-right" i18n="latest-blocks.fees">Fees</th>
-        <th class="txs text-right" i18n="latest-blocks.transactions">Txs</th>
+        <th class="txs text-right" i18n="dashboard.txs">TXs</th>
         <th class="size" i18n="latest-blocks.size">Size</th>
       </thead>
       <tbody>
@@ -378,10 +370,8 @@
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.estimated">Estimated
-                        </th>
-                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.reported">Reported
-                        </th>
+                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.estimated">Estimated</th>
+                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.reported">Reported</th>
                         <th scope="col" class="block-count-title" style="width: 26%" i18n="mining.luck">Luck</th>
                       </tr>
                     </thead>
@@ -406,10 +396,8 @@
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title" style="width: 33%" i18n="mining.estimated">Estimated
-                        </th>
-                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.reported">Reported
-                        </th>
+                        <th scope="col" class="block-count-title" style="width: 33%" i18n="mining.estimated">Estimated</th>
+                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.reported">Reported</th>
                         <th scope="col" class="block-count-title" style="width: 30%" i18n="mining.luck">Luck</th>
                       </tr>
                     </thead>
@@ -430,13 +418,13 @@
 
               <!-- Mined blocks desktop -->
               <tr *ngIf="!isMobile()" class="taller-row">
-                <td class="label" i18n="mining.mined-blocks">Mined Blocks</td>
+                <td class="label" i18n="mining.mined-blocks">Mined blocks</td>
                 <td class="data">
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title" style="width: 37%" i18n="24h">24h</th>
-                        <th scope="col" class="block-count-title" style="width: 37%" i18n="1w">1w</th>
+                        <th scope="col" class="block-count-title" style="width: 37%">24h</th>
+                        <th scope="col" class="block-count-title" style="width: 37%">1w</th>
                         <th scope="col" class="block-count-title" style="width: 26%" i18n="all">All</th>
                       </tr>
                     </thead>
@@ -457,12 +445,12 @@
               <!-- Mined blocks mobile -->
               <tr *ngIf="isMobile()">
                 <td colspan=2>
-                  <span class="label" i18n="mining.mined-blocks">Mined Blocks</span>
+                  <span class="label" i18n="mining.mined-blocks">Mined blocks</span>
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title" style="width: 33%" i18n="24h">24h</th>
-                        <th scope="col" class="block-count-title" style="width: 37%" i18n="1w">1w</th>
+                        <th scope="col" class="block-count-title" style="width: 33%">24h</th>
+                        <th scope="col" class="block-count-title" style="width: 37%">1w</th>
                         <th scope="col" class="block-count-title" style="width: 30%" i18n="all">All</th>
                       </tr>
                     </thead>

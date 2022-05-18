@@ -1,4 +1,4 @@
-import { BlockExtended } from "../mempool.interfaces";
+import { BlockExtended } from '../mempool.interfaces';
 
 export function prepareBlock(block: any): BlockExtended {
   return <BlockExtended>{
@@ -17,9 +17,11 @@ export function prepareBlock(block: any): BlockExtended {
     extras: {
       coinbaseRaw: block.coinbase_raw ?? block.extras.coinbaseRaw,
       medianFee: block.medianFee ?? block.median_fee ?? block.extras?.medianFee,
-      feeRange: block.feeRange ?? block.fee_range ?? block?.extras?.feeSpan,
+      feeRange: block.feeRange ?? block.fee_span,
       reward: block.reward ?? block?.extras?.reward,
-      totalFees: block.totalFees ?? block?.fees ?? block?.extras.totalFees,
+      totalFees: block.totalFees ?? block?.fees ?? block?.extras?.totalFees,
+      avgFee: block?.extras?.avgFee ?? block.avg_fee,
+      avgFeeRate: block?.avgFeeRate ?? block.avg_fee_rate,
       pool: block?.extras?.pool ?? (block?.pool_id ? {
         id: block.pool_id,
         name: block.pool_name,
