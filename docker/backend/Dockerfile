@@ -1,4 +1,4 @@
-FROM node:16.10.0-buster-slim AS builder
+FROM node:16.15.0-buster-slim AS builder
 
 ARG commitHash
 ENV DOCKER_COMMIT_HASH=${commitHash}
@@ -11,7 +11,7 @@ RUN apt-get install -y build-essential python3 pkg-config
 RUN npm install
 RUN npm run build
 
-FROM node:16.10.0-buster-slim
+FROM node:16.15.0-buster-slim
 
 WORKDIR /backend
 
