@@ -11,13 +11,10 @@
   max-width: 100%;
 }
 
-td {
-  padding-top: 0.7rem !important;
+tr, td, th {
+  border: 0px;
+  padding-top: 0.65rem !important;
   padding-bottom: 0.7rem !important;
-  @media (max-width: 376px) {
-    padding-top: 0.73rem !important;
-    padding-bottom: 0.73rem !important;
-    }
 }
 
 .clear-link {
@@ -41,7 +38,7 @@ td {
 }
 .pool.widget {
   width: 40%;
-  padding-left: 30px;
+  padding-left: 24px;
   @media (max-width: 376px) {
     width: 60%;
   }
@@ -56,7 +53,7 @@ td {
   width: 10%;
 }
 .height.widget {
-  width: 20%;
+  width: 15%;
   @media (max-width: 576px) {
     width: 10%;
   }

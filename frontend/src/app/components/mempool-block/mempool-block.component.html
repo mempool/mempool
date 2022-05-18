@@ -21,7 +21,7 @@
               <td><span class="yellow-color">{{ mempoolBlock.feeRange[0] | number:'1.0-0' }} - {{ mempoolBlock.feeRange[mempoolBlock.feeRange.length - 1] | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></span></td>
             </tr>
             <tr>
-              <td i18n="mempool-block.total-fees">Total fees</td>
+              <td i18n="block.total-fees|Total fees in a block">Total fees</td>
               <td><app-amount [satoshis]="mempoolBlock.totalFees" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="mempoolBlock.totalFees" digitsInfo="1.0-0"></app-fiat></span></td>
             </tr>
             <tr>
