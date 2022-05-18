@@ -200,9 +200,13 @@
     <ng-template [ngIf]="isLoadingTransactions">
       <div class="text-center mb-4" class="tx-skeleton">
 
-        <div class="header-bg box">
-          <span class="skeleton-loader"></span>
-        </div>
+        <ng-container *ngIf="(txsLoadingStatus$ | async) as txsLoadingStatus; else headerLoader">
+          <div class="header-bg box">
+            <div class="progress progress-dark" style="margin: 4px; height: 14px;">
+              <div class="progress-bar progress-light" role="progressbar" [ngStyle]="{'width': txsLoadingStatus + '%' }"></div>
+            </div>
+          </div>
+        </ng-container>
 
         <div class="header-bg box">
           <div class="row">
@@ -215,14 +219,6 @@
             </div>
           </div>
         </div>
-
-        <ng-container *ngIf="(txsLoadingStatus$ | async) as txsLoadingStatus">
-          <br>
-          <div class="progress progress-dark">
-            <div class="progress-bar progress-darklight" role="progressbar" [ngStyle]="{'width': txsLoadingStatus + '%' }"></div>
-          </div>
-        </ng-container>
-
       </div>
     </ng-template>
     <ngb-pagination class="pagination-container float-right" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page, blockTxTitle)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
@@ -278,6 +274,12 @@
       <span i18n="block.error.loading-block-data">Error loading block data.</span>
       <br><br>
       <i>{{ error.error }}</i>
+    </div>
+  </ng-template>
+
+  <ng-template #headerLoader>
+    <div class="header-bg box">
+      <span class="skeleton-loader"></span>
     </div>
   </ng-template>
 
