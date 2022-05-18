@@ -3,7 +3,7 @@
 
   <form [formGroup]="pushTxForm" (submit)="pushTxForm.valid && postTx()" novalidate>
     <div class="mb-3">
-      <textarea formControlName="txHash" class="form-control" rows="5" i18n-placeholder="transaction.hex" placeholder="Transaction Hex"></textarea>
+      <textarea formControlName="txHash" class="form-control" rows="5" i18n-placeholder="transaction.hex" placeholder="Transaction hex"></textarea>
     </div>
     <button [disabled]="isLoading" type="submit" class="btn btn-primary mr-2" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</button>
     <p class="red-color d-inline">{{ error }}</p> <a *ngIf="txId" [routerLink]="['/tx/' | relativeUrl, txId]">{{ txId }}</a>
