@@ -32,7 +32,7 @@ class DifficultyAdjustmentApi {
       }
     }
 
-    let timeAvgMins = blocksInEpoch ? diff / blocksInEpoch / 60 : 10;
+    let timeAvgMins = blocksInEpoch && blocksInEpoch > 146 ? diff / blocksInEpoch / 60 : 10;
 
     // Testnet difficulty is set to 1 after 20 minutes of no blocks,
     // therefore the time between blocks will always be below 20 minutes (1200s).
