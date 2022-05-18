@@ -154,6 +154,10 @@ export class ApiService {
     );
   }
 
+  getBlock$(hash: string): Observable<BlockExtended> {
+    return this.httpClient.get<BlockExtended>(this.apiBaseUrl + this.apiBasePath + '/api/v1/block/' + hash);
+  }
+
   getHistoricalHashrate$(interval: string | undefined): Observable<any> {
     return this.httpClient.get<any[]>(
         this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/hashrate` +

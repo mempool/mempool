@@ -29,6 +29,7 @@ import { MempoolBlocksComponent } from '../components/mempool-blocks/mempool-blo
 import { BlockchainBlocksComponent } from '../components/blockchain-blocks/blockchain-blocks.component';
 import { AmountComponent } from '../components/amount/amount.component';
 import { RouterModule } from '@angular/router';
+import { CapAddressPipe } from './pipes/cap-address-pipe/cap-address-pipe';
 
 @NgModule({
   declarations: [
@@ -51,6 +52,7 @@ import { RouterModule } from '@angular/router';
     WuBytesPipe,
     CeilPipe,
     ShortenStringPipe,
+    CapAddressPipe,
     Decimal2HexPipe,
     FeeRoundingPipe,
     ColoredPriceDirective,
@@ -103,6 +105,7 @@ import { RouterModule } from '@angular/router';
     WuBytesPipe,
     CeilPipe,
     ShortenStringPipe,
+    CapAddressPipe,
     Decimal2HexPipe,
     FeeRoundingPipe,
     ColoredPriceDirective,
