@@ -9,6 +9,9 @@ const emptyCodeSample = {
   response: ``
 };
 
+const showJsExamplesDefault = { "": true, "testnet": true, "signet": true, "liquid": true, "liquidtestnet": false, "bisq": true };
+const showJsExamplesDefaultFalse = { "": false, "testnet": false, "signet": false, "liquid": false, "liquidtestnet": false, "bisq": false };
+
 export const wsApiDocsData = {
   codeTemplate: {
     curl: `/api/v1/ws`,
@@ -85,6 +88,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/difficulty-adjustment",
     showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -169,6 +173,7 @@ export const restApiDocsData = [
     },
     urlString: "/stats",
     showConditions: ["bisq"],
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -224,6 +229,7 @@ export const restApiDocsData = [
     },
     urlString: "/currencies",
     showConditions: ["bisq"],
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -274,6 +280,7 @@ export const restApiDocsData = [
     },
     urlString: "/depth?market=[:market]",
     showConditions: ["bisq"],
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -331,6 +338,7 @@ export const restApiDocsData = [
     },
     urlString: "/hloc?market=[:market]",
     showConditions: ["bisq"],
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -389,6 +397,7 @@ export const restApiDocsData = [
     },
     urlString: "/markets",
     showConditions: ["bisq"],
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -445,6 +454,7 @@ export const restApiDocsData = [
     },
     urlString: "/offers?market=[:market]",
     showConditions: ["bisq"],
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -522,6 +532,7 @@ export const restApiDocsData = [
     },
     urlString: "/ticker?market=[:market]",
     showConditions: ["bisq"],
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -576,6 +587,7 @@ export const restApiDocsData = [
     },
     urlString: "/trades?market=[:market]&limit=[:limit]",
     showConditions: ["bisq"],
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -630,6 +642,7 @@ export const restApiDocsData = [
     },
     urlString: "/volumes?basecurrency=[:basecurrency]",
     showConditions: ["bisq"],
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -690,6 +703,7 @@ export const restApiDocsData = [
     },
     urlString: "/address/:address",
     showConditions: bitcoinNetworks.concat(liquidNetworks).concat(["bisq"]),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -848,6 +862,7 @@ export const restApiDocsData = [
     },
     urlString: "/address/:address/txs",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -1001,6 +1016,7 @@ export const restApiDocsData = [
     },
     urlString: "/address/:address/txs/chain",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -1159,6 +1175,7 @@ export const restApiDocsData = [
     },
     urlString: "/address/:address/txs/mempool",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -1285,6 +1302,7 @@ export const restApiDocsData = [
     },
     urlString: "/address/:address/utxo",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -1423,6 +1441,7 @@ export const restApiDocsData = [
     },
     urlString: "/asset/:asset_id",
     showConditions: liquidNetworks,
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -1523,6 +1542,7 @@ export const restApiDocsData = [
     },
     urlString: "/asset/:asset_id/txs[/mempool|/chain]",
     showConditions: liquidNetworks,
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -1609,6 +1629,7 @@ export const restApiDocsData = [
     },
     urlString: "/asset/:asset_id/supply[/decimal]",
     showConditions: liquidNetworks,
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -1659,6 +1680,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/assets/icons",
     showConditions: liquidNetworks,
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -1699,6 +1721,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/asset/:asset_id/icon",
     showConditions: liquidNetworks,
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         noWrap: true,
@@ -1740,6 +1763,7 @@ export const restApiDocsData = [
     },
     urlString: "/block/:hash",
     showConditions: bitcoinNetworks.concat(liquidNetworks).concat(["bisq"]),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -1920,6 +1944,7 @@ export const restApiDocsData = [
     },
     urlString: "/block/:hash/header",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -1985,6 +2010,7 @@ export const restApiDocsData = [
     },
     urlString: "/block-height/:height",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -2047,6 +2073,7 @@ export const restApiDocsData = [
     },
     urlString: "/block/:hash/raw",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -2112,6 +2139,7 @@ export const restApiDocsData = [
     },
     urlString: "/block/:hash/status",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -2197,6 +2225,7 @@ export const restApiDocsData = [
     },
     urlString: "/blocks/tip/height",
     showConditions: bitcoinNetworks.concat(liquidNetworks).concat(["bisq"]),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -2265,6 +2294,7 @@ export const restApiDocsData = [
     },
     urlString: "/blocks/tip/hash",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -2328,6 +2358,7 @@ export const restApiDocsData = [
     },
     urlString: "/block/:hash/txid/:index",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -2393,6 +2424,7 @@ export const restApiDocsData = [
     },
     urlString: "/block/:hash/txids",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -2487,6 +2519,7 @@ export const restApiDocsData = [
     },
     urlString: "/block/:hash/txs[/:start_index]",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -2642,6 +2675,7 @@ export const restApiDocsData = [
     },
     urlString: "/blocks[/:startHeight]",
     showConditions: bitcoinNetworks.concat(liquidNetworks).concat(["bisq"]),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       bisq: {
         codeTemplate: {
@@ -2820,6 +2854,7 @@ export const restApiDocsData = [
     },
     urlString: "/blocks[/:startHeight]",
     showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -2961,6 +2996,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/mining/pools/[:timePeriod]",
     showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
         codeTemplate: {
@@ -3044,6 +3080,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/mining/pool/:slug",
     showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
         codeTemplate: {
@@ -3120,6 +3157,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/mining/hashrate/pools/[:timePeriod]",
     showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
         codeTemplate: {
@@ -3214,6 +3252,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/mining/pool/:slug/hashrate",
     showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
         codeTemplate: {
@@ -3302,6 +3341,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/mining/pool/:slug/blocks/[:blockHeight]",
     showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
         codeTemplate: {
@@ -3423,6 +3463,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/mining/hashrate/[:timePeriod]",
     showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
         codeTemplate: {
@@ -3497,6 +3538,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/mining/reward-stats/:blockCount",
     showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
         codeTemplate: {
@@ -3553,6 +3595,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/mining/blocks/fees/:timePeriod",
     showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
         codeTemplate: {
@@ -3635,6 +3678,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/mining/blocks/rewards/:timePeriod",
     showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
         codeTemplate: {
@@ -3712,6 +3756,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/mining/blocks/fee-rates/:timePeriod",
     showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
         codeTemplate: {
@@ -3799,6 +3844,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/mining/blocks/sizes-weights/:timePeriod",
     showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
         codeTemplate: {
@@ -3903,6 +3949,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/fees/mempool-blocks",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -4056,6 +4103,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/fees/recommended",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -4151,6 +4199,7 @@ export const restApiDocsData = [
     },
     urlString: "/mempool",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -4254,6 +4303,7 @@ export const restApiDocsData = [
     },
     urlString: "/mempool/txids",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -4340,6 +4390,7 @@ export const restApiDocsData = [
     },
     urlString: "/mempool/recent",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -4453,6 +4504,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/fees/cpfp",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -4518,6 +4570,7 @@ export const restApiDocsData = [
     },
     urlString: "/tx/:txid",
     showConditions: bitcoinNetworks.concat(liquidNetworks).concat(["bisq"]),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -4678,6 +4731,7 @@ export const restApiDocsData = [
     },
     urlString: "/tx/:txid/hex",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -4748,6 +4802,7 @@ export const restApiDocsData = [
     },
     urlString: "/tx/:txid/merkleblock-proof",
     showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -4808,6 +4863,7 @@ export const restApiDocsData = [
     },
     urlString: "/tx/:txid/merkle-proof",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -4946,6 +5002,7 @@ export const restApiDocsData = [
     },
     urlString: "/tx/:txid/outspend/:vout",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -5082,6 +5139,7 @@ export const restApiDocsData = [
     },
     urlString: "/tx/:txid/outspends",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -5241,6 +5299,7 @@ export const restApiDocsData = [
     },
     urlString: "/tx/:txid/raw",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -5311,6 +5370,7 @@ export const restApiDocsData = [
     },
     urlString: "/tx/:txid/status",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -5408,6 +5468,7 @@ export const restApiDocsData = [
     },
     urlString: "/txs/:index/:length",
     showConditions: ["bisq"],
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -5465,6 +5526,7 @@ export const restApiDocsData = [
     },
     urlString: "/api/tx",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
