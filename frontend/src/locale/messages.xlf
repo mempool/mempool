@@ -1878,6 +1878,25 @@
         </context-group>
         <note priority="1" from="description">mining.block-fees</note>
       </trans-unit>
+      <trans-unit id="c20172223f84462032664d717d739297e5a9e2fe" datatype="html">
+        <source>Fees</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block-fees-graph/block-fees-graph.component.ts</context>
+          <context context-type="linenumber">160,158</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
+          <context context-type="linenumber">16,17</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
+          <context context-type="linenumber">217,219</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
+          <context context-type="linenumber">265,267</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="8ba8fe810458280a83df7fdf4c614dfc1a826445" datatype="html">
         <source>Block Rewards</source>
         <context-group purpose="location">
@@ -1893,6 +1912,25 @@
           <context context-type="linenumber">18</context>
         </context-group>
         <note priority="1" from="description">mining.block-rewards</note>
+      </trans-unit>
+      <trans-unit id="12f86e6747a5ad39e62d3480ddc472b1aeab5b76" datatype="html">
+        <source>Reward</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block-rewards-graph/block-rewards-graph.component.ts</context>
+          <context context-type="linenumber">160,158</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
+          <context context-type="linenumber">15,17</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
+          <context context-type="linenumber">216,218</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
+          <context context-type="linenumber">264,266</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="56fa1cd221491b6478998679cba2dc8d55ba330d" datatype="html">
         <source>Block Sizes and Weights</source>
@@ -1910,32 +1948,16 @@
         </context-group>
         <note priority="1" from="description">mining.block-sizes-weights</note>
       </trans-unit>
-      <trans-unit id="bdf0e930eb22431140a2eaeacd809cc5f8ebd38c" datatype="html">
-        <source>Next Block</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">7,8</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">19,20</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
-          <context context-type="linenumber">71</context>
-        </context-group>
-        <note priority="1" from="description">Next Block</note>
-      </trans-unit>
-      <trans-unit id="a0e07a711d171f4d40dd388d70ed32f9b8101e0a" datatype="html">
-        <source>Previous Block</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">26,27</context>
-        </context-group>
-        <note priority="1" from="description">Previous Block</note>
-      </trans-unit>
       <trans-unit id="7faaaa08f56427999f3be41df1093ce4089bbd75" datatype="html">
         <source>Size</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block-sizes-weights-graph/block-sizes-weights-graph.component.ts</context>
+          <context context-type="linenumber">181,180</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block-sizes-weights-graph/block-sizes-weights-graph.component.ts</context>
+          <context context-type="linenumber">227,225</context>
+        </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">64,66</context>
@@ -1972,10 +1994,17 @@
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">116,119</context>
         </context-group>
-        <note priority="1" from="description">block.size</note>
       </trans-unit>
       <trans-unit id="919f2fd60a898850c24b1584362bbf18a4628bcb" datatype="html">
         <source>Weight</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block-sizes-weights-graph/block-sizes-weights-graph.component.ts</context>
+          <context context-type="linenumber">189,188</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block-sizes-weights-graph/block-sizes-weights-graph.component.ts</context>
+          <context context-type="linenumber">258,255</context>
+        </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">68,70</context>
@@ -1984,7 +2013,30 @@
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">220,222</context>
         </context-group>
-        <note priority="1" from="description">block.weight</note>
+      </trans-unit>
+      <trans-unit id="bdf0e930eb22431140a2eaeacd809cc5f8ebd38c" datatype="html">
+        <source>Next Block</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
+          <context context-type="linenumber">7,8</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
+          <context context-type="linenumber">19,20</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
+          <context context-type="linenumber">71</context>
+        </context-group>
+        <note priority="1" from="description">Next Block</note>
+      </trans-unit>
+      <trans-unit id="a0e07a711d171f4d40dd388d70ed32f9b8101e0a" datatype="html">
+        <source>Previous Block</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
+          <context context-type="linenumber">26,27</context>
+        </context-group>
+        <note priority="1" from="description">Previous Block</note>
       </trans-unit>
       <trans-unit id="0b47a777f024ab4e3cdf0062acb4d86e9ae1f635" datatype="html">
         <source>Median fee</source>
@@ -2167,6 +2219,14 @@
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.html</context>
           <context context-type="linenumber">73,75</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
+          <context context-type="linenumber">237,236</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
+          <context context-type="linenumber">305,302</context>
+        </context-group>
         <note priority="1" from="description">block.difficulty</note>
       </trans-unit>
       <trans-unit id="a6bb63d98a8a67689070a79ccf13960c25b572ef" datatype="html">
@@ -2252,38 +2312,6 @@
           <context context-type="linenumber">113,114</context>
         </context-group>
         <note priority="1" from="description">latest-blocks.mined</note>
-      </trans-unit>
-      <trans-unit id="12f86e6747a5ad39e62d3480ddc472b1aeab5b76" datatype="html">
-        <source>Reward</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
-          <context context-type="linenumber">15,17</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
-          <context context-type="linenumber">216,218</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
-          <context context-type="linenumber">264,266</context>
-        </context-group>
-        <note priority="1" from="description">latest-blocks.reward</note>
-      </trans-unit>
-      <trans-unit id="c20172223f84462032664d717d739297e5a9e2fe" datatype="html">
-        <source>Fees</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
-          <context context-type="linenumber">16,17</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
-          <context context-type="linenumber">217,219</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
-          <context context-type="linenumber">265,267</context>
-        </context-group>
-        <note priority="1" from="description">latest-blocks.fees</note>
       </trans-unit>
       <trans-unit id="e6213c3f05146287cf121868d9f3d3c3ff5f9714" datatype="html">
         <source>TXs</source>
@@ -2559,10 +2587,6 @@
           <context context-type="sourcefile">src/app/components/hashrates-chart-pools/hashrate-chart-pools.component.html</context>
           <context context-type="linenumber">6,8</context>
         </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/hashrates-chart-pools/hashrate-chart-pools.component.html</context>
-          <context context-type="linenumber">10,11</context>
-        </context-group>
         <note priority="1" from="description">mining.pools-dominance</note>
       </trans-unit>
       <trans-unit id="3510fc6daa1d975f331e3a717bdf1a34efa06dff" datatype="html">
@@ -2590,6 +2614,14 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.html</context>
           <context context-type="linenumber">67,69</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
+          <context context-type="linenumber">226,225</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
+          <context context-type="linenumber">293,291</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
@@ -2814,6 +2846,17 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6095122426142344316" datatype="html">
+        <source><x id="PH" equiv-text="i"/> blocks</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
+          <context context-type="linenumber">160,158</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
+          <context context-type="linenumber">163,162</context>
         </context-group>
       </trans-unit>
       <trans-unit id="cafc87479686947e2590b9f588a88040aeaf660b" datatype="html">
