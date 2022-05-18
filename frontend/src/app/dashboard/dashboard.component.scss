@@ -134,6 +134,8 @@
   table-layout:fixed;
   tr, td, th {
     border: 0px;
+    padding-top: 0.71rem !important;
+    padding-bottom: 0.75rem !important;
   }
   td {
     overflow:hidden;
@@ -182,16 +184,15 @@
   text-align: left;
   tr, td, th {
     border: 0px;
+    padding-top: 0.65rem !important;
+    padding-bottom: 0.7rem !important;
   }
   .table-cell-height {
     width: 15%;
   }
   .table-cell-mined {
     width: 35%;
-    text-align: right;
-    @media (min-width: 376px) {
-      text-align: left;
-    }
+    text-align: left;
   }
   .table-cell-transaction-count {
     display: none;

@@ -14,14 +14,31 @@ class BitcoinApi implements AbstractBitcoinApi {
     this.bitcoindClient = bitcoinClient;
   }
 
-  $getRawTransaction(txId: string, skipConversion = false, addPrevout = false, blockHash?: string): Promise<IEsploraApi.Transaction> {
+  static convertBlock(block: IBitcoinApi.Block): IEsploraApi.Block {
+    return {
+      id: block.hash,
+      height: block.height,
+      version: block.version,
+      timestamp: block.time,
+      bits: parseInt(block.bits, 16),
+      nonce: block.nonce,
+      difficulty: block.difficulty,
+      merkle_root: block.merkleroot,
+      tx_count: block.nTx,
+      size: block.size,
+      weight: block.weight,
+      previousblockhash: block.previousblockhash,
+    };
+  }
+
+  $getRawTransaction(txId: string, skipConversion = false, addPrevout = false): Promise<IEsploraApi.Transaction> {
     // If the transaction is in the mempool we already converted and fetched the fee. Only prevouts are missing
     const txInMempool = mempool.getMempool()[txId];
     if (txInMempool && addPrevout) {
       return this.$addPrevouts(txInMempool);
     }
 
-    return this.bitcoindClient.getRawTransaction(txId, true, blockHash)
+    return this.bitcoindClient.getRawTransaction(txId, true)
       .then((transaction: IBitcoinApi.Transaction) => {
         if (skipConversion) {
           transaction.vout.forEach((vout) => {
@@ -174,33 +191,16 @@ class BitcoinApi implements AbstractBitcoinApi {
       };
     }
 
-    if (transaction.confirmations) {
-      esploraTransaction = await this.$calculateFeeFromInputs(esploraTransaction, addPrevout);
-    } else {
-      esploraTransaction = await this.$appendMempoolFeeData(esploraTransaction);
-      if (addPrevout) {
-        esploraTransaction = await this.$calculateFeeFromInputs(esploraTransaction, addPrevout);
+    if (addPrevout) {
+      if (transaction.confirmations) {
+        esploraTransaction = await this.$calculateFeeFromInputs(esploraTransaction);
+      } else {
+        esploraTransaction = await this.$appendMempoolFeeData(esploraTransaction);
+        esploraTransaction = await this.$calculateFeeFromInputs(esploraTransaction);
       }
     }
 
     return esploraTransaction;
-  }
-
-  static convertBlock(block: IBitcoinApi.Block): IEsploraApi.Block {
-    return {
-      id: block.hash,
-      height: block.height,
-      version: block.version,
-      timestamp: block.time,
-      bits: parseInt(block.bits, 16),
-      nonce: block.nonce,
-      difficulty: block.difficulty,
-      merkle_root: block.merkleroot,
-      tx_count: block.nTx,
-      size: block.size,
-      weight: block.weight,
-      previousblockhash: block.previousblockhash,
-    };
   }
 
   private translateScriptPubKeyType(outputType: string): string {
@@ -245,7 +245,7 @@ class BitcoinApi implements AbstractBitcoinApi {
       if (vin.prevout) {
         continue;
       }
-      const innerTx = await this.$getRawTransaction(vin.txid, false);
+      const innerTx = await this.$getRawTransaction(vin.txid, false, false);
       vin.prevout = innerTx.vout[vin.vout];
       this.addInnerScriptsToVin(vin);
     }
@@ -271,18 +271,16 @@ class BitcoinApi implements AbstractBitcoinApi {
     return this.bitcoindClient.getRawMemPool(true);
   }
 
-  private async $calculateFeeFromInputs(transaction: IEsploraApi.Transaction, addPrevout: boolean): Promise<IEsploraApi.Transaction> {
+  private async $calculateFeeFromInputs(transaction: IEsploraApi.Transaction): Promise<IEsploraApi.Transaction> {
     if (transaction.vin[0].is_coinbase) {
       transaction.fee = 0;
       return transaction;
     }
     let totalIn = 0;
     for (const vin of transaction.vin) {
-      const innerTx = await this.$getRawTransaction(vin.txid, !addPrevout);
-      if (addPrevout) {
-        vin.prevout = innerTx.vout[vin.vout];
-        this.addInnerScriptsToVin(vin);
-      }
+      const innerTx = await this.$getRawTransaction(vin.txid, false, false);
+      vin.prevout = innerTx.vout[vin.vout];
+      this.addInnerScriptsToVin(vin);
       totalIn += innerTx.vout[vin.vout].value;
     }
     const totalOut = transaction.vout.reduce((p, output) => p + output.value, 0);
