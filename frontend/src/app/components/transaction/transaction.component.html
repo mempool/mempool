@@ -46,7 +46,7 @@
             <table class="table table-borderless table-striped">
               <tbody>
                 <tr>
-                  <td i18n="transaction.timestamp|Transaction Timestamp">Timestamp</td>
+                  <td i18n="block.timestamp">Timestamp</td>
                   <td>
                     &lrm;{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}
                     <div class="lg-inline">
@@ -209,7 +209,7 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td i18n="transaction.size|Transaction Size">Size</td>
+                <td i18n="block.size">Size</td>
                 <td [innerHTML]="'&lrm;' + (tx.size | bytes: 2)"></td>
               </tr>
               <tr>
@@ -217,7 +217,7 @@
                 <td [innerHTML]="'&lrm;' + (tx.weight / 4 | vbytes: 2)"></td>
               </tr>
               <tr>
-                <td i18n="transaction.weight|Transaction Weight">Weight</td>
+                <td i18n="block.weight">Weight</td>
                 <td [innerHTML]="'&lrm;' + (tx.weight | wuBytes: 2)"></td>
               </tr>
             </tbody>
@@ -235,7 +235,7 @@
                 <td [innerHTML]="'&lrm;' + (tx.locktime | number)"></td>
               </tr>
               <tr>
-                <td i18n="transaction.hex">Transaction Hex</td>
+                <td i18n="transaction.hex">Transaction hex</td>
                 <td><a target="_blank" href="{{ network === '' ? '' : '/' + network }}/api/tx/{{ txId }}/hex"><fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true"></fa-icon></a></td>
               </tr>
             </tbody>
@@ -383,7 +383,7 @@
     <tbody>
       <tr>
         <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
-        <td>{{ tx.fee | number }} <span class="symbol" i18n="transaction.fee.sat|Transaction Fee sat">sat</span> <span class="fiat"><app-fiat [value]="tx.fee"></app-fiat></span></td>
+        <td>{{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [value]="tx.fee"></app-fiat></span></td>
       </tr>
       <tr>
         <td i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>

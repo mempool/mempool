@@ -702,8 +702,8 @@ class Routes {
 
   public async getBlock(req: Request, res: Response) {
     try {
-      const result = await bitcoinApi.$getBlock(req.params.hash);
-      res.json(result);
+      const block = await blocks.$getBlock(req.params.hash);
+      res.json(block);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
@@ -727,7 +727,7 @@ class Routes {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
-  
+
   public async getBlocks(req: Request, res: Response) {
     try {
       loadingIndicators.setProgress('blocks', 0);
