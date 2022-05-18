@@ -7,6 +7,7 @@ import logger from '../logger';
 import blocks from './blocks';
 import { Common } from './common';
 import loadingIndicators from './loading-indicators';
+import { escape } from 'mysql2';
 
 class Mining {
   hashrateIndexingStarted = false;
@@ -110,7 +111,7 @@ class Mining {
   public async $getPoolStat(slug: string): Promise<object> {
     const pool = await PoolsRepository.$getPool(slug);
     if (!pool) {
-      throw new Error(`This mining pool does not exist`);
+      throw new Error('This mining pool does not exist ' + escape(slug));
     }
 
     const blockCount: number = await BlocksRepository.$blockCount(pool.id);
