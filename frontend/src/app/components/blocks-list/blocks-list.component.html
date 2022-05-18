@@ -40,10 +40,10 @@
             <app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since>
           </td>
           <td class="reward text-right" [class]="widget ? 'widget' : ''">
-            <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-2"></app-amount>
+            <app-amount [satoshis]="block.extras.reward" [noFiat]="true" digitsInfo="1.2-2"></app-amount>
           </td>
           <td class="fees text-right" *ngIf="!widget">
-            <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-2"></app-amount>
+            <app-amount [satoshis]="block.extras.totalFees" [noFiat]="true" digitsInfo="1.2-2"></app-amount>
           </td>
           <td class="txs text-right" [class]="widget ? 'widget' : ''">
             {{ block.tx_count | number }}
