@@ -54,7 +54,7 @@ export class DifficultyAdjustmentsTable implements OnInit {
 
           return {
             availableTimespanDay: availableTimespanDay,
-            difficulty: tableData.slice(0, 5),
+            difficulty: tableData.slice(0, 6),
           };
         }),
       );

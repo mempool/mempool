@@ -39,7 +39,7 @@ export class ApiDocsComponent implements OnInit {
       }
       window.addEventListener('scroll', function() {
         that.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
-      });
+      }, { passive: true} );
     }, 1 );
   }
 
