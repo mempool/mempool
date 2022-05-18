@@ -3,7 +3,7 @@
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
   <a class="navbar-brand" [routerLink]="['/' | relativeUrl]" style="position: relative;">
     <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
-      <img [src]="officialMempoolSpace ? './resources/mempool-space-logo.png' : './resources/mempool-logo.png'" height="35" width="140" class="logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }">
+      <img [src]="officialMempoolSpace ? './resources/mempool-space-logo.png' : './resources/mempool-logo.png'" height="35" width="140" class="logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }" alt="The Mempool Open Source Project logo">
       <div class="connection-badge">
         <div class="badge badge-warning" *ngIf="connectionState.val === 0" i18n="master-page.offline">Offline</div>
         <div class="badge badge-warning" *ngIf="connectionState.val === 1" i18n="master-page.reconnecting">Reconnecting...</div>
@@ -13,16 +13,16 @@
 
   <div (window:resize)="onResize($event)" ngbDropdown class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED || env.LIQUID_TESTNET_ENABLED">
     <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split" aria-haspopup="true">
-      <img src="./resources/{{ network.val === '' ? 'bitcoin' : network.val }}-logo.png" style="width: 25px; height: 25px;" class="mr-1">
+      <img src="./resources/{{ network.val === '' ? 'bitcoin' : network.val }}-logo.png" style="width: 25px; height: 25px;" class="mr-1" [alt]="(network.val === '' ? 'bitcoin' : network.val) + ' logo'">
     </button>
     <div ngbDropdownMenu [ngClass]="{'dropdown-menu-right' : isMobile}">
-      <button ngbDropdownItem class="mainnet" routerLink="/"><img src="./resources/bitcoin-logo.png" style="width: 30px;" class="mr-1"> Mainnet</button>
-      <button ngbDropdownItem *ngIf="env.SIGNET_ENABLED" class="signet" [class.active]="network.val === 'signet'" routerLink="/signet"><img src="./resources/signet-logo.png" style="width: 30px;" class="mr-1"> Signet</button>
-      <button ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet" [class.active]="network.val === 'testnet'" routerLink="/testnet"><img src="./resources/testnet-logo.png" style="width: 30px;" class="mr-1"> Testnet</button>
+      <button ngbDropdownItem class="mainnet" routerLink="/"><img src="./resources/bitcoin-logo.png" style="width: 30px;" class="mr-1" alt="bitcoin logo"> Mainnet</button>
+      <button ngbDropdownItem *ngIf="env.SIGNET_ENABLED" class="signet" [class.active]="network.val === 'signet'" routerLink="/signet"><img src="./resources/signet-logo.png" style="width: 30px;" class="mr-1" alt="signet logo"> Signet</button>
+      <button ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet" [class.active]="network.val === 'testnet'" routerLink="/testnet"><img src="./resources/testnet-logo.png" style="width: 30px;" class="mr-1" alt="testnet logo"> Testnet</button>
       <h6 *ngIf="env.LIQUID_ENABLED || env.BISQ_ENABLED" class="dropdown-header" i18n="master-page.layer2-networks-header">Layer 2 Networks</h6>
-      <a [href]="env.BISQ_WEBSITE_URL + urlLanguage" ngbDropdownItem *ngIf="env.BISQ_ENABLED" class="bisq"><img src="./resources/bisq-logo.png" style="width: 30px;" class="mr-1"> Bisq</a>
-      <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage" ngbDropdownItem *ngIf="env.LIQUID_ENABLED" class="liquid" [class.active]="network.val === 'liquid'"><img src="./resources/liquid-logo.png" style="width: 30px;" class="mr-1"> Liquid</a>
-      <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage + '/testnet'" ngbDropdownItem *ngIf="env.LIQUID_TESTNET_ENABLED" class="liquidtestnet" [class.active]="network.val === 'liquid'"><img src="./resources/liquidtestnet-logo.png" style="width: 30px;" class="mr-1"> Liquid Testnet</a>
+      <a [href]="env.BISQ_WEBSITE_URL + urlLanguage" ngbDropdownItem *ngIf="env.BISQ_ENABLED" class="bisq"><img src="./resources/bisq-logo.png" style="width: 30px;" class="mr-1" alt="bisq logo"> Bisq</a>
+      <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage" ngbDropdownItem *ngIf="env.LIQUID_ENABLED" class="liquid" [class.active]="network.val === 'liquid'"><img src="./resources/liquid-logo.png" style="width: 30px;" class="mr-1" alt="liquid mainnet logo"> Liquid</a>
+      <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage + '/testnet'" ngbDropdownItem *ngIf="env.LIQUID_TESTNET_ENABLED" class="liquidtestnet" [class.active]="network.val === 'liquid'"><img src="./resources/liquidtestnet-logo.png" style="width: 30px;" class="mr-1" alt="liquid testnet logo"> Liquid Testnet</a>
     </div>
   </div>
 
@@ -32,7 +32,7 @@
         <a class="nav-link" [routerLink]="['/' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'tachometer-alt']" [fixedWidth]="true" i18n-title="master-page.dashboard" title="Dashboard"></fa-icon></a>
       </li>
       <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" id="btn-pools" *ngIf="stateService.env.MINING_DASHBOARD">
-        <a class="nav-link" [routerLink]="['/mining' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'hammer']" [fixedWidth]="true" i18n-title="master-page.mining-dashboard" title="Mining Dashboard"></fa-icon></a>
+        <a class="nav-link" [routerLink]="['/mining' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'hammer']" [fixedWidth]="true" i18n-title="mining.mining-dashboard" title="Mining Dashboard"></fa-icon></a>
       </li>
       <li class="nav-item" routerLinkActive="active" id="btn-blocks" *ngIf="!stateService.env.MINING_DASHBOARD">
         <a class="nav-link" [routerLink]="['/blocks' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'cubes']" [fixedWidth]="true" i18n-title="master-page.blocks" title="Blocks"></fa-icon></a>

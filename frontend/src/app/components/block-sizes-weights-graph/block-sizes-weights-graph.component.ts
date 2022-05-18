@@ -62,7 +62,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
   ngOnInit(): void {
     let firstRun = true;
 
-    this.seoService.setTitle($localize`:@@mining.hashrate-difficulty:Hashrate and Weight`);
+    this.seoService.setTitle($localize`:@@56fa1cd221491b6478998679cba2dc8d55ba330d:Block Sizes and Weights`);
     this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);

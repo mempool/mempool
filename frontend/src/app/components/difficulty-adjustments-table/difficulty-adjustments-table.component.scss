@@ -2,10 +2,15 @@
   width: 100%;
   text-align: left;
   table-layout:fixed;
-  tr, td, th {
+  tr, th {
     border: 0px;
+    padding-top: 0.65rem !important;
+    padding-bottom: 0.7rem !important;
   }
   td {
+    border: 0px;
+    padding-top: 0.71rem !important;
+    padding-bottom: 0.75rem !important;
     width: 25%;
     @media (max-width: 376px) {
       padding: 0.85rem;
