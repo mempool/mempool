@@ -134,7 +134,7 @@ class Blocks {
       blockExtended.extras.avgFeeRate = stats.avgfeerate;
     }
 
-    if (Common.indexingEnabled()) {
+    if (['mainnet', 'testnet', 'signet', 'regtest'].includes(config.MEMPOOL.NETWORK)) {
       let pool: PoolTag;
       if (blockExtended.extras?.coinbaseTx !== undefined) {
         pool = await this.$findBlockMiner(blockExtended.extras?.coinbaseTx);
@@ -143,7 +143,8 @@ class Blocks {
       }
 
       if (!pool) { // We should never have this situation in practise
-        logger.warn(`Cannot assign pool to block ${blockExtended.height} and 'unknown' pool does not exist. Check your "pools" table entries`);
+        logger.warn(`Cannot assign pool to block ${blockExtended.height} and 'unknown' pool does not exist. ` +
+          `Check your "pools" table entries`);
         return blockExtended;
       }
 
@@ -387,6 +388,42 @@ class Blocks {
     await blocksRepository.$saveBlockInDatabase(blockExtended);
 
     return prepareBlock(blockExtended);
+  }
+
+  /**
+   * Index a block by hash if it's missing from the database. Returns the block after indexing
+   */
+  public async $getBlock(hash: string): Promise<BlockExtended | IEsploraApi.Block> {
+    // Check the memory cache
+    const blockByHash = this.getBlocks().find((b) => b.id === hash);
+    if (blockByHash) {
+      return blockByHash;
+    }
+
+    // Block has already been indexed
+    if (Common.indexingEnabled()) {
+      const dbBlock = await blocksRepository.$getBlockByHash(hash);
+      if (dbBlock != null) {
+        return prepareBlock(dbBlock);
+      }
+    }
+
+    const block = await bitcoinApi.$getBlock(hash);
+
+    // Not Bitcoin network, return the block as it
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
+      return block;
+    }
+
+    // Bitcoin network, add our custom data on top
+    const transactions = await this.$getTransactionsExtended(hash, block.height, true);
+    const blockExtended = await this.$getBlockExtended(block, transactions);
+    if (Common.indexingEnabled()) {
+      delete(blockExtended['coinbaseTx']);
+      await blocksRepository.$saveBlockInDatabase(blockExtended);
+    }
+
+    return blockExtended;
   }
 
   public async $getBlocksExtras(fromHeight?: number, limit: number = 15): Promise<BlockExtended[]> {

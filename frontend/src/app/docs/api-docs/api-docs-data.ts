@@ -4468,6 +4468,14 @@ export const faqData = [
     answer: "Mining pools are groups of miners that combine their computational power in order to increase the probability of finding new blocks."
   },
   {
+    type: "endpoint",
+    category: "basics",
+    showConditions: bitcoinNetworks,
+    fragment: "what-is-full-mempool",
+    title: "What does it mean for the mempool to be \"full\"?",
+    answer: "<p>When a Bitcoin transaction is made, it is stored in a Bitcoin node's mempool before it is confirmed into a block. When the rate of incoming transactions exceeds the rate transactions are confirmed, the mempool grows in size.</p><p>The default maximum size of a Bitcoin node's mempool is 300MB, so when there are 300MB of transactions in the mempool, we say it's \"full\".</p>"
+  },
+  {
     type: "category",
     category: "help",
     fragment: "help-stuck-transaction",
