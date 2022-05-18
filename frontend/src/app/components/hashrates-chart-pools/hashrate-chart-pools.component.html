@@ -3,11 +3,11 @@
 <div class="full-container">
 
   <div class="card-header  mb-0 mb-md-4">
-    <span i18n="mining.pools-dominance">Mining pools dominance</span>
+    <span i18n="mining.pools-dominance">Pools Dominance</span>
     <button class="btn" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
       <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
     </button>
-
+    <span i18n="mining.pools-dominance">Pools Dominance</span>
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(hashrateObservable$ | async) as stats">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.blockCount >= 4320">
