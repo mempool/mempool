@@ -9,9 +9,9 @@ import { take } from 'rxjs/operators';
 import { TransferState, makeStateKey } from '@angular/platform-browser';
 import { BlockExtended } from '../interfaces/node-api.interface';
 
-const OFFLINE_RETRY_AFTER_MS = 10000;
-const OFFLINE_PING_CHECK_AFTER_MS = 30000;
-const EXPECT_PING_RESPONSE_AFTER_MS = 4000;
+const OFFLINE_RETRY_AFTER_MS = 1000;
+const OFFLINE_PING_CHECK_AFTER_MS = 10000;
+const EXPECT_PING_RESPONSE_AFTER_MS = 5000;
 
 const initData = makeStateKey('/api/v1/init-data');
 
