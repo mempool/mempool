@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 17;
+  private static currentVersion = 18;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
 
@@ -179,6 +179,10 @@ class DatabaseMigration {
 
       if (databaseSchemaVersion < 17 && isBitcoin === true) {
         await this.$executeQuery('ALTER TABLE `pools` ADD `slug` CHAR(50) NULL');
+      }
+
+      if (databaseSchemaVersion < 18 && isBitcoin === true) {
+        await this.$executeQuery('ALTER TABLE `blocks` ADD INDEX `hash` (`hash`);');
       }
     } catch (e) {
       throw e;
