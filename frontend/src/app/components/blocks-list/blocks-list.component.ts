@@ -39,7 +39,7 @@ export class BlocksList implements OnInit {
       this.websocketService.want(['blocks']);
     }
 
-    this.skeletonLines = this.widget === true ? [...Array(5).keys()] : [...Array(15).keys()];
+    this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
 
     this.blocks$ = combineLatest([
@@ -61,7 +61,7 @@ export class BlocksList implements OnInit {
                     block.extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
                 }
                 if (this.widget) {
-                  return blocks.slice(0, 5);
+                  return blocks.slice(0, 6);
                 }
                 return blocks;
               }),
@@ -85,7 +85,7 @@ export class BlocksList implements OnInit {
           blocks[1][0].extras.pool.logo = `./resources/mining-pools/` +
             blocks[1][0].extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
           acc.unshift(blocks[1][0]);
-          acc = acc.slice(0, this.widget ? 5 : 15);
+          acc = acc.slice(0, this.widget ? 6 : 15);
           return acc;
         }, [])
       );
