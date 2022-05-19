@@ -2852,9 +2852,9 @@ export const restApiDocsData = [
     description: {
       default: "Returns details on the past 15 blocks with fee and mining details in an <code>extras</code> field. If <code>:startHeight</code> is specified, the past 15 blocks before (and including) <code>:startHeight</code> are returned."
     },
-    urlString: "/blocks[/:startHeight]",
+    urlString: "/blocks-extras[/:startHeight]",
     showConditions: bitcoinNetworks,
-    showJsExamples: showJsExamplesDefault,
+    showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
         codeTemplate: {
@@ -2969,12 +2969,22 @@ export const restApiDocsData = [
   },
   ...        
 ]`,
-          codeSampleTestnet: emptyCodeSample,
-          codeSampleSignet: emptyCodeSample,
-          codeSampleLiquid: emptyCodeSample,
-          codeSampleLiquidTestnet: emptyCodeSample,
-          codeSampleBisq: emptyCodeSample,
-        }
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['2226118'],
+          response: `[]`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['88832'],
+          response: `[]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
       }
     }
   },
@@ -2985,7 +2995,7 @@ export const restApiDocsData = [
     title: "Mining",
     showConditions: bitcoinNetworks
   },
-  {
+ {
     type: "endpoint",
     category: "mining",
     httpRequestMethod: "GET",
@@ -2994,20 +3004,20 @@ export const restApiDocsData = [
     description: {
       default: "Returns a list of all known mining pools ordered by blocks found over the specified trailing <code>:timePeriod</code>.</p><p>Leave <code>:timePeriod</code> unspecified to get all available data, or specify one of the following values: " + miningTimeIntervals + "."
     },
-    urlString: "/v1/mining/pools/[:timePeriod]",
+    urlString: "/v1/mining/pools[/:timePeriod]",
     showConditions: bitcoinNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
         codeTemplate: {
-          curl: `/api/v1/mining/pools/1w`,
+          curl: `/api/v1/mining/pools/%{1}`,
           commonJS: ``,
           esModule: ``
         },
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: [],
+          curl: [`1w`],
           response: `{
   "pools": [
   {
@@ -3046,22 +3056,39 @@ export const restApiDocsData = [
         codeSampleTestnet: {
           esModule: [],
           commonJS: [],
-          curl: [],
-          response: `[
-  {
-
-  }
-]`
+          curl: [`3y`],
+          response: `{
+  "pools": [
+    {
+      "poolId": 112,
+      "name": "SBI Crypto",
+      "link": "https://sbicrypto.com",
+      "blockCount": 26243,
+      "rank": 2,
+      "emptyBlocks": 11272,
+      "slug": "sbicrypto"
+    },
+    {
+      "poolId": 8,
+      "name": "Huobi.pool",
+      "link": "https://www.hpt.com/",
+      "blockCount": 12134,
+      "rank": 3,
+      "emptyBlocks": 6096,
+      "slug": "huobipool"
+    },
+    ...
+  ],
+  "oldestIndexedBlockTimestamp": 1296688602,
+  "blockCount": 2226180,
+  "lastEstimatedHashrate": 602244182177430.8
+}`
         },
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [],
-          response: `[
-  {
-
-  }
-]`
+          curl: [`3y`],
+          response: `{}`
         },
         codeSampleLiquid: emptyCodeSample,
         codeSampleLiquidTestnet: emptyCodeSample,
@@ -3076,7 +3103,7 @@ export const restApiDocsData = [
     fragment: "get-mining-pool",
     title: "GET Mining Pool",
     description: {
-      default: "<p>Returns details about the specified mining pool.</p>"
+      default: "<p>Returns details about the mining pool specified by <code>:slug</code>.</p>"
     },
     urlString: "/v1/mining/pool/:slug",
     showConditions: bitcoinNetworks,
@@ -3084,14 +3111,14 @@ export const restApiDocsData = [
     codeExample: {
       default: {
         codeTemplate: {
-          curl: `/api/v1/mining/pool/slushpool`,
+          curl: `/api/v1/mining/pool/%{1}`,
           commonJS: ``,
           esModule: ``
         },
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: [],
+          curl: [`slushpool`],
           response: `{
   "pool": {
     "id": 43,
@@ -3123,22 +3150,38 @@ export const restApiDocsData = [
         codeSampleTestnet: {
           esModule: [],
           commonJS: [],
-          curl: [],
-          response: `[
-  {
-
-  }
-]`
+          curl: [`binancepool`],
+          response: `{
+  "pool": {
+    "id": 105,
+    "name": "Binance Pool",
+    "link": "https://pool.binance.com/",
+    "addresses": [],
+    "regexes": [
+      "/Binance/",
+      "binance"
+    ],
+    "slug": "binancepool"
+  },
+  "blockCount": {
+    "all": 2,
+    "24h": 1,
+    "1w": 1
+  },
+  "blockShare": {
+    "all": 8.984160924290476e-7,
+    "24h": 0.004524886877828055,
+    "1w": 0.0005089058524173028
+  },
+  "estimatedHashrate": 2617854550633.5283,
+  "reportedHashrate": null
+}`
         },
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [],
-          response: `[
-  {
-
-  }
-]`
+          curl: [`unknown`],
+          response: `{}`
         },
         codeSampleLiquid: emptyCodeSample,
         codeSampleLiquidTestnet: emptyCodeSample,
@@ -3161,14 +3204,14 @@ export const restApiDocsData = [
     codeExample: {
       default: {
         codeTemplate: {
-          curl: `/api/v1/mining/hashrate/pools/1m`,
+          curl: `/api/v1/mining/hashrate/pools/%{1}`,
           commonJS: ``,
           esModule: ``
         },
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: [],
+          curl: [`1m`],
           response: `[
   {
     "timestamp": 1650240000,
@@ -3218,20 +3261,32 @@ export const restApiDocsData = [
         codeSampleTestnet: {
           esModule: [],
           commonJS: [],
-          curl: [],
+          curl: [`1y`],
           response: `[
   {
-
+    "timestamp": 1621814400,
+    "avgHashrate": 395655036336662.7,
+    "share": 1,
+    "poolName": "Unknown"
+  },
+  {
+    "timestamp": 1621814400,
+    "avgHashrate": 0,
+    "share": 0,
+    "poolName": "Binance Pool"
   }
 ]`
         },
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [],
+          curl: [`1w`],
           response: `[
   {
-
+    "timestamp": 1600041600,
+    "avgHashrate": 21621.70283633912,
+    "share": 1,
+    "poolName": "Unknown"
   }
 ]`
         },
@@ -3248,7 +3303,7 @@ export const restApiDocsData = [
     fragment: "get-mining-pool-hashrate",
     title: "GET Mining Pool Hashrate",
     description: {
-      default: "Returns all known hashrate data for the specified mining pool. Hashrate values are weekly averages."
+      default: "Returns all known hashrate data for the mining pool specified by <code>:slug</code>. Hashrate values are weekly averages."
     },
     urlString: "/v1/mining/pool/:slug/hashrate",
     showConditions: bitcoinNetworks,
@@ -3256,14 +3311,14 @@ export const restApiDocsData = [
     codeExample: {
       default: {
         codeTemplate: {
-          curl: `/api/v1/mining/pool/foundryusa/hashrate`,
+          curl: `/api/v1/mining/pool/%{1}/hashrate`,
           commonJS: ``,
           esModule: ``
         },
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: [],
+          curl: [`foundryusa`],
           response: `[
   {
     "timestamp": 1647216000,
@@ -3307,21 +3362,53 @@ export const restApiDocsData = [
         codeSampleTestnet: {
           esModule: [],
           commonJS: [],
-          curl: [],
+          curl: [`kncminer`],
           response: `[
   {
-
-  }
+    "timestamp": 1400457600,
+    "avgHashrate": 23504290056.20675,
+    "share": 0.21875,
+    "poolName": "KnCMiner"
+  },
+  {
+    "timestamp": 1401062400,
+    "avgHashrate": 22880315827.385838,
+    "share": 0.301661,
+    "poolName": "KnCMiner"
+  },
+  {
+    "timestamp": 1401667200,
+    "avgHashrate": 65314000516.18979,
+    "share": 0.774853,
+    "poolName": "KnCMiner"
+  },
+  ...
 ]`
         },
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [],
+          curl: [`unknown`],
           response: `[
   {
-
-  }
+    "timestamp": 1600041600,
+    "avgHashrate": 21621.70283633912,
+    "share": 1,
+    "poolName": "Unknown"
+  },
+  {
+    "timestamp": 1600646400,
+    "avgHashrate": 23490.65374463165,
+    "share": 1,
+    "poolName": "Unknown"
+  },
+  {
+    "timestamp": 1601251200,
+    "avgHashrate": 22660.62333333333,
+    "share": 1,
+    "poolName": "Unknown"
+  },
+  ...
 ]`
         },
         codeSampleLiquid: emptyCodeSample,
@@ -3337,7 +3424,7 @@ export const restApiDocsData = [
     fragment: "get-mining-pool-blocks",
     title: "GET Mining Pool Blocks",
     description: {
-      default: "Returns past 10 blocks mined by the specified mining pool before the specified <code>:blockHeight</code>. If no <code>:blockHeight</code> is specified, the mining pool's 10 most recent blocks are returned."
+      default: "Returns past 10 blocks mined by the specified mining pool (<code>:slug</code>) before the specified <code>:blockHeight</code>. If no <code>:blockHeight</code> is specified, the mining pool's 10 most recent blocks are returned."
     },
     urlString: "/v1/mining/pool/:slug/blocks/[:blockHeight]",
     showConditions: bitcoinNetworks,
@@ -3345,14 +3432,14 @@ export const restApiDocsData = [
     codeExample: {
       default: {
         codeTemplate: {
-          curl: `/api/v1/mining/pool/luxor/blocks/730000`,
+          curl: `/api/v1/mining/pool/%{1}/blocks/%{2}`,
           commonJS: ``,
           esModule: ``
         },
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: [],
+          curl: [`luxor`,`730000`],
           response: `[
   {
     "id": "0000000000000000000572c6eb693c51b728593139079c613c8ea0bc6384e362",
@@ -3429,21 +3516,109 @@ export const restApiDocsData = [
         codeSampleTestnet: {
           esModule: [],
           commonJS: [],
-          curl: [],
+          curl: [`bitcoincom`,`2226000`],
           response: `[
   {
-
-  }
+    "id": "00000000000000ed428cdb70dfdeb0f3927912131cb96e7b1fe274b1bb1181b2",
+    "timestamp": 1582018014,
+    "height": 1666150,
+    "version": 541065216,
+    "bits": 436312585,
+    "nonce": 21973352,
+    "difficulty": 10474471.99230249,
+    "merkle_root": "541456efe41e5730a563475e0c5e2007ee660f1d86d9778bfc164d73c59fd605",
+    "tx_count": 382,
+    "size": 126201,
+    "weight": 331851,
+    "previousblockhash": "00000000005a0843cc88b09cf6def15e4dc8fe38ab5cf3ad890f34a2df497004",
+    "extras": {
+      "coinbaseRaw": "03666c19706f6f6c2e626974636f696e2e636f6d010000022583010000000000",
+      "medianFee": 1,
+      "reward": 39726335,
+      "totalFees": 663835,
+      "pool": {
+        "id": 12
+      }
+    }
+  },
+  {
+    "id": "00000000000000af90f51e48cb29fdecc62e9961c5e27aca1a4ae8213aae1954",
+    "timestamp": 1579793108,
+    "height": 1663620,
+    "version": 541065216,
+    "bits": 436295134,
+    "nonce": 1762790676,
+    "difficulty": 12563071.03178775,
+    "merkle_root": "02d02afea666f08bab5851de541d0570c71a6cd8be358c28952c52d57b7afad4",
+    "tx_count": 24,
+    "size": 9562,
+    "weight": 23848,
+    "previousblockhash": "000000000000013bbdbc0fef53a5b4b2af02880a6f56f7945de071b71d51123a",
+    "extras": {
+      "coinbaseRaw": "03846219706f6f6c2e626974636f696e2e636f6d01000065f224020000000000",
+      "medianFee": 1,
+      "reward": 39547121,
+      "totalFees": 484621,
+      "pool": {
+        "id": 12
+      }
+    }
+  },
+  ...
 ]`
         },
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [],
+          curl: [`unknown`,`45000`],
           response: `[
   {
-
-  }
+    "id": "00000002440c34e403b2b4e10f390ab105c825dd6285cd6f4050db23cf7e3e46",
+    "timestamp": 1625317548,
+    "height": 44999,
+    "version": 536870912,
+    "bits": 503405326,
+    "nonce": 14354169,
+    "difficulty": 0.002881346304279315,
+    "merkle_root": "3324dc134dec1b57cfea574ce2db6e40e51469417b6381a1389e7969386ab42e",
+    "tx_count": 14,
+    "size": 2971,
+    "weight": 8149,
+    "previousblockhash": "000000d7998f5cf0fb144a400566221574f5f35ebd5d7d9fa803460b6942e237",
+    "extras": {
+      "coinbaseRaw": "03c7af00",
+      "medianFee": 1,
+      "reward": 5000002252,
+      "totalFees": 2252,
+      "pool": {
+        "id": 137
+      }
+    }
+  },
+  {
+    "id": "000000d7998f5cf0fb144a400566221574f5f35ebd5d7d9fa803460b6942e237",
+    "timestamp": 1625317223,
+    "height": 44998,
+    "version": 536870912,
+    "bits": 503405326,
+    "nonce": 4729165,
+    "difficulty": 0.002881346304279315,
+    "merkle_root": "55869f5a52d7709fb2c6df91d64841f4551d659948b7537b6cd8f19c68d27115",
+    "tx_count": 32,
+    "size": 6967,
+    "weight": 18247,
+    "previousblockhash": "000000d6de5b925642a7afed41994947db8612955fbdfd9d1b48f99fc0187385",
+    "extras": {
+      "coinbaseRaw": "03c6af00",
+      "medianFee": 1,
+      "reward": 5000005528,
+      "totalFees": 5528,
+      "pool": {
+        "id": 137
+      }
+    }
+  },
+  ...
 ]`
         },
         codeSampleLiquid: emptyCodeSample,
@@ -3504,22 +3679,67 @@ export const restApiDocsData = [
         codeSampleTestnet: {
           esModule: [],
           commonJS: [],
-          curl: [],
-          response: `[
-  {
-
-  }
-]`
+          curl: [`3d`],
+          response: `{
+  "hashrates": [
+    {
+      "timestamp": 1652745600,
+      "avgHashrate": 385829751259101.6
+    },
+    {
+      "timestamp": 1652832000,
+      "avgHashrate": 657984995406460.8
+    },
+    {
+      "timestamp": 1652918400,
+      "avgHashrate": 510731129917436.6
+    }
+  ],
+  "difficulty": [
+    {
+      "timestamp": 1652691434,
+      "difficulty": 26119369.29706616,
+      "height": 2225402
+    }
+  ],
+  "currentHashrate": 781149965464814.4,
+  "currentDifficulty": 55580658.55098472
+}`
         },
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [],
-          response: `[
-  {
-
-  }
-]`
+          curl: [`3d`],
+          response: `{
+  "hashrates": [
+    {
+      "timestamp": 1652745600,
+      "avgHashrate": 21304.18163251096
+    },
+    {
+      "timestamp": 1652832000,
+      "avgHashrate": 22034.51091213679
+    },
+    {
+      "timestamp": 1652918400,
+      "avgHashrate": 20312.75493978447
+    }
+  ],
+  "difficulty": [
+    {
+      "timestamp": 1652692199,
+      "difficulty": 0.002868721424409158,
+      "height": 90533
+    },
+    {
+      "timestamp": 1652796655,
+      "difficulty": 0.00286032350920122,
+      "height": 90720
+    }
+  ],
+  "currentHashrate": 23490.95654668005,
+  "currentDifficulty": 0.00286032350920122
+}`
         },
         codeSampleLiquid: emptyCodeSample,
         codeSampleLiquidTestnet: emptyCodeSample,
@@ -3534,7 +3754,7 @@ export const restApiDocsData = [
     fragment: "get-reward-stats",
     title: "GET Reward Stats",
     description: {
-      default: "Returns block reward and total transactions confirmed for each of the past <code>blockCount</code> blocks."
+      default: "Returns block reward and total transactions confirmed for each of the past <code>:blockCount</code> blocks."
     },
     urlString: "/v1/mining/reward-stats/:blockCount",
     showConditions: bitcoinNetworks,
@@ -3542,14 +3762,14 @@ export const restApiDocsData = [
     codeExample: {
       default: {
         codeTemplate: {
-          curl: `/api/v1/mining/reward-stats/100`,
+          curl: `/api/v1/mining/reward-stats/%{1}`,
           commonJS: ``,
           esModule: ``
         },
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: [],
+          curl: [`100`],
           response: `{
   "startBlock": 736556,
   "endBlock": 736655,
@@ -3561,22 +3781,26 @@ export const restApiDocsData = [
         codeSampleTestnet: {
           esModule: [],
           commonJS: [],
-          curl: [],
-          response: `[
-  {
-
-  }
-]`
+          curl: [`100`],
+          response: `{
+  "startBlock": 2226086,
+  "endBlock": 2226185,
+  "totalReward": "513462793",
+  "totalFee": "25181593",
+  "totalTx": "2366"
+}`
         },
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [],
-          response: `[
-  {
-
-  }
-]`
+          curl: [`100`],
+          response: `{
+  "startBlock": 90899,
+  "endBlock": 90998,
+  "totalReward": "500001245259",
+  "totalFee": "1245259",
+  "totalTx": "1112"
+}`
         },
         codeSampleLiquid: emptyCodeSample,
         codeSampleLiquidTestnet: emptyCodeSample,
@@ -3599,14 +3823,14 @@ export const restApiDocsData = [
     codeExample: {
       default: {
         codeTemplate: {
-          curl: `/api/v1/mining/blocks/fees/1w`,
+          curl: `/api/v1/mining/blocks/fees/%{1}`,
           commonJS: ``,
           esModule: ``
         },
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: [],
+          curl: [`1w`],
           response: `[
   {
     "avg_height": 735644,
@@ -3644,21 +3868,37 @@ export const restApiDocsData = [
         codeSampleTestnet: {
           esModule: [],
           commonJS: [],
-          curl: [],
+          curl: [`1w`],
           response: `[
   {
-
-  }
+    "avg_height": 2224253,
+    "timestamp": 1652346420,
+    "avg_fees": 211686
+  },
+  {
+    "avg_height": 2224254,
+    "timestamp": 1652346850,
+    "avg_fees": 2565952
+  },
+  ...
 ]`
         },
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [],
+          curl: [`1w`],
           response: `[
   {
-
-  }
+    "avg_height": 89978,
+    "timestamp": 1652346573,
+    "avg_fees": 1071
+  },
+  {
+    "avg_height": 89979,
+    "timestamp": 1652346970,
+    "avg_fees": 1224
+  },
+  ...
 ]`
         },
         codeSampleLiquid: emptyCodeSample,
@@ -3682,14 +3922,14 @@ export const restApiDocsData = [
     codeExample: {
       default: {
         codeTemplate: {
-          curl: `/api/v1/mining/blocks/rewards/1d`,
+          curl: `/api/v1/mining/blocks/rewards/%{1}`,
           commonJS: ``,
           esModule: ``
         },
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: [],
+          curl: [`1d`],
           response: `[
   {
     "avg_height": 599992,
@@ -3722,21 +3962,37 @@ export const restApiDocsData = [
         codeSampleTestnet: {
           esModule: [],
           commonJS: [],
-          curl: [],
+          curl: [`1d`],
           response: `[
   {
-
-  }
+    "avg_height": 12,
+    "timestamp": 1296689648,
+    "avg_rewards": 5000000000
+  },
+  {
+    "avg_height": 269,
+    "timestamp": 1296717674,
+    "avg_rewards": 5000091820
+  },
+  ...
 ]`
         },
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [],
+          curl: [`1d`],
           response: `[
   {
-
-  }
+    "avg_height": 183,
+    "timestamp": 1598962247,
+    "avg_rewards": 5000000000
+  },
+  {
+    "avg_height": 576,
+    "timestamp": 1599047892,
+    "avg_rewards": 5000000000
+  },
+  ...
 ]`
         },
         codeSampleLiquid: emptyCodeSample,
@@ -3760,14 +4016,14 @@ export const restApiDocsData = [
     codeExample: {
       default: {
         codeTemplate: {
-          curl: `/api/v1/mining/blocks/fee-rates/1m`,
+          curl: `/api/v1/mining/blocks/fee-rates/%{1}`,
           commonJS: ``,
           esModule: ``
         },
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: [],
+          curl: [`1m`],
           response: `{
   "oldestIndexedBlockTimestamp": 1571434851,
   "blockFeeRates": [
@@ -3805,27 +4061,74 @@ export const restApiDocsData = [
       "avg_fee_100": 251
     },
     ...
+  ]
 }`
         },
         codeSampleTestnet: {
           esModule: [],
           commonJS: [],
-          curl: [],
-          response: `[
-  {
-
-  }
-]`
+          curl: [`1m`],
+          response: `{
+  "oldestIndexedBlockTimestamp": 1296688602,
+  "blockFeeRates": [
+    {
+      "avg_height": 2196306,
+      "timestamp": 1650360168,
+      "avg_fee_0": 1,
+      "avg_fee_10": 1,
+      "avg_fee_25": 1,
+      "avg_fee_50": 1,
+      "avg_fee_75": 2,
+      "avg_fee_90": 28,
+      "avg_fee_100": 2644
+    },
+    {
+      "avg_height": 2196308,
+      "timestamp": 1650361209,
+      "avg_fee_0": 1,
+      "avg_fee_10": 1,
+      "avg_fee_25": 1,
+      "avg_fee_50": 4,
+      "avg_fee_75": 12,
+      "avg_fee_90": 65,
+      "avg_fee_100": 102
+    },
+    ...
+  ]
+}`
         },
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [],
-          response: `[
-  {
-
-  }
-]`
+          curl: [`1m`],
+          response: `{
+  "oldestIndexedBlockTimestamp": 1598918400,
+  "blockFeeRates": [
+    {
+      "avg_height": 86620,
+      "timestamp": 1650360010,
+      "avg_fee_0": 1,
+      "avg_fee_10": 1,
+      "avg_fee_25": 1,
+      "avg_fee_50": 1,
+      "avg_fee_75": 1,
+      "avg_fee_90": 1,
+      "avg_fee_100": 1
+    },
+    {
+      "avg_height": 86623,
+      "timestamp": 1650361330,
+      "avg_fee_0": 1,
+      "avg_fee_10": 1,
+      "avg_fee_25": 1,
+      "avg_fee_50": 1,
+      "avg_fee_75": 1,
+      "avg_fee_90": 1,
+      "avg_fee_100": 1
+    },
+    ...
+  ]
+}`
         },
         codeSampleLiquid: emptyCodeSample,
         codeSampleLiquidTestnet: emptyCodeSample,
@@ -3848,14 +4151,14 @@ export const restApiDocsData = [
     codeExample: {
       default: {
         codeTemplate: {
-          curl: `/api/v1/mining/blocks/sizes-weights/3y`,
+          curl: `/api/v1/mining/blocks/sizes-weights/%{1}`,
           commonJS: ``,
           esModule: ``
         },
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: [],
+          curl: [`3y`],
           response: `{
   "sizes": [
     {
@@ -3908,22 +4211,68 @@ export const restApiDocsData = [
         codeSampleTestnet: {
           esModule: [],
           commonJS: [],
-          curl: [],
-          response: `[
-  {
-
-  }
-]`
+          curl: [`3y`],
+          response: `{
+  "sizes": [
+    {
+      "avg_height": 1517188,
+      "timestamp": 1558262730,
+      "avg_size": 25089
+    },
+    {
+      "avg_height": 1517275,
+      "timestamp": 1558290933,
+      "avg_size": 21679
+    },
+    ...
+  ],
+  "weights": [
+    {
+      "avg_height": 1517188,
+      "timestamp": 1558262730,
+      "avg_weight": 74921
+    },
+    {
+      "avg_height": 1517275,
+      "timestamp": 1558290933,
+      "avg_weight": 65164
+    },
+    ...
+  ]
+}`
         },
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [],
-          response: `[
-  {
-
-  }
-]`
+          curl: [`3y`],
+          response: `{
+  "sizes": [
+    {
+      "avg_height": 83,
+      "timestamp": 1598937527,
+      "avg_size": 329
+    },
+    {
+      "avg_height": 266,
+      "timestamp": 1598982991,
+      "avg_size": 330
+    },
+    ...
+  ],
+  "weights": [
+    {
+      "avg_height": 83,
+      "timestamp": 1598937527,
+      "avg_weight": 1209
+    },
+    {
+      "avg_height": 266,
+      "timestamp": 1598982991,
+      "avg_weight": 1212
+    },
+    ...
+  ]
+}`
         },
         codeSampleLiquid: emptyCodeSample,
         codeSampleLiquidTestnet: emptyCodeSample,
