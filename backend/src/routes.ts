@@ -703,6 +703,7 @@ class Routes {
   public async getBlock(req: Request, res: Response) {
     try {
       const block = await blocks.$getBlock(req.params.hash);
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 600).toUTCString());
       res.json(block);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
