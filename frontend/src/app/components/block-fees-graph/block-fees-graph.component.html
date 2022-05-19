@@ -2,11 +2,10 @@
 
 <div class="full-container">
   <div class="card-header mb-0 mb-md-4">
-    <span i18n="mining.block-fees">Block fees</span>
-    <button class="btn" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
+    <span i18n="mining.block-fees">Block Fees</span>
+      <button class="btn" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
       <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
     </button>
-
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(statsObservable$ | async) as stats">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.blockCount >= 144">

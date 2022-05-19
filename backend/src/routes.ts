@@ -572,9 +572,9 @@ class Routes {
     }
   }
 
-  public async $getPools(interval: string, req: Request, res: Response) {
+  public async $getPools(req: Request, res: Response) {
     try {
-      const stats = await miningStats.$getPoolsStats(interval);
+      const stats = await miningStats.$getPoolsStats(req.params.interval);
       const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
@@ -588,7 +588,7 @@ class Routes {
 
   public async $getPoolsHistoricalHashrate(req: Request, res: Response) {
     try {
-      const hashrates = await HashratesRepository.$getPoolsWeeklyHashrate(req.params.interval ?? null);
+      const hashrates = await HashratesRepository.$getPoolsWeeklyHashrate(req.params.interval);
       const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
@@ -620,8 +620,8 @@ class Routes {
 
   public async $getHistoricalHashrate(req: Request, res: Response) {
     try {
-      const hashrates = await HashratesRepository.$getNetworkDailyHashrate(req.params.interval ?? null);
-      const difficulty = await BlocksRepository.$getBlocksDifficulty(req.params.interval ?? null);
+      const hashrates = await HashratesRepository.$getNetworkDailyHashrate(req.params.interval);
+      const difficulty = await BlocksRepository.$getBlocksDifficulty(req.params.interval);
       const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
@@ -640,7 +640,7 @@ class Routes {
 
   public async $getHistoricalBlockFees(req: Request, res: Response) {
     try {
-      const blockFees = await mining.$getHistoricalBlockFees(req.params.interval ?? null);
+      const blockFees = await mining.$getHistoricalBlockFees(req.params.interval);
       const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
@@ -654,7 +654,7 @@ class Routes {
 
   public async $getHistoricalBlockRewards(req: Request, res: Response) {
     try {
-      const blockRewards = await mining.$getHistoricalBlockRewards(req.params.interval ?? null);
+      const blockRewards = await mining.$getHistoricalBlockRewards(req.params.interval);
       const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
@@ -668,7 +668,7 @@ class Routes {
 
   public async $getHistoricalBlockFeeRates(req: Request, res: Response) {
     try {
-      const blockFeeRates = await mining.$getHistoricalBlockFeeRates(req.params.interval ?? null);
+      const blockFeeRates = await mining.$getHistoricalBlockFeeRates(req.params.interval);
       const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
@@ -684,8 +684,8 @@ class Routes {
 
   public async $getHistoricalBlockSizeAndWeight(req: Request, res: Response) {
     try {
-      const blockSizes = await mining.$getHistoricalBlockSizes(req.params.interval ?? null);
-      const blockWeights = await mining.$getHistoricalBlockWeights(req.params.interval ?? null);
+      const blockSizes = await mining.$getHistoricalBlockSizes(req.params.interval);
+      const blockWeights = await mining.$getHistoricalBlockWeights(req.params.interval);
       const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
@@ -702,8 +702,9 @@ class Routes {
 
   public async getBlock(req: Request, res: Response) {
     try {
-      const result = await bitcoinApi.$getBlock(req.params.hash);
-      res.json(result);
+      const block = await blocks.$getBlock(req.params.hash);
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 600).toUTCString());
+      res.json(block);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
@@ -727,7 +728,7 @@ class Routes {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
-  
+
   public async getBlocks(req: Request, res: Response) {
     try {
       loadingIndicators.setProgress('blocks', 0);
