@@ -12,6 +12,7 @@ export class CodeTemplateComponent implements OnInit {
   @Input() hostname: string;
   @Input() baseNetworkUrl: string;
   @Input() method: 'GET' | 'POST' | 'websocket' = 'GET';
+  @Input() showCodeExample: any;
   env: Env;
 
   constructor(
