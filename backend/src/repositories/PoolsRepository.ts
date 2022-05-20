@@ -78,7 +78,6 @@ class PoolsRepository {
       const [rows]: any[] = await DB.query(query, [slug]);
 
       if (rows.length < 1) {
-        logger.debug(`This slug does not match any known pool`);
         return null;
       }
 
