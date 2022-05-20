@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import poolsParser from '../api/pools-parser';
 import config from '../config';
 import DB from '../database';
+import backendInfo from '../api/backend-info';
 import logger from '../logger';
 import { SocksProxyAgent } from 'socks-proxy-agent';
 import * as https from 'https';
@@ -113,10 +114,19 @@ class PoolsUpdater {
    */
   private async query(path): Promise<object | undefined> {
     type axiosOptions = {
+      headers: {
+        'User-Agent': string
+      };
+      timeout: number;
       httpsAgent?: https.Agent;
     }
     const setDelay = (secs: number = 1): Promise<void> => new Promise(resolve => setTimeout(() => resolve(), secs * 1000));
-    const axiosOptions: axiosOptions = {};
+    const axiosOptions: axiosOptions = {
+      headers: {
+        'User-Agent': (config.MEMPOOL.USER_AGENT === 'mempool') ? `mempool/v${backendInfo.getBackendInfo().version}` : `${config.MEMPOOL.USER_AGENT}`
+      },
+      timeout: config.SOCKS5PROXY.ENABLED ? 30000 : 10000
+    };
     let retry = 0;
 
     if (config.SOCKS5PROXY.ENABLED) {
