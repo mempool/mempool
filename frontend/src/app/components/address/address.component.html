@@ -66,9 +66,14 @@
 
     <div class="text-center">
       <ng-template [ngIf]="isLoadingTransactions">
-        <div class="header-bg box" style="padding: 10px; margin-bottom: 10px;">
-          <span class="skeleton-loader"></span>
-        </div>
+
+        <ng-container *ngIf="addressLoadingStatus$ as addressLoadingStatus">
+          <div class="header-bg box" style="padding: 12px; margin-bottom: 10px;">
+            <div class="progress progress-dark">
+              <div class="progress-bar progress-light" role="progressbar" [ngStyle]="{'width': addressLoadingStatus + '%' }"></div>
+            </div>
+          </div>
+        </ng-container>
 
         <div class="header-bg box">
           <div class="row" style="height: 107px;">
@@ -80,13 +85,6 @@
             </div>
           </div>
         </div>
-
-        <ng-container *ngIf="addressLoadingStatus$ | async as addressLoadingStatus">
-          <br>
-          <div class="progress progress-dark">
-            <div class="progress-bar progress-darklight" role="progressbar" [ngStyle]="{'width': addressLoadingStatus + '%' }"></div>
-          </div>
-        </ng-container>
 
       </ng-template>
 
@@ -154,4 +152,10 @@
 
 <ng-template #confidentialTd>
   <td i18n="shared.confidential">Confidential</td>
+</ng-template>
+
+<ng-template #headerLoader>
+  <div class="header-bg box" style="padding: 10px; margin-bottom: 10px;">
+    <span class="skeleton-loader"></span>
+  </div>
 </ng-template>
