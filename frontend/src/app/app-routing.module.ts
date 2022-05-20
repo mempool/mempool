@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
 import { StartComponent } from './components/start/start.component';
 import { TransactionComponent } from './components/transaction/transaction.component';
 import { BlockComponent } from './components/block/block.component';
@@ -537,7 +537,8 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
   imports: [RouterModule.forRoot(routes, {
     initialNavigation: 'enabled',
     scrollPositionRestoration: 'enabled',
-    anchorScrolling: 'enabled'
+    anchorScrolling: 'enabled',
+    preloadingStrategy: PreloadAllModules
   })],
 })
 export class AppRoutingModule { }
