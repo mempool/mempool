@@ -13,6 +13,7 @@ const showJsExamplesDefault = { "": true, "testnet": true, "signet": true, "liqu
 const showJsExamplesDefaultFalse = { "": false, "testnet": false, "signet": false, "liquid": false, "liquidtestnet": false, "bisq": false };
 
 export const wsApiDocsData = {
+  showJsExamples: showJsExamplesDefault,
   codeTemplate: {
     curl: `/api/v1/ws`,
     commonJS: `
@@ -2967,7 +2968,7 @@ export const restApiDocsData = [
     "weight": 3931749,
     "previousblockhash": "00000000000000000002b5b2afc1c62e61e53f966b965a9a8ce99112e24066ae"
   },
-  ...        
+  ...
 ]`,
         },
         codeSampleTestnet: {
@@ -3047,7 +3048,7 @@ export const restApiDocsData = [
     "emptyBlocks": 0,
     "slug": "antpool"
   },
-  ...  
+  ...
   "oldestIndexedBlockTimestamp": 1231006505,
   "blockCount": 1005,
   "lastEstimatedHashrate": 230086716765559200000
