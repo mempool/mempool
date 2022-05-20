@@ -778,9 +778,9 @@ class Routes {
       const endIndex = Math.min(startingIndex + 10, txIds.length);
       for (let i = startingIndex; i < endIndex; i++) {
         try {
-          const transaction = await transactionUtils.$getTransactionExtended(txIds[i], true);
+          const transaction = await transactionUtils.$getTransactionExtended(txIds[i], true, true);
           transactions.push(transaction);
-          loadingIndicators.setProgress('blocktxs-' + req.params.hash, (i + 1) / endIndex * 100);
+          loadingIndicators.setProgress('blocktxs-' + req.params.hash, (i - startingIndex + 1) / (endIndex - startingIndex) * 100);
         } catch (e) {
           logger.debug('getBlockTransactions error: ' + (e instanceof Error ? e.message : e));
         }

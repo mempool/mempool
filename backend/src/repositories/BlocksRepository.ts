@@ -5,6 +5,7 @@ import { Common } from '../api/common';
 import { prepareBlock } from '../utils/blocks-utils';
 import PoolsRepository from './PoolsRepository';
 import HashratesRepository from './HashratesRepository';
+import { escape } from 'mysql2';
 
 class BlocksRepository {
   /**
@@ -235,7 +236,7 @@ class BlocksRepository {
   public async $getBlocksByPool(slug: string, startHeight?: number): Promise<object[]> {
     const pool = await PoolsRepository.$getPool(slug);
     if (!pool) {
-      throw new Error(`This mining pool does not exist`);
+      throw new Error('This mining pool does not exist ' + escape(slug));
     }
 
     const params: any[] = [];
