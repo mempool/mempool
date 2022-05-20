@@ -88,6 +88,10 @@ const routes: Routes = [
             path: 'mining/block-sizes-weights',
             component: BlockSizesWeightsGraphComponent,
           },
+          {
+            path: '',
+            redirectTo: 'mempool',
+          },
         ]
       },
       {
