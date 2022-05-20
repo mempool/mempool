@@ -500,7 +500,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
             },
             {
               path: '**',
-              redirectTo: 'all'
+              redirectTo: 'featured'
             }
           ]
         },
