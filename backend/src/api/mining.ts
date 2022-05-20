@@ -89,7 +89,6 @@ class Mining {
     });
 
     poolsStatistics['pools'] = poolsStats;
-    poolsStatistics['oldestIndexedBlockTimestamp'] = await BlocksRepository.$oldestBlockTimestamp();
 
     const blockCount: number = await BlocksRepository.$blockCount(null, interval);
     poolsStatistics['blockCount'] = blockCount;
