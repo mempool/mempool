@@ -7,6 +7,7 @@ import { BlockSizesWeightsGraphComponent } from '../components/block-sizes-weigh
 import { GraphsComponent } from '../components/graphs/graphs.component';
 import { HashrateChartComponent } from '../components/hashrate-chart/hashrate-chart.component';
 import { HashrateChartPoolsComponent } from '../components/hashrates-chart-pools/hashrate-chart-pools.component';
+import { LiquidMasterPageComponent } from '../components/liquid-master-page/liquid-master-page.component';
 import { MasterPageComponent } from '../components/master-page/master-page.component';
 import { MempoolBlockComponent } from '../components/mempool-block/mempool-block.component';
 import { MiningDashboardComponent } from '../components/mining-dashboard/mining-dashboard.component';
@@ -17,10 +18,15 @@ import { StatisticsComponent } from '../components/statistics/statistics.compone
 import { TelevisionComponent } from '../components/television/television.component';
 import { DashboardComponent } from '../dashboard/dashboard.component';
 
+const browserWindow = window || {};
+// @ts-ignore
+const browserWindowEnv = browserWindow.__env || {};
+const isLiquid = browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid';
+
 const routes: Routes = [
   {
     path: '',
-    component: MasterPageComponent,
+    component: isLiquid ? LiquidMasterPageComponent : MasterPageComponent,
     children: [
       {
         path: 'mining/pool/:slug',
