@@ -720,49 +720,12 @@ class Routes {
     }
   }
 
-  public async getBlocksExtras(req: Request, res: Response) {
+  public async getBlocks(req: Request, res: Response) {
     try {
       const height = req.params.height === undefined ? undefined : parseInt(req.params.height, 10);
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
-      res.json(await blocks.$getBlocksExtras(height, 15));
+      res.json(await blocks.$getBlocks(height, 15));
     } catch (e) {
-      res.status(500).send(e instanceof Error ? e.message : e);
-    }
-  }
-
-  public async getBlocks(req: Request, res: Response) {
-    try {
-      loadingIndicators.setProgress('blocks', 0);
-
-      const returnBlocks: IEsploraApi.Block[] = [];
-      const fromHeight = parseInt(req.params.height, 10) || blocks.getCurrentBlockHeight();
-
-      // Check if block height exist in local cache to skip the hash lookup
-      const blockByHeight = blocks.getBlocks().find((b) => b.height === fromHeight);
-      let startFromHash: string | null = null;
-      if (blockByHeight) {
-        startFromHash = blockByHeight.id;
-      } else {
-        startFromHash = await bitcoinApi.$getBlockHash(fromHeight);
-      }
-
-      let nextHash = startFromHash;
-      for (let i = 0; i < 10 && nextHash; i++) {
-        const localBlock = blocks.getBlocks().find((b) => b.id === nextHash);
-        if (localBlock) {
-          returnBlocks.push(localBlock);
-          nextHash = localBlock.previousblockhash;
-        } else {
-          const block = await bitcoinApi.$getBlock(nextHash);
-          returnBlocks.push(block);
-          nextHash = block.previousblockhash;
-        }
-        loadingIndicators.setProgress('blocks', i / 10 * 100);
-      }
-
-      res.json(returnBlocks);
-    } catch (e) {
-      loadingIndicators.setProgress('blocks', 100);
       res.status(500).send(e instanceof Error ? e.message : e);
     }
   }

@@ -426,10 +426,7 @@ class Blocks {
     return blockExtended;
   }
 
-  public async $getBlocksExtras(fromHeight?: number, limit: number = 15): Promise<BlockExtended[]> {
-    // Note - This API is breaking if indexing is not available. For now it is okay because we only
-    // use it for the mining pages, and mining pages should not be available if indexing is turned off.
-    // I'll need to fix it before we refactor the block(s) related pages
+  public async $getBlocks(fromHeight?: number, limit: number = 15): Promise<BlockExtended[]> {
     try {
       let currentHeight = fromHeight !== undefined ? fromHeight : this.getCurrentBlockHeight();
       const returnBlocks: BlockExtended[] = [];
