@@ -20,6 +20,7 @@ interface IConfig {
     EXTERNAL_ASSETS: string[];
     EXTERNAL_MAX_RETRY: number;
     EXTERNAL_RETRY_INTERVAL: number;
+    USER_AGENT: string;
     STDOUT_LOG_MIN_PRIORITY: 'emerg' | 'alert' | 'crit' | 'err' | 'warn' | 'notice' | 'info' | 'debug';
   };
   ESPLORA: {
@@ -108,6 +109,7 @@ const defaults: IConfig = {
     'EXTERNAL_ASSETS': [],
     'EXTERNAL_MAX_RETRY': 10,
     'EXTERNAL_RETRY_INTERVAL': 60,
+    'USER_AGENT': 'mempool',
     'STDOUT_LOG_MIN_PRIORITY': 'debug',
   },
   'ESPLORA': {

@@ -18,6 +18,7 @@
     "EXTERNAL_ASSETS": [],
     "EXTERNAL_MAX_RETRY": 10,
     "EXTERNAL_RETRY_INTERVAL": 60,
+    "USER_AGENT": "mempool",
     "STDOUT_LOG_MIN_PRIORITY": "debug"
   },
   "CORE_RPC": {

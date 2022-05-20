@@ -8,6 +8,7 @@ import { BisqBlocks, BisqBlock, BisqTransaction, BisqStats, BisqTrade } from './
 import { Common } from '../common';
 import { BlockExtended } from '../../mempool.interfaces';
 import { StaticPool } from 'node-worker-threads-pool';
+import backendInfo from '../backend-info';
 import logger from '../../logger';
 
 class Bisq {
@@ -148,13 +149,22 @@ class Bisq {
   }
   private async updatePrice() {
     type axiosOptions = {
+      headers: {
+        'User-Agent': string
+      };
+      timeout: number;
       httpAgent?: http.Agent;
       httpsAgent?: https.Agent;
     }
     const setDelay = (secs: number = 1): Promise<void> => new Promise(resolve => setTimeout(() => resolve(), secs * 1000));
     const BISQ_URL = (config.SOCKS5PROXY.ENABLED === true) && (config.SOCKS5PROXY.USE_ONION === true) ? config.PRICE_DATA_SERVER.BISQ_ONION : config.PRICE_DATA_SERVER.BISQ_URL;
     const isHTTP = (new URL(BISQ_URL).protocol.split(':')[0] === 'http') ? true : false;
-    const axiosOptions: axiosOptions = {};
+    const axiosOptions: axiosOptions = {
+      headers: {
+        'User-Agent': (config.MEMPOOL.USER_AGENT === 'mempool') ? `mempool/v${backendInfo.getBackendInfo().version}` : `${config.MEMPOOL.USER_AGENT}`
+      },
+      timeout: config.SOCKS5PROXY.ENABLED ? 30000 : 10000
+    };
     let retry = 0;
 
     if (config.SOCKS5PROXY.ENABLED) {
