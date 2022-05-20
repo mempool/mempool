@@ -645,7 +645,7 @@ class Routes {
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.header('X-total-count', blockCount.toString());
-      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(blockFees);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
@@ -659,7 +659,7 @@ class Routes {
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.header('X-total-count', blockCount.toString());
-      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(blockRewards);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
@@ -672,7 +672,7 @@ class Routes {
       const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
-      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json({
         oldestIndexedBlockTimestamp: oldestIndexedBlockTimestamp,
         blockFeeRates: blockFeeRates,
@@ -690,7 +690,7 @@ class Routes {
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.header('X-total-count', blockCount.toString());
-      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json({
         sizes: blockSizes,
         weights: blockWeights
