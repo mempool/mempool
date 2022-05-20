@@ -283,10 +283,8 @@ class BitcoinApi implements AbstractBitcoinApi {
         continue;
       }
       const innerTx = await this.$getRawTransaction(transaction.vin[i].txid, false, false);
-      if (addPrevout) {
-        transaction.vin[i].prevout = innerTx.vout[transaction.vin[i].vout];
-        this.addInnerScriptsToVin(transaction.vin[i]);
-      }
+      transaction.vin[i].prevout = innerTx.vout[transaction.vin[i].vout];
+      this.addInnerScriptsToVin(transaction.vin[i]);
       totalIn += innerTx.vout[transaction.vin[i].vout].value;
     }
     if (lazyPrevouts && transaction.vin.length > 12) {

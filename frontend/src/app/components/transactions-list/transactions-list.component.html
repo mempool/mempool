@@ -268,6 +268,7 @@
       <div class="float-left mt-2-5" *ngIf="!transactionPage && !tx.vin[0].is_coinbase && tx.fee !== -1">
         {{ tx.fee / (tx.weight / 4) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span> <span class="d-none d-sm-inline-block">&nbsp;&ndash; {{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [value]="tx.fee"></app-fiat></span></span>
       </div>
+      <div class="float-left mt-2-5 grey-info-text" *ngIf="tx.fee === -1" i18n="transactions-list.load-to-reveal-fee-info">Show all inputs to reveal fee data</div>
 
       <div class="float-right">
         <ng-container *ngIf="showConfirmations && latestBlock$ | async as latestBlock">
