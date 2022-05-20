@@ -78,23 +78,23 @@ export class ApiService {
       amount: amount,
       orderId: orderId,
     };
-    return this.httpClient.post<any>(this.apiBaseUrl + this.apiBasePath + '/api/v1/donations', params);
+    return this.httpClient.post<any>(this.apiBaseUrl + '/api/v1/donations', params);
   }
 
   getDonation$(): Observable<any[]> {
-    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/donations');
+    return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/donations');
   }
 
   getTranslators$(): Observable<ITranslators> {
-    return this.httpClient.get<ITranslators>(this.apiBaseUrl + this.apiBasePath + '/api/v1/translators');
+    return this.httpClient.get<ITranslators>(this.apiBaseUrl + '/api/v1/translators');
   }
 
   getContributor$(): Observable<any[]> {
-    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/contributors');
+    return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/contributors');
   }
 
   checkDonation$(orderId: string): Observable<any[]> {
-    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/donations/check?order_id=' + orderId);
+    return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/donations/check?order_id=' + orderId);
   }
 
   getInitData$(): Observable<WebsocketResponse> {

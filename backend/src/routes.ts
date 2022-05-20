@@ -703,6 +703,7 @@ class Routes {
   public async getBlock(req: Request, res: Response) {
     try {
       const block = await blocks.$getBlock(req.params.hash);
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 600).toUTCString());
       res.json(block);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
@@ -722,6 +723,7 @@ class Routes {
   public async getBlocksExtras(req: Request, res: Response) {
     try {
       const height = req.params.height === undefined ? undefined : parseInt(req.params.height, 10);
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(await blocks.$getBlocksExtras(height, 15));
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
@@ -1001,6 +1003,7 @@ class Routes {
   public async $getRewardStats(req: Request, res: Response) {
     try {
       const response = await mining.$getRewardStats(parseInt(req.params.blockCount, 10));
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(response);
     } catch (e) {
       res.status(500).end();
