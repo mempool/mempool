@@ -83,8 +83,8 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
               tap((response) => {
                 const data = response.body;
                 this.prepareChartOptions({
-                  sizes: data.sizes.map(val => [val.timestamp * 1000, val.avg_size / 1000000, val.avg_height]),
-                  weights: data.weights.map(val => [val.timestamp * 1000, val.avg_weight / 1000000, val.avg_height]),
+                  sizes: data.sizes.map(val => [val.timestamp * 1000, val.avgSize / 1000000, val.avgHeight]),
+                  weights: data.weights.map(val => [val.timestamp * 1000, val.avgWeight / 1000000, val.avgHeight]),
                 });
                 this.isLoading = false;
               }),
