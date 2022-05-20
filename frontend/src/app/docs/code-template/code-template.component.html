@@ -7,7 +7,7 @@
         <pre><code [innerText]="wrapCurlTemplate(code)"></code></pre>
       </ng-template>
     </li>
-    <li ngbNavItem *ngIf="network !== 'liquidtestnet'">
+    <li ngbNavItem *ngIf="showCodeExample[network]">
       <a ngbNavLink (click)="adjustContainerHeight( $event )" >CommonJS</a>
       <ng-template ngbNavContent>
         <div class="subtitle"><ng-container i18n="API Docs code example">Code Example</ng-container> <app-clipboard [text]="wrapCommonJS(code)"></app-clipboard></div>
@@ -17,8 +17,8 @@
         <pre><code [innerText]="wrapCommonJS(code)"></code></pre>
       </ng-template>
     </li>
-    <li ngbNavItem>
-      <a ngbNavLink (click)="adjustContainerHeight( $event )" *ngIf="network !== 'liquidtestnet'">ES Module</a>
+    <li ngbNavItem *ngIf="showCodeExample[network]">
+      <a ngbNavLink (click)="adjustContainerHeight( $event )">ES Module</a>
       <ng-template ngbNavContent>
         <div class="subtitle"><ng-container i18n="API Docs install lib">Install Package</ng-container> <app-clipboard [text]="wrapImportTemplate()"></app-clipboard></div>
         <div class="links">
