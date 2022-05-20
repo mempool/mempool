@@ -669,14 +669,12 @@ class Routes {
   public async $getHistoricalBlockFeeRates(req: Request, res: Response) {
     try {
       const blockFeeRates = await mining.$getHistoricalBlockFeeRates(req.params.interval);
-      const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
+      const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
+      res.header('X-total-count', blockCount.toString());
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
-      res.json({
-        oldestIndexedBlockTimestamp: oldestIndexedBlockTimestamp,
-        blockFeeRates: blockFeeRates,
-      });
+      res.json(blockFeeRates);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
