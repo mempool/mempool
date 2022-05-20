@@ -24,6 +24,7 @@ import { BisqAddressComponent } from './bisq-address/bisq-address.component';
 import { BisqStatsComponent } from './bisq-stats/bisq-stats.component';
 import { BsqAmountComponent } from './bsq-amount/bsq-amount.component';
 import { BisqTradesComponent } from './bisq-trades/bisq-trades.component';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import { BisqTradesComponent } from './bisq-trades/bisq-trades.component';
     BisqMainDashboardComponent,
   ],
   imports: [
+    CommonModule,
     BisqRoutingModule,
     SharedModule,
     NgbPaginationModule,
