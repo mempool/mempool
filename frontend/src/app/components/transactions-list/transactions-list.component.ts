@@ -175,6 +175,17 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     }
   }
 
+  loadMoreInputs(tx: Transaction) {
+    tx['@vinLimit'] = false;
+
+    this.electrsApiService.getTransaction$(tx.txid)
+      .subscribe((newTx) => {
+        tx.vin = newTx.vin;
+        tx.fee = newTx.fee;
+        this.ref.markForCheck();
+      });
+  }
+
   ngOnDestroy() {
     this.outspendsSubscription.unsubscribe();
   }
