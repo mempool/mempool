@@ -192,12 +192,9 @@ class BitcoinApi implements AbstractBitcoinApi {
     }
 
     if (addPrevout) {
-      if (transaction.confirmations) {
-        esploraTransaction = await this.$calculateFeeFromInputs(esploraTransaction);
-      } else {
-        esploraTransaction = await this.$appendMempoolFeeData(esploraTransaction);
-        esploraTransaction = await this.$calculateFeeFromInputs(esploraTransaction);
-      }
+      esploraTransaction = await this.$calculateFeeFromInputs(esploraTransaction);
+    } else if (!transaction.confirmations) {
+      esploraTransaction = await this.$appendMempoolFeeData(esploraTransaction);
     }
 
     return esploraTransaction;
