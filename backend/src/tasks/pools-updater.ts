@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import poolsParser from '../api/pools-parser';
 import config from '../config';
 import DB from '../database';
@@ -136,10 +136,10 @@ class PoolsUpdater {
       axiosOptions.httpsAgent = new SocksProxyAgent(socksOptions);
     }
 
-    while(retry < 5) {
+    while(retry < config.MEMPOOL.EXTERNAL_MAX_RETRY) {
       try {
-        const data = await axios.get(path, axiosOptions);
-        if (data.statusText !== 'OK' || !data.data) {
+        const data: AxiosResponse = await axios.get(path, axiosOptions);
+        if (data.statusText === 'error' || !data.data) {
           throw new Error(`Could not fetch data from Github, Error: ${data.status}`);
         }
         return data.data;
@@ -147,7 +147,7 @@ class PoolsUpdater {
         logger.err('Could not connect to Github. Reason: '  + (e instanceof Error ? e.message : e));
         retry++;
       }
-      await setDelay();
+      await setDelay(config.MEMPOOL.EXTERNAL_RETRY_INTERVAL);
     }
     return undefined;
   }
