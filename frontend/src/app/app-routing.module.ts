@@ -35,6 +35,11 @@ let routes: Routes = [
         component: MasterPageComponent,
         children: [
           {
+            path: 'mining/blocks',
+            redirectTo: 'blocks',
+            pathMatch: 'full'
+          },
+          {
             path: 'tx/push',
             component: PushTransactionComponent,
           },
@@ -110,6 +115,11 @@ let routes: Routes = [
   {
     path: 'signet',
     children: [
+      {
+        path: 'mining/blocks',
+        redirectTo: 'blocks',
+        pathMatch: 'full'
+      },
       {
         path: '',
         pathMatch: 'full',
@@ -201,6 +211,11 @@ let routes: Routes = [
     path: '',
     component: MasterPageComponent,
     children: [
+      {
+        path: 'mining/blocks',
+        redirectTo: 'blocks',
+        pathMatch: 'full'
+      },
       {
         path: 'tx/push',
         component: PushTransactionComponent,
