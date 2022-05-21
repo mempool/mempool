@@ -157,7 +157,7 @@ class Bisq {
       httpsAgent?: https.Agent;
     }
     const setDelay = (secs: number = 1): Promise<void> => new Promise(resolve => setTimeout(() => resolve(), secs * 1000));
-    const BISQ_URL = (config.SOCKS5PROXY.ENABLED === true) && (config.SOCKS5PROXY.USE_ONION === true) ? config.PRICE_DATA_SERVER.BISQ_ONION : config.PRICE_DATA_SERVER.BISQ_URL;
+    const BISQ_URL = (config.SOCKS5PROXY.ENABLED === true) && (config.SOCKS5PROXY.USE_ONION === true) ? config.EXTERNAL_DATA_SERVER.BISQ_ONION : config.EXTERNAL_DATA_SERVER.BISQ_URL;
     const isHTTP = (new URL(BISQ_URL).protocol.split(':')[0] === 'http') ? true : false;
     const axiosOptions: axiosOptions = {
       headers: {
