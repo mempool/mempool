@@ -78,14 +78,14 @@ interface IConfig {
   PRICE_DATA_SERVER: {
     TOR_URL: string;
     CLEARNET_URL: string;
-    BISQ_URL: string;
-    BISQ_ONION: string;
   };
   EXTERNAL_DATA_SERVER: {
     MEMPOOL_API: string;
     MEMPOOL_ONION: string;
     LIQUID_API: string;
     LIQUID_ONION: string;
+    BISQ_URL: string;
+    BISQ_ONION: string;
   };
 }
 
@@ -166,15 +166,15 @@ const defaults: IConfig = {
   },
   "PRICE_DATA_SERVER": {
     'TOR_URL': 'http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices',
-    'CLEARNET_URL': 'https://price.bisq.wiz.biz/getAllMarketPrices',
-    'BISQ_URL': 'https://bisq.markets/api',
-    'BISQ_ONION': 'http://bisqmktse2cabavbr2xjq7xw3h6g5ottemo5rolfcwt6aly6tp5fdryd.onion/api'
+    'CLEARNET_URL': 'https://price.bisq.wiz.biz/getAllMarketPrices'
   },
   "EXTERNAL_DATA_SERVER": {
     'MEMPOOL_API': 'https://mempool.space/api/v1',
     'MEMPOOL_ONION': 'http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/api/v1',
     'LIQUID_API': 'https://liquid.network/api/v1',
-    'LIQUID_ONION': 'http://liquidmom47f6s3m53ebfxn47p76a6tlnxib3wp6deux7wuzotdr6cyd.onion/api/v1'
+    'LIQUID_ONION': 'http://liquidmom47f6s3m53ebfxn47p76a6tlnxib3wp6deux7wuzotdr6cyd.onion/api/v1',
+    'BISQ_URL': 'https://bisq.markets/api',
+    'BISQ_ONION': 'http://bisqmktse2cabavbr2xjq7xw3h6g5ottemo5rolfcwt6aly6tp5fdryd.onion/api'
   }
 };
 
