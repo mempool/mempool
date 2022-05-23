@@ -21,8 +21,7 @@
       <tbody *ngIf="blocks$ | async as blocks; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
         <tr *ngFor="let block of blocks; let i= index; trackBy: trackByBlock">
           <td class="text-left" [class]="widget ? 'widget' : ''">
-            <a [routerLink]="['/block' | relativeUrl, block.height]">{{ block.height
-              }}</a>
+            <a [routerLink]="['/block' | relativeUrl, block.height]">{{ block.height }}</a>
           </td>
           <td  *ngIf="indexingAvailable" class="pool text-left" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
             <div class="tooltip-custom">
@@ -61,29 +60,29 @@
       <ng-template #skeleton>
         <tbody>
           <tr *ngFor="let item of skeletonLines">
-            <td class="height text-left" [class]="widget ? 'widget' : ''">
+            <td class="height text-left" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
               <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
-            <td class="pool text-left" [class]="widget ? 'widget' : ''">
+            <td *ngIf="indexingAvailable" class="pool text-left" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
               <img width="1" height="25" style="opacity: 0">
               <span class="skeleton-loader" style="max-width: 125px"></span>
             </td>
-            <td class="timestamp" *ngIf="!widget">
+            <td class="timestamp" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">
               <span class="skeleton-loader" style="max-width: 150px"></span>
             </td>
-            <td class="mined" *ngIf="!widget">
+            <td class="mined" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">
               <span class="skeleton-loader" style="max-width: 125px"></span>
             </td>
-            <td class="reward text-right" [class]="widget ? 'widget' : ''">
+            <td *ngIf="indexingAvailable" class="reward text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
               <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
-            <td class="fees text-right" *ngIf="!widget">
+            <td *ngIf="indexingAvailable && !widget" class="fees text-right" [class]="indexingAvailable ? '' : 'legacy'">
               <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
-            <td class="txs text-right" [class]="widget ? 'widget' : ''">
+            <td class="txs text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
               <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
-            <td class="size" *ngIf="!widget">
+            <td class="size" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">
               <span class="skeleton-loader"></span>
             </td>
           </tr>
