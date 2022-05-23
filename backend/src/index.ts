@@ -336,8 +336,8 @@ class Server {
     }
 
     this.app
-      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks', routes.getBlocks)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/:height', routes.getBlocks)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks', routes.getBlocks.bind(routes))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/:height', routes.getBlocks.bind(routes))
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash', routes.getBlock);
 
     if (config.MEMPOOL.BACKEND !== 'esplora') {
