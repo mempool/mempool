@@ -129,25 +129,25 @@ class PoolsUpdater {
     };
     let retry = 0;
 
-    if (config.SOCKS5PROXY.ENABLED) {
-      const socksOptions: any = {
-        agentOptions: {
-          keepAlive: true,
-        },
-        hostname: config.SOCKS5PROXY.HOST,
-        port: config.SOCKS5PROXY.PORT
-      };
-
-      if (config.SOCKS5PROXY.USERNAME && config.SOCKS5PROXY.PASSWORD) {
-        socksOptions.username = config.SOCKS5PROXY.USERNAME;
-        socksOptions.password = config.SOCKS5PROXY.PASSWORD;
-      }
-
-      axiosOptions.httpsAgent = new SocksProxyAgent(socksOptions);
-    }
-
     while(retry < config.MEMPOOL.EXTERNAL_MAX_RETRY) {
       try {
+        if (config.SOCKS5PROXY.ENABLED) {
+          const socksOptions: any = {
+            agentOptions: {
+              keepAlive: true,
+            },
+            hostname: config.SOCKS5PROXY.HOST,
+            port: config.SOCKS5PROXY.PORT
+          };
+
+          if (config.SOCKS5PROXY.USERNAME && config.SOCKS5PROXY.PASSWORD) {
+            socksOptions.username = config.SOCKS5PROXY.USERNAME;
+            socksOptions.password = config.SOCKS5PROXY.PASSWORD;
+          }
+
+          axiosOptions.httpsAgent = new SocksProxyAgent(socksOptions);
+        }
+        
         const data: AxiosResponse = await axios.get(path, axiosOptions);
         if (data.statusText === 'error' || !data.data) {
           throw new Error(`Could not fetch data from Github, Error: ${data.status}`);
