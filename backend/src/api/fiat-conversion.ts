@@ -62,30 +62,30 @@ class FiatConversion {
 
     let retry = 0;
 
-    if (config.SOCKS5PROXY.ENABLED) {
-      let socksOptions: any = {
-        agentOptions: {
-          keepAlive: true,
-        },
-        hostname: config.SOCKS5PROXY.HOST,
-        port: config.SOCKS5PROXY.PORT
-      };
-
-      if (config.SOCKS5PROXY.USERNAME && config.SOCKS5PROXY.PASSWORD) {
-        socksOptions.username = config.SOCKS5PROXY.USERNAME;
-        socksOptions.password = config.SOCKS5PROXY.PASSWORD;
-      }
-
-      // Handle proxy agent for onion addresses
-      if (isHTTP) {
-        axiosOptions.httpAgent = new SocksProxyAgent(socksOptions);
-      } else {
-        axiosOptions.httpsAgent = new SocksProxyAgent(socksOptions);
-      }
-    }
-
     while(retry < config.MEMPOOL.EXTERNAL_MAX_RETRY) {
       try {
+        if (config.SOCKS5PROXY.ENABLED) {
+          let socksOptions: any = {
+            agentOptions: {
+              keepAlive: true,
+            },
+            hostname: config.SOCKS5PROXY.HOST,
+            port: config.SOCKS5PROXY.PORT
+          };
+
+          if (config.SOCKS5PROXY.USERNAME && config.SOCKS5PROXY.PASSWORD) {
+            socksOptions.username = config.SOCKS5PROXY.USERNAME;
+            socksOptions.password = config.SOCKS5PROXY.PASSWORD;
+          }
+
+          // Handle proxy agent for onion addresses
+          if (isHTTP) {
+            axiosOptions.httpAgent = new SocksProxyAgent(socksOptions);
+          } else {
+            axiosOptions.httpsAgent = new SocksProxyAgent(socksOptions);
+          }
+        }
+        
         logger.debug('Querying currency rates service...');
 
         const response: AxiosResponse = await axios.get(`${fiatConversionUrl}`, axiosOptions);
