@@ -87,9 +87,11 @@ export class BlocksList implements OnInit {
             return blocks[0];
           }
           this.blocksCount = Math.max(this.blocksCount, blocks[1][0].height) + 1;
-          // @ts-ignore: Need to add an extra field for the template
-          blocks[1][0].extras.pool.logo = `./resources/mining-pools/` +
-            blocks[1][0].extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
+          if (this.stateService.env.MINING_DASHBOARD) {
+            // @ts-ignore: Need to add an extra field for the template
+            blocks[1][0].extras.pool.logo = `./resources/mining-pools/` +
+              blocks[1][0].extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
+          }
           acc.unshift(blocks[1][0]);
           acc = acc.slice(0, this.widget ? 6 : 15);
           return acc;
