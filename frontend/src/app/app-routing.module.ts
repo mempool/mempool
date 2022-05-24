@@ -20,7 +20,6 @@ import { AssetsFeaturedComponent } from './components/assets/assets-featured/ass
 import { AssetsComponent } from './components/assets/assets.component';
 import { AssetComponent } from './components/asset/asset.component';
 import { AssetsNavComponent } from './components/assets/assets-nav/assets-nav.component';
-import { LightningDashboardComponent } from './lightning/lightning-dashboard/lightning-dashboard.component';
 
 let routes: Routes = [
   { 
@@ -99,7 +98,6 @@ let routes: Routes = [
           },
           {
             path: 'lightning',
-            component: LightningDashboardComponent,
             loadChildren: () => import('./lightning/lightning.module').then(m => m.LightningModule)
           },
         ],
@@ -194,7 +192,6 @@ let routes: Routes = [
           },
           {
             path: 'lightning',
-            component: LightningDashboardComponent,
             loadChildren: () => import('./lightning/lightning.module').then(m => m.LightningModule)
           },
         ],
@@ -286,7 +283,6 @@ let routes: Routes = [
       },
       {
         path: 'lightning',
-        component: LightningDashboardComponent,
         loadChildren: () => import('./lightning/lightning.module').then(m => m.LightningModule)
       },
     ],
