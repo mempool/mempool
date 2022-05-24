@@ -15,6 +15,7 @@ import BitcoinApi from './bitcoin/bitcoin-api';
 import { prepareBlock } from '../utils/blocks-utils';
 import BlocksRepository from '../repositories/BlocksRepository';
 import HashratesRepository from '../repositories/HashratesRepository';
+import indexer from '../indexer';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -23,9 +24,6 @@ class Blocks {
   private lastDifficultyAdjustmentTime = 0;
   private previousDifficultyRetarget = 0;
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
-  private blockIndexingStarted = false;
-  public blockIndexingCompleted = false;
-  public reindexFlag = false;
 
   constructor() { }
 
@@ -197,24 +195,15 @@ class Blocks {
    * [INDEXING] Index all blocks metadata for the mining dashboard
    */
   public async $generateBlockDatabase() {
-    if (this.blockIndexingStarted && !this.reindexFlag) {
-      return;
-    }
-
-    this.reindexFlag = false;
-
     const blockchainInfo = await bitcoinClient.getBlockchainInfo();
     if (blockchainInfo.blocks !== blockchainInfo.headers) { // Wait for node to sync
       return;
     }
 
-    this.blockIndexingStarted = true;
-    this.blockIndexingCompleted = false;
-
     try {
       let currentBlockHeight = blockchainInfo.blocks;
 
-      let indexingBlockAmount = config.MEMPOOL.INDEXING_BLOCKS_AMOUNT;
+      let indexingBlockAmount = Math.min(config.MEMPOOL.INDEXING_BLOCKS_AMOUNT, blockchainInfo.blocks);
       if (indexingBlockAmount <= -1) {
         indexingBlockAmount = currentBlockHeight + 1;
       }
@@ -275,14 +264,14 @@ class Blocks {
       loadingIndicators.setProgress('block-indexing', 100);
     } catch (e) {
       logger.err('Block indexing failed. Trying again later. Reason: ' + (e instanceof Error ? e.message : e));
-      this.blockIndexingStarted = false;
       loadingIndicators.setProgress('block-indexing', 100);
       return;
     }
 
     const chainValid = await BlocksRepository.$validateChain();
-    this.reindexFlag = !chainValid;
-    this.blockIndexingCompleted = chainValid;
+    if (!chainValid) {
+      indexer.reindex();
+    }
   }
 
   public async $updateBlocks() {
@@ -299,6 +288,8 @@ class Blocks {
       logger.info(`${blockHeightTip - this.currentBlockHeight} blocks since tip. Fast forwarding to the ${config.MEMPOOL.INITIAL_BLOCKS_AMOUNT} recent blocks`);
       this.currentBlockHeight = blockHeightTip - config.MEMPOOL.INITIAL_BLOCKS_AMOUNT;
       fastForwarded = true;
+      logger.info(`Re-indexing skipped blocks and corresponding hashrates data`);
+      indexer.reindex(); // Make sure to index the skipped blocks #1619
     }
 
     if (!this.lastDifficultyAdjustmentTime) {
