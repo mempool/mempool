@@ -125,7 +125,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
         }),
         switchMap(() => {
           let transactionObservable$: Observable<Transaction>;
-          if (history.state.data) {
+          if (history.state.data && history.state.data.fee !== -1) {
             transactionObservable$ = of(history.state.data);
           } else {
             transactionObservable$ = this.electrsApiService
