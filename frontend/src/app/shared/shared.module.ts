@@ -4,7 +4,7 @@ import { NgbCollapse, NgbCollapseModule, NgbRadioGroup, NgbTypeaheadModule } fro
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
-  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload } from '@fortawesome/free-solid-svg-icons';
+  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode } from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MasterPageComponent } from '../components/master-page/master-page.component';
 import { BisqMasterPageComponent } from '../components/bisq-master-page/bisq-master-page.component';
@@ -75,6 +75,7 @@ import { IndexingProgressComponent } from '../components/indexing-progress/index
 import { SvgImagesComponent } from '../components/svg-images/svg-images.component';
 import { ChangeComponent } from '../components/change/change.component';
 import { SatsComponent } from './components/sats/sats.component';
+import { SearchResultsComponent } from '../components/search-form/search-results/search-results.component';
 
 @NgModule({
   declarations: [
@@ -144,6 +145,7 @@ import { SatsComponent } from './components/sats/sats.component';
     SvgImagesComponent,
     ChangeComponent,
     SatsComponent,
+    SearchResultsComponent,
   ],
   imports: [
     CommonModule,
@@ -240,7 +242,8 @@ import { SatsComponent } from './components/sats/sats.component';
     IndexingProgressComponent,
     SvgImagesComponent,
     ChangeComponent,
-    SatsComponent
+    SatsComponent,
+    SearchResultsComponent,
   ]
 })
 export class SharedModule {
@@ -279,5 +282,6 @@ export class SharedModule {
     library.addIcons(faBook);
     library.addIcons(faListUl);
     library.addIcons(faDownload);
+    library.addIcons(faQrcode);
   }
 }
