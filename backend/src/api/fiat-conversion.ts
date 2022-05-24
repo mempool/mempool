@@ -76,6 +76,9 @@ class FiatConversion {
           if (config.SOCKS5PROXY.USERNAME && config.SOCKS5PROXY.PASSWORD) {
             socksOptions.username = config.SOCKS5PROXY.USERNAME;
             socksOptions.password = config.SOCKS5PROXY.PASSWORD;
+          } else {
+            // Retry with different tor circuits https://stackoverflow.com/a/64960234
+            socksOptions.username = `circuit${retry}`;
           }
 
           // Handle proxy agent for onion addresses
