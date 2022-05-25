@@ -1,3 +1,4 @@
+import { escape } from 'mysql2';
 import { Common } from '../api/common';
 import DB from '../database';
 import logger from '../logger';
@@ -105,7 +106,7 @@ class HashratesRepository {
   public async $getPoolWeeklyHashrate(slug: string): Promise<any[]> {
     const pool = await PoolsRepository.$getPool(slug);
     if (!pool) {
-      throw new Error(`This mining pool does not exist`);
+      throw new Error('This mining pool does not exist ' + escape(slug));
     }
 
     // Find hashrate boundaries

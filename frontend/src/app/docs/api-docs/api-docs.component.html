@@ -101,7 +101,7 @@
             <div class="subtitle" i18n>Description</div>
             <div i18n="api-docs.websocket.websocket">Default push: <code>{{ '{' }} action: 'want', data: ['blocks', ...] {{ '}' }}</code> to express what you want pushed. Available: <code>blocks</code>, <code>mempool-blocks</code>, <code>live-2h-chart</code>, and <code>stats</code>.<br><br>Push transactions related to address: <code>{{ '{' }} 'track-address': '3PbJ...bF9B' {{ '}' }}</code> to receive all new transactions containing that address as input or output. Returns an array of transactions. <code>address-transactions</code> for new mempool transactions, and <code>block-transactions</code> for new block confirmed transactions.</div>
           </div>
-          <app-code-template [method]="'websocket'" [hostname]="hostname" [code]="wsDocs" [network]="network.val" ></app-code-template>
+          <app-code-template [method]="'websocket'" [hostname]="hostname" [code]="wsDocs" [network]="network.val" [showCodeExample]="wsDocs.showJsExamples"></app-code-template>
         </div>
       </div>
     </div>

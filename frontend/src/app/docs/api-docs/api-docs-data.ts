@@ -13,6 +13,7 @@ const showJsExamplesDefault = { "": true, "testnet": true, "signet": true, "liqu
 const showJsExamplesDefaultFalse = { "": false, "testnet": false, "signet": false, "liquid": false, "liquidtestnet": false, "bisq": false };
 
 export const wsApiDocsData = {
+  showJsExamples: showJsExamplesDefault,
   codeTemplate: {
     curl: `/api/v1/ws`,
     commonJS: `
@@ -2967,7 +2968,7 @@ export const restApiDocsData = [
     "weight": 3931749,
     "previousblockhash": "00000000000000000002b5b2afc1c62e61e53f966b965a9a8ce99112e24066ae"
   },
-  ...        
+  ...
 ]`,
         },
         codeSampleTestnet: {
@@ -3047,7 +3048,7 @@ export const restApiDocsData = [
     "emptyBlocks": 0,
     "slug": "antpool"
   },
-  ...  
+  ...
   "oldestIndexedBlockTimestamp": 1231006505,
   "blockCount": 1005,
   "lastEstimatedHashrate": 230086716765559200000
@@ -3833,34 +3834,34 @@ export const restApiDocsData = [
           curl: [`1w`],
           response: `[
   {
-    "avg_height": 735644,
+    "avgHeight": 735644,
     "timestamp": 1652119111,
-    "avg_fees": 24212890
+    "avgFees": 24212890
   },
   {
-    "avg_height": 735646,
+    "avgHeight": 735646,
     "timestamp": 1652120252,
-    "avg_fees": 21655996
+    "avgFees": 21655996
   },
   {
-    "avg_height": 735648,
+    "avgHeight": 735648,
     "timestamp": 1652121214,
-    "avg_fees": 20678859
+    "avgFees": 20678859
   },
   {
-    "avg_height": 735649,
+    "avgHeight": 735649,
     "timestamp": 1652121757,
-    "avg_fees": 21020140
+    "avgFees": 21020140
   },
   {
-    "avg_height": 735650,
+    "avgHeight": 735650,
     "timestamp": 1652122367,
-    "avg_fees": 23064200
+    "avgFees": 23064200
   },
   {
-    "avg_height": 735652,
+    "avgHeight": 735652,
     "timestamp": 1652122893,
-    "avg_fees": 17620723
+    "avgFees": 17620723
   },
   ...
 ]`
@@ -3871,14 +3872,14 @@ export const restApiDocsData = [
           curl: [`1w`],
           response: `[
   {
-    "avg_height": 2224253,
+    "avgHeight": 2224253,
     "timestamp": 1652346420,
-    "avg_fees": 211686
+    "avgFees": 211686
   },
   {
-    "avg_height": 2224254,
+    "avgHeight": 2224254,
     "timestamp": 1652346850,
-    "avg_fees": 2565952
+    "avgFees": 2565952
   },
   ...
 ]`
@@ -3889,14 +3890,14 @@ export const restApiDocsData = [
           curl: [`1w`],
           response: `[
   {
-    "avg_height": 89978,
+    "avgHeight": 89978,
     "timestamp": 1652346573,
-    "avg_fees": 1071
+    "avgFees": 1071
   },
   {
-    "avg_height": 89979,
+    "avgHeight": 89979,
     "timestamp": 1652346970,
-    "avg_fees": 1224
+    "avgFees": 1224
   },
   ...
 ]`
@@ -3932,29 +3933,29 @@ export const restApiDocsData = [
           curl: [`1d`],
           response: `[
   {
-    "avg_height": 599992,
+    "avgHeight": 599992,
     "timestamp": 1571438412,
-    "avg_rewards": 1260530933
+    "avgRewards": 1260530933
   },
   {
-    "avg_height": 600000,
+    "avgHeight": 600000,
     "timestamp": 1571443398,
-    "avg_rewards": 1264314538
+    "avgRewards": 1264314538
   },
   {
-    "avg_height": 725441,
+    "avgHeight": 725441,
     "timestamp": 1646139035,
-    "avg_rewards": 637067563
+    "avgRewards": 637067563
   },
   {
-    "avg_height": 725585,
+    "avgHeight": 725585,
     "timestamp": 1646222444,
-    "avg_rewards": 646519104
+    "avgRewards": 646519104
   },
   {
-    "avg_height": 725727,
+    "avgHeight": 725727,
     "timestamp": 1646308374,
-    "avg_rewards": 638709605
+    "avgRewards": 638709605
   },
   ...
 ]`
@@ -3965,14 +3966,14 @@ export const restApiDocsData = [
           curl: [`1d`],
           response: `[
   {
-    "avg_height": 12,
+    "avgHeight": 12,
     "timestamp": 1296689648,
-    "avg_rewards": 5000000000
+    "avgRewards": 5000000000
   },
   {
-    "avg_height": 269,
+    "avgHeight": 269,
     "timestamp": 1296717674,
-    "avg_rewards": 5000091820
+    "avgRewards": 5000091820
   },
   ...
 ]`
@@ -3983,14 +3984,14 @@ export const restApiDocsData = [
           curl: [`1d`],
           response: `[
   {
-    "avg_height": 183,
+    "avgHeight": 183,
     "timestamp": 1598962247,
-    "avg_rewards": 5000000000
+    "avgRewards": 5000000000
   },
   {
-    "avg_height": 576,
+    "avgHeight": 576,
     "timestamp": 1599047892,
-    "avg_rewards": 5000000000
+    "avgRewards": 5000000000
   },
   ...
 ]`
@@ -4028,37 +4029,37 @@ export const restApiDocsData = [
   "oldestIndexedBlockTimestamp": 1571434851,
   "blockFeeRates": [
     {
-      "avg_height": 732152,
+      "avgHeight": 732152,
       "timestamp": 1650132959,
-      "avg_fee_0": 1,
-      "avg_fee_10": 2,
-      "avg_fee_25": 2,
-      "avg_fee_50": 3,
-      "avg_fee_75": 4,
-      "avg_fee_90": 8,
-      "avg_fee_100": 393
+      "avgFee_0": 1,
+      "avgFee_10": 2,
+      "avgFee_25": 2,
+      "avgFee_50": 3,
+      "avgFee_75": 4,
+      "avgFee_90": 8,
+      "avgFee_100": 393
     },
     {
-      "avg_height": 732158,
+      "avgHeight": 732158,
       "timestamp": 1650134432,
-      "avg_fee_0": 1,
-      "avg_fee_10": 1,
-      "avg_fee_25": 2,
-      "avg_fee_50": 4,
-      "avg_fee_75": 6,
-      "avg_fee_90": 10,
-      "avg_fee_100": 240
+      "avgFee_0": 1,
+      "avgFee_10": 1,
+      "avgFee_25": 2,
+      "avgFee_50": 4,
+      "avgFee_75": 6,
+      "avgFee_90": 10,
+      "avgFee_100": 240
     },
     {
-      "avg_height": 732161,
+      "avgHeight": 732161,
       "timestamp": 1650135818,
-      "avg_fee_0": 1,
-      "avg_fee_10": 1,
-      "avg_fee_25": 1,
-      "avg_fee_50": 2,
-      "avg_fee_75": 5,
-      "avg_fee_90": 8,
-      "avg_fee_100": 251
+      "avgFee_0": 1,
+      "avgFee_10": 1,
+      "avgFee_25": 1,
+      "avgFee_50": 2,
+      "avgFee_75": 5,
+      "avgFee_90": 8,
+      "avgFee_100": 251
     },
     ...
   ]
@@ -4072,26 +4073,26 @@ export const restApiDocsData = [
   "oldestIndexedBlockTimestamp": 1296688602,
   "blockFeeRates": [
     {
-      "avg_height": 2196306,
+      "avgHeight": 2196306,
       "timestamp": 1650360168,
-      "avg_fee_0": 1,
-      "avg_fee_10": 1,
-      "avg_fee_25": 1,
-      "avg_fee_50": 1,
-      "avg_fee_75": 2,
-      "avg_fee_90": 28,
-      "avg_fee_100": 2644
+      "avgFee_0": 1,
+      "avgFee_10": 1,
+      "avgFee_25": 1,
+      "avgFee_50": 1,
+      "avgFee_75": 2,
+      "avgFee_90": 28,
+      "avgFee_100": 2644
     },
     {
-      "avg_height": 2196308,
+      "avgHeight": 2196308,
       "timestamp": 1650361209,
-      "avg_fee_0": 1,
-      "avg_fee_10": 1,
-      "avg_fee_25": 1,
-      "avg_fee_50": 4,
-      "avg_fee_75": 12,
-      "avg_fee_90": 65,
-      "avg_fee_100": 102
+      "avgFee_0": 1,
+      "avgFee_10": 1,
+      "avgFee_25": 1,
+      "avgFee_50": 4,
+      "avgFee_75": 12,
+      "avgFee_90": 65,
+      "avgFee_100": 102
     },
     ...
   ]
@@ -4105,26 +4106,26 @@ export const restApiDocsData = [
   "oldestIndexedBlockTimestamp": 1598918400,
   "blockFeeRates": [
     {
-      "avg_height": 86620,
+      "avgHeight": 86620,
       "timestamp": 1650360010,
-      "avg_fee_0": 1,
-      "avg_fee_10": 1,
-      "avg_fee_25": 1,
-      "avg_fee_50": 1,
-      "avg_fee_75": 1,
-      "avg_fee_90": 1,
-      "avg_fee_100": 1
+      "avgFee_0": 1,
+      "avgFee_10": 1,
+      "avgFee_25": 1,
+      "avgFee_50": 1,
+      "avgFee_75": 1,
+      "avgFee_90": 1,
+      "avgFee_100": 1
     },
     {
-      "avg_height": 86623,
+      "avgHeight": 86623,
       "timestamp": 1650361330,
-      "avg_fee_0": 1,
-      "avg_fee_10": 1,
-      "avg_fee_25": 1,
-      "avg_fee_50": 1,
-      "avg_fee_75": 1,
-      "avg_fee_90": 1,
-      "avg_fee_100": 1
+      "avgFee_0": 1,
+      "avgFee_10": 1,
+      "avgFee_25": 1,
+      "avgFee_50": 1,
+      "avgFee_75": 1,
+      "avgFee_90": 1,
+      "avgFee_100": 1
     },
     ...
   ]
@@ -4162,47 +4163,47 @@ export const restApiDocsData = [
           response: `{
   "sizes": [
     {
-      "avg_height": 576650,
+      "avgHeight": 576650,
       "timestamp": 1558212081,
-      "avg_size": 1271404
+      "avgSize": 1271404
     },
     {
-      "avg_height": 576715,
+      "avgHeight": 576715,
       "timestamp": 1558246272,
-      "avg_size": 1105893
+      "avgSize": 1105893
     },
     {
-      "avg_height": 576797,
+      "avgHeight": 576797,
       "timestamp": 1558289379,
-      "avg_size": 1141071
+      "avgSize": 1141071
     },
     {
-      "avg_height": 576885,
+      "avgHeight": 576885,
       "timestamp": 1558330184,
-      "avg_size": 1108166
+      "avgSize": 1108166
     },
     ...
   ],
   "weights": [
     {
-      "avg_height": 576650,
+      "avgHeight": 576650,
       "timestamp": 1558212081,
-      "avg_weight": 3994002
+      "avgWeight": 3994002
     },
     {
-      "avg_height": 576715,
+      "avgHeight": 576715,
       "timestamp": 1558246272,
-      "avg_weight": 3756312
+      "avgWeight": 3756312
     },
     {
-      "avg_height": 576797,
+      "avgHeight": 576797,
       "timestamp": 1558289379,
-      "avg_weight": 3719625
+      "avgWeight": 3719625
     },
     {
-      "avg_height": 576885,
+      "avgHeight": 576885,
       "timestamp": 1558330184,
-      "avg_weight": 3631381
+      "avgWeight": 3631381
     },
     ...
   ]
@@ -4215,27 +4216,27 @@ export const restApiDocsData = [
           response: `{
   "sizes": [
     {
-      "avg_height": 1517188,
+      "avgHeight": 1517188,
       "timestamp": 1558262730,
-      "avg_size": 25089
+      "avgSize": 25089
     },
     {
-      "avg_height": 1517275,
+      "avgHeight": 1517275,
       "timestamp": 1558290933,
-      "avg_size": 21679
+      "avgSize": 21679
     },
     ...
   ],
   "weights": [
     {
-      "avg_height": 1517188,
+      "avgHeight": 1517188,
       "timestamp": 1558262730,
-      "avg_weight": 74921
+      "avgWeight": 74921
     },
     {
-      "avg_height": 1517275,
+      "avgHeight": 1517275,
       "timestamp": 1558290933,
-      "avg_weight": 65164
+      "avgWeight": 65164
     },
     ...
   ]
@@ -4248,27 +4249,27 @@ export const restApiDocsData = [
           response: `{
   "sizes": [
     {
-      "avg_height": 83,
+      "avgHeight": 83,
       "timestamp": 1598937527,
-      "avg_size": 329
+      "avgSize": 329
     },
     {
-      "avg_height": 266,
+      "avgHeight": 266,
       "timestamp": 1598982991,
-      "avg_size": 330
+      "avgSize": 330
     },
     ...
   ],
   "weights": [
     {
-      "avg_height": 83,
+      "avgHeight": 83,
       "timestamp": 1598937527,
-      "avg_weight": 1209
+      "avgWeight": 1209
     },
     {
-      "avg_height": 266,
+      "avgHeight": 266,
       "timestamp": 1598982991,
-      "avg_weight": 1212
+      "avgWeight": 1212
     },
     ...
   ]

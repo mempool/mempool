@@ -4,14 +4,11 @@ import PoolsRepository from '../repositories/PoolsRepository';
 import HashratesRepository from '../repositories/HashratesRepository';
 import bitcoinClient from './bitcoin/bitcoin-client';
 import logger from '../logger';
-import blocks from './blocks';
 import { Common } from './common';
 import loadingIndicators from './loading-indicators';
+import { escape } from 'mysql2';
 
 class Mining {
-  hashrateIndexingStarted = false;
-  weeklyHashrateIndexingStarted = false;
-
   constructor() {
   }
 
@@ -110,7 +107,7 @@ class Mining {
   public async $getPoolStat(slug: string): Promise<object> {
     const pool = await PoolsRepository.$getPool(slug);
     if (!pool) {
-      throw new Error(`This mining pool does not exist`);
+      throw new Error('This mining pool does not exist ' + escape(slug));
     }
 
     const blockCount: number = await BlocksRepository.$blockCount(pool.id);
@@ -152,14 +149,9 @@ class Mining {
    * [INDEXING] Generate weekly mining pool hashrate history
    */
   public async $generatePoolHashrateHistory(): Promise<void> {
-    if (!blocks.blockIndexingCompleted || this.hashrateIndexingStarted || this.weeklyHashrateIndexingStarted) {
-      return;
-    }
-
     const now = new Date();
 
     try {
-      this.weeklyHashrateIndexingStarted = true;
       const lastestRunDate = await HashratesRepository.$getLatestRun('last_weekly_hashrates_indexing');
 
       // Run only if:
@@ -167,11 +159,9 @@ class Mining {
       // * we started a new week (around Monday midnight)
       const runIndexing = lastestRunDate === 0 || now.getUTCDay() === 1 && lastestRunDate !== now.getUTCDate();
       if (!runIndexing) {
-        this.weeklyHashrateIndexingStarted = false;
         return;
       }
     } catch (e) {
-      this.weeklyHashrateIndexingStarted = false;
       throw e;
     }
 
@@ -191,6 +181,7 @@ class Mining {
       const startedAt = new Date().getTime() / 1000;
       let timer = new Date().getTime() / 1000;
 
+      logger.debug(`Indexing weekly mining pool hashrate`);
       loadingIndicators.setProgress('weekly-hashrate-indexing', 0);
 
       while (toTimestamp > genesisTimestamp) {
@@ -255,7 +246,6 @@ class Mining {
         ++indexedThisRun;
         ++totalIndexed;
       }
-      this.weeklyHashrateIndexingStarted = false;
       await HashratesRepository.$setLatestRun('last_weekly_hashrates_indexing', new Date().getUTCDate());
       if (newlyIndexed > 0) {
         logger.info(`Indexed ${newlyIndexed} pools weekly hashrate`);
@@ -263,7 +253,6 @@ class Mining {
       loadingIndicators.setProgress('weekly-hashrate-indexing', 100);
     } catch (e) {
       loadingIndicators.setProgress('weekly-hashrate-indexing', 100);
-      this.weeklyHashrateIndexingStarted = false;
       throw e;
     }
   }
@@ -272,22 +261,14 @@ class Mining {
    * [INDEXING] Generate daily hashrate data
    */
   public async $generateNetworkHashrateHistory(): Promise<void> {
-    if (!blocks.blockIndexingCompleted || this.hashrateIndexingStarted) {
-      return;
-    }
-
     try {
-      this.hashrateIndexingStarted = true;
-
       // We only run this once a day around midnight
       const latestRunDate = await HashratesRepository.$getLatestRun('last_hashrates_indexing');
       const now = new Date().getUTCDate();
       if (now === latestRunDate) {
-        this.hashrateIndexingStarted = false;
         return;
       }
     } catch (e) {
-      this.hashrateIndexingStarted = false;
       throw e;
     }
 
@@ -305,6 +286,7 @@ class Mining {
       const startedAt = new Date().getTime() / 1000;
       let timer = new Date().getTime() / 1000;
 
+      logger.debug(`Indexing daily network hashrate`);
       loadingIndicators.setProgress('daily-hashrate-indexing', 0);
 
       while (toTimestamp > genesisTimestamp) {
@@ -376,14 +358,12 @@ class Mining {
       await HashratesRepository.$saveHashrates(hashrates);
 
       await HashratesRepository.$setLatestRun('last_hashrates_indexing', new Date().getUTCDate());
-      this.hashrateIndexingStarted = false;
       if (newlyIndexed > 0) {
         logger.info(`Indexed ${newlyIndexed} day of network hashrate`);
       }
       loadingIndicators.setProgress('daily-hashrate-indexing', 100);
     } catch (e) {
       loadingIndicators.setProgress('daily-hashrate-indexing', 100);
-      this.hashrateIndexingStarted = false;
       throw e;
     }
   }
