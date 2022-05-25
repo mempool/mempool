@@ -76,7 +76,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
           this.isLoading = true;
           return this.apiService.getHistoricalBlockFeeRates$(timespan)
             .pipe(
-              tap((data: any) => {
+              tap((response) => {
                 // Group by percentile
                 const seriesData = {
                   'Min': [],
@@ -87,7 +87,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
                   '90th': [],
                   'Max': []
                 };
-                for (const rate of data.blockFeeRates) {
+                for (const rate of response.body) {
                   const timestamp = rate.timestamp * 1000;
                   seriesData['Min'].push([timestamp, rate.avgFee_0, rate.avgHeight]);
                   seriesData['10th'].push([timestamp, rate.avgFee_10, rate.avgHeight]);
@@ -130,13 +130,9 @@ export class BlockFeeRatesGraphComponent implements OnInit {
                 });
                 this.isLoading = false;
               }),
-              map((data: any) => {
-                const availableTimespanDay = (
-                  (new Date().getTime() / 1000) - (data.oldestIndexedBlockTimestamp)
-                ) / 3600 / 24;
-
+              map((response) => {
                 return {
-                  availableTimespanDay: availableTimespanDay,
+                  blockCount: parseInt(response.headers.get('x-total-count'), 10),
                 };
               }),
             );
