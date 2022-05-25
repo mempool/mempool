@@ -9,7 +9,8 @@
             <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
           </button>
 
-          <form [formGroup]="radioGroupForm" class="formRadioGroup" (click)="saveGraphPreference()">
+          <form [formGroup]="radioGroupForm" class="formRadioGroup"
+            [class]="stateService.env.MINING_DASHBOARD ? 'mining' : ''" (click)="saveGraphPreference()">
             <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
               <label ngbButtonLabel class="btn-primary btn-sm">
                 <input ngbButton type="radio" [value]="'2h'" [routerLink]="['/graphs' | relativeUrl]" fragment="2h"> 2H
