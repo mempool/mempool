@@ -6,6 +6,9 @@
   padding-left: 0px;
   padding-bottom: 0px;
 }
+.container-xl.legacy {
+  max-width: 1140px;
+}
 
 .container {
   max-width: 100%;
@@ -58,6 +61,9 @@ tr, td, th {
     width: 10%;
   }
 }
+.height.legacy {
+  width: 15%;
+}
 
 .timestamp {
   width: 18%;
@@ -65,11 +71,20 @@ tr, td, th {
     display: none;
   }
 }
+.timestamp.legacy {
+  width: 20%;
+}
 
 .mined {
   width: 13%;
   @media (max-width: 576px) {
     display: none;
+  }
+}
+.mined.legacy {
+  width: 15%;
+  @media (max-width: 576px) {
+    display: table-cell;
   }
 }
 
@@ -87,6 +102,10 @@ tr, td, th {
   @media (max-width: 650px) {
     display: none;
   }
+}
+.txs.legacy {
+  padding-right: 80px;
+  width: 10%;
 }
 
 .fees {
@@ -124,6 +143,12 @@ tr, td, th {
   }
   @media (max-width: 450px) {
     display: none;
+  }
+}
+.size.legacy {
+  width: 20%;
+  @media (max-width: 576px) {
+    display: table-cell;
   }
 }
 

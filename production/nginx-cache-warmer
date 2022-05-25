@@ -4,6 +4,7 @@ slugs=(`curl -sSL https://raw.githubusercontent.com/mempool/mining-pools/master/
 
 while true
 do for url in / \
+	'/api/v1/blocks' \
 	'/api/v1/statistics/2h' \
 	'/api/v1/statistics/24h' \
 	'/api/v1/statistics/1w' \
@@ -36,7 +37,6 @@ do for url in / \
 	'/api/v1/mining/hashrate/pools/3y' \
 	'/api/v1/mining/hashrate/pools/all' \
 	'/api/v1/mining/reward-stats/144' \
-	'/api/v1/mining/blocks-extras' \
 	'/api/v1/mining/blocks/fees/24h' \
 	'/api/v1/mining/blocks/fees/3d' \
 	'/api/v1/mining/blocks/fees/1w' \
