@@ -16,6 +16,8 @@ import { prepareBlock } from '../utils/blocks-utils';
 import BlocksRepository from '../repositories/BlocksRepository';
 import HashratesRepository from '../repositories/HashratesRepository';
 import indexer from '../indexer';
+import fiatConversion from './fiat-conversion';
+import RatesRepository from '../repositories/RatesRepository';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -312,6 +314,8 @@ class Blocks {
       }
     }
 
+    const currentUsdPrice = fiatConversion.getConversionRates().USD;
+
     while (this.currentBlockHeight < blockHeightTip) {
       if (this.currentBlockHeight < blockHeightTip - config.MEMPOOL.INITIAL_BLOCKS_AMOUNT) {
         this.currentBlockHeight = blockHeightTip;
@@ -340,6 +344,9 @@ class Blocks {
           }
           await blocksRepository.$saveBlockInDatabase(blockExtended);
         }
+      }
+      if (fiatConversion.ratesInitialized === true) {
+        await RatesRepository.$saveRate(blockExtended.height, fiatConversion.getConversionRates());
       }
 
       if (block.height % 2016 === 0) {
