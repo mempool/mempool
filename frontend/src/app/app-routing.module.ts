@@ -7,7 +7,6 @@ import { AddressComponent } from './components/address/address.component';
 import { MasterPageComponent } from './components/master-page/master-page.component';
 import { AboutComponent } from './components/about/about.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
-import { LatestBlocksComponent } from './components/latest-blocks/latest-blocks.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
 import { TrademarkPolicyComponent } from './components/trademark-policy/trademark-policy.component';
@@ -36,19 +35,20 @@ let routes: Routes = [
         component: MasterPageComponent,
         children: [
           {
-            path: 'tx/push',
-            component: PushTransactionComponent,
+            path: 'mining/blocks',
+            redirectTo: 'blocks',
+            pathMatch: 'full'
           },
           {
-            path: 'blocks',
-            component: LatestBlocksComponent,
+            path: 'tx/push',
+            component: PushTransactionComponent,
           },
           {
             path: 'about',
             component: AboutComponent,
           },
           {
-            path: 'mining/blocks',
+            path: 'blocks',
             component: BlocksList,
           },
           {
@@ -116,6 +116,11 @@ let routes: Routes = [
     path: 'signet',
     children: [
       {
+        path: 'mining/blocks',
+        redirectTo: 'blocks',
+        pathMatch: 'full'
+      },
+      {
         path: '',
         pathMatch: 'full',
         loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
@@ -129,15 +134,11 @@ let routes: Routes = [
             component: PushTransactionComponent,
           },
           {
-            path: 'blocks',
-            component: LatestBlocksComponent,
-          },
-          {
             path: 'about',
             component: AboutComponent,
           },
           {
-            path: 'mining/blocks',
+            path: 'blocks',
             component: BlocksList,
           },
           {
@@ -211,19 +212,20 @@ let routes: Routes = [
     component: MasterPageComponent,
     children: [
       {
-        path: 'tx/push',
-        component: PushTransactionComponent,
+        path: 'mining/blocks',
+        redirectTo: 'blocks',
+        pathMatch: 'full'
       },
       {
-        path: 'blocks',
-        component: LatestBlocksComponent,
+        path: 'tx/push',
+        component: PushTransactionComponent,
       },
       {
         path: 'about',
         component: AboutComponent,
       },
       {
-        path: 'mining/blocks',
+        path: 'blocks',
         component: BlocksList,
       },
       {
@@ -322,15 +324,11 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
               component: PushTransactionComponent,
             },
             {
-              path: 'blocks',
-              component: LatestBlocksComponent,
-            },
-            {
               path: 'about',
               component: AboutComponent,
             },
             {
-              path: 'mining/blocks',
+              path: 'blocks',
               component: BlocksList,
             },
             {
@@ -430,15 +428,11 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
           component: PushTransactionComponent,
         },
         {
-          path: 'blocks',
-          component: LatestBlocksComponent,
-        },
-        {
           path: 'about',
           component: AboutComponent,
         },
         {
-          path: 'mining/blocks',
+          path: 'blocks',
           component: BlocksList,
         },
         {

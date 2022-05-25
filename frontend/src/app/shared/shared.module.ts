@@ -48,7 +48,6 @@ import { TransactionsListComponent } from '../components/transactions-list/trans
 import { BlockComponent } from '../components/block/block.component';
 import { AddressComponent } from '../components/address/address.component';
 import { SearchFormComponent } from '../components/search-form/search-form.component';
-import { LatestBlocksComponent } from '../components/latest-blocks/latest-blocks.component';
 import { AddressLabelsComponent } from '../components/address-labels/address-labels.component';
 import { FooterComponent } from '../components/footer/footer.component';
 import { TimeSpanComponent } from '../components/time-span/time-span.component';
@@ -113,7 +112,6 @@ import { IndexingProgressComponent } from '../components/indexing-progress/index
     BlockComponent,
     TransactionsListComponent,
     AddressComponent,
-    LatestBlocksComponent,
     SearchFormComponent,
     TimeSpanComponent,
     AddressLabelsComponent,
@@ -208,7 +206,6 @@ import { IndexingProgressComponent } from '../components/indexing-progress/index
     BlockComponent,
     TransactionsListComponent,
     AddressComponent,
-    LatestBlocksComponent,
     SearchFormComponent,
     TimeSpanComponent,
     AddressLabelsComponent,
