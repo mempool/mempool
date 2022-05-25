@@ -15,7 +15,7 @@ export function prepareBlock(block: any): BlockExtended {
     weight: block.weight,
     previousblockhash: block.previousblockhash,
     extras: {
-      coinbaseRaw: block.coinbase_raw ?? block.extras.coinbaseRaw,
+      coinbaseRaw: block.coinbase_raw ?? block.extras?.coinbaseRaw,
       medianFee: block.medianFee ?? block.median_fee ?? block.extras?.medianFee,
       feeRange: block.feeRange ?? block.fee_span,
       reward: block.reward ?? block?.extras?.reward,

@@ -149,7 +149,7 @@ export class ApiService {
 
   getBlocks$(from: number): Observable<BlockExtended[]> {
     return this.httpClient.get<BlockExtended[]>(
-      this.apiBaseUrl + this.apiBasePath + `/api/v1/blocks-extras` +
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/blocks` +
       (from !== undefined ? `/${from}` : ``)
     );
   }
