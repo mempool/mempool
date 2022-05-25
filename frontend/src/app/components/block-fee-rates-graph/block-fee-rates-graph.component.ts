@@ -89,13 +89,13 @@ export class BlockFeeRatesGraphComponent implements OnInit {
                 };
                 for (const rate of data.blockFeeRates) {
                   const timestamp = rate.timestamp * 1000;
-                  seriesData['Min'].push([timestamp, rate.avg_fee_0, rate.avg_height]);
-                  seriesData['10th'].push([timestamp, rate.avg_fee_10, rate.avg_height]);
-                  seriesData['25th'].push([timestamp, rate.avg_fee_25, rate.avg_height]);
-                  seriesData['Median'].push([timestamp, rate.avg_fee_50, rate.avg_height]);
-                  seriesData['75th'].push([timestamp, rate.avg_fee_75, rate.avg_height]);
-                  seriesData['90th'].push([timestamp, rate.avg_fee_90, rate.avg_height]);
-                  seriesData['Max'].push([timestamp, rate.avg_fee_100, rate.avg_height]);
+                  seriesData['Min'].push([timestamp, rate.avgFee_0, rate.avgHeight]);
+                  seriesData['10th'].push([timestamp, rate.avgFee_10, rate.avgHeight]);
+                  seriesData['25th'].push([timestamp, rate.avgFee_25, rate.avgHeight]);
+                  seriesData['Median'].push([timestamp, rate.avgFee_50, rate.avgHeight]);
+                  seriesData['75th'].push([timestamp, rate.avgFee_75, rate.avgHeight]);
+                  seriesData['90th'].push([timestamp, rate.avgFee_90, rate.avgHeight]);
+                  seriesData['Max'].push([timestamp, rate.avgFee_100, rate.avgHeight]);
                 }
 
                 // Prepare chart
