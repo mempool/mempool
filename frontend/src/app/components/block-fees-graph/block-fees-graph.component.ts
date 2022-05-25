@@ -71,7 +71,7 @@ export class BlockFeesGraphComponent implements OnInit {
             .pipe(
               tap((response) => {
                 this.prepareChartOptions({
-                  blockFees: response.body.map(val => [val.timestamp * 1000, val.avg_fees / 100000000]),
+                  blockFees: response.body.map(val => [val.timestamp * 1000, val.avgFees / 100000000]),
                 });
                 this.isLoading = false;
               }),
