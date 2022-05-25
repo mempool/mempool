@@ -27,8 +27,8 @@ import icons from './api/liquid/icons';
 import { Common } from './api/common';
 import mining from './api/mining';
 import HashratesRepository from './repositories/HashratesRepository';
-import BlocksRepository from './repositories/BlocksRepository';
 import poolsUpdater from './tasks/pools-updater';
+import indexer from './indexer';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -99,7 +99,7 @@ class Server {
         }
         await databaseMigration.$initializeOrMigrateDatabase();
         if (Common.indexingEnabled()) {
-          await this.$resetHashratesIndexingState();
+          await indexer.$resetHashratesIndexingState();
         }
       } catch (e) {
         throw new Error(e instanceof Error ? e.message : 'Error');
@@ -154,7 +154,7 @@ class Server {
       await poolsUpdater.updatePoolsJson();
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
-      this.$runIndexingWhenReady();
+      indexer.$run();
 
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;
@@ -170,29 +170,6 @@ class Server {
       setTimeout(this.runMainUpdateLoop.bind(this), 1000 * this.currentBackendRetryInterval);
       this.currentBackendRetryInterval *= 2;
       this.currentBackendRetryInterval = Math.min(this.currentBackendRetryInterval, 60);
-    }
-  }
-
-  async $resetHashratesIndexingState() {
-    try {
-      await HashratesRepository.$setLatestRun('last_hashrates_indexing', 0);
-      await HashratesRepository.$setLatestRun('last_weekly_hashrates_indexing', 0);
-    } catch (e) {
-      logger.err(`Cannot reset hashrate indexing timestamps. Reason: ` + (e instanceof Error ? e.message : e));
-    }
-  }
-
-  async $runIndexingWhenReady() {
-    if (!Common.indexingEnabled() || mempool.hasPriority()) {
-      return;
-    }
-
-    try {
-      await blocks.$generateBlockDatabase();
-      await mining.$generateNetworkHashrateHistory();
-      await mining.$generatePoolHashrateHistory();
-    } catch (e) {
-      logger.err(`Indexing failed, trying again later. Reason: ` + (e instanceof Error ? e.message : e));
     }
   }
 
@@ -337,8 +314,8 @@ class Server {
     }
 
     this.app
-      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-extras', routes.getBlocksExtras)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-extras/:height', routes.getBlocksExtras)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks', routes.getBlocks.bind(routes))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/:height', routes.getBlocks.bind(routes))
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash', routes.getBlock);
 
     if (config.MEMPOOL.BACKEND !== 'esplora') {
@@ -352,8 +329,6 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/status', routes.getTransactionStatus)
         .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/outspends', routes.getTransactionOutspends)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/header', routes.getBlockHeader)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'blocks', routes.getBlocks)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/:height', routes.getBlocks)
         .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/height', routes.getBlockTipHeight)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txs', routes.getBlockTransactions)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txs/:index', routes.getBlockTransactions)
