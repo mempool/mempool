@@ -36,7 +36,11 @@ export class SearchResultsComponent implements OnChanges {
         break;
       case 'Enter':
         event.preventDefault();
-        this.selectedResult.emit(this.resultsFlattened[this.activeIdx]);
+        if (this.resultsFlattened[this.activeIdx]) {
+          this.selectedResult.emit(this.resultsFlattened[this.activeIdx]);
+        } else {
+          this.selectedResult.emit(this.searchTerm);
+        }
         this.results = null;
         break;
     }
