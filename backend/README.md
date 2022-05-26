@@ -45,7 +45,9 @@ rpcpassword=mempool
 
 **This step is optional.** You can run Mempool without configuring an Electrum Server for it, but address lookups will be disabled.
 
-### 4. Configure MySQL
+### 4. Configure MariaDB
+
+_Mempool needs MariaDB v10.5 or later. If you already have MySQL installed, make sure to migrate any existing databases **before** installing MariaDB._
 
 Get MariaDB from your operating system's package manager:
 
