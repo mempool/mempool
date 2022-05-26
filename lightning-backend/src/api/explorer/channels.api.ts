@@ -47,10 +47,10 @@ class ChannelsApi {
     }
   }
 
-  public async $getChannel(shortId: string): Promise<any> {
+  public async $getChannel(id: string): Promise<any> {
     try {
       const query = `SELECT n1.alias AS alias_left, n2.alias AS alias_right, channels.*, ns1.channels AS channels_left, ns1.capacity AS capacity_left, ns2.channels AS channels_right, ns2.capacity AS capacity_right FROM channels LEFT JOIN nodes AS n1 ON n1.public_key = channels.node1_public_key LEFT JOIN nodes AS n2 ON n2.public_key = channels.node2_public_key LEFT JOIN node_stats AS ns1 ON ns1.public_key = channels.node1_public_key LEFT JOIN node_stats AS ns2 ON ns2.public_key = channels.node2_public_key WHERE (ns1.id = (SELECT MAX(id) FROM node_stats WHERE public_key = channels.node1_public_key) AND ns2.id = (SELECT MAX(id) FROM node_stats WHERE public_key = channels.node2_public_key)) AND channels.id = ?`;
-      const [rows]: any = await DB.query(query, [shortId]);
+      const [rows]: any = await DB.query(query, [id]);
       if (rows[0]) {
         return this.convertChannel(rows[0]);
       }

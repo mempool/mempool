@@ -1,6 +1,6 @@
 <div class="mb-2 box-top">
   <div class="box-left">
-    <h2 class="mb-0">{{ channel.alias || '?' }}</h2>
+    <h3 class="mb-0">{{ channel.alias || '?' }}</h3>
     <a [routerLink]="['/lightning/node' | relativeUrl, channel.public_key]" >
       {{ channel.public_key | shortenString : 12 }}
     </a>
