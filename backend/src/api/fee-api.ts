@@ -20,6 +20,7 @@ class FeeApi {
         'halfHourFee': this.defaultFee,
         'hourFee': this.defaultFee,
         'minimumFee': minimumFee,
+        'economyFee': 2 * minimumFee,
       };
     }
 
@@ -32,6 +33,7 @@ class FeeApi {
       'halfHourFee': secondMedianFee,
       'hourFee': thirdMedianFee,
       'minimumFee': minimumFee,
+      'economyFee': 2 * minimumFee,
     };
   }
 
