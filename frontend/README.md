@@ -34,6 +34,8 @@ $ npm run config:defaults:bisq
 
 ### 3. Run the Frontend
 
+_Node.js 16 and npm 7 are recommended._
+
 Install project dependencies and run the frontend server:
 
 ```
@@ -68,6 +70,8 @@ If all tests are green, submit your PR, and it will be reviewed by someone on th
 Set up the [Mempool backend](../backend/) first, if you haven't already.
 
 ### 1. Build the Frontend
+
+_Node.js 16 and npm 7 are recommended._
 
 Build the frontend:
 
