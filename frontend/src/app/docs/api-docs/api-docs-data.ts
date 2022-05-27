@@ -5990,6 +5990,14 @@ export const faqData = [
     answer: "<p>When a Bitcoin transaction is made, it is stored in a Bitcoin node's mempool before it is confirmed into a block. When the rate of incoming transactions exceeds the rate transactions are confirmed, the mempool grows in size.</p><p>The default maximum size of a Bitcoin node's mempool is 300MB, so when there are 300MB of transactions in the mempool, we say it's \"full\".</p>"
   },
   {
+    type: "endpoint",
+    category: "basics",
+    showConditions: bitcoinNetworks,
+    fragment: "why-empty-blocks",
+    title: "Why are there empty blocks?",
+    answer: "<p>When a new block is found, mining pools send miners a block template with no transactions so they can start searching for the next block as soon as possible. They send a block template full of transactions right afterward, but a full block template is a bigger data transfer and takes slightly longer to reach miners.</p><p>In this intervening time, which is usually no more than 1-2 seconds, miners sometimes get lucky and find a new block using the empty block template.</p>"
+  },
+  {
     type: "category",
     category: "help",
     fragment: "help-stuck-transaction",

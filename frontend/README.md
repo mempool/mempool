@@ -1,8 +1,30 @@
-# mempool-frontend
+# Mempool Frontend
 
-## Contributing
+You can build and run the Mempool frontend and proxy to the production Mempool backend (for easier frontend development), or you can connect it to your own backend for a full Mempool development instance, custom deployment, etc.
 
-This package is used for the https://mempool.space, https://liquid.network and https://bisq.markets websites - there are npm scripts to setup all three, which effectively change how BASE_MODULE is  configured:
+Jump to a section in this doc:
+- [Quick Setup for Frontend Development](#quick-setup-for-frontend-development)
+- [Manual Frontend Setup](#manual-setup)
+- [Translations](#translations-transifex-project)
+
+## Quick Setup for Frontend Development
+
+If you want to quickly improve the UI, fix typos, or make other updates that don't require any backend changes, you don't need to set up an entire backend—you can simply run the Mempool frontend locally and proxy to the mempool.space backend.
+
+### 1. Clone Mempool Repository
+
+Get the latest Mempool code:
+
+```
+git clone https://github.com/mempool/mempool
+cd mempool
+```
+
+### 2. Specify Website
+
+The same frontend codebase is used for https://mempool.space, https://liquid.network and https://bisq.markets.
+
+Configure the frontend for the site you want by running the corresponding command:
 
 ```
 $ npm run config:defaults:mempool
@@ -10,18 +32,22 @@ $ npm run config:defaults:liquid
 $ npm run config:defaults:bisq
 ```
 
-Changes that affect the frontend codebase only can be done using the production backend so you don't need to spin up the entire Mempool infrastructure. This is very convenient in case you want to quickly improve the UI, fix typos or implement new features that don't require any backend changes.
+### 3. Run the Frontend
 
-Make your changes, install the project dependencies and run the frontend server as follows:
+_Node.js 16 and npm 7 are recommended._
+
+Install project dependencies and run the frontend server:
 
 ```
 $ npm install
 $ npm run serve:local-prod
 ```
 
-The frontend will be available at http://localhost:4200/ and all API requests will be proxied to the production server at https://mempool.space
+The frontend will be available at http://localhost:4200/ and all API requests will be proxied to the production server at https://mempool.space.
 
-After making your changes, you can run our end-to-end automation suite and check for possible regressions:
+### 4. Test
+
+After making your changes, you can run our end-to-end automation suite and check for possible regressions.
 
 Headless:
 
@@ -37,11 +63,43 @@ $ npm run config:defaults:mempool && npm run cypress:open
 
 This will open the Cypress test runner, where you can select any of the test files to run.
 
-If all tests are green, submit your PR and it will be reviewed by someone on the team as soon as possible.
+If all tests are green, submit your PR, and it will be reviewed by someone on the team as soon as possible.
+
+## Manual Setup
+
+Set up the [Mempool backend](../backend/) first, if you haven't already.
+
+### 1. Build the Frontend
+
+_Node.js 16 and npm 7 are recommended._
+
+Build the frontend:
+
+```
+cd frontend
+npm install # add --prod for production
+npm run build
+```
+
+### 2. Run the Frontend
+
+#### Development
+
+To run your local Mempool frontend with your local Mempool backend:
+
+```
+npm run serve
+```
+
+#### Production
+
+The `npm run build` command from step 1 above should have generated a `dist` directory. Put the contents of `dist/` onto your web server.
+
+You will probably want to set up a reverse proxy, TLS, etc. There are sample nginx configuration files in the top level of the repository for reference, but note that support for such tasks is outside the scope of this project.
 
 ## Translations: Transifex Project
 
-The mempool frontend strings are localized into 20+ locales:
+The Mempool frontend strings are localized into 20+ locales:
 https://www.transifex.com/mempool/mempool/dashboard/
 
 ### Translators
