@@ -1,5 +1,9 @@
-var https = require('https');
+var axios = require('axios');
 var fs = require('fs');
+var stream = require('stream');
+var util = require('util');
+var finished = util.promisify(stream.finished);
+var { SocksProxyAgent } = require('socks-proxy-agent');
 
 const CONFIG_FILE_NAME = 'mempool-frontend-config.json';
 let configContent = {};
@@ -21,45 +25,76 @@ try {
   }
 }
 
-function download(filename, url) {
-  https.get(url, (response) => {
-    if (response.statusCode < 200 || response.statusCode > 299) {
-      throw new Error('HTTP Error ' + response.statusCode + ' while fetching \'' + filename + '\'');
-    }
-    response.pipe(fs.createWriteStream(filename));
-  })
-  .on('error', function(e) {
-    throw new Error(e);
+function setDelay(secs) {
+  return new Promise(function (resolve) {
+    setTimeout(function () {
+      resolve()
+    }, secs * 1000);
   });
 }
 
-function downloadMiningPoolLogos() {
-  const options = {
-    host: 'api.github.com',
-    path: '/repos/mempool/mining-pool-logos/contents/',
-    method: 'GET',
-    headers: {'user-agent': 'node.js'}
-  };
+async function fetch(url, isFile) {
+  var retry = 0;
+  var axiosOptions = {
+    headers: {
+      'User-Agent': `${configContent.USER_AGENT}`
+    },
+    timeout: 30000
+  }
+  if (isFile) {
+    axiosOptions.responseType = 'stream';
+  }
+  while (retry < 5) {
+    try {
+      if (configContent.SOCKS_PROXY === true) {
+        var socksOptions = {
+          agentOptions: {
+            keepAlive: true,
+          },
+          hostname: configContent.SOCKS_HOST,
+          port: configContent.SOCKS_PORT
+        }
 
-  https.get(options, (response) => {
-    let chunks_of_data = [];
-
-    response.on('data', (fragments) => {
-      chunks_of_data.push(fragments);
-    });
-  
-    response.on('end', () => {
-      let response_body = Buffer.concat(chunks_of_data);
-      const poolLogos = JSON.parse(response_body.toString());
-      for (const poolLogo of poolLogos) {
-          download(`${PATH}/mining-pools/${poolLogo.name}`, poolLogo.download_url);
+        if (configContent.SOCKS_USERNAME && configContent.SOCKS_PASSWORD) {
+          socksOptions.username = configContent.SOCKS_USERNAME;
+          socksOptions.password = configContent.SOCKS_PASSWORD;
+        } else {
+          // Retry with different tor circuits https://stackoverflow.com/a/64960234
+          socksOptions.username = `circuit${retry}`;
+        }
+        axiosOptions.httpsAgent = new SocksProxyAgent(socksOptions);
       }
-    });
-  
-    response.on('error', (error) => {
-      throw new Error(error);
-    });
-  })
+      var response = await axios.get(url, axiosOptions);
+      if (response.status < 200 || response.status > 299) {
+        throw new Error('HTTP Error ' + response.status + ' while fetching \'' + filename + '\'');
+      }
+      return response.data;
+    } catch (e) {
+      console.error(`Failed to fetch data from ${url}, will retry`);
+      console.error(e);
+      retry++;
+    }
+    await setDelay(10);
+  }
+}
+
+async function download(filename, url) {
+  try {
+    var writer = fs.createWriteStream(filename);
+    var stream = await fetch(url, true);
+    stream.pipe(writer);
+    await finished(writer);
+  } catch (e) {
+    console.error(`Failed to write stream data for ${filename}`);
+    console.error(e);
+  }
+}
+
+async function downloadMiningPoolLogos() {
+  var poolLogos = await fetch('https://api.github.com/repos/mempool/mining-pool-logos/contents');
+  for (var i = 0; i < poolLogos.length; ++i) {
+    download(`${PATH}/mining-pools/${poolLogos[i].name}`, poolLogos[i].download_url);
+  }
 }
 
 const poolsJsonUrl = 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json';

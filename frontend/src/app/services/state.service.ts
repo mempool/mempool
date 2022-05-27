@@ -37,6 +37,12 @@ export interface Env {
   LIQUID_WEBSITE_URL: string;
   BISQ_WEBSITE_URL: string;
   MINING_DASHBOARD: boolean;
+  USER_AGENT: string,
+  SOCKS_PROXY: boolean,
+  SOCKS_HOST: string,
+  SOCKS_PORT: number,
+  SOCKS_USERNAME: string,
+  SOCKS_PASSWORD: string,
 }
 
 const defaultEnv: Env = {
@@ -60,7 +66,13 @@ const defaultEnv: Env = {
   'MEMPOOL_WEBSITE_URL': 'https://mempool.space',
   'LIQUID_WEBSITE_URL': 'https://liquid.network',
   'BISQ_WEBSITE_URL': 'https://bisq.markets',
-  'MINING_DASHBOARD': true
+  'MINING_DASHBOARD': true,
+  'USER_AGENT': 'mempool',
+  'SOCKS_PROXY': false,
+  'SOCKS_HOST': '127.0.0.1',
+  'SOCKS_PORT': 9050,
+  'SOCKS_USERNAME': '',
+  'SOCKS_PASSWORD': ''
 };
 
 @Injectable({
