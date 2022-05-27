@@ -221,8 +221,7 @@
       <tbody [style]="isLoading ? 'opacity: 0.75' : ''">
         <tr *ngFor="let block of blocks; let i= index; trackBy: trackByBlock">
           <td class="height">
-            <a [routerLink]="['/block' | relativeUrl, block.height]">{{ block.height
-              }}</a>
+            <a [routerLink]="['/block' | relativeUrl, block.id]">{{ block.height }}</a>
           </td>
           <td class="timestamp">
             &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
