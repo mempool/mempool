@@ -114,7 +114,7 @@
                   <td><span class="skeleton-loader"></span></td>
                 </tr>
               </ng-template>
-              <tr>
+              <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
                 <td i18n="block.miner">Miner</td>
                 <td *ngIf="stateService.env.MINING_DASHBOARD">
                   <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]" class="badge"
