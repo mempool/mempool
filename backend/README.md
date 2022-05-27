@@ -99,7 +99,10 @@ Edit `mempool-config.json` as needed.
 
 In particular, make sure:
 - the correct Bitcoin Core RPC credentials are specified in `CORE_RPC`
-- the correct `BACKEND` is specified in `MEMPOOL`: it should be "electrum" if you're connecting to an Electrum Server and "none" if you're not
+- the correct `BACKEND` is specified in `MEMPOOL`:
+  - "electrum" if you're using [romanz/electrs](https://github.com/romanz/electrs) or [cculianu/Fulcrum](https://github.com/cculianu/Fulcrum)
+  - "esplora" if you're using [Blockstream/electrs](https://github.com/Blockstream/electrs)
+  - "none" if you're not using any Electrum Server
 
 ### 6. Run Mempool Backend
 
