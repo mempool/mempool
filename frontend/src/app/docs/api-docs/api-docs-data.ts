@@ -6009,8 +6009,8 @@ export const faqData = [
     category: "help",
     showConditions: bitcoinNetworks,
     fragment: "why-is-transaction-stuck-in-mempool",
-    title: "Why is my transaction stuck in the mempool?",
-    answer: "<p>Miners decide which transactions are included in the blocks they mine, so they usually prioritize transactions which pay them the highest transaction fees (transaction fees are measured in sats per virtual byte, or sat/vB). If it's been a while and your transcation hasn't been confirmed, your transaction probably has a lower transaction fee relative to other transactions currently in the mempool.</p>"
+    title: "Why isn't my transaction confirming?",
+    answer: "<p>If it's been a while and your transaction hasn't confirmed, your transaction is probably using a lower feerate relative to other transactions currently in the mempool. Depending on how you made your transaction, there may be <a href='/docs/faq/#how-to-get-transaction-confirmed-quickly'>ways to accelerate the process</a>.</p><p>There's no need to panic—a Bitcoin transaction will always either confirm completely (or not at all) at some point. As long as you have your transaction's ID, you can always see where your funds are.</p><p style='font-weight:700'>This site only provides data about the Bitcoin network—it cannot help you get your transaction confirmed quicker.</p>"
   },
   {
     type: "endpoint",
@@ -6018,7 +6018,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "how-to-get-transaction-confirmed-quickly",
     title: "How can I get my transaction confirmed more quickly?",
-    answer: "<p>If your wallet supports RBF, and if your transaction was created with RBF enabled, you can bump the fee higher.</p><p>Otherwise, if your wallet does not support RBF, you can increase the effective fee rate of your transaction by spending its change output using a higher fee. This is called CPFP.</p>"
+    answer: "<p>To get your transaction confirmed quicker, you will need to increase its effective feerate.</p><p>If your transaction was created with RBF enabled, your stuck transaction can simply be replaced with a new one that has a higher fee.</p><p>Otherwise, if you control any of the stuck transaction's outputs, you can use CPFP to increase your stuck transaction's effective feerate.</p><p>If you are not sure how to do RBF or CPFP, work with the tool you used to make the transaction (wallet software, exchange company, etc). This website only provides data about the Bitcoin network, so there is nothing it can do to help you get your transaction confirmed quicker.</p>"
   },
   {
     type: "endpoint",
@@ -6026,7 +6026,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "how-prevent-stuck-transaction",
     title: "How can I prevent a transaction from getting stuck in the future?",
-    answer: "<p>You must use an adequate transaction fee commensurate with how quickly you need the transaction to be confirmed. Also consider using RBF if your wallet supports it so that you can bump the fee rate if needed.</p>"
+    answer: "<p>You must use an adequate transaction fee commensurate with how quickly you need the transaction to be confirmed. See Mempool's fee estimates on the <a href='/'>front page</a>.</p><p>Also consider using RBF (if your wallet supports it) so that you can bump the feerate on your transaction if it does end up getting stuck.</p>"
   },
   {
     type: "category",
