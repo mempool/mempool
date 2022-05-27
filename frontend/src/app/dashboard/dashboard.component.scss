@@ -198,9 +198,7 @@
     display: none;
     text-align: right;
     width: 20%;
-    @media (min-width: 376px) {
-      display: table-cell;
-    }
+    display: table-cell;
   }
   .table-cell-size {
     display: none;

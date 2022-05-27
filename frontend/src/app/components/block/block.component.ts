@@ -38,6 +38,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   showDetails = false;
   showPreviousBlocklink = true;
   showNextBlocklink = true;
+  transactionsError: any = null;
 
   subscription: Subscription;
   keyNavigationSubscription: Subscription;
@@ -152,12 +153,13 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.stateService.markBlock$.next({ blockHeight: this.blockHeight });
         this.isLoadingTransactions = true;
         this.transactions = null;
+        this.transactionsError = null;
       }),
       debounceTime(300),
       switchMap((block) => this.electrsApiService.getBlockTransactions$(block.id)
         .pipe(
           catchError((err) => {
-            console.log(err);
+            this.transactionsError = err;
             return of([]);
         }))
       ),
@@ -218,9 +220,16 @@ export class BlockComponent implements OnInit, OnDestroy {
     const start = (page - 1) * this.itemsPerPage;
     this.isLoadingTransactions = true;
     this.transactions = null;
+    this.transactionsError = null;
     target.scrollIntoView(); // works for chrome
 
     this.electrsApiService.getBlockTransactions$(this.block.id, start)
+      .pipe(
+        catchError((err) => {
+          this.transactionsError = err;
+          return of([]);
+      })
+      )
      .subscribe((transactions) => {
         this.transactions = transactions;
         this.isLoadingTransactions = false;
