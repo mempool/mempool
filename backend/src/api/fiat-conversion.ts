@@ -27,9 +27,10 @@ class FiatConversion {
   }
 
   public startService() {
+    const fiatConversionUrl = (config.SOCKS5PROXY.ENABLED === true) && (config.SOCKS5PROXY.USE_ONION === true) ? config.PRICE_DATA_SERVER.TOR_URL : config.PRICE_DATA_SERVER.CLEARNET_URL;
     logger.info('Starting currency rates service');
     if (config.SOCKS5PROXY.ENABLED) {
-      logger.info(`Currency rates service will be queried over the Tor network using ${config.PRICE_DATA_SERVER.TOR_URL}`);
+      logger.info(`Currency rates service will be queried over the Tor network using ${fiatConversionUrl}`);
     } else {
       logger.info(`Currency rates service will be queried over clearnet using ${config.PRICE_DATA_SERVER.CLEARNET_URL}`);
     }
