@@ -13,6 +13,7 @@ import config from '../config';
 import transactionUtils from './transaction-utils';
 import rbfCache from './rbf-cache';
 import difficultyAdjustment from './difficulty-adjustment';
+import feeApi from './fee-api';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
@@ -236,6 +237,7 @@ class WebsocketHandler {
     const rbfTransactions = Common.findRbfTransactions(newTransactions, deletedTransactions);
     const da = difficultyAdjustment.getDifficultyAdjustment();
     memPool.handleRbfTransactions(rbfTransactions);
+    const recommendedFees = feeApi.getRecommendedFee();
 
     this.wss.clients.forEach(async (client: WebSocket) => {
       if (client.readyState !== WebSocket.OPEN) {
@@ -249,6 +251,7 @@ class WebsocketHandler {
         response['vBytesPerSecond'] = vBytesPerSecond;
         response['transactions'] = newTransactions.slice(0, 6).map((tx) => Common.stripTransaction(tx));
         response['da'] = da;
+        response['fees'] = recommendedFees;
       }
 
       if (client['want-mempool-blocks']) {
@@ -413,6 +416,7 @@ class WebsocketHandler {
         'block': block,
         'mempoolInfo': memPool.getMempoolInfo(),
         'da': difficultyAdjustment.getDifficultyAdjustment(),
+        'fees': feeApi.getRecommendedFee(),
       };
 
       if (mBlocks && client['want-mempool-blocks']) {
