@@ -7,7 +7,6 @@ import { LightweightChartsComponent } from './lightweight-charts/lightweight-cha
 import { LightweightChartsAreaComponent } from './lightweight-charts-area/lightweight-charts-area.component';
 import { BisqMarketComponent } from './bisq-market/bisq-market.component';
 import { BisqTransactionsComponent } from './bisq-transactions/bisq-transactions.component';
-import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { BisqTransactionComponent } from './bisq-transaction/bisq-transaction.component';
 import { BisqBlockComponent } from './bisq-block/bisq-block.component';
 import { BisqDashboardComponent } from './bisq-dashboard/bisq-dashboard.component';
@@ -50,7 +49,6 @@ import { CommonModule } from '@angular/common';
     CommonModule,
     BisqRoutingModule,
     SharedModule,
-    NgbPaginationModule,
     FontAwesomeModule,
     NgxBootstrapMultiselectModule,
   ],
