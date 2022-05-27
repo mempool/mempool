@@ -4470,7 +4470,8 @@ export const restApiDocsData = [
   fastestFee: 1,
   halfHourFee: 1,
   hourFee: 1,
-  minimumFee: 1
+  minimumFee: 1,
+  economyFee: 1
 }`
         },
         codeSampleTestnet: {
@@ -4481,7 +4482,8 @@ export const restApiDocsData = [
   fastestFee: 1,
   halfHourFee: 1,
   hourFee: 1,
-  minimumFee: 1
+  minimumFee: 1,
+  economyFee: 1
 }`
         },
         codeSampleSignet: {
@@ -4492,7 +4494,8 @@ export const restApiDocsData = [
   fastestFee: 1,
   halfHourFee: 1,
   hourFee: 1,
-  minimumFee: 1
+  minimumFee: 1,
+  economyFee: 1
 }`
         },
         codeSampleLiquid: {
@@ -4503,7 +4506,8 @@ export const restApiDocsData = [
   fastestFee: 0.1,
   halfHourFee: 0.1,
   hourFee: 0.1,
-  minimumFee: 1
+  minimumFee: 1,
+  economyFee: 1
 }`
         },
         codeSampleLiquidTestnet: {
@@ -4514,7 +4518,8 @@ export const restApiDocsData = [
   fastestFee: 0.1,
   halfHourFee: 0.1,
   hourFee: 0.1,
-  minimumFee: 1
+  minimumFee: 1,
+  economyFee: 1
 }`
         },
         codeSampleBisq: emptyCodeSample,
