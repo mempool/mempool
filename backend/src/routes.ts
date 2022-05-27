@@ -669,14 +669,12 @@ class Routes {
   public async $getHistoricalBlockFeeRates(req: Request, res: Response) {
     try {
       const blockFeeRates = await mining.$getHistoricalBlockFeeRates(req.params.interval);
-      const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
+      const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
+      res.header('X-total-count', blockCount.toString());
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
-      res.json({
-        oldestIndexedBlockTimestamp: oldestIndexedBlockTimestamp,
-        blockFeeRates: blockFeeRates,
-      });
+      res.json(blockFeeRates);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
@@ -720,20 +718,22 @@ class Routes {
     }
   }
 
-  public async getBlocksExtras(req: Request, res: Response) {
+  public async getBlocks(req: Request, res: Response) {
     try {
-      const height = req.params.height === undefined ? undefined : parseInt(req.params.height, 10);
-      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
-      res.json(await blocks.$getBlocksExtras(height, 15));
+      if (['mainnet', 'testnet', 'signet', 'regtest'].includes(config.MEMPOOL.NETWORK)) { // Bitcoin
+        const height = req.params.height === undefined ? undefined : parseInt(req.params.height, 10);
+        res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+        res.json(await blocks.$getBlocks(height, 15));
+      } else { // Liquid, Bisq
+        return await this.getLegacyBlocks(req, res);
+      }
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
-  public async getBlocks(req: Request, res: Response) {
+  public async getLegacyBlocks(req: Request, res: Response) {
     try {
-      loadingIndicators.setProgress('blocks', 0);
-
       const returnBlocks: IEsploraApi.Block[] = [];
       const fromHeight = parseInt(req.params.height, 10) || blocks.getCurrentBlockHeight();
 
@@ -757,16 +757,15 @@ class Routes {
           returnBlocks.push(block);
           nextHash = block.previousblockhash;
         }
-        loadingIndicators.setProgress('blocks', i / 10 * 100);
       }
 
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(returnBlocks);
     } catch (e) {
-      loadingIndicators.setProgress('blocks', 100);
       res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
-
+  
   public async getBlockTransactions(req: Request, res: Response) {
     try {
       loadingIndicators.setProgress('blocktxs-' + req.params.hash, 0);
