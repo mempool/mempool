@@ -61,6 +61,11 @@ Then, set the following variables in `docker-compose.yml` so Mempool can connect
       ELECTRUM_TLS_ENABLED: "false"
 ```
 
+Eligible values for `MEMPOOL_BACKEND`:
+  - "electrum" if you're using [romanz/electrs](https://github.com/romanz/electrs) or [cculianu/Fulcrum](https://github.com/cculianu/Fulcrum)
+  - "esplora" if you're using [Blockstream/electrs](https://github.com/Blockstream/electrs)
+  - "none" if you're not using any Electrum Server
+
 Of course, if your Docker host IP address is different, update accordingly.
 
 With `bitcoind` and Electrum Server set up, run Mempool with:
