@@ -1,3 +1,3 @@
 <div class="mempool-block-overview">
-  <p *ngIf="mempoolBlock$ | async as mempoolBlock">{{ mempoolBlock.transactions.length }}</p>
+  <canvas class="block-overview" #blockCanvas></canvas>
 </div>
