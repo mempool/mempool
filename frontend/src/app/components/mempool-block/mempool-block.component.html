@@ -39,9 +39,10 @@
             </tr>
           </tbody>
         </table>
+        <app-fee-distribution-graph [data]="mempoolBlock.feeRange" ></app-fee-distribution-graph>
       </div>
       <div class="col-md chart-container">
-        <app-fee-distribution-graph [data]="mempoolBlock.feeRange" ></app-fee-distribution-graph>
+        <app-mempool-block-overview [index]="mempoolBlockIndex"></app-mempool-block-overview>
       </div>
     </div>
   </div>

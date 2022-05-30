@@ -111,6 +111,22 @@ class WebsocketHandler {
             }
           }
 
+          if (parsedMessage && parsedMessage['track-mempool-block'] != null) {
+            if (Number.isInteger(parsedMessage['track-mempool-block']) && parsedMessage['track-mempool-block'] >= 0) {
+              const index = parsedMessage['track-mempool-block'];
+              client['track-mempool-block'] = index;
+              const mBlocksWithTransactions = mempoolBlocks.getMempoolBlocksWithTransactions();
+              if (mBlocksWithTransactions[index]) {
+                response['projected-mempool-block'] = {
+                  index: index,
+                  block: mBlocksWithTransactions[index],
+                };
+              }
+            } else {
+              client['track-mempool-block'] = null;
+            }
+          }
+
           if (parsedMessage.action === 'init') {
             const _blocks = blocks.getBlocks().slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT);
             if (!_blocks) {
@@ -233,6 +249,7 @@ class WebsocketHandler {
 
     mempoolBlocks.updateMempoolBlocks(newMempool);
     const mBlocks = mempoolBlocks.getMempoolBlocks();
+    const mBlocksWithTransactions = mempoolBlocks.getMempoolBlocksWithTransactions();
     const mempoolInfo = memPool.getMempoolInfo();
     const vBytesPerSecond = memPool.getVBytesPerSecond();
     const rbfTransactions = Common.findRbfTransactions(newTransactions, deletedTransactions);
@@ -367,6 +384,16 @@ class WebsocketHandler {
               break;
             }
           }
+        }
+      }
+
+      if (client['track-mempool-block'] >= 0) {
+        const index = client['track-mempool-block'];
+        if (mBlocksWithTransactions[index]) {
+          response['projected-mempool-block'] = {
+            index: index,
+            block: mBlocksWithTransactions[index],
+          };
         }
       }
 
