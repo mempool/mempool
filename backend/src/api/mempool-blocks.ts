@@ -112,6 +112,7 @@ class MempoolBlocks {
       medianFee: Common.percentile(transactions.map((tx) => tx.effectiveFeePerVsize), config.MEMPOOL.RECOMMENDED_FEE_PERCENTILE),
       feeRange: Common.getFeesInRange(transactions, rangeLength),
       transactionIds: transactions.map((tx) => tx.txid),
+      transactions: transactions.map((tx) => Common.stripTransaction(tx)),
     };
   }
 }

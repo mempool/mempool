@@ -27,6 +27,7 @@ export class WebsocketService {
   private lastWant: string | null = null;
   private isTrackingTx = false;
   private trackingTxId: string;
+  private trackingMempoolBlock: number;
   private latestGitCommit = '';
   private onlineCheckTimeout: number;
   private onlineCheckTimeoutTwo: number;
@@ -155,6 +156,16 @@ export class WebsocketService {
 
   stopTrackingAsset() {
     this.websocketSubject.next({ 'track-asset': 'stop' });
+  }
+
+  startTrackMempoolBlock(block: number) {
+    this.websocketSubject.next({ 'track-mempool-block': block });
+    this.trackingMempoolBlock = block
+  }
+
+  stopTrackMempoolBlock() {
+    this.websocketSubject.next({ 'track-mempool-block': -1 });
+    this.trackingMempoolBlock = -1
   }
 
   startTrackBisqMarket(market: string) {
@@ -291,6 +302,12 @@ export class WebsocketService {
       response['block-transactions'].forEach((addressTransaction: Transaction) => {
         this.stateService.blockTransactions$.next(addressTransaction);
       });
+    }
+
+    if (response['projected-mempool-block']) {
+      if (response['projected-mempool-block'].index == this.trackingMempoolBlock) {
+        this.stateService.mempoolBlock$.next(response['projected-mempool-block'].block);
+      }
     }
 
     if (response['live-2h-chart']) {
