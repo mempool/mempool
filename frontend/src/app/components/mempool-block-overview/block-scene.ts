@@ -71,6 +71,33 @@ export default class BlockScene {
     })
   }
 
+  update (add: TxView[], remove: TxView[], direction: string = 'left'): void {
+    const startTime = performance.now()
+    this.removeBatch(remove.map(tx => tx.txid), startTime, direction)
+
+    // clean up sprites
+    setTimeout(() => {
+      remove.forEach(tx => {
+        tx.destroy()
+      })
+    }, 1000)
+
+    // try to insert new txs directly
+    const remaining = []
+    add = add.sort((a,b) => { return b.feerate - a.feerate })
+    add.forEach(tx => {
+      if (!this.tryInsertByFee(tx)) {
+        remaining.push(tx)
+      }
+    })
+
+    this.placeBatch(remaining)
+
+    this.layout.applyGravity()
+
+    this.updateAll(startTime, direction)
+  }
+
   //return the tx at this screen position, if any
   getTxAt (position: Position): TxView | void {
     if (this.layout) {
@@ -144,9 +171,10 @@ export default class BlockScene {
           position: tx.screenPosition
         },
         duration: 1000,
-        minDuration: 1000,
+        minDuration: 500,
         start: startTime,
         delay: 50,
+        adjust: true
       })
     }
   }
@@ -231,6 +259,45 @@ export default class BlockScene {
   private place (tx: TxView): void {
     const size = this.txSize(tx)
     this.layout.insert(tx, size)
+  }
+
+  private tryInsertByFee (tx: TxView): boolean {
+    const size = this.txSize(tx)
+    const position = this.layout.tryInsertByFee(tx, size)
+    if (position) {
+      this.txs[tx.txid] = tx
+      return true
+    } else {
+      return false
+    }
+  }
+
+  // Add a list of transactions to the layout,
+  // keeping everything approximately sorted by feerate.
+  private placeBatch (txs: TxView[]): void {
+    if (txs.length) {
+      // grab the new tx with the highest fee rate
+      txs = txs.sort((a,b) => { return b.feerate - a.feerate })
+      let i = 0
+      let maxSize = txs.reduce((max, tx) => {
+        return Math.max(this.txSize(tx), max)
+      }, 1) * 2
+
+      // find a reasonable place for it in the layout
+      const root = this.layout.getReplacementRoot(txs[0].feerate, maxSize)
+
+      // extract a sub tree of transactions from the layout, rooted at that point
+      const popped = this.layout.popTree(root.x, root.y, maxSize)
+      // combine those with the new transactions and sort
+      txs = txs.concat(popped)
+      txs = txs.sort((a,b) => { return b.feerate - a.feerate })
+
+      // insert everything back into the layout
+      txs.forEach(tx => {
+        this.txs[tx.txid] = tx
+        this.place(tx)
+      })
+    }
   }
 
   private removeBatch (ids: string[], startTime: number, direction: string = 'left'): (TxView | void)[] {
@@ -353,6 +420,33 @@ class Row {
       i++
     }
   }
+
+  getSlotsBetween (left: number, right: number): TxSlot[] {
+    const range = new Slot(left, right)
+    return this.filled.filter(slot => {
+      return slot.intersects(range)
+    })
+  }
+
+  slotAt (x: number): Slot | void {
+    let i = 0
+    while (i < this.slots.length && this.slots[i].l <= x) {
+      if (this.slots[i].l <= x && this.slots[i].r > x) return this.slots[i]
+      i++
+    }
+  }
+
+  getAvgFeerate (): number {
+    let count = 0
+    let total = 0
+    this.filled.forEach(slot => {
+      if (slot.tx) {
+        count += slot.w
+        total += (slot.tx.feerate * slot.w)
+      }
+    })
+    return total / count
+  }
 }
 
 class BlockLayout {
@@ -360,13 +454,14 @@ class BlockLayout {
   height: number;
   rows: Row[];
   txPositions: { [key: string]: Square }
-
+  txs: { [key: string]: TxView }
 
   constructor ({ width, height } : { width: number, height: number }) {
     this.width = width
     this.height = height
     this.rows = [new Row(0, this.width)]
     this.txPositions = {}
+    this.txs = {}
   }
 
   getRow (position: Square): Row {
@@ -391,6 +486,7 @@ class BlockLayout {
       }
     }
     delete this.txPositions[tx.txid]
+    delete this.txs[tx.txid]
   }
 
   insert (tx: TxView, width: number): Square {
@@ -403,6 +499,7 @@ class BlockLayout {
     }
     const position = { x: fit.x, y: fit.y, s: width }
     this.txPositions[tx.txid] = position
+    this.txs[tx.txid] = tx
     tx.applyGridPosition(position)
     return position
   }
@@ -438,5 +535,121 @@ class BlockLayout {
         if (fit) return fit
       }
     }
+  }
+
+  // insert only if the tx fits into a fee-appropriate position
+  tryInsertByFee (tx: TxView, size: number): Square | void {
+    const fit = this.fit(tx, size)
+
+    if (this.checkRowFees(fit.y, tx.feerate)) {
+      // insert the tx into rows at that position
+      for (let y = fit.y; y < fit.y + size; y++) {
+        if (y >= this.rows.length) this.addRow()
+        this.rows[y].insert(fit.x, size, tx)
+      }
+      const position = { x: fit.x, y: fit.y, s: size }
+      this.txPositions[tx.txid] = position
+      this.txs[tx.txid] = tx
+      tx.applyGridPosition(position)
+      return position
+    }
+  }
+
+  // Return the first slot with a lower feerate
+  getReplacementRoot (feerate: number, width: number): Square {
+    let slot
+    for (let row = 0; row <= this.rows.length; row++) {
+      if (this.rows[row].slots.length > 0) {
+        return { x: this.rows[row].slots[0].l, y: row }
+      } else {
+        slot = this.rows[row].filled.find(x => {
+          return x.tx.feerate < feerate
+        })
+        if (slot) {
+          return { x: Math.min(slot.l, this.width - width), y: row }
+        }
+      }
+    }
+    return { x: 0, y: this.rows.length }
+  }
+
+  // remove and return all transactions in a subtree of the layout
+  popTree (x: number, y: number, width: number) {
+    const selected: { [key: string]: TxView } = {}
+    let left = x
+    let right = x + width
+    let prevWidth = right - left
+    let prevFee = Infinity
+    // scan rows upwards within a channel bounded by 'left' and 'right'
+    for (let row = y; row < this.rows.length; row++) {
+      let rowMax = 0
+      let slots = this.rows[row].getSlotsBetween(left, right)
+      // check each slot in this row overlapping the search channel
+      slots.forEach(slot => {
+        // select the associated transaction
+        selected[slot.tx.txid] = slot.tx
+        rowMax = Math.max(rowMax, slot.tx.feerate)
+        // widen the search channel to accommodate this slot if necessary
+        if (slot.w > prevWidth) {
+          left = slot.l
+          right = slot.r
+          // if this slot's tx has a higher feerate than the max in the previous row
+          // (i.e. it's out of position)
+          // select all txs overlapping the slot's full width in some rows *below*
+          // to free up space for this tx to sink down to its proper position
+          if (slot.tx.feerate > prevFee) {
+            let count = 0
+            // keep scanning back down until we find a full row of higher-feerate txs
+            for (let echo = row - 1; echo >= 0 && count < slot.w; echo--) {
+              let echoSlots = this.rows[echo].getSlotsBetween(slot.l, slot.r)
+              count = 0
+              echoSlots.forEach(echoSlot => {
+                selected[echoSlot.tx.txid] = echoSlot.tx
+                if (echoSlot.tx.feerate >= slot.tx.feerate) {
+                  count += echoSlot.w
+                }
+              })
+            }
+          }
+        }
+      })
+      prevWidth = right - left
+      prevFee = rowMax
+    }
+
+    const txList = Object.values(selected)
+
+    txList.forEach(tx => {
+      this.remove(tx)
+    })
+    return txList
+  }
+
+  // Check if this row has high enough avg fees
+  // for a tx with this feerate to make sense here
+  checkRowFees (row: number, targetFee: number): boolean {
+    // first row is always fine
+    if (row == 0 || !this.rows[row]) return true
+    return (this.rows[row].getAvgFeerate() > (targetFee * 0.9))
+  }
+
+  // drop any free-floating transactions down into empty spaces
+  applyGravity (): void {
+    Object.entries(this.txPositions).sort(([keyA, posA], [keyB, posB]) => {
+      return posA.y - posB.y || posA.x - posB.x
+    }).forEach(([txid, position]) => {
+      // see how far this transaction can fall
+      let dropTo = position.y
+      while (dropTo > 0 && !this.rows[dropTo - 1].getSlotsBetween(position.x, position.x + position.s).length) {
+        dropTo--;
+      }
+      // if it can fall at all
+      if (dropTo < position.y) {
+        // remove and reinsert in the row we found
+        const tx = this.txs[txid]
+        this.remove(tx)
+        this.insert(tx, position.s)
+      }
+    })
   }
 }

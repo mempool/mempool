@@ -124,7 +124,7 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
     } else if (blockMined) {
       this.scene.replace(Object.values(this.txViews), remove, 'right')
     } else {
-      this.scene.replace(Object.values(this.txViews), remove, 'left')
+      this.scene.update(add, remove, 'left')
     }
 
     this.lastBlockHeight = this.stateService.latestBlockHeight
