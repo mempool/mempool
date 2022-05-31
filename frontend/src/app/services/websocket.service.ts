@@ -27,6 +27,7 @@ export class WebsocketService {
   private lastWant: string | null = null;
   private isTrackingTx = false;
   private trackingTxId: string;
+  private isTrackingMempoolBlock = false;
   private trackingMempoolBlock: number;
   private latestGitCommit = '';
   private onlineCheckTimeout: number;
@@ -103,6 +104,9 @@ export class WebsocketService {
           if (this.isTrackingTx) {
             this.startMultiTrackTransaction(this.trackingTxId);
           }
+          if (this.isTrackingMempoolBlock) {
+            this.startTrackMempoolBlock(this.trackingMempoolBlock);
+          }
           this.stateService.connectionState$.next(2);
         }
 
@@ -160,12 +164,13 @@ export class WebsocketService {
 
   startTrackMempoolBlock(block: number) {
     this.websocketSubject.next({ 'track-mempool-block': block });
+    this.isTrackingMempoolBlock = true
     this.trackingMempoolBlock = block
   }
 
   stopTrackMempoolBlock() {
     this.websocketSubject.next({ 'track-mempool-block': -1 });
-    this.trackingMempoolBlock = -1
+    this.isTrackingMempoolBlock = false
   }
 
   startTrackBisqMarket(market: string) {

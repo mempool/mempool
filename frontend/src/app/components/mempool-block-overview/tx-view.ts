@@ -8,13 +8,14 @@ const hoverTransitionTime = 300
 const defaultHoverColor = hexToColor('1bd8f4')
 
 // convert from this class's update format to TxSprite's update format
-function toSpriteUpdate({display, duration, delay, start, adjust} : ViewUpdateParams): SpriteUpdateParams {
+function toSpriteUpdate(params : ViewUpdateParams): SpriteUpdateParams {
   return {
-    start: (start || performance.now()) + (delay || 0),
-    duration: duration,
-    ...display.position,
-    ...display.color,
-    adjust
+    start: (params.start || performance.now()) + (params.delay || 0),
+    duration: params.duration,
+    minDuration: params.minDuration,
+    ...params.display.position,
+    ...params.display.color,
+    adjust: params.adjust
   }
 }
 
@@ -80,13 +81,13 @@ export default class TxView implements TransactionStripped {
     jitter: if set, adds a random amount to the delay,
     adjust: if true, modify an in-progress transition instead of replacing it
   */
-  update ({ display, duration, delay, jitter, start, adjust }: ViewUpdateParams): void {
-    if (jitter) delay += (Math.random() * jitter)
+  update (params: ViewUpdateParams): void {
+    if (params.jitter) params.delay += (Math.random() * params.jitter)
 
     if (!this.initialised || !this.sprite) {
       this.initialised = true
       this.sprite = new TxSprite(
-        toSpriteUpdate({display, duration, delay, start}),
+        toSpriteUpdate(params),
         this.vertexArray
       )
       // apply any pending hover event
@@ -100,7 +101,7 @@ export default class TxView implements TransactionStripped {
       }
     } else {
       this.sprite.update(
-        toSpriteUpdate({display, duration, delay, start, adjust})
+        toSpriteUpdate(params)
       )
     }
     this.dirty = false

@@ -63,10 +63,10 @@ export type ViewUpdateParams = {
     position?: Square,
     color?: Color,
   },
+  start?: number,
   duration?: number,
   minDuration?: number,
   delay?: number,
-  start?: number,
   jitter?: number,
   state?: string,
   adjust?: boolean
