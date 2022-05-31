@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { Env, StateService } from '../../services/state.service';
 import { Observable, merge, of } from 'rxjs';
-import { SeoService } from '../../services/seo.service';
 import { tap } from 'rxjs/operators';
 import { ActivatedRoute } from "@angular/router";
 import { faqData, restApiDocsData, wsApiDocsData } from './api-docs-data';
@@ -27,7 +26,6 @@ export class ApiDocsComponent implements OnInit {
 
   constructor(
     private stateService: StateService,
-    private seoService: SeoService,
     private route: ActivatedRoute,
   ) { }
 
@@ -45,7 +43,6 @@ export class ApiDocsComponent implements OnInit {
 
   ngOnInit(): void {
     this.env = this.stateService.env;
-    this.seoService.setTitle($localize`:@@e351b40b3869a5c7d19c3d4918cb1ac7aaab95c4:API`);
     this.network$ = merge(of(''), this.stateService.networkChanged$).pipe(
       tap((network: string) => {
         if (this.env.BASE_MODULE === 'mempool' && network !== '') {
