@@ -6,12 +6,19 @@ import backendInfo from './backend-info';
 import { SocksProxyAgent } from 'socks-proxy-agent';
 
 class FiatConversion {
-  private conversionRates: IConversionRates = {
-    'USD': 0
-  };
+  private debasingFiatCurrencies = ['AED', 'AUD', 'BDT', 'BHD', 'BMD', 'BRL', 'CAD', 'CHF', 'CLP',
+    'CNY', 'CZK', 'DKK', 'EUR', 'GBP', 'HKD', 'HUF', 'IDR', 'ILS', 'INR', 'JPY', 'KRW', 'KWD',
+    'LKR', 'MMK', 'MXN', 'MYR', 'NGN', 'NOK', 'NZD', 'PHP', 'PKR', 'PLN', 'RUB', 'SAR', 'SEK',
+    'SGD', 'THB', 'TRY', 'TWD', 'UAH', 'USD', 'VND', 'ZAR'];
+  private conversionRates: IConversionRates = {};
   private ratesChangedCallback: ((rates: IConversionRates) => void) | undefined;
+  public ratesInitialized = false; // If true, it means rates are ready for use
 
-  constructor() { }
+  constructor() {
+    for (const fiat of this.debasingFiatCurrencies) {
+      this.conversionRates[fiat] = 0;
+    }
+  }
 
   public setProgressChangedCallback(fn: (rates: IConversionRates) => void) {
     this.ratesChangedCallback = fn;
@@ -62,13 +69,14 @@ class FiatConversion {
         response = await axios.get(fiatConversionUrl, { headers: headers, timeout: 10000 });
       }
 
-      const usd = response.data.data.find((item: any) => item.currencyCode === 'USD');
+      for (const rate of response.data.data) {
+        if (this.debasingFiatCurrencies.includes(rate.currencyCode) && rate.provider === 'Bisq-Aggregate') {
+          this.conversionRates[rate.currencyCode] = Math.round(100 * rate.price) / 100;
+        }
+      }
 
-      this.conversionRates = {
-        'USD': usd.price,
-      };
-
-      logger.debug(`USD Conversion Rate: ${usd.price}`);
+      this.ratesInitialized = true;
+      logger.debug(`USD Conversion Rate: ${this.conversionRates.USD}`);
 
       if (this.ratesChangedCallback) {
         this.ratesChangedCallback(this.conversionRates);
