@@ -15,6 +15,9 @@ import BitcoinApi from './bitcoin/bitcoin-api';
 import { prepareBlock } from '../utils/blocks-utils';
 import BlocksRepository from '../repositories/BlocksRepository';
 import HashratesRepository from '../repositories/HashratesRepository';
+import indexer from '../indexer';
+import fiatConversion from './fiat-conversion';
+import RatesRepository from '../repositories/RatesRepository';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -23,9 +26,6 @@ class Blocks {
   private lastDifficultyAdjustmentTime = 0;
   private previousDifficultyRetarget = 0;
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
-  private blockIndexingStarted = false;
-  public blockIndexingCompleted = false;
-  public reindexFlag = false;
 
   constructor() { }
 
@@ -134,7 +134,7 @@ class Blocks {
       blockExtended.extras.avgFeeRate = stats.avgfeerate;
     }
 
-    if (Common.indexingEnabled()) {
+    if (['mainnet', 'testnet', 'signet', 'regtest'].includes(config.MEMPOOL.NETWORK)) {
       let pool: PoolTag;
       if (blockExtended.extras?.coinbaseTx !== undefined) {
         pool = await this.$findBlockMiner(blockExtended.extras?.coinbaseTx);
@@ -143,7 +143,8 @@ class Blocks {
       }
 
       if (!pool) { // We should never have this situation in practise
-        logger.warn(`Cannot assign pool to block ${blockExtended.height} and 'unknown' pool does not exist. Check your "pools" table entries`);
+        logger.warn(`Cannot assign pool to block ${blockExtended.height} and 'unknown' pool does not exist. ` +
+          `Check your "pools" table entries`);
         return blockExtended;
       }
 
@@ -196,24 +197,15 @@ class Blocks {
    * [INDEXING] Index all blocks metadata for the mining dashboard
    */
   public async $generateBlockDatabase() {
-    if (this.blockIndexingStarted && !this.reindexFlag) {
-      return;
-    }
-
-    this.reindexFlag = false;
-
     const blockchainInfo = await bitcoinClient.getBlockchainInfo();
     if (blockchainInfo.blocks !== blockchainInfo.headers) { // Wait for node to sync
       return;
     }
 
-    this.blockIndexingStarted = true;
-    this.blockIndexingCompleted = false;
-
     try {
       let currentBlockHeight = blockchainInfo.blocks;
 
-      let indexingBlockAmount = config.MEMPOOL.INDEXING_BLOCKS_AMOUNT;
+      let indexingBlockAmount = Math.min(config.MEMPOOL.INDEXING_BLOCKS_AMOUNT, blockchainInfo.blocks);
       if (indexingBlockAmount <= -1) {
         indexingBlockAmount = currentBlockHeight + 1;
       }
@@ -274,14 +266,14 @@ class Blocks {
       loadingIndicators.setProgress('block-indexing', 100);
     } catch (e) {
       logger.err('Block indexing failed. Trying again later. Reason: ' + (e instanceof Error ? e.message : e));
-      this.blockIndexingStarted = false;
       loadingIndicators.setProgress('block-indexing', 100);
       return;
     }
 
     const chainValid = await BlocksRepository.$validateChain();
-    this.reindexFlag = !chainValid;
-    this.blockIndexingCompleted = chainValid;
+    if (!chainValid) {
+      indexer.reindex();
+    }
   }
 
   public async $updateBlocks() {
@@ -298,6 +290,8 @@ class Blocks {
       logger.info(`${blockHeightTip - this.currentBlockHeight} blocks since tip. Fast forwarding to the ${config.MEMPOOL.INITIAL_BLOCKS_AMOUNT} recent blocks`);
       this.currentBlockHeight = blockHeightTip - config.MEMPOOL.INITIAL_BLOCKS_AMOUNT;
       fastForwarded = true;
+      logger.info(`Re-indexing skipped blocks and corresponding hashrates data`);
+      indexer.reindex(); // Make sure to index the skipped blocks #1619
     }
 
     if (!this.lastDifficultyAdjustmentTime) {
@@ -349,6 +343,9 @@ class Blocks {
           await blocksRepository.$saveBlockInDatabase(blockExtended);
         }
       }
+      if (fiatConversion.ratesInitialized === true) {
+        await RatesRepository.$saveRate(blockExtended.height, fiatConversion.getConversionRates());
+      }
 
       if (block.height % 2016 === 0) {
         this.previousDifficultyRetarget = (block.difficulty - this.currentDifficulty) / this.currentDifficulty * 100;
@@ -389,10 +386,43 @@ class Blocks {
     return prepareBlock(blockExtended);
   }
 
-  public async $getBlocksExtras(fromHeight?: number, limit: number = 15): Promise<BlockExtended[]> {
-    // Note - This API is breaking if indexing is not available. For now it is okay because we only
-    // use it for the mining pages, and mining pages should not be available if indexing is turned off.
-    // I'll need to fix it before we refactor the block(s) related pages
+  /**
+   * Index a block by hash if it's missing from the database. Returns the block after indexing
+   */
+  public async $getBlock(hash: string): Promise<BlockExtended | IEsploraApi.Block> {
+    // Check the memory cache
+    const blockByHash = this.getBlocks().find((b) => b.id === hash);
+    if (blockByHash) {
+      return blockByHash;
+    }
+
+    // Block has already been indexed
+    if (Common.indexingEnabled()) {
+      const dbBlock = await blocksRepository.$getBlockByHash(hash);
+      if (dbBlock != null) {
+        return prepareBlock(dbBlock);
+      }
+    }
+
+    const block = await bitcoinApi.$getBlock(hash);
+
+    // Not Bitcoin network, return the block as it
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
+      return block;
+    }
+
+    // Bitcoin network, add our custom data on top
+    const transactions = await this.$getTransactionsExtended(hash, block.height, true);
+    const blockExtended = await this.$getBlockExtended(block, transactions);
+    if (Common.indexingEnabled()) {
+      delete(blockExtended['coinbaseTx']);
+      await blocksRepository.$saveBlockInDatabase(blockExtended);
+    }
+
+    return blockExtended;
+  }
+
+  public async $getBlocks(fromHeight?: number, limit: number = 15): Promise<BlockExtended[]> {
     try {
       let currentHeight = fromHeight !== undefined ? fromHeight : this.getCurrentBlockHeight();
       const returnBlocks: BlockExtended[] = [];
@@ -401,25 +431,32 @@ class Blocks {
         return returnBlocks;
       }
 
+      if (currentHeight === 0 && Common.indexingEnabled()) {
+        currentHeight = await blocksRepository.$mostRecentBlockHeight();
+      }
+
       // Check if block height exist in local cache to skip the hash lookup
       const blockByHeight = this.getBlocks().find((b) => b.height === currentHeight);
       let startFromHash: string | null = null;
       if (blockByHeight) {
         startFromHash = blockByHeight.id;
-      } else {
+      } else if (!Common.indexingEnabled()) {
         startFromHash = await bitcoinApi.$getBlockHash(currentHeight);
       }
 
       let nextHash = startFromHash;
       for (let i = 0; i < limit && currentHeight >= 0; i++) {
         let block = this.getBlocks().find((b) => b.height === currentHeight);
-        if (!block && Common.indexingEnabled()) {
+        if (block) {
+          returnBlocks.push(block);
+        } else if (Common.indexingEnabled()) {
           block = await this.$indexBlock(currentHeight);
-        } else if (!block) {
+          returnBlocks.push(block);
+        } else if (nextHash != null) {
           block = prepareBlock(await bitcoinApi.$getBlock(nextHash));
+          nextHash = block.previousblockhash;
+          returnBlocks.push(block);
         }
-        returnBlocks.push(block);
-        nextHash = block.previousblockhash;
         currentHeight--;
       }
 

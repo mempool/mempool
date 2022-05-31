@@ -1,5 +1,6 @@
 const bitcoinNetworks = ["", "testnet", "signet"];
 const liquidNetworks = ["liquid", "liquidtestnet"];
+const miningTimeIntervals = "<code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>";
 
 const emptyCodeSample = {
   esModule: [],
@@ -8,7 +9,11 @@ const emptyCodeSample = {
   response: ``
 };
 
+const showJsExamplesDefault = { "": true, "testnet": true, "signet": true, "liquid": true, "liquidtestnet": false, "bisq": true };
+const showJsExamplesDefaultFalse = { "": false, "testnet": false, "signet": false, "liquid": false, "liquidtestnet": false, "bisq": false };
+
 export const wsApiDocsData = {
+  showJsExamples: showJsExamplesDefault,
   codeTemplate: {
     curl: `/api/v1/ws`,
     commonJS: `
@@ -84,6 +89,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/difficulty-adjustment",
     showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -168,6 +174,7 @@ export const restApiDocsData = [
     },
     urlString: "/stats",
     showConditions: ["bisq"],
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -223,6 +230,7 @@ export const restApiDocsData = [
     },
     urlString: "/currencies",
     showConditions: ["bisq"],
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -273,6 +281,7 @@ export const restApiDocsData = [
     },
     urlString: "/depth?market=[:market]",
     showConditions: ["bisq"],
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -330,6 +339,7 @@ export const restApiDocsData = [
     },
     urlString: "/hloc?market=[:market]",
     showConditions: ["bisq"],
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -388,6 +398,7 @@ export const restApiDocsData = [
     },
     urlString: "/markets",
     showConditions: ["bisq"],
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -444,6 +455,7 @@ export const restApiDocsData = [
     },
     urlString: "/offers?market=[:market]",
     showConditions: ["bisq"],
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -521,6 +533,7 @@ export const restApiDocsData = [
     },
     urlString: "/ticker?market=[:market]",
     showConditions: ["bisq"],
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -575,6 +588,7 @@ export const restApiDocsData = [
     },
     urlString: "/trades?market=[:market]&limit=[:limit]",
     showConditions: ["bisq"],
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -629,6 +643,7 @@ export const restApiDocsData = [
     },
     urlString: "/volumes?basecurrency=[:basecurrency]",
     showConditions: ["bisq"],
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -689,6 +704,7 @@ export const restApiDocsData = [
     },
     urlString: "/address/:address",
     showConditions: bitcoinNetworks.concat(liquidNetworks).concat(["bisq"]),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -847,6 +863,7 @@ export const restApiDocsData = [
     },
     urlString: "/address/:address/txs",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -1000,6 +1017,7 @@ export const restApiDocsData = [
     },
     urlString: "/address/:address/txs/chain",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -1158,6 +1176,7 @@ export const restApiDocsData = [
     },
     urlString: "/address/:address/txs/mempool",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -1284,6 +1303,7 @@ export const restApiDocsData = [
     },
     urlString: "/address/:address/utxo",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -1422,6 +1442,7 @@ export const restApiDocsData = [
     },
     urlString: "/asset/:asset_id",
     showConditions: liquidNetworks,
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -1522,6 +1543,7 @@ export const restApiDocsData = [
     },
     urlString: "/asset/:asset_id/txs[/mempool|/chain]",
     showConditions: liquidNetworks,
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -1608,6 +1630,7 @@ export const restApiDocsData = [
     },
     urlString: "/asset/:asset_id/supply[/decimal]",
     showConditions: liquidNetworks,
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -1658,6 +1681,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/assets/icons",
     showConditions: liquidNetworks,
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -1698,6 +1722,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/asset/:asset_id/icon",
     showConditions: liquidNetworks,
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         noWrap: true,
@@ -1734,11 +1759,12 @@ export const restApiDocsData = [
     fragment: "get-block",
     title: "GET Block",
     description: {
-      default: "Returns details about a block. Available fields: <code>id</code>, <code>height</code>, <code>version</code>, <code>timestamp</code>, <code>bits</code>, <code>nonce</code>, <code>merkle_root</code>, <code>tx_count</code>, <code>size</code>, <code>weight</code>, and <code>previousblockhash</code>.",
+      default: "Returns details about a block.",
       liquid: "Returns details about a block. Available fields: <code>id</code>, <code>height</code>, <code>version</code>, <code>timestamp</code>, <code>bits</code>, <code>nonce</code>, <code>merkle_root</code>, <code>tx_count</code>, <code>size</code>, <code>weight</code>,<code>proof</code>, and <code>previousblockhash</code>."
     },
     urlString: "/block/:hash",
     showConditions: bitcoinNetworks.concat(liquidNetworks).concat(["bisq"]),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -1764,19 +1790,54 @@ export const restApiDocsData = [
           commonJS: ['000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce'],
           curl: ['000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce'],
           response: `{
-  id: "000000000000000015dc777b3ff2611091336355d3f0ee9766a2cf3be8e4b1ce",
-  height: 363366,
-  version: 2,
-  timestamp: 1435766771,
-  tx_count: 494,
-  size: 286494,
-  weight: 1145976,
-  merkle_root: "9d3cb87bf05ebae366b4262ed5f768ce8c62fc385c3886c9cb097647b04b686c",
-  previousblockhash: "000000000000000010c545b6fa3ef1f7cf45a2a8760b1ee9f2e89673218207ce",
-  mediantime: 1435763435,
-  nonce: 2892644888,
-  bits: 404111758,
-  difficulty: 49402014931
+  "extras": {
+    "reward": 638307429,
+    "coinbaseTx": {
+      "vin": [
+        {
+          "scriptsig": "03ad3e0b2cfabe6d6df8fb5429a5de5fc2bd1bafffbc90d33c77eb73307d51931d247f21d7bccde51710000000f09f909f092f4632506f6f6c2f6b0000000000000000000000000000000000000000000000000000000000000000000000050086411100"
+        }
+      ],
+      "vout": [
+        {
+          "scriptpubkey_address": "1KFHE7w8BhaENAswwryaoccDb6qcT6DbYY",
+          "value": 638307429
+        }
+      ]
+    },
+    "coinbaseRaw": "03ad3e0b2cfabe6d6df8fb5429a5de5fc2bd1bafffbc90d33c77eb73307d51931d247f21d7bccde51710000000f09f909f092f4632506f6f6c2f6b0000000000000000000000000000000000000000000000000000000000000000000000050086411100",
+    "medianFee": 10,
+    "feeRange": [
+      1,
+      8,
+      9,
+      10,
+      15,
+      21,
+      348
+    ],
+    "totalFees": 13307429,
+    "avgFee": 5591,
+    "avgFeeRate": 13,
+    "pool": {
+      "id": 36,
+      "name": "F2Pool",
+      "slug": "f2pool"
+    },
+    "matchRate": 93
+  },
+  "id": "00000000000000000007566f8f035a1dc38b351e6f54778b311fe6dbabd79b46",
+  "height": 736941,
+  "version": 536870916,
+  "timestamp": 1652891466,
+  "bits": 386466234,
+  "nonce": 3514220842,
+  "difficulty": 31251101365711.12,
+  "merkle_root": "4a3072f98f60cbb639bb7f46180b8843d17c7502627ffb633db0ed86610cdd71",
+  "tx_count": 2381,
+  "size": 1709571,
+  "weight": 3997770,
+  "previousblockhash": "00000000000000000005ef14db0b4befcbbe1e9b8676eec67fcf810a899c4d5e"
 }`
         },
         codeSampleTestnet: {
@@ -1884,6 +1945,7 @@ export const restApiDocsData = [
     },
     urlString: "/block/:hash/header",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -1949,6 +2011,7 @@ export const restApiDocsData = [
     },
     urlString: "/block-height/:height",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -2011,6 +2074,7 @@ export const restApiDocsData = [
     },
     urlString: "/block/:hash/raw",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -2076,6 +2140,7 @@ export const restApiDocsData = [
     },
     urlString: "/block/:hash/status",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -2161,6 +2226,7 @@ export const restApiDocsData = [
     },
     urlString: "/blocks/tip/height",
     showConditions: bitcoinNetworks.concat(liquidNetworks).concat(["bisq"]),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -2229,6 +2295,7 @@ export const restApiDocsData = [
     },
     urlString: "/blocks/tip/hash",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -2292,6 +2359,7 @@ export const restApiDocsData = [
     },
     urlString: "/block/:hash/txid/:index",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -2357,6 +2425,7 @@ export const restApiDocsData = [
     },
     urlString: "/block/:hash/txids",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -2451,6 +2520,7 @@ export const restApiDocsData = [
     },
     urlString: "/block/:hash/txs[/:start_index]",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -2602,10 +2672,11 @@ export const restApiDocsData = [
     fragment: "get-blocks",
     title: "GET Blocks",
     description: {
-      default: "Returns the 10 newest blocks starting at the tip or at <code>:start_height</code> if specified."
+      default: "Returns details on the past 10 blocks. If <code>:startHeight</code> is specified, the past 10 blocks before (and including) <code>:startHeight</code> are returned."
     },
-    urlString: "/blocks[/:start_height]",
+    urlString: "/blocks[/:startHeight]",
     showConditions: bitcoinNetworks.concat(liquidNetworks).concat(["bisq"]),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       bisq: {
         codeTemplate: {
@@ -2649,14 +2720,14 @@ export const restApiDocsData = [
           commonJS: `
         const { %{0}: { blocks } } = mempoolJS();
 
-        const getBlocks = await blocks.getBlocks({ start_height: %{1} });
+        const getBlocks = await blocks.getBlocks({ startHeight: %{1} });
 
         document.getElementById("result").textContent = JSON.stringify(getBlocks, undefined, 2);
         `,
           esModule: `
   const { %{0}: { blocks } } = mempoolJS();
 
-  const getBlocks = await blocks.getBlocks({ start_height: %{1} });
+  const getBlocks = await blocks.getBlocks({ startHeight: %{1} });
   console.log(getBlocks);
           `,
         },
@@ -2774,6 +2845,1433 @@ export const restApiDocsData = [
     }
   },
   {
+    type: "endpoint",
+    category: "blocks",
+    httpRequestMethod: "GET",
+    fragment: "get-blocks-extras",
+    title: "GET Blocks Extras",
+    description: {
+      default: "Returns details on the past 15 blocks with fee and mining details in an <code>extras</code> field. If <code>:startHeight</code> is specified, the past 15 blocks before (and including) <code>:startHeight</code> are returned."
+    },
+    urlString: "/blocks-extras[/:startHeight]",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/blocks-extras/%{1}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['736915'],
+          response: `[
+  {
+    "extras": {
+      "reward": 629766074,
+      "coinbaseTx": {
+        "vin": [
+          {
+            "scriptsig": "03933e0b215c204d41524120506f6f6c205c00000000be82a250e5ef942790d2542ca87d0000"
+          }
+        ],
+        "vout": [
+          {
+            "scriptpubkey_address": "1A32KFEX7JNPmU1PVjrtiXRrTQcesT3Nf1",
+            "value": 629766074
+          }
+        ]
+      },
+      "coinbaseRaw": "03933e0b215c204d41524120506f6f6c205c00000000be82a250e5ef942790d2542ca87d0000",
+      "medianFee": 14,
+      "feeRange": [
+        1,
+        1,
+        4,
+        14,
+        15,
+        20,
+        364
+      ],
+      "totalFees": 4766074,
+      "avgFee": 5043,
+      "avgFeeRate": 14,
+      "pool": {
+        "id": 115,
+        "name": "MARA Pool",
+        "slug": "marapool"
+      },
+      "matchRate": 100
+    },
+    "id": "00000000000000000000a742ae476dbe2a58c48b193484945c52b05967f2d74c",
+    "height": 736915,
+    "version": 541065216,
+    "timestamp": 1652877171,
+    "bits": 386466234,
+    "nonce": 4069175824,
+    "difficulty": 31251101365711.12,
+    "merkle_root": "de54fd1adee9f010534e8efbf1244a01528e20dd283c8927026f5442c3e03459",
+    "tx_count": 946,
+    "size": 524907,
+    "weight": 1362339,
+    "previousblockhash": "000000000000000000070760a253405ca69498464d9f8e9fab2452cbbfc10cbe"
+  },
+  {
+    "extras": {
+      "reward": 638804415,
+      "coinbaseTx": {
+        "vin": [
+          {
+            "scriptsig": "03923e0bfabe6d6dc3e96cee3cb68ee52bd31fde8e1f4983a780ea836115788d81a559e03791071f01000000000000001065040008d708c7010000000000007a6d4683012f736c7573682f"
+          }
+        ],
+        "vout": [
+          {
+            "scriptpubkey_address": "1CK6KHY6MHgYvmRQ4PAafKYDrg1ejbH1cE",
+            "value": 638804415
+          }
+        ]
+      },
+      "coinbaseRaw": "03923e0bfabe6d6dc3e96cee3cb68ee52bd31fde8e1f4983a780ea836115788d81a559e03791071f01000000000000001065040008d708c7010000000000007a6d4683012f736c7573682f",
+      "medianFee": 14,
+      "feeRange": [
+        1,
+        1,
+        2,
+        14,
+        15,
+        20,
+        347
+      ],
+      "totalFees": 13804415,
+      "avgFee": 5287,
+      "avgFeeRate": 14,
+      "pool": {
+        "id": 43,
+        "name": "SlushPool",
+        "slug": "slushpool"
+      },
+      "matchRate": 100
+    },
+    "id": "000000000000000000070760a253405ca69498464d9f8e9fab2452cbbfc10cbe",
+    "height": 736914,
+    "version": 555696132,
+    "timestamp": 1652876939,
+    "bits": 386466234,
+    "nonce": 3839610443,
+    "difficulty": 31251101365711.12,
+    "merkle_root": "dc6d15f641e7af26dbaf3ee37203155f8053a8755e85f4955d11ea0c54008b16",
+    "tx_count": 2612,
+    "size": 1450209,
+    "weight": 3931749,
+    "previousblockhash": "00000000000000000002b5b2afc1c62e61e53f966b965a9a8ce99112e24066ae"
+  },
+  ...
+]`,
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['2226118'],
+          response: `[]`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['88832'],
+          response: `[]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "category",
+    category: "mining",
+    fragment: "mining",
+    title: "Mining",
+    showConditions: bitcoinNetworks
+  },
+ {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-mining-pools",
+    title: "GET Mining Pools",
+    description: {
+      default: "Returns a list of all known mining pools ordered by blocks found over the specified trailing <code>:timePeriod</code>.</p><p>Leave <code>:timePeriod</code> unspecified to get all available data, or specify one of the following values: " + miningTimeIntervals + "."
+    },
+    urlString: "/v1/mining/pools[/:timePeriod]",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/pools/%{1}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`1w`],
+          response: `{
+  "pools": [
+  {
+    "poolId": 111,
+    "name": "Foundry USA",
+    "link": "https://foundrydigital.com/",
+    "blockCount": 194,
+    "rank": 1,
+    "emptyBlocks": 0,
+    "slug": "foundryusa"
+  },
+  {
+    "poolId": 36,
+    "name": "F2Pool",
+    "link": "https://www.f2pool.com/",
+    "blockCount": 154,
+    "rank": 2,
+    "emptyBlocks": 0,
+    "slug": "f2pool"
+  },
+  {
+    "poolId": 44,
+    "name": "AntPool",
+    "link": "https://www.antpool.com/",
+    "blockCount": 138,
+    "rank": 3,
+    "emptyBlocks": 0,
+    "slug": "antpool"
+  },
+  ...
+  "blockCount": 1005,
+  "lastEstimatedHashrate": 230086716765559200000
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+  "pools": [
+    {
+      "poolId": 112,
+      "name": "SBI Crypto",
+      "link": "https://sbicrypto.com",
+      "blockCount": 26243,
+      "rank": 2,
+      "emptyBlocks": 11272,
+      "slug": "sbicrypto"
+    },
+    {
+      "poolId": 8,
+      "name": "Huobi.pool",
+      "link": "https://www.hpt.com/",
+      "blockCount": 12134,
+      "rank": 3,
+      "emptyBlocks": 6096,
+      "slug": "huobipool"
+    },
+    ...
+  ],
+  "blockCount": 2226180,
+  "lastEstimatedHashrate": 602244182177430.8
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-mining-pool",
+    title: "GET Mining Pool",
+    description: {
+      default: "<p>Returns details about the mining pool specified by <code>:slug</code>.</p>"
+    },
+    urlString: "/v1/mining/pool/:slug",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/pool/%{1}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`slushpool`],
+          response: `{
+  "pool": {
+    "id": 43,
+    "name": "SlushPool",
+    "link": "https://slushpool.com/",
+    "addresses": [
+      "1CK6KHY6MHgYvmRQ4PAafKYDrg1ejbH1cE",
+      "1AqTMY7kmHZxBuLUR5wJjPFUvqGs23sesr"
+    ],
+    "regexes": [
+      "/slush/"
+    ],
+    "slug": "slushpool"
+  },
+  "blockCount": {
+    "all": 679,
+    "24h": 8,
+    "1w": 56
+  },
+  "blockShare": {
+    "all": 0.06015770355275981,
+    "24h": 0.05333333333333334,
+    "1w": 0.055666003976143144
+  },
+  "estimatedHashrate": 12448077385930390000,
+  "reportedHashrate": null
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`binancepool`],
+          response: `{
+  "pool": {
+    "id": 105,
+    "name": "Binance Pool",
+    "link": "https://pool.binance.com/",
+    "addresses": [],
+    "regexes": [
+      "/Binance/",
+      "binance"
+    ],
+    "slug": "binancepool"
+  },
+  "blockCount": {
+    "all": 2,
+    "24h": 1,
+    "1w": 1
+  },
+  "blockShare": {
+    "all": 8.984160924290476e-7,
+    "24h": 0.004524886877828055,
+    "1w": 0.0005089058524173028
+  },
+  "estimatedHashrate": 2617854550633.5283,
+  "reportedHashrate": null
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`unknown`],
+          response: `{}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-mining-pool-hashrates",
+    title: "GET Mining Pool Hashrates",
+    description: {
+      default: "<p>Returns average hashrates (and share of total hashrate) of mining pools active in the specified trailing <code>:timePeriod</code>, in descending order of hashrate.</p><p>Leave <code>:timePeriod</code> unspecified to get all available data, or specify any of the following time periods: " + miningTimeIntervals.substr(52) + ".</p>"
+    },
+    urlString: "/v1/mining/hashrate/pools/[:timePeriod]",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/hashrate/pools/%{1}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`1m`],
+          response: `[
+  {
+    "timestamp": 1650240000,
+    "avgHashrate": 38258816322322470000,
+    "share": 0.185366,
+    "poolName": "Foundry USA"
+  },
+  {
+    "timestamp": 1650240000,
+    "avgHashrate": 28996155528497033000,
+    "share": 0.140488,
+    "poolName": "F2Pool"
+  },
+  {
+    "timestamp": 1650240000,
+    "avgHashrate": 29801604293177496000,
+    "share": 0.14439,
+    "poolName": "AntPool"
+  },
+  {
+    "timestamp": 1650240000,
+    "avgHashrate": 21747116646372770000,
+    "share": 0.105366,
+    "poolName": "Poolin"
+  },
+  {
+    "timestamp": 1650240000,
+    "avgHashrate": 26579809234455600000,
+    "share": 0.12878,
+    "poolName": "Binance Pool"
+  },
+  {
+    "timestamp": 1650240000,
+    "avgHashrate": 19934856925841707000,
+    "share": 0.0965854,
+    "poolName": "ViaBTC"
+  },
+  {
+    "timestamp": 1650240000,
+    "avgHashrate": 11679007087866855000,
+    "share": 0.0565854,
+    "poolName": "SlushPool"
+  },
+  ...
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`1y`],
+          response: `[
+  {
+    "timestamp": 1621814400,
+    "avgHashrate": 395655036336662.7,
+    "share": 1,
+    "poolName": "Unknown"
+  },
+  {
+    "timestamp": 1621814400,
+    "avgHashrate": 0,
+    "share": 0,
+    "poolName": "Binance Pool"
+  }
+]`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`1w`],
+          response: `[
+  {
+    "timestamp": 1600041600,
+    "avgHashrate": 21621.70283633912,
+    "share": 1,
+    "poolName": "Unknown"
+  }
+]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-mining-pool-hashrate",
+    title: "GET Mining Pool Hashrate",
+    description: {
+      default: "Returns all known hashrate data for the mining pool specified by <code>:slug</code>. Hashrate values are weekly averages."
+    },
+    urlString: "/v1/mining/pool/:slug/hashrate",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/pool/%{1}/hashrate`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`foundryusa`],
+          response: `[
+  {
+    "timestamp": 1647216000,
+    "avgHashrate": 39126788325841880000,
+    "share": 0.195312,
+    "poolName": "Foundry USA"
+  },
+  {
+    "timestamp": 1647302400,
+    "avgHashrate": 42038778612166990000,
+    "share": 0.208941,
+    "poolName": "Foundry USA"
+  },
+  {
+    "timestamp": 1647820800,
+    "avgHashrate": 40677922193000910000,
+    "share": 0.196597,
+    "poolName": "Foundry USA"
+  },
+  {
+    "timestamp": 1647907200,
+    "avgHashrate": 40210989932016525000,
+    "share": 0.194707,
+    "poolName": "Foundry USA"
+  },
+  {
+    "timestamp": 1648425600,
+    "avgHashrate": 39336856807414260000,
+    "share": 0.194605,
+    "poolName": "Foundry USA"
+  },
+  {
+    "timestamp": 1648512000,
+    "avgHashrate": 39391244745360090000,
+    "share": 0.193487,
+    "poolName": "Foundry USA"
+  },
+  ...
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`kncminer`],
+          response: `[
+  {
+    "timestamp": 1400457600,
+    "avgHashrate": 23504290056.20675,
+    "share": 0.21875,
+    "poolName": "KnCMiner"
+  },
+  {
+    "timestamp": 1401062400,
+    "avgHashrate": 22880315827.385838,
+    "share": 0.301661,
+    "poolName": "KnCMiner"
+  },
+  {
+    "timestamp": 1401667200,
+    "avgHashrate": 65314000516.18979,
+    "share": 0.774853,
+    "poolName": "KnCMiner"
+  },
+  ...
+]`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`unknown`],
+          response: `[
+  {
+    "timestamp": 1600041600,
+    "avgHashrate": 21621.70283633912,
+    "share": 1,
+    "poolName": "Unknown"
+  },
+  {
+    "timestamp": 1600646400,
+    "avgHashrate": 23490.65374463165,
+    "share": 1,
+    "poolName": "Unknown"
+  },
+  {
+    "timestamp": 1601251200,
+    "avgHashrate": 22660.62333333333,
+    "share": 1,
+    "poolName": "Unknown"
+  },
+  ...
+]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-mining-pool-blocks",
+    title: "GET Mining Pool Blocks",
+    description: {
+      default: "Returns past 10 blocks mined by the specified mining pool (<code>:slug</code>) before the specified <code>:blockHeight</code>. If no <code>:blockHeight</code> is specified, the mining pool's 10 most recent blocks are returned."
+    },
+    urlString: "/v1/mining/pool/:slug/blocks/[:blockHeight]",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/pool/%{1}/blocks/%{2}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`luxor`,`730000`],
+          response: `[
+  {
+    "id": "0000000000000000000572c6eb693c51b728593139079c613c8ea0bc6384e362",
+    "timestamp": 1648778242,
+    "height": 729910,
+    "version": 536895488,
+    "bits": 386521239,
+    "nonce": 1708647181,
+    "difficulty": 28587155782195.14,
+    "merkle_root": "729be37fb4b1bff0ca2e4b572e5dc3fb57e5aa57a8a400f8c89d4993d05c204f",
+    "tx_count": 1808,
+    "size": 1595444,
+    "weight": 3992846,
+    "previousblockhash": "00000000000000000000034e117bb9922da36adc6393fabfe9ed97c7bb38998c",
+    "extras": {
+      "coinbaseRaw": "0336230b315c20506f7765726564206279204c75786f722054656368205c000000002103a960b06341e200000e744596150000000000",
+      "medianFee": 1,
+      "reward": 628988802,
+      "totalFees": 3988802,
+      "pool": {
+        "id": 4
+      }
+    }
+  },
+  {
+    "id": "00000000000000000009b6d122d9e2299d2f9cda13274a9f024bebe52ef96a59",
+    "timestamp": 1648717740,
+    "height": 729820,
+    "version": 536870912,
+    "bits": 386521239,
+    "nonce": 1608169168,
+    "difficulty": 28587155782195.14,
+    "merkle_root": "4f67e65e8e5e554cd4a8d0f91aa63b5e8686817984eb8188af5fb39958263f5d",
+    "tx_count": 1425,
+    "size": 729585,
+    "weight": 1954155,
+    "previousblockhash": "000000000000000000006441657fa1eea37d68784ebd86dc1cd7f89251130f56",
+    "extras": {
+      "coinbaseRaw": "03dc220b315c20506f7765726564206279204c75786f722054656368205c00000000e5ae4908ac1f20df00000410c830000000000000",
+      "medianFee": 8,
+      "reward": 630138805,
+      "totalFees": 5138805,
+      "pool": {
+        "id": 4
+      }
+    }
+  },
+  {
+    "id": "0000000000000000000796834c03bd3be474bfa895146a58015f5ff325ef50c0",
+    "timestamp": 1648653948,
+    "height": 729714,
+    "version": 549453824,
+    "bits": 386547904,
+    "nonce": 883606929,
+    "difficulty": 27452707696466.39,
+    "merkle_root": "45593907e5fa0dee743d2f9194b0923a800cb6313e66221a86bf51df388e012c",
+    "tx_count": 1709,
+    "size": 1434271,
+    "weight": 3993013,
+    "previousblockhash": "000000000000000000000fbfac1a91cdeaf64d689f7673d02613da9d10bfb284",
+    "extras": {
+      "coinbaseRaw": "0372220b315c20506f7765726564206279204c75786f722054656368205c0000000063349a9b3d185fed000007e7092a000000000000",
+      "medianFee": 3,
+      "reward": 632350743,
+      "totalFees": 7350743,
+      "pool": {
+        "id": 4
+      }
+    }
+  },
+  ...
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`bitcoincom`,`2226000`],
+          response: `[
+  {
+    "id": "00000000000000ed428cdb70dfdeb0f3927912131cb96e7b1fe274b1bb1181b2",
+    "timestamp": 1582018014,
+    "height": 1666150,
+    "version": 541065216,
+    "bits": 436312585,
+    "nonce": 21973352,
+    "difficulty": 10474471.99230249,
+    "merkle_root": "541456efe41e5730a563475e0c5e2007ee660f1d86d9778bfc164d73c59fd605",
+    "tx_count": 382,
+    "size": 126201,
+    "weight": 331851,
+    "previousblockhash": "00000000005a0843cc88b09cf6def15e4dc8fe38ab5cf3ad890f34a2df497004",
+    "extras": {
+      "coinbaseRaw": "03666c19706f6f6c2e626974636f696e2e636f6d010000022583010000000000",
+      "medianFee": 1,
+      "reward": 39726335,
+      "totalFees": 663835,
+      "pool": {
+        "id": 12
+      }
+    }
+  },
+  {
+    "id": "00000000000000af90f51e48cb29fdecc62e9961c5e27aca1a4ae8213aae1954",
+    "timestamp": 1579793108,
+    "height": 1663620,
+    "version": 541065216,
+    "bits": 436295134,
+    "nonce": 1762790676,
+    "difficulty": 12563071.03178775,
+    "merkle_root": "02d02afea666f08bab5851de541d0570c71a6cd8be358c28952c52d57b7afad4",
+    "tx_count": 24,
+    "size": 9562,
+    "weight": 23848,
+    "previousblockhash": "000000000000013bbdbc0fef53a5b4b2af02880a6f56f7945de071b71d51123a",
+    "extras": {
+      "coinbaseRaw": "03846219706f6f6c2e626974636f696e2e636f6d01000065f224020000000000",
+      "medianFee": 1,
+      "reward": 39547121,
+      "totalFees": 484621,
+      "pool": {
+        "id": 12
+      }
+    }
+  },
+  ...
+]`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`unknown`,`45000`],
+          response: `[
+  {
+    "id": "00000002440c34e403b2b4e10f390ab105c825dd6285cd6f4050db23cf7e3e46",
+    "timestamp": 1625317548,
+    "height": 44999,
+    "version": 536870912,
+    "bits": 503405326,
+    "nonce": 14354169,
+    "difficulty": 0.002881346304279315,
+    "merkle_root": "3324dc134dec1b57cfea574ce2db6e40e51469417b6381a1389e7969386ab42e",
+    "tx_count": 14,
+    "size": 2971,
+    "weight": 8149,
+    "previousblockhash": "000000d7998f5cf0fb144a400566221574f5f35ebd5d7d9fa803460b6942e237",
+    "extras": {
+      "coinbaseRaw": "03c7af00",
+      "medianFee": 1,
+      "reward": 5000002252,
+      "totalFees": 2252,
+      "pool": {
+        "id": 137
+      }
+    }
+  },
+  {
+    "id": "000000d7998f5cf0fb144a400566221574f5f35ebd5d7d9fa803460b6942e237",
+    "timestamp": 1625317223,
+    "height": 44998,
+    "version": 536870912,
+    "bits": 503405326,
+    "nonce": 4729165,
+    "difficulty": 0.002881346304279315,
+    "merkle_root": "55869f5a52d7709fb2c6df91d64841f4551d659948b7537b6cd8f19c68d27115",
+    "tx_count": 32,
+    "size": 6967,
+    "weight": 18247,
+    "previousblockhash": "000000d6de5b925642a7afed41994947db8612955fbdfd9d1b48f99fc0187385",
+    "extras": {
+      "coinbaseRaw": "03c6af00",
+      "medianFee": 1,
+      "reward": 5000005528,
+      "totalFees": 5528,
+      "pool": {
+        "id": 137
+      }
+    }
+  },
+  ...
+]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-hashrate",
+    title: "GET Hashrate",
+    description: {
+      default: "<p>Returns network-wide hashrate and difficulty figures over the specified trailing <code>:timePeriod</code>:</p><ul><li>Current (real-time) hashrate</li><li>Current (real-time) difficulty</li><li>Historical daily average hashrates</li><li>Historical difficulty</li></ul><p>Valid values for <code>:timePeriod</code> are " + miningTimeIntervals.substr(52) + ". If no time interval is specified, all available data is returned.</p><p>Be sure that <code>INDEXING_BLOCKS_AMOUNT</code> is set properly in your backend config so that enough blocks are indexed to properly serve your request.</p>"
+    },
+    urlString: "/v1/mining/hashrate/[:timePeriod]",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/hashrate/3d`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "hashrates": [
+    {
+      "timestamp": 1652486400,
+      "avgHashrate": 236499762108771800000
+    },
+    {
+      "timestamp": 1652572800,
+      "avgHashrate": 217473276787331300000
+    },
+    {
+      "timestamp": 1652659200,
+      "avgHashrate": 189877203506913000000
+    }
+  ],
+  "difficulty": [
+    {
+      "timestamp": 1652468330,
+      "difficulty": 31251101365711.12,
+      "height": 736249
+    }
+  ],
+  "currentHashrate": 252033247355212300000,
+  "currentDifficulty": 31251101365711.12
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3d`],
+          response: `{
+  "hashrates": [
+    {
+      "timestamp": 1652745600,
+      "avgHashrate": 385829751259101.6
+    },
+    {
+      "timestamp": 1652832000,
+      "avgHashrate": 657984995406460.8
+    },
+    {
+      "timestamp": 1652918400,
+      "avgHashrate": 510731129917436.6
+    }
+  ],
+  "difficulty": [
+    {
+      "timestamp": 1652691434,
+      "difficulty": 26119369.29706616,
+      "height": 2225402
+    }
+  ],
+  "currentHashrate": 781149965464814.4,
+  "currentDifficulty": 55580658.55098472
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3d`],
+          response: `{
+  "hashrates": [
+    {
+      "timestamp": 1652745600,
+      "avgHashrate": 21304.18163251096
+    },
+    {
+      "timestamp": 1652832000,
+      "avgHashrate": 22034.51091213679
+    },
+    {
+      "timestamp": 1652918400,
+      "avgHashrate": 20312.75493978447
+    }
+  ],
+  "difficulty": [
+    {
+      "timestamp": 1652692199,
+      "difficulty": 0.002868721424409158,
+      "height": 90533
+    },
+    {
+      "timestamp": 1652796655,
+      "difficulty": 0.00286032350920122,
+      "height": 90720
+    }
+  ],
+  "currentHashrate": 23490.95654668005,
+  "currentDifficulty": 0.00286032350920122
+}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-reward-stats",
+    title: "GET Reward Stats",
+    description: {
+      default: "Returns block reward and total transactions confirmed for the past <code>:blockCount</code> blocks."
+    },
+    urlString: "/v1/mining/reward-stats/:blockCount",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/reward-stats/%{1}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`100`],
+          response: `{
+  "startBlock": 736556,
+  "endBlock": 736655,
+  "totalReward": "63811748254",
+  "totalFee": "1311748254",
+  "totalTx": "164216"
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`100`],
+          response: `{
+  "startBlock": 2226086,
+  "endBlock": 2226185,
+  "totalReward": "513462793",
+  "totalFee": "25181593",
+  "totalTx": "2366"
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`100`],
+          response: `{
+  "startBlock": 90899,
+  "endBlock": 90998,
+  "totalReward": "500001245259",
+  "totalFee": "1245259",
+  "totalTx": "1112"
+}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-block-fees",
+    title: "GET Block Fees",
+    description: {
+      default: "<p>Returns average total fees for blocks in the specified <code>:timePeriod</code>, ordered oldest to newest. <code>:timePeriod</code> can be any of the following: " + miningTimeIntervals + ".</p><p>For <code>24h</code> and <code>3d</code> time periods, every block is included and fee amounts are exact (not averages). For the <code>1w</code> time period, fees may be averages depending on how fast blocks were found around a particular timestamp. For other time periods, fees are averages.</p>"
+    },
+    urlString: "/v1/mining/blocks/fees/:timePeriod",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/blocks/fees/%{1}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`1w`],
+          response: `[
+  {
+    "avgHeight": 735644,
+    "timestamp": 1652119111,
+    "avgFees": 24212890
+  },
+  {
+    "avgHeight": 735646,
+    "timestamp": 1652120252,
+    "avgFees": 21655996
+  },
+  {
+    "avgHeight": 735648,
+    "timestamp": 1652121214,
+    "avgFees": 20678859
+  },
+  {
+    "avgHeight": 735649,
+    "timestamp": 1652121757,
+    "avgFees": 21020140
+  },
+  {
+    "avgHeight": 735650,
+    "timestamp": 1652122367,
+    "avgFees": 23064200
+  },
+  {
+    "avgHeight": 735652,
+    "timestamp": 1652122893,
+    "avgFees": 17620723
+  },
+  ...
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`1w`],
+          response: `[
+  {
+    "avgHeight": 2224253,
+    "timestamp": 1652346420,
+    "avgFees": 211686
+  },
+  {
+    "avgHeight": 2224254,
+    "timestamp": 1652346850,
+    "avgFees": 2565952
+  },
+  ...
+]`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`1w`],
+          response: `[
+  {
+    "avgHeight": 89978,
+    "timestamp": 1652346573,
+    "avgFees": 1071
+  },
+  {
+    "avgHeight": 89979,
+    "timestamp": 1652346970,
+    "avgFees": 1224
+  },
+  ...
+]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-block-rewards",
+    title: "GET Block Rewards",
+    description: {
+      default: "<p>Returns average block rewards for blocks in the specified <code>:timePeriod</code>, ordered oldest to newest. <code>:timePeriod</code> can be any of the following: " + miningTimeIntervals + ".</p><p>For <code>24h</code> and <code>3d</code> time periods, every block is included and block rewards are exact (not averages). For the <code>1w</code> time period, block rewards may be averages depending on how fast blocks were found around a particular timestamp. For other time periods, block rewards are averages.</p>"
+    },
+    urlString: "/v1/mining/blocks/rewards/:timePeriod",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/blocks/rewards/%{1}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`1d`],
+          response: `[
+  {
+    "avgHeight": 599992,
+    "timestamp": 1571438412,
+    "avgRewards": 1260530933
+  },
+  {
+    "avgHeight": 600000,
+    "timestamp": 1571443398,
+    "avgRewards": 1264314538
+  },
+  {
+    "avgHeight": 725441,
+    "timestamp": 1646139035,
+    "avgRewards": 637067563
+  },
+  {
+    "avgHeight": 725585,
+    "timestamp": 1646222444,
+    "avgRewards": 646519104
+  },
+  {
+    "avgHeight": 725727,
+    "timestamp": 1646308374,
+    "avgRewards": 638709605
+  },
+  ...
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`1d`],
+          response: `[
+  {
+    "avgHeight": 12,
+    "timestamp": 1296689648,
+    "avgRewards": 5000000000
+  },
+  {
+    "avgHeight": 269,
+    "timestamp": 1296717674,
+    "avgRewards": 5000091820
+  },
+  ...
+]`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`1d`],
+          response: `[
+  {
+    "avgHeight": 183,
+    "timestamp": 1598962247,
+    "avgRewards": 5000000000
+  },
+  {
+    "avgHeight": 576,
+    "timestamp": 1599047892,
+    "avgRewards": 5000000000
+  },
+  ...
+]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-block-feerates",
+    title: "GET Block Feerates",
+    description: {
+      default: "Returns average feerate percentiles for blocks in the specified <code>:timePeriod</code>, ordered oldest to newest. <code>:timePeriod</code> can be any of the following: " + miningTimeIntervals + ".</p><p>For <code>24h</code> and <code>3d</code> time periods, every block is included and percentiles are exact (not averages). For the <code>1w</code> time period, percentiles may be averages depending on how fast blocks were found around a particular timestamp. For other time periods, percentiles are averages."
+    },
+    urlString: "/v1/mining/blocks/fee-rates/:timePeriod",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/blocks/fee-rates/%{1}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`1m`],
+          response: `[
+  {
+    "avgHeight": 732152,
+    "timestamp": 1650132959,
+    "avgFee_0": 1,
+    "avgFee_10": 2,
+    "avgFee_25": 2,
+    "avgFee_50": 3,
+    "avgFee_75": 4,
+    "avgFee_90": 8,
+    "avgFee_100": 393
+  },
+  {
+    "avgHeight": 732158,
+    "timestamp": 1650134432,
+    "avgFee_0": 1,
+    "avgFee_10": 1,
+    "avgFee_25": 2,
+    "avgFee_50": 4,
+    "avgFee_75": 6,
+    "avgFee_90": 10,
+    "avgFee_100": 240
+  },
+  {
+    "avgHeight": 732161,
+    "timestamp": 1650135818,
+    "avgFee_0": 1,
+    "avgFee_10": 1,
+    "avgFee_25": 1,
+    "avgFee_50": 2,
+    "avgFee_75": 5,
+    "avgFee_90": 8,
+    "avgFee_100": 251
+  },
+  ...
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`1m`],
+          response: `[
+  {
+    "avgHeight": 2196306,
+    "timestamp": 1650360168,
+    "avgFee_0": 1,
+    "avgFee_10": 1,
+    "avgFee_25": 1,
+    "avgFee_50": 1,
+    "avgFee_75": 2,
+    "avgFee_90": 28,
+    "avgFee_100": 2644
+  },
+  {
+    "avgHeight": 2196308,
+    "timestamp": 1650361209,
+    "avgFee_0": 1,
+    "avgFee_10": 1,
+    "avgFee_25": 1,
+    "avgFee_50": 4,
+    "avgFee_75": 12,
+    "avgFee_90": 65,
+    "avgFee_100": 102
+  },
+  ...
+]`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`1m`],
+          response: `{
+"blockFeeRates": [
+  {
+    "avgHeight": 86620,
+    "timestamp": 1650360010,
+    "avgFee_0": 1,
+    "avgFee_10": 1,
+    "avgFee_25": 1,
+    "avgFee_50": 1,
+    "avgFee_75": 1,
+    "avgFee_90": 1,
+    "avgFee_100": 1
+  },
+  {
+    "avgHeight": 86623,
+    "timestamp": 1650361330,
+    "avgFee_0": 1,
+    "avgFee_10": 1,
+    "avgFee_25": 1,
+    "avgFee_50": 1,
+    "avgFee_75": 1,
+    "avgFee_90": 1,
+    "avgFee_100": 1
+  },
+  ...
+]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "mining",
+    httpRequestMethod: "GET",
+    fragment: "get-sizes-weights",
+    title: "GET Block Sizes and Weights",
+    description: {
+      default: "<p>Returns average size (bytes) and average weight (weight units) for blocks in the specified <code>:timePeriod</code>, ordered oldest to newest. <code>:timePeriod</code> can be any of the following: " + miningTimeIntervals + ".</p><p>For <code>24h</code> and <code>3d</code> time periods, every block is included and figures are exact (not averages). For the <code>1w</code> time period, figures may be averages depending on how fast blocks were found around a particular timestamp. For other time periods, figures are averages.</p>"
+    },
+    urlString: "/v1/mining/blocks/sizes-weights/:timePeriod",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/blocks/sizes-weights/%{1}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+  "sizes": [
+    {
+      "avgHeight": 576650,
+      "timestamp": 1558212081,
+      "avgSize": 1271404
+    },
+    {
+      "avgHeight": 576715,
+      "timestamp": 1558246272,
+      "avgSize": 1105893
+    },
+    {
+      "avgHeight": 576797,
+      "timestamp": 1558289379,
+      "avgSize": 1141071
+    },
+    {
+      "avgHeight": 576885,
+      "timestamp": 1558330184,
+      "avgSize": 1108166
+    },
+    ...
+  ],
+  "weights": [
+    {
+      "avgHeight": 576650,
+      "timestamp": 1558212081,
+      "avgWeight": 3994002
+    },
+    {
+      "avgHeight": 576715,
+      "timestamp": 1558246272,
+      "avgWeight": 3756312
+    },
+    {
+      "avgHeight": 576797,
+      "timestamp": 1558289379,
+      "avgWeight": 3719625
+    },
+    {
+      "avgHeight": 576885,
+      "timestamp": 1558330184,
+      "avgWeight": 3631381
+    },
+    ...
+  ]
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+  "sizes": [
+    {
+      "avgHeight": 1517188,
+      "timestamp": 1558262730,
+      "avgSize": 25089
+    },
+    {
+      "avgHeight": 1517275,
+      "timestamp": 1558290933,
+      "avgSize": 21679
+    },
+    ...
+  ],
+  "weights": [
+    {
+      "avgHeight": 1517188,
+      "timestamp": 1558262730,
+      "avgWeight": 74921
+    },
+    {
+      "avgHeight": 1517275,
+      "timestamp": 1558290933,
+      "avgWeight": 65164
+    },
+    ...
+  ]
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+  "sizes": [
+    {
+      "avgHeight": 83,
+      "timestamp": 1598937527,
+      "avgSize": 329
+    },
+    {
+      "avgHeight": 266,
+      "timestamp": 1598982991,
+      "avgSize": 330
+    },
+    ...
+  ],
+  "weights": [
+    {
+      "avgHeight": 83,
+      "timestamp": 1598937527,
+      "avgWeight": 1209
+    },
+    {
+      "avgHeight": 266,
+      "timestamp": 1598982991,
+      "avgWeight": 1212
+    },
+    ...
+  ]
+}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
     type: "category",
     category: "fees",
     fragment: "fees",
@@ -2791,6 +4289,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/fees/mempool-blocks",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -2944,6 +4443,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/fees/recommended",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -2970,6 +4470,7 @@ export const restApiDocsData = [
   fastestFee: 1,
   halfHourFee: 1,
   hourFee: 1,
+  economyFee: 1,
   minimumFee: 1
 }`
         },
@@ -2981,6 +4482,7 @@ export const restApiDocsData = [
   fastestFee: 1,
   halfHourFee: 1,
   hourFee: 1,
+  economyFee: 1,
   minimumFee: 1
 }`
         },
@@ -2992,6 +4494,7 @@ export const restApiDocsData = [
   fastestFee: 1,
   halfHourFee: 1,
   hourFee: 1,
+  economyFee: 1,
   minimumFee: 1
 }`
         },
@@ -3003,7 +4506,8 @@ export const restApiDocsData = [
   fastestFee: 0.1,
   halfHourFee: 0.1,
   hourFee: 0.1,
-  minimumFee: 1
+  economyFee: 0.1,
+  minimumFee: 0.1
 }`
         },
         codeSampleLiquidTestnet: {
@@ -3014,7 +4518,8 @@ export const restApiDocsData = [
   fastestFee: 0.1,
   halfHourFee: 0.1,
   hourFee: 0.1,
-  minimumFee: 1
+  economyFee: 0.1,
+  minimumFee: 0.1
 }`
         },
         codeSampleBisq: emptyCodeSample,
@@ -3039,6 +4544,7 @@ export const restApiDocsData = [
     },
     urlString: "/mempool",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -3142,6 +4648,7 @@ export const restApiDocsData = [
     },
     urlString: "/mempool/txids",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -3228,6 +4735,7 @@ export const restApiDocsData = [
     },
     urlString: "/mempool/recent",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -3341,6 +4849,7 @@ export const restApiDocsData = [
     },
     urlString: "/v1/fees/cpfp",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -3406,6 +4915,7 @@ export const restApiDocsData = [
     },
     urlString: "/tx/:txid",
     showConditions: bitcoinNetworks.concat(liquidNetworks).concat(["bisq"]),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -3566,6 +5076,7 @@ export const restApiDocsData = [
     },
     urlString: "/tx/:txid/hex",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -3636,6 +5147,7 @@ export const restApiDocsData = [
     },
     urlString: "/tx/:txid/merkleblock-proof",
     showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -3696,6 +5208,7 @@ export const restApiDocsData = [
     },
     urlString: "/tx/:txid/merkle-proof",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -3834,6 +5347,7 @@ export const restApiDocsData = [
     },
     urlString: "/tx/:txid/outspend/:vout",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -3970,6 +5484,7 @@ export const restApiDocsData = [
     },
     urlString: "/tx/:txid/outspends",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -4129,6 +5644,7 @@ export const restApiDocsData = [
     },
     urlString: "/tx/:txid/raw",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -4199,6 +5715,7 @@ export const restApiDocsData = [
     },
     urlString: "/tx/:txid/status",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -4296,6 +5813,7 @@ export const restApiDocsData = [
     },
     urlString: "/txs/:index/:length",
     showConditions: ["bisq"],
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -4353,6 +5871,7 @@ export const restApiDocsData = [
     },
     urlString: "/api/tx",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
         codeTemplate: {
@@ -4468,6 +5987,22 @@ export const faqData = [
     answer: "Mining pools are groups of miners that combine their computational power in order to increase the probability of finding new blocks."
   },
   {
+    type: "endpoint",
+    category: "basics",
+    showConditions: bitcoinNetworks,
+    fragment: "what-is-full-mempool",
+    title: "What does it mean for the mempool to be \"full\"?",
+    answer: "<p>When a Bitcoin transaction is made, it is stored in a Bitcoin node's mempool before it is confirmed into a block. When the rate of incoming transactions exceeds the rate transactions are confirmed, the mempool grows in size.</p><p>The default maximum size of a Bitcoin node's mempool is 300MB, so when there are 300MB of transactions in the mempool, we say it's \"full\".</p>"
+  },
+  {
+    type: "endpoint",
+    category: "basics",
+    showConditions: bitcoinNetworks,
+    fragment: "why-empty-blocks",
+    title: "Why are there empty blocks?",
+    answer: "<p>When a new block is found, mining pools send miners a block template with no transactions so they can start searching for the next block as soon as possible. They send a block template full of transactions right afterward, but a full block template is a bigger data transfer and takes slightly longer to reach miners.</p><p>In this intervening time, which is usually no more than 1-2 seconds, miners sometimes get lucky and find a new block using the empty block template.</p>"
+  },
+  {
     type: "category",
     category: "help",
     fragment: "help-stuck-transaction",
@@ -4479,8 +6014,8 @@ export const faqData = [
     category: "help",
     showConditions: bitcoinNetworks,
     fragment: "why-is-transaction-stuck-in-mempool",
-    title: "Why is my transaction stuck in the mempool?",
-    answer: "<p>Miners decide which transactions are included in the blocks they mine, so they usually prioritize transactions which pay them the highest transaction fees (transaction fees are measured in sats per virtual byte, or sat/vB). If it's been a while and your transcation hasn't been confirmed, your transaction probably has a lower transaction fee relative to other transactions currently in the mempool.</p>"
+    title: "Why isn't my transaction confirming?",
+    answer: "<p>If it's been a while and your transaction hasn't confirmed, your transaction is probably using a lower feerate relative to other transactions currently in the mempool. Depending on how you made your transaction, there may be <a href='/docs/faq/#how-to-get-transaction-confirmed-quickly'>ways to accelerate the process</a>.</p><p>There's no need to panic—a Bitcoin transaction will always either confirm completely (or not at all) at some point. As long as you have your transaction's ID, you can always see where your funds are.</p><p style='font-weight:700'>This site only provides data about the Bitcoin network—it cannot help you get your transaction confirmed quicker.</p>"
   },
   {
     type: "endpoint",
@@ -4488,7 +6023,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "how-to-get-transaction-confirmed-quickly",
     title: "How can I get my transaction confirmed more quickly?",
-    answer: "<p>If your wallet supports RBF, and if your transaction was created with RBF enabled, you can bump the fee higher.</p><p>Otherwise, if your wallet does not support RBF, you can increase the effective fee rate of your transaction by spending its change output using a higher fee. This is called CPFP.</p>"
+    answer: "<p>To get your transaction confirmed quicker, you will need to increase its effective feerate.</p><p>If your transaction was created with RBF enabled, your stuck transaction can simply be replaced with a new one that has a higher fee.</p><p>Otherwise, if you control any of the stuck transaction's outputs, you can use CPFP to increase your stuck transaction's effective feerate.</p><p>If you are not sure how to do RBF or CPFP, work with the tool you used to make the transaction (wallet software, exchange company, etc). This website only provides data about the Bitcoin network, so there is nothing it can do to help you get your transaction confirmed quicker.</p>"
   },
   {
     type: "endpoint",
@@ -4496,7 +6031,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "how-prevent-stuck-transaction",
     title: "How can I prevent a transaction from getting stuck in the future?",
-    answer: "<p>You must use an adequate transaction fee commensurate with how quickly you need the transaction to be confirmed. Also consider using RBF if your wallet supports it so that you can bump the fee rate if needed.</p>"
+    answer: "<p>You must use an adequate transaction fee commensurate with how quickly you need the transaction to be confirmed. See Mempool's fee estimates on the <a href='/'>front page</a>.</p><p>Also consider using RBF (if your wallet supports it) so that you can bump the feerate on your transaction if it does end up getting stuck.</p>"
   },
   {
     type: "category",

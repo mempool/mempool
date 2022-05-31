@@ -1,11 +1,13 @@
-<div *ngIf="group$ | async as group; else loading">
+<div *ngIf="group$ | async as group; else loading;">
   
-  <div class="main-title">
-    <h2>{{ group.group.name }}</h2>
+  <ng-container *ngTemplateOutlet="title; context: group.group"></ng-container>
 
-    <div class="sub-title" i18n>Group of {{ group.group.assets.length | number }} assets</div>
-  </div>
-
+  <ng-template #title>
+    <div class="main-title">
+      <h2>{{ group.name }}</h2>
+      <div class="sub-title" i18n>Group of {{ group.assets.length | number }} assets</div>
+    </div>
+  </ng-template>
 
   <div class="clearfix"></div>
 

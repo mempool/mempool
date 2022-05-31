@@ -129,3 +129,20 @@ h2 {
 .summary {
 	margin-top: 10px;
 }
+
+.addr-left {
+	font-family: monospace;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	margin-right: -7px
+}
+
+.addr-right {
+	font-family: monospace;
+}
+
+.grey-info-text {
+	color:#6c757d;
+	font-style: italic;
+	font-size: 12px;
+}

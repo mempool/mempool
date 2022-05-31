@@ -62,7 +62,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`:@@mining.block-fee-rates:Block Fee Rates`);
+    this.seoService.setTitle($localize`:@@ed8e33059967f554ff06b4f5b6049c465b92d9b3:Block Fee Rates`);
     this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
@@ -76,7 +76,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
           this.isLoading = true;
           return this.apiService.getHistoricalBlockFeeRates$(timespan)
             .pipe(
-              tap((data: any) => {
+              tap((response) => {
                 // Group by percentile
                 const seriesData = {
                   'Min': [],
@@ -87,15 +87,15 @@ export class BlockFeeRatesGraphComponent implements OnInit {
                   '90th': [],
                   'Max': []
                 };
-                for (const rate of data.blockFeeRates) {
+                for (const rate of response.body) {
                   const timestamp = rate.timestamp * 1000;
-                  seriesData['Min'].push([timestamp, rate.avg_fee_0, rate.avg_height]);
-                  seriesData['10th'].push([timestamp, rate.avg_fee_10, rate.avg_height]);
-                  seriesData['25th'].push([timestamp, rate.avg_fee_25, rate.avg_height]);
-                  seriesData['Median'].push([timestamp, rate.avg_fee_50, rate.avg_height]);
-                  seriesData['75th'].push([timestamp, rate.avg_fee_75, rate.avg_height]);
-                  seriesData['90th'].push([timestamp, rate.avg_fee_90, rate.avg_height]);
-                  seriesData['Max'].push([timestamp, rate.avg_fee_100, rate.avg_height]);
+                  seriesData['Min'].push([timestamp, rate.avgFee_0, rate.avgHeight]);
+                  seriesData['10th'].push([timestamp, rate.avgFee_10, rate.avgHeight]);
+                  seriesData['25th'].push([timestamp, rate.avgFee_25, rate.avgHeight]);
+                  seriesData['Median'].push([timestamp, rate.avgFee_50, rate.avgHeight]);
+                  seriesData['75th'].push([timestamp, rate.avgFee_75, rate.avgHeight]);
+                  seriesData['90th'].push([timestamp, rate.avgFee_90, rate.avgHeight]);
+                  seriesData['Max'].push([timestamp, rate.avgFee_100, rate.avgHeight]);
                 }
 
                 // Prepare chart
@@ -130,13 +130,9 @@ export class BlockFeeRatesGraphComponent implements OnInit {
                 });
                 this.isLoading = false;
               }),
-              map((data: any) => {
-                const availableTimespanDay = (
-                  (new Date().getTime() / 1000) - (data.oldestIndexedBlockTimestamp)
-                ) / 3600 / 24;
-
+              map((response) => {
                 return {
-                  availableTimespanDay: availableTimespanDay,
+                  blockCount: parseInt(response.headers.get('x-total-count'), 10),
                 };
               }),
             );

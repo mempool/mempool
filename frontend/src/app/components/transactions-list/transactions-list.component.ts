@@ -22,6 +22,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   @Input() showConfirmations = false;
   @Input() transactionPage = false;
   @Input() errorUnblinded = false;
+  @Input() paginated = false;
   @Input() outputIndex: number;
   @Input() address: string = '';
 
@@ -29,7 +30,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
   latestBlock$: Observable<BlockExtended>;
   outspendsSubscription: Subscription;
-  refreshOutspends$: ReplaySubject<object> = new ReplaySubject();
+  refreshOutspends$: ReplaySubject<{ [str: string]: Observable<Outspend[]>}> = new ReplaySubject();
   showDetails$ = new BehaviorSubject<boolean>(false);
   outspends: Outspend[][] = [];
   assetsMinimal: any;
@@ -83,6 +84,9 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   ngOnChanges() {
     if (!this.transactions || !this.transactions.length) {
       return;
+    }
+    if (this.paginated) {
+      this.outspends = [];
     }
     if (this.outputIndex) {
       setTimeout(() => {
@@ -169,6 +173,17 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     } else {
       this.showDetails$.next(true);
     }
+  }
+
+  loadMoreInputs(tx: Transaction) {
+    tx['@vinLimit'] = false;
+
+    this.electrsApiService.getTransaction$(tx.txid)
+      .subscribe((newTx) => {
+        tx.vin = newTx.vin;
+        tx.fee = newTx.fee;
+        this.ref.markForCheck();
+      });
   }
 
   ngOnDestroy() {

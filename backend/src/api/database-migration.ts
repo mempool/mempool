@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 17;
+  private static currentVersion = 19;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
 
@@ -179,6 +179,14 @@ class DatabaseMigration {
 
       if (databaseSchemaVersion < 17 && isBitcoin === true) {
         await this.$executeQuery('ALTER TABLE `pools` ADD `slug` CHAR(50) NULL');
+      }
+
+      if (databaseSchemaVersion < 18 && isBitcoin === true) {
+        await this.$executeQuery('ALTER TABLE `blocks` ADD INDEX `hash` (`hash`);');
+      }
+
+      if (databaseSchemaVersion < 19) {
+        await this.$executeQuery(this.getCreateRatesTableQuery(), await this.$checkIfTableExists('rates'));
       }
     } catch (e) {
       throw e;
@@ -459,6 +467,14 @@ class DatabaseMigration {
       PRIMARY KEY (hashrate_timestamp),
       INDEX (pool_id),
       FOREIGN KEY (pool_id) REFERENCES pools (id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateRatesTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS rates (
+      height int(10) unsigned NOT NULL,
+      bisq_rates JSON NOT NULL,
+      PRIMARY KEY (height)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 

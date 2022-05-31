@@ -17,6 +17,7 @@ export class BlocksList implements OnInit {
 
   blocks$: Observable<any[]> = undefined;
 
+  indexingAvailable = false;
   isLoading = true;
   fromBlockHeight = undefined;
   paginationMaxSize: number;
@@ -35,11 +36,14 @@ export class BlocksList implements OnInit {
   }
 
   ngOnInit(): void {
+    this.indexingAvailable = (this.stateService.env.BASE_MODULE === 'mempool' &&
+      this.stateService.env.MINING_DASHBOARD === true);
+
     if (!this.widget) {
       this.websocketService.want(['blocks']);
     }
 
-    this.skeletonLines = this.widget === true ? [...Array(5).keys()] : [...Array(15).keys()];
+    this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
 
     this.blocks$ = combineLatest([
@@ -55,17 +59,19 @@ export class BlocksList implements OnInit {
                 this.isLoading = false;
               }),
               map(blocks => {
-                for (const block of blocks) {
-                  // @ts-ignore: Need to add an extra field for the template
-                  block.extras.pool.logo = `./resources/mining-pools/` +
-                    block.extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
+                if (this.indexingAvailable) {
+                  for (const block of blocks) {
+                    // @ts-ignore: Need to add an extra field for the template
+                    block.extras.pool.logo = `./resources/mining-pools/` +
+                      block.extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
+                  }
                 }
                 if (this.widget) {
-                  return blocks.slice(0, 5);
+                  return blocks.slice(0, 6);
                 }
                 return blocks;
               }),
-              retryWhen(errors => errors.pipe(delayWhen(() => timer(1000))))
+              retryWhen(errors => errors.pipe(delayWhen(() => timer(10000))))
             )
           })
       ),
@@ -81,11 +87,13 @@ export class BlocksList implements OnInit {
             return blocks[0];
           }
           this.blocksCount = Math.max(this.blocksCount, blocks[1][0].height) + 1;
-          // @ts-ignore: Need to add an extra field for the template
-          blocks[1][0].extras.pool.logo = `./resources/mining-pools/` +
-            blocks[1][0].extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
+          if (this.stateService.env.MINING_DASHBOARD) {
+            // @ts-ignore: Need to add an extra field for the template
+            blocks[1][0].extras.pool.logo = `./resources/mining-pools/` +
+              blocks[1][0].extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
+          }
           acc.unshift(blocks[1][0]);
-          acc = acc.slice(0, this.widget ? 5 : 15);
+          acc = acc.slice(0, this.widget ? 6 : 15);
           return acc;
         }, [])
       );

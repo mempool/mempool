@@ -1,8 +1,10 @@
-const https = require('https');
+import axios from 'axios';
 import poolsParser from '../api/pools-parser';
 import config from '../config';
 import DB from '../database';
 import logger from '../logger';
+import { SocksProxyAgent } from 'socks-proxy-agent';
+import * as https from 'https';
 
 /**
  * Maintain the most recent version of pools.json
@@ -14,7 +16,7 @@ class PoolsUpdater {
   }
 
   public async updatePoolsJson() {
-    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false || config.DATABASE.ENABLED === false) {
       return;
     }
 
@@ -27,6 +29,13 @@ class PoolsUpdater {
     }
 
     this.lastRun = now;
+
+    logger.info('Updating latest mining pools from Github');
+    if (config.SOCKS5PROXY.ENABLED) {
+      logger.info('List of public pools will be queried over the Tor network');
+    } else {
+      logger.info('List of public pools will be queried over clearnet');
+    }
 
     try {
       const dbSha = await this.getShaFromDb();
@@ -41,7 +50,10 @@ class PoolsUpdater {
       }
 
       logger.warn('Pools.json is outdated, fetch latest from github');
-      const poolsJson = await this.fetchPools();
+      const poolsJson = await this.query('https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json');
+      if (poolsJson === undefined) {
+        return;
+      }
       await poolsParser.migratePoolsJson(poolsJson);
       await this.updateDBSha(githubSha);
       logger.notice('PoolsUpdater completed');
@@ -50,14 +62,6 @@ class PoolsUpdater {
       this.lastRun = now - (oneWeek - oneDay); // Try again in 24h instead of waiting next week
       logger.err('PoolsUpdater failed. Will try again in 24h. Reason: '  + (e instanceof Error ? e.message : e));
     }
-  }
-
-  /**
-   * Fetch pools.json from github repo
-   */
-  private async fetchPools(): Promise<object> {
-    const response = await this.query('/repos/mempool/mining-pools/contents/pools.json');
-    return JSON.parse(Buffer.from(response['content'], 'base64').toString('utf8'));
   }
 
   /**
@@ -90,11 +94,13 @@ class PoolsUpdater {
    * Fetch our latest pools.json sha from github
    */
   private async fetchPoolsSha(): Promise<string | undefined> {
-    const response = await this.query('/repos/mempool/mining-pools/git/trees/master');
+    const response = await this.query('https://api.github.com/repos/mempool/mining-pools/git/trees/master');
 
-    for (const file of response['tree']) {
-      if (file['path'] === 'pools.json') {
-        return file['sha'];
+    if (response !== undefined) {
+      for (const file of response['tree']) {
+        if (file['path'] === 'pools.json') {
+          return file['sha'];
+        }
       }
     }
 
@@ -105,35 +111,45 @@ class PoolsUpdater {
   /**
    * Http request wrapper
    */
-  private query(path): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const options = {
-        host: 'api.github.com',
-        path: path,
-        method: 'GET',
-        headers: { 'user-agent': 'node.js' }
+  private async query(path): Promise<object | undefined> {
+    type axiosOptions = {
+      httpsAgent?: https.Agent;
+    }
+    const setDelay = (secs: number = 1): Promise<void> => new Promise(resolve => setTimeout(() => resolve(), secs * 1000));
+    const axiosOptions: axiosOptions = {};
+    let retry = 0;
+
+    if (config.SOCKS5PROXY.ENABLED) {
+      const socksOptions: any = {
+        agentOptions: {
+          keepAlive: true,
+        },
+        hostname: config.SOCKS5PROXY.HOST,
+        port: config.SOCKS5PROXY.PORT
       };
 
-      logger.debug('Querying: api.github.com' + path);
+      if (config.SOCKS5PROXY.USERNAME && config.SOCKS5PROXY.PASSWORD) {
+        socksOptions.username = config.SOCKS5PROXY.USERNAME;
+        socksOptions.password = config.SOCKS5PROXY.PASSWORD;
+      }
 
-      const request = https.get(options, (response) => {
-        const chunks_of_data: any[] = [];
-        response.on('data', (fragments) => {
-          chunks_of_data.push(fragments);
-        });
-        response.on('end', () => {
-          resolve(JSON.parse(Buffer.concat(chunks_of_data).toString()));
-        });
-        response.on('error', (error) => {
-          reject(error);
-        });
-      });
+      axiosOptions.httpsAgent = new SocksProxyAgent(socksOptions);
+    }
 
-      request.on('error', (error) => {
-        logger.err('Github API query failed. Reason: '  + error);
-        reject(error);
-      });
-    });
+    while(retry < 5) {
+      try {
+        const data = await axios.get(path, axiosOptions);
+        if (data.statusText !== 'OK' || !data.data) {
+          throw new Error(`Could not fetch data from Github, Error: ${data.status}`);
+        }
+        return data.data;
+      } catch (e) {
+        logger.err('Could not connect to Github. Reason: '  + (e instanceof Error ? e.message : e));
+        retry++;
+      }
+      await setDelay();
+    }
+    return undefined;
   }
 }
 

@@ -53,7 +53,7 @@ export class BlockRewardsGraphComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`:@@mining.block-reward:Block Reward`);
+    this.seoService.setTitle($localize`:@@8ba8fe810458280a83df7fdf4c614dfc1a826445:Block Rewards`);
     this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
@@ -69,7 +69,7 @@ export class BlockRewardsGraphComponent implements OnInit {
             .pipe(
               tap((response) => {
                 this.prepareChartOptions({
-                  blockRewards: response.body.map(val => [val.timestamp * 1000, val.avg_rewards / 100000000]),
+                  blockRewards: response.body.map(val => [val.timestamp * 1000, val.avgRewards / 100000000]),
                 });
                 this.isLoading = false;
               }),
@@ -157,7 +157,7 @@ export class BlockRewardsGraphComponent implements OnInit {
       series: [
         {
           zlevel: 0,
-          name: 'Reward',
+          name: $localize`:@@12f86e6747a5ad39e62d3480ddc472b1aeab5b76:Reward`,
           showSymbol: false,
           symbol: 'none',
           data: data.blockRewards,

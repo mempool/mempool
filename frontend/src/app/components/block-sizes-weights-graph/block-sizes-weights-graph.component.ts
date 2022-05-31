@@ -62,7 +62,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
   ngOnInit(): void {
     let firstRun = true;
 
-    this.seoService.setTitle($localize`:@@mining.hashrate-difficulty:Hashrate and Weight`);
+    this.seoService.setTitle($localize`:@@56fa1cd221491b6478998679cba2dc8d55ba330d:Block Sizes and Weights`);
     this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
@@ -83,8 +83,8 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
               tap((response) => {
                 const data = response.body;
                 this.prepareChartOptions({
-                  sizes: data.sizes.map(val => [val.timestamp * 1000, val.avg_size / 1000000, val.avg_height]),
-                  weights: data.weights.map(val => [val.timestamp * 1000, val.avg_weight / 1000000, val.avg_height]),
+                  sizes: data.sizes.map(val => [val.timestamp * 1000, val.avgSize / 1000000, val.avgHeight]),
+                  weights: data.weights.map(val => [val.timestamp * 1000, val.avgWeight / 1000000, val.avgHeight]),
                 });
                 this.isLoading = false;
               }),
@@ -178,7 +178,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
         padding: 10,
         data: [
           {
-            name: 'Size',
+            name: $localize`:@@7faaaa08f56427999f3be41df1093ce4089bbd75:Size`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -186,7 +186,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: 'Weight',
+            name: $localize`:@@919f2fd60a898850c24b1584362bbf18a4628bcb:Weight`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -224,7 +224,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
       series: data.sizes.length === 0 ? [] : [
         {
           zlevel: 1,
-          name: 'Size',
+          name: $localize`:@@7faaaa08f56427999f3be41df1093ce4089bbd75:Size`,
           showSymbol: false,
           symbol: 'none',
           data: data.sizes,
@@ -255,7 +255,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
         {
           zlevel: 1,
           yAxisIndex: 0,
-          name: 'Weight',
+          name: $localize`:@@919f2fd60a898850c24b1584362bbf18a4628bcb:Weight`,
           showSymbol: false,
           symbol: 'none',
           data: data.weights,

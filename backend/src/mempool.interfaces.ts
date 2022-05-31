@@ -81,7 +81,7 @@ export interface TransactionStripped {
 
 export interface BlockExtension {
   totalFees?: number;
-  medianFee?: number; // Actually the median fee rate that we compute ourself
+  medianFee?: number;
   feeRange?: number[];
   reward?: number;
   coinbaseTx?: TransactionMinerInfo;
