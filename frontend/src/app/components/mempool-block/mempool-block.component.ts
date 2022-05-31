@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/
 import { StateService } from 'src/app/services/state.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap, map, tap, filter } from 'rxjs/operators';
-import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
+import { MempoolBlock, TransactionStripped } from 'src/app/interfaces/websocket.interface';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { SeoService } from 'src/app/services/seo.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
@@ -18,6 +18,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
   mempoolBlockIndex: number;
   mempoolBlock$: Observable<MempoolBlock>;
   ordinal$: BehaviorSubject<string> = new BehaviorSubject('');
+  previewTx: TransactionStripped | void;
 
   constructor(
     private route: ActivatedRoute,
@@ -74,5 +75,9 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
     } else {
       return $localize`:@@mempool-block.block.no:Mempool block ${this.mempoolBlockIndex + 1}:INTERPOLATION:`;
     }
- }
+  }
+
+  setTxPreview(event: TransactionStripped | void): void {
+    this.previewTx = event
+  }
 }

@@ -1,6 +1,6 @@
 import TxSprite from './tx-sprite'
 import TxView from './tx-view'
-import { Square } from './sprite-types'
+import { Position, Square } from './sprite-types'
 
 export default class BlockScene {
   scene: { count: number, offset: { x: number, y: number}};
@@ -33,6 +33,7 @@ export default class BlockScene {
     this.unitWidth = this.gridSize - (this.unitPadding * 2)
 
     this.dirty = true
+    if (this.initialised && this.scene) this.updateAll(performance.now())
   }
 
   // Animate new block entering scene
@@ -68,6 +69,14 @@ export default class BlockScene {
     txs.sort((a,b) => { return b.feerate - a.feerate }).forEach(tx => {
       this.insert(tx, startTime, direction)
     })
+  }
+
+  //return the tx at this screen position, if any
+  getTxAt (position: Position): TxView | void {
+    if (this.layout) {
+      const gridPosition = this.screenToGrid(position)
+      return this.layout.getTx(gridPosition)
+    } else return null
   }
 
   private init ({ width, height, resolution, blockLimit }: { width: number, height: number, resolution: number, blockLimit: number}): void {
@@ -205,6 +214,14 @@ export default class BlockScene {
     }
   }
 
+  screenToGrid (position: Position): Position {
+    const grid = {
+      x: Math.floor((position.y - this.unitPadding) / this.gridSize),
+      y: Math.floor((this.width + (this.unitPadding * 2) - position.x) / this.gridSize)
+    }
+    return grid
+  }
+
   // calculates and returns the size of the tx in multiples of the grid size
   private txSize (tx: TxView): number {
     let scale = Math.max(1,Math.round(Math.sqrt(tx.vsize / this.vbytesPerUnit)))
@@ -328,6 +345,14 @@ class Row {
       }
     }
   }
+
+  txAt (x: number): TxView | void {
+    let i = 0
+    while (i < this.filled.length && this.filled[i].l <= x) {
+      if (this.filled[i].l <= x && this.filled[i].r > x) return this.filled[i].tx
+      i++
+    }
+  }
 }
 
 class BlockLayout {
@@ -342,6 +367,16 @@ class BlockLayout {
     this.height = height
     this.rows = [new Row(0, this.width)]
     this.txPositions = {}
+  }
+
+  getRow (position: Square): Row {
+    return this.rows[position.y]
+  }
+
+  getTx (position: Square): TxView | void {
+    if (this.getRow(position)) {
+      return this.getRow(position).txAt(position.x)
+    }
   }
 
   addRow (): void {
