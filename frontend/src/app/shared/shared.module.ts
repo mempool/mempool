@@ -71,6 +71,7 @@ import { RewardStatsComponent } from '../components/reward-stats/reward-stats.co
 import { DataCyDirective } from '../data-cy.directive';
 import { LoadingIndicatorComponent } from '../components/loading-indicator/loading-indicator.component';
 import { IndexingProgressComponent } from '../components/indexing-progress/indexing-progress.component';
+import { SvgImagesComponent } from '../components/svg-images/svg-images.component';
 
 @NgModule({
   declarations: [
@@ -136,6 +137,7 @@ import { IndexingProgressComponent } from '../components/indexing-progress/index
     RewardStatsComponent,
     LoadingIndicatorComponent,
     IndexingProgressComponent,
+    SvgImagesComponent,
   ],
   imports: [
     CommonModule,
@@ -228,6 +230,7 @@ import { IndexingProgressComponent } from '../components/indexing-progress/index
     RewardStatsComponent,
     LoadingIndicatorComponent,
     IndexingProgressComponent,
+    SvgImagesComponent,
   ]
 })
 export class SharedModule {
