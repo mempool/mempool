@@ -1,18 +1,23 @@
 # Docker Installation
 
-This directory contains the Dockerfiles used to build and release the official images and a `docker-compose.yml` for end users to run a Mempool instance with minimal effort.
+This directory contains the Dockerfiles used to build and release the official images, as well as a `docker-compose.yml` to configure environment variables and other settings.
 
-You can choose to configure Mempool to run with a basic backend powered by just `bitcoind`, or with `bitcoind` along with an Electrum-compatible server for full functionality.
+If you are looking to use these Docker images to deploy your own instance of Mempool, note that they only containerize Mempool's frontend and backend. You will still need to deploy and configure Bitcoin Core and an Electrum Server separately, along with any other utilities specific to your use case (e.g., a reverse proxy, etc). Such configuration is mostly beyond the scope of the Mempool project, so please only proceed if you know what you're doing.
 
-## `bitcoind`-only Configuration
+Jump to a section in this doc:
+- [Configure with Bitcoin Core Only](#configure-with-bitcoin-core-only)
+- [Configure with Bitcoin Core + Electrum Server](#configure-with-bitcoin-core--electrum-server)
+- [Further Configuration](#further-configuration)
 
-_Note: address lookups require an Electrum server and will not work with this configuration._
+## Configure with Bitcoin Core Only
 
-Make sure `bitcoind` is running and synced.
+_Note: address lookups require an Electrum Server and will not work with this configuration. [Add an Electrum Server](#configure-with-bitcoin-core--electrum-server) to your backend for full functionality._
 
-The default Docker configuration assumes you have added RPC credentials for a `mempool` user with a `mempool` password in your `bitcoin.conf` file, like so:
+The default Docker configuration assumes you have the following configuration in your `bitcoin.conf` file:
 
 ```
+txindex=1
+server=1
 rpcuser=mempool
 rpcpassword=mempool
 ```
@@ -31,6 +36,8 @@ If you want to use different credentials, specify them in the `docker-compose.ym
 
 The IP address in the example above refers to Docker's default gateway IP address so that the container can hit the `bitcoind` instance running on the host machine. If your setup is different, update it accordingly.
 
+Make sure `bitcoind` is running and synced.
+
 Now, run:
 
 ```bash
@@ -39,11 +46,11 @@ docker-compose up
 
 Your Mempool instance should be running at http://localhost. The graphs will be populated as new transactions are detected.
 
-## `bitcoind` + Electrum Server Configuration
+## Configure with Bitcoin Core + Electrum Server
 
-First, configure `bitcoind` as specified above, and make sure your Electrum server is running and synced.
+First, configure `bitcoind` as specified above, and make sure your Electrum Server is running and synced. See [this FAQ](https://mempool.space/docs/faq#address-lookup-issues) if you need help picking an Electrum Server implementation.
 
-Then, make sure the following variables are set in `docker-compose.yml`, as shown below, so Mempool can connect to your Electrum server:
+Then, set the following variables in `docker-compose.yml` so Mempool can connect to your Electrum Server:
 
 ```
   api:
@@ -53,6 +60,11 @@ Then, make sure the following variables are set in `docker-compose.yml`, as show
       ELECTRUM_PORT: "50002"
       ELECTRUM_TLS_ENABLED: "false"
 ```
+
+Eligible values for `MEMPOOL_BACKEND`:
+  - "electrum" if you're using [romanz/electrs](https://github.com/romanz/electrs) or [cculianu/Fulcrum](https://github.com/cculianu/Fulcrum)
+  - "esplora" if you're using [Blockstream/electrs](https://github.com/Blockstream/electrs)
+  - "none" if you're not using any Electrum Server
 
 Of course, if your Docker host IP address is different, update accordingly.
 
