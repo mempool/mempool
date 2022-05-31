@@ -343,7 +343,7 @@ class Blocks {
           await blocksRepository.$saveBlockInDatabase(blockExtended);
         }
       }
-      if (fiatConversion.ratesInitialized === true) {
+      if (fiatConversion.ratesInitialized === true && config.DATABASE.ENABLED === true) {
         await RatesRepository.$saveRate(blockExtended.height, fiatConversion.getConversionRates());
       }
 
