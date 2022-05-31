@@ -619,6 +619,14 @@ class Routes {
   }
 
   public async $getHistoricalHashrate(req: Request, res: Response) {
+    let currentHashrate = 0, currentDifficulty = 0;
+    try {
+      currentHashrate = await bitcoinClient.getNetworkHashPs();
+      currentDifficulty = await bitcoinClient.getDifficulty();
+    } catch (e) {
+      logger.debug('Bitcoin Core is not available, using zeroed value for current hashrate and difficulty');
+    }
+
     try {
       const hashrates = await HashratesRepository.$getNetworkDailyHashrate(req.params.interval);
       const difficulty = await BlocksRepository.$getBlocksDifficulty(req.params.interval);
@@ -630,8 +638,8 @@ class Routes {
       res.json({
         hashrates: hashrates,
         difficulty: difficulty,
-        currentHashrate: await bitcoinClient.getNetworkHashPs(),
-        currentDifficulty: await bitcoinClient.getDifficulty(),
+        currentHashrate: currentHashrate,
+        currentDifficulty: currentDifficulty,
       });
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
