@@ -1,29 +1,30 @@
 <app-indexing-progress *ngIf="!widget"></app-indexing-progress>
 
-<div class="container-xl" [class]="widget ? 'widget' : 'full-height'">
+<div class="container-xl" style="min-height: 335px" [ngClass]="{'widget': widget, 'full-height': !widget, 'legacy': !indexingAvailable}">
   <h1 *ngIf="!widget" class="float-left" i18n="master-page.blocks">Blocks</h1>
+  <div *ngIf="!widget && isLoading" class="spinner-border ml-3" role="status"></div>
 
   <div class="clearfix"></div>
 
   <div style="min-height: 295px">
     <table class="table table-borderless">
       <thead>
-        <th class="height text-left" [class]="widget ? 'widget' : ''" i18n="latest-blocks.height">Height</th>
-        <th class="pool text-left" [class]="widget ? 'widget' : ''" i18n="mining.pool-name">Pool</th>
-        <th class="timestamp" i18n="latest-blocks.timestamp" *ngIf="!widget">Timestamp</th>
-        <th class="mined" i18n="latest-blocks.mined" *ngIf="!widget">Mined</th>
-        <th class="reward text-right" i18n="latest-blocks.reward" [class]="widget ? 'widget' : ''">Reward</th>
-        <th class="fees text-right" i18n="latest-blocks.fees" *ngIf="!widget">Fees</th>
-        <th class="txs text-right" i18n="dashboard.txs" [class]="widget ? 'widget' : ''">TXs</th>
-        <th class="size" i18n="latest-blocks.size" *ngIf="!widget">Size</th>
+        <th class="height text-left" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}" i18n="latest-blocks.height">Height</th>
+        <th *ngIf="indexingAvailable" class="pool text-left" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}" i18n="mining.pool-name">Pool</th>
+        <th class="timestamp" i18n="latest-blocks.timestamp" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">Timestamp</th>
+        <th class="mined" i18n="latest-blocks.mined" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">Mined</th>
+        <th *ngIf="indexingAvailable" class="reward text-right" i18n="latest-blocks.reward" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">Reward</th>
+        <th *ngIf="indexingAvailable && !widget" class="fees text-right" i18n="latest-blocks.fees" [class]="indexingAvailable ? '' : 'legacy'">Fees</th>
+        <th *ngIf="indexingAvailable" class="txs text-right" i18n="dashboard.txs" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">TXs</th>
+        <th *ngIf="!indexingAvailable" class="txs text-right" i18n="dashboard.txs" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">Transactions</th>
+        <th class="size" i18n="latest-blocks.size" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">Size</th>
       </thead>
       <tbody *ngIf="blocks$ | async as blocks; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
         <tr *ngFor="let block of blocks; let i= index; trackBy: trackByBlock">
           <td class="text-left" [class]="widget ? 'widget' : ''">
-            <a [routerLink]="['/block' | relativeUrl, block.height]">{{ block.height
-              }}</a>
+            <a [routerLink]="['/block' | relativeUrl, block.height]">{{ block.height }}</a>
           </td>
-          <td class="pool text-left" [class]="widget ? 'widget' : ''">
+          <td  *ngIf="indexingAvailable" class="pool text-left" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
             <div class="tooltip-custom">
               <a class="clear-link" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]">
                 <img width="22" height="22" src="{{ block.extras.pool['logo'] }}"
@@ -36,19 +37,19 @@
           <td class="timestamp" *ngIf="!widget">
             &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
           </td>
-          <td class="mined" *ngIf="!widget">
+          <td class="mined" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">
             <app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since>
           </td>
-          <td class="reward text-right" [class]="widget ? 'widget' : ''">
+          <td *ngIf="indexingAvailable" class="reward text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
             <app-amount [satoshis]="block.extras.reward" [noFiat]="true" digitsInfo="1.2-2"></app-amount>
           </td>
-          <td class="fees text-right" *ngIf="!widget">
+          <td *ngIf="indexingAvailable && !widget" class="fees text-right" [class]="indexingAvailable ? '' : 'legacy'">
             <app-amount [satoshis]="block.extras.totalFees" [noFiat]="true" digitsInfo="1.2-2"></app-amount>
           </td>
-          <td class="txs text-right" [class]="widget ? 'widget' : ''">
+          <td class="txs text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
             {{ block.tx_count | number }}
           </td>
-          <td class="size" *ngIf="!widget">
+          <td class="size" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">
             <div class="progress">
               <div class="progress-bar progress-mempool" role="progressbar"
                 [ngStyle]="{'width': (block.weight / stateService.env.BLOCK_WEIGHT_UNITS)*100 + '%' }"></div>
@@ -60,29 +61,29 @@
       <ng-template #skeleton>
         <tbody>
           <tr *ngFor="let item of skeletonLines">
-            <td class="height text-left" [class]="widget ? 'widget' : ''">
+            <td class="height text-left" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
               <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
-            <td class="pool text-left" [class]="widget ? 'widget' : ''">
+            <td *ngIf="indexingAvailable" class="pool text-left" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
               <img width="1" height="25" style="opacity: 0">
               <span class="skeleton-loader" style="max-width: 125px"></span>
             </td>
-            <td class="timestamp" *ngIf="!widget">
+            <td class="timestamp" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">
               <span class="skeleton-loader" style="max-width: 150px"></span>
             </td>
-            <td class="mined" *ngIf="!widget">
+            <td class="mined" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">
               <span class="skeleton-loader" style="max-width: 125px"></span>
             </td>
-            <td class="reward text-right" [class]="widget ? 'widget' : ''">
+            <td *ngIf="indexingAvailable" class="reward text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
               <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
-            <td class="fees text-right" *ngIf="!widget">
+            <td *ngIf="indexingAvailable && !widget" class="fees text-right" [class]="indexingAvailable ? '' : 'legacy'">
               <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
-            <td class="txs text-right" [class]="widget ? 'widget' : ''">
+            <td class="txs text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
               <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
-            <td class="size" *ngIf="!widget">
+            <td class="size" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">
               <span class="skeleton-loader"></span>
             </td>
           </tr>

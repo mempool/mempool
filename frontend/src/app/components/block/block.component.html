@@ -114,7 +114,7 @@
                   <td><span class="skeleton-loader"></span></td>
                 </tr>
               </ng-template>
-              <tr>
+              <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
                 <td i18n="block.miner">Miner</td>
                 <td *ngIf="stateService.env.MINING_DASHBOARD">
                   <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]" class="badge"
@@ -197,7 +197,18 @@
 
     <app-transactions-list [transactions]="transactions" [paginated]="true"></app-transactions-list>
 
-    <ng-template [ngIf]="isLoadingTransactions">
+    <ng-template [ngIf]="transactionsError">
+      <div class="text-center">
+        <br>
+        <span i18n="error.general-loading-data">Error loading data.</span>
+        <br><br>
+        <i>{{ transactionsError.status }}: {{ transactionsError.error }}</i>
+        <br>
+        <br>
+      </div>
+    </ng-template>
+
+    <ng-template [ngIf]="isLoadingTransactions && !transactionsError">
       <div class="text-center mb-4" class="tx-skeleton">
 
         <ng-container *ngIf="(txsLoadingStatus$ | async) as txsLoadingStatus; else headerLoader">
@@ -271,9 +282,9 @@
 
   <ng-template [ngIf]="error">
     <div class="text-center">
-      <span i18n="block.error.loading-block-data">Error loading block data.</span>
+      <span i18n="error.general-loading-data">Error loading data.</span>
       <br><br>
-      <i>{{ error.error }}</i>
+      <i>{{ error.code }}: {{ error.error }}</i>
     </div>
   </ng-template>
 
