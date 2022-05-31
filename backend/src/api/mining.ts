@@ -89,14 +89,18 @@ class Mining {
     });
 
     poolsStatistics['pools'] = poolsStats;
-    poolsStatistics['oldestIndexedBlockTimestamp'] = await BlocksRepository.$oldestBlockTimestamp();
 
     const blockCount: number = await BlocksRepository.$blockCount(null, interval);
     poolsStatistics['blockCount'] = blockCount;
 
     const totalBlock24h: number = await BlocksRepository.$blockCount(null, '24h');
-    const lastBlockHashrate = await bitcoinClient.getNetworkHashPs(totalBlock24h);
-    poolsStatistics['lastEstimatedHashrate'] = lastBlockHashrate;
+
+    try {
+      poolsStatistics['lastEstimatedHashrate'] = await bitcoinClient.getNetworkHashPs(totalBlock24h);
+    } catch (e) {
+      poolsStatistics['lastEstimatedHashrate'] = 0;
+      logger.debug('Bitcoin Core is not available, using zeroed value for current hashrate');
+    }
 
     return poolsStatistics;
   }
@@ -119,7 +123,12 @@ class Mining {
     const blockCount1w: number = await BlocksRepository.$blockCount(pool.id, '1w');
     const totalBlock1w: number = await BlocksRepository.$blockCount(null, '1w');
 
-    const currentEstimatedkHashrate = await bitcoinClient.getNetworkHashPs(totalBlock24h);
+    let currentEstimatedHashrate = 0;
+    try {
+      currentEstimatedHashrate = await bitcoinClient.getNetworkHashPs(totalBlock24h);
+    } catch (e) {
+      logger.debug('Bitcoin Core is not available, using zeroed value for current hashrate');
+    }
 
     return {
       pool: pool,
@@ -133,7 +142,7 @@ class Mining {
         '24h': blockCount24h / totalBlock24h,
         '1w': blockCount1w / totalBlock1w,
       },
-      estimatedHashrate: currentEstimatedkHashrate * (blockCount24h / totalBlock24h),
+      estimatedHashrate: currentEstimatedHashrate * (blockCount24h / totalBlock24h),
       reportedHashrate: null,
     };
   }

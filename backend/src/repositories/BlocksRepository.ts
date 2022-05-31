@@ -122,6 +122,19 @@ class BlocksRepository {
   }
 
   /**
+   * Return most recent block height
+   */
+  public async $mostRecentBlockHeight(): Promise<number> {
+    try {
+      const [row] = await DB.query('SELECT MAX(height) as maxHeight from blocks');
+      return row[0]['maxHeight'];
+    } catch (e) {
+      logger.err(`Cannot count blocks for this pool (using offset). Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
    * Get blocks count for a period
    */
   public async $blockCount(poolId: number | null, interval: string | null = null): Promise<number> {
@@ -475,9 +488,9 @@ class BlocksRepository {
   public async $getHistoricalBlockFees(div: number, interval: string | null): Promise<any> {
     try {
       let query = `SELECT
-        CAST(AVG(height) as INT) as avg_height,
+        CAST(AVG(height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(fees) as INT) as avg_fees
+        CAST(AVG(fees) as INT) as avgFees
         FROM blocks`;
 
       if (interval !== null) {
@@ -500,9 +513,9 @@ class BlocksRepository {
   public async $getHistoricalBlockRewards(div: number, interval: string | null): Promise<any> {
     try {
       let query = `SELECT
-        CAST(AVG(height) as INT) as avg_height,
+        CAST(AVG(height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(reward) as INT) as avg_rewards
+        CAST(AVG(reward) as INT) as avgRewards
         FROM blocks`;
 
       if (interval !== null) {
@@ -525,15 +538,15 @@ class BlocksRepository {
    public async $getHistoricalBlockFeeRates(div: number, interval: string | null): Promise<any> {
     try {
       let query = `SELECT
-        CAST(AVG(height) as INT) as avg_height,
+        CAST(AVG(height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(JSON_EXTRACT(fee_span, '$[0]')) as INT) as avg_fee_0,
-        CAST(AVG(JSON_EXTRACT(fee_span, '$[1]')) as INT) as avg_fee_10,
-        CAST(AVG(JSON_EXTRACT(fee_span, '$[2]')) as INT) as avg_fee_25,
-        CAST(AVG(JSON_EXTRACT(fee_span, '$[3]')) as INT) as avg_fee_50,
-        CAST(AVG(JSON_EXTRACT(fee_span, '$[4]')) as INT) as avg_fee_75,
-        CAST(AVG(JSON_EXTRACT(fee_span, '$[5]')) as INT) as avg_fee_90,
-        CAST(AVG(JSON_EXTRACT(fee_span, '$[6]')) as INT) as avg_fee_100
+        CAST(AVG(JSON_EXTRACT(fee_span, '$[0]')) as INT) as avgFee_0,
+        CAST(AVG(JSON_EXTRACT(fee_span, '$[1]')) as INT) as avgFee_10,
+        CAST(AVG(JSON_EXTRACT(fee_span, '$[2]')) as INT) as avgFee_25,
+        CAST(AVG(JSON_EXTRACT(fee_span, '$[3]')) as INT) as avgFee_50,
+        CAST(AVG(JSON_EXTRACT(fee_span, '$[4]')) as INT) as avgFee_75,
+        CAST(AVG(JSON_EXTRACT(fee_span, '$[5]')) as INT) as avgFee_90,
+        CAST(AVG(JSON_EXTRACT(fee_span, '$[6]')) as INT) as avgFee_100
       FROM blocks`;
 
       if (interval !== null) {
@@ -556,9 +569,9 @@ class BlocksRepository {
    public async $getHistoricalBlockSizes(div: number, interval: string | null): Promise<any> {
     try {
       let query = `SELECT
-        CAST(AVG(height) as INT) as avg_height,
+        CAST(AVG(height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(size) as INT) as avg_size
+        CAST(AVG(size) as INT) as avgSize
       FROM blocks`;
 
       if (interval !== null) {
@@ -581,9 +594,9 @@ class BlocksRepository {
    public async $getHistoricalBlockWeights(div: number, interval: string | null): Promise<any> {
     try {
       let query = `SELECT
-        CAST(AVG(height) as INT) as avg_height,
+        CAST(AVG(height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(weight) as INT) as avg_weight
+        CAST(AVG(weight) as INT) as avgWeight
       FROM blocks`;
 
       if (interval !== null) {

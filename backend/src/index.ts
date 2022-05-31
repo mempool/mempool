@@ -25,9 +25,6 @@ import databaseMigration from './api/database-migration';
 import syncAssets from './sync-assets';
 import icons from './api/liquid/icons';
 import { Common } from './api/common';
-import mining from './api/mining';
-import HashratesRepository from './repositories/HashratesRepository';
-import BlocksRepository from './repositories/BlocksRepository';
 import poolsUpdater from './tasks/pools-updater';
 import indexer from './indexer';
 
@@ -315,8 +312,8 @@ class Server {
     }
 
     this.app
-      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-extras', routes.getBlocksExtras)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-extras/:height', routes.getBlocksExtras)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks', routes.getBlocks.bind(routes))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/:height', routes.getBlocks.bind(routes))
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash', routes.getBlock);
 
     if (config.MEMPOOL.BACKEND !== 'esplora') {
@@ -330,8 +327,6 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/status', routes.getTransactionStatus)
         .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/outspends', routes.getTransactionOutspends)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/header', routes.getBlockHeader)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'blocks', routes.getBlocks)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/:height', routes.getBlocks)
         .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/height', routes.getBlockTipHeight)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txs', routes.getBlockTransactions)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txs/:index', routes.getBlockTransactions)

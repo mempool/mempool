@@ -69,7 +69,7 @@ export class BlockRewardsGraphComponent implements OnInit {
             .pipe(
               tap((response) => {
                 this.prepareChartOptions({
-                  blockRewards: response.body.map(val => [val.timestamp * 1000, val.avg_rewards / 100000000]),
+                  blockRewards: response.body.map(val => [val.timestamp * 1000, val.avgRewards / 100000000]),
                 });
                 this.isLoading = false;
               }),

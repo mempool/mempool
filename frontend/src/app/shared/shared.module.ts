@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbCollapse, NgbCollapseModule, NgbRadioGroup, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
@@ -48,7 +47,6 @@ import { TransactionsListComponent } from '../components/transactions-list/trans
 import { BlockComponent } from '../components/block/block.component';
 import { AddressComponent } from '../components/address/address.component';
 import { SearchFormComponent } from '../components/search-form/search-form.component';
-import { LatestBlocksComponent } from '../components/latest-blocks/latest-blocks.component';
 import { AddressLabelsComponent } from '../components/address-labels/address-labels.component';
 import { FooterComponent } from '../components/footer/footer.component';
 import { TimeSpanComponent } from '../components/time-span/time-span.component';
@@ -113,7 +111,6 @@ import { IndexingProgressComponent } from '../components/indexing-progress/index
     BlockComponent,
     TransactionsListComponent,
     AddressComponent,
-    LatestBlocksComponent,
     SearchFormComponent,
     TimeSpanComponent,
     AddressLabelsComponent,
@@ -148,11 +145,10 @@ import { IndexingProgressComponent } from '../components/indexing-progress/index
     NgbTooltipModule,
     NgbButtonsModule,
     NgbPaginationModule,
-    NgbDropdownModule,
-    NgbAccordionModule,
-    InfiniteScrollModule,
     NgbTypeaheadModule,
-    NgbModule,
+    NgbDropdownModule,
+    NgbCollapseModule,
+    InfiniteScrollModule,
     FontAwesomeModule,
   ],
   providers: [
@@ -164,17 +160,16 @@ import { IndexingProgressComponent } from '../components/indexing-progress/index
   ],
   exports: [
     RouterModule,
-    InfiniteScrollModule,
-    NgbTypeaheadModule,
-    NgbModule,
-    FontAwesomeModule,
-    NgbAccordionModule,
-    NgbNavModule,
     ReactiveFormsModule,
+    NgbNavModule,
     NgbTooltipModule,
     NgbButtonsModule,
     NgbPaginationModule,
+    NgbTypeaheadModule,
     NgbDropdownModule,
+    NgbCollapseModule,
+    InfiniteScrollModule,
+    FontAwesomeModule,
     TimeSinceComponent,
     TimeUntilComponent,
     ClipboardComponent,
@@ -208,7 +203,6 @@ import { IndexingProgressComponent } from '../components/indexing-progress/index
     BlockComponent,
     TransactionsListComponent,
     AddressComponent,
-    LatestBlocksComponent,
     SearchFormComponent,
     TimeSpanComponent,
     AddressLabelsComponent,

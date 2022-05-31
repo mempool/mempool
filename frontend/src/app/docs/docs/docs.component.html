@@ -3,10 +3,10 @@
 
     <h2 i18n="documentation.title">Documentation</h2>
 
-    <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav-tabs">
+    <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav-tabs" role="tablist">
 
-      <li [ngbNavItem]="0" *ngIf="showFaqTab">
-        <a ngbNavLink [routerLink]="['/docs/faq' | relativeUrl]">FAQ</a>
+      <li [ngbNavItem]="0" *ngIf="showFaqTab" role="presentation">
+        <a ngbNavLink [routerLink]="['/docs/faq' | relativeUrl]" role="tab">FAQ</a>
         <ng-template ngbNavContent>
 
           <app-api-docs [whichTab]="'faq'"></app-api-docs>
@@ -14,8 +14,8 @@
         </ng-template>
       </li>
 
-      <li [ngbNavItem]="1">
-        <a ngbNavLink [routerLink]="['/docs/api/rest' | relativeUrl]">API - REST</a>
+      <li [ngbNavItem]="1" role="presentation">
+        <a ngbNavLink [routerLink]="['/docs/api/rest' | relativeUrl]" role="tab">API - REST</a>
         <ng-template ngbNavContent>
 
           <app-api-docs [whichTab]="'rest'"></app-api-docs>
@@ -23,8 +23,8 @@
         </ng-template>
       </li>
 
-      <li [ngbNavItem]="2" *ngIf="showWebSocketTab">
-        <a ngbNavLink [routerLink]="['/docs/api/websocket' | relativeUrl]">API - WebSocket</a>
+      <li [ngbNavItem]="2" *ngIf="showWebSocketTab" role="presentation">
+        <a ngbNavLink [routerLink]="['/docs/api/websocket' | relativeUrl]" role="tab">API - WebSocket</a>
         <ng-template ngbNavContent>
 
           <app-api-docs [whichTab]="'websocket'"></app-api-docs>
