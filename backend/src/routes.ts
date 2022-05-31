@@ -572,9 +572,9 @@ class Routes {
     }
   }
 
-  public async $getPools(interval: string, req: Request, res: Response) {
+  public async $getPools(req: Request, res: Response) {
     try {
-      const stats = await miningStats.$getPoolsStats(interval);
+      const stats = await miningStats.$getPoolsStats(req.params.interval);
       const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
@@ -588,7 +588,7 @@ class Routes {
 
   public async $getPoolsHistoricalHashrate(req: Request, res: Response) {
     try {
-      const hashrates = await HashratesRepository.$getPoolsWeeklyHashrate(req.params.interval ?? null);
+      const hashrates = await HashratesRepository.$getPoolsWeeklyHashrate(req.params.interval);
       const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
@@ -619,9 +619,17 @@ class Routes {
   }
 
   public async $getHistoricalHashrate(req: Request, res: Response) {
+    let currentHashrate = 0, currentDifficulty = 0;
     try {
-      const hashrates = await HashratesRepository.$getNetworkDailyHashrate(req.params.interval ?? null);
-      const difficulty = await BlocksRepository.$getBlocksDifficulty(req.params.interval ?? null);
+      currentHashrate = await bitcoinClient.getNetworkHashPs();
+      currentDifficulty = await bitcoinClient.getDifficulty();
+    } catch (e) {
+      logger.debug('Bitcoin Core is not available, using zeroed value for current hashrate and difficulty');
+    }
+
+    try {
+      const hashrates = await HashratesRepository.$getNetworkDailyHashrate(req.params.interval);
+      const difficulty = await BlocksRepository.$getBlocksDifficulty(req.params.interval);
       const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
@@ -630,8 +638,8 @@ class Routes {
       res.json({
         hashrates: hashrates,
         difficulty: difficulty,
-        currentHashrate: await bitcoinClient.getNetworkHashPs(),
-        currentDifficulty: await bitcoinClient.getDifficulty(),
+        currentHashrate: currentHashrate,
+        currentDifficulty: currentDifficulty,
       });
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
@@ -640,12 +648,12 @@ class Routes {
 
   public async $getHistoricalBlockFees(req: Request, res: Response) {
     try {
-      const blockFees = await mining.$getHistoricalBlockFees(req.params.interval ?? null);
+      const blockFees = await mining.$getHistoricalBlockFees(req.params.interval);
       const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.header('X-total-count', blockCount.toString());
-      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(blockFees);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
@@ -654,12 +662,12 @@ class Routes {
 
   public async $getHistoricalBlockRewards(req: Request, res: Response) {
     try {
-      const blockRewards = await mining.$getHistoricalBlockRewards(req.params.interval ?? null);
+      const blockRewards = await mining.$getHistoricalBlockRewards(req.params.interval);
       const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.header('X-total-count', blockCount.toString());
-      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(blockRewards);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
@@ -668,15 +676,13 @@ class Routes {
 
   public async $getHistoricalBlockFeeRates(req: Request, res: Response) {
     try {
-      const blockFeeRates = await mining.$getHistoricalBlockFeeRates(req.params.interval ?? null);
-      const oldestIndexedBlockTimestamp = await BlocksRepository.$oldestBlockTimestamp();
+      const blockFeeRates = await mining.$getHistoricalBlockFeeRates(req.params.interval);
+      const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
-      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
-      res.json({
-        oldestIndexedBlockTimestamp: oldestIndexedBlockTimestamp,
-        blockFeeRates: blockFeeRates,
-      });
+      res.header('X-total-count', blockCount.toString());
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      res.json(blockFeeRates);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
@@ -684,13 +690,13 @@ class Routes {
 
   public async $getHistoricalBlockSizeAndWeight(req: Request, res: Response) {
     try {
-      const blockSizes = await mining.$getHistoricalBlockSizes(req.params.interval ?? null);
-      const blockWeights = await mining.$getHistoricalBlockWeights(req.params.interval ?? null);
+      const blockSizes = await mining.$getHistoricalBlockSizes(req.params.interval);
+      const blockWeights = await mining.$getHistoricalBlockWeights(req.params.interval);
       const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.header('X-total-count', blockCount.toString());
-      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json({
         sizes: blockSizes,
         weights: blockWeights
@@ -702,8 +708,9 @@ class Routes {
 
   public async getBlock(req: Request, res: Response) {
     try {
-      const result = await bitcoinApi.$getBlock(req.params.hash);
-      res.json(result);
+      const block = await blocks.$getBlock(req.params.hash);
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 600).toUTCString());
+      res.json(block);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
@@ -719,19 +726,22 @@ class Routes {
     }
   }
 
-  public async getBlocksExtras(req: Request, res: Response) {
+  public async getBlocks(req: Request, res: Response) {
     try {
-      const height = req.params.height === undefined ? undefined : parseInt(req.params.height, 10);
-      res.json(await blocks.$getBlocksExtras(height, 15));
+      if (['mainnet', 'testnet', 'signet', 'regtest'].includes(config.MEMPOOL.NETWORK)) { // Bitcoin
+        const height = req.params.height === undefined ? undefined : parseInt(req.params.height, 10);
+        res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+        res.json(await blocks.$getBlocks(height, 15));
+      } else { // Liquid, Bisq
+        return await this.getLegacyBlocks(req, res);
+      }
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
-  
-  public async getBlocks(req: Request, res: Response) {
-    try {
-      loadingIndicators.setProgress('blocks', 0);
 
+  public async getLegacyBlocks(req: Request, res: Response) {
+    try {
       const returnBlocks: IEsploraApi.Block[] = [];
       const fromHeight = parseInt(req.params.height, 10) || blocks.getCurrentBlockHeight();
 
@@ -755,16 +765,15 @@ class Routes {
           returnBlocks.push(block);
           nextHash = block.previousblockhash;
         }
-        loadingIndicators.setProgress('blocks', i / 10 * 100);
       }
 
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(returnBlocks);
     } catch (e) {
-      loadingIndicators.setProgress('blocks', 100);
       res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
-
+  
   public async getBlockTransactions(req: Request, res: Response) {
     try {
       loadingIndicators.setProgress('blocktxs-' + req.params.hash, 0);
@@ -776,9 +785,9 @@ class Routes {
       const endIndex = Math.min(startingIndex + 10, txIds.length);
       for (let i = startingIndex; i < endIndex; i++) {
         try {
-          const transaction = await transactionUtils.$getTransactionExtended(txIds[i], true);
+          const transaction = await transactionUtils.$getTransactionExtended(txIds[i], true, true);
           transactions.push(transaction);
-          loadingIndicators.setProgress('blocktxs-' + req.params.hash, (i + 1) / endIndex * 100);
+          loadingIndicators.setProgress('blocktxs-' + req.params.hash, (i - startingIndex + 1) / (endIndex - startingIndex) * 100);
         } catch (e) {
           logger.debug('getBlockTransactions error: ' + (e instanceof Error ? e.message : e));
         }
@@ -1001,6 +1010,7 @@ class Routes {
   public async $getRewardStats(req: Request, res: Response) {
     try {
       const response = await mining.$getRewardStats(parseInt(req.params.blockCount, 10));
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(response);
     } catch (e) {
       res.status(500).end();

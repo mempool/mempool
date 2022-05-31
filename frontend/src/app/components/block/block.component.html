@@ -81,15 +81,26 @@
               <ng-template [ngIf]="fees !== undefined" [ngIfElse]="loadingFees">
                 <tr>
                   <td i18n="block.total-fees|Total fees in a block">Total fees</td>
-                  <td *ngIf="network !== 'liquid' && network !== 'liquidtestnet'; else liquidTotalFees"><app-amount [satoshis]="fees * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="fees * 100000000" digitsInfo="1.0-0"></app-fiat></span></td>
+                  <td *ngIf="network !== 'liquid' && network !== 'liquidtestnet'; else liquidTotalFees">
+                    <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
+                    <span class="fiat">
+                      <app-fiat [value]="block.extras.totalFees" digitsInfo="1.0-0"></app-fiat>
+                    </span>
+                  </td>
                   <ng-template #liquidTotalFees>
-                    <td><app-amount [satoshis]="fees * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount>&nbsp; <app-fiat [value]="fees * 100000000" digitsInfo="1.2-2"></app-fiat></td>
+                    <td>
+                      <app-amount [satoshis]="fees * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount>&nbsp; <app-fiat
+                        [value]="fees * 100000000" digitsInfo="1.2-2"></app-fiat>
+                    </td>
                   </ng-template>
                 </tr>
                 <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
                   <td i18n="block.subsidy-and-fees|Total subsidy and fees in a block">Subsidy + fees:</td>
                   <td>
-                    <app-amount [satoshis]="(blockSubsidy + fees) * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="(blockSubsidy + fees) * 100000000" digitsInfo="1.0-0"></app-fiat></span>
+                    <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
+                    <span class="fiat">
+                      <app-fiat [value]="(blockSubsidy + fees) * 100000000" digitsInfo="1.0-0"></app-fiat>
+                    </span>
                   </td>
                 </tr>
               </ng-template>
@@ -103,9 +114,20 @@
                   <td><span class="skeleton-loader"></span></td>
                 </tr>
               </ng-template>
-              <tr>
+              <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
                 <td i18n="block.miner">Miner</td>
-                <td><app-miner [coinbaseTransaction]="coinbaseTx"></app-miner></td>
+                <td *ngIf="stateService.env.MINING_DASHBOARD">
+                  <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]" class="badge"
+                    [class]="block.extras.pool.name === 'Unknown' ? 'badge-secondary' : 'badge-primary'">
+                    {{ block.extras.pool.name }}
+                  </a>
+                </td>
+                <td *ngIf="!stateService.env.MINING_DASHBOARD && stateService.env.BASE_MODULE === 'mempool'">
+                  <span placement="bottom" class="badge"
+                    [class]="block.extras.pool.name === 'Unknown' ? 'badge-secondary' : 'badge-primary'">
+                    {{ block.extras.pool.name }}
+                </span>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -173,14 +195,29 @@
     </div>
     <div class="clearfix"></div>
 
-    <app-transactions-list [transactions]="transactions"></app-transactions-list>
+    <app-transactions-list [transactions]="transactions" [paginated]="true"></app-transactions-list>
 
-    <ng-template [ngIf]="isLoadingTransactions">
+    <ng-template [ngIf]="transactionsError">
+      <div class="text-center">
+        <br>
+        <span i18n="error.general-loading-data">Error loading data.</span>
+        <br><br>
+        <i>{{ transactionsError.status }}: {{ transactionsError.error }}</i>
+        <br>
+        <br>
+      </div>
+    </ng-template>
+
+    <ng-template [ngIf]="isLoadingTransactions && !transactionsError">
       <div class="text-center mb-4" class="tx-skeleton">
 
-        <div class="header-bg box">
-          <span class="skeleton-loader"></span>
-        </div>
+        <ng-container *ngIf="(txsLoadingStatus$ | async) as txsLoadingStatus; else headerLoader">
+          <div class="header-bg box">
+            <div class="progress progress-dark" style="margin: 4px; height: 14px;">
+              <div class="progress-bar progress-light" role="progressbar" [ngStyle]="{'width': txsLoadingStatus + '%' }"></div>
+            </div>
+          </div>
+        </ng-container>
 
         <div class="header-bg box">
           <div class="row">
@@ -193,14 +230,6 @@
             </div>
           </div>
         </div>
-
-        <ng-container *ngIf="(txsLoadingStatus$ | async) as txsLoadingStatus">
-          <br>
-          <div class="progress progress-dark">
-            <div class="progress-bar progress-darklight" role="progressbar" [ngStyle]="{'width': txsLoadingStatus + '%' }"></div>
-          </div>
-        </ng-container>
-
       </div>
     </ng-template>
     <ngb-pagination class="pagination-container float-right" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page, blockTxTitle)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
@@ -253,9 +282,15 @@
 
   <ng-template [ngIf]="error">
     <div class="text-center">
-      <span i18n="block.error.loading-block-data">Error loading block data.</span>
+      <span i18n="error.general-loading-data">Error loading data.</span>
       <br><br>
-      <i>{{ error.error }}</i>
+      <i>{{ error.code }}: {{ error.error }}</i>
+    </div>
+  </ng-template>
+
+  <ng-template #headerLoader>
+    <div class="header-bg box">
+      <span class="skeleton-loader"></span>
     </div>
   </ng-template>
 

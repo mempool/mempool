@@ -34,10 +34,6 @@ export class DifficultyAdjustmentsTable implements OnInit {
       .pipe(
         map((response) => {
           const data = response.body;
-          const availableTimespanDay = (
-            (new Date().getTime() / 1000) - (data.oldestIndexedBlockTimestamp)
-          ) / 3600 / 24;
-
           const tableData = [];
           for (let i = data.difficulty.length - 1; i > 0; --i) {
             const selectedPowerOfTen: any = selectPowerOfTen(data.difficulty[i].difficulty);
@@ -53,8 +49,7 @@ export class DifficultyAdjustmentsTable implements OnInit {
           this.isLoading = false;
 
           return {
-            availableTimespanDay: availableTimespanDay,
-            difficulty: tableData.slice(0, 5),
+            difficulty: tableData.slice(0, 6),
           };
         }),
       );

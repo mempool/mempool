@@ -5,6 +5,7 @@ import { Common } from '../api/common';
 import { prepareBlock } from '../utils/blocks-utils';
 import PoolsRepository from './PoolsRepository';
 import HashratesRepository from './HashratesRepository';
+import { escape } from 'mysql2';
 
 class BlocksRepository {
   /**
@@ -116,6 +117,19 @@ class BlocksRepository {
       return rows;
     } catch (e) {
       logger.err('Cannot count empty blocks. Reason: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Return most recent block height
+   */
+  public async $mostRecentBlockHeight(): Promise<number> {
+    try {
+      const [row] = await DB.query('SELECT MAX(height) as maxHeight from blocks');
+      return row[0]['maxHeight'];
+    } catch (e) {
+      logger.err(`Cannot count blocks for this pool (using offset). Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -235,12 +249,30 @@ class BlocksRepository {
   public async $getBlocksByPool(slug: string, startHeight?: number): Promise<object[]> {
     const pool = await PoolsRepository.$getPool(slug);
     if (!pool) {
-      throw new Error(`This mining pool does not exist`);
+      throw new Error('This mining pool does not exist ' + escape(slug));
     }
 
     const params: any[] = [];
-    let query = ` SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
-      previous_block_hash as previousblockhash
+    let query = ` SELECT
+      height,
+      hash as id,
+      UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
+      size,
+      weight,
+      tx_count,
+      coinbase_raw,
+      difficulty,
+      fees,
+      fee_span,
+      median_fee,
+      reward,
+      version,
+      bits,
+      nonce,
+      merkle_root,
+      previous_block_hash as previousblockhash,
+      avg_fee,
+      avg_fee_rate
       FROM blocks
       WHERE pool_id = ?`;
     params.push(pool.id);
@@ -273,11 +305,32 @@ class BlocksRepository {
    */
   public async $getBlockByHeight(height: number): Promise<object | null> {
     try {
-      const [rows]: any[] = await DB.query(`
-        SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
-        pools.id as pool_id, pools.name as pool_name, pools.link as pool_link, pools.slug as pool_slug,
-        pools.addresses as pool_addresses, pools.regexes as pool_regexes,
-        previous_block_hash as previousblockhash
+      const [rows]: any[] = await DB.query(`SELECT
+        height,
+        hash as id,
+        UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
+        size,
+        weight,
+        tx_count,
+        coinbase_raw,
+        difficulty,
+        pools.id as pool_id,
+        pools.name as pool_name,
+        pools.link as pool_link,
+        pools.slug as pool_slug,
+        pools.addresses as pool_addresses,
+        pools.regexes as pool_regexes,
+        fees,
+        fee_span,
+        median_fee,
+        reward,
+        version,
+        bits,
+        nonce,
+        merkle_root,
+        previous_block_hash as previousblockhash,
+        avg_fee,
+        avg_fee_rate
         FROM blocks
         JOIN pools ON blocks.pool_id = pools.id
         WHERE height = ${height};
@@ -287,9 +340,38 @@ class BlocksRepository {
         return null;
       }
 
+      rows[0].fee_span = JSON.parse(rows[0].fee_span);
       return rows[0];
     } catch (e) {
       logger.err(`Cannot get indexed block ${height}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Get one block by hash
+   */
+  public async $getBlockByHash(hash: string): Promise<object | null> {
+    try {
+      const query = `
+        SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp, hash as id,
+        pools.id as pool_id, pools.name as pool_name, pools.link as pool_link, pools.slug as pool_slug,
+        pools.addresses as pool_addresses, pools.regexes as pool_regexes,
+        previous_block_hash as previousblockhash
+        FROM blocks
+        JOIN pools ON blocks.pool_id = pools.id
+        WHERE hash = '${hash}';
+      `;
+      const [rows]: any[] = await DB.query(query);
+
+      if (rows.length <= 0) {
+        return null;
+      }
+
+      rows[0].fee_span = JSON.parse(rows[0].fee_span);
+      return rows[0];
+    } catch (e) {
+      logger.err(`Cannot get indexed block ${hash}. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -397,18 +479,28 @@ class BlocksRepository {
       const [blocks]: any[] = await DB.query(`SELECT height, hash, previous_block_hash,
         UNIX_TIMESTAMP(blockTimestamp) as timestamp FROM blocks ORDER BY height`);
 
-      let currentHeight = 1;
-      while (currentHeight < blocks.length) {
-        if (blocks[currentHeight].previous_block_hash !== blocks[currentHeight - 1].hash) {
-          logger.warn(`Chain divergence detected at block ${blocks[currentHeight - 1].height}, re-indexing newer blocks and hashrates`);
-          await this.$deleteBlocksFrom(blocks[currentHeight - 1].height);
-          await HashratesRepository.$deleteHashratesFromTimestamp(blocks[currentHeight - 1].timestamp - 604800);
+      let partialMsg = false;
+      let idx = 1;
+      while (idx < blocks.length) {
+        if (blocks[idx].height - 1 !== blocks[idx - 1].height) {
+          if (partialMsg === false) {
+            logger.info('Some blocks are not indexed, skipping missing blocks during chain validation');
+            partialMsg = true;
+          }
+          ++idx;
+          continue;
+        }
+
+        if (blocks[idx].previous_block_hash !== blocks[idx - 1].hash) {
+          logger.warn(`Chain divergence detected at block ${blocks[idx - 1].height}, re-indexing newer blocks and hashrates`);
+          await this.$deleteBlocksFrom(blocks[idx - 1].height);
+          await HashratesRepository.$deleteHashratesFromTimestamp(blocks[idx - 1].timestamp - 604800);
           return false;
         }
-        ++currentHeight;
+        ++idx;
       }
 
-      logger.info(`${currentHeight} blocks hash validated in ${new Date().getTime() - start} ms`);
+      logger.info(`${idx} blocks hash validated in ${new Date().getTime() - start} ms`);
       return true;
     } catch (e) {
       logger.err('Cannot validate chain of block hash. Reason: ' + (e instanceof Error ? e.message : e));
@@ -435,9 +527,9 @@ class BlocksRepository {
   public async $getHistoricalBlockFees(div: number, interval: string | null): Promise<any> {
     try {
       let query = `SELECT
-        CAST(AVG(height) as INT) as avg_height,
+        CAST(AVG(height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(fees) as INT) as avg_fees
+        CAST(AVG(fees) as INT) as avgFees
         FROM blocks`;
 
       if (interval !== null) {
@@ -457,12 +549,12 @@ class BlocksRepository {
   /**
    * Get the historical averaged block rewards
    */
-   public async $getHistoricalBlockRewards(div: number, interval: string | null): Promise<any> {
+  public async $getHistoricalBlockRewards(div: number, interval: string | null): Promise<any> {
     try {
       let query = `SELECT
-        CAST(AVG(height) as INT) as avg_height,
+        CAST(AVG(height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(reward) as INT) as avg_rewards
+        CAST(AVG(reward) as INT) as avgRewards
         FROM blocks`;
 
       if (interval !== null) {
@@ -485,15 +577,15 @@ class BlocksRepository {
    public async $getHistoricalBlockFeeRates(div: number, interval: string | null): Promise<any> {
     try {
       let query = `SELECT
-        CAST(AVG(height) as INT) as avg_height,
+        CAST(AVG(height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(JSON_EXTRACT(fee_span, '$[0]')) as INT) as avg_fee_0,
-        CAST(AVG(JSON_EXTRACT(fee_span, '$[1]')) as INT) as avg_fee_10,
-        CAST(AVG(JSON_EXTRACT(fee_span, '$[2]')) as INT) as avg_fee_25,
-        CAST(AVG(JSON_EXTRACT(fee_span, '$[3]')) as INT) as avg_fee_50,
-        CAST(AVG(JSON_EXTRACT(fee_span, '$[4]')) as INT) as avg_fee_75,
-        CAST(AVG(JSON_EXTRACT(fee_span, '$[5]')) as INT) as avg_fee_90,
-        CAST(AVG(JSON_EXTRACT(fee_span, '$[6]')) as INT) as avg_fee_100
+        CAST(AVG(JSON_EXTRACT(fee_span, '$[0]')) as INT) as avgFee_0,
+        CAST(AVG(JSON_EXTRACT(fee_span, '$[1]')) as INT) as avgFee_10,
+        CAST(AVG(JSON_EXTRACT(fee_span, '$[2]')) as INT) as avgFee_25,
+        CAST(AVG(JSON_EXTRACT(fee_span, '$[3]')) as INT) as avgFee_50,
+        CAST(AVG(JSON_EXTRACT(fee_span, '$[4]')) as INT) as avgFee_75,
+        CAST(AVG(JSON_EXTRACT(fee_span, '$[5]')) as INT) as avgFee_90,
+        CAST(AVG(JSON_EXTRACT(fee_span, '$[6]')) as INT) as avgFee_100
       FROM blocks`;
 
       if (interval !== null) {
@@ -516,9 +608,9 @@ class BlocksRepository {
    public async $getHistoricalBlockSizes(div: number, interval: string | null): Promise<any> {
     try {
       let query = `SELECT
-        CAST(AVG(height) as INT) as avg_height,
+        CAST(AVG(height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(size) as INT) as avg_size
+        CAST(AVG(size) as INT) as avgSize
       FROM blocks`;
 
       if (interval !== null) {
@@ -541,9 +633,9 @@ class BlocksRepository {
    public async $getHistoricalBlockWeights(div: number, interval: string | null): Promise<any> {
     try {
       let query = `SELECT
-        CAST(AVG(height) as INT) as avg_height,
+        CAST(AVG(height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(weight) as INT) as avg_weight
+        CAST(AVG(weight) as INT) as avgWeight
       FROM blocks`;
 
       if (interval !== null) {

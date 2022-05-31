@@ -60,12 +60,18 @@
                     </ng-container>
                     <ng-container *ngSwitchDefault>
                       <ng-template [ngIf]="!vin.prevout" [ngIfElse]="defaultAddress">
-                        <span>{{ vin.issuance ? 'Issuance' : 'UNKNOWN' }}</span>
+                        <span *ngIf="vin.lazy; else defaultNoPrevout" class="skeleton-loader"></span>
+                        <ng-template #defaultNoPrevout>
+                          <span>{{ vin.issuance ? 'Issuance' : 'UNKNOWN' }}</span>
+                        </ng-template>
                       </ng-template>
                       <ng-template #defaultAddress>
                         <a [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">
                           <span class="d-block d-lg-none">{{ vin.prevout.scriptpubkey_address | shortenString : 16 }}</span>
-                          <span class="d-none d-lg-block">{{ vin.prevout.scriptpubkey_address | shortenString : 35 }}</span>
+                          <span class="d-none d-lg-flex justify-content-start">
+                            <span class="addr-left flex-grow-1" [style]="vin.prevout.scriptpubkey_address.length > 40 ? 'max-width: 235px' : ''">{{ vin.prevout.scriptpubkey_address }}</span>
+                            <span *ngIf="vin.prevout.scriptpubkey_address.length > 40" class="addr-right">{{ vin.prevout.scriptpubkey_address | capAddress: 40: 10 }}</span>
+                          </span>
                         </a>
                         <div>
                           <app-address-labels [vin]="vin"></app-address-labels>
@@ -84,6 +90,7 @@
                     </ng-template>
                   </ng-template>
                   <ng-template #defaultOutput>
+                    <span *ngIf="vin.lazy" class="skeleton-loader"></span>
                     <app-amount *ngIf="vin.prevout" [satoshis]="vin.prevout.value"></app-amount>
                   </ng-template>
                 </td>
@@ -138,7 +145,7 @@
             </ng-template>
             <tr *ngIf="tx.vin.length > 12 && tx['@vinLimit']">
               <td colspan="3" class="text-center">
-                <button class="btn btn-sm btn-primary mt-2" (click)="tx['@vinLimit'] = false;"><span i18n="transactions-list.load-all">Load all</span> ({{ tx.vin.length - 10 }})</button>
+                <button class="btn btn-sm btn-primary mt-2" (click)="loadMoreInputs(tx);"><span i18n="show-all">Show all</span> ({{ tx.vin.length - 10 }})</button>
               </td>
             </tr>
           </tbody>
@@ -156,7 +163,10 @@
                 <td>
                   <a *ngIf="vout.scriptpubkey_address; else scriptpubkey_type" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">
                     <span class="d-block d-lg-none">{{ vout.scriptpubkey_address | shortenString : 16 }}</span>
-                    <span class="d-none d-lg-block">{{ vout.scriptpubkey_address | shortenString : 35 }}</span>
+                    <span class="d-none d-lg-flex justify-content-start">
+                      <span class="addr-left flex-grow-1" [style]="vout.scriptpubkey_address.length > 40 ? 'max-width: 235px' : ''">{{ vout.scriptpubkey_address }}</span>
+                      <span *ngIf="vout.scriptpubkey_address.length > 40" class="addr-right">{{ vout.scriptpubkey_address | capAddress: 40: 10 }}</span>
+                    </span>
                   </a>
                   <div>
                     <app-address-labels [vout]="vout"></app-address-labels>
@@ -232,7 +242,7 @@
                         <td style="text-align: left;">{{ vout.scriptpubkey }}</td>
                       </tr>
                       <tr *ngIf="vout.scriptpubkey_type == 'op_return'">
-                        <td>OP_RETURN <span i18n="transactions-list.vout.scriptpubkey-type.data">data</span></td>
+                        <td>OP_RETURN <span>data</span></td>
                         <td style="text-align: left;">{{ vout.scriptpubkey_asm | hex2ascii }}</td>
                       </tr>
                       <tr *ngIf="vout.scriptpubkey_type">
@@ -246,7 +256,7 @@
             </ng-template>
             <tr *ngIf="tx.vout.length > 12 && tx['@voutLimit'] && !outputIndex">
               <td colspan="3" class="text-center">
-                <button class="btn btn-sm btn-primary mt-2" (click)="tx['@voutLimit'] = false;"><span i18n="transactions-list.load-all">Load all</span> ({{ tx.vout.length - 10 }})</button>
+                <button class="btn btn-sm btn-primary mt-2" (click)="tx['@voutLimit'] = false;"><span i18n="show-all">Show all</span> ({{ tx.vout.length - 10 }})</button>
               </td>
             </tr>
           </tbody>
@@ -255,9 +265,10 @@
     </div>
 
     <div class="summary">
-      <div class="float-left mt-2-5" *ngIf="!transactionPage && !tx.vin[0].is_coinbase">
+      <div class="float-left mt-2-5" *ngIf="!transactionPage && !tx.vin[0].is_coinbase && tx.fee !== -1">
         {{ tx.fee / (tx.weight / 4) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span> <span class="d-none d-sm-inline-block">&nbsp;&ndash; {{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [value]="tx.fee"></app-fiat></span></span>
       </div>
+      <div class="float-left mt-2-5 grey-info-text" *ngIf="tx.fee === -1" i18n="transactions-list.load-to-reveal-fee-info">Show all inputs to reveal fee data</div>
 
       <div class="float-right">
         <ng-container *ngIf="showConfirmations && latestBlock$ | async as latestBlock">
