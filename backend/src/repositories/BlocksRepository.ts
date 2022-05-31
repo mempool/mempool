@@ -122,6 +122,19 @@ class BlocksRepository {
   }
 
   /**
+   * Return most recent block height
+   */
+  public async $mostRecentBlockHeight(): Promise<number> {
+    try {
+      const [row] = await DB.query('SELECT MAX(height) as maxHeight from blocks');
+      return row[0]['maxHeight'];
+    } catch (e) {
+      logger.err(`Cannot count blocks for this pool (using offset). Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
    * Get blocks count for a period
    */
   public async $blockCount(poolId: number | null, interval: string | null = null): Promise<number> {

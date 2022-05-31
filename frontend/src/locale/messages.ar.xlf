@@ -147,6 +147,7 @@
       </trans-unit>
       <trans-unit id="ngb.progressbar.value" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="@Input() te"/></source>
+        <target><x id="INTERPOLATION" equiv-text="@Input() te"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/progressbar/progressbar.ts</context>
           <context context-type="linenumber">59,63</context>
@@ -250,6 +251,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.PM" datatype="html">
         <source><x id="INTERPOLATION"/></source>
+        <target><x id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/timepicker/timepicker.ts</context>
           <context context-type="linenumber">295</context>
@@ -257,6 +259,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.AM" datatype="html">
         <source><x id="INTERPOLATION"/></source>
+        <target><x id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/timepicker/timepicker.ts</context>
           <context context-type="linenumber">295</context>
@@ -279,7 +282,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">3,5</context>
+          <context context-type="linenumber">3</context>
         </context-group>
         <note priority="1" from="description">shared.address</note>
       </trans-unit>
@@ -292,7 +295,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">31,32</context>
+          <context context-type="linenumber">31</context>
         </context-group>
         <note priority="1" from="description">address.total-received</note>
       </trans-unit>
@@ -309,7 +312,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">35,36</context>
+          <context context-type="linenumber">35</context>
         </context-group>
         <note priority="1" from="description">address.total-sent</note>
       </trans-unit>
@@ -322,7 +325,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">40,41</context>
+          <context context-type="linenumber">40</context>
         </context-group>
         <note priority="1" from="description">address.balance</note>
       </trans-unit>
@@ -435,11 +438,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
-          <context context-type="linenumber">13,15</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
-          <context context-type="linenumber">10,12</context>
+          <context context-type="linenumber">13,14</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
@@ -506,10 +505,6 @@
           <context context-type="linenumber">5,7</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
-          <context context-type="linenumber">9,10</context>
-        </context-group>
-        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">212,214</context>
         </context-group>
@@ -548,8 +543,8 @@
           <context context-type="linenumber">34,36</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
-          <context context-type="linenumber">12,16</context>
+          <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
+          <context context-type="linenumber">18,19</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
@@ -571,14 +566,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
           <context context-type="linenumber">4,9</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
-          <context context-type="linenumber">2,7</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.ts</context>
-          <context context-type="linenumber">39</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-master-page/liquid-master-page.component.html</context>
@@ -731,6 +718,7 @@
       </trans-unit>
       <trans-unit id="97ff5554c708164d58b14e45072acbcbf9f4d137" datatype="html">
         <source>View more »</source>
+        <target> عرض المزيد 》</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
           <context context-type="linenumber">92,97</context>
@@ -770,7 +758,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">357,361</context>
+          <context context-type="linenumber">361,365</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -1029,7 +1017,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">239,241</context>
+          <context context-type="linenumber">249,251</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8fe73a4787b8068b2ba61f54ab7e0f9af2ea1fc9" datatype="html">
@@ -1083,7 +1071,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">266,267</context>
+          <context context-type="linenumber">277,278</context>
         </context-group>
         <note priority="1" from="description">Transaction singular confirmation count</note>
         <note priority="1" from="meaning">shared.confirmation-count.singular</note>
@@ -1105,7 +1093,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">267,268</context>
+          <context context-type="linenumber">278,279</context>
         </context-group>
         <note priority="1" from="description">Transaction plural confirmation count</note>
         <note priority="1" from="meaning">shared.confirmation-count.plural</note>
@@ -1470,15 +1458,16 @@
         <target>التحالفات المجتمعية</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">257,259</context>
+          <context context-type="linenumber">261,263</context>
         </context-group>
         <note priority="1" from="description">about.alliances</note>
       </trans-unit>
       <trans-unit id="d5a535ddb26ae8cb056325715af27bb1b4008c14" datatype="html">
         <source>Project Translators</source>
+        <target>مترجمي المشروع</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">273,275</context>
+          <context context-type="linenumber">277,279</context>
         </context-group>
         <note priority="1" from="description">about.translators</note>
       </trans-unit>
@@ -1487,7 +1476,7 @@
         <target>المساهمون في المشروع</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">287,289</context>
+          <context context-type="linenumber">291,293</context>
         </context-group>
         <note priority="1" from="description">about.contributors</note>
       </trans-unit>
@@ -1496,7 +1485,7 @@
         <target>أعضاء المشروع</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">299,301</context>
+          <context context-type="linenumber">303,305</context>
         </context-group>
         <note priority="1" from="description">about.project_members</note>
       </trans-unit>
@@ -1505,7 +1494,7 @@
         <target>فريق صيانة المشروع</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">312,314</context>
+          <context context-type="linenumber">316,318</context>
         </context-group>
         <note priority="1" from="description">about.maintainers</note>
       </trans-unit>
@@ -1541,25 +1530,23 @@
         <target>غير سري</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">23,24</context>
+          <context context-type="linenumber">23</context>
         </context-group>
         <note priority="1" from="description">address.unconfidential</note>
       </trans-unit>
       <trans-unit id="714e34125b3343df73f19ec800b43be95217d5d4" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="of {{ txCount | number }} transaction&lt;/ng-template&gt;"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transaction</source>
-        <target><x id="INTERPOLATION" equiv-text="of {{ txCount | number }} transaction&lt;/ng-template&gt;"/> من <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> تحويلة</target>
+        <source><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transaction</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">60,61</context>
+          <context context-type="linenumber">60</context>
         </context-group>
         <note priority="1" from="description">X of X Address Transaction</note>
       </trans-unit>
       <trans-unit id="0f6ada0cfb60aefd8f77f8a22349850ce186d666" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="of {{ txCount | number }} transactions&lt;/ng-template&gt;       &lt;/h2&gt;"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transactions</source>
-        <target><x id="INTERPOLATION" equiv-text="of {{ txCount | number }} transactions&lt;/ng-template&gt;       &lt;/h2&gt;"/> من <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> معاملة</target>
+        <source><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transactions</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">61,62</context>
+          <context context-type="linenumber">61</context>
         </context-group>
         <note priority="1" from="description">X of X Address Transactions (Plural)</note>
       </trans-unit>
@@ -1568,15 +1555,15 @@
         <target>خطأ في تحميل بيانات العنوان.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">132,134</context>
+          <context context-type="linenumber">130</context>
         </context-group>
         <note priority="1" from="description">address.error.loading-address-data</note>
       </trans-unit>
       <trans-unit id="49cef95661d86f4341788ce40068d58801adc6e6" datatype="html">
-        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="There many transactions on this address, more than your backend can handle. See more on &lt;a href=&quot;/docs/faq#a"/>There many transactions on this address, more than your backend can handle. See more on <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/>setting up a stronger backend<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.<x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> Consider viewing this address on the official Mempool website instead: </source>
+        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i&gt;"/>There many transactions on this address, more than your backend can handle. See more on <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/>setting up a stronger backend<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.<x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/><x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/> Consider viewing this address on the official Mempool website instead: </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">137,140</context>
+          <context context-type="linenumber">135,138</context>
         </context-group>
         <note priority="1" from="description">Electrum server limit exceeded error</note>
       </trans-unit>
@@ -1585,7 +1572,7 @@
         <target>سري</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
-          <context context-type="linenumber">156,158</context>
+          <context context-type="linenumber">154</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/amount/amount.component.html</context>
@@ -1601,7 +1588,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">274,276</context>
+          <context context-type="linenumber">285,287</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -1803,6 +1790,7 @@
       </trans-unit>
       <trans-unit id="dfc3c34e182ea73c5d784ff7c8135f087992dac1" datatype="html">
         <source>All</source>
+        <target>الكل</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.html</context>
           <context context-type="linenumber">13</context>
@@ -2002,6 +1990,7 @@
       </trans-unit>
       <trans-unit id="6c453b11fd7bd159ae30bc381f367bc736d86909" datatype="html">
         <source>Block Fees</source>
+        <target>رسوم الكتله</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-graph/block-fees-graph.component.html</context>
           <context context-type="linenumber">5,7</context>
@@ -2018,6 +2007,7 @@
       </trans-unit>
       <trans-unit id="c20172223f84462032664d717d739297e5a9e2fe" datatype="html">
         <source>Fees</source>
+        <target>الرسوم</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-graph/block-fees-graph.component.ts</context>
           <context context-type="linenumber">160,158</context>
@@ -2037,6 +2027,7 @@
       </trans-unit>
       <trans-unit id="8ba8fe810458280a83df7fdf4c614dfc1a826445" datatype="html">
         <source>Block Rewards</source>
+        <target>مكافأة الكتلة </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-rewards-graph/block-rewards-graph.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -2053,13 +2044,14 @@
       </trans-unit>
       <trans-unit id="12f86e6747a5ad39e62d3480ddc472b1aeab5b76" datatype="html">
         <source>Reward</source>
+        <target>المكافأة </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-rewards-graph/block-rewards-graph.component.ts</context>
           <context context-type="linenumber">160,158</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
-          <context context-type="linenumber">15,17</context>
+          <context context-type="linenumber">15,16</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
@@ -2103,11 +2095,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
-          <context context-type="linenumber">18,20</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
-          <context context-type="linenumber">13,16</context>
+          <context context-type="linenumber">19,21</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
@@ -2254,7 +2242,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">259</context>
+          <context context-type="linenumber">269</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -2412,21 +2400,24 @@
         <note priority="1" from="description">Transaction Details</note>
         <note priority="1" from="meaning">transaction.details</note>
       </trans-unit>
-      <trans-unit id="56ad2f3895f350abdd3cee2d95498deb8819afac" datatype="html">
-        <source>Error loading block data.</source>
-        <target>خطأ في تحميل بيانات الكتلة.</target>
+      <trans-unit id="822972b5d47ee555d3be0c7ab9aae8090ecdf7bc" datatype="html">
+        <source>Error loading data.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">278,288</context>
+          <context context-type="linenumber">203,205</context>
         </context-group>
-        <note priority="1" from="description">block.error.loading-block-data</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
+          <context context-type="linenumber">285,290</context>
+        </context-group>
+        <note priority="1" from="description">error.general-loading-data</note>
       </trans-unit>
       <trans-unit id="block.component.browser-title" datatype="html">
         <source>Block <x id="BLOCK_HEIGHT" equiv-text="block.height"/>: <x id="BLOCK_ID" equiv-text="block.id"/></source>
         <target>الكتلة <x id="BLOCK_HEIGHT" equiv-text="block.height"/>: <x id="BLOCK_ID" equiv-text="block.id"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.ts</context>
-          <context context-type="linenumber">146</context>
+          <context context-type="linenumber">147</context>
         </context-group>
       </trans-unit>
       <trans-unit id="e70fcca5a99575cffef3ff8cbd5e69f06ffd0f1c" datatype="html">
@@ -2453,10 +2444,6 @@
           <context context-type="linenumber">14,15</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/latest-blocks/latest-blocks.component.html</context>
-          <context context-type="linenumber">11,12</context>
-        </context-group>
-        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">214,215</context>
         </context-group>
@@ -2475,7 +2462,7 @@
         <target>التحويلات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
-          <context context-type="linenumber">18,19</context>
+          <context context-type="linenumber">18</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
@@ -2513,6 +2500,7 @@
       </trans-unit>
       <trans-unit id="024cdb2814b0cb3f4ced148f1a0b9854447cb214" datatype="html">
         <source>Change</source>
+        <target>تغير</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-adjustments-table/difficulty-adjustments-table.component.html</context>
           <context context-type="linenumber">8,11</context>
@@ -2618,6 +2606,7 @@
       </trans-unit>
       <trans-unit id="df71fa93f0503396ea2bb3ba5161323330314d6c" datatype="html">
         <source>Next Halving</source>
+        <target>الانقسام التالي</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">50,52</context>
@@ -2729,6 +2718,7 @@
       </trans-unit>
       <trans-unit id="c95f8a34509967d6cbcf118a9637b23a83633449" datatype="html">
         <source>Mining</source>
+        <target>التعدين</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">5</context>
@@ -3029,6 +3019,7 @@
       </trans-unit>
       <trans-unit id="6095122426142344316" datatype="html">
         <source><x id="PH" equiv-text="i"/> blocks</source>
+        <target>كتل<x id="PH" equiv-text="i"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">160,158</context>
@@ -3060,6 +3051,7 @@
       </trans-unit>
       <trans-unit id="4eb84de23219c85432e38fb4fbdeb6c0f103ff8b" datatype="html">
         <source>Show all</source>
+        <target>عرض الكل</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">53,55</context>
@@ -3070,16 +3062,17 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">141,144</context>
+          <context context-type="linenumber">148,151</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">249,251</context>
+          <context context-type="linenumber">259,261</context>
         </context-group>
         <note priority="1" from="description">show-all</note>
       </trans-unit>
       <trans-unit id="1eede69e18c5ac9c0b0295b72cabb7e64e029e74" datatype="html">
         <source>Hide</source>
+        <target>إخفاء </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">55,58</context>
@@ -3108,6 +3101,7 @@
       </trans-unit>
       <trans-unit id="91c20d9f5b4e74c46be050ed5bf0db732a86bcf7" datatype="html">
         <source>Estimated</source>
+        <target>المتوقع</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">96,97</context>
@@ -3188,6 +3182,7 @@
       </trans-unit>
       <trans-unit id="149da150f9b3a141a73a58a25142a850107a8212" datatype="html">
         <source>24h</source>
+        <target>٢٤ ساعه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">147</context>
@@ -3200,6 +3195,7 @@
       </trans-unit>
       <trans-unit id="f7b50e4989540954a9035833470efba042a2819c" datatype="html">
         <source>1w</source>
+        <target>١ أسبوع </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">148</context>
@@ -3280,10 +3276,6 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
-          <context context-type="linenumber">29,31</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">53,56</context>
         </context-group>
         <context-group purpose="location">
@@ -3312,6 +3304,14 @@
         </context-group>
         <note priority="1" from="description">sat/vB</note>
         <note priority="1" from="meaning">shared.sat-vbyte</note>
+      </trans-unit>
+      <trans-unit id="f9bc2ce34cf7fc23c09b4cea1d92cc75ef4d6e71" datatype="html">
+        <source>Average Fee</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
+          <context context-type="linenumber">29,31</context>
+        </context-group>
+        <note priority="1" from="description">mining.average-fee</note>
       </trans-unit>
       <trans-unit id="8be96dc461529381c812f64962c62f4228d01470" datatype="html">
         <source>Fee paid on average for each transaction in the past 144 blocks</source>
@@ -3639,7 +3639,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">270,273</context>
+          <context context-type="linenumber">281,284</context>
         </context-group>
         <note priority="1" from="description">Transaction unconfirmed state</note>
         <note priority="1" from="meaning">transaction.unconfirmed</note>
@@ -3768,7 +3768,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">259,260</context>
+          <context context-type="linenumber">269,270</context>
         </context-group>
         <note priority="1" from="description">sat</note>
         <note priority="1" from="meaning">shared.sat</note>
@@ -3815,7 +3815,7 @@
         <target>البرنامج النصي (ASM)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">97,99</context>
+          <context context-type="linenumber">104,106</context>
         </context-group>
         <note priority="1" from="description">ScriptSig (ASM)</note>
         <note priority="1" from="meaning">transactions-list.scriptsig.asm</note>
@@ -3825,7 +3825,7 @@
         <target>البرنامج النصي. (HEX)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">101,104</context>
+          <context context-type="linenumber">108,111</context>
         </context-group>
         <note priority="1" from="description">ScriptSig (HEX)</note>
         <note priority="1" from="meaning">transactions-list.scriptsig.hex</note>
@@ -3835,7 +3835,7 @@
         <target>شوهد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">106,108</context>
+          <context context-type="linenumber">113,115</context>
         </context-group>
         <note priority="1" from="description">transactions-list.witness</note>
       </trans-unit>
@@ -3844,7 +3844,7 @@
         <target>البرنامج النصي استرداد P2SH</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">110,111</context>
+          <context context-type="linenumber">117,118</context>
         </context-group>
         <note priority="1" from="description">transactions-list.p2sh-redeem-script</note>
       </trans-unit>
@@ -3852,7 +3852,7 @@
         <source>P2TR tapscript</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">114,116</context>
+          <context context-type="linenumber">121,123</context>
         </context-group>
         <note priority="1" from="description">transactions-list.p2tr-tapscript</note>
       </trans-unit>
@@ -3861,7 +3861,7 @@
         <target>نتائج التجزئة النصية العالقة 2 للشاهد  النصي المنفصل. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">116,118</context>
+          <context context-type="linenumber">123,125</context>
         </context-group>
         <note priority="1" from="description">transactions-list.p2wsh-witness-script</note>
       </trans-unit>
@@ -3870,7 +3870,7 @@
         <target>ن التسلسل</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">121,123</context>
+          <context context-type="linenumber">128,130</context>
         </context-group>
         <note priority="1" from="description">transactions-list.nsequence</note>
       </trans-unit>
@@ -3879,7 +3879,7 @@
         <target>نص النتائج السابقة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">126,127</context>
+          <context context-type="linenumber">133,134</context>
         </context-group>
         <note priority="1" from="description">transactions-list.previous-output-script</note>
       </trans-unit>
@@ -3888,7 +3888,7 @@
         <target>نص النتائج السابقة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">130,131</context>
+          <context context-type="linenumber">137,138</context>
         </context-group>
         <note priority="1" from="description">transactions-list.previous-output-type</note>
       </trans-unit>
@@ -3897,7 +3897,7 @@
         <target>إخراج المعاملات الى <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-contain"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">166,167</context>
+          <context context-type="linenumber">176,177</context>
         </context-group>
         <note priority="1" from="description">transactions-list.peg-out-to</note>
       </trans-unit>
@@ -3906,7 +3906,7 @@
         <target>النتيجة النصية لمعاملات بتكوين(عملية عكسية لإلغاء الرموز النصية)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">227,229</context>
+          <context context-type="linenumber">237,239</context>
         </context-group>
         <note priority="1" from="description">ScriptPubKey (ASM)</note>
         <note priority="1" from="meaning">transactions-list.scriptpubkey.asm</note>
@@ -3916,10 +3916,18 @@
         <target> النتيجة النصيةلمعاملات بتكوين (سلسلة ارقام  سداسية عشرية)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
-          <context context-type="linenumber">231,234</context>
+          <context context-type="linenumber">241,244</context>
         </context-group>
         <note priority="1" from="description">ScriptPubKey (HEX)</note>
         <note priority="1" from="meaning">transactions-list.scriptpubkey.hex</note>
+      </trans-unit>
+      <trans-unit id="ed46038430735e21c9b6165380ec1892e2f87791" datatype="html">
+        <source>Show all inputs to reveal fee data</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
+          <context context-type="linenumber">271,274</context>
+        </context-group>
+        <note priority="1" from="description">transactions-list.load-to-reveal-fee-info</note>
       </trans-unit>
       <trans-unit id="f85c05147b720576e50336cf26f63d3b05601699" datatype="html">
         <source>This transaction saved <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedGains * 100 | number:  '1.0-0' }}"/>% on fees by using native SegWit-Bech32</source>
