@@ -108,7 +108,7 @@
     "@types/jasminewd2": "~2.0.10",
     "@types/node": "^12.11.1",
     "codelyzer": "~6.0.2",
-    "http-proxy-middleware": "^1.0.5",
+    "http-proxy-middleware": "^2.0.6",
     "jasmine-core": "~4.1.0",
     "jasmine-spec-reporter": "~7.0.0",
     "karma": "~6.3.19",
