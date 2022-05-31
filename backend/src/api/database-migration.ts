@@ -185,7 +185,7 @@ class DatabaseMigration {
         await this.$executeQuery('ALTER TABLE `blocks` ADD INDEX `hash` (`hash`);');
       }
 
-      if (databaseSchemaVersion < 19 && isBitcoin === true) {
+      if (databaseSchemaVersion < 19) {
         await this.$executeQuery(this.getCreateRatesTableQuery(), await this.$checkIfTableExists('rates'));
       }
     } catch (e) {
