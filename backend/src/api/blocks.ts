@@ -314,8 +314,6 @@ class Blocks {
       }
     }
 
-    const currentUsdPrice = fiatConversion.getConversionRates().USD;
-
     while (this.currentBlockHeight < blockHeightTip) {
       if (this.currentBlockHeight < blockHeightTip - config.MEMPOOL.INITIAL_BLOCKS_AMOUNT) {
         this.currentBlockHeight = blockHeightTip;
