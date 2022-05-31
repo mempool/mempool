@@ -25,8 +25,6 @@ import databaseMigration from './api/database-migration';
 import syncAssets from './sync-assets';
 import icons from './api/liquid/icons';
 import { Common } from './api/common';
-import mining from './api/mining';
-import HashratesRepository from './repositories/HashratesRepository';
 import poolsUpdater from './tasks/pools-updater';
 import indexer from './indexer';
 
@@ -69,7 +67,7 @@ class Server {
   }
 
   async startServer(worker = false) {
-    logger.debug(`Starting Mempool Server${worker ? ' (worker)' : ''}... (${backendInfo.getShortCommitHash()})`);
+    logger.notice(`Starting Mempool Server${worker ? ' (worker)' : ''}... (${backendInfo.getShortCommitHash()})`);
 
     this.app
       .use((req: Request, res: Response, next: NextFunction) => {
