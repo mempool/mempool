@@ -17,9 +17,9 @@
       <img src="./resources/{{ network.val === '' ? 'bitcoin' : network.val }}-logo.png" style="width: 25px; height: 25px;" class="mr-1" [alt]="(network.val === '' ? 'bitcoin' : network.val) + ' logo'">
     </button>
     <div ngbDropdownMenu [ngClass]="{'dropdown-menu-right' : isMobile}">
-      <button ngbDropdownItem class="mainnet" routerLink="/"><img src="./resources/bitcoin-logo.png" style="width: 30px;" class="mr-1" alt="bitcoin logo"> Mainnet</button>
-      <button ngbDropdownItem *ngIf="env.SIGNET_ENABLED" class="signet" [class.active]="network.val === 'signet'" routerLink="/signet"><img src="./resources/signet-logo.png" style="width: 30px;" class="mr-1" alt="signet logo"> Signet</button>
-      <button ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet" [class.active]="network.val === 'testnet'" routerLink="/testnet"><img src="./resources/testnet-logo.png" style="width: 30px;" class="mr-1" alt="testnet logo"> Testnet</button>
+      <a ngbDropdownItem class="mainnet" routerLink="/"><img src="./resources/bitcoin-logo.png" style="width: 30px;" class="mainnet mr-1" alt="bitcoin logo"> Mainnet</a>
+      <a ngbDropdownItem *ngIf="env.SIGNET_ENABLED" class="signet" [class.active]="network.val === 'signet'" routerLink="/signet"><img src="./resources/signet-logo.png" style="width: 30px;" class="signet mr-1" alt="logo"> Signet</a>
+      <a ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet" [class.active]="network.val === 'testnet'" routerLink="/testnet"><img src="./resources/testnet-logo.png" style="width: 30px;" class="mr-1" alt="testnet logo"> Testnet</a>
       <h6 *ngIf="env.LIQUID_ENABLED || env.BISQ_ENABLED" class="dropdown-header" i18n="master-page.layer2-networks-header">Layer 2 Networks</h6>
       <a [href]="env.BISQ_WEBSITE_URL + urlLanguage" ngbDropdownItem *ngIf="env.BISQ_ENABLED" class="bisq"><img src="./resources/bisq-logo.png" style="width: 30px;" class="mr-1" alt="bisq logo"> Bisq</a>
       <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage" ngbDropdownItem *ngIf="env.LIQUID_ENABLED" class="liquid" [class.active]="network.val === 'liquid'"><img src="./resources/liquid-logo.png" style="width: 30px;" class="mr-1" alt="liquid mainnet logo"> Liquid</a>

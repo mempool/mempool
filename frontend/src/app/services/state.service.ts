@@ -1,7 +1,7 @@
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable } from 'rxjs';
 import { Transaction } from '../interfaces/electrs.interface';
-import { IBackendInfo, MempoolBlock, MempoolInfo, ReplacedTransaction, TransactionStripped } from '../interfaces/websocket.interface';
+import { IBackendInfo, MempoolBlock, MempoolInfo, Recommendedfees, ReplacedTransaction, TransactionStripped } from '../interfaces/websocket.interface';
 import { BlockExtended, DifficultyAdjustment, OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
@@ -90,6 +90,7 @@ export class StateService {
   previousRetarget$ = new ReplaySubject<number>(1);
   backendInfo$ = new ReplaySubject<IBackendInfo>(1);
   loadingIndicators$ = new ReplaySubject<ILoadingIndicators>(1);
+  recommendedFees$ = new ReplaySubject<Recommendedfees>(1);
 
   live2Chart$ = new Subject<OptimizedMempoolStats>();
 
