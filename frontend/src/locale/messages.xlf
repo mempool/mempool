@@ -3934,13 +3934,6 @@
         </context-group>
         <note priority="1" from="description">api-docs.websocket.websocket</note>
       </trans-unit>
-      <trans-unit id="e351b40b3869a5c7d19c3d4918cb1ac7aaab95c4" datatype="html">
-        <source>API</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.ts</context>
-          <context context-type="linenumber">48</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="0a668c1c2a17e557a18fc06619998e002f50df1e" datatype="html">
         <source>Code Example</source>
         <context-group purpose="location">
@@ -3972,6 +3965,24 @@
           <context context-type="linenumber">36,37</context>
         </context-group>
         <note priority="1" from="description">API Docs API response</note>
+      </trans-unit>
+      <trans-unit id="docs.faq.button-title" datatype="html">
+        <source>FAQ</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="e351b40b3869a5c7d19c3d4918cb1ac7aaab95c4" datatype="html">
+        <source>API</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="date-base.year" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> year</source>
