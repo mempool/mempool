@@ -253,8 +253,26 @@ class BlocksRepository {
     }
 
     const params: any[] = [];
-    let query = ` SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
-      previous_block_hash as previousblockhash
+    let query = ` SELECT
+      height,
+      hash as id,
+      UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
+      size,
+      weight,
+      tx_count,
+      coinbase_raw,
+      difficulty,
+      fees,
+      fee_span,
+      median_fee,
+      reward,
+      version,
+      bits,
+      nonce,
+      merkle_root,
+      previous_block_hash as previousblockhash,
+      avg_fee,
+      avg_fee_rate
       FROM blocks
       WHERE pool_id = ?`;
     params.push(pool.id);
@@ -287,11 +305,32 @@ class BlocksRepository {
    */
   public async $getBlockByHeight(height: number): Promise<object | null> {
     try {
-      const [rows]: any[] = await DB.query(`
-        SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
-        pools.id as pool_id, pools.name as pool_name, pools.link as pool_link, pools.slug as pool_slug,
-        pools.addresses as pool_addresses, pools.regexes as pool_regexes,
-        previous_block_hash as previousblockhash
+      const [rows]: any[] = await DB.query(`SELECT
+        height,
+        hash as id,
+        UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
+        size,
+        weight,
+        tx_count,
+        coinbase_raw,
+        difficulty,
+        pools.id as pool_id,
+        pools.name as pool_name,
+        pools.link as pool_link,
+        pools.slug as pool_slug,
+        pools.addresses as pool_addresses,
+        pools.regexes as pool_regexes,
+        fees,
+        fee_span,
+        median_fee,
+        reward,
+        version,
+        bits,
+        nonce,
+        merkle_root,
+        previous_block_hash as previousblockhash,
+        avg_fee,
+        avg_fee_rate
         FROM blocks
         JOIN pools ON blocks.pool_id = pools.id
         WHERE height = ${height};
