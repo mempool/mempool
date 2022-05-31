@@ -1,4 +1,3 @@
-import config from '../config';
 import { MempoolBlock } from '../mempool.interfaces';
 import { Common } from './common';
 import mempool from './mempool';
@@ -19,6 +18,7 @@ class FeeApi {
         'fastestFee': this.defaultFee,
         'halfHourFee': this.defaultFee,
         'hourFee': this.defaultFee,
+        'economyFee': minimumFee,
         'minimumFee': minimumFee,
       };
     }
@@ -31,6 +31,7 @@ class FeeApi {
       'fastestFee': firstMedianFee,
       'halfHourFee': secondMedianFee,
       'hourFee': thirdMedianFee,
+      'economyFee': Math.min(2 * minimumFee, thirdMedianFee),
       'minimumFee': minimumFee,
     };
   }
