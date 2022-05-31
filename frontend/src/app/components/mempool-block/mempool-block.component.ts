@@ -19,13 +19,16 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
   mempoolBlock$: Observable<MempoolBlock>;
   ordinal$: BehaviorSubject<string> = new BehaviorSubject('');
   previewTx: TransactionStripped | void;
+  webGlEnabled: boolean;
 
   constructor(
     private route: ActivatedRoute,
     public stateService: StateService,
     private seoService: SeoService,
     private websocketService: WebsocketService,
-  ) { }
+  ) {
+    this.webGlEnabled = detectWebGL();
+  }
 
   ngOnInit(): void {
     this.websocketService.want(['blocks', 'mempool-blocks']);
@@ -80,4 +83,10 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
   setTxPreview(event: TransactionStripped | void): void {
     this.previewTx = event
   }
+}
+
+function detectWebGL () {
+  const canvas = document.createElement("canvas");
+  const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+  return (gl && gl instanceof WebGLRenderingContext)
 }

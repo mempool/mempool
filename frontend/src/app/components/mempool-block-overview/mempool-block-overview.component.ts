@@ -1,7 +1,7 @@
 import { Component, ElementRef, ViewChild, HostListener, Input, Output, EventEmitter, OnInit, OnDestroy,  OnChanges, ChangeDetectionStrategy, NgZone } from '@angular/core';
 import { StateService } from 'src/app/services/state.service';
 import { MempoolBlockWithTransactions, MempoolBlockDelta, TransactionStripped } from 'src/app/interfaces/websocket.interface';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, BehaviorSubject } from 'rxjs';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { FastVertexArray } from './fast-vertex-array';
 import BlockScene from './block-scene';
@@ -33,6 +33,7 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
   selectedTx: TxView | void;
   lastBlockHeight: number;
   blockIndex: number;
+  isLoading$ = new BehaviorSubject<boolean>(true);
 
   blockSub: Subscription;
   deltaSub: Subscription;
@@ -65,6 +66,8 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
 
   ngOnChanges(changes): void {
     if (changes.index) {
+      this.clearBlock(changes.index.currentValue > changes.index.previousValue ? 'right' : 'left')
+      this.isLoading$.next(true)
       this.websocketService.startTrackMempoolBlock(changes.index.currentValue);
     }
   }
@@ -75,6 +78,15 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
     this.websocketService.stopTrackMempoolBlock();
   }
 
+  clearBlock(direction): void {
+    if (this.scene) {
+      this.scene.exit(direction)
+    }
+    this.hoverTx = null
+    this.selectedTx = null
+    this.txPreviewEvent.emit(null)
+  }
+
   replaceBlock(block: MempoolBlockWithTransactions): void {
     if (!this.scene) {
       this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: 75, blockLimit: this.stateService.blockVSize, vertexArray: this.vertexArray })
@@ -82,8 +94,6 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
     const blockMined = (this.stateService.latestBlockHeight > this.lastBlockHeight)
     if (this.blockIndex != this.index) {
       const direction = (this.blockIndex == null || this.index < this.blockIndex) ? 'left' : 'right'
-      this.scene.exit(direction)
-      this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: 75, blockLimit: this.stateService.blockVSize, vertexArray: this.vertexArray })
       this.scene.enter(block.transactions, direction)
     } else {
       this.scene.replace(block.transactions, blockMined ? 'right' : 'left')
@@ -91,6 +101,7 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
 
     this.lastBlockHeight = this.stateService.latestBlockHeight
     this.blockIndex = this.index
+    this.isLoading$.next(false)
   }
 
   updateBlock(delta: MempoolBlockDelta): void {
@@ -105,11 +116,12 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
       this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: 75, blockLimit: this.stateService.blockVSize, vertexArray: this.vertexArray })
       this.scene.enter(delta.added, direction)
     } else {
-      this.scene.update(delta.added, delta.removed, blockMined ? 'right' : 'left')
+      this.scene.update(delta.added, delta.removed, blockMined ? 'right' : 'left', blockMined)
     }
 
     this.lastBlockHeight = this.stateService.latestBlockHeight
     this.blockIndex = this.index
+    this.isLoading$.next(false)
   }
 
   initCanvas (): void {

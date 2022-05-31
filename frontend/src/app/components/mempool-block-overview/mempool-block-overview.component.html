@@ -1,3 +1,6 @@
 <div class="mempool-block-overview">
   <canvas class="block-overview" #blockCanvas></canvas>
+  <div class="loader-wrapper" [class.hidden]="!(isLoading$ | async)">
+    <div class="spinner-border ml-3 loading" role="status"></div>
+  </div>
 </div>
