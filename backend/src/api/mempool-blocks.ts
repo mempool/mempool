@@ -1,10 +1,11 @@
 import logger from '../logger';
-import { MempoolBlock, TransactionExtended, MempoolBlockWithTransactions } from '../mempool.interfaces';
+import { MempoolBlock, TransactionExtended, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta } from '../mempool.interfaces';
 import { Common } from './common';
 import config from '../config';
 
 class MempoolBlocks {
   private mempoolBlocks: MempoolBlockWithTransactions[] = [];
+  private mempoolBlockDeltas: MempoolBlockDelta[] = [];
 
   constructor() {}
 
@@ -23,6 +24,10 @@ class MempoolBlocks {
 
   public getMempoolBlocksWithTransactions(): MempoolBlockWithTransactions[] {
     return this.mempoolBlocks;
+  }
+
+  public getMempoolBlockDeltas(): MempoolBlockDelta[] {
+    return this.mempoolBlockDeltas
   }
 
   public updateMempoolBlocks(memPool: { [txid: string]: TransactionExtended }): void {
@@ -66,11 +71,14 @@ class MempoolBlocks {
     const time = end - start;
     logger.debug('Mempool blocks calculated in ' + time / 1000 + ' seconds');
 
-    this.mempoolBlocks = this.calculateMempoolBlocks(memPoolArray);
+    const { blocks, deltas } = this.calculateMempoolBlocks(memPoolArray, this.mempoolBlocks);
+    this.mempoolBlocks = blocks
+    this.mempoolBlockDeltas = deltas
   }
 
-  private calculateMempoolBlocks(transactionsSorted: TransactionExtended[]): MempoolBlockWithTransactions[] {
+  private calculateMempoolBlocks(transactionsSorted: TransactionExtended[], prevBlocks: MempoolBlockWithTransactions[]): { blocks: MempoolBlockWithTransactions[], deltas: MempoolBlockDelta[] } {
     const mempoolBlocks: MempoolBlockWithTransactions[] = [];
+    const mempoolBlockDeltas: MempoolBlockDelta[] = [];
     let blockWeight = 0;
     let blockSize = 0;
     let transactions: TransactionExtended[] = [];
@@ -90,7 +98,39 @@ class MempoolBlocks {
     if (transactions.length) {
       mempoolBlocks.push(this.dataToMempoolBlocks(transactions, blockSize, blockWeight, mempoolBlocks.length));
     }
-    return mempoolBlocks;
+    // Calculate change from previous block states
+    for (let i = 0; i < Math.max(mempoolBlocks.length, prevBlocks.length); i++) {
+      let added: TransactionStripped[] = []
+      let removed: string[] = []
+      if (mempoolBlocks[i] && !prevBlocks[i]) {
+        added = mempoolBlocks[i].transactions
+      } else if (!mempoolBlocks[i] && prevBlocks[i]) {
+        removed = prevBlocks[i].transactions.map(tx => tx.txid)
+      } else if (mempoolBlocks[i] && prevBlocks[i]) {
+        const prevIds = {}
+        const newIds = {}
+        prevBlocks[i].transactions.forEach(tx => {
+          prevIds[tx.txid] = true
+        })
+        mempoolBlocks[i].transactions.forEach(tx => {
+          newIds[tx.txid] = true
+        })
+        prevBlocks[i].transactions.forEach(tx => {
+          if (!newIds[tx.txid]) removed.push(tx.txid)
+        })
+        mempoolBlocks[i].transactions.forEach(tx => {
+          if (!prevIds[tx.txid]) added.push(tx)
+        })
+      }
+      mempoolBlockDeltas.push({
+        added,
+        removed
+      })
+    }
+    return {
+      blocks: mempoolBlocks,
+      deltas: mempoolBlockDeltas
+    }
   }
 
   private dataToMempoolBlocks(transactions: TransactionExtended[],

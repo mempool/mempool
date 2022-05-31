@@ -311,7 +311,11 @@ export class WebsocketService {
 
     if (response['projected-mempool-block']) {
       if (response['projected-mempool-block'].index == this.trackingMempoolBlock) {
-        this.stateService.mempoolBlock$.next(response['projected-mempool-block'].block);
+        if (response['projected-mempool-block'].block) {
+          this.stateService.mempoolBlock$.next(response['projected-mempool-block'].block);
+        } else if (response['projected-mempool-block'].delta) {
+          this.stateService.mempoolBlockDelta$.next(response['projected-mempool-block'].delta);
+        }
       }
     }
 

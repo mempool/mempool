@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild, HostListener, Input, Output, EventEmitter, OnInit, OnDestroy,  OnChanges, ChangeDetectionStrategy, NgZone } from '@angular/core';
 import { StateService } from 'src/app/services/state.service';
-import { MempoolBlockWithTransactions, TransactionStripped } from 'src/app/interfaces/websocket.interface';
+import { MempoolBlockWithTransactions, MempoolBlockDelta, TransactionStripped } from 'src/app/interfaces/websocket.interface';
 import { Observable, Subscription } from 'rxjs';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { FastVertexArray } from './fast-vertex-array';
@@ -29,14 +29,13 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
   vertexArray: FastVertexArray;
   running: boolean;
   scene: BlockScene;
-  txViews: { [key: string]: TxView };
   hoverTx: TxView | void;
   selectedTx: TxView | void;
   lastBlockHeight: number;
   blockIndex: number;
 
-  sub: Subscription;
-  mempoolBlock$: Observable<MempoolBlockWithTransactions>;
+  blockSub: Subscription;
+  deltaSub: Subscription;
 
   constructor(
     public stateService: StateService,
@@ -44,14 +43,14 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
     readonly _ngZone: NgZone,
   ) {
     this.vertexArray = new FastVertexArray(512, TxSprite.dataSize)
-    this.txViews = {}
   }
 
   ngOnInit(): void {
-    this.websocketService.startTrackMempoolBlock(this.index);
-    this.mempoolBlock$ = this.stateService.mempoolBlock$
-    this.sub = this.mempoolBlock$.subscribe((block) => {
-      this.updateBlock(block)
+    this.blockSub = this.stateService.mempoolBlock$.subscribe((block) => {
+      this.replaceBlock(block)
+    })
+    this.deltaSub = this.stateService.mempoolBlockDelta$.subscribe((delta) => {
+      this.updateBlock(delta)
     })
   }
 
@@ -66,65 +65,47 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
 
   ngOnChanges(changes): void {
     if (changes.index) {
-      this.clearBlock(changes.index.currentValue)
       this.websocketService.startTrackMempoolBlock(changes.index.currentValue);
     }
   }
 
   ngOnDestroy(): void {
-    this.sub.unsubscribe();
+    this.blockSub.unsubscribe();
+    this.deltaSub.unsubscribe();
     this.websocketService.stopTrackMempoolBlock();
   }
 
-  clearBlock(index: number): void {
-    if (this.scene && index != this.blockIndex) {
-      const direction = (this.blockIndex == null || this.index < this.blockIndex) ? 'left' : 'right'
-      const removed = this.scene.exit(direction)
-      setTimeout(() => {
-        removed.forEach(tx => tx.destroy())
-      }, 1000)
-      this.txViews = {}
-      this.scene = null
+  replaceBlock(block: MempoolBlockWithTransactions): void {
+    if (!this.scene) {
+      this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: 75, blockLimit: this.stateService.blockVSize, vertexArray: this.vertexArray })
     }
+    const blockMined = (this.stateService.latestBlockHeight > this.lastBlockHeight)
+    if (this.blockIndex != this.index) {
+      const direction = (this.blockIndex == null || this.index < this.blockIndex) ? 'left' : 'right'
+      this.scene.exit(direction)
+      this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: 75, blockLimit: this.stateService.blockVSize, vertexArray: this.vertexArray })
+      this.scene.enter(block.transactions, direction)
+    } else {
+      this.scene.replace(block.transactions, blockMined ? 'right' : 'left')
+    }
+
+    this.lastBlockHeight = this.stateService.latestBlockHeight
+    this.blockIndex = this.index
   }
 
-  updateBlock(block: MempoolBlockWithTransactions): void {
+  updateBlock(delta: MempoolBlockDelta): void {
     if (!this.scene) {
-      this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: 75, blockLimit: this.stateService.blockVSize })
+      this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: 75, blockLimit: this.stateService.blockVSize, vertexArray: this.vertexArray })
     }
     const blockMined = (this.stateService.latestBlockHeight > this.lastBlockHeight)
 
-    const nextIds = {}
-    let remove = []
-    let add = []
-    block.transactions.forEach(tx => {
-      nextIds[tx.txid] = true
-    })
-
-    // List old transactions to remove
-    Object.keys(this.txViews).forEach(txid => {
-      if (!nextIds[txid]) {
-        remove.push(this.txViews[txid])
-        delete this.txViews[txid]
-      }
-    })
-
-    // List new transactions to add
-    block.transactions.forEach(tx => {
-      if (!this.txViews[tx.txid]) {
-        const txView = new TxView(tx, this.vertexArray)
-        this.txViews[tx.txid] = txView
-        add.push(txView)
-      }
-    })
-
     if (this.blockIndex != this.index) {
       const direction = (this.blockIndex == null || this.index < this.blockIndex) ? 'left' : 'right'
-      this.scene.enter(Object.values(this.txViews), direction)
-    } else if (blockMined) {
-      this.scene.replace(Object.values(this.txViews), remove, 'right')
+      this.scene.exit(direction)
+      this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: 75, blockLimit: this.stateService.blockVSize, vertexArray: this.vertexArray })
+      this.scene.enter(delta.added, direction)
     } else {
-      this.scene.update(add, remove, 'left')
+      this.scene.update(delta.added, delta.removed, blockMined ? 'right' : 'left')
     }
 
     this.lastBlockHeight = this.stateService.latestBlockHeight
