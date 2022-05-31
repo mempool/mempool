@@ -1,7 +1,7 @@
 .card-title {
   color: #4a68b9;
   font-size: 10px;
-  margin-bottom: 4px;  
+  margin-bottom: 4px;
   font-size: 1rem;
 }
 
@@ -25,7 +25,7 @@
     flex-direction: row;
   }  
   .item {
-    max-width: 150px;
+    width: 100px;
     margin: 0;
     width: -webkit-fill-available;
     @media (min-width: 376px) {
@@ -82,4 +82,18 @@
       max-width: 55px;
     }
   }
+}
+
+.fee-progress-bar {
+  width: 100%;
+  height: 20px;
+  margin-top: 15px;
+  border-radius: 0px 10px 10px 0px;
+  display: flex;
+  flex-direction: row;
+}
+
+.fee-label {
+  font-size: 12px;
+  width: 100px;
 }
