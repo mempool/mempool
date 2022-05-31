@@ -26,7 +26,13 @@ class Bisq {
   constructor() {}
 
   startBisqService(): void {
-    this.checkForBisqDataFolder();
+    try {
+      this.checkForBisqDataFolder();
+    } catch (e) {
+      logger.info('Retrying to start bisq service (markets) in 3 minutes');
+      setTimeout(this.startBisqService.bind(this), 180000);
+      return;
+    }
     this.loadBisqDumpFile();
     this.startBisqDirectoryWatcher();
   }
@@ -34,7 +40,7 @@ class Bisq {
   private checkForBisqDataFolder() {
     if (!fs.existsSync(Bisq.MARKET_JSON_PATH + Bisq.MARKET_JSON_FILE_PATHS.cryptoCurrency)) {
       logger.err(Bisq.MARKET_JSON_PATH + Bisq.MARKET_JSON_FILE_PATHS.cryptoCurrency + ` doesn't exist. Make sure Bisq is running and the config is correct before starting the server.`);
-      return process.exit(1);
+      throw new Error(`Cannot load BISQ ${Bisq.MARKET_JSON_FILE_PATHS.cryptoCurrency} file`);
     }
   }
 
