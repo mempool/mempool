@@ -21,6 +21,7 @@ export interface WebsocketResponse {
   loadingIndicators?: ILoadingIndicators;
   backendInfo?: IBackendInfo;
   da?: DifficultyAdjustment;
+  fees?: Recommendedfees;
   'track-tx'?: string;
   'track-address'?: string;
   'track-asset'?: string;
@@ -64,4 +65,12 @@ export interface IBackendInfo {
   hostname: string;
   gitCommit: string;
   version: string;
+}
+
+export interface Recommendedfees {
+  fastestFee: number;
+  halfHourFee: number;
+  hourFee: number;
+  minimumFee: number;
+  economyFee: number;
 }
