@@ -25,8 +25,6 @@ import databaseMigration from './api/database-migration';
 import syncAssets from './sync-assets';
 import icons from './api/liquid/icons';
 import { Common } from './api/common';
-import mining from './api/mining';
-import HashratesRepository from './repositories/HashratesRepository';
 import poolsUpdater from './tasks/pools-updater';
 import indexer from './indexer';
 
