@@ -30,7 +30,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
   latestBlock$: Observable<BlockExtended>;
   outspendsSubscription: Subscription;
-  refreshOutspends$: ReplaySubject<object> = new ReplaySubject();
+  refreshOutspends$: ReplaySubject<{ [str: string]: Observable<Outspend[]>}> = new ReplaySubject();
   showDetails$ = new BehaviorSubject<boolean>(false);
   outspends: Outspend[][] = [];
   assetsMinimal: any;
