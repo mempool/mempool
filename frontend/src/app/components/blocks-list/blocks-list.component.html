@@ -22,7 +22,7 @@
       <tbody *ngIf="blocks$ | async as blocks; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
         <tr *ngFor="let block of blocks; let i= index; trackBy: trackByBlock">
           <td class="text-left" [class]="widget ? 'widget' : ''">
-            <a [routerLink]="['/block' | relativeUrl, block.height]">{{ block.height }}</a>
+            <a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a>
           </td>
           <td  *ngIf="indexingAvailable" class="pool text-left" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
             <div class="tooltip-custom">
