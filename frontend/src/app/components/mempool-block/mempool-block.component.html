@@ -68,10 +68,11 @@
               </ng-container>
           </tbody>
         </table>
-        <app-fee-distribution-graph [data]="mempoolBlock.feeRange" ></app-fee-distribution-graph>
+        <app-fee-distribution-graph *ngIf="webGlEnabled" [data]="mempoolBlock.feeRange" ></app-fee-distribution-graph>
       </div>
       <div class="col-md chart-container">
-        <app-mempool-block-overview [index]="mempoolBlockIndex" (txPreviewEvent)="setTxPreview($event)"></app-mempool-block-overview>
+        <app-mempool-block-overview *ngIf="webGlEnabled" [index]="mempoolBlockIndex" (txPreviewEvent)="setTxPreview($event)"></app-mempool-block-overview>
+        <app-fee-distribution-graph *ngIf="!webGlEnabled" [data]="mempoolBlock.feeRange" ></app-fee-distribution-graph>
       </div>
     </div>
   </div>

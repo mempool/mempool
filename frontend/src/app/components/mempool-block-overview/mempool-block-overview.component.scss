@@ -3,6 +3,9 @@
   width: 100%;
   padding-bottom: 100%;
   background: #181b2d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .block-overview {
@@ -12,4 +15,21 @@
   top: 0;
   bottom: 0;
   overflow: hidden;
+}
+
+.loader-wrapper {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 500ms 500ms;
+
+  &.hidden {
+    opacity: 0;
+    transition: opacity 500ms;
+  }
 }

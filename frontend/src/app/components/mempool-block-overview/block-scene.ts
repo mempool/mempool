@@ -90,7 +90,7 @@ export default class BlockScene {
     this.updateAll(startTime, direction)
   }
 
-  update (add: TransactionStripped[], remove: string[], direction: string = 'left'): void {
+  update (add: TransactionStripped[], remove: string[], direction: string = 'left', resetLayout: boolean = false): void {
     const startTime = performance.now()
     const removed = this.removeBatch(remove, startTime, direction)
 
@@ -101,17 +101,25 @@ export default class BlockScene {
       })
     }, 1000)
 
-    // try to insert new txs directly
-    const remaining = []
-    add.map(tx => new TxView(tx, this.vertexArray)).sort((a,b) => { return b.feerate - a.feerate }).forEach(tx => {
-      if (!this.tryInsertByFee(tx)) {
-        remaining.push(tx)
-      }
-    })
-
-    this.placeBatch(remaining)
-
-    this.layout.applyGravity()
+    if (resetLayout) {
+      add.forEach(tx => {
+        if (!this.txs[tx.txid]) this.txs[tx.txid] = new TxView(tx, this.vertexArray)
+      })
+      this.layout = new BlockLayout({ width: this.gridWidth, height: this.gridHeight })
+      Object.values(this.txs).sort((a,b) => { return b.feerate - a.feerate }).forEach(tx => {
+        this.place(tx)
+      })
+    } else {
+      // try to insert new txs directly
+      const remaining = []
+      add.map(tx => new TxView(tx, this.vertexArray)).sort((a,b) => { return b.feerate - a.feerate }).forEach(tx => {
+        if (!this.tryInsertByFee(tx)) {
+          remaining.push(tx)
+        }
+      })
+      this.placeBatch(remaining)
+      this.layout.applyGravity()
+    }
 
     this.updateAll(startTime, direction)
   }
