@@ -1,7 +1,6 @@
 import logger from '../logger';
 import * as WebSocket from 'ws';
-import { BlockExtended, TransactionExtended, WebsocketResponse, MempoolBlock,
-  OptimizedStatistic, ILoadingIndicators, IConversionRates } from '../mempool.interfaces';
+import { BlockExtended, TransactionExtended, WebsocketResponse, MempoolBlock, MempoolBlockDelta, OptimizedStatistic, ILoadingIndicators, IConversionRates } from '../mempool.interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
 import backendInfo from './backend-info';
@@ -249,7 +248,7 @@ class WebsocketHandler {
 
     mempoolBlocks.updateMempoolBlocks(newMempool);
     const mBlocks = mempoolBlocks.getMempoolBlocks();
-    const mBlocksWithTransactions = mempoolBlocks.getMempoolBlocksWithTransactions();
+    const mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
     const mempoolInfo = memPool.getMempoolInfo();
     const vBytesPerSecond = memPool.getVBytesPerSecond();
     const rbfTransactions = Common.findRbfTransactions(newTransactions, deletedTransactions);
@@ -389,10 +388,10 @@ class WebsocketHandler {
 
       if (client['track-mempool-block'] >= 0) {
         const index = client['track-mempool-block'];
-        if (mBlocksWithTransactions[index]) {
+        if (mBlockDeltas[index]) {
           response['projected-mempool-block'] = {
             index: index,
-            block: mBlocksWithTransactions[index],
+            delta: mBlockDeltas[index],
           };
         }
       }
@@ -409,6 +408,7 @@ class WebsocketHandler {
     }
 
     let mBlocks: undefined | MempoolBlock[];
+    let mBlockDeltas: undefined | MempoolBlockDelta[];
     let matchRate = 0;
     const _memPool = memPool.getMempool();
     const _mempoolBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
@@ -425,6 +425,7 @@ class WebsocketHandler {
       matchRate = Math.round((matches.length / (txIds.length - 1)) * 100);
       mempoolBlocks.updateMempoolBlocks(_memPool);
       mBlocks = mempoolBlocks.getMempoolBlocks();
+      mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
     }
 
     if (block.extras) {
@@ -519,6 +520,16 @@ class WebsocketHandler {
           });
 
           response['block-transactions'] = foundTransactions;
+        }
+      }
+
+      if (client['track-mempool-block'] >= 0) {
+        const index = client['track-mempool-block'];
+        if (mBlockDeltas && mBlockDeltas[index]) {
+          response['projected-mempool-block'] = {
+            index: index,
+            delta: mBlockDeltas[index],
+          };
         }
       }
 

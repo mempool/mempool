@@ -1,9 +1,12 @@
+import { FastVertexArray } from './fast-vertex-array'
 import TxSprite from './tx-sprite'
 import TxView from './tx-view'
+import { TransactionStripped } from 'src/app/interfaces/websocket.interface';
 import { Position, Square } from './sprite-types'
 
 export default class BlockScene {
   scene: { count: number, offset: { x: number, y: number}};
+  vertexArray: FastVertexArray;
   txs: { [key: string]: TxView };
   width: number;
   height: number;
@@ -17,8 +20,8 @@ export default class BlockScene {
   layout: BlockLayout;
   dirty: boolean;
 
-  constructor ({ width, height, resolution, blockLimit }: { width: number, height: number, resolution: number, blockLimit: number}) {
-    this.init({ width, height, resolution, blockLimit })
+  constructor ({ width, height, resolution, blockLimit, vertexArray }: { width: number, height: number, resolution: number, blockLimit: number, vertexArray: FastVertexArray }) {
+    this.init({ width, height, resolution, blockLimit, vertexArray })
   }
 
   destroy (): void {
@@ -37,55 +40,70 @@ export default class BlockScene {
   }
 
   // Animate new block entering scene
-  enter (txs: TxView[], direction) {
-    this.replace(txs, [], direction)
+  enter (txs: TransactionStripped[], direction) {
+    this.replace(txs, direction)
   }
 
   // Animate block leaving scene
-  exit (direction: string): TxView[] {
-    const removed = []
+  exit (direction: string): void {
     const startTime = performance.now()
-    Object.values(this.txs).forEach(tx => {
-      this.remove(tx.txid, startTime, direction)
-      removed.push(tx)
-    })
-    return removed
-  }
-
-  // Reset layout and replace with new set of transactions
-  replace (txs: TxView[], remove: TxView[], direction: string = 'left'): void {
-    const startTime = performance.now()
-    this.removeBatch(remove.map(tx => tx.txid), startTime, direction)
+    const removed = this.removeBatch(Object.keys(this.txs), startTime, direction)
 
     // clean up sprites
     setTimeout(() => {
-      remove.forEach(tx => {
+      removed.forEach(tx => {
+        tx.destroy()
+      })
+    }, 2000)
+  }
+
+  // Reset layout and replace with new set of transactions
+  replace (txs: TransactionStripped[], direction: string = 'left'): void {
+    const startTime = performance.now()
+    const nextIds = {}
+    const remove = []
+    txs.forEach(tx => {
+      nextIds[tx.txid] = true
+    })
+    Object.keys(this.txs).forEach(txid => {
+      if (!nextIds[txid]) remove.push(txid)
+    })
+    txs.forEach(tx => {
+      if (!this.txs[tx.txid]) this.txs[tx.txid] = new TxView(tx, this.vertexArray)
+    })
+
+    const removed = this.removeBatch(remove, startTime, direction)
+
+    // clean up sprites
+    setTimeout(() => {
+      removed.forEach(tx => {
         tx.destroy()
       })
     }, 1000)
 
     this.layout = new BlockLayout({ width: this.gridWidth, height: this.gridHeight })
 
-    txs.sort((a,b) => { return b.feerate - a.feerate }).forEach(tx => {
-      this.insert(tx, startTime, direction)
+    Object.values(this.txs).sort((a,b) => { return b.feerate - a.feerate }).forEach(tx => {
+      this.place(tx)
     })
+
+    this.updateAll(startTime, direction)
   }
 
-  update (add: TxView[], remove: TxView[], direction: string = 'left'): void {
+  update (add: TransactionStripped[], remove: string[], direction: string = 'left'): void {
     const startTime = performance.now()
-    this.removeBatch(remove.map(tx => tx.txid), startTime, direction)
+    const removed = this.removeBatch(remove, startTime, direction)
 
     // clean up sprites
     setTimeout(() => {
-      remove.forEach(tx => {
+      removed.forEach(tx => {
         tx.destroy()
       })
     }, 1000)
 
     // try to insert new txs directly
     const remaining = []
-    add = add.sort((a,b) => { return b.feerate - a.feerate })
-    add.forEach(tx => {
+    add.map(tx => new TxView(tx, this.vertexArray)).sort((a,b) => { return b.feerate - a.feerate }).forEach(tx => {
       if (!this.tryInsertByFee(tx)) {
         remaining.push(tx)
       }
@@ -106,7 +124,9 @@ export default class BlockScene {
     } else return null
   }
 
-  private init ({ width, height, resolution, blockLimit }: { width: number, height: number, resolution: number, blockLimit: number}): void {
+  private init ({ width, height, resolution, blockLimit, vertexArray }: { width: number, height: number, resolution: number, blockLimit: number, vertexArray: FastVertexArray }): void {
+    this.vertexArray = vertexArray
+
     this.scene = {
       count: 0,
       offset: {
@@ -300,11 +320,11 @@ export default class BlockScene {
     }
   }
 
-  private removeBatch (ids: string[], startTime: number, direction: string = 'left'): (TxView | void)[] {
+  private removeBatch (ids: string[], startTime: number, direction: string = 'left'): TxView[] {
     if (!startTime) startTime = performance.now()
     return ids.map(id => {
       return this.remove(id, startTime, direction)
-    }).filter(tx => !!tx)
+    }).filter(tx => tx != null) as TxView[]
   }
 }
 

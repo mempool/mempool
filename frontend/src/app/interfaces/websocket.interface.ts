@@ -50,6 +50,11 @@ export interface MempoolBlockWithTransactions extends MempoolBlock {
   transactions: TransactionStripped[];
 }
 
+export interface MempoolBlockDelta {
+  added: TransactionStripped[],
+  removed: string[],
+}
+
 export interface MempoolInfo {
   loaded: boolean;                 //  (boolean) True if the mempool is fully loaded
   size: number;                    //  (numeric) Current tx count
