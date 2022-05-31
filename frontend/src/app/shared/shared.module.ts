@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbCollapse, NgbCollapseModule, NgbRadioGroup, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
@@ -146,11 +145,10 @@ import { IndexingProgressComponent } from '../components/indexing-progress/index
     NgbTooltipModule,
     NgbButtonsModule,
     NgbPaginationModule,
-    NgbDropdownModule,
-    NgbAccordionModule,
-    InfiniteScrollModule,
     NgbTypeaheadModule,
-    NgbModule,
+    NgbDropdownModule,
+    NgbCollapseModule,
+    InfiniteScrollModule,
     FontAwesomeModule,
   ],
   providers: [
@@ -162,17 +160,16 @@ import { IndexingProgressComponent } from '../components/indexing-progress/index
   ],
   exports: [
     RouterModule,
-    InfiniteScrollModule,
-    NgbTypeaheadModule,
-    NgbModule,
-    FontAwesomeModule,
-    NgbAccordionModule,
-    NgbNavModule,
     ReactiveFormsModule,
+    NgbNavModule,
     NgbTooltipModule,
     NgbButtonsModule,
     NgbPaginationModule,
+    NgbTypeaheadModule,
     NgbDropdownModule,
+    NgbCollapseModule,
+    InfiniteScrollModule,
+    FontAwesomeModule,
     TimeSinceComponent,
     TimeUntilComponent,
     ClipboardComponent,
