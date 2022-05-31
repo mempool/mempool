@@ -1,6 +1,6 @@
-import { Component, ElementRef, ViewChild, HostListener, Input, OnInit, OnDestroy,  OnChanges, ChangeDetectionStrategy, NgZone } from '@angular/core';
+import { Component, ElementRef, ViewChild, HostListener, Input, Output, EventEmitter, OnInit, OnDestroy,  OnChanges, ChangeDetectionStrategy, NgZone } from '@angular/core';
 import { StateService } from 'src/app/services/state.service';
-import { MempoolBlockWithTransactions } from 'src/app/interfaces/websocket.interface';
+import { MempoolBlockWithTransactions, TransactionStripped } from 'src/app/interfaces/websocket.interface';
 import { Observable, Subscription } from 'rxjs';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { FastVertexArray } from './fast-vertex-array';
@@ -16,6 +16,7 @@ import TxView from './tx-view';
 })
 export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChanges {
   @Input() index: number;
+  @Output() txPreviewEvent = new EventEmitter<TransactionStripped | void>()
 
   @ViewChild('blockCanvas')
   canvas: ElementRef<HTMLCanvasElement>;
@@ -29,6 +30,8 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
   running: boolean;
   scene: BlockScene;
   txViews: { [key: string]: TxView };
+  hoverTx: TxView | void;
+  selectedTx: TxView | void;
   lastBlockHeight: number;
   blockIndex: number;
 
@@ -257,6 +260,56 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
         this.animationFrameRequest = null
       }
       this.animationFrameRequest = requestAnimationFrame(() => this.run());
+    }
+  }
+
+  @HostListener('click', ['$event'])
+  onClick(event) {
+    this.setPreviewTx(event.offsetX, event.offsetY, true)
+  }
+
+  @HostListener('pointermove', ['$event'])
+  onPointerMove(event) {
+    this.setPreviewTx(event.offsetX, event.offsetY, false)
+  }
+
+  @HostListener('pointerleave', ['$event'])
+  onPointerLeave(event) {
+    this.setPreviewTx(-1, -1, false)
+  }
+
+  setPreviewTx(x: number, y: number, clicked: boolean = false) {
+    if (this.scene && (!this.selectedTx || clicked)) {
+      const selected = this.scene.getTxAt({ x, y })
+      const currentPreview = this.selectedTx || this.hoverTx
+
+      if (selected !== currentPreview) {
+        if (currentPreview) currentPreview.setHover(false)
+        if (selected) {
+          selected.setHover(true)
+          this.txPreviewEvent.emit({
+            txid: selected.txid,
+            fee: selected.fee,
+            vsize: selected.vsize,
+            value: selected.value
+          })
+          if (clicked) this.selectedTx = selected
+          else this.hoverTx = selected
+        } else {
+          if (clicked) {
+            this.selectedTx = null
+          }
+          this.hoverTx = null
+          this.txPreviewEvent.emit(null)
+        }
+      } else if (clicked) {
+        if (selected === this.selectedTx) {
+          this.hoverTx = this.selectedTx
+          this.selectedTx = null
+        } else {
+          this.selectedTx = selected
+        }
+      }
     }
   }
 }
