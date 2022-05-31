@@ -67,7 +67,7 @@ class Server {
   }
 
   async startServer(worker = false) {
-    logger.debug(`Starting Mempool Server${worker ? ' (worker)' : ''}... (${backendInfo.getShortCommitHash()})`);
+    logger.notice(`Starting Mempool Server${worker ? ' (worker)' : ''}... (${backendInfo.getShortCommitHash()})`);
 
     this.app
       .use((req: Request, res: Response, next: NextFunction) => {
