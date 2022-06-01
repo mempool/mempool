@@ -19,7 +19,7 @@
       <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage + '/signet'" ngbDropdownItem *ngIf="env.SIGNET_ENABLED" class="signet"><img src="./resources/signet-logo.png" style="width: 30px;" class="mr-1"> Signet</a>
       <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage + '/testnet'" ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet"><img src="./resources/testnet-logo.png" style="width: 30px;" class="mr-1"> Testnet</a>
       <h6 class="dropdown-header" i18n="master-page.layer2-networks-header">Layer 2 Networks</h6>
-      <button ngbDropdownItem class="mainnet active" routerLink="/"><img src="./resources/bisq-logo.png" style="width: 30px;" class="mr-1"> Bisq</button>
+      <a ngbDropdownItem class="mainnet active" routerLink="/"><img src="./resources/bisq-logo.png" style="width: 30px;" class="mr-1"> Bisq</a>
       <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage" ngbDropdownItem *ngIf="env.LIQUID_ENABLED" class="liquid"><img src="./resources/liquid-logo.png" style="width: 30px;" class="mr-1"> Liquid</a>
       <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage + '/testnet'" ngbDropdownItem *ngIf="env.LIQUID_TESTNET_ENABLED" class="liquidtestnet"><img src="./resources/liquidtestnet-logo.png" style="width: 30px;" class="mr-1"> Liquid Testnet</a>
     </div>

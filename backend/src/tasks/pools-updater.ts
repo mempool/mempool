@@ -16,7 +16,7 @@ class PoolsUpdater {
   }
 
   public async updatePoolsJson() {
-    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false || config.DATABASE.ENABLED === false) {
       return;
     }
 
