@@ -25,6 +25,7 @@ export interface WebsocketResponse {
   'track-tx'?: string;
   'track-address'?: string;
   'track-asset'?: string;
+  'track-mempool-block'?: number;
   'watch-mempool'?: boolean;
   'track-bisq-market'?: string;
 }
@@ -42,6 +43,16 @@ export interface MempoolBlock {
   totalFees: number;
   feeRange: number[];
   index: number;
+}
+
+export interface MempoolBlockWithTransactions extends MempoolBlock {
+  transactionIds: string[];
+  transactions: TransactionStripped[];
+}
+
+export interface MempoolBlockDelta {
+  added: TransactionStripped[],
+  removed: string[],
 }
 
 export interface MempoolInfo {
