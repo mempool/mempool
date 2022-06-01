@@ -14,35 +14,26 @@ import { tap } from 'rxjs/operators';
 export class FeesBoxComponent implements OnInit {
   isLoadingWebSocket$: Observable<boolean>;
   recommendedFees$: Observable<Recommendedfees>;
-  defaultFee: number;
-  startColor = '#2e324e';
-  endColor = '#2e324e';
+  gradient = 'linear-gradient(to right, #2e324e, #2e324e)';
 
   constructor(
-    private stateService: StateService,
+    private stateService: StateService
   ) { }
 
   ngOnInit(): void {
-    this.defaultFee = this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet' ? 0.1 : 1;
-
     this.isLoadingWebSocket$ = this.stateService.isLoadingWebSocket$;
     this.recommendedFees$ = this.stateService.recommendedFees$
       .pipe(
         tap((fees) => {
-          // For quick testing purpose
-          // fees.fastestFee = 400;
-          // fees.halfHourFee = 75;
-          // fees.hourFee = 50;
-          // fees.economyFee = 40;
-          // fees.minimumFee = 5;
-
           let feeLevelIndex = feeLevels.slice().reverse().findIndex((feeLvl) => fees.minimumFee >= feeLvl);
           feeLevelIndex = feeLevelIndex >= 0 ? feeLevels.length - feeLevelIndex : feeLevelIndex;
-          this.startColor = '#' + (mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
+          const startColor = '#' + (mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
 
           feeLevelIndex = feeLevels.slice().reverse().findIndex((feeLvl) => fees.fastestFee >= feeLvl);
           feeLevelIndex = feeLevelIndex >= 0 ? feeLevels.length - feeLevelIndex : feeLevelIndex;
-          this.endColor = '#' + (mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
+          const endColor = '#' + (mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
+
+          this.gradient = `linear-gradient(to right, ${startColor}, ${endColor})`;
         }
       )
     );

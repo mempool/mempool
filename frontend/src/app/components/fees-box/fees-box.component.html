@@ -1,13 +1,12 @@
-<div class="fee-progress-bar" [style.background]="'linear-gradient(to right, ' + startColor + ', ' + endColor + ')'">
-  <span class="fee-label" i18n="fees-box.minimum">Minimum</span>
-  <span class="fee-label" i18n="fees-box.economy">Economy</span>
-  <span class="fee-label" i18n="fees-box.low">Low</span>
-  <span class="fee-label" i18n="fees-box.medium">Medium</span>
-  <span class="fee-label" i18n="fees-box.high">High</span>
-</div>
-
-<div class="fee-estimation-wrapper">
-  <div class="fee-estimation-container" *ngIf="(isLoadingWebSocket$ | async) === false && (recommendedFees$ | async) as recommendedFees; else loadingFees">
+<div class="fee-estimation-wrapper" *ngIf="(isLoadingWebSocket$ | async) === false && (recommendedFees$ | async) as recommendedFees; else loadingFees">
+  <div class="fee-progress-bar" [style.background]="gradient">
+    <span class="fee-label" i18n="fees-box.minimum">Minimum</span>
+    <span class="fee-label" i18n="fees-box.economy">Economy</span>
+    <span class="fee-label" i18n="fees-box.low">Low</span>
+    <span class="fee-label" i18n="fees-box.medium">Medium</span>
+    <span class="fee-label" i18n="fees-box.high">High</span>
+  </div>
+  <div class="fee-estimation-container">
     <div class="item">
       <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom">
         <div class="fee-text">{{ recommendedFees.minimumFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat [value]="recommendedFees.minimumFee * 140" ></app-fiat></span>
@@ -37,6 +36,13 @@
 </div>
 
 <ng-template #loadingFees>
+  <div class="fee-progress-bar" [style.background]="gradient">
+    <span class="fee-label" i18n="fees-box.minimum">Minimum</span>
+    <span class="fee-label" i18n="fees-box.economy">Economy</span>
+    <span class="fee-label" i18n="fees-box.low">Low</span>
+    <span class="fee-label" i18n="fees-box.medium">Medium</span>
+    <span class="fee-label" i18n="fees-box.high">High</span>
+  </div>
   <div class="fee-estimation-container loading-container">
     <div class="item">
       <div class="card-text">
