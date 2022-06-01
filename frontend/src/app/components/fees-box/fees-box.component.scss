@@ -21,28 +21,22 @@
 .fee-estimation-container {
   display: flex;
   justify-content: space-between;
-  @media (min-width: 376px) {
-    flex-direction: row;
-  }  
+  flex-direction: row;
   .item {
     width: 100px;
     margin: 0;
     width: -webkit-fill-available;
-    @media (min-width: 376px) {
-      margin: 0 auto 0px;
-    }    
-    &:first-child{
-      display: none;
-      @media (min-width: 485px) {
-        display: block;
-      }    
-      @media (min-width: 768px) {
-        display: none;
-      }    
-      @media (min-width: 992px) {
-        display: block;
-      }    
+    &:first-child {
+      @media (767px < width < 992px), (width < 576px) {
+        display: none
+      }
     }
+    &:nth-child(2) {
+      @media (767px < width < 992px), (width < 576px) {
+        display: none
+      }
+    }
+    margin: 0 auto 0px;
     &:last-child {
       margin-bottom: 0;
     }
@@ -86,7 +80,7 @@
 .fee-progress-bar {
   width: 100%;
   height: 22px;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   border-radius: 0px 10px 10px 0px;
   display: flex;
   flex-direction: row;
@@ -95,5 +89,18 @@
 
 .fee-label {
   font-size: 14px;
-  width: 100px;
+  width: 20%;
+  @media (767px < width < 992px), (width < 576px) {
+    width: 33%;
+  }
+  &:first-child {
+    @media (767px < width < 992px), (width < 576px) {
+      display: none
+    }
+  }
+  &:nth-child(2) {
+    @media (767px < width < 992px), (width < 576px) {
+      display: none
+    }
+  }
 }
