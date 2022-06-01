@@ -307,6 +307,7 @@ class BlocksRepository {
     try {
       const [rows]: any[] = await DB.query(`SELECT
         height,
+        hash,
         hash as id,
         UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
         size,

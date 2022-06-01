@@ -200,6 +200,7 @@ class WebsocketHandler {
       'backendInfo': backendInfo.getBackendInfo(),
       'loadingIndicators': loadingIndicators.getLoadingIndicators(),
       'da': difficultyAdjustment.getDifficultyAdjustment(),
+      'fees': feeApi.getRecommendedFee(),
       ...this.extraInitProperties
     };
   }
@@ -403,6 +404,9 @@ class WebsocketHandler {
       block.extras.matchRate = matchRate;
     }
 
+    const da = difficultyAdjustment.getDifficultyAdjustment();
+    const fees = feeApi.getRecommendedFee();
+
     this.wss.clients.forEach((client) => {
       if (client.readyState !== WebSocket.OPEN) {
         return;
@@ -415,8 +419,8 @@ class WebsocketHandler {
       const response = {
         'block': block,
         'mempoolInfo': memPool.getMempoolInfo(),
-        'da': difficultyAdjustment.getDifficultyAdjustment(),
-        'fees': feeApi.getRecommendedFee(),
+        'da': da,
+        'fees': fees,
       };
 
       if (mBlocks && client['want-mempool-blocks']) {
