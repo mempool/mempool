@@ -16,6 +16,8 @@ import { prepareBlock } from '../utils/blocks-utils';
 import BlocksRepository from '../repositories/BlocksRepository';
 import HashratesRepository from '../repositories/HashratesRepository';
 import indexer from '../indexer';
+import fiatConversion from './fiat-conversion';
+import RatesRepository from '../repositories/RatesRepository';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -341,6 +343,9 @@ class Blocks {
           await blocksRepository.$saveBlockInDatabase(blockExtended);
         }
       }
+      if (fiatConversion.ratesInitialized === true && config.DATABASE.ENABLED === true) {
+        await RatesRepository.$saveRate(blockExtended.height, fiatConversion.getConversionRates());
+      }
 
       if (block.height % 2016 === 0) {
         this.previousDifficultyRetarget = (block.difficulty - this.currentDifficulty) / this.currentDifficulty * 100;
@@ -426,25 +431,32 @@ class Blocks {
         return returnBlocks;
       }
 
+      if (currentHeight === 0 && Common.indexingEnabled()) {
+        currentHeight = await blocksRepository.$mostRecentBlockHeight();
+      }
+
       // Check if block height exist in local cache to skip the hash lookup
       const blockByHeight = this.getBlocks().find((b) => b.height === currentHeight);
       let startFromHash: string | null = null;
       if (blockByHeight) {
         startFromHash = blockByHeight.id;
-      } else {
+      } else if (!Common.indexingEnabled()) {
         startFromHash = await bitcoinApi.$getBlockHash(currentHeight);
       }
 
       let nextHash = startFromHash;
       for (let i = 0; i < limit && currentHeight >= 0; i++) {
         let block = this.getBlocks().find((b) => b.height === currentHeight);
-        if (!block && Common.indexingEnabled()) {
+        if (block) {
+          returnBlocks.push(block);
+        } else if (Common.indexingEnabled()) {
           block = await this.$indexBlock(currentHeight);
-        } else if (!block) {
+          returnBlocks.push(block);
+        } else if (nextHash != null) {
           block = prepareBlock(await bitcoinApi.$getBlock(nextHash));
+          nextHash = block.previousblockhash;
+          returnBlocks.push(block);
         }
-        returnBlocks.push(block);
-        nextHash = block.previousblockhash;
         currentHeight--;
       }
 
