@@ -15,8 +15,8 @@ export class FeesBoxComponent implements OnInit {
   isLoadingWebSocket$: Observable<boolean>;
   recommendedFees$: Observable<Recommendedfees>;
   defaultFee: number;
-  startColor = '#557d00';
-  endColor = '#557d00';
+  startColor = '#2e324e';
+  endColor = '#2e324e';
 
   constructor(
     private stateService: StateService,
@@ -29,6 +29,7 @@ export class FeesBoxComponent implements OnInit {
     this.recommendedFees$ = this.stateService.recommendedFees$
       .pipe(
         tap((fees) => {
+          // For quick testing purpose
           // fees.fastestFee = 400;
           // fees.halfHourFee = 75;
           // fees.hourFee = 50;
