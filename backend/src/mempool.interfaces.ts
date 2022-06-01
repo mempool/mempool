@@ -33,6 +33,12 @@ export interface MempoolBlock {
 
 export interface MempoolBlockWithTransactions extends MempoolBlock {
   transactionIds: string[];
+  transactions: TransactionStripped[];
+}
+
+export interface MempoolBlockDelta {
+  added: TransactionStripped[];
+  removed: string[];
 }
 
 interface VinStrippedToScriptsig {
