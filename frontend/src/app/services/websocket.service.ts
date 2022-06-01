@@ -309,12 +309,12 @@ export class WebsocketService {
       });
     }
 
-    if (response['projected-mempool-block']) {
-      if (response['projected-mempool-block'].index == this.trackingMempoolBlock) {
-        if (response['projected-mempool-block'].block) {
-          this.stateService.mempoolBlock$.next(response['projected-mempool-block'].block);
-        } else if (response['projected-mempool-block'].delta) {
-          this.stateService.mempoolBlockDelta$.next(response['projected-mempool-block'].delta);
+    if (response['projected-block-transactions']) {
+      if (response['projected-block-transactions'].index == this.trackingMempoolBlock) {
+        if (response['projected-block-transactions'].blockTransactions) {
+          this.stateService.mempoolBlockTransactions$.next(response['projected-block-transactions'].blockTransactions);
+        } else if (response['projected-block-transactions'].delta) {
+          this.stateService.mempoolBlockDelta$.next(response['projected-block-transactions'].delta);
         }
       }
     }

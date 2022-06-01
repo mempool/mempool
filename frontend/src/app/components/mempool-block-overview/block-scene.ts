@@ -1,5 +1,4 @@
 import { FastVertexArray } from './fast-vertex-array'
-import TxSprite from './tx-sprite'
 import TxView from './tx-view'
 import { TransactionStripped } from 'src/app/interfaces/websocket.interface';
 import { Position, Square } from './sprite-types'

@@ -1,7 +1,8 @@
-import { Component, ElementRef, ViewChild, HostListener, Input, Output, EventEmitter, OnInit, OnDestroy,  OnChanges, ChangeDetectionStrategy, NgZone } from '@angular/core';
+import { Component, ElementRef, ViewChild, HostListener, Input, Output, EventEmitter, OnInit,
+  OnDestroy, OnChanges, ChangeDetectionStrategy, NgZone, AfterViewInit } from '@angular/core';
 import { StateService } from 'src/app/services/state.service';
 import { MempoolBlockWithTransactions, MempoolBlockDelta, TransactionStripped } from 'src/app/interfaces/websocket.interface';
-import { Observable, Subscription, BehaviorSubject } from 'rxjs';
+import { Subscription, BehaviorSubject } from 'rxjs';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { FastVertexArray } from './fast-vertex-array';
 import BlockScene from './block-scene';
@@ -14,9 +15,9 @@ import TxView from './tx-view';
   styleUrls: ['./mempool-block-overview.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChanges {
+export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
   @Input() index: number;
-  @Output() txPreviewEvent = new EventEmitter<TransactionStripped | void>()
+  @Output() txPreviewEvent = new EventEmitter<TransactionStripped | void>();
 
   @ViewChild('blockCanvas')
   canvas: ElementRef<HTMLCanvasElement>;
@@ -41,33 +42,33 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
   constructor(
     public stateService: StateService,
     private websocketService: WebsocketService,
-    readonly _ngZone: NgZone,
+    readonly ngZone: NgZone,
   ) {
-    this.vertexArray = new FastVertexArray(512, TxSprite.dataSize)
+    this.vertexArray = new FastVertexArray(512, TxSprite.dataSize);
   }
 
   ngOnInit(): void {
-    this.blockSub = this.stateService.mempoolBlock$.subscribe((block) => {
-      this.replaceBlock(block)
-    })
+    this.blockSub = this.stateService.mempoolBlockTransactions$.subscribe((transactionsStripped) => {
+      this.replaceBlock(transactionsStripped);
+    });
     this.deltaSub = this.stateService.mempoolBlockDelta$.subscribe((delta) => {
-      this.updateBlock(delta)
-    })
+      this.updateBlock(delta);
+    });
   }
 
   ngAfterViewInit(): void {
-    this.canvas.nativeElement.addEventListener("webglcontextlost", this.handleContextLost, false)
-    this.canvas.nativeElement.addEventListener("webglcontextrestored", this.handleContextRestored, false)
-    this.gl = this.canvas.nativeElement.getContext('webgl')
-    this.initCanvas()
+    this.canvas.nativeElement.addEventListener('webglcontextlost', this.handleContextLost, false);
+    this.canvas.nativeElement.addEventListener('webglcontextrestored', this.handleContextRestored, false);
+    this.gl = this.canvas.nativeElement.getContext('webgl');
+    this.initCanvas();
 
-    this.resizeCanvas()
+    this.resizeCanvas();
   }
 
   ngOnChanges(changes): void {
     if (changes.index) {
-      this.clearBlock(changes.index.currentValue > changes.index.previousValue ? 'right' : 'left')
-      this.isLoading$.next(true)
+      this.clearBlock(changes.index.currentValue > changes.index.previousValue ? 'right' : 'left');
+      this.isLoading$.next(true);
       this.websocketService.startTrackMempoolBlock(changes.index.currentValue);
     }
   }
@@ -80,53 +81,56 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
 
   clearBlock(direction): void {
     if (this.scene) {
-      this.scene.exit(direction)
+      this.scene.exit(direction);
     }
-    this.hoverTx = null
-    this.selectedTx = null
-    this.txPreviewEvent.emit(null)
+    this.hoverTx = null;
+    this.selectedTx = null;
+    this.txPreviewEvent.emit(null);
   }
 
-  replaceBlock(block: MempoolBlockWithTransactions): void {
+  replaceBlock(transactionsStripped: TransactionStripped[]): void {
     if (!this.scene) {
-      this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: 75, blockLimit: this.stateService.blockVSize, vertexArray: this.vertexArray })
+      this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: 75,
+        blockLimit: this.stateService.blockVSize, vertexArray: this.vertexArray });
     }
-    const blockMined = (this.stateService.latestBlockHeight > this.lastBlockHeight)
-    if (this.blockIndex != this.index) {
-      const direction = (this.blockIndex == null || this.index < this.blockIndex) ? 'left' : 'right'
-      this.scene.enter(block.transactions, direction)
+    const blockMined = (this.stateService.latestBlockHeight > this.lastBlockHeight);
+    if (this.blockIndex !== this.index) {
+      const direction = (this.blockIndex == null || this.index < this.blockIndex) ? 'left' : 'right';
+      this.scene.enter(transactionsStripped, direction);
     } else {
-      this.scene.replace(block.transactions, blockMined ? 'right' : 'left')
+      this.scene.replace(transactionsStripped, blockMined ? 'right' : 'left');
     }
 
-    this.lastBlockHeight = this.stateService.latestBlockHeight
-    this.blockIndex = this.index
-    this.isLoading$.next(false)
+    this.lastBlockHeight = this.stateService.latestBlockHeight;
+    this.blockIndex = this.index;
+    this.isLoading$.next(false);
   }
 
   updateBlock(delta: MempoolBlockDelta): void {
     if (!this.scene) {
-      this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: 75, blockLimit: this.stateService.blockVSize, vertexArray: this.vertexArray })
+      this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: 75,
+        blockLimit: this.stateService.blockVSize, vertexArray: this.vertexArray });
     }
-    const blockMined = (this.stateService.latestBlockHeight > this.lastBlockHeight)
+    const blockMined = (this.stateService.latestBlockHeight > this.lastBlockHeight);
 
-    if (this.blockIndex != this.index) {
-      const direction = (this.blockIndex == null || this.index < this.blockIndex) ? 'left' : 'right'
-      this.scene.exit(direction)
-      this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: 75, blockLimit: this.stateService.blockVSize, vertexArray: this.vertexArray })
-      this.scene.enter(delta.added, direction)
+    if (this.blockIndex !== this.index) {
+      const direction = (this.blockIndex == null || this.index < this.blockIndex) ? 'left' : 'right';
+      this.scene.exit(direction);
+      this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: 75,
+        blockLimit: this.stateService.blockVSize, vertexArray: this.vertexArray });
+      this.scene.enter(delta.added, direction);
     } else {
-      this.scene.update(delta.added, delta.removed, blockMined ? 'right' : 'left', blockMined)
+      this.scene.update(delta.added, delta.removed, blockMined ? 'right' : 'left', blockMined);
     }
 
-    this.lastBlockHeight = this.stateService.latestBlockHeight
-    this.blockIndex = this.index
-    this.isLoading$.next(false)
+    this.lastBlockHeight = this.stateService.latestBlockHeight;
+    this.blockIndex = this.index;
+    this.isLoading$.next(false);
   }
 
-  initCanvas (): void {
-    this.gl.clearColor(0.0, 0.0, 0.0, 0.0)
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT)
+  initCanvas(): void {
+    this.gl.clearColor(0.0, 0.0, 0.0, 0.0);
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
     const shaderSet = [
       {
@@ -137,97 +141,101 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
         type: this.gl.FRAGMENT_SHADER,
         src: fragShaderSrc
       }
-    ]
+    ];
 
-    this.shaderProgram = this.buildShaderProgram(shaderSet)
+    this.shaderProgram = this.buildShaderProgram(shaderSet);
 
-    this.gl.useProgram(this.shaderProgram)
+    this.gl.useProgram(this.shaderProgram);
 
     // Set up alpha blending
     this.gl.enable(this.gl.BLEND);
     this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
 
-    const glBuffer = this.gl.createBuffer()
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, glBuffer)
+    const glBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, glBuffer);
 
     /* SET UP SHADER ATTRIBUTES */
     Object.keys(attribs).forEach((key, i) => {
-      attribs[key].pointer = this.gl.getAttribLocation(this.shaderProgram, key)
+      attribs[key].pointer = this.gl.getAttribLocation(this.shaderProgram, key);
       this.gl.enableVertexAttribArray(attribs[key].pointer);
-    })
+    });
 
-    this.start()
+    this.start();
   }
 
   handleContextLost(event): void {
-    event.preventDefault()
-    cancelAnimationFrame(this.animationFrameRequest)
-    this.animationFrameRequest = null
-    this.running = false
+    event.preventDefault();
+    cancelAnimationFrame(this.animationFrameRequest);
+    this.animationFrameRequest = null;
+    this.running = false;
   }
 
   handleContextRestored(event): void {
-    this.initCanvas()
+    this.initCanvas();
   }
 
   @HostListener('window:resize', ['$event'])
   resizeCanvas(): void {
-    this.displayWidth = this.canvas.nativeElement.parentElement.clientWidth
-    this.displayHeight = this.canvas.nativeElement.parentElement.clientHeight
-    this.canvas.nativeElement.width = this.displayWidth
-    this.canvas.nativeElement.height = this.displayHeight
-    if (this.gl) this.gl.viewport(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height)
-    if (this.scene) this.scene.resize({ width: this.displayWidth, height: this.displayHeight })
+    this.displayWidth = this.canvas.nativeElement.parentElement.clientWidth;
+    this.displayHeight = this.canvas.nativeElement.parentElement.clientHeight;
+    this.canvas.nativeElement.width = this.displayWidth;
+    this.canvas.nativeElement.height = this.displayHeight;
+    if (this.gl) {
+      this.gl.viewport(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
+    }
+    if (this.scene) {
+      this.scene.resize({ width: this.displayWidth, height: this.displayHeight });
+    }
   }
 
   compileShader(src, type): WebGLShader {
-    let shader = this.gl.createShader(type)
+    const shader = this.gl.createShader(type);
 
-    this.gl.shaderSource(shader, src)
-    this.gl.compileShader(shader)
+    this.gl.shaderSource(shader, src);
+    this.gl.compileShader(shader);
 
     if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
-      console.log(`Error compiling ${type === this.gl.VERTEX_SHADER ? "vertex" : "fragment"} shader:`)
-      console.log(this.gl.getShaderInfoLog(shader))
+      console.log(`Error compiling ${type === this.gl.VERTEX_SHADER ? 'vertex' : 'fragment'} shader:`);
+      console.log(this.gl.getShaderInfoLog(shader));
     }
-    return shader
+    return shader;
   }
 
   buildShaderProgram(shaderInfo): WebGLProgram {
-    let program = this.gl.createProgram()
+    const program = this.gl.createProgram();
 
     shaderInfo.forEach((desc) => {
-      let shader = this.compileShader(desc.src, desc.type)
+      const shader = this.compileShader(desc.src, desc.type);
       if (shader) {
-        this.gl.attachShader(program, shader)
+        this.gl.attachShader(program, shader);
       }
-    })
+    });
 
-    this.gl.linkProgram(program)
+    this.gl.linkProgram(program);
 
     if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
-      console.log("Error linking shader program:")
-      console.log(this.gl.getProgramInfoLog(program))
+      console.log('Error linking shader program:');
+      console.log(this.gl.getProgramInfoLog(program));
     }
 
-    return program
+    return program;
   }
 
   start(): void {
-    this.running = true
-    this._ngZone.runOutsideAngular(() => this.run())
+    this.running = true;
+    this.ngZone.runOutsideAngular(() => this.run());
   }
 
-  run (now?: DOMHighResTimeStamp): void {
+  run(now?: DOMHighResTimeStamp): void {
     if (!now) {
-      now = performance.now()
+      now = performance.now();
     }
 
     /* SET UP SHADER UNIFORMS */
     // screen dimensions
-    this.gl.uniform2f(this.gl.getUniformLocation(this.shaderProgram, 'screenSize'), this.displayWidth, this.displayHeight)
+    this.gl.uniform2f(this.gl.getUniformLocation(this.shaderProgram, 'screenSize'), this.displayWidth, this.displayHeight);
     // frame timestamp
-    this.gl.uniform1f(this.gl.getUniformLocation(this.shaderProgram, 'now'), now)
+    this.gl.uniform1f(this.gl.getUniformLocation(this.shaderProgram, 'now'), now);
 
     /* SET UP SHADER ATTRIBUTES */
     Object.keys(attribs).forEach((key, i) => {
@@ -237,20 +245,20 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
       false, // never normalised
       stride,   // distance between values of the same attribute
       attribs[key].offset);  // offset of the first value
-    })
+    });
 
-    const pointArray = this.vertexArray.getVertexData()
+    const pointArray = this.vertexArray.getVertexData();
 
     if (pointArray.length) {
-      this.gl.bufferData(this.gl.ARRAY_BUFFER, pointArray, this.gl.DYNAMIC_DRAW)
-      this.gl.drawArrays(this.gl.TRIANGLES, 0, pointArray.length / TxSprite.vertexSize)
+      this.gl.bufferData(this.gl.ARRAY_BUFFER, pointArray, this.gl.DYNAMIC_DRAW);
+      this.gl.drawArrays(this.gl.TRIANGLES, 0, pointArray.length / TxSprite.vertexSize);
     }
 
     /* LOOP */
     if (this.running) {
       if (this.animationFrameRequest) {
-        cancelAnimationFrame(this.animationFrameRequest)
-        this.animationFrameRequest = null
+        cancelAnimationFrame(this.animationFrameRequest);
+        this.animationFrameRequest = null;
       }
       this.animationFrameRequest = requestAnimationFrame(() => this.run());
     }
@@ -258,49 +266,54 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
 
   @HostListener('click', ['$event'])
   onClick(event) {
-    this.setPreviewTx(event.offsetX, event.offsetY, true)
+    this.setPreviewTx(event.offsetX, event.offsetY, true);
   }
 
   @HostListener('pointermove', ['$event'])
   onPointerMove(event) {
-    this.setPreviewTx(event.offsetX, event.offsetY, false)
+    this.setPreviewTx(event.offsetX, event.offsetY, false);
   }
 
   @HostListener('pointerleave', ['$event'])
   onPointerLeave(event) {
-    this.setPreviewTx(-1, -1, false)
+    this.setPreviewTx(-1, -1, false);
   }
 
   setPreviewTx(x: number, y: number, clicked: boolean = false) {
     if (this.scene && (!this.selectedTx || clicked)) {
-      const selected = this.scene.getTxAt({ x, y })
-      const currentPreview = this.selectedTx || this.hoverTx
+      const selected = this.scene.getTxAt({ x, y });
+      const currentPreview = this.selectedTx || this.hoverTx;
 
       if (selected !== currentPreview) {
-        if (currentPreview) currentPreview.setHover(false)
+        if (currentPreview) {
+          currentPreview.setHover(false);
+        }
         if (selected) {
-          selected.setHover(true)
+          selected.setHover(true);
           this.txPreviewEvent.emit({
             txid: selected.txid,
             fee: selected.fee,
             vsize: selected.vsize,
             value: selected.value
-          })
-          if (clicked) this.selectedTx = selected
-          else this.hoverTx = selected
+          });
+          if (clicked) {
+            this.selectedTx = selected;
+          } else {
+            this.hoverTx = selected;
+          }
         } else {
           if (clicked) {
-            this.selectedTx = null
+            this.selectedTx = null;
           }
-          this.hoverTx = null
-          this.txPreviewEvent.emit(null)
+          this.hoverTx = null;
+          this.txPreviewEvent.emit(null);
         }
       } else if (clicked) {
         if (selected === this.selectedTx) {
-          this.hoverTx = this.selectedTx
-          this.selectedTx = null
+          this.hoverTx = this.selectedTx;
+          this.selectedTx = null;
         } else {
-          this.selectedTx = selected
+          this.selectedTx = selected;
         }
       }
     }
@@ -317,16 +330,16 @@ const attribs = {
   colG: { type: 'FLOAT', count: 4, pointer: null, offset: 0 },
   colB: { type: 'FLOAT', count: 4, pointer: null, offset: 0 },
   colA: { type: 'FLOAT', count: 4, pointer: null, offset: 0 }
-}
+};
 // Calculate the number of bytes per vertex based on specified attributes
 const stride = Object.values(attribs).reduce((total, attrib) => {
-  return total + (attrib.count * 4)
-}, 0)
+  return total + (attrib.count * 4);
+}, 0);
 // Calculate vertex attribute offsets
 for (let i = 0, offset = 0; i < Object.keys(attribs).length; i++) {
-  let attrib = Object.values(attribs)[i]
-  attrib.offset = offset
-  offset += (attrib.count * 4)
+  const attrib = Object.values(attribs)[i];
+  attrib.offset = offset;
+  offset += (attrib.count * 4);
 }
 
 const vertShaderSrc = `
@@ -376,7 +389,7 @@ void main() {
 
   vColor = vec4(red, green, blue, alpha);
 }
-`
+`;
 
 const fragShaderSrc = `
 varying lowp vec4 vColor;
@@ -386,4 +399,4 @@ void main() {
   // premultiply alpha
   gl_FragColor.rgb *= gl_FragColor.a;
 }
-`
+`;
