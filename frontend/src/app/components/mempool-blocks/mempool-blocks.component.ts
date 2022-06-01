@@ -238,7 +238,6 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
       gradientColors.push(mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
     });
 
-
     gradientColors.forEach((color, i, gc) => {
       backgroundGradients.push(`
         #${i === 0 ? color : gc[i - 1]} ${ i === 0 ? emptyBackgroundSpacePercentage : ((i / gradientColors.length) * 100) * usedBlockSpace / 100 + emptyBackgroundSpacePercentage }%,
