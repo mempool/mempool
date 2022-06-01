@@ -1,19 +1,33 @@
-<div class="fee-estimation-wrapper">
-  <div class="fee-estimation-container" *ngIf="(isLoadingWebSocket$ | async) === false && (recommendedFees$ | async) as recommendedFees; else loadingFees">
+<div class="fee-estimation-wrapper" *ngIf="(isLoadingWebSocket$ | async) === false && (recommendedFees$ | async) as recommendedFees; else loadingFees">
+  <div class="fee-progress-bar" [style.background]="gradient">
+    <span class="fee-label" i18n="fees-box.minimum">Minimum</span>
+    <span class="fee-label" i18n="fees-box.economy">Economy</span>
+    <span class="fee-label" i18n="fees-box.low">Low</span>
+    <span class="fee-label" i18n="fees-box.medium">Medium</span>
+    <span class="fee-label" i18n="fees-box.high">High</span>
+  </div>
+  <div class="fee-estimation-container">
     <div class="item">
-      <h5 class="card-title" i18n="fees-box.low-priority">Low priority</h5>
+      <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom">
+        <div class="fee-text">{{ recommendedFees.minimumFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat [value]="recommendedFees.minimumFee * 140" ></app-fiat></span>
+      </div>
+    </div>
+    <div class="item">
+      <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom">
+        <div class="fee-text">{{ recommendedFees.economyFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat [value]="recommendedFees.economyFee * 140" ></app-fiat></span>
+      </div>
+    </div>
+    <div class="item">
       <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom">
         <div class="fee-text">{{ recommendedFees.hourFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat [value]="recommendedFees.hourFee * 140" ></app-fiat></span>
       </div>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="fees-box.medium-priority">Medium priority</h5>
       <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom">
         <div class="fee-text">{{ recommendedFees.halfHourFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat [value]="recommendedFees.halfHourFee * 140" ></app-fiat></span>
       </div>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="fees-box.high-priority">High priority</h5>
       <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom">
         <div class="fee-text">{{ recommendedFees.fastestFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat [value]="recommendedFees.fastestFee * 140" ></app-fiat></span>
       </div>
@@ -22,23 +36,39 @@
 </div>
 
 <ng-template #loadingFees>
+  <div class="fee-progress-bar" [style.background]="gradient">
+    <span class="fee-label" i18n="fees-box.minimum">Minimum</span>
+    <span class="fee-label" i18n="fees-box.economy">Economy</span>
+    <span class="fee-label" i18n="fees-box.low">Low</span>
+    <span class="fee-label" i18n="fees-box.medium">Medium</span>
+    <span class="fee-label" i18n="fees-box.high">High</span>
+  </div>
   <div class="fee-estimation-container loading-container">
     <div class="item">
-      <h5 class="card-title" i18n="fees-box.low-priority">Low priority</h5>
       <div class="card-text">
         <div class="skeleton-loader"></div>
         <div class="skeleton-loader"></div>
       </div>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="fees-box.medium-priority">Medium priority</h5>
       <div class="card-text">
         <div class="skeleton-loader"></div>
         <div class="skeleton-loader"></div>
       </div>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="fees-box.high-priority">High priority</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
       <div class="card-text">
         <div class="skeleton-loader"></div>
         <div class="skeleton-loader"></div>
