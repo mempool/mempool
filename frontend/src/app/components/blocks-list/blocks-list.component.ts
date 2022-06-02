@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, timer } from 'rxjs';
+import { BehaviorSubject, combineLatest, concat, Observable, timer } from 'rxjs';
 import { delayWhen, map, retryWhen, scan, skip, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended } from 'src/app/interfaces/node-api.interface';
 import { ApiService } from 'src/app/services/api.service';
@@ -15,7 +15,7 @@ import { WebsocketService } from 'src/app/services/websocket.service';
 export class BlocksList implements OnInit {
   @Input() widget: boolean = false;
 
-  blocks$: Observable<any[]> = undefined;
+  blocks$: Observable<BlockExtended[]> = undefined;
 
   indexingAvailable = false;
   isLoading = true;
@@ -27,6 +27,7 @@ export class BlocksList implements OnInit {
   blocksCount: number;
   fromHeightSubject: BehaviorSubject<number> = new BehaviorSubject(this.fromBlockHeight);
   skeletonLines: number[] = [];
+  lastBlockHeight = -1;
 
   constructor(
     private apiService: ApiService,
@@ -57,6 +58,7 @@ export class BlocksList implements OnInit {
                   this.blocksCount = blocks[0].height + 1;
                 }
                 this.isLoading = false;
+                this.lastBlockHeight = Math.max(...blocks.map(o => o.height))
               }),
               map(blocks => {
                 if (this.indexingAvailable) {
@@ -73,12 +75,18 @@ export class BlocksList implements OnInit {
               }),
               retryWhen(errors => errors.pipe(delayWhen(() => timer(10000))))
             )
-          })
+        })
       ),
       this.stateService.blocks$
         .pipe(
-          skip(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT - 1),
-        ),
+          switchMap((block) => {
+            if (block[0].height <= this.lastBlockHeight) {
+              return []; // Return an empty stream so the last pipe is not executed
+            }
+            this.lastBlockHeight = block[0].height;
+            return [block];
+          })
+        )
     ])
       .pipe(
         scan((acc, blocks) => {
