@@ -235,7 +235,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.increment-seconds" datatype="html">
         <source>Increment seconds</source>
-        <target>Növelés másodpercel</target>
+        <target>Másodperc növelése</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/timepicker/timepicker.ts</context>
           <context context-type="linenumber">295</context>
@@ -243,7 +243,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.decrement-seconds" datatype="html">
         <source>Decrement seconds</source>
-        <target>Csökkenés másodpercel</target>
+        <target>Másodperc csökkenétése</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/timepicker/timepicker.ts</context>
           <context context-type="linenumber">295</context>
@@ -288,7 +288,7 @@
       </trans-unit>
       <trans-unit id="a9b87c3aa4731edee661c8287ef3aab71799c0b8" datatype="html">
         <source>Total received</source>
-        <target>Összesen fogadott</target>
+        <target>Összes fogadott</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
           <context context-type="linenumber">22</context>
@@ -301,7 +301,7 @@
       </trans-unit>
       <trans-unit id="f149942f271231be52f55589398967093382d96d" datatype="html">
         <source>Total sent</source>
-        <target>Összesen küldött</target>
+        <target>Összes küldött</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
           <context context-type="linenumber">26</context>
@@ -1286,7 +1286,7 @@
       </trans-unit>
       <trans-unit id="450749685636583691" datatype="html">
         <source>Pay trade fee</source>
-        <target>Kereskedelmi díj fizetése</target>
+        <target>Kereskedési díj fizetése</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">37</context>
@@ -1342,7 +1342,7 @@
       </trans-unit>
       <trans-unit id="bisq-transactions.filter" datatype="html">
         <source>Filter</source>
-        <target>Filter</target>
+        <target>Szűrő</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">57,56</context>
@@ -1420,7 +1420,7 @@
       </trans-unit>
       <trans-unit id="a24b1c6a9c4334ba204e4cec2dd9f32ea33d043f" datatype="html">
         <source>Enterprise Sponsors 🚀</source>
-        <target>Enterprise Szponzorok 🚀</target>
+        <target>Céges Szponzorok 🚀</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">38,41</context>
@@ -1631,7 +1631,7 @@
       </trans-unit>
       <trans-unit id="8f301d45550dcb7dec91cc1fdc1f65f13c6a2892" datatype="html">
         <source>Precision</source>
-        <target>Precízió</target>
+        <target>Pontosság</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">27</context>
@@ -1681,7 +1681,7 @@
       </trans-unit>
       <trans-unit id="e21556753a442f3d474ccfed50cd3f60bec18fe3" datatype="html">
         <source>Burned amount</source>
-        <target>Kibocsájtó</target>
+        <target>Elégetett mennyiség</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">51</context>
@@ -1691,7 +1691,7 @@
       </trans-unit>
       <trans-unit id="1990b8bef8f205a7d1b821aa4f979cc9f4fe179d" datatype="html">
         <source>Circulating amount</source>
-        <target>Körforgásban lévő mennyiség</target>
+        <target>Forgalomban lévő mennyiség</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">55</context>
@@ -1760,7 +1760,7 @@
       </trans-unit>
       <trans-unit id="ee8f8008bae6ce3a49840c4e1d39b4af23d4c263" datatype="html">
         <source>Assets</source>
-        <target>Assetok</target>
+        <target>Assetek</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.html</context>
           <context context-type="linenumber">3</context>
@@ -1872,7 +1872,7 @@
       </trans-unit>
       <trans-unit id="52686df280be57a57e1e9ecf5786499b147e0e90" datatype="html">
         <source>Error loading assets data.</source>
-        <target>Hiba történt az assetok adainak betöltésekor.</target>
+        <target>Hiba történt az assetek adainak betöltésekor.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets.component.html</context>
           <context context-type="linenumber">48,53</context>
@@ -1898,7 +1898,7 @@
       </trans-unit>
       <trans-unit id="c5d46228bea3555d65c705bad40be80f8798a113" datatype="html">
         <source>Reconnecting...</source>
-        <target>Újra kapcsolódás...</target>
+        <target>Újrakapcsolódás...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/bisq-master-page/bisq-master-page.component.html</context>
           <context context-type="linenumber">8,13</context>
@@ -2003,6 +2003,7 @@
       </trans-unit>
       <trans-unit id="c20172223f84462032664d717d739297e5a9e2fe" datatype="html">
         <source>Fees</source>
+        <source>Díjak</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-graph/block-fees-graph.component.ts</context>
           <context context-type="linenumber">160,158</context>
@@ -2022,6 +2023,7 @@
       </trans-unit>
       <trans-unit id="8ba8fe810458280a83df7fdf4c614dfc1a826445" datatype="html">
         <source>Block Rewards</source>
+        <source>Blokk jutalmak</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-rewards-graph/block-rewards-graph.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -2163,7 +2165,7 @@
       </trans-unit>
       <trans-unit id="0b47a777f024ab4e3cdf0062acb4d86e9ae1f635" datatype="html">
         <source>Median fee</source>
-        <target>Átlag díj</target>
+        <target>Medián díj</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">78,79</context>
@@ -2250,7 +2252,7 @@
       </trans-unit>
       <trans-unit id="855f852e5642a1279605465df0cbbe78c2622648" datatype="html">
         <source>Based on average native segwit transaction of 140 vBytes</source>
-        <target>Az átlag 140 vBájtnyi native segwit tranzakción alapulvéve</target>
+        <target>Egy átlagos 140 vBájtos natív segwit tranzakció alapján</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">79,81</context>
@@ -2325,7 +2327,7 @@
       </trans-unit>
       <trans-unit id="d71be278785ad5940aacaf2b29a67bdbf6fc6be8" datatype="html">
         <source>Merkle root</source>
-        <target>Merkle törzs</target>
+        <target>Merkle gyökér</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">155,157</context>
@@ -2363,7 +2365,7 @@
       </trans-unit>
       <trans-unit id="a6bb63d98a8a67689070a79ccf13960c25b572ef" datatype="html">
         <source>Nonce</source>
-        <target>Nounce</target>
+        <target>Nonce</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">169,171</context>
@@ -2372,7 +2374,7 @@
       </trans-unit>
       <trans-unit id="cbfb79ff517493268a49acffa81ecc02336d8372" datatype="html">
         <source>Block Header Hex</source>
-        <target>Blokk Fejcím Hex</target>
+        <target>Blokk Fejléc Hex</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">173,174</context>
@@ -2501,7 +2503,7 @@
       </trans-unit>
       <trans-unit id="63da83692b85cf17e0606153029a83fd4038d6dd" datatype="html">
         <source>Difficulty Adjustment</source>
-        <target>Bányászási Nehézségifok</target>
+        <target>Nehézség változás</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">1,5</context>
@@ -2514,7 +2516,7 @@
       </trans-unit>
       <trans-unit id="0912816d94f2f05a7eee8f7622670e0c6bbbce16" datatype="html">
         <source>Remaining</source>
-        <target>Hátramaradt</target>
+        <target>Hátralévő</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">7,9</context>
@@ -2864,7 +2866,7 @@
       </trans-unit>
       <trans-unit id="b2cb12c1680a46464cae5aa0d0d1d6914733a75d" datatype="html">
         <source>Fee span</source>
-        <target>Díj fesztáv</target>
+        <target>Díj tartomány</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
           <context context-type="linenumber">20,21</context>
@@ -2889,7 +2891,7 @@
       </trans-unit>
       <trans-unit id="2348971518300945764" datatype="html">
         <source>Range</source>
-        <target>Távolság</target>
+        <target>Tartomány</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-graph/mempool-graph.component.ts</context>
           <context context-type="linenumber">259</context>
@@ -2897,7 +2899,7 @@
       </trans-unit>
       <trans-unit id="1033261550402895380" datatype="html">
         <source>Sum</source>
-        <target>Összesen</target>
+        <target>Összes</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-graph/mempool-graph.component.ts</context>
           <context context-type="linenumber">261</context>
@@ -4047,7 +4049,7 @@
       </trans-unit>
       <trans-unit id="86d26b45470e43b409e589517922276109138e87" datatype="html">
         <source>Transaction Fees</source>
-        <target>Tranzakciós Díjjak</target>
+        <target>Tranzakciós Díjak</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">6,9</context>
