@@ -1,22 +1,22 @@
 <div class="fee-estimation-wrapper" *ngIf="(isLoadingWebSocket$ | async) === false && (recommendedFees$ | async) as recommendedFees; else loadingFees">
-  <div class="fee-progress-bar" [style.background]="gradient">
-    <span class="fee-label" i18n="fees-box.minimum">Minimum</span>
-    <span class="fee-label" i18n="fees-box.economy">Economy</span>
-    <span class="fee-label" i18n="fees-box.low">Low</span>
-    <span class="fee-label" i18n="fees-box.medium">Medium</span>
-    <span class="fee-label" i18n="fees-box.high">High</span>
+  <div class="d-flex">
+    <div class="fee-progress-bar" [style.background]="noPriority">
+      <span class="fee-label" i18n="fees-box.no-priority">No Priority</span>
+    </div>
+    <div class="band-separator fill"></div>
+    <div class="fee-progress-bar priority" [style.background]="gradient">
+      <span class="fee-label prority" i18n="fees-box.low-priority">Low Priority</span>
+      <span class="fee-label prority" i18n="fees-box.medium-priority">Medium Priority</span>
+      <span class="fee-label prority" i18n="fees-box.high-priority">High Priority</span>
+    </div>
   </div>
   <div class="fee-estimation-container">
-    <div class="item">
-      <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom">
-        <div class="fee-text">{{ recommendedFees.minimumFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat [value]="recommendedFees.minimumFee * 140" ></app-fiat></span>
-      </div>
-    </div>
     <div class="item">
       <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom">
         <div class="fee-text">{{ recommendedFees.economyFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat [value]="recommendedFees.economyFee * 140" ></app-fiat></span>
       </div>
     </div>
+    <div class="band-separator"></div>
     <div class="item">
       <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom">
         <div class="fee-text">{{ recommendedFees.hourFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat [value]="recommendedFees.hourFee * 140" ></app-fiat></span>
@@ -36,12 +36,16 @@
 </div>
 
 <ng-template #loadingFees>
-  <div class="fee-progress-bar" [style.background]="gradient">
-    <span class="fee-label" i18n="fees-box.minimum">Minimum</span>
-    <span class="fee-label" i18n="fees-box.economy">Economy</span>
-    <span class="fee-label" i18n="fees-box.low">Low</span>
-    <span class="fee-label" i18n="fees-box.medium">Medium</span>
-    <span class="fee-label" i18n="fees-box.high">High</span>
+  <div class="d-flex">
+    <div class="fee-progress-bar" [style.background]="noPriority">
+      <span class="fee-label" i18n="fees-box.no-priority">No Priority</span>
+    </div>
+    <div class="band-separator fill"></div>
+    <div class="fee-progress-bar priority" [style.background]="gradient">
+      <span class="fee-label prority" i18n="fees-box.low-priority">Low Priority</span>
+      <span class="fee-label prority" i18n="fees-box.medium-priority">Medium Priority</span>
+      <span class="fee-label prority" i18n="fees-box.high-priority">High Priority</span>
+    </div>
   </div>
   <div class="fee-estimation-container loading-container">
     <div class="item">
@@ -50,12 +54,7 @@
         <div class="skeleton-loader"></div>
       </div>
     </div>
-    <div class="item">
-      <div class="card-text">
-        <div class="skeleton-loader"></div>
-        <div class="skeleton-loader"></div>
-      </div>
-    </div>
+    <div class="band-separator"></div>
     <div class="item">
       <div class="card-text">
         <div class="skeleton-loader"></div>

@@ -31,11 +31,6 @@
         display: none
       }
     }
-    &:nth-child(2) {
-      @media (767px < width < 992px), (width < 576px) {
-        display: none
-      }
-    }
     margin: 0 auto 0px;
     &:last-child {
       margin-bottom: 0;
@@ -78,29 +73,51 @@
 }
 
 .fee-progress-bar {
-  width: 100%;
+  width: 25%;
   height: 22px;
   margin-bottom: 12px;
-  border-radius: 0px 10px 10px 0px;
   display: flex;
   flex-direction: row;
   transition: background-color 1s;
-}
-
-.fee-label {
-  font-size: 14px;
-  width: 20%;
-  @media (767px < width < 992px), (width < 576px) {
-    width: 33%;
+  &.priority {
+    @media (767px < width < 992px), (width < 576px) {
+      width: 100%;
+    }
+    width: 75%;
+    border-radius: 0px 10px 10px 0px;
   }
   &:first-child {
     @media (767px < width < 992px), (width < 576px) {
       display: none
     }
   }
-  &:nth-child(2) {
-    @media (767px < width < 992px), (width < 576px) {
-      display: none
-    }
+}
+
+.band-separator {
+  width: 5%;
+  @media (767px < width < 992px), (width < 576px) {
+    display: none
+  }
+  &.fill {
+    height: 22px;
+    background: repeating-linear-gradient(
+      90deg,
+      rgb(45, 51, 72),
+      rgb(45, 51, 72) 2px,
+      rgb(29, 31, 49) 2px,
+      rgb(29, 31, 49) 4px
+    );  
+  }
+}
+
+.fee-label {
+  padding-top: 2px;
+  font-size: 12px;
+  width: 100%;
+  @media (767px < width < 992px), (width < 576px) {
+    width: 33%;
+  }
+  &.prority {
+    width: 33%;
   }
 }
