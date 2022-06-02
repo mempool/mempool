@@ -1,6 +1,7 @@
 import logger from '../logger';
 import * as WebSocket from 'ws';
-import { BlockExtended, TransactionExtended, WebsocketResponse, MempoolBlock, MempoolBlockDelta, OptimizedStatistic, ILoadingIndicators, IConversionRates } from '../mempool.interfaces';
+import { BlockExtended, TransactionExtended, WebsocketResponse, MempoolBlock, MempoolBlockDelta,
+  OptimizedStatistic, ILoadingIndicators, IConversionRates } from '../mempool.interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
 import backendInfo from './backend-info';
@@ -110,15 +111,15 @@ class WebsocketHandler {
             }
           }
 
-          if (parsedMessage && parsedMessage['track-mempool-block'] != null) {
+          if (parsedMessage && parsedMessage['track-mempool-block'] !== undefined) {
             if (Number.isInteger(parsedMessage['track-mempool-block']) && parsedMessage['track-mempool-block'] >= 0) {
               const index = parsedMessage['track-mempool-block'];
               client['track-mempool-block'] = index;
               const mBlocksWithTransactions = mempoolBlocks.getMempoolBlocksWithTransactions();
               if (mBlocksWithTransactions[index]) {
-                response['projected-mempool-block'] = {
+                response['projected-block-transactions'] = {
                   index: index,
-                  block: mBlocksWithTransactions[index],
+                  blockTransactions: mBlocksWithTransactions[index].transactions
                 };
               }
             } else {
@@ -389,7 +390,7 @@ class WebsocketHandler {
       if (client['track-mempool-block'] >= 0) {
         const index = client['track-mempool-block'];
         if (mBlockDeltas[index]) {
-          response['projected-mempool-block'] = {
+          response['projected-block-transactions'] = {
             index: index,
             delta: mBlockDeltas[index],
           };
@@ -526,7 +527,7 @@ class WebsocketHandler {
       if (client['track-mempool-block'] >= 0) {
         const index = client['track-mempool-block'];
         if (mBlockDeltas && mBlockDeltas[index]) {
-          response['projected-mempool-block'] = {
+          response['projected-block-transactions'] = {
             index: index,
             delta: mBlockDeltas[index],
           };
