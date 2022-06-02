@@ -2947,6 +2947,86 @@ export const restApiDocsData = [
     }
   },
   {
+    type: "endpoint",
+    category: "blocks",
+    httpRequestMethod: "GET",
+    fragment: "get-blocks",
+    title: "GET Blocks",
+    description: {
+      default: "<p>Returns the past <code>n</code> blocks with BSQ transactions starting <code>m</code> blocks ago.</p><p>Assume a block height of 700,000. Query <code>/blocks/0/10</code> for the past 10 blocks before 700,000 with BSQ transactions. Query <code>/blocks/1000/10</code> for the past 10 blocks before 699,000 with BSQ transactions."
+    },
+    urlString: "/blocks/:m/:n",
+    showConditions: ["bisq"],
+    showJsExamples: showJsExamplesDefault,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/blocks/%{1}/%{2}`,
+          commonJS: `
+        const { %{0}: { blocks } } = mempoolJS();
+
+        const getBlocks = await blocks.getBlocks({ index: %{1}, length: %{2} });
+
+        document.getElementById("result").textContent = JSON.stringify(getBlocks, undefined, 2);
+        `,
+          esModule: `
+  const { %{0}: { blocks } } = mempoolJS();
+
+  const getBlocks = await blocks.getBlocks({ index: %{1}, length: %{2} });
+  console.log(getBlocks);
+          `,
+        },
+        codeSampleMainnet: emptyCodeSample,
+        codeSampleTestnet: emptyCodeSample,
+        codeSampleSignet: emptyCodeSample,
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: {
+          esModule: ['0', '5'],
+          commonJS: ['0', '5'],
+          curl: ['0', '5'],
+          response: `[
+  {
+    "height": 739030,
+    "time": 1654203258000,
+    "hash": "000000000000000000036bc04416ddeec264cbb977a9cd9e454897acb547b601",
+    "previousBlockHash": "00000000000000000000f49261617b589d76e5e70529ea1d4c16f3e19ddcb8ef",
+    "txs": [ ... ],
+  },
+  {
+    "height": 739029,
+    "time": 1654203236000,
+    "hash": "00000000000000000000f49261617b589d76e5e70529ea1d4c16f3e19ddcb8ef",
+    "previousBlockHash": "00000000000000000008dd87e9486cd0d71c5d84e452432bab33c2a0cbaa31ce",
+    "txs": [ ... ],
+  },
+  {
+    "height": 739025,
+    "time": 1654199569000,
+    "hash": "000000000000000000021e9ce82dec208af75807f92a9b1d9dae91f2b4d40e24",
+    "previousBlockHash": "00000000000000000002db644c025a76464b466d25900402452b07213b30c40b",
+    "txs": [ ... ]
+  },
+  {
+    "height": 739023,
+    "time": 1654198597000,
+    "hash": "0000000000000000000702ce10250a46bea4155ca7acb869f3ea92c1e3a68bc5",
+    "previousBlockHash": "00000000000000000002b3d6c1adc5676262ded84181982f88dbd357b9f9d1ec",
+    "txs": [ ... ]
+  },
+  {
+    "height": 739020,
+    "time": 1654197263000,
+    "hash": "000000000000000000046eb46ad941028381d3534c35658f9c80de0641dbbb31",
+    "previousBlockHash": "000000000000000000073f1c49b4c4895f3fa6b866d1e21ab8b22f3f9318b42f",
+    "txs": [ ... ]
+  }
+]`
+        },
+      }
+    }
+  },
+  {
     type: "category",
     category: "mining",
     fragment: "mining",
