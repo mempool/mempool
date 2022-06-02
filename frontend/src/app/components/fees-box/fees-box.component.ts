@@ -15,6 +15,7 @@ export class FeesBoxComponent implements OnInit {
   isLoadingWebSocket$: Observable<boolean>;
   recommendedFees$: Observable<Recommendedfees>;
   gradient = 'linear-gradient(to right, #2e324e, #2e324e)';
+  noPriority = '#2e324e';
 
   constructor(
     private stateService: StateService
@@ -34,6 +35,7 @@ export class FeesBoxComponent implements OnInit {
           const endColor = '#' + (mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
 
           this.gradient = `linear-gradient(to right, ${startColor}, ${endColor})`;
+          this.noPriority = startColor;
         }
       )
     );
