@@ -2853,13 +2853,13 @@ export const restApiDocsData = [
     description: {
       default: "Returns details on the past 15 blocks with fee and mining details in an <code>extras</code> field. If <code>:startHeight</code> is specified, the past 15 blocks before (and including) <code>:startHeight</code> are returned."
     },
-    urlString: "/blocks-extras[/:startHeight]",
+    urlString: "/v1/blocks-extras[/:startHeight]",
     showConditions: bitcoinNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
         codeTemplate: {
-          curl: `/api/blocks-extras/%{1}`,
+          curl: `/api/v1/blocks-extras/%{1}`,
           commonJS: ``,
           esModule: ``
         },
