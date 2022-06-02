@@ -77,7 +77,7 @@ Query OK, 0 rows affected (0.00 sec)
 
 #### Build
 
-_Node.js 16 and npm 7 are recommended._
+_Make sure to use Node.js 16.15 and npm 7._
 
 Install dependencies with `npm` and build the backend:
 
