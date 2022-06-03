@@ -103,14 +103,14 @@ class DiskCache {
             }
           }
         } catch (e) {
-          logger.debug('Error parsing ' + fileName + '. Skipping.');
+          logger.info('Error parsing ' + fileName + '. Skipping. Reason: ' + (e instanceof Error ? e.message : e));
         }
       }
 
       memPool.setMempool(data.mempool);
       blocks.setBlocks(data.blocks);
     } catch (e) {
-      logger.warn('Failed to parse mempoool and blocks cache. Skipping.');
+      logger.warn('Failed to parse mempoool and blocks cache. Skipping. Reason: ' + (e instanceof Error ? e.message : e));
     }
   }
 }
