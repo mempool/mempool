@@ -41,6 +41,7 @@ class DiskCache {
       const chunkSize = Math.floor(mempoolArray.length / DiskCache.CHUNK_FILES);
 
       await fsPromises.writeFile(DiskCache.FILE_NAME, JSON.stringify({
+        cacheSchemaVersion: this.cacheSchemaVersion,
         blocks: blocks.getBlocks(),
         mempool: {},
         mempoolArray: mempoolArray.splice(0, chunkSize),
