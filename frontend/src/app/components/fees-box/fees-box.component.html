@@ -12,23 +12,23 @@
   </div>
   <div class="fee-estimation-container">
     <div class="item">
-      <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom">
+      <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="No target confirmation range—least expense, least priority" placement="bottom">
         <div class="fee-text">{{ recommendedFees.economyFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat [value]="recommendedFees.economyFee * 140" ></app-fiat></span>
       </div>
     </div>
     <div class="band-separator"></div>
     <div class="item">
-      <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom">
+      <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Attempt confirmation within next few blocks, but don't need quickly" placement="bottom">
         <div class="fee-text">{{ recommendedFees.hourFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat [value]="recommendedFees.hourFee * 140" ></app-fiat></span>
       </div>
     </div>
     <div class="item">
-      <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom">
+      <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Attempt faster confirmation within next few blocks" placement="bottom">
         <div class="fee-text">{{ recommendedFees.halfHourFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat [value]="recommendedFees.halfHourFee * 140" ></app-fiat></span>
       </div>
     </div>
     <div class="item">
-      <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom">
+      <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Attempt fastest confirmation, in next block or so" placement="bottom">
         <div class="fee-text">{{ recommendedFees.fastestFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat [value]="recommendedFees.fastestFee * 140" ></app-fiat></span>
       </div>
     </div>
