@@ -85,6 +85,8 @@ export class AddressLabelsComponent implements OnInit {
     }
 
     this.detectMultisig(this.vin.inner_redeemscript_asm);
+
+    this.detectMultisig(this.vin.prevout.scriptpubkey_asm);
   }
 
   detectMultisig(script: string) {
@@ -118,7 +120,11 @@ export class AddressLabelsComponent implements OnInit {
     }
     const m = parseInt(opM.match(/[0-9]+/)[0], 10);
 
-    this.label = $localize`:@@address-label.multisig:Multisig ${m}:multisigM: of ${n}:multisigN:`
+    if (ops.length) {
+      return;
+    }
+
+    this.label = $localize`:@@address-label.multisig:Multisig ${m}:multisigM: of ${n}:multisigN:`;
   }
 
   handleVout() {
