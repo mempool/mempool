@@ -9,6 +9,8 @@ import { TransactionExtended } from '../mempool.interfaces';
 import { Common } from './common';
 
 class DiskCache {
+  private cacheSchemaVersion = 1;
+
   private static FILE_NAME = config.MEMPOOL.CACHE_DIR + '/cache.json';
   private static FILE_NAMES = config.MEMPOOL.CACHE_DIR + '/cache{number}.json';
   private static CHUNK_FILES = 25;
@@ -57,6 +59,13 @@ class DiskCache {
     }
   }
 
+  wipeCache() {
+    fs.unlinkSync(DiskCache.FILE_NAME);
+    for (let i = 1; i < DiskCache.CHUNK_FILES; i++) {
+      fs.unlinkSync(DiskCache.FILE_NAMES.replace('{number}', i.toString()));
+    }
+  }
+  
   loadMempoolCache() {
     if (!fs.existsSync(DiskCache.FILE_NAME)) {
       return;
@@ -67,6 +76,11 @@ class DiskCache {
       if (cacheData) {
         logger.info('Restoring mempool and blocks data from disk cache');
         data = JSON.parse(cacheData);
+        if (data.cacheSchemaVersion === undefined || data.cacheSchemaVersion !== this.cacheSchemaVersion) {
+          logger.notice('Disk cache contains an outdated schema version. Clearing it and skipping the cache loading.');
+          return this.wipeCache();
+        }
+
         if (data.mempoolArray) {
           for (const tx of data.mempoolArray) {
             data.mempool[tx.txid] = tx;
