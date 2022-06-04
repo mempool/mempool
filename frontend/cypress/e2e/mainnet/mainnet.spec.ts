@@ -189,7 +189,7 @@ describe('Mainnet', () => {
         cy.get('[data-cy="tx-2"] .table-tx-vin .highlight').invoke('text').should('contain', `${address}`);
       });
 
-      it.only('highlights both input and output addresses in the same transaction', () => {
+      it('highlights both input and output addresses in the same transaction', () => {
         const address = 'bc1q03u63r6hm7a3v6em58zdqtp446w2pw30nm63mv';
         cy.visit(`/address/${address}`);
         cy.waitForSkeletonGone();
@@ -241,7 +241,7 @@ describe('Mainnet', () => {
             cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
             cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
             cy.document().left();
-            cy.get('.title-block h1').invoke('text').should('equal', 'Next block');
+            cy.get('.title-block h1').invoke('text').should('equal', 'Next Block');
           });
         });
 

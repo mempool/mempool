@@ -35,13 +35,14 @@ describe('Bisq', () => {
         "Proposal", "Reimbursement request", "Transfer BSQ", "Unlock", "Vote reveal"
       ];
       filters.forEach((filter) => {
-        it(`filters the transaction screen by ${filter}`, () => {
+        it.only(`filters the transaction screen by ${filter}`, () => {
           cy.visit(`${basePath}/transactions`);
+          cy.wait('@txs');
           cy.waitForSkeletonGone();
           cy.get('#filter').click();
           cy.contains(filter).find('input').click();
-          //TODO: change this waiter
-          cy.wait(1000);
+          cy.wait('@txs');
+          cy.wait(500);
           cy.get('td:nth-of-type(2)').each(($td) => {
             expect($td.text().trim()).to.eq(filter);
           });
@@ -56,7 +57,7 @@ describe('Bisq', () => {
         filters.forEach((filter) => {
           cy.contains(filter).find('input').click();
           //TODO: change this waiter
-          cy.wait(1000);
+          cy.wait(1500);
         });
         cy.get('td:nth-of-type(2)').each(($td) => {
           const regex = new RegExp(`${filters.join('|')}`, 'g');
