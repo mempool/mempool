@@ -69,7 +69,7 @@ jobs:
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
 
       - name: ${{ matrix.browser }} browser tests (Bisq)
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v4
         if: always()
         with:
           tag: ${{ github.event_name }}
