@@ -6,6 +6,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SvgImagesComponent {
+  randomId = Math.floor(Math.random() * 10000);
   @Input() name: string;
   @Input() class: string;
   @Input() style: string;
