@@ -1,10 +1,6 @@
 name: Cypress Tests
 
-on:
-  push:
-    branches:
-      - master
-  pull_request:
+on: [push, pull_request]
 jobs:
   cypress:
     runs-on: ${{ matrix.os }}
@@ -25,7 +21,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
       - name: ${{ matrix.browser }} browser tests (Mempool)
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v4
         with:
           tag: ${{ github.event_name }}
           working-directory: frontend
@@ -36,9 +32,9 @@ jobs:
           record: true
           parallel: true
           spec: |
-            cypress/integration/mainnet/*.spec.ts
-            cypress/integration/signet/*.spec.ts
-            cypress/integration/testnet/*.spec.ts
+            cypress/e2e/mainnet/*.spec.ts
+            cypress/e2e/signet/*.spec.ts
+            cypress/e2e/testnet/*.spec.ts
           group: Tests on ${{ matrix.browser }} (Mempool)
           browser: ${{ matrix.browser }}
           ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
@@ -49,7 +45,7 @@ jobs:
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
 
       - name: ${{ matrix.browser }} browser tests (Liquid)
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v4
         if: always()
         with:
           tag: ${{ github.event_name }}
@@ -61,8 +57,8 @@ jobs:
           record: true
           parallel: true
           spec: |
-            cypress/integration/liquid/liquid.spec.ts
-            cypress/integration/liquidtestnet/liquidtestnet.spec.ts
+            cypress/e2e/liquid/liquid.spec.ts
+            cypress/e2e/liquidtestnet/liquidtestnet.spec.ts
           group: Tests on ${{ matrix.browser }} (Liquid)
           browser: ${{ matrix.browser }}
           ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
@@ -73,7 +69,7 @@ jobs:
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
 
       - name: ${{ matrix.browser }} browser tests (Bisq)
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v4
         if: always()
         with:
           tag: ${{ github.event_name }}
@@ -84,7 +80,7 @@ jobs:
           wait-on-timeout: 120
           record: true
           parallel: true
-          spec: cypress/integration/bisq/bisq.spec.ts
+          spec: cypress/e2e/bisq/bisq.spec.ts
           group: Tests on ${{ matrix.browser }} (Bisq)
           browser: ${{ matrix.browser }}
           ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
