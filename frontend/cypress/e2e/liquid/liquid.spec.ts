@@ -124,7 +124,7 @@ describe('Liquid', () => {
         cy.visit(`${basePath}/assets`);
         cy.waitForSkeletonGone();
         cy.get('.container-xl input').click().type('Liquid Bitcoin').then(() => {
-          cy.get('ngb-typeahead-window').should('have.length', 1);
+          cy.get('ngb-typeahead-window', { timeout: 30000 }).should('have.length', 1);
         });
       });
 
@@ -132,7 +132,7 @@ describe('Liquid', () => {
         cy.visit(`${basePath}/assets`);
         cy.waitForSkeletonGone();
         cy.get('.container-xl input').click().type('Liquid AUD').then(() => {
-          cy.get('ngb-typeahead-window:nth-of-type(1) button').click();
+          cy.get('ngb-typeahead-window:nth-of-type(1) button', { timeout: 30000 }).click();
         });
       });
     });
