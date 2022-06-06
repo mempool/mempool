@@ -17,7 +17,7 @@ import BlocksRepository from '../repositories/BlocksRepository';
 import HashratesRepository from '../repositories/HashratesRepository';
 import indexer from '../indexer';
 import fiatConversion from './fiat-conversion';
-import RatesRepository from '../repositories/RatesRepository';
+import blocksRates from './blocks-rates';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -343,8 +343,11 @@ class Blocks {
           await blocksRepository.$saveBlockInDatabase(blockExtended);
         }
       }
-      if (fiatConversion.ratesInitialized === true && config.DATABASE.ENABLED === true) {
-        await RatesRepository.$saveRate(blockExtended.height, fiatConversion.getConversionRates());
+      if (config.DATABASE.ENABLED === true) {
+        const blockchainInfo = await bitcoinClient.getBlockchainInfo();
+        if (blockchainInfo.blocks === blockchainInfo.headers) {
+          await blocksRates.saveRateForBlock(blockExtended.height);
+        }
       }
 
       if (block.height % 2016 === 0) {

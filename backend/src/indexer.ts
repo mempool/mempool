@@ -4,6 +4,7 @@ import mempool from './api/mempool';
 import mining from './api/mining';
 import logger from './logger';
 import HashratesRepository from './repositories/HashratesRepository';
+import blocksRates from './api/blocks-rates';
 
 class Indexer {
   runIndexer = true;
@@ -31,6 +32,7 @@ class Indexer {
       await this.$resetHashratesIndexingState();
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();
+      await blocksRates.savePendingBlockRates();
     } catch (e) {
       this.reindex();
       logger.err(`Indexer failed, trying again later. Reason: ` + (e instanceof Error ? e.message : e));
