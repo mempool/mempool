@@ -12,24 +12,24 @@
   </div>
   <div class="fee-estimation-container">
     <div class="item">
-      <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom">
-        <div class="fee-text">{{ recommendedFees.economyFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat [value]="recommendedFees.economyFee * 140" ></app-fiat></span>
+      <div class="card-text">
+        <div class="fee-text">{{ recommendedFees.economyFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom" [value]="recommendedFees.economyFee * 140" ></app-fiat></span>
       </div>
     </div>
     <div class="band-separator"></div>
     <div class="item">
-      <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom">
-        <div class="fee-text">{{ recommendedFees.hourFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat [value]="recommendedFees.hourFee * 140" ></app-fiat></span>
+      <div class="card-text">
+        <div class="fee-text">{{ recommendedFees.hourFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom" [value]="recommendedFees.hourFee * 140" ></app-fiat></span>
       </div>
     </div>
     <div class="item">
-      <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom">
-        <div class="fee-text">{{ recommendedFees.halfHourFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat [value]="recommendedFees.halfHourFee * 140" ></app-fiat></span>
+      <div class="card-text">
+        <div class="fee-text">{{ recommendedFees.halfHourFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom" [value]="recommendedFees.halfHourFee * 140" ></app-fiat></span>
       </div>
     </div>
     <div class="item">
-      <div class="card-text" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom">
-        <div class="fee-text">{{ recommendedFees.fastestFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat [value]="recommendedFees.fastestFee * 140" ></app-fiat></span>
+      <div class="card-text">
+        <div class="fee-text">{{ recommendedFees.fastestFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom" [value]="recommendedFees.fastestFee * 140" ></app-fiat></span>
       </div>
     </div>
   </div>
