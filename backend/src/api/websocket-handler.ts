@@ -116,12 +116,10 @@ class WebsocketHandler {
               const index = parsedMessage['track-mempool-block'];
               client['track-mempool-block'] = index;
               const mBlocksWithTransactions = mempoolBlocks.getMempoolBlocksWithTransactions();
-              if (mBlocksWithTransactions[index]) {
-                response['projected-block-transactions'] = {
-                  index: index,
-                  blockTransactions: mBlocksWithTransactions[index].transactions
-                };
-              }
+              response['projected-block-transactions'] = {
+                index: index,
+                blockTransactions: mBlocksWithTransactions[index]?.transactions || [],
+              };
             } else {
               client['track-mempool-block'] = null;
             }
