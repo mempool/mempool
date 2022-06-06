@@ -256,7 +256,7 @@ class BlocksRepository {
 
     const params: any[] = [];
     let query = ` SELECT
-      height,
+      blocks.height,
       hash as id,
       UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
       size,
@@ -274,8 +274,10 @@ class BlocksRepository {
       merkle_root,
       previous_block_hash as previousblockhash,
       avg_fee,
-      avg_fee_rate
+      avg_fee_rate,
+      IFNULL(JSON_EXTRACT(rates.bisq_rates, '$.USD'), null) as usd
       FROM blocks
+      LEFT JOIN rates on rates.height = blocks.height
       WHERE pool_id = ?`;
     params.push(pool.id);
 
@@ -308,7 +310,7 @@ class BlocksRepository {
   public async $getBlockByHeight(height: number): Promise<object | null> {
     try {
       const [rows]: any[] = await DB.query(`SELECT
-        height,
+        blocks.height,
         hash,
         hash as id,
         UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
@@ -333,10 +335,12 @@ class BlocksRepository {
         merkle_root,
         previous_block_hash as previousblockhash,
         avg_fee,
-        avg_fee_rate
+        avg_fee_rate,
+        IFNULL(JSON_EXTRACT(rates.bisq_rates, '$.USD'), null) as usd
         FROM blocks
         JOIN pools ON blocks.pool_id = pools.id
-        WHERE height = ${height};
+        LEFT JOIN rates on rates.height = blocks.height
+        WHERE blocks.height = ${height};
       `);
 
       if (rows.length <= 0) {
@@ -357,12 +361,14 @@ class BlocksRepository {
   public async $getBlockByHash(hash: string): Promise<object | null> {
     try {
       const query = `
-        SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp, hash as id,
+        SELECT *, blocks.height, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp, hash as id,
         pools.id as pool_id, pools.name as pool_name, pools.link as pool_link, pools.slug as pool_slug,
         pools.addresses as pool_addresses, pools.regexes as pool_regexes,
-        previous_block_hash as previousblockhash
+        previous_block_hash as previousblockhash,
+        IFNULL(JSON_EXTRACT(rates.bisq_rates, '$.USD'), null) as usd
         FROM blocks
         JOIN pools ON blocks.pool_id = pools.id
+        LEFT JOIN rates on rates.height = blocks.height
         WHERE hash = '${hash}';
       `;
       const [rows]: any[] = await DB.query(query);
@@ -473,10 +479,12 @@ class BlocksRepository {
   public async $getHistoricalBlockFees(div: number, interval: string | null): Promise<any> {
     try {
       let query = `SELECT
-        CAST(AVG(height) as INT) as avgHeight,
+        CAST(AVG(blocks.height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(fees) as INT) as avgFees
-        FROM blocks`;
+        CAST(AVG(fees) as INT) as avgFees,
+        IFNULL(JSON_EXTRACT(rates.bisq_rates, '$.USD'), null) as usd
+        FROM blocks
+        LEFT JOIN rates on rates.height = blocks.height`;
 
       if (interval !== null) {
         query += ` WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
@@ -498,10 +506,12 @@ class BlocksRepository {
   public async $getHistoricalBlockRewards(div: number, interval: string | null): Promise<any> {
     try {
       let query = `SELECT
-        CAST(AVG(height) as INT) as avgHeight,
+        CAST(AVG(blocks.height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(reward) as INT) as avgRewards
-        FROM blocks`;
+        CAST(AVG(reward) as INT) as avgRewards,
+        IFNULL(JSON_EXTRACT(rates.bisq_rates, '$.USD'), null) as usd
+        FROM blocks
+        LEFT JOIN rates on rates.height = blocks.height`;
 
       if (interval !== null) {
         query += ` WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;

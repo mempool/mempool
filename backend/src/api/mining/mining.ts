@@ -31,7 +31,7 @@ class Mining {
    */
   public async $getHistoricalBlockFees(interval: string | null = null): Promise<any> {
     return await BlocksRepository.$getHistoricalBlockFees(
-      this.getTimeRange(interval),
+      this.getTimeRangeForAmounts(interval),
       Common.getSqlInterval(interval)
     );
   }
@@ -41,7 +41,7 @@ class Mining {
    */
   public async $getHistoricalBlockRewards(interval: string | null = null): Promise<any> {
     return await BlocksRepository.$getHistoricalBlockRewards(
-      this.getTimeRange(interval),
+      this.getTimeRangeForAmounts(interval),
       Common.getSqlInterval(interval)
     );
   }
@@ -462,6 +462,21 @@ class Mining {
     return date;
   }
 
+  private getTimeRangeForAmounts(interval: string | null): number {
+    switch (interval) {
+      case '3y': return 1296000;
+      case '2y': return 864000;
+      case '1y': return 432000;
+      case '6m': return 216000;
+      case '3m': return 108000;
+      case '1m': return 36000;
+      case '1w': return 8400;
+      case '3d': return 3600;
+      case '24h': return 1200; 
+      default: return 3888000;
+    }
+  }
+
   private getTimeRange(interval: string | null): number {
     switch (interval) {
       case '3y': return 43200; // 12h
@@ -473,7 +488,7 @@ class Mining {
       case '1w': return 300; // 5min
       case '3d': return 1;
       case '24h': return 1;
-      default: return 86400; // 24h
+      default: return 86400;
     }
   }
 }

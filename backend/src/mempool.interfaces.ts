@@ -109,6 +109,7 @@ export interface BlockExtension {
   avgFee?: number;
   avgFeeRate?: number;
   coinbaseRaw?: string;
+  usd?: number | null;
 }
 
 export interface BlockExtended extends IEsploraApi.Block {
