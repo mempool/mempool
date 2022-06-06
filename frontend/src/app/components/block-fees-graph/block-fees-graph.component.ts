@@ -4,12 +4,13 @@ import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
-import { formatNumber } from '@angular/common';
+import { formatCurrency, formatNumber, getCurrencySymbol } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { download, formatterXAxis, formatterXAxisLabel } from 'src/app/shared/graphs.utils';
+import { download, formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from 'src/app/shared/graphs.utils';
 import { StorageService } from 'src/app/services/storage.service';
 import { MiningService } from 'src/app/services/mining.service';
 import { ActivatedRoute } from '@angular/router';
+import { FiatShortenerPipe } from 'src/app/shared/pipes/fiat-shortener.pipe';
 
 @Component({
   selector: 'app-block-fees-graph',
@@ -51,6 +52,7 @@ export class BlockFeesGraphComponent implements OnInit {
     private storageService: StorageService,
     private miningService: MiningService,
     private route: ActivatedRoute,
+    private fiatShortenerPipe: FiatShortenerPipe,
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
@@ -82,6 +84,7 @@ export class BlockFeesGraphComponent implements OnInit {
               tap((response) => {
                 this.prepareChartOptions({
                   blockFees: response.body.map(val => [val.timestamp * 1000, val.avgFees / 100000000, val.avgHeight]),
+                  blockFeesUSD: response.body.filter(val => val.usd > 0).map(val => [val.timestamp * 1000, val.avgFees / 100000000 * val.usd, val.avgHeight]),
                 });
                 this.isLoading = false;
               }),
@@ -98,16 +101,17 @@ export class BlockFeesGraphComponent implements OnInit {
 
   prepareChartOptions(data) {
     this.chartOptions = {
-      animation: false,
       color: [
-        new graphic.LinearGradient(0, 0, 0, 0.65, [
-          { offset: 0, color: '#F4511E' },
-          { offset: 0.25, color: '#FB8C00' },
-          { offset: 0.5, color: '#FFB300' },
-          { offset: 0.75, color: '#FDD835' },
-          { offset: 1, color: '#7CB342' }
+        new graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: '#00ACC1' },
+          { offset: 1, color: '#0D47A1' },
+        ]),
+        new graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: '#FDD835' },
+          { offset: 1, color: '#FB8C00' },
         ]),
       ],
+      animation: false,
       grid: {
         top: 30,
         bottom: 80,
@@ -128,28 +132,52 @@ export class BlockFeesGraphComponent implements OnInit {
           align: 'left',
         },
         borderColor: '#000',
-        formatter: (ticks) => {
-          let tooltip = `<b style="color: white; margin-left: 2px">${formatterXAxis(this.locale, this.timespan, parseInt(ticks[0].axisValue, 10))}</b><br>`;
-          tooltip += `${ticks[0].marker} ${ticks[0].seriesName}: ${formatNumber(ticks[0].data[1], this.locale, '1.3-3')} BTC`;
-          tooltip += `<br>`;
+        formatter: function (data) {
+          if (data.length <= 0) {
+            return '';
+          }
+          let tooltip = `<b style="color: white; margin-left: 2px">
+            ${formatterXAxis(this.locale, this.timespan, parseInt(data[0].axisValue, 10))}</b><br>`;
 
-          if (['24h', '3d'].includes(this.timespan)) {
-            tooltip += `<small>` + $localize`At block: ${ticks[0].data[2]}` + `</small>`;
-          } else {
-            tooltip += `<small>` + $localize`Around block: ${ticks[0].data[2]}` + `</small>`;
+          for (const tick of data) {
+            if (tick.seriesIndex === 0) {
+              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.3-3')} BTC<br>`;
+            } else if (tick.seriesIndex === 1) {
+              tooltip += `${tick.marker} ${tick.seriesName}: ${formatCurrency(tick.data[1], this.locale, getCurrencySymbol('USD', 'narrow'), 'USD', '1.0-0')}<br>`;
+            }
           }
 
+          tooltip += `<small>* On average around block ${data[0].data[2]}</small>`;
           return tooltip;
-        }
+        }.bind(this)
       },
-      xAxis: {
-        name: formatterXAxisLabel(this.locale, this.timespan),
-        nameLocation: 'middle',
-        nameTextStyle: {
-          padding: [10, 0, 0, 0],
-        },
+      xAxis: data.blockFees.length === 0 ? undefined :
+      {
         type: 'time',
         splitNumber: this.isMobile() ? 5 : 10,
+        axisLabel: {
+          hideOverlap: true,
+        }
+      },
+      legend: {
+        data: [
+          {
+            name: 'Fees BTC',
+            inactiveColor: 'rgb(110, 112, 121)',
+            textStyle: {
+              color: 'white',
+            },
+            icon: 'roundRect',
+          },
+          {
+            name: 'Fees USD',
+            inactiveColor: 'rgb(110, 112, 121)',
+            textStyle: {  
+              color: 'white',
+            },
+            icon: 'roundRect',
+          },
+        ],
       },
       yAxis: [
         {
@@ -160,6 +188,9 @@ export class BlockFeesGraphComponent implements OnInit {
               return `${val} BTC`;
             }
           },
+          max: (value) => {
+            return Math.floor(value.max * 2 * 10) / 10;
+          },
           splitLine: {
             lineStyle: {
               type: 'dotted',
@@ -168,18 +199,47 @@ export class BlockFeesGraphComponent implements OnInit {
             }
           },
         },
+        {
+          type: 'value',
+          position: 'right',
+          axisLabel: {
+            color: 'rgb(110, 112, 121)',
+            formatter: function(val) {
+              return this.fiatShortenerPipe.transform(val);
+            }.bind(this)
+          },
+          splitLine: {
+            show: false,
+          },
+        },
       ],
       series: [
         {
+          legendHoverLink: false,
           zlevel: 0,
-          name: $localize`:@@c20172223f84462032664d717d739297e5a9e2fe:Fees`,
-          showSymbol: false,
-          symbol: 'none',
+          yAxisIndex: 0,
+          name: 'Fees BTC',
           data: data.blockFees,
           type: 'line',
+          smooth: 0.25,
+          symbol: 'none',
+          areaStyle: {
+            opacity: 0.25,
+          },
+        },
+        {
+          legendHoverLink: false,
+          zlevel: 1,
+          yAxisIndex: 1,
+          name: 'Fees USD',
+          data: data.blockFeesUSD,
+          type: 'line',
+          smooth: 0.25,
+          symbol: 'none',
           lineStyle: {
             width: 2,
-          },
+            opacity: 0.75,
+          }
         },
       ],
       dataZoom: [{
