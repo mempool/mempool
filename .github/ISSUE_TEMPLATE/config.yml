@@ -3,3 +3,6 @@ contact_links:
   - name: 🙋 Need help? Chat with us on Matrix
     url: https://matrix.to/#/#mempool.support:bitcoin.kyoto
     about: For support requests or general questions
+  - name: 🌐 Want to help with translations? Use Transifex
+    url: https://www.transifex.com/mempool/mempool
+    about: All translations work is done on Transifex
