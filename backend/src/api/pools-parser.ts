@@ -147,7 +147,7 @@ class PoolsParser {
     for (let i = 0; i < finalPoolDataAdd.length; ++i) {
       queryAdd += `('${finalPoolDataAdd[i].name}', '${finalPoolDataAdd[i].link}',
       '${JSON.stringify(finalPoolDataAdd[i].regexes)}', '${JSON.stringify(finalPoolDataAdd[i].addresses)}',
-      ${finalPoolDataAdd[i].slug}),`;
+      ${JSON.stringify(finalPoolDataAdd[i].slug)}),`;
     }
     queryAdd = queryAdd.slice(0, -1) + ';';
 
