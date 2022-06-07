@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import * as fs from 'fs';
 import config from './config';
+import backendInfo from './api/backend-info';
 import logger from './logger';
 import { SocksProxyAgent } from 'socks-proxy-agent';
 
@@ -42,6 +43,9 @@ class SyncAssets {
 
           logger.info(`Downloading external asset ${fileName} over the Tor network...`);
           return axios.get(url, {
+            headers: {
+              'User-Agent': (config.MEMPOOL.USER_AGENT === 'mempool') ? `mempool/v${backendInfo.getBackendInfo().version}` : `${config.MEMPOOL.USER_AGENT}`
+            },
             httpAgent: agent,
             httpsAgent: agent,
             responseType: 'stream',
@@ -57,6 +61,9 @@ class SyncAssets {
         } else {
           logger.info(`Downloading external asset ${fileName} over clearnet...`);
           return axios.get(url, {
+            headers: {
+              'User-Agent': (config.MEMPOOL.USER_AGENT === 'mempool') ? `mempool/v${backendInfo.getBackendInfo().version}` : `${config.MEMPOOL.USER_AGENT}`
+            },
             responseType: 'stream',
             timeout: 30000
           }).then(function (response) {
