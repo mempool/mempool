@@ -1,6 +1,6 @@
 import logger from '../logger';
 import * as WebSocket from 'ws';
-import { BlockExtended, TransactionExtended, WebsocketResponse, MempoolBlock,
+import { BlockExtended, TransactionExtended, WebsocketResponse, MempoolBlock, MempoolBlockDelta,
   OptimizedStatistic, ILoadingIndicators, IConversionRates } from '../mempool.interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
@@ -13,6 +13,7 @@ import config from '../config';
 import transactionUtils from './transaction-utils';
 import rbfCache from './rbf-cache';
 import difficultyAdjustment from './difficulty-adjustment';
+import feeApi from './fee-api';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
@@ -110,6 +111,20 @@ class WebsocketHandler {
             }
           }
 
+          if (parsedMessage && parsedMessage['track-mempool-block'] !== undefined) {
+            if (Number.isInteger(parsedMessage['track-mempool-block']) && parsedMessage['track-mempool-block'] >= 0) {
+              const index = parsedMessage['track-mempool-block'];
+              client['track-mempool-block'] = index;
+              const mBlocksWithTransactions = mempoolBlocks.getMempoolBlocksWithTransactions();
+              response['projected-block-transactions'] = {
+                index: index,
+                blockTransactions: mBlocksWithTransactions[index]?.transactions || [],
+              };
+            } else {
+              client['track-mempool-block'] = null;
+            }
+          }
+
           if (parsedMessage.action === 'init') {
             const _blocks = blocks.getBlocks().slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT);
             if (!_blocks) {
@@ -199,6 +214,7 @@ class WebsocketHandler {
       'backendInfo': backendInfo.getBackendInfo(),
       'loadingIndicators': loadingIndicators.getLoadingIndicators(),
       'da': difficultyAdjustment.getDifficultyAdjustment(),
+      'fees': feeApi.getRecommendedFee(),
       ...this.extraInitProperties
     };
   }
@@ -231,11 +247,13 @@ class WebsocketHandler {
 
     mempoolBlocks.updateMempoolBlocks(newMempool);
     const mBlocks = mempoolBlocks.getMempoolBlocks();
+    const mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
     const mempoolInfo = memPool.getMempoolInfo();
     const vBytesPerSecond = memPool.getVBytesPerSecond();
     const rbfTransactions = Common.findRbfTransactions(newTransactions, deletedTransactions);
     const da = difficultyAdjustment.getDifficultyAdjustment();
     memPool.handleRbfTransactions(rbfTransactions);
+    const recommendedFees = feeApi.getRecommendedFee();
 
     this.wss.clients.forEach(async (client: WebSocket) => {
       if (client.readyState !== WebSocket.OPEN) {
@@ -249,6 +267,7 @@ class WebsocketHandler {
         response['vBytesPerSecond'] = vBytesPerSecond;
         response['transactions'] = newTransactions.slice(0, 6).map((tx) => Common.stripTransaction(tx));
         response['da'] = da;
+        response['fees'] = recommendedFees;
       }
 
       if (client['want-mempool-blocks']) {
@@ -366,6 +385,16 @@ class WebsocketHandler {
         }
       }
 
+      if (client['track-mempool-block'] >= 0) {
+        const index = client['track-mempool-block'];
+        if (mBlockDeltas[index]) {
+          response['projected-block-transactions'] = {
+            index: index,
+            delta: mBlockDeltas[index],
+          };
+        }
+      }
+
       if (Object.keys(response).length) {
         client.send(JSON.stringify(response));
       }
@@ -378,6 +407,7 @@ class WebsocketHandler {
     }
 
     let mBlocks: undefined | MempoolBlock[];
+    let mBlockDeltas: undefined | MempoolBlockDelta[];
     let matchRate = 0;
     const _memPool = memPool.getMempool();
     const _mempoolBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
@@ -394,11 +424,15 @@ class WebsocketHandler {
       matchRate = Math.round((matches.length / (txIds.length - 1)) * 100);
       mempoolBlocks.updateMempoolBlocks(_memPool);
       mBlocks = mempoolBlocks.getMempoolBlocks();
+      mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
     }
 
     if (block.extras) {
       block.extras.matchRate = matchRate;
     }
+
+    const da = difficultyAdjustment.getDifficultyAdjustment();
+    const fees = feeApi.getRecommendedFee();
 
     this.wss.clients.forEach((client) => {
       if (client.readyState !== WebSocket.OPEN) {
@@ -412,7 +446,8 @@ class WebsocketHandler {
       const response = {
         'block': block,
         'mempoolInfo': memPool.getMempoolInfo(),
-        'da': difficultyAdjustment.getDifficultyAdjustment(),
+        'da': da,
+        'fees': fees,
       };
 
       if (mBlocks && client['want-mempool-blocks']) {
@@ -484,6 +519,16 @@ class WebsocketHandler {
           });
 
           response['block-transactions'] = foundTransactions;
+        }
+      }
+
+      if (client['track-mempool-block'] >= 0) {
+        const index = client['track-mempool-block'];
+        if (mBlockDeltas && mBlockDeltas[index]) {
+          response['projected-block-transactions'] = {
+            index: index,
+            delta: mBlockDeltas[index],
+          };
         }
       }
 
