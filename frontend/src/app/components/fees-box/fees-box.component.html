@@ -1,35 +1,35 @@
 <div class="fee-estimation-wrapper" *ngIf="(isLoadingWebSocket$ | async) === false && (recommendedFees$ | async) as recommendedFees; else loadingFees">
   <div class="d-flex">
     <div class="fee-progress-bar" [style.background]="noPriority">
-      <span class="fee-label" i18n="fees-box.no-priority">No Priority</span>
+      <span class="fee-label" i18n="fees-box.no-priority" i18n-ngbTooltip="Transaction feerate tooltip (economy)" ngbTooltip="Either 2x the minimum, or the Low Priority rate (whichever is lower)" placement="bottom">No Priority</span>
     </div>
     <div class="band-separator fill"></div>
     <div class="fee-progress-bar priority" [style.background]="gradient">
-      <span class="fee-label prority" i18n="fees-box.low-priority">Low Priority</span>
-      <span class="fee-label prority" i18n="fees-box.medium-priority">Medium Priority</span>
-      <span class="fee-label prority" i18n="fees-box.high-priority">High Priority</span>
+      <span class="fee-label prority" i18n="fees-box.low-priority" i18n-ngbTooltip="Transaction feerate tooltip (low priority)" ngbTooltip="Places your transaction in between the second and third projected blocks" placement="bottom">Low Priority</span>
+      <span class="fee-label prority" i18n="fees-box.medium-priority" i18n-ngbTooltip="Transaction feerate tooltip (medium priority)" ngbTooltip="Places your transaction in between the first and second projected blocks" placement="bottom">Medium Priority</span>
+      <span class="fee-label prority" i18n="fees-box.high-priority" i18n-ngbTooltip="Transaction feerate tooltip (high priority)" ngbTooltip="Places your transaction in the first projected block" placement="bottom">High Priority</span>
     </div>
   </div>
   <div class="fee-estimation-container">
     <div class="item">
       <div class="card-text">
-        <div i18n-ngbTooltip="Transaction feerate tooltip (economy)" ngbTooltip="Either 2x the minimum, or the Low Priority rate (whichever is lower)" placement="bottom" class="fee-text">{{ recommendedFees.economyFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom" [value]="recommendedFees.economyFee * 140" ></app-fiat></span>
+        <div class="fee-text">{{ recommendedFees.economyFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom" [value]="recommendedFees.economyFee * 140" ></app-fiat></span>
       </div>
     </div>
     <div class="band-separator"></div>
     <div class="item">
       <div class="card-text">
-        <div i18n-ngbTooltip="Transaction feerate tooltip (low priority)" ngbTooltip="Places your transaction in between the second and third projected blocks" placement="bottom" class="fee-text">{{ recommendedFees.hourFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom" [value]="recommendedFees.hourFee * 140" ></app-fiat></span>
+        <div class="fee-text">{{ recommendedFees.hourFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom" [value]="recommendedFees.hourFee * 140" ></app-fiat></span>
       </div>
     </div>
     <div class="item">
       <div class="card-text">
-        <div i18n-ngbTooltip="Transaction feerate tooltip (medium priority)" ngbTooltip="Places your transaction in between the first and second projected blocks" placement="bottom" class="fee-text">{{ recommendedFees.halfHourFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom" [value]="recommendedFees.halfHourFee * 140" ></app-fiat></span>
+        <div class="fee-text">{{ recommendedFees.halfHourFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom" [value]="recommendedFees.halfHourFee * 140" ></app-fiat></span>
       </div>
     </div>
     <div class="item">
       <div class="card-text">
-        <div i18n-ngbTooltip="Transaction feerate tooltip (high priority)" ngbTooltip="Places your transaction in the first projected block" placement="bottom" class="fee-text">{{ recommendedFees.fastestFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom" [value]="recommendedFees.fastestFee * 140" ></app-fiat></span>
+        <div class="fee-text">{{ recommendedFees.fastestFee }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span></div> <span class="fiat"><app-fiat i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom" [value]="recommendedFees.fastestFee * 140" ></app-fiat></span>
       </div>
     </div>
   </div>
