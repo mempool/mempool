@@ -5,7 +5,7 @@
       <div class="col card-wrapper" *ngIf="(network$ | async) !== 'liquid' && (network$ | async) !== 'liquidtestnet'">
         <div class="main-title" i18n="fees-box.transaction-fees">Transaction Fees</div>
         <div class="card">
-          <div class="card-body">
+          <div class="card-body less-padding">
             <app-fees-box class="d-block"></app-fees-box>
           </div>
         </div>
@@ -33,7 +33,7 @@
         <div class="col card-wrapper">
           <div class="main-title" i18n="fees-box.transaction-fees">Transaction Fees</div>
           <div class="card">
-            <div class="card-body">
+            <div class="card-body less-padding">
               <app-fees-box class="d-block"></app-fees-box>
             </div>
           </div>

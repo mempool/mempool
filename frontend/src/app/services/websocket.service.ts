@@ -27,6 +27,8 @@ export class WebsocketService {
   private lastWant: string | null = null;
   private isTrackingTx = false;
   private trackingTxId: string;
+  private isTrackingMempoolBlock = false;
+  private trackingMempoolBlock: number;
   private latestGitCommit = '';
   private onlineCheckTimeout: number;
   private onlineCheckTimeoutTwo: number;
@@ -102,6 +104,9 @@ export class WebsocketService {
           if (this.isTrackingTx) {
             this.startMultiTrackTransaction(this.trackingTxId);
           }
+          if (this.isTrackingMempoolBlock) {
+            this.startTrackMempoolBlock(this.trackingMempoolBlock);
+          }
           this.stateService.connectionState$.next(2);
         }
 
@@ -155,6 +160,17 @@ export class WebsocketService {
 
   stopTrackingAsset() {
     this.websocketSubject.next({ 'track-asset': 'stop' });
+  }
+
+  startTrackMempoolBlock(block: number) {
+    this.websocketSubject.next({ 'track-mempool-block': block });
+    this.isTrackingMempoolBlock = true
+    this.trackingMempoolBlock = block
+  }
+
+  stopTrackMempoolBlock() {
+    this.websocketSubject.next({ 'track-mempool-block': -1 });
+    this.isTrackingMempoolBlock = false
   }
 
   startTrackBisqMarket(market: string) {
@@ -263,6 +279,10 @@ export class WebsocketService {
       this.stateService.difficultyAdjustment$.next(response.da);
     }
 
+    if (response.fees) {
+     this.stateService.recommendedFees$.next(response.fees); 
+    }
+
     if (response.backendInfo) {
       this.stateService.backendInfo$.next(response.backendInfo);
 
@@ -287,6 +307,16 @@ export class WebsocketService {
       response['block-transactions'].forEach((addressTransaction: Transaction) => {
         this.stateService.blockTransactions$.next(addressTransaction);
       });
+    }
+
+    if (response['projected-block-transactions']) {
+      if (response['projected-block-transactions'].index == this.trackingMempoolBlock) {
+        if (response['projected-block-transactions'].blockTransactions) {
+          this.stateService.mempoolBlockTransactions$.next(response['projected-block-transactions'].blockTransactions);
+        } else if (response['projected-block-transactions'].delta) {
+          this.stateService.mempoolBlockDelta$.next(response['projected-block-transactions'].delta);
+        }
+      }
     }
 
     if (response['live-2h-chart']) {
