@@ -104,6 +104,9 @@ sed -i "s/__MEMPOOL_INDEXING_BLOCKS_AMOUNT__/${__MEMPOOL_INDEXING_BLOCKS_AMOUNT_
 sed -i "s/__MEMPOOL_PRICE_FEED_UPDATE_INTERVAL__/${__MEMPOOL_PRICE_FEED_UPDATE_INTERVAL__}/g" mempool-config.json
 sed -i "s/__MEMPOOL_USE_SECOND_NODE_FOR_MINFEE__/${__MEMPOOL_USE_SECOND_NODE_FOR_MINFEE__}/g" mempool-config.json
 sed -i "s!__MEMPOOL_EXTERNAL_ASSETS__!${__MEMPOOL_EXTERNAL_ASSETS__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_EXTERNAL_MAX_RETRY__!${__MEMPOOL_EXTERNAL_MAX_RETRY__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_EXTERNAL_RETRY_INTERVAL__!${__MEMPOOL_EXTERNAL_RETRY_INTERVAL__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_USER_AGENT__!${__MEMPOOL_USER_AGENT__}!g" mempool-config.json
 sed -i "s/__MEMPOOL_STDOUT_LOG_MIN_PRIORITY__/${__MEMPOOL_STDOUT_LOG_MIN_PRIORITY__}/g" mempool-config.json
 
 sed -i "s/__CORE_RPC_HOST__/${__CORE_RPC_HOST__}/g" mempool-config.json
@@ -144,6 +147,7 @@ sed -i "s/__BISQ_ENABLED__/${__BISQ_ENABLED__}/g" mempool-config.json
 sed -i "s!__BISQ_DATA_PATH__!${__BISQ_DATA_PATH__}!g" mempool-config.json
 
 sed -i "s/__SOCKS5PROXY_ENABLED__/${__SOCKS5PROXY_ENABLED__}/g" mempool-config.json
+sed -i "s/__SOCKS5PROXY_USE_ONION__/${__SOCKS5PROXY_USE_ONION__}/g" mempool-config.json
 sed -i "s/__SOCKS5PROXY_HOST__/${__SOCKS5PROXY_HOST__}/g" mempool-config.json
 sed -i "s/__SOCKS5PROXY_PORT__/${__SOCKS5PROXY_PORT__}/g" mempool-config.json
 sed -i "s/__SOCKS5PROXY_USERNAME__/${__SOCKS5PROXY_USERNAME__}/g" mempool-config.json
@@ -151,5 +155,12 @@ sed -i "s/__SOCKS5PROXY_PASSWORD__/${__SOCKS5PROXY_PASSWORD__}/g" mempool-config
 
 sed -i "s!__PRICE_DATA_SERVER_TOR_URL__!${__PRICE_DATA_SERVER_TOR_URL__}!g" mempool-config.json
 sed -i "s!__PRICE_DATA_SERVER_CLEARNET_URL__!${__PRICE_DATA_SERVER_CLEARNET_URL__}!g" mempool-config.json
+
+sed -i "s!__EXTERNAL_DATA_SERVER_MEMPOOL_API__!${__EXTERNAL_DATA_SERVER_MEMPOOL_API__}!g" mempool-config.json
+sed -i "s!__EXTERNAL_DATA_SERVER_MEMPOOL_ONION__!${__EXTERNAL_DATA_SERVER_MEMPOOL_ONION__}!g" mempool-config.json
+sed -i "s!__EXTERNAL_DATA_SERVER_LIQUID_API__!${__EXTERNAL_DATA_SERVER_LIQUID_API__}!g" mempool-config.json
+sed -i "s!__EXTERNAL_DATA_SERVER_LIQUID_ONION__!${__EXTERNAL_DATA_SERVER_LIQUID_ONION__}!g" mempool-config.json
+sed -i "s!__EXTERNAL_DATA_SERVER_BISQ_API__!${__EXTERNAL_DATA_SERVER_BISQ_API__}!g" mempool-config.json
+sed -i "s!__EXTERNAL_DATA_SERVER_BISQ_ONION__!${__EXTERNAL_DATA_SERVER_BISQ_ONION__}!g" mempool-config.json
 
 node /backend/dist/index.js
