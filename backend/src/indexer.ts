@@ -13,7 +13,9 @@ class Indexer {
   }
 
   public reindex() {
-    this.runIndexer = true;
+    if (Common.indexingEnabled()) {
+      this.runIndexer = true;
+    }
   }
 
   public async $run() {
