@@ -12,12 +12,13 @@ import * as https from 'https';
  */
 class PoolsUpdater {
   lastRun: number = 0;
+  currentSha: any = undefined;
 
   constructor() {
   }
 
   public async updatePoolsJson() {
-    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false || config.DATABASE.ENABLED === false) {
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
       return;
     }
 
@@ -39,14 +40,17 @@ class PoolsUpdater {
     }
 
     try {
-      const dbSha = await this.getShaFromDb();
       const githubSha = await this.fetchPoolsSha(); // Fetch pools.json sha from github
       if (githubSha === undefined) {
         return;
       }
 
-      logger.debug(`Pools.json sha | Current: ${dbSha} | Github: ${githubSha}`);
-      if (dbSha !== undefined && dbSha === githubSha) {
+      if (config.DATABASE.ENABLED === true) {
+        this.currentSha = await this.getShaFromDb();      
+      }
+
+      logger.debug(`Pools.json sha | Current: ${this.currentSha} | Github: ${githubSha}`);
+      if (this.currentSha !== undefined && this.currentSha === githubSha) {
         return;
       }
 
@@ -69,12 +73,14 @@ class PoolsUpdater {
    * Fetch our latest pools.json sha from the db
    */
   private async updateDBSha(githubSha: string) {
-    try {
-      await DB.query('DELETE FROM state where name="pools_json_sha"');
-      await DB.query(`INSERT INTO state VALUES('pools_json_sha', NULL, '${githubSha}')`);
-    } catch (e) {
-      logger.err('Cannot save github pools.json sha into the db. Reason: '  + (e instanceof Error ? e.message : e));
-      return undefined;
+    this.currentSha = githubSha;
+    if (config.DATABASE.ENABLED === true) {
+      try {
+        await DB.query('DELETE FROM state where name="pools_json_sha"');
+        await DB.query(`INSERT INTO state VALUES('pools_json_sha', NULL, '${githubSha}')`);
+      } catch (e) {
+        logger.err('Cannot save github pools.json sha into the db. Reason: '  + (e instanceof Error ? e.message : e));
+      }
     }
   }
 

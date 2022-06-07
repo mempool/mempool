@@ -22,12 +22,20 @@ import { PoolOptions } from 'mysql2/typings/mysql';
     timezone: '+00:00',
   };
 
+  private checkDBFlag() {
+    if (config.DATABASE.ENABLED === false) {
+      logger.err('Trying to use DB feature but config.DATABASE.ENABLED is set to false, please open an issue');
+    }
+  }
+
   public async query(query, params?) {
+    this.checkDBFlag();
     const pool = await this.getPool();
     return pool.query(query, params);
   }
 
   public async checkDbConnection() {
+    this.checkDBFlag();
     try {
       await this.query('SELECT ?', [1]);
       logger.info('Database connection established.');

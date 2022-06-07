@@ -11,6 +11,14 @@ interface Pool {
 }
 
 class PoolsParser {
+  miningPools: any[] = [];
+  unknownPool: any = {
+    'name': "Unknown",
+    'link': "https://learnmeabitcoin.com/technical/coinbase-transaction",
+    'regexes': "[]",
+    'addresses': "[]",
+    'slug': 'unknown'
+  };
   slugWarnFlag = false;
 
   /**
@@ -60,11 +68,17 @@ class PoolsParser {
     // Get existing pools from the db
     let existingPools;
     try {
-      [existingPools] = await DB.query({ sql: 'SELECT * FROM pools;', timeout: 120000 });
+      if (config.DATABASE.ENABLED === true) {
+        [existingPools] = await DB.query({ sql: 'SELECT * FROM pools;', timeout: 120000 });
+      } else {
+        existingPools = [];
+      }
     } catch (e) {
       logger.err('Cannot get existing pools from the database, skipping pools.json import');
       return;
     }
+
+    this.miningPools = [];
 
     // Finally, we generate the final consolidated pools data
     const finalPoolDataAdd: Pool[] = [];
@@ -97,24 +111,33 @@ class PoolsParser {
         logger.warn(`No slug found for '${poolNames[i]}', generating it => '${slug}'`);
       }
 
+      const poolObj = {
+        'name': finalPoolName,
+        'link': match[0].link,
+        'regexes': allRegexes,
+        'addresses': allAddresses,
+        'slug': slug
+      };
+
       if (existingPools.find((pool) => pool.name === poolNames[i]) !== undefined) {
-        finalPoolDataUpdate.push({
-          'name': finalPoolName,
-          'link': match[0].link,
-          'regexes': allRegexes,
-          'addresses': allAddresses,
-          'slug': slug
-        });
+        finalPoolDataUpdate.push(poolObj);
       } else {
         logger.debug(`Add '${finalPoolName}' mining pool`);
-        finalPoolDataAdd.push({
-          'name': finalPoolName,
-          'link': match[0].link,
-          'regexes': allRegexes,
-          'addresses': allAddresses,
-          'slug': slug
-        });
+        finalPoolDataAdd.push(poolObj);
       }
+
+      this.miningPools.push({
+        'name': finalPoolName,
+        'link': match[0].link,
+        'regexes': JSON.stringify(allRegexes),
+        'addresses': JSON.stringify(allAddresses),
+        'slug': slug
+      });
+    }
+
+    if (config.DATABASE.ENABLED === false) { // Don't run db operations
+      logger.info('Mining pools.json import completed (no database)');
+      return;
     }
 
     logger.debug(`Update pools table now`);
@@ -124,11 +147,11 @@ class PoolsParser {
     for (let i = 0; i < finalPoolDataAdd.length; ++i) {
       queryAdd += `('${finalPoolDataAdd[i].name}', '${finalPoolDataAdd[i].link}',
       '${JSON.stringify(finalPoolDataAdd[i].regexes)}', '${JSON.stringify(finalPoolDataAdd[i].addresses)}',
-      ${JSON.stringify(finalPoolDataAdd[i].slug)}),`;
+      ${finalPoolDataAdd[i].slug}),`;
     }
     queryAdd = queryAdd.slice(0, -1) + ';';
 
-    // Add new mining pools into the database
+    // Updated existing mining pools in the database
     const updateQueries: string[] = [];
     for (let i = 0; i < finalPoolDataUpdate.length; ++i) {
       updateQueries.push(`
