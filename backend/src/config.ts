@@ -18,6 +18,9 @@ interface IConfig {
     PRICE_FEED_UPDATE_INTERVAL: number;
     USE_SECOND_NODE_FOR_MINFEE: boolean;
     EXTERNAL_ASSETS: string[];
+    EXTERNAL_MAX_RETRY: number;
+    EXTERNAL_RETRY_INTERVAL: number;
+    USER_AGENT: string;
     STDOUT_LOG_MIN_PRIORITY: 'emerg' | 'alert' | 'crit' | 'err' | 'warn' | 'notice' | 'info' | 'debug';
   };
   ESPLORA: {
@@ -66,6 +69,7 @@ interface IConfig {
   };
   SOCKS5PROXY: {
     ENABLED: boolean;
+    USE_ONION: boolean;
     HOST: string;
     PORT: number;
     USERNAME: string;
@@ -74,6 +78,14 @@ interface IConfig {
   PRICE_DATA_SERVER: {
     TOR_URL: string;
     CLEARNET_URL: string;
+  };
+  EXTERNAL_DATA_SERVER: {
+    MEMPOOL_API: string;
+    MEMPOOL_ONION: string;
+    LIQUID_API: string;
+    LIQUID_ONION: string;
+    BISQ_URL: string;
+    BISQ_ONION: string;
   };
 }
 
@@ -94,9 +106,10 @@ const defaults: IConfig = {
     'INDEXING_BLOCKS_AMOUNT': 11000, // 0 = disable indexing, -1 = index all blocks
     'PRICE_FEED_UPDATE_INTERVAL': 600,
     'USE_SECOND_NODE_FOR_MINFEE': false,
-    'EXTERNAL_ASSETS': [
-      'https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json'
-    ],
+    'EXTERNAL_ASSETS': [],
+    'EXTERNAL_MAX_RETRY': 1,
+    'EXTERNAL_RETRY_INTERVAL': 0,
+    'USER_AGENT': 'mempool',
     'STDOUT_LOG_MIN_PRIORITY': 'debug',
   },
   'ESPLORA': {
@@ -145,6 +158,7 @@ const defaults: IConfig = {
   },
   'SOCKS5PROXY': {
     'ENABLED': false,
+    'USE_ONION': true,
     'HOST': '127.0.0.1',
     'PORT': 9050,
     'USERNAME': '',
@@ -153,6 +167,14 @@ const defaults: IConfig = {
   "PRICE_DATA_SERVER": {
     'TOR_URL': 'http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices',
     'CLEARNET_URL': 'https://price.bisq.wiz.biz/getAllMarketPrices'
+  },
+  "EXTERNAL_DATA_SERVER": {
+    'MEMPOOL_API': 'https://mempool.space/api/v1',
+    'MEMPOOL_ONION': 'http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/api/v1',
+    'LIQUID_API': 'https://liquid.network/api/v1',
+    'LIQUID_ONION': 'http://liquidmom47f6s3m53ebfxn47p76a6tlnxib3wp6deux7wuzotdr6cyd.onion/api/v1',
+    'BISQ_URL': 'https://bisq.markets/api',
+    'BISQ_ONION': 'http://bisqmktse2cabavbr2xjq7xw3h6g5ottemo5rolfcwt6aly6tp5fdryd.onion/api'
   }
 };
 
@@ -168,6 +190,7 @@ class Config implements IConfig {
   BISQ: IConfig['BISQ'];
   SOCKS5PROXY: IConfig['SOCKS5PROXY'];
   PRICE_DATA_SERVER: IConfig['PRICE_DATA_SERVER'];
+  EXTERNAL_DATA_SERVER: IConfig['EXTERNAL_DATA_SERVER'];
 
   constructor() {
     const configs = this.merge(configFile, defaults);
@@ -182,6 +205,7 @@ class Config implements IConfig {
     this.BISQ = configs.BISQ;
     this.SOCKS5PROXY = configs.SOCKS5PROXY;
     this.PRICE_DATA_SERVER = configs.PRICE_DATA_SERVER;
+    this.EXTERNAL_DATA_SERVER = configs.EXTERNAL_DATA_SERVER;
   }
 
   merge = (...objects: object[]): IConfig => {
