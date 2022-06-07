@@ -18,6 +18,7 @@ import HashratesRepository from '../repositories/HashratesRepository';
 import indexer from '../indexer';
 import fiatConversion from './fiat-conversion';
 import RatesRepository from '../repositories/RatesRepository';
+import poolsParser from './pools-parser';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -139,7 +140,11 @@ class Blocks {
       if (blockExtended.extras?.coinbaseTx !== undefined) {
         pool = await this.$findBlockMiner(blockExtended.extras?.coinbaseTx);
       } else {
-        pool = await poolsRepository.$getUnknownPool();
+        if (config.DATABASE.ENABLED === true) {
+          pool = await poolsRepository.$getUnknownPool();
+        } else {
+          pool = poolsParser.unknownPool;
+        }
       }
 
       if (!pool) { // We should never have this situation in practise
@@ -165,13 +170,22 @@ class Blocks {
    */
   private async $findBlockMiner(txMinerInfo: TransactionMinerInfo | undefined): Promise<PoolTag> {
     if (txMinerInfo === undefined || txMinerInfo.vout.length < 1) {
-      return await poolsRepository.$getUnknownPool();
+      if (config.DATABASE.ENABLED === true) {
+        return await poolsRepository.$getUnknownPool();
+      } else {
+        return poolsParser.unknownPool;
+      }
     }
 
     const asciiScriptSig = transactionUtils.hex2ascii(txMinerInfo.vin[0].scriptsig);
     const address = txMinerInfo.vout[0].scriptpubkey_address;
 
-    const pools: PoolTag[] = await poolsRepository.$getPools();
+    let pools: PoolTag[] = [];
+    if (config.DATABASE.ENABLED === true) {
+      pools = await poolsRepository.$getPools();
+    } else {
+      pools = poolsParser.miningPools;
+    }
     for (let i = 0; i < pools.length; ++i) {
       if (address !== undefined) {
         const addresses: string[] = JSON.parse(pools[i].addresses);
@@ -190,7 +204,11 @@ class Blocks {
       }
     }
 
-    return await poolsRepository.$getUnknownPool();
+    if (config.DATABASE.ENABLED === true) {
+      return await poolsRepository.$getUnknownPool();
+    } else {
+      return poolsParser.unknownPool;
+    }
   }
 
   /**
