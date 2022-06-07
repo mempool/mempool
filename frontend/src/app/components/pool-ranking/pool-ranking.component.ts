@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, Input, NgZone, OnInit, HostBinding 
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from 'echarts';
-import { combineLatest, Observable, of } from 'rxjs';
-import { catchError, map, share, skip, startWith, switchMap, tap } from 'rxjs/operators';
+import { concat, Observable } from 'rxjs';
+import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { SinglePoolStats } from 'src/app/interfaces/node-api.interface';
 import { SeoService } from 'src/app/services/seo.service';
 import { StorageService } from '../..//services/storage.service';
@@ -58,15 +58,7 @@ export class PoolRankingComponent implements OnInit {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
-    // When...
-    this.miningStatsObservable$ = combineLatest([
-      // ...a new block is mined
-      this.stateService.blocks$
-        .pipe(
-          // (we always receives some blocks at start so only trigger for the last one)
-          skip(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT - 1),
-        ),
-      // ...or we change the timespan
+    this.miningStatsObservable$ = concat(
       this.radioGroupForm.get('dateSpan').valueChanges
         .pipe(
           startWith(this.miningWindowPreference), // (trigger when the page loads)
@@ -76,18 +68,19 @@ export class PoolRankingComponent implements OnInit {
               this.storageService.setValue('miningWindowPreference', value);
             }
             this.miningWindowPreference = value;
+          }),
+          switchMap(() => {
+            return this.miningService.getMiningStats(this.miningWindowPreference);
           })
-        )
-    ])
-      // ...then refresh the mining stats
+        ),
+        this.stateService.blocks$
+          .pipe(
+            switchMap(() => {
+              return this.miningService.getMiningStats(this.miningWindowPreference);
+            })
+          )
+      )
       .pipe(
-        switchMap(() => {
-          this.isLoading = true;
-          return this.miningService.getMiningStats(this.miningWindowPreference)
-            .pipe(
-              catchError((e) => of(this.getEmptyMiningStat()))
-            );
-        }),
         map(data => {
           data.pools = data.pools.map((pool: SinglePoolStats) => this.formatPoolUI(pool));
           data['minersLuck'] = (100 * (data.blockCount / 1008)).toFixed(2); // luck 1w

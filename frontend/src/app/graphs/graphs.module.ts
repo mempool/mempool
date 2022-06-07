@@ -14,6 +14,7 @@ import { LbtcPegsGraphComponent } from '../components/lbtc-pegs-graph/lbtc-pegs-
 import { GraphsComponent } from '../components/graphs/graphs.component';
 import { StatisticsComponent } from '../components/statistics/statistics.component';
 import { MempoolBlockComponent } from '../components/mempool-block/mempool-block.component';
+import { MempoolBlockOverviewComponent } from '../components/mempool-block-overview/mempool-block-overview.component';
 import { PoolRankingComponent } from '../components/pool-ranking/pool-ranking.component';
 import { PoolComponent } from '../components/pool/pool.component';
 import { TelevisionComponent } from '../components/television/television.component';
@@ -40,6 +41,7 @@ import { CommonModule } from '@angular/common';
     BlockFeeRatesGraphComponent,
     BlockSizesWeightsGraphComponent,
     FeeDistributionGraphComponent,
+    MempoolBlockOverviewComponent,
     IncomingTransactionsGraphComponent,
     MempoolGraphComponent,
     LbtcPegsGraphComponent,

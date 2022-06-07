@@ -133,7 +133,7 @@
     text-align: center;
     flex-direction: column;
     justify-content: space-around;
-    padding: 22px 20px;
+    padding: 24px 20px;
   }
 }
 
@@ -147,4 +147,8 @@
 .previous-retarget-sign {
   margin-right: -2px;
   font-size: 10px;
+}
+
+.symbol {
+  font-size: 13px;
 }

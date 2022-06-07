@@ -10,38 +10,69 @@
   <div class="box">
     <div class="row">
       <div class="col-md">
-        <table class="table table-borderless table-striped">
+        <table class="table table-borderless table-striped table-fixed">
           <tbody>
-            <tr>
-              <td i18n="mempool-block.median-fee">Median fee</td>
-              <td>~{{ mempoolBlock.medianFee | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span> <span class="fiat"><app-fiat [value]="mempoolBlock.medianFee * 140" digitsInfo="1.2-2" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat></span></td>
-            </tr>
-            <tr>
-              <td i18n="mempool-block.fee-span">Fee span</td>
-              <td><span class="yellow-color">{{ mempoolBlock.feeRange[0] | number:'1.0-0' }} - {{ mempoolBlock.feeRange[mempoolBlock.feeRange.length - 1] | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></span></td>
-            </tr>
-            <tr>
-              <td i18n="block.total-fees|Total fees in a block">Total fees</td>
-              <td><app-amount [satoshis]="mempoolBlock.totalFees" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="mempoolBlock.totalFees" digitsInfo="1.0-0"></app-fiat></span></td>
-            </tr>
-            <tr>
-              <td i18n="mempool-block.transactions">Transactions</td>
-              <td>{{ mempoolBlock.nTx }}</td>
-            </tr>
-            <tr>
-              <td i18n="mempool-block.size">Size</td>
-              <td>
-                <div class="progress">
-                  <div class="progress-bar progress-mempool {{ (network$ | async) }}" role="progressbar" [ngStyle]="{'width': (mempoolBlock.blockVSize / stateService.blockVSize) * 100 + '%' }"></div>
-                  <div class="progress-text" [innerHTML]="mempoolBlock.blockSize | bytes: 2"></div>
-                </div>
-              </td>
-            </tr>
+            <ng-container *ngIf="!previewTx">
+              <tr>
+                <td i18n="mempool-block.median-fee">Median fee</td>
+                <td>~{{ mempoolBlock.medianFee | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span> <span class="fiat"><app-fiat [value]="mempoolBlock.medianFee * 140" digitsInfo="1.2-2" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat></span></td>
+              </tr>
+              <tr>
+                <td i18n="mempool-block.fee-span">Fee span</td>
+                <td><span class="yellow-color">{{ mempoolBlock.feeRange[0] | number:'1.0-0' }} - {{ mempoolBlock.feeRange[mempoolBlock.feeRange.length - 1] | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></span></td>
+              </tr>
+              <tr>
+                <td i18n="block.total-fees|Total fees in a block">Total fees</td>
+                <td><app-amount [satoshis]="mempoolBlock.totalFees" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="mempoolBlock.totalFees" digitsInfo="1.0-0"></app-fiat></span></td>
+              </tr>
+              <tr>
+                <td i18n="mempool-block.transactions">Transactions</td>
+                <td>{{ mempoolBlock.nTx }}</td>
+              </tr>
+              <tr>
+                <td i18n="mempool-block.size">Size</td>
+                <td>
+                  <div class="progress">
+                    <div class="progress-bar progress-mempool {{ (network$ | async) }}" role="progressbar" [ngStyle]="{'width': (mempoolBlock.blockVSize / stateService.blockVSize) * 100 + '%' }"></div>
+                    <div class="progress-text" [innerHTML]="mempoolBlock.blockSize | bytes: 2"></div>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+
+            <ng-container *ngIf="previewTx">
+              <tr>
+                <td i18n="shared.transaction">Transaction</td>
+                <td>
+                  <a [routerLink]="['/tx/' | relativeUrl, previewTx.txid]">{{ previewTx.txid | shortenString : 16}}</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="td-width" i18n="transaction.value|Transaction value">Value</td>
+                <td><app-amount [satoshis]="previewTx.value"></app-amount></td>
+              </tr>
+              <tr>
+                <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
+                <td>{{ previewTx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [value]="previewTx.fee"></app-fiat></span></td>
+              </tr>
+              <tr>
+                <td i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
+                <td>
+                  {{ (previewTx.fee / previewTx.vsize) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+                </td>
+              </tr>
+              <tr>
+                <td i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
+                <td [innerHTML]="'&lrm;' + (previewTx.vsize | vbytes: 2)"></td>
+              </tr>
+              </ng-container>
           </tbody>
         </table>
+        <app-fee-distribution-graph *ngIf="webGlEnabled" [data]="mempoolBlock.feeRange" ></app-fee-distribution-graph>
       </div>
       <div class="col-md chart-container">
-        <app-fee-distribution-graph [data]="mempoolBlock.feeRange" ></app-fee-distribution-graph>
+        <app-mempool-block-overview *ngIf="webGlEnabled" [index]="mempoolBlockIndex" (txPreviewEvent)="setTxPreview($event)"></app-mempool-block-overview>
+        <app-fee-distribution-graph *ngIf="!webGlEnabled" [data]="mempoolBlock.feeRange" ></app-fee-distribution-graph>
       </div>
     </div>
   </div>

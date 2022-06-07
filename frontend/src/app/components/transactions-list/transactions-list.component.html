@@ -66,13 +66,16 @@
                         </ng-template>
                       </ng-template>
                       <ng-template #defaultAddress>
-                        <a [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">
+                        <a *ngIf="vin.prevout.scriptpubkey_address; else vinScriptPubkeyType" [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">
                           <span class="d-block d-lg-none">{{ vin.prevout.scriptpubkey_address | shortenString : 16 }}</span>
                           <span class="d-none d-lg-flex justify-content-start">
                             <span class="addr-left flex-grow-1" [style]="vin.prevout.scriptpubkey_address.length > 40 ? 'max-width: 235px' : ''">{{ vin.prevout.scriptpubkey_address }}</span>
                             <span *ngIf="vin.prevout.scriptpubkey_address.length > 40" class="addr-right">{{ vin.prevout.scriptpubkey_address | capAddress: 40: 10 }}</span>
                           </span>
                         </a>
+                        <ng-template #vinScriptPubkeyType>
+                          {{ vin.prevout.scriptpubkey_type?.toUpperCase() }}
+                        </ng-template>
                         <div>
                           <app-address-labels [vin]="vin"></app-address-labels>
                         </div>
