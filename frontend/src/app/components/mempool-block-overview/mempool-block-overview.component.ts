@@ -1,8 +1,9 @@
 import { Component, ElementRef, ViewChild, HostListener, Input, Output, EventEmitter, OnInit,
   OnDestroy, OnChanges, ChangeDetectionStrategy, NgZone, AfterViewInit } from '@angular/core';
 import { StateService } from 'src/app/services/state.service';
-import { MempoolBlockWithTransactions, MempoolBlockDelta, TransactionStripped } from 'src/app/interfaces/websocket.interface';
-import { Subscription, BehaviorSubject } from 'rxjs';
+import { MempoolBlockDelta, TransactionStripped } from 'src/app/interfaces/websocket.interface';
+import { Subscription, BehaviorSubject, merge, of } from 'rxjs';
+import { switchMap, filter } from 'rxjs/operators';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { FastVertexArray } from './fast-vertex-array';
 import BlockScene from './block-scene';
@@ -48,9 +49,14 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
   }
 
   ngOnInit(): void {
-    this.blockSub = this.stateService.mempoolBlockTransactions$.subscribe((transactionsStripped) => {
-      this.replaceBlock(transactionsStripped);
-    });
+    this.blockSub = merge(
+        of(true),
+        this.stateService.connectionState$.pipe(filter((state) => state === 2))
+      )
+      .pipe(switchMap(() => this.stateService.mempoolBlockTransactions$))
+      .subscribe((transactionsStripped) => {
+        this.replaceBlock(transactionsStripped);
+      });
     this.deltaSub = this.stateService.mempoolBlockDelta$.subscribe((delta) => {
       this.updateBlock(delta);
     });
