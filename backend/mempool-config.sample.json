@@ -15,9 +15,10 @@
     "INDEXING_BLOCKS_AMOUNT": 11000,
     "PRICE_FEED_UPDATE_INTERVAL": 600,
     "USE_SECOND_NODE_FOR_MINFEE": false,
-    "EXTERNAL_ASSETS": [
-      "https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json"
-    ],
+    "EXTERNAL_ASSETS": [],
+    "EXTERNAL_MAX_RETRY": 1,
+    "EXTERNAL_RETRY_INTERVAL": 0,
+    "USER_AGENT": "mempool",
     "STDOUT_LOG_MIN_PRIORITY": "debug"
   },
   "CORE_RPC": {
@@ -66,6 +67,7 @@
   },
   "SOCKS5PROXY": {
     "ENABLED": false,
+    "USE_ONION": true,
     "HOST": "127.0.0.1",
     "PORT": 9050,
     "USERNAME": "",
@@ -74,5 +76,13 @@
   "PRICE_DATA_SERVER": {
     "TOR_URL": "http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices",
     "CLEARNET_URL": "https://price.bisq.wiz.biz/getAllMarketPrices"
+  },
+  "EXTERNAL_DATA_SERVER": {
+    "MEMPOOL_API": "https://mempool.space/api/v1",
+    "MEMPOOL_ONION": "http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/api/v1",
+    "LIQUID_API": "https://liquid.network/api/v1",
+    "LIQUID_ONION": "http://liquidmom47f6s3m53ebfxn47p76a6tlnxib3wp6deux7wuzotdr6cyd.onion/api/v1",
+    "BISQ_URL": "https://bisq.markets/api",
+    "BISQ_ONION": "http://bisqmktse2cabavbr2xjq7xw3h6g5ottemo5rolfcwt6aly6tp5fdryd.onion/api"
   }
 }

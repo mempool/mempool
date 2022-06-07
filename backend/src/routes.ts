@@ -990,7 +990,7 @@ class Routes {
 
   public async $getAllFeaturedLiquidAssets(req: Request, res: Response) {
     try {
-      const response = await axios.get('https://liquid.network/api/v1/assets/featured', { responseType: 'stream', timeout: 10000 });
+      const response = await axios.get(`${config.EXTERNAL_DATA_SERVER.LIQUID_API}/assets/featured`, { responseType: 'stream', timeout: 10000 });
       response.data.pipe(res);
     } catch (e) {
       res.status(500).end();
@@ -999,7 +999,7 @@ class Routes {
 
   public async $getAssetGroup(req: Request, res: Response) {
     try {
-      const response = await axios.get('https://liquid.network/api/v1/assets/group/' + parseInt(req.params.id, 10),
+      const response = await axios.get(`${config.EXTERNAL_DATA_SERVER.LIQUID_API}/assets/group/${parseInt(req.params.id, 10)}`,
         { responseType: 'stream', timeout: 10000 });
       response.data.pipe(res);
     } catch (e) {
