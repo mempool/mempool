@@ -35,7 +35,13 @@ class Bisq {
   constructor() {}
 
   startBisqService(): void {
-    this.checkForBisqDataFolder();
+    try {
+      this.checkForBisqDataFolder();
+    } catch (e) {
+      logger.info('Retrying to start bisq service in 3 minutes');
+      setTimeout(this.startBisqService.bind(this), 180000);
+      return;
+    }
     this.loadBisqDumpFile();
     setInterval(this.updatePrice.bind(this), 1000 * 60 * 60);
     this.updatePrice();
@@ -90,7 +96,7 @@ class Bisq {
   private checkForBisqDataFolder() {
     if (!fs.existsSync(Bisq.BLOCKS_JSON_FILE_PATH)) {
       logger.warn(Bisq.BLOCKS_JSON_FILE_PATH + ` doesn't exist. Make sure Bisq is running and the config is correct before starting the server.`);
-      return process.exit(1);
+      throw new Error(`Cannot load BISQ ${Bisq.BLOCKS_JSON_FILE_PATH} file`);
     }
   }
 
@@ -162,7 +168,7 @@ class Bisq {
       this.buildIndex();
       this.calculateStats();
     } catch (e) {
-      logger.info('loadBisqDumpFile() error.' + (e instanceof Error ? e.message : e));
+      logger.info('Cannot load bisq dump file because: ' + (e instanceof Error ? e.message : e));
     }
   }
 
