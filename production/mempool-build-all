@@ -16,7 +16,8 @@ if [ -f "${LOCKFILE}" ];then
     exit 1
 fi
 
-trap 'rm -f "${LOCKFILE}"; exit $?' INT TERM EXIT
+trap "rv=\$?; rm -rf "${LOCKFILE}"; exit \$rv" INT TERM EXIT
+
 touch "${LOCKFILE}"
 
 echo "Upgrading mempool to ${REF}" | wall
