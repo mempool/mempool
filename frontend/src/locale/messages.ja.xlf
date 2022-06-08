@@ -2648,6 +2648,7 @@
       </trans-unit>
       <trans-unit id="6ff9e8b67bc2cda7569dc0996d4c2fd858c5d4e6" datatype="html">
         <source>Either 2x the minimum, or the Low Priority rate (whichever is lower)</source>
+        <target>最低手数料率の2倍あるいは低優先手数料率(そのうち低い方)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">4,7</context>
@@ -2669,6 +2670,7 @@
       </trans-unit>
       <trans-unit id="3be54a643a1ac01e9f57f6ffe75717215c59e90d" datatype="html">
         <source>Places your transaction in between the second and third mempool blocks</source>
+        <target>トランザクションを第2と第3のmempoolブロックの間に置きます</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -2690,6 +2692,7 @@
       </trans-unit>
       <trans-unit id="e095ca196e0b6331585f35ae7373dab9bb772399" datatype="html">
         <source>Places your transaction in between the first and second mempool blocks</source>
+        <target>トランザクションを第1と第2のmempoolブロックの間に置きます</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">9,10</context>
@@ -2711,6 +2714,7 @@
       </trans-unit>
       <trans-unit id="a5a4d2c76b74faddf1aab8dc6e092cddee5a6142" datatype="html">
         <source>Places your transaction in the first mempool block</source>
+        <target>トランザクションを第1のmempoolブロックに置きます</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">10,14</context>

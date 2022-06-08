@@ -1397,7 +1397,7 @@
       </trans-unit>
       <trans-unit id="8a4411dcb4da0aa489ec367bf2a3ec289e07a86e" datatype="html">
         <source>Our mempool and blockchain explorer for the Bitcoin community, focusing on the transaction fee market and multi-layer ecosystem, completely self-hosted without any trusted third-parties.</source>
-        <target>Vår mempool og blokkkjede utforsker for Bitcoin samfunnet, fokuserer på transaksjonsavgift-markedet og multilags økosystemet, fullstendig self-hosted uten tredjeparter.</target>
+        <target>Vår mempool- og blokkkjede-utforsker for Bitcoin-samfunnet, med fokus på transaksjonsgebyrmarkedet og flerlagsøkosystemet, fullstendig self-hosted uten tredjeparter.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">13,17</context>
@@ -1445,7 +1445,7 @@
       </trans-unit>
       <trans-unit id="673e6c47e6dffb3860102581b7fe7e534929e308" datatype="html">
         <source>Self-Hosted Integrations</source>
-        <target>Self-Hosted integrasjoner</target>
+        <target>Self-Hosted-integrasjoner</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">197,199</context>
@@ -1454,7 +1454,7 @@
       </trans-unit>
       <trans-unit id="11564b903fa784898b90f4166c2f42b77bbb82ac" datatype="html">
         <source>Wallet Integrations</source>
-        <target>Lommebok integrasjoner</target>
+        <target>Lommebok-integrasjoner</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">231,233</context>
