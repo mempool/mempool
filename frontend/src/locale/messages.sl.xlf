@@ -11,6 +11,7 @@
       </trans-unit>
       <trans-unit id="ngb.carousel.slide-number" datatype="html">
         <source> Slide <x id="INTERPOLATION" equiv-text="ext(value);"/> of <x id="INTERPOLATION_1" equiv-text="turn this._wrap"/> </source>
+        <target> Stran <x id="INTERPOLATION" equiv-text="ext(value);"/> od <x id="INTERPOLATION_1" equiv-text="turn this._wrap"/> </target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/carousel/carousel.ts</context>
           <context context-type="linenumber">147,156</context>
@@ -147,6 +148,7 @@
       </trans-unit>
       <trans-unit id="ngb.progressbar.value" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="@Input() te"/></source>
+        <target><x id="INTERPOLATION" equiv-text="@Input() te"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/progressbar/progressbar.ts</context>
           <context context-type="linenumber">59,63</context>
@@ -250,6 +252,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.PM" datatype="html">
         <source><x id="INTERPOLATION"/></source>
+        <target><x id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/timepicker/timepicker.ts</context>
           <context context-type="linenumber">295</context>
@@ -257,6 +260,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.AM" datatype="html">
         <source><x id="INTERPOLATION"/></source>
+        <target><x id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/timepicker/timepicker.ts</context>
           <context context-type="linenumber">295</context>
@@ -715,6 +719,7 @@
       </trans-unit>
       <trans-unit id="97ff5554c708164d58b14e45072acbcbf9f4d137" datatype="html">
         <source>View more »</source>
+        <target>Prikaži več »</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
           <context context-type="linenumber">92,97</context>
@@ -1464,6 +1469,7 @@
       </trans-unit>
       <trans-unit id="d5a535ddb26ae8cb056325715af27bb1b4008c14" datatype="html">
         <source>Project Translators</source>
+        <target>Prevajalci</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">301,303</context>
@@ -1519,6 +1525,7 @@
       </trans-unit>
       <trans-unit id="address-label.multisig" datatype="html">
         <source>Multisig <x id="multisigM" equiv-text="m"/> of <x id="multisigN" equiv-text="n"/></source>
+        <target>Multisig <x id="multisigM" equiv-text="m"/> od <x id="multisigN" equiv-text="n"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.ts</context>
           <context context-type="linenumber">127</context>
@@ -1535,6 +1542,7 @@
       </trans-unit>
       <trans-unit id="714e34125b3343df73f19ec800b43be95217d5d4" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transaction</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> od <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transakcija</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">60</context>
@@ -1543,6 +1551,7 @@
       </trans-unit>
       <trans-unit id="0f6ada0cfb60aefd8f77f8a22349850ce186d666" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transactions</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> od <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transakcij</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">61</context>
@@ -1750,6 +1759,7 @@
       </trans-unit>
       <trans-unit id="e3f9fda25b281496fe296fb7e8228f59b50983ad" datatype="html">
         <source>Group of <x id="INTERPOLATION" equiv-text="{{ group.assets.length | number }}"/> assets</source>
+        <target>Skupina <x id="INTERPOLATION" equiv-text="{{ group.assets.length | number }}"/> sredstev</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/asset-group/asset-group.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -1782,6 +1792,7 @@
       </trans-unit>
       <trans-unit id="d06e27f7453fcf29134f9e61533ea4eb4b890f5f" datatype="html">
         <source>Featured</source>
+        <target>Predstavljeno</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.html</context>
           <context context-type="linenumber">9</context>
@@ -1789,6 +1800,7 @@
       </trans-unit>
       <trans-unit id="dfc3c34e182ea73c5d784ff7c8135f087992dac1" datatype="html">
         <source>All</source>
+        <target>Vse</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.html</context>
           <context context-type="linenumber">13</context>
@@ -2004,6 +2016,7 @@
       </trans-unit>
       <trans-unit id="c20172223f84462032664d717d739297e5a9e2fe" datatype="html">
         <source>Fees</source>
+        <target>Omrežnine</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-graph/block-fees-graph.component.ts</context>
           <context context-type="linenumber">160,158</context>
@@ -2039,6 +2052,7 @@
       </trans-unit>
       <trans-unit id="12f86e6747a5ad39e62d3480ddc472b1aeab5b76" datatype="html">
         <source>Reward</source>
+        <target>Nagrada</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-rewards-graph/block-rewards-graph.component.ts</context>
           <context context-type="linenumber">160,158</context>
@@ -2306,7 +2320,7 @@
       </trans-unit>
       <trans-unit id="b784270035273a5744e3c23c0fff31eebca32050" datatype="html">
         <source>Subsidy + fees:</source>
-        <target>Nagrada + omrežnine:</target>
+        <target>Novi kovanci + omrežnine:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">98,100</context>
@@ -2428,6 +2442,7 @@
       </trans-unit>
       <trans-unit id="e70fcca5a99575cffef3ff8cbd5e69f06ffd0f1c" datatype="html">
         <source>Pool</source>
+        <target>Združenje</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
           <context context-type="linenumber">13,14</context>
@@ -2498,6 +2513,7 @@
       </trans-unit>
       <trans-unit id="736a52d86df31df97dbb673d5dd4cc30ee322805" datatype="html">
         <source>Adjusted</source>
+        <target>Prilagojeno</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-adjustments-table/difficulty-adjustments-table.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -2506,6 +2522,7 @@
       </trans-unit>
       <trans-unit id="024cdb2814b0cb3f4ced148f1a0b9854447cb214" datatype="html">
         <source>Change</source>
+        <target>Sprememba</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-adjustments-table/difficulty-adjustments-table.component.html</context>
           <context context-type="linenumber">8,11</context>
@@ -2611,6 +2628,7 @@
       </trans-unit>
       <trans-unit id="df71fa93f0503396ea2bb3ba5161323330314d6c" datatype="html">
         <source>Next Halving</source>
+        <target>Naslednja razpolovitev</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">50,52</context>
@@ -3036,6 +3054,7 @@
       </trans-unit>
       <trans-unit id="26e78cd052d05a0c1a7db43fac8df52ec6950672" datatype="html">
         <source>Reward stats</source>
+        <target>Statistika nagrad</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
           <context context-type="linenumber">10</context>
@@ -3044,6 +3063,7 @@
       </trans-unit>
       <trans-unit id="8527213d7c7dbffe48a45c4d796ae221d419c71a" datatype="html">
         <source>(144 blocks)</source>
+        <target>(144 blokov)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
           <context context-type="linenumber">11</context>
@@ -3065,6 +3085,7 @@
       </trans-unit>
       <trans-unit id="21d0c2d4d5429197892c827178819da2770f2f25" datatype="html">
         <source>Adjustments</source>
+        <target>Prilagoditve</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
           <context context-type="linenumber">63</context>
@@ -3085,6 +3106,7 @@
       </trans-unit>
       <trans-unit id="9ef8b357c32266f8423e24bf654006d3aa8fcd0b" datatype="html">
         <source>Blocks (1w)</source>
+        <target>Blokov (1 teden)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">14,18</context>
@@ -3097,6 +3119,7 @@
       </trans-unit>
       <trans-unit id="e1ea393882afe8ac40ff7637a33a5a46bdb3e0ce" datatype="html">
         <source>Pools Count (1w)</source>
+        <target>Število združenj (1 teden)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">20,24</context>
@@ -3117,6 +3140,7 @@
       </trans-unit>
       <trans-unit id="3b85a3f96af9710b9a7684c5065bfbc2d3fb718a" datatype="html">
         <source>Empty blocks</source>
+        <target>Prazni bloki</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">89,92</context>
@@ -3125,6 +3149,7 @@
       </trans-unit>
       <trans-unit id="d720761d772947b9a6a0ae3f1c68b2e7119259cf" datatype="html">
         <source>All miners</source>
+        <target>Skupaj</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">107,108</context>
@@ -3140,6 +3165,7 @@
       </trans-unit>
       <trans-unit id="6095122426142344316" datatype="html">
         <source><x id="PH" equiv-text="i"/> blocks</source>
+        <target><x id="PH" equiv-text="i"/> blokov</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">153,151</context>
@@ -3151,6 +3177,7 @@
       </trans-unit>
       <trans-unit id="cafc87479686947e2590b9f588a88040aeaf660b" datatype="html">
         <source>Tags</source>
+        <target>Oznake</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">22,23</context>
@@ -3171,6 +3198,7 @@
       </trans-unit>
       <trans-unit id="4eb84de23219c85432e38fb4fbdeb6c0f103ff8b" datatype="html">
         <source>Show all</source>
+        <target>Prikaži vse</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">53,55</context>
@@ -3191,6 +3219,7 @@
       </trans-unit>
       <trans-unit id="1eede69e18c5ac9c0b0295b72cabb7e64e029e74" datatype="html">
         <source>Hide</source>
+        <target>Skrij</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">55,58</context>
@@ -3279,6 +3308,7 @@
       </trans-unit>
       <trans-unit id="88cb6e7b056be423b78e369ae1592c9e751095b8" datatype="html">
         <source>Mined blocks</source>
+        <target>Narudarjeni bloki</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">141,143</context>
@@ -3299,6 +3329,7 @@
       </trans-unit>
       <trans-unit id="149da150f9b3a141a73a58a25142a850107a8212" datatype="html">
         <source>24h</source>
+        <target>24h</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">147</context>
@@ -3311,6 +3342,7 @@
       </trans-unit>
       <trans-unit id="f7b50e4989540954a9035833470efba042a2819c" datatype="html">
         <source>1w</source>
+        <target>1 teden</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">148</context>
@@ -3323,6 +3355,7 @@
       </trans-unit>
       <trans-unit id="d7bb114523b22ee8330164224b11d75e62966539" datatype="html">
         <source>Coinbase tag</source>
+        <target>Coinbase oznaka</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">215,217</context>
@@ -3365,6 +3398,7 @@
       </trans-unit>
       <trans-unit id="e48f3277d241b5e74b6e01a989a4ecb4495d3d25" datatype="html">
         <source>Miners Reward</source>
+        <target>Skupaj nagrad</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">4,6</context>
@@ -3377,6 +3411,7 @@
       </trans-unit>
       <trans-unit id="79b0842a2010172290ad09062bf51f09d8842f65" datatype="html">
         <source>Amount being paid to miners in the past 144 blocks</source>
+        <target>Znesek izplačan rudarjem v zadnjih 144 blokih</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -3385,6 +3420,7 @@
       </trans-unit>
       <trans-unit id="c4ae62409269c8255a390587baad3ff496889cba" datatype="html">
         <source>Reward Per Tx</source>
+        <target>Nagrada na Tx</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">16,18</context>
@@ -3401,6 +3437,7 @@
       </trans-unit>
       <trans-unit id="b41ac8dd7567baf0e88ad834b5dd95df03a19c09" datatype="html">
         <source>Average miners' reward per transaction in the past 144 blocks</source>
+        <target>Povprečna nagrada na transakcijo v zadnjih 144 blokih</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">18,20</context>
@@ -3409,6 +3446,7 @@
       </trans-unit>
       <trans-unit id="31443c29cb161e8aa661eb5035f675746ef95b45" datatype="html">
         <source>sats/tx</source>
+        <target>sat/tx</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">21,24</context>
@@ -3422,6 +3460,7 @@
       </trans-unit>
       <trans-unit id="f9bc2ce34cf7fc23c09b4cea1d92cc75ef4d6e71" datatype="html">
         <source>Average Fee</source>
+        <target>Povp. omrežnina</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">29,31</context>
@@ -3430,6 +3469,7 @@
       </trans-unit>
       <trans-unit id="8be96dc461529381c812f64962c62f4228d01470" datatype="html">
         <source>Fee paid on average for each transaction in the past 144 blocks</source>
+        <target>Povprečna plačana omrežnina za transakcijo v zadnjih 144 blokih</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">31,32</context>

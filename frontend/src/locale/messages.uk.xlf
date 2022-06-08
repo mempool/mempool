@@ -11,6 +11,7 @@
       </trans-unit>
       <trans-unit id="ngb.carousel.slide-number" datatype="html">
         <source> Slide <x id="INTERPOLATION" equiv-text="ext(value);"/> of <x id="INTERPOLATION_1" equiv-text="turn this._wrap"/> </source>
+        <target>Слайд <x id="INTERPOLATION" equiv-text="ext(value);"/> з <x id="INTERPOLATION_1" equiv-text="turn this._wrap"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/carousel/carousel.ts</context>
           <context context-type="linenumber">147,156</context>
@@ -147,6 +148,7 @@
       </trans-unit>
       <trans-unit id="ngb.progressbar.value" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="@Input() te"/></source>
+        <target><x id="INTERPOLATION" equiv-text="@Input() te"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/progressbar/progressbar.ts</context>
           <context context-type="linenumber">59,63</context>
@@ -250,6 +252,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.PM" datatype="html">
         <source><x id="INTERPOLATION"/></source>
+        <target><x id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/timepicker/timepicker.ts</context>
           <context context-type="linenumber">295</context>
@@ -257,6 +260,7 @@
       </trans-unit>
       <trans-unit id="ngb.timepicker.AM" datatype="html">
         <source><x id="INTERPOLATION"/></source>
+        <target><x id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/timepicker/timepicker.ts</context>
           <context context-type="linenumber">295</context>
@@ -715,6 +719,7 @@
       </trans-unit>
       <trans-unit id="97ff5554c708164d58b14e45072acbcbf9f4d137" datatype="html">
         <source>View more »</source>
+        <target>Дивитись більше »</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
           <context context-type="linenumber">92,97</context>
