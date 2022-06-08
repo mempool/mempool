@@ -1,0 +1,3 @@
+[submodule "frontend/mempool.js"]
+	path = frontend/mempool.js
+	url = git@github.com:mempool/mempool.js.git
