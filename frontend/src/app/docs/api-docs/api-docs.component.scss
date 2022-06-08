@@ -199,6 +199,10 @@ h3 {
 
 @media (max-width: 992px) {
 
+  h3 {
+    margin: 1.5rem 0 0 0;
+  }
+
   .hide-on-mobile {
     display: none;
   }
@@ -236,6 +240,10 @@ h3 {
     top: -10000px;
     opacity: 0;
     transition: 0.5s opacity ease;
+  }
+
+  .api-note {
+    font-size: 0.85rem;
   }
 }
 
