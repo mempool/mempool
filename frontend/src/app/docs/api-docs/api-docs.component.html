@@ -34,7 +34,7 @@
 
       <div class="doc-content">
 
-        <p class="api-note">Reference for the {{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} <ng-container i18n="api-docs.title">API service</ng-container>.</p>
+        <p class="api-note">Below is a reference for the {{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} <ng-container i18n="api-docs.title">REST API service</ng-container>.</p>
         <p class="api-note no-bottom-space">Note that we enforce rate limits. If you exceed these limits, you will get a polite error encouraging you to run your own Mempool instance.     If you repeatedly exceed the limits, you may be banned from accessing the service altogether.</p>
 
         <div class="doc-item-container" *ngFor="let item of restDocs">
