@@ -23,6 +23,7 @@ export class ApiDocsComponent implements OnInit {
   restDocs: any[];
   wsDocs: any;
   screenWidth: number;
+  officialMempoolInstance: boolean;
 
   constructor(
     private stateService: StateService,
@@ -43,6 +44,7 @@ export class ApiDocsComponent implements OnInit {
 
   ngOnInit(): void {
     this.env = this.stateService.env;
+    this.officialMempoolInstance = this.env.OFFICIAL_MEMPOOL_SPACE;
     this.network$ = merge(of(''), this.stateService.networkChanged$).pipe(
       tap((network: string) => {
         if (this.env.BASE_MODULE === 'mempool' && network !== '') {
