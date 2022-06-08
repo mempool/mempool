@@ -160,7 +160,7 @@ sed -i "s!__EXTERNAL_DATA_SERVER_MEMPOOL_API__!${__EXTERNAL_DATA_SERVER_MEMPOOL_
 sed -i "s!__EXTERNAL_DATA_SERVER_MEMPOOL_ONION__!${__EXTERNAL_DATA_SERVER_MEMPOOL_ONION__}!g" mempool-config.json
 sed -i "s!__EXTERNAL_DATA_SERVER_LIQUID_API__!${__EXTERNAL_DATA_SERVER_LIQUID_API__}!g" mempool-config.json
 sed -i "s!__EXTERNAL_DATA_SERVER_LIQUID_ONION__!${__EXTERNAL_DATA_SERVER_LIQUID_ONION__}!g" mempool-config.json
-sed -i "s!__EXTERNAL_DATA_SERVER_BISQ_API__!${__EXTERNAL_DATA_SERVER_BISQ_API__}!g" mempool-config.json
+sed -i "s!__EXTERNAL_DATA_SERVER_BISQ_URL__!${__EXTERNAL_DATA_SERVER_BISQ_URL__}!g" mempool-config.json
 sed -i "s!__EXTERNAL_DATA_SERVER_BISQ_ONION__!${__EXTERNAL_DATA_SERVER_BISQ_ONION__}!g" mempool-config.json
 
 node /backend/dist/index.js
