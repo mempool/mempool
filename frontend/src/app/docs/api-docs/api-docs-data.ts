@@ -6052,7 +6052,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "why-is-transaction-stuck-in-mempool",
     title: "Why isn't my transaction confirming?",
-    answer: "<p>If it's been a while and your transaction hasn't confirmed, your transaction is probably using a lower feerate relative to other transactions currently in the mempool. Depending on how you made your transaction, there may be <a href='/docs/faq/#how-to-get-transaction-confirmed-quickly'>ways to accelerate the process</a>.</p><p>There's no need to panic—a Bitcoin transaction will always either confirm completely (or not at all) at some point. As long as you have your transaction's ID, you can always see where your funds are.</p><p style='font-weight:700'>This site only provides data about the Bitcoin network—it cannot help you get your transaction confirmed quicker.</p>"
+    answer: "<p>If it's been a while and your transaction hasn't confirmed, your transaction is probably using a lower feerate relative to other transactions currently in the mempool. Depending on how you made your transaction, there may be <a class='mempool-link-data-file' href='/docs/faq/#how-to-get-transaction-confirmed-quickly'>ways to accelerate the process</a>.</p><p>There's no need to panic—a Bitcoin transaction will always either confirm completely (or not at all) at some point. As long as you have your transaction's ID, you can always see where your funds are.</p><p style='font-weight:700'>This site only provides data about the Bitcoin network—it cannot help you get your transaction confirmed quicker.</p>"
   },
   {
     type: "endpoint",
@@ -6068,7 +6068,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "how-prevent-stuck-transaction",
     title: "How can I prevent a transaction from getting stuck in the future?",
-    answer: "<p>You must use an adequate transaction fee commensurate with how quickly you need the transaction to be confirmed. See Mempool's fee estimates on the <a href='/'>front page</a>.</p><p>Also consider using RBF (if your wallet supports it) so that you can bump the feerate on your transaction if it does end up getting stuck.</p>"
+    answer: "<p>You must use an adequate transaction fee commensurate with how quickly you need the transaction to be confirmed. See Mempool's fee estimates on the <a class='mempool-link-data-file' href='/'>front page</a>.</p><p>Also consider using RBF (if your wallet supports it) so that you can bump the feerate on your transaction if it does end up getting stuck.</p>"
   },
   {
     type: "category",
@@ -6107,7 +6107,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "looking-up-fee-estimates",
     title: "How can I look up fee estimates?",
-    answer: "<p>See real-time fee estimates on <a href='/'>the main dashboard</a>.</p><p>Here is an overview of Mempool's feerate suggestions:</p><ul> <li><b>High Priority.</b> This figure is the median feerate of transactions in the <a href='/mempool-block/0'>first mempool block</a>. Consider using this feerate if you want confirmation as soon as possible.</li><li><b>Medium Priority.</b> This figure is the average of the median feerate of the <a href='/mempool-block/0'>first mempool block</a> and the median feerate of the <a href='/mempool-block/1'>second mempool block</a>.</li><li><b>Low Priority.</b> This figure is the average of the Medium Priority feerate and the median feerate of the <a href='/mempool-block/2'>third mempool block</a>. Consider using this feerate if you want confirmation soon but don't need it particularly quickly.</li><li><b>No Priority.</b> This figure is either 2x the minimum feerate, or the Low Priority feerate (whichever is lower). Consider using this feerate if you are in no rush and don't mind if confirmation takes a while.</li></ul><p>In all cases, the suggested feerate is adjusted lower if any of the mempool blocks involved in the calculation are not full (example: if there is only 1 mempool block that's less than half-full, Mempool will suggest a feerate of 1 sat/vB—not the median feerate of transactions in the block).</p><p>Mempool blocks use feerates, transaction sizes, and other metrics to <b>forecast</b> which transactions will be in future blocks. Actual blocks will turn out to be different: miners have their own views of the mempool, their own algorithms for determining which transactions to include in a block, etc.</p><p>Ultimately, the Bitcoin network is not perfectly predictable, so fee estimation cannot be perfectly precise.</p><p><b>Use Mempool's feerate suggestions as a guide, and understand that they do not guarantee transaction confirmation in any period of time.</b></p>"
+    answer: "<p>See real-time fee estimates on <a class='mempool-link-data-file' href='/'>the main dashboard</a>.</p><p>Here is an overview of Mempool's feerate suggestions:</p><ul> <li><b>High Priority.</b> This figure is the median feerate of transactions in the <a class='mempool-link-data-file' href='/mempool-block/0'>first mempool block</a>. Consider using this feerate if you want confirmation as soon as possible.</li><li><b>Medium Priority.</b> This figure is the average of the median feerate of the <a class='mempool-link-data-file' href='/mempool-block/0'>first mempool block</a> and the median feerate of the <a class='mempool-link-data-file' href='/mempool-block/1'>second mempool block</a>.</li><li><b>Low Priority.</b> This figure is the average of the Medium Priority feerate and the median feerate of the <a class='mempool-link-data-file' href='/mempool-block/2'>third mempool block</a>. Consider using this feerate if you want confirmation soon but don't need it particularly quickly.</li><li><b>No Priority.</b> This figure is either 2x the minimum feerate, or the Low Priority feerate (whichever is lower). Consider using this feerate if you are in no rush and don't mind if confirmation takes a while.</li></ul><p>In all cases, the suggested feerate is adjusted lower if any of the mempool blocks involved in the calculation are not full (example: if there is only 1 mempool block that's less than half-full, Mempool will suggest a feerate of 1 sat/vB—not the median feerate of transactions in the block).</p><p>Mempool blocks use feerates, transaction sizes, and other metrics to <b>forecast</b> which transactions will be in future blocks. Actual blocks will turn out to be different: miners have their own views of the mempool, their own algorithms for determining which transactions to include in a block, etc.</p><p>Ultimately, the Bitcoin network is not perfectly predictable, so fee estimation cannot be perfectly precise.</p><p><b>Use Mempool's feerate suggestions as a guide, and understand that they do not guarantee transaction confirmation in any period of time.</b></p>"
   },
   {
     type: "endpoint",
@@ -6115,7 +6115,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "looking-up-historical-trends",
     title: "How can I explore historical trends?",
-    answer: "See the <a href='/graphs'>graphs page</a> for aggregate trends over time: mempool size over time and incoming transaction velocity over time."
+    answer: "See the <a class='mempool-link-data-file' href='/graphs'>graphs page</a> for aggregate trends over time: mempool size over time and incoming transaction velocity over time."
   },
   {
     type: "category",
@@ -6130,7 +6130,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "who-runs-this-website",
     title: "Who runs this website?",
-    answer: "The official mempool.space website is operated by The Mempool Open Source Project. See more information on our <a href='/about'>About page</a>. There are also many unofficial instances of this website operated by individual members of the Bitcoin community."
+    answer: "The official mempool.space website is operated by The Mempool Open Source Project. See more information on our <a class='mempool-link-data-file' href='/about'>About page</a>. There are also many unofficial instances of this website operated by individual members of the Bitcoin community."
   },
   {
     type: "endpoint",

@@ -4,7 +4,7 @@
     <div id="faq" *ngIf="whichTab === 'faq'">
 
       <div id="doc-nav-desktop" class="hide-on-mobile" [ngClass]="desktopDocsNavPosition">
-        <app-api-docs-nav (navLinkClickEvent)="anchorLinkClick( $event )" [network]="{ val: network$ | async }" [whichTab]="whichTab"></app-api-docs-nav>
+        <app-api-docs-nav (navLinkClickEvent)="anchorLinkClick( $event, true )" [network]="{ val: network$ | async }" [whichTab]="whichTab"></app-api-docs-nav>
       </div>
 
       <div class="doc-content">
@@ -12,7 +12,7 @@
         <div class="doc-item-container" *ngFor="let item of faq">
           <h3 *ngIf="item.type === 'category'">{{ item.title }}</h3>
           <div *ngIf="item.type !== 'category'" class="endpoint-container" id="{{ item.fragment }}">
-            <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick( $event )" [routerLink]="['./']" fragment="{{ item.fragment }}"><table><tr><td>{{ item.title }}</td><td><span>{{ item.category }}</span></td></tr></table></a>
+            <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick( $event, false )" [routerLink]="['./']" fragment="{{ item.fragment }}"><table><tr><td>{{ item.title }}</td><td><span>{{ item.category }}</span></td></tr></table></a>
             <div class="endpoint-content">
               <div class="endpoint" [innerHTML]="item.answer | noSanitize"></div>
               <div class="blockchain-wrapper" *ngIf="item.fragment === 'what-is-a-mempool-explorer'">
@@ -29,7 +29,7 @@
     <div id="restAPI" *ngIf="whichTab === 'rest'">
 
       <div id="doc-nav-desktop" class="hide-on-mobile" [ngClass]="desktopDocsNavPosition">
-        <app-api-docs-nav (navLinkClickEvent)="anchorLinkClick( $event )" [network]="{ val: network$ | async }" [whichTab]="whichTab"></app-api-docs-nav>
+        <app-api-docs-nav (navLinkClickEvent)="anchorLinkClick( $event, true )" [network]="{ val: network$ | async }" [whichTab]="whichTab"></app-api-docs-nav>
       </div>
 
       <div class="doc-content">
@@ -39,7 +39,7 @@
         <div class="doc-item-container" *ngFor="let item of restDocs">
           <h3 *ngIf="( item.type === 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )">{{ item.title }}</h3>
           <div *ngIf="( item.type !== 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )" class="endpoint-container" id="{{ item.fragment }}">
-            <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick( $event )" [routerLink]="['./']" fragment="{{ item.fragment }}">{{ item.title }} <span>{{ item.category }}</span></a>
+            <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick( $event, false )" [routerLink]="['./']" fragment="{{ item.fragment }}">{{ item.title }} <span>{{ item.category }}</span></a>
             <div class="endpoint-content">
               <div class="endpoint">
                 <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>

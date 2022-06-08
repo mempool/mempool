@@ -2,7 +2,7 @@ import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { Env, StateService } from '../../services/state.service';
 import { Observable, merge, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { faqData, restApiDocsData, wsApiDocsData } from './api-docs-data';
 
 @Component({
@@ -27,17 +27,37 @@ export class ApiDocsComponent implements OnInit {
   constructor(
     private stateService: StateService,
     private route: ActivatedRoute,
+    private router: Router,
   ) { }
 
   ngAfterViewInit() {
     const that = this;
     setTimeout( () => {
       if( this.route.snapshot.fragment ) {
-        this.openEndpointContainer( this.route.snapshot.fragment );
+        this.openEndpointContainer( this.route.snapshot.fragment, true );
       }
       window.addEventListener('scroll', function() {
         that.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
       }, { passive: true} );
+
+      //make links coming from api-docs-data.ts open without reloading spa
+      document.querySelector('body').onclick = function( event: any ) {
+        if( event.target.className === "mempool-link-data-file" ) {
+          event.preventDefault();
+          const link = event.target.attributes.href.value;
+          if( link.indexOf( "#" ) < 0 ) {
+            that.router.navigate( [ that.baseNetworkUrl + link ] );
+          } else {
+            const path = that.baseNetworkUrl + link.substring( 0, link.indexOf("#") );
+            const fragment = link.substring( link.indexOf("#") + 1 );
+            that.router.navigate( [ path ], { fragment: fragment } );
+            setTimeout( () => {
+              that.anchorLinkClick( {}, true, fragment );
+            }, 1 );
+          }
+        }
+      };
+
     }, 1 );
   }
 
@@ -71,24 +91,27 @@ export class ApiDocsComponent implements OnInit {
     });
   }
 
-  anchorLinkClick( event: any ) {
-    let targetId = "";
-    if( event.target.nodeName === "A" ) {
-      targetId = event.target.hash.substring(1);
-    } else {
-      let element = event.target;
-      while( element.nodeName !== "A" ) {
-        element = element.parentElement;
-      }
-      targetId = element.hash.substring(1);
-    }
-    if( this.route.snapshot.fragment === targetId ) {
-      document.getElementById( targetId ).scrollIntoView();
-    }
-    this.openEndpointContainer( targetId );
+  ngOnDestroy(): void {
+    document.querySelector('body').onclick = null;
   }
 
-  openEndpointContainer( targetId ) {
+  anchorLinkClick( event: any, onlyOpen: boolean, targetId: string = "" ) {
+    if( !targetId ) {
+      if( event.target.nodeName === "A" ) {
+        targetId = event.target.hash.substring(1);
+      } else {
+        let element = event.target;
+        while( element.nodeName !== "A" ) {
+          element = element.parentElement;
+        }
+        targetId = element.hash.substring(1);
+      }
+    }
+    document.getElementById( targetId ).scrollIntoView();
+    this.openEndpointContainer( targetId, onlyOpen );
+  }
+
+  openEndpointContainer( targetId: string, onlyOpen: boolean ) {
     const tabHeaderHeight = document.getElementById( targetId + "-tab-header" ).scrollHeight;
     if( ( window.innerWidth <= 992 ) && ( ( this.whichTab === 'rest' ) || ( this.whichTab === 'faq' ) ) && targetId ) {
       const endpointContainerEl = document.querySelector<HTMLElement>( "#" + targetId );
@@ -96,6 +119,7 @@ export class ApiDocsComponent implements OnInit {
       const endPointContentElHeight = endpointContentEl.clientHeight;
 
       if( endpointContentEl.classList.contains( "open" ) ) {
+        if( onlyOpen ) { return; }
         endpointContainerEl.style.height = "auto";
         endpointContentEl.style.top = "-10000px";
         endpointContentEl.style.opacity = "0";
