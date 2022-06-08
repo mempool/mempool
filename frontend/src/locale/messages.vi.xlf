@@ -715,6 +715,7 @@
       </trans-unit>
       <trans-unit id="97ff5554c708164d58b14e45072acbcbf9f4d137" datatype="html">
         <source>View more »</source>
+        <target>Xem thêm »</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
           <context context-type="linenumber">92,97</context>
@@ -1464,6 +1465,7 @@
       </trans-unit>
       <trans-unit id="d5a535ddb26ae8cb056325715af27bb1b4008c14" datatype="html">
         <source>Project Translators</source>
+        <target>Dịch giả của Dự án</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">301,303</context>
@@ -1519,6 +1521,7 @@
       </trans-unit>
       <trans-unit id="address-label.multisig" datatype="html">
         <source>Multisig <x id="multisigM" equiv-text="m"/> of <x id="multisigN" equiv-text="n"/></source>
+        <target>Đa chữ ký<x id="multisigM" equiv-text="m"/> trên<x id="multisigN" equiv-text="n"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.ts</context>
           <context context-type="linenumber">127</context>
@@ -1535,6 +1538,7 @@
       </trans-unit>
       <trans-unit id="714e34125b3343df73f19ec800b43be95217d5d4" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transaction</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> trong<x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> giao dịch</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">60</context>
@@ -1543,6 +1547,7 @@
       </trans-unit>
       <trans-unit id="0f6ada0cfb60aefd8f77f8a22349850ce186d666" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transactions</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> trong<x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> giao dịch</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">61</context>
@@ -1789,6 +1794,7 @@
       </trans-unit>
       <trans-unit id="dfc3c34e182ea73c5d784ff7c8135f087992dac1" datatype="html">
         <source>All</source>
+        <target>Tất cả</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.html</context>
           <context context-type="linenumber">13</context>
@@ -2004,6 +2010,7 @@
       </trans-unit>
       <trans-unit id="c20172223f84462032664d717d739297e5a9e2fe" datatype="html">
         <source>Fees</source>
+        <target>Phí</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-graph/block-fees-graph.component.ts</context>
           <context context-type="linenumber">160,158</context>
@@ -2023,6 +2030,7 @@
       </trans-unit>
       <trans-unit id="8ba8fe810458280a83df7fdf4c614dfc1a826445" datatype="html">
         <source>Block Rewards</source>
+        <target>Phần thưởng khối</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-rewards-graph/block-rewards-graph.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -2039,6 +2047,7 @@
       </trans-unit>
       <trans-unit id="12f86e6747a5ad39e62d3480ddc472b1aeab5b76" datatype="html">
         <source>Reward</source>
+        <target>Phần thưởng</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-rewards-graph/block-rewards-graph.component.ts</context>
           <context context-type="linenumber">160,158</context>
@@ -2498,6 +2507,7 @@
       </trans-unit>
       <trans-unit id="736a52d86df31df97dbb673d5dd4cc30ee322805" datatype="html">
         <source>Adjusted</source>
+        <target>Đã điều chỉnh</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-adjustments-table/difficulty-adjustments-table.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -2506,6 +2516,7 @@
       </trans-unit>
       <trans-unit id="024cdb2814b0cb3f4ced148f1a0b9854447cb214" datatype="html">
         <source>Change</source>
+        <target>Thay đổi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-adjustments-table/difficulty-adjustments-table.component.html</context>
           <context context-type="linenumber">8,11</context>
@@ -2611,6 +2622,7 @@
       </trans-unit>
       <trans-unit id="df71fa93f0503396ea2bb3ba5161323330314d6c" datatype="html">
         <source>Next Halving</source>
+        <target>Halving Tiếp theo</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">50,52</context>
@@ -2627,6 +2639,7 @@
       </trans-unit>
       <trans-unit id="eef30290726d3d569232f4c136082bb9daaf490b" datatype="html">
         <source>No Priority</source>
+        <target>Không ưu tiên</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">4,7</context>
@@ -2647,6 +2660,7 @@
       </trans-unit>
       <trans-unit id="29949587189ee02db19274db4ac656913cb243c3" datatype="html">
         <source>Low Priority</source>
+        <target>Ưu tiên thấp</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -2687,6 +2701,7 @@
       </trans-unit>
       <trans-unit id="d1d0bb0a34b216be66137562a0b18eaaca546113" datatype="html">
         <source>High Priority</source>
+        <target>Ưu tiên cao</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">10,15</context>
@@ -2763,6 +2778,7 @@
       </trans-unit>
       <trans-unit id="c95f8a34509967d6cbcf118a9637b23a83633449" datatype="html">
         <source>Mining</source>
+        <target>Đào</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">5</context>
@@ -2795,6 +2811,7 @@
       </trans-unit>
       <trans-unit id="3510fc6daa1d975f331e3a717bdf1a34efa06dff" datatype="html">
         <source>Hashrate &amp; Difficulty</source>
+        <target>Tỷ lệ băm &amp; Độ khó</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">12</context>
@@ -2811,6 +2828,7 @@
       </trans-unit>
       <trans-unit id="79a9dc5b1caca3cbeb1733a19515edacc5fc7920" datatype="html">
         <source>Hashrate</source>
+        <target>Tỷ lệ băm</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.html</context>
           <context context-type="linenumber">8,10</context>
@@ -2927,6 +2945,7 @@
       </trans-unit>
       <trans-unit id="bc4c61d3713989e3c8c6610fca3ea1ca1cb19edb" datatype="html">
         <source>Value</source>
+        <target>Giá trị</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
           <context context-type="linenumber">51,54</context>
@@ -3065,6 +3084,7 @@
       </trans-unit>
       <trans-unit id="21d0c2d4d5429197892c827178819da2770f2f25" datatype="html">
         <source>Adjustments</source>
+        <target>Sự điều chỉnh</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
           <context context-type="linenumber">63</context>
@@ -3109,6 +3129,7 @@
       </trans-unit>
       <trans-unit id="3c3a423d91e36ac6624e909fcd2669a25685f847" datatype="html">
         <source>Rank</source>
+        <target>Hạng</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">84,86</context>
@@ -3117,6 +3138,7 @@
       </trans-unit>
       <trans-unit id="3b85a3f96af9710b9a7684c5065bfbc2d3fb718a" datatype="html">
         <source>Empty blocks</source>
+        <target>Các khối trống</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">89,92</context>
@@ -3171,6 +3193,7 @@
       </trans-unit>
       <trans-unit id="4eb84de23219c85432e38fb4fbdeb6c0f103ff8b" datatype="html">
         <source>Show all</source>
+        <target>Hiện tất cả</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">53,55</context>
@@ -3191,6 +3214,7 @@
       </trans-unit>
       <trans-unit id="1eede69e18c5ac9c0b0295b72cabb7e64e029e74" datatype="html">
         <source>Hide</source>
+        <target>Ẩn</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">55,58</context>
@@ -3219,6 +3243,7 @@
       </trans-unit>
       <trans-unit id="91c20d9f5b4e74c46be050ed5bf0db732a86bcf7" datatype="html">
         <source>Estimated</source>
+        <target>Dự kiến</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">96,97</context>
@@ -3239,6 +3264,7 @@
       </trans-unit>
       <trans-unit id="b34d145304d2f8d17e98586e27652a29f21691fe" datatype="html">
         <source>Reported</source>
+        <target>Đã báo cáo</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">97,98</context>
@@ -3279,6 +3305,7 @@
       </trans-unit>
       <trans-unit id="88cb6e7b056be423b78e369ae1592c9e751095b8" datatype="html">
         <source>Mined blocks</source>
+        <target>Các khối đã đào</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">141,143</context>
@@ -3299,6 +3326,7 @@
       </trans-unit>
       <trans-unit id="149da150f9b3a141a73a58a25142a850107a8212" datatype="html">
         <source>24h</source>
+        <target>24 giờ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">147</context>
@@ -3311,6 +3339,7 @@
       </trans-unit>
       <trans-unit id="f7b50e4989540954a9035833470efba042a2819c" datatype="html">
         <source>1w</source>
+        <target>1 tuần</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">148</context>
@@ -3323,6 +3352,7 @@
       </trans-unit>
       <trans-unit id="d7bb114523b22ee8330164224b11d75e62966539" datatype="html">
         <source>Coinbase tag</source>
+        <target>Thẻ Coinbase</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">215,217</context>
@@ -3422,6 +3452,7 @@
       </trans-unit>
       <trans-unit id="f9bc2ce34cf7fc23c09b4cea1d92cc75ef4d6e71" datatype="html">
         <source>Average Fee</source>
+        <target>Phí Trung bình</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">29,31</context>
@@ -3986,6 +4017,7 @@
       </trans-unit>
       <trans-unit id="ed46038430735e21c9b6165380ec1892e2f87791" datatype="html">
         <source>Show all inputs to reveal fee data</source>
+        <target>Hiện tất cả đầu vào để xem dữ liệu phí</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">274,277</context>
@@ -4300,6 +4332,7 @@
       </trans-unit>
       <trans-unit id="docs.faq.button-title" datatype="html">
         <source>FAQ</source>
+        <target>FAQ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">33</context>
