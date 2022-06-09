@@ -34,7 +34,7 @@ $ npm run config:defaults:bisq
 
 ### 3. Run the Frontend
 
-_Make sure to use Node.js 16.15 and npm 7._
+_Make sure to use Node.js 16.10 and npm 7._
 
 Install project dependencies and run the frontend server:
 
@@ -71,13 +71,13 @@ Set up the [Mempool backend](../backend/) first, if you haven't already.
 
 ### 1. Build the Frontend
 
-_Node.js 16 and npm 7 are recommended._
+_Make sure to use Node.js 16.10 and npm 7._
 
 Build the frontend:
 
 ```
 cd frontend
-npm install # add --prod for production
+npm install
 npm run build
 ```
 
