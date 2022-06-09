@@ -2079,7 +2079,7 @@
       </trans-unit>
       <trans-unit id="56fa1cd221491b6478998679cba2dc8d55ba330d" datatype="html">
         <source>Block Sizes and Weights</source>
-        <target>Размеры и вес блоков</target>
+        <target>Размер и вес блоков</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-sizes-weights-graph/block-sizes-weights-graph.component.html</context>
           <context context-type="linenumber">4,6</context>
@@ -2522,7 +2522,7 @@
       </trans-unit>
       <trans-unit id="736a52d86df31df97dbb673d5dd4cc30ee322805" datatype="html">
         <source>Adjusted</source>
-        <target>Скорректированное</target>
+        <target>Произошло</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-adjustments-table/difficulty-adjustments-table.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -2531,7 +2531,7 @@
       </trans-unit>
       <trans-unit id="024cdb2814b0cb3f4ced148f1a0b9854447cb214" datatype="html">
         <source>Change</source>
-        <target>Сдача</target>
+        <target>Изменение</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-adjustments-table/difficulty-adjustments-table.component.html</context>
           <context context-type="linenumber">8,11</context>
@@ -2553,7 +2553,7 @@
       </trans-unit>
       <trans-unit id="0912816d94f2f05a7eee8f7622670e0c6bbbce16" datatype="html">
         <source>Remaining</source>
-        <target>Остаток</target>
+        <target>Осталось</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">7,9</context>
@@ -2679,7 +2679,7 @@
       </trans-unit>
       <trans-unit id="29949587189ee02db19274db4ac656913cb243c3" datatype="html">
         <source>Low Priority</source>
-        <target>Низкий приоритет</target>
+        <target>Низкий </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -2701,7 +2701,7 @@
       </trans-unit>
       <trans-unit id="ee847b69ef2dc81bb3e9b8cd30f02f8d63adbe07" datatype="html">
         <source>Medium Priority</source>
-        <target>Средний приоритет</target>
+        <target>Средний </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">9,10</context>
@@ -2723,7 +2723,7 @@
       </trans-unit>
       <trans-unit id="d1d0bb0a34b216be66137562a0b18eaaca546113" datatype="html">
         <source>High Priority</source>
-        <target>Высокий приоритет</target>
+        <target>Высокий </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">10,15</context>
@@ -4206,7 +4206,7 @@
       </trans-unit>
       <trans-unit id="86d26b45470e43b409e589517922276109138e87" datatype="html">
         <source>Transaction Fees</source>
-        <target>Транзакционные комиссии</target>
+        <target>Транзакционные комиссии (приоритет)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">6,9</context>
