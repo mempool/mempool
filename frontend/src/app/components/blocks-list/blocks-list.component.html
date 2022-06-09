@@ -10,12 +10,15 @@
     <table class="table table-borderless">
       <thead>
         <th class="height text-left" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}" i18n="latest-blocks.height">Height</th>
-        <th *ngIf="indexingAvailable" class="pool text-left" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}" i18n="mining.pool-name">Pool</th>
+        <th *ngIf="indexingAvailable" class="pool text-left" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}" i18n="mining.pool-name"
+          i18n-ngbTooltip="mining.pool-name" ngbTooltip="Pool" placement="bottom" #miningpool [disableTooltip]="!isEllipsisActive(miningpool)">Pool</th>
         <th class="timestamp" i18n="latest-blocks.timestamp" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">Timestamp</th>
         <th class="mined" i18n="latest-blocks.mined" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">Mined</th>
-        <th *ngIf="indexingAvailable" class="reward text-right" i18n="latest-blocks.reward" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">Reward</th>
+        <th *ngIf="indexingAvailable" class="reward text-right" i18n="latest-blocks.reward" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}"
+          i18n-ngbTooltip="latest-blocks.reward" ngbTooltip="Reward" placement="bottom" #reward [disableTooltip]="!isEllipsisActive(reward)">Reward</th>
         <th *ngIf="indexingAvailable && !widget" class="fees text-right" i18n="latest-blocks.fees" [class]="indexingAvailable ? '' : 'legacy'">Fees</th>
-        <th *ngIf="indexingAvailable" class="txs text-right" i18n="dashboard.txs" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">TXs</th>
+        <th *ngIf="indexingAvailable" class="txs text-right" i18n="dashboard.txs" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}"
+          i18n-ngbTooltip="dashboard.txs" ngbTooltip="TXs" placement="bottom" #txs [disableTooltip]="!isEllipsisActive(txs)">TXs</th>
         <th *ngIf="!indexingAvailable" class="txs text-right" i18n="dashboard.txs" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">Transactions</th>
         <th class="size" i18n="latest-blocks.size" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">Size</th>
       </thead>

@@ -44,6 +44,10 @@ tr, td, th {
   @media (max-width: 576px) {
     width: 34%;
   }
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 160px;
 }
 .pool.widget {
   width: 40%;
@@ -102,6 +106,10 @@ tr, td, th {
   @media (max-width: 875px) {
     display: none;
   }
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100px;
 }
 .txs.widget {
   padding-right: 0;
@@ -130,6 +138,10 @@ tr, td, th {
     width: 7%;
     padding-right: 30px;
   }
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100px;
 }
 .reward.widget {
   width: 20%;
