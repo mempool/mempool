@@ -114,4 +114,8 @@ export class BlocksList implements OnInit {
   trackByBlock(index: number, block: BlockExtended) {
     return block.height;
   }
+
+  isEllipsisActive(e) {
+    return (e.offsetWidth < e.scrollWidth);
+  }
 }

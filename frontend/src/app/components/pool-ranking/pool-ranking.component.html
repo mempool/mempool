@@ -5,19 +5,22 @@
   <div *ngIf="widget">
     <div class="pool-distribution" *ngIf="(miningStatsObservable$ | async) as miningStats; else loadingReward">
       <div class="item">
-        <h5 class="card-title" i18n="mining.miners-luck">Pools Luck (1w)</h5>
+        <h5 class="card-title" i18n="mining.miners-luck" i18n-ngbTooltip="mining.miners-luck"
+        ngbTooltip="Pools Luck (1w)" placement="bottom" #minersluck [disableTooltip]="!isEllipsisActive(minersluck)">Pools Luck (1w)</h5>
         <p class="card-text">
           {{ miningStats['minersLuck'] }}%
         </p>
       </div>
       <div class="item">
-        <h5 class="card-title" i18n="master-page.blocks">Blocks (1w)</h5>
+        <h5 class="card-title" i18n="master-page.blocks" i18n-ngbTooltip="master-page.blocks"
+        ngbTooltip="Blocks (1w)" placement="bottom" #blockscount [disableTooltip]="!isEllipsisActive(blockscount)">Blocks (1w)</h5>
         <p class="card-text">
           {{ miningStats.blockCount }}
         </p>
       </div>
       <div class="item">
-        <h5 class="card-title" i18n="mining.miners-count">Pools Count (1w)</h5>
+        <h5 class="card-title" i18n="mining.miners-count" i18n-ngbTooltip="mining.miners-count"
+        ngbTooltip="Pools Count (1w)" placement="bottom" #poolscount [disableTooltip]="!isEllipsisActive(poolscount)">Pools Count (1w)</h5>
         <p class="card-text">
           {{ miningStats.pools.length }}
         </p>
