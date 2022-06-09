@@ -1988,7 +1988,7 @@
       </trans-unit>
       <trans-unit id="ed8e33059967f554ff06b4f5b6049c465b92d9b3" datatype="html">
         <source>Block Fee Rates</source>
-        <target>Ratio de tasas de bloque</target>
+        <target>Ratio de tasas por bloque</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fee-rates-graph/block-fee-rates-graph.component.html</context>
           <context context-type="linenumber">5,7</context>
@@ -2005,7 +2005,7 @@
       </trans-unit>
       <trans-unit id="6c453b11fd7bd159ae30bc381f367bc736d86909" datatype="html">
         <source>Block Fees</source>
-        <target>Tasas de bloque</target>
+        <target>Tasas por bloque</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-graph/block-fees-graph.component.html</context>
           <context context-type="linenumber">5,7</context>
@@ -3150,7 +3150,7 @@
       </trans-unit>
       <trans-unit id="e1ea393882afe8ac40ff7637a33a5a46bdb3e0ce" datatype="html">
         <source>Pools Count (1w)</source>
-        <target>Conteo de pools (1 semana)</target>
+        <target>Conteo de pools (7 días)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">20,24</context>
@@ -3890,7 +3890,7 @@
       </trans-unit>
       <trans-unit id="516a786e59a57efaf80e11370b4bade400f19445" datatype="html">
         <source>Locktime</source>
-        <target>Tiempo de bloqueo</target>
+        <target>Tiempo de bloque</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">234,236</context>
