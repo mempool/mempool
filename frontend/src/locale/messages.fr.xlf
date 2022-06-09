@@ -3124,7 +3124,7 @@
       </trans-unit>
       <trans-unit id="8ef3568472375e791e861ca1ef76d4cb66eef8ef" datatype="html">
         <source>Pools Luck (1w)</source>
-        <target>Chance des pools (1 sem)</target>
+        <target>Chance des pools</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">8,12</context>
@@ -3150,7 +3150,7 @@
       </trans-unit>
       <trans-unit id="e1ea393882afe8ac40ff7637a33a5a46bdb3e0ce" datatype="html">
         <source>Pools Count (1w)</source>
-        <target>Nombre de pool (1 sem)</target>
+        <target>Nombre de pool</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">20,24</context>

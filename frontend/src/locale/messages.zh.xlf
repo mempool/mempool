@@ -1524,6 +1524,7 @@
       </trans-unit>
       <trans-unit id="address-label.multisig" datatype="html">
         <source>Multisig <x id="multisigM" equiv-text="m"/> of <x id="multisigN" equiv-text="n"/></source>
+        <target><x id="multisigM" equiv-text="m"/>个中的<x id="multisigN" equiv-text="n"/>个多重签名</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.ts</context>
           <context context-type="linenumber">127</context>
@@ -1540,6 +1541,7 @@
       </trans-unit>
       <trans-unit id="714e34125b3343df73f19ec800b43be95217d5d4" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transaction</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/>笔交易中的<x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/>笔</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">60</context>
@@ -1548,6 +1550,7 @@
       </trans-unit>
       <trans-unit id="0f6ada0cfb60aefd8f77f8a22349850ce186d666" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transactions</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/>笔交易中的<x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/>笔</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">61</context>
@@ -1993,6 +1996,7 @@
       </trans-unit>
       <trans-unit id="6c453b11fd7bd159ae30bc381f367bc736d86909" datatype="html">
         <source>Block Fees</source>
+        <target>区块费用</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-graph/block-fees-graph.component.html</context>
           <context context-type="linenumber">5,7</context>
@@ -2029,6 +2033,7 @@
       </trans-unit>
       <trans-unit id="8ba8fe810458280a83df7fdf4c614dfc1a826445" datatype="html">
         <source>Block Rewards</source>
+        <target>区块奖励</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-rewards-graph/block-rewards-graph.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -2045,6 +2050,7 @@
       </trans-unit>
       <trans-unit id="12f86e6747a5ad39e62d3480ddc472b1aeab5b76" datatype="html">
         <source>Reward</source>
+        <target>奖励</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-rewards-graph/block-rewards-graph.component.ts</context>
           <context context-type="linenumber">160,158</context>
@@ -2414,6 +2420,7 @@
       </trans-unit>
       <trans-unit id="822972b5d47ee555d3be0c7ab9aae8090ecdf7bc" datatype="html">
         <source>Error loading data.</source>
+        <target>加载数据时出错。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">203,205</context>
@@ -2434,6 +2441,7 @@
       </trans-unit>
       <trans-unit id="e70fcca5a99575cffef3ff8cbd5e69f06ffd0f1c" datatype="html">
         <source>Pool</source>
+        <target>矿池</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
           <context context-type="linenumber">13,14</context>
@@ -2619,6 +2627,7 @@
       </trans-unit>
       <trans-unit id="df71fa93f0503396ea2bb3ba5161323330314d6c" datatype="html">
         <source>Next Halving</source>
+        <target>下一个减半</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">50,52</context>
@@ -2635,6 +2644,7 @@
       </trans-unit>
       <trans-unit id="eef30290726d3d569232f4c136082bb9daaf490b" datatype="html">
         <source>No Priority</source>
+        <target>无优先级</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">4,7</context>
@@ -2655,6 +2665,7 @@
       </trans-unit>
       <trans-unit id="29949587189ee02db19274db4ac656913cb243c3" datatype="html">
         <source>Low Priority</source>
+        <target>低优先级</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -2675,6 +2686,7 @@
       </trans-unit>
       <trans-unit id="ee847b69ef2dc81bb3e9b8cd30f02f8d63adbe07" datatype="html">
         <source>Medium Priority</source>
+        <target>中优先级</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">9,10</context>
@@ -2695,6 +2707,7 @@
       </trans-unit>
       <trans-unit id="d1d0bb0a34b216be66137562a0b18eaaca546113" datatype="html">
         <source>High Priority</source>
+        <target>高优先级</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">10,15</context>
@@ -2780,6 +2793,7 @@
       </trans-unit>
       <trans-unit id="4592bd8fffebd3841fc8d59472caf4b4655e6184" datatype="html">
         <source>Pools Ranking</source>
+        <target>矿池排名</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">8</context>
@@ -2792,6 +2806,7 @@
       </trans-unit>
       <trans-unit id="43f992a71c7b7def78d430e5af489b914cc61c11" datatype="html">
         <source>Pools Dominance</source>
+        <target>矿池优势</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">10</context>
@@ -2804,6 +2819,7 @@
       </trans-unit>
       <trans-unit id="3510fc6daa1d975f331e3a717bdf1a34efa06dff" datatype="html">
         <source>Hashrate &amp; Difficulty</source>
+        <target>哈希率和难度</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">12</context>
@@ -2820,6 +2836,7 @@
       </trans-unit>
       <trans-unit id="79a9dc5b1caca3cbeb1733a19515edacc5fc7920" datatype="html">
         <source>Hashrate</source>
+        <target>哈希率</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.html</context>
           <context context-type="linenumber">8,10</context>
@@ -2889,6 +2906,7 @@
       </trans-unit>
       <trans-unit id="a681a4e2011bb28157689dbaa387de0dd0aa0c11" datatype="html">
         <source>Mining Dashboard</source>
+        <target>挖矿仪表板</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">36,38</context>
@@ -2936,6 +2954,7 @@
       </trans-unit>
       <trans-unit id="bc4c61d3713989e3c8c6610fca3ea1ca1cb19edb" datatype="html">
         <source>Value</source>
+        <target>价值</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
           <context context-type="linenumber">51,54</context>
@@ -3045,6 +3064,7 @@
       </trans-unit>
       <trans-unit id="26e78cd052d05a0c1a7db43fac8df52ec6950672" datatype="html">
         <source>Reward stats</source>
+        <target>奖励统计</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
           <context context-type="linenumber">10</context>
@@ -3053,6 +3073,7 @@
       </trans-unit>
       <trans-unit id="8527213d7c7dbffe48a45c4d796ae221d419c71a" datatype="html">
         <source>(144 blocks)</source>
+        <target>（144个区块）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
           <context context-type="linenumber">11</context>
@@ -3126,6 +3147,7 @@
       </trans-unit>
       <trans-unit id="3b85a3f96af9710b9a7684c5065bfbc2d3fb718a" datatype="html">
         <source>Empty blocks</source>
+        <target>空区块</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">89,92</context>
@@ -3134,6 +3156,7 @@
       </trans-unit>
       <trans-unit id="d720761d772947b9a6a0ae3f1c68b2e7119259cf" datatype="html">
         <source>All miners</source>
+        <target>所有矿工</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">107,108</context>
@@ -3142,6 +3165,7 @@
       </trans-unit>
       <trans-unit id="mining.mining-pools" datatype="html">
         <source>Mining Pools</source>
+        <target>矿池</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">55</context>
@@ -3161,6 +3185,7 @@
       </trans-unit>
       <trans-unit id="cafc87479686947e2590b9f588a88040aeaf660b" datatype="html">
         <source>Tags</source>
+        <target>标签</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">22,23</context>
@@ -3181,6 +3206,7 @@
       </trans-unit>
       <trans-unit id="4eb84de23219c85432e38fb4fbdeb6c0f103ff8b" datatype="html">
         <source>Show all</source>
+        <target>显示所有</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">53,55</context>
@@ -3201,6 +3227,7 @@
       </trans-unit>
       <trans-unit id="1eede69e18c5ac9c0b0295b72cabb7e64e029e74" datatype="html">
         <source>Hide</source>
+        <target>隐藏</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">55,58</context>
@@ -3209,6 +3236,7 @@
       </trans-unit>
       <trans-unit id="cc657077942054572b255be033d634cf601c50b6" datatype="html">
         <source>Hashrate (24h)</source>
+        <target>哈希率（24小时）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">91,93</context>
@@ -3377,6 +3405,7 @@
       </trans-unit>
       <trans-unit id="e48f3277d241b5e74b6e01a989a4ecb4495d3d25" datatype="html">
         <source>Miners Reward</source>
+        <target>矿池奖励</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">4,6</context>
@@ -3397,6 +3426,7 @@
       </trans-unit>
       <trans-unit id="c4ae62409269c8255a390587baad3ff496889cba" datatype="html">
         <source>Reward Per Tx</source>
+        <target>每笔交易奖励</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">16,18</context>
