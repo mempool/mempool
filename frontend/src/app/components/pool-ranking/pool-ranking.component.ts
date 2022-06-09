@@ -292,5 +292,9 @@ export class PoolRankingComponent implements OnInit {
     this.chartOptions.backgroundColor = 'none';
     this.chartInstance.setOption(this.chartOptions);
   }
+
+  isEllipsisActive(e) {
+    return (e.offsetWidth < e.scrollWidth);
+  }
 }
 
