@@ -49,7 +49,9 @@
     <div class="col">
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title" i18n="dashboard.latest-blocks">Latest blocks</h5>
+          <a class="no-effect" href="" [routerLink]="['/blocks' | relativeUrl]">
+            <h5 class="card-title" i18n="dashboard.latest-blocks">Latest blocks</h5>
+          </a>
           <app-blocks-list [widget]=true></app-blocks-list>
           <div><a [routerLink]="['/blocks' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>
@@ -60,7 +62,9 @@
     <div class="col">
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title" i18n="dashboard.adjustments">Adjustments</h5>
+          <a class="no-effect" href="" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]">
+            <h5 class="card-title" i18n="dashboard.adjustments">Adjustments</h5>
+          </a>
           <app-difficulty-adjustments-table></app-difficulty-adjustments-table>
           <div><a [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>

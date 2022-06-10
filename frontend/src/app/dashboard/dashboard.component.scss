@@ -317,3 +317,8 @@
   vertical-align: text-top;
   padding-left: 10px;
 }
+
+.no-effect, .no-effect:hover, .no-effect:focus, .no-effect:active {
+    text-decoration: none;
+    color: inherit;
+}

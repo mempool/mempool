@@ -106,7 +106,9 @@
       <div class="col">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title" i18n="dashboard.latest-blocks">Latest blocks</h5>
+            <a class="no-effect" href="" [routerLink]="['/blocks' | relativeUrl]">
+              <h5 class="card-title" i18n="dashboard.latest-blocks">Latest blocks</h5>
+            </a>
             <table class="table lastest-blocks-table">
               <thead>
                 <th class="table-cell-height" i18n="dashboard.latest-blocks.height">Height</th>

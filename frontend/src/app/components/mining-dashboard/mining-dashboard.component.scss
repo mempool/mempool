@@ -97,3 +97,8 @@
 .card-text {
   font-size: 22px;
 }
+
+.no-effect, .no-effect:hover, .no-effect:focus, .no-effect:active {
+  text-decoration: none;
+  color: inherit;
+}
