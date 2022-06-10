@@ -207,7 +207,7 @@ export class HashrateChartComponent implements OnInit {
           const date = new Date(ticks[0].data[0]).toLocaleDateString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
 
           return `
-            <b style="color: white; margin-left: 18px">${date}</b><br>
+            <b style="color: white; margin-left: 2px">${date}</b><br>
             <span>${hashrateString}</span><br>
             <span>${difficultyString}</span>
           `;
