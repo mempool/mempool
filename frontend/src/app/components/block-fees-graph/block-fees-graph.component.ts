@@ -124,9 +124,9 @@ export class BlockFeesGraphComponent implements OnInit {
           tooltip += `<br>`;
 
           if (['24h', '3d'].includes(this.timespan)) {
-            tooltip += `<small>` + $localize`At block:` + ` ${ticks[0].data[2]}</small>`;
+            tooltip += `<small>` + $localize`At block: ${ticks[0].data[2]}` + `</small>`;
           } else {
-            tooltip += `<small>` + $localize`Around block:` + ` ${ticks[0].data[2]}</small>`;
+            tooltip += `<small>` + $localize`Around block: ${ticks[0].data[2]}` + `</small>`;
           }
 
           return tooltip;
