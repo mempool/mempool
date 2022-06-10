@@ -13,18 +13,16 @@ export const formatterXAxis = (
       return date.toLocaleTimeString(locale, { hour: 'numeric', minute: 'numeric' });
     case '24h':
     case '3d':
-      return date.toLocaleTimeString(locale, { weekday: 'short', hour: 'numeric', minute: 'numeric' });
     case '1w':
     case '1m':
     case '3m':
     case '6m':
     case '1y':
-      return date.toLocaleTimeString(locale, { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' });
+      return date.toLocaleTimeString(locale, { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' });
     case '2y':
     case '3y':
-      return date.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' });
     case 'all':
-      return date.toLocaleDateString(locale, { year: 'numeric', month: 'short' });
+      return date.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' });
   }
 };
 

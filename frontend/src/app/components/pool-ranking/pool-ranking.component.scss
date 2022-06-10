@@ -103,6 +103,7 @@
       }
     }
     &:nth-child(3) {
+      width: 50%;
       order: 3;
       @media (min-width: 485px) {
         order: 2;
