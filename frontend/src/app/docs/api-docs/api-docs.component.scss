@@ -22,8 +22,12 @@ li.nav-item {
   }
 }
 
-.no-bottom-space {
+.doc-welcome-note {
   margin-bottom: 0;
+}
+
+.api-note {
+  margin-top: 1rem;
 }
 
 .nav-tabs .nav-link.active {
@@ -199,13 +203,16 @@ h3 {
 
 @media (max-width: 992px) {
 
+  h3 {
+    margin: 1.5rem 0 0 0;
+  }
+
   .hide-on-mobile {
     display: none;
   }
 
   .doc-content {
     width: 100%;
-    margin-top: -20px;
     float: unset;
   }
 
@@ -237,6 +244,10 @@ h3 {
     top: -10000px;
     opacity: 0;
     transition: 0.5s opacity ease;
+  }
+
+  .doc-welcome-note {
+    font-size: 0.85rem;
   }
 }
 
