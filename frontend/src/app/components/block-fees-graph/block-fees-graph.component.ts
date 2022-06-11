@@ -6,7 +6,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { formatNumber } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { download, formatterXAxisLabel } from 'src/app/shared/graphs.utils';
+import { download, formatterXAxis, formatterXAxisLabel } from 'src/app/shared/graphs.utils';
 import { StorageService } from 'src/app/services/storage.service';
 import { MiningService } from 'src/app/services/mining.service';
 
@@ -71,7 +71,7 @@ export class BlockFeesGraphComponent implements OnInit {
             .pipe(
               tap((response) => {
                 this.prepareChartOptions({
-                  blockFees: response.body.map(val => [val.timestamp * 1000, val.avgFees / 100000000]),
+                  blockFees: response.body.map(val => [val.timestamp * 1000, val.avgFees / 100000000, val.avgHeight]),
                 });
                 this.isLoading = false;
               }),
@@ -119,12 +119,17 @@ export class BlockFeesGraphComponent implements OnInit {
         },
         borderColor: '#000',
         formatter: (ticks) => {
-          const tick = ticks[0];
-          const feesString = `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.3-3')} BTC`;
-          return `
-            <b style="color: white; margin-left: 18px">${tick.axisValueLabel}</b><br>
-            <span>${feesString}</span>
-          `;
+          let tooltip = `<b style="color: white; margin-left: 2px">${formatterXAxis(this.locale, this.timespan, parseInt(ticks[0].axisValue, 10))}</b><br>`;
+          tooltip += `${ticks[0].marker} ${ticks[0].seriesName}: ${formatNumber(ticks[0].data[1], this.locale, '1.3-3')} BTC`;
+          tooltip += `<br>`;
+
+          if (['24h', '3d'].includes(this.timespan)) {
+            tooltip += `<small>` + $localize`At block: ${ticks[0].data[2]}` + `</small>`;
+          } else {
+            tooltip += `<small>` + $localize`Around block: ${ticks[0].data[2]}` + `</small>`;
+          }
+
+          return tooltip;
         }
       },
       xAxis: {
