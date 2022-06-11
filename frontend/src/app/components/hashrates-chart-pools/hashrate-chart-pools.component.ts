@@ -155,7 +155,7 @@ export class HashrateChartPoolsComponent implements OnInit {
           color: 'grey',
           fontSize: 15
         },
-        text: `Indexing in progess`,
+        text: $localize`:@@23555386d8af1ff73f297e89dd4af3f4689fb9dd:Indexing blocks`,
         left: 'center',
         top: 'center',
       };
@@ -186,7 +186,7 @@ export class HashrateChartPoolsComponent implements OnInit {
         borderColor: '#000',
         formatter: function (data) {
           const date = new Date(data[0].data[0]).toLocaleDateString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
-          let tooltip = `<b style="color: white; margin-left: 18px">${date}</b><br>`;
+          let tooltip = `<b style="color: white; margin-left: 2px">${date}</b><br>`;
           data.sort((a, b) => b.data[1] - a.data[1]);
           for (const pool of data) {
             if (pool.data[1] > 0) {

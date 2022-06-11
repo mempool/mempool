@@ -10,7 +10,7 @@ import { StorageService } from 'src/app/services/storage.service';
 import { MiningService } from 'src/app/services/mining.service';
 import { StateService } from 'src/app/services/state.service';
 import { Router } from '@angular/router';
-import { download } from 'src/app/shared/graphs.utils';
+import { download, formatterXAxis } from 'src/app/shared/graphs.utils';
 
 @Component({
   selector: 'app-block-sizes-weights-graph',
@@ -107,7 +107,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
           color: 'grey',
           fontSize: 15
         },
-        text: `Indexing in progess`,
+        text: $localize`:@@23555386d8af1ff73f297e89dd4af3f4689fb9dd:Indexing blocks`,
         left: 'center',
         top: 'center'
       };
@@ -141,27 +141,21 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
         },
         borderColor: '#000',
         formatter: (ticks) => {
-          let sizeString = '';
-          let weightString = '';
+          let tooltip = `<b style="color: white; margin-left: 2px">${formatterXAxis(this.locale, this.timespan, parseInt(ticks[0].axisValue, 10))}</b><br>`;
 
           for (const tick of ticks) {
             if (tick.seriesIndex === 0) { // Size
-              sizeString = `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.2-2')} MB`;
+              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.2-2')} MB`;
             } else if (tick.seriesIndex === 1) { // Weight
-              weightString = `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.2-2')} MWU`;
+              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.2-2')} MWU`;
             }
+            tooltip += `<br>`;
           }
 
-          const date = new Date(ticks[0].data[0]).toLocaleDateString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
-
-          let tooltip = `<b style="color: white; margin-left: 18px">${date}</b><br>
-            <span>${sizeString}</span><br>
-            <span>${weightString}</span>`;
-
           if (['24h', '3d'].includes(this.timespan)) {
-            tooltip += `<br><small>At block: ${ticks[0].data[2]}</small>`;
+            tooltip += `<small>` + $localize`At block: ${ticks[0].data[2]}` + `</small>`;
           } else {
-            tooltip += `<br><small>Around block ${ticks[0].data[2]}</small>`;
+            tooltip += `<small>` + $localize`Around block: ${ticks[0].data[2]}` + `</small>`;
           }
 
           return tooltip;
