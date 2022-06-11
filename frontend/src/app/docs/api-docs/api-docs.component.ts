@@ -35,6 +35,7 @@ export class ApiDocsComponent implements OnInit {
     setTimeout( () => {
       if( this.route.snapshot.fragment ) {
         this.openEndpointContainer( this.route.snapshot.fragment );
+        document.getElementById( this.route.snapshot.fragment ).scrollIntoView();
       }
       window.addEventListener('scroll', function() {
         that.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
