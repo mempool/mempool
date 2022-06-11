@@ -141,7 +141,7 @@ export class HashrateChartComponent implements OnInit {
           color: 'grey',
           fontSize: 15
         },
-        text: `Indexing in progess`,
+        text: $localize`:@@23555386d8af1ff73f297e89dd4af3f4689fb9dd:Indexing blocks`,
         left: 'center',
         top: 'center'
       };
@@ -207,7 +207,7 @@ export class HashrateChartComponent implements OnInit {
           const date = new Date(ticks[0].data[0]).toLocaleDateString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
 
           return `
-            <b style="color: white; margin-left: 18px">${date}</b><br>
+            <b style="color: white; margin-left: 2px">${date}</b><br>
             <span>${hashrateString}</span><br>
             <span>${difficultyString}</span>
           `;

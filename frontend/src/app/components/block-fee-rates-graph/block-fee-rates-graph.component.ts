@@ -169,17 +169,16 @@ export class BlockFeeRatesGraphComponent implements OnInit {
           if (data.length <= 0) {
             return '';
           }
-          let tooltip = `<b style="color: white; margin-left: 2px">
-            ${formatterXAxis(this.locale, this.timespan, parseInt(data[0].axisValue, 10))}</b><br>`;
+          let tooltip = `<b style="color: white; margin-left: 2px">${formatterXAxis(this.locale, this.timespan, parseInt(data[0].axisValue, 10))}</b><br>`;
 
           for (const pool of data.reverse()) {
             tooltip += `${pool.marker} ${pool.seriesName}: ${pool.data[1]} sats/vByte<br>`;
           }
 
           if (['24h', '3d'].includes(this.timespan)) {
-            tooltip += `<small>At block: ${data[0].data[2]}</small>`;
+            tooltip += `<small>` + $localize`At block: ${data[0].data[2]}` + `</small>`;
           } else {
-            tooltip += `<small>Around block ${data[0].data[2]}</small>`;
+            tooltip += `<small>` + $localize`Around block: ${data[0].data[2]}` + `</small>`;
           }
 
           return tooltip;
