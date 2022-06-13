@@ -199,7 +199,7 @@ nodemon src/index.ts --ignore cache/ --ignore pools.json
    ./src/bitcoin-cli sendtoaddress # will print the help
    ```
 
-* Mini script to generate txs with random fx rate (between 1 to 100 sat/vB). It's slow so don't expect to use this to test mempool spam, except if you let it run for a long time, or maybe with multiple regtest node connected to each other.
+* Mini script to generate transactions with random TX fee-rate (between 1 to 100 sat/vB). It's slow so don't expect to use this to test mempool spam, except if you let it run for a long time, or maybe with multiple regtest node connected to each other.
    ```
    #!/bin/bash
    address=$(./src/bitcoin-cli -regtest -rpcport=8332 getnewaddress)
