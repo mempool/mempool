@@ -17,6 +17,6 @@ export class MiningDashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.websocketService.want(['blocks', 'mempool-blocks']);
+    this.websocketService.want(['blocks', 'mempool-blocks', 'stats']);
   }
 }
