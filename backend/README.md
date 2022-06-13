@@ -159,3 +159,58 @@ nodemon src/index.ts --ignore cache/ --ignore pools.json
 ```
 
 `nodemon` should be in npm's global binary folder. If needed, you can determine where that is with `npm -g bin`.
+
+### Regtest cheatsheets
+
+* Useful link https://gist.github.com/System-Glitch/cb4e87bf1ae3fec9925725bb3ebe223a
+
+* Run bitcoind for regtest
+   ```
+   bitcoind -regtest -rpcport=8332
+   ```
+
+* If it's the first time, create a new wallet
+   ```
+   bitcoin-cli -regtest -rpcport=8332 createwallet test
+   ```
+
+* If it's not the first time, load the wallet. This command may take a while if you have lot of utxos
+   ```
+   bitcoin-cli -regtest -rpcport=8332 loadwallet test
+   ```
+
+* Get a new address
+   ```
+   address=$(./src/bitcoin-cli -regtest -rpcport=8332 getnewaddress)
+   ```
+
+* Mine blocks to the previously generated new address, you need at least 101 blocks before being able to spend. This will take some time to execute (~1 min)
+   ```
+   bitcoin-cli -regtest -rpcport=8332 generatetoaddress 101 $address
+   ```
+
+* Send 0.1 BTC at 5 sat/vB to another address
+   ```
+   ./src/bitcoin-cli -named -regtest -rpcport=8332 sendtoaddress address=$(./src/bitcoin-cli -regtest -rpcport=8332 getnewaddress) amount=0.1 fee_rate=5
+   ```
+
+* See more example of `sendtoaddress`
+   ```
+   ./src/bitcoin-cli sendtoaddress # will print the help
+   ```
+
+* Mini script to generate transactions with random TX fee-rate (between 1 to 100 sat/vB). It's slow so don't expect to use this to test mempool spam, except if you let it run for a long time, or maybe with multiple regtest node connected to each other.
+   ```
+   #!/bin/bash
+   address=$(./src/bitcoin-cli -regtest -rpcport=8332 getnewaddress)
+   for i in {1..1000000}
+   do
+	    ./src/bitcoin-cli -regtest -rpcport=8332 -named sendtoaddress address=$address amount=0.01 fee_rate=$(jot -r 1  1 100)
+   done
+   ```
+
+* Generate block at regular interval (every 10 sec in this example)
+   ```
+   watch -n 10 "./src/bitcoin-cli -regtest -rpcport=8332 generatetoaddress 1 $address"
+   ```
+
