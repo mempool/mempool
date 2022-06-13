@@ -280,7 +280,7 @@ class Blocks {
 
         currentBlockHeight -= chunkSize;
       }
-      logger.info(`Indexed ${newlyIndexed} blocks`);
+      logger.notice(`Block indexing completed: indexed ${newlyIndexed} blocks`);
       loadingIndicators.setProgress('block-indexing', 100);
     } catch (e) {
       logger.err('Block indexing failed. Trying again later. Reason: ' + (e instanceof Error ? e.message : e));
