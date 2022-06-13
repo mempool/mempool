@@ -27,6 +27,8 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
   animationFrameRequest: number;
   displayWidth: number;
   displayHeight: number;
+  cssWidth: number;
+  cssHeight: number;
   shaderProgram: WebGLProgram;
   vertexArray: FastVertexArray;
   running: boolean;
@@ -182,12 +184,14 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
 
   @HostListener('window:resize', ['$event'])
   resizeCanvas(): void {
-    this.displayWidth = this.canvas.nativeElement.parentElement.clientWidth;
-    this.displayHeight = this.canvas.nativeElement.parentElement.clientHeight;
+    this.cssWidth = this.canvas.nativeElement.parentElement.clientWidth;
+    this.cssHeight = this.canvas.nativeElement.parentElement.clientHeight;
+    this.displayWidth = window.devicePixelRatio * this.cssWidth;
+    this.displayHeight = window.devicePixelRatio * this.cssHeight;
     this.canvas.nativeElement.width = this.displayWidth;
     this.canvas.nativeElement.height = this.displayHeight;
     if (this.gl) {
-      this.gl.viewport(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
+      this.gl.viewport(0, 0, this.displayWidth, this.displayHeight);
     }
     if (this.scene) {
       this.scene.resize({ width: this.displayWidth, height: this.displayHeight });
@@ -285,7 +289,9 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
     this.setPreviewTx(-1, -1, false);
   }
 
-  setPreviewTx(x: number, y: number, clicked: boolean = false) {
+  setPreviewTx(cssX: number, cssY: number, clicked: boolean = false) {
+    const x = cssX * window.devicePixelRatio;
+    const y = cssY * window.devicePixelRatio;
     if (this.scene && (!this.selectedTx || clicked)) {
       const selected = this.scene.getTxAt({ x, y });
       const currentPreview = this.selectedTx || this.hoverTx;

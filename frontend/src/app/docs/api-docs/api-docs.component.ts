@@ -1,16 +1,17 @@
-import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, QueryList, AfterViewInit, ViewChildren } from '@angular/core';
 import { Env, StateService } from '../../services/state.service';
 import { Observable, merge, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ActivatedRoute } from "@angular/router";
 import { faqData, restApiDocsData, wsApiDocsData } from './api-docs-data';
+import { FaqTemplateDirective } from '../faq-template/faq-template.component';
 
 @Component({
   selector: 'app-api-docs',
   templateUrl: './api-docs.component.html',
   styleUrls: ['./api-docs.component.scss']
 })
-export class ApiDocsComponent implements OnInit {
+export class ApiDocsComponent implements OnInit, AfterViewInit {
   hostname = document.location.hostname;
   network$: Observable<string>;
   active = 0;
@@ -24,6 +25,9 @@ export class ApiDocsComponent implements OnInit {
   wsDocs: any;
   screenWidth: number;
   officialMempoolInstance: boolean;
+
+  @ViewChildren(FaqTemplateDirective) faqTemplates: QueryList<FaqTemplateDirective>;
+  dict = {};
 
   constructor(
     private stateService: StateService,
@@ -40,6 +44,7 @@ export class ApiDocsComponent implements OnInit {
       window.addEventListener('scroll', function() {
         that.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
       }, { passive: true} );
+      this.faqTemplates.forEach((x) => this.dict[x.type] = x.template);
     }, 1 );
   }
 
