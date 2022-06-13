@@ -5981,7 +5981,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "what-is-a-mempool",
     title: "What is a mempool?",
-    answer: "<p>A mempool (short for \"memory pool\") holds the queue of pending and unconfirmed transactions for a cryptocurrency network node. There is no one global mempool: every node on the network maintains its own mempool, so different nodes may hold different transactions in their mempools.</p>"
   },
   {
     type: "endpoint",
@@ -5989,7 +5988,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "what-is-a-mempool-explorer",
     title: "What is a mempool explorer?",
-    answer: "<p>A mempool explorer is a tool that enables you to view real-time and historical information about a node's mempool, visualize its transactions, and search and view those transactions.</p><p>The mempool.space website invented the concept of visualizing a Bitcoin node's mempool as <b>projected blocks</b>. These blocks are the inspiration for our half-filled block logo.</p><p>Projected blocks are on the left of the dotted white line, and confirmed blocks are on the right.</p>"
   },
   {
     type: "endpoint",
@@ -5997,7 +5995,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "what-is-a-blockchain",
     title: "What is a blockchain?",
-    answer: "<p>A blockchain is a distributed ledger that records the transactions for a cryptocurrency network. Miners amend the blockchain ledger by mining new blocks.</p>"
   },
   {
     type: "endpoint",
@@ -6005,7 +6002,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "what-is-a-block-explorer",
     title: "What is a block explorer?",
-    answer: "<p>A block explorer is a tool that enables you to explore real-time and historical information about the blockchain of a cryptocurrency. This includes data related to blocks, transactions, addresses, and more.</p>"
   },
   {
     type: "endpoint",
@@ -6013,7 +6009,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "what-is-mining",
     title: "What is mining?",
-    answer: "Mining is the process by which unconfirmed transactions in a mempool are confirmed into a block on a blockchain. Miners select unconfirmed transactions from their mempools and arrange them into a block such that they solve a particular math problem.</p><p>The first miner on the network to find a suitable block earns all the transaction fees from the transactions in that block. As a result, miners tend to prioritize transactions with higher transaction fees.</p>"
   },
   {
     type: "endpoint",
@@ -6021,7 +6016,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "what-are-mining-pools",
     title: "What are mining pools?",
-    answer: "Mining pools are groups of miners that combine their computational power in order to increase the probability of finding new blocks."
   },
   {
     type: "endpoint",
@@ -6029,7 +6023,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "what-is-full-mempool",
     title: "What does it mean for the mempool to be \"full\"?",
-    answer: "<p>When a Bitcoin transaction is made, it is stored in a Bitcoin node's mempool before it is confirmed into a block. When the rate of incoming transactions exceeds the rate transactions are confirmed, the mempool grows in size.</p><p>The default maximum size of a Bitcoin node's mempool is 300MB, so when there are 300MB of transactions in the mempool, we say it's \"full\".</p>"
   },
   {
     type: "endpoint",
@@ -6037,7 +6030,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "why-empty-blocks",
     title: "Why are there empty blocks?",
-    answer: "<p>When a new block is found, mining pools send miners a block template with no transactions so they can start searching for the next block as soon as possible. They send a block template full of transactions right afterward, but a full block template is a bigger data transfer and takes slightly longer to reach miners.</p><p>In this intervening time, which is usually no more than 1-2 seconds, miners sometimes get lucky and find a new block using the empty block template.</p>"
   },
   {
     type: "category",
@@ -6052,7 +6044,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "why-is-transaction-stuck-in-mempool",
     title: "Why isn't my transaction confirming?",
-    answer: "<p>If it's been a while and your transaction hasn't confirmed, your transaction is probably using a lower feerate relative to other transactions currently in the mempool. Depending on how you made your transaction, there may be <a href='/docs/faq/#how-to-get-transaction-confirmed-quickly'>ways to accelerate the process</a>.</p><p>There's no need to panic—a Bitcoin transaction will always either confirm completely (or not at all) at some point. As long as you have your transaction's ID, you can always see where your funds are.</p><p style='font-weight:700'>This site only provides data about the Bitcoin network—it cannot help you get your transaction confirmed quicker.</p>"
   },
   {
     type: "endpoint",
@@ -6060,7 +6051,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "how-to-get-transaction-confirmed-quickly",
     title: "How can I get my transaction confirmed more quickly?",
-    answer: "<p>To get your transaction confirmed quicker, you will need to increase its effective feerate.</p><p>If your transaction was created with RBF enabled, your stuck transaction can simply be replaced with a new one that has a higher fee.</p><p>Otherwise, if you control any of the stuck transaction's outputs, you can use CPFP to increase your stuck transaction's effective feerate.</p><p>If you are not sure how to do RBF or CPFP, work with the tool you used to make the transaction (wallet software, exchange company, etc). This website only provides data about the Bitcoin network, so there is nothing it can do to help you get your transaction confirmed quicker.</p>"
   },
   {
     type: "endpoint",
@@ -6068,7 +6058,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "how-prevent-stuck-transaction",
     title: "How can I prevent a transaction from getting stuck in the future?",
-    answer: "<p>You must use an adequate transaction fee commensurate with how quickly you need the transaction to be confirmed. See Mempool's fee estimates on the <a href='/'>front page</a>.</p><p>Also consider using RBF (if your wallet supports it) so that you can bump the feerate on your transaction if it does end up getting stuck.</p>"
   },
   {
     type: "category",
@@ -6083,7 +6072,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "looking-up-transactions",
     title: "How can I look up a transaction?",
-    answer: "Search for the transaction ID in the search box at the top-right of this website."
   },
   {
     type: "endpoint",
@@ -6091,7 +6079,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "looking-up-addresses",
     title: "How can I look up an address?",
-    answer: "Search for the address in the search box at the top-right of this website."
   },
   {
     type: "endpoint",
@@ -6099,7 +6086,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "looking-up-blocks",
     title: "How can I look up a block?",
-    answer: "Search for the block number (or block hash) in the search box at the top-right of this website."
   },
   {
     type: "endpoint",
@@ -6107,7 +6093,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "looking-up-fee-estimates",
     title: "How can I look up fee estimates?",
-    answer: "<p>See real-time fee estimates on <a href='/'>the main dashboard</a>.</p><p>Here is an overview of Mempool's feerate suggestions:</p><ul> <li><b>High Priority.</b> This figure is the median feerate of transactions in the <a href='/mempool-block/0'>first mempool block</a>. Consider using this feerate if you want confirmation as soon as possible.</li><li><b>Medium Priority.</b> This figure is the average of the median feerate of the <a href='/mempool-block/0'>first mempool block</a> and the median feerate of the <a href='/mempool-block/1'>second mempool block</a>.</li><li><b>Low Priority.</b> This figure is the average of the Medium Priority feerate and the median feerate of the <a href='/mempool-block/2'>third mempool block</a>. Consider using this feerate if you want confirmation soon but don't need it particularly quickly.</li><li><b>No Priority.</b> This figure is either 2x the minimum feerate, or the Low Priority feerate (whichever is lower). Consider using this feerate if you are in no rush and don't mind if confirmation takes a while.</li></ul><p>In all cases, the suggested feerate is adjusted lower if any of the mempool blocks involved in the calculation are not full (example: if there is only 1 mempool block that's less than half-full, Mempool will suggest a feerate of 1 sat/vB—not the median feerate of transactions in the block).</p><p>Mempool blocks use feerates, transaction sizes, and other metrics to <b>forecast</b> which transactions will be in future blocks. Actual blocks will turn out to be different: miners have their own views of the mempool, their own algorithms for determining which transactions to include in a block, etc.</p><p>Ultimately, the Bitcoin network is not perfectly predictable, so fee estimation cannot be perfectly precise.</p><p><b>Use Mempool's feerate suggestions as a guide, and understand that they do not guarantee transaction confirmation in any period of time.</b></p>"
   },
   {
     type: "endpoint",
@@ -6115,7 +6100,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "looking-up-historical-trends",
     title: "How can I explore historical trends?",
-    answer: "See the <a href='/graphs'>graphs page</a> for aggregate trends over time: mempool size over time and incoming transaction velocity over time."
   },
   {
     type: "category",
@@ -6130,7 +6114,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "who-runs-this-website",
     title: "Who runs this website?",
-    answer: "The official mempool.space website is operated by The Mempool Open Source Project. See more information on our <a href='/about'>About page</a>. There are also many unofficial instances of this website operated by individual members of the Bitcoin community."
   },
   {
     type: "endpoint",
@@ -6138,7 +6121,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "host-my-own-instance-raspberry-pi",
     title: "How can I host my own instance on a Raspberry Pi?",
-    answer: "We support one-click installation on a number of Raspberry Pi full-node distros including Umbrel, RaspiBlitz, MyNode, and RoninDojo."
   },
   {
     type: "endpoint",
@@ -6146,7 +6128,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "host-my-own-instance-linux-server",
     title: "How can I host my own instance on a Linux server?",
-    answer: "You can manually install mempool on your own Linux server, but this requires advanced sysadmin skills since you will be manually configuring everything. We do not provide support for manual deployments."
   },
   {
     type: "endpoint",
@@ -6154,7 +6135,6 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "install-mempool-with-docker",
     title: "Can I install Mempool using Docker?",
-    answer: "Yes, we publish Docker images (or you can build your own). Check out <a href='https://github.com/mempool/mempool/tree/master/docker' target='_blank'>the documentation</a> for details."
   },
   {
     type: "endpoint",
@@ -6162,6 +6142,5 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "address-lookup-issues",
     title: "Why do I get an error for certain address lookups on my Mempool instance?",
-    answer: "<p>If you're getting errors when doing address lookups, it's probably because of your Electrum server backend.</p><p>Mempool uses an Electrum server to do address lookups. There are several implementations of the Electrum server protocol, and Mempool can use any of them, but the implementation you use affects performance:</p><ol><li><a href='https://github.com/romanz/electrs' target='_blank'>romanz/electrs</a>. This is a common choice for its low resource requirements, and most full-node distros use it. But while this implementation works great for basic queries, it will struggle with heavier ones (e.g. looking up addresses with many transactions)—especially when running on low-power hardware like a Raspberry Pi.</li><li><a href='https://github.com/cculianu/Fulcrum' target='_blank'>Fulcrum</a>. Fulcrum requires more resources than romanz/electrs but it can still run on a Raspberry Pi, and it handles heavy queries much more efficiently. If you're having issues with romanz/electrs, Fulcrum is worth a try.</li><li><a href='https://github.com/Blockstream/electrs' target='_blank'>blockstream/electrs</a>. If you have stronger hardware, consider running Blockstream's electrs implementation. It's the backend mempool.space uses, and is also what powers blockstream.info.</li></ol>"
   }
 ];

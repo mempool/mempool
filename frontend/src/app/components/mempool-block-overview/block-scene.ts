@@ -27,15 +27,17 @@ export default class BlockScene {
     Object.values(this.txs).forEach(tx => tx.destroy())
   }
 
-  resize ({ width = this.width, height = this.height }: { width?: number, height?: number}): void {
-    this.width = width
-    this.height = height
-    this.gridSize = this.width / this.gridWidth
-    this.unitPadding =  Math.floor(Math.max(1, width / 1000))
-    this.unitWidth = this.gridSize - (this.unitPadding * 2)
+  resize({ width = this.width, height = this.height }: { width?: number, height?: number}): void {
+    this.width = width;
+    this.height = height;
+    this.gridSize = this.width / this.gridWidth;
+    this.unitPadding =  width / 500;
+    this.unitWidth = this.gridSize - (this.unitPadding * 2);
 
-    this.dirty = true
-    if (this.initialised && this.scene) this.updateAll(performance.now())
+    this.dirty = true;
+    if (this.initialised && this.scene) {
+      this.updateAll(performance.now());
+    }
   }
 
   // Animate new block entering scene
