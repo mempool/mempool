@@ -7,8 +7,24 @@ class DatabaseMigration {
   private static currentVersion = 19;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
+  private uniqueLogs: string[] = [];
+
+  private blocksTruncatedMessage = `'blocks' table has been truncated. Re-indexing from scratch.`;
+  private hashratesTruncatedMessage = `'hashrates' table has been truncated. Re-indexing from scratch.`;
 
   constructor() { }
+
+  /**
+   * Avoid printing multiple time the same message
+   */
+  private uniqueLog(loggerFunction: any, msg: string) {
+    if (this.uniqueLogs.includes(msg)) {
+      return;
+    }
+    this.uniqueLogs.push(msg);
+    loggerFunction(msg);
+  }
+
   /**
    * Entry point
    */
@@ -39,6 +55,16 @@ class DatabaseMigration {
       process.exit(-1);
     }
 
+    if (databaseSchemaVersion === 0) {
+      logger.info('Initializing database (first run, clean install)');
+    }
+
+    if (databaseSchemaVersion <= 2) {
+      // Disable some spam logs when they're not relevant
+      this.uniqueLogs.push(this.blocksTruncatedMessage);
+      this.uniqueLogs.push(this.hashratesTruncatedMessage);
+    }
+
     logger.debug('MIGRATIONS: Current state.schema_version ' + databaseSchemaVersion);
     logger.debug('MIGRATIONS: Latest DatabaseMigration.version is ' + DatabaseMigration.currentVersion);
     if (databaseSchemaVersion >= DatabaseMigration.currentVersion) {
@@ -56,10 +82,13 @@ class DatabaseMigration {
     }
 
     if (DatabaseMigration.currentVersion > databaseSchemaVersion) {
-      logger.notice('MIGRATIONS: Upgrading database schema');
       try {
         await this.$migrateTableSchemaFromVersion(databaseSchemaVersion);
-        logger.notice(`MIGRATIONS: OK. Database schema have been migrated from version ${databaseSchemaVersion} to ${DatabaseMigration.currentVersion} (latest version)`);
+        if (databaseSchemaVersion === 0) {
+          logger.notice(`MIGRATIONS: OK. Database schema has been properly initialized to version ${DatabaseMigration.currentVersion} (latest version)`);          
+        } else {
+          logger.notice(`MIGRATIONS: OK. Database schema have been migrated from version ${databaseSchemaVersion} to ${DatabaseMigration.currentVersion} (latest version)`);
+        }
       } catch (e) {
         logger.err('MIGRATIONS: Unable to migrate database, aborting. ' + e);
       }
@@ -89,13 +118,13 @@ class DatabaseMigration {
         await this.$executeQuery(this.getCreateBlocksTableQuery(), await this.$checkIfTableExists('blocks'));
       }
       if (databaseSchemaVersion < 5 && isBitcoin === true) {
-        logger.warn(`'blocks' table has been truncated. Re-indexing from scratch.`);
+        this.uniqueLog(logger.notice, this.blocksTruncatedMessage);
         await this.$executeQuery('TRUNCATE blocks;'); // Need to re-index
         await this.$executeQuery('ALTER TABLE blocks ADD `reward` double unsigned NOT NULL DEFAULT "0"');
       }
 
       if (databaseSchemaVersion < 6 && isBitcoin === true) {
-        logger.warn(`'blocks' table has been truncated. Re-indexing from scratch.`);
+        this.uniqueLog(logger.notice, this.blocksTruncatedMessage);
         await this.$executeQuery('TRUNCATE blocks;');  // Need to re-index
         // Cleanup original blocks fields type
         await this.$executeQuery('ALTER TABLE blocks MODIFY `height` integer unsigned NOT NULL DEFAULT "0"');
@@ -122,7 +151,7 @@ class DatabaseMigration {
       }
 
       if (databaseSchemaVersion < 8 && isBitcoin === true) {
-        logger.warn(`'hashrates' table has been truncated. Re-indexing from scratch.`);
+        this.uniqueLog(logger.notice, this.blocksTruncatedMessage);
         await this.$executeQuery('TRUNCATE hashrates;'); // Need to re-index
         await this.$executeQuery('ALTER TABLE `hashrates` DROP INDEX `PRIMARY`');
         await this.$executeQuery('ALTER TABLE `hashrates` ADD `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST');
@@ -131,7 +160,7 @@ class DatabaseMigration {
       }
 
       if (databaseSchemaVersion < 9 && isBitcoin === true) {
-        logger.warn(`'hashrates' table has been truncated. Re-indexing from scratch.`);
+        this.uniqueLog(logger.notice, this.hashratesTruncatedMessage);
         await this.$executeQuery('TRUNCATE hashrates;'); // Need to re-index
         await this.$executeQuery('ALTER TABLE `state` CHANGE `name` `name` varchar(100)');
         await this.$executeQuery('ALTER TABLE `hashrates` ADD UNIQUE `hashrate_timestamp_pool_id` (`hashrate_timestamp`, `pool_id`)');
@@ -142,7 +171,7 @@ class DatabaseMigration {
       }
 
       if (databaseSchemaVersion < 11 && isBitcoin === true) {
-        logger.warn(`'blocks' table has been truncated. Re-indexing from scratch.`);
+        this.uniqueLog(logger.notice, this.blocksTruncatedMessage);
         await this.$executeQuery('TRUNCATE blocks;'); // Need to re-index
         await this.$executeQuery(`ALTER TABLE blocks
           ADD avg_fee INT UNSIGNED NULL,
@@ -166,14 +195,14 @@ class DatabaseMigration {
       }
 
       if (databaseSchemaVersion < 14 && isBitcoin === true) {
-        logger.warn(`'hashrates' table has been truncated. Re-indexing from scratch.`);
+        this.uniqueLog(logger.notice, this.hashratesTruncatedMessage);
         await this.$executeQuery('TRUNCATE hashrates;'); // Need to re-index
         await this.$executeQuery('ALTER TABLE `hashrates` DROP FOREIGN KEY `hashrates_ibfk_1`');
         await this.$executeQuery('ALTER TABLE `hashrates` MODIFY `pool_id` SMALLINT UNSIGNED NOT NULL DEFAULT "0"');
       }
 
       if (databaseSchemaVersion < 16 && isBitcoin === true) {
-        logger.warn(`'hashrates' table has been truncated. Re-indexing from scratch.`);
+        this.uniqueLog(logger.notice, this.hashratesTruncatedMessage);
         await this.$executeQuery('TRUNCATE hashrates;'); // Need to re-index because we changed timestamps
       }
 
@@ -282,6 +311,8 @@ class DatabaseMigration {
     for (const query of this.getMigrationQueriesFromVersion(version)) {
       transactionQueries.push(query);
     }
+
+    logger.notice(`MIGRATIONS: ${version > 0 ? 'Upgrading' : 'Initializing'} database schema version number to ${DatabaseMigration.currentVersion}`);
     transactionQueries.push(this.getUpdateToLatestSchemaVersionQuery());
 
     try {
@@ -305,6 +336,9 @@ class DatabaseMigration {
 
     if (version < 1) {
       if (config.MEMPOOL.NETWORK !== 'liquid' && config.MEMPOOL.NETWORK !== 'liquidtestnet') {
+        if (version > 0) {
+          logger.notice(`MIGRATIONS: Migrating (shifting) statistics table data`);
+        }
         queries.push(this.getShiftStatisticsQuery());
       }
     }
