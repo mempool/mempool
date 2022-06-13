@@ -257,7 +257,7 @@ class Mining {
       }
       await HashratesRepository.$setLatestRun('last_weekly_hashrates_indexing', new Date().getUTCDate());
       if (newlyIndexed > 0) {
-        logger.info(`Indexed ${newlyIndexed} pools weekly hashrate`);
+        logger.notice(`Weekly mining pools hashrates indexing completed: indexed ${newlyIndexed}`);
       }
       loadingIndicators.setProgress('weekly-hashrate-indexing', 100);
     } catch (e) {
@@ -368,7 +368,7 @@ class Mining {
 
       await HashratesRepository.$setLatestRun('last_hashrates_indexing', new Date().getUTCDate());
       if (newlyIndexed > 0) {
-        logger.info(`Indexed ${newlyIndexed} day of network hashrate`);
+        logger.notice(`Daily network hashrate indexing completed: indexed ${newlyIndexed} days`);
       }
       loadingIndicators.setProgress('daily-hashrate-indexing', 100);
     } catch (e) {

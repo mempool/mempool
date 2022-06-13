@@ -13,6 +13,8 @@ import * as https from 'https';
 class PoolsUpdater {
   lastRun: number = 0;
   currentSha: any = undefined;
+  poolsUrl: string = 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json';
+  treeUrl: string = 'https://api.github.com/repos/mempool/mining-pools/git/trees/master';
 
   constructor() {
   }
@@ -32,11 +34,10 @@ class PoolsUpdater {
 
     this.lastRun = now;
 
-    logger.info('Updating latest mining pools from Github');
     if (config.SOCKS5PROXY.ENABLED) {
-      logger.info('List of public pools will be queried over the Tor network');
+      logger.info(`Updating latest mining pools from ${this.poolsUrl} over the Tor network`);
     } else {
-      logger.info('List of public pools will be queried over clearnet');
+      logger.info(`Updating latest mining pools from ${this.poolsUrl} over clearnet`);
     }
 
     try {
@@ -54,8 +55,12 @@ class PoolsUpdater {
         return;
       }
 
-      logger.warn('Pools.json is outdated, fetch latest from github');
-      const poolsJson = await this.query('https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json');
+      if (this.currentSha === undefined) {
+        logger.info(`Downloading pools.json for the first time from ${this.poolsUrl}`);
+      } else {
+        logger.warn(`Pools.json is outdated, fetch latest from ${this.poolsUrl}`);
+      }
+      const poolsJson = await this.query(this.poolsUrl);
       if (poolsJson === undefined) {
         return;
       }
@@ -101,7 +106,7 @@ class PoolsUpdater {
    * Fetch our latest pools.json sha from github
    */
   private async fetchPoolsSha(): Promise<string | undefined> {
-    const response = await this.query('https://api.github.com/repos/mempool/mining-pools/git/trees/master');
+    const response = await this.query(this.treeUrl);
 
     if (response !== undefined) {
       for (const file of response['tree']) {
@@ -111,7 +116,7 @@ class PoolsUpdater {
       }
     }
 
-    logger.err('Cannot to find latest pools.json sha from github api response');
+    logger.err(`Cannot find "pools.json" in git tree (${this.treeUrl})`);
     return undefined;
   }
 
@@ -159,7 +164,7 @@ class PoolsUpdater {
         
         const data: AxiosResponse = await axios.get(path, axiosOptions);
         if (data.statusText === 'error' || !data.data) {
-          throw new Error(`Could not fetch data from Github, Error: ${data.status}`);
+          throw new Error(`Could not fetch data from ${path}, Error: ${data.status}`);
         }
         return data.data;
       } catch (e) {
