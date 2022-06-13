@@ -35,7 +35,6 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
-    renderer: 'svg',
   };
 
   @HostBinding('attr.dir') dir = 'ltr';
@@ -314,7 +313,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,
       excludeComponents: ['dataZoom'],
-    }), `block-sizes-weights-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
+    }), `block-sizes-weights-${this.timespan}-${Math.round(now.getTime() / 1000)}.png`);
     // @ts-ignore
     this.chartOptions.grid.bottom = prevBottom;
     this.chartOptions.backgroundColor = 'none';

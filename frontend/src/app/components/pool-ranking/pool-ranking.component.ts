@@ -28,7 +28,6 @@ export class PoolRankingComponent implements OnInit {
   isLoading = true;
   chartOptions: EChartsOption = {};
   chartInitOptions = {
-    renderer: 'svg',
   };
   timespan = '';
   chartInstance: any = undefined;
@@ -288,7 +287,7 @@ export class PoolRankingComponent implements OnInit {
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,
       excludeComponents: ['dataZoom'],
-    }), `pools-ranking-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
+    }), `pools-ranking-${this.timespan}-${Math.round(now.getTime() / 1000)}.png`);
     this.chartOptions.backgroundColor = 'none';
     this.chartInstance.setOption(this.chartOptions);
   }

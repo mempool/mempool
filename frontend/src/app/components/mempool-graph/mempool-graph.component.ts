@@ -37,7 +37,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   mempoolVsizeFeesData: any;
   mempoolVsizeFeesOptions: EChartsOption;
   mempoolVsizeFeesInitOptions = {
-    renderer: 'svg',
   };
   windowPreference: string;
   hoverIndexSerie = 0;
@@ -401,7 +400,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,
       excludeComponents: ['dataZoom'],
-    }), `mempool-graph-${timespan}-${Math.round(now.getTime() / 1000)}.svg`);
+    }), `mempool-graph-${timespan}-${Math.round(now.getTime() / 1000)}.png`);
     // @ts-ignore
     this.mempoolVsizeFeesOptions.grid.height = prevHeight;
     this.mempoolVsizeFeesOptions.backgroundColor = 'none';

@@ -36,7 +36,7 @@ export class HashrateChartComponent implements OnInit {
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
-    renderer: 'svg',
+    renderer: 'canvas',
   };
 
   @HostBinding('attr.dir') dir = 'ltr';
@@ -359,7 +359,7 @@ export class HashrateChartComponent implements OnInit {
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,
       excludeComponents: ['dataZoom'],
-    }), `hashrate-difficulty-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
+    }), `hashrate-difficulty-${this.timespan}-${Math.round(now.getTime() / 1000)}.png`);
     // @ts-ignore
     this.chartOptions.grid.bottom = prevBottom;
     this.chartOptions.backgroundColor = 'none';

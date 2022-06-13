@@ -33,7 +33,6 @@ export class BlockRewardsGraphComponent implements OnInit {
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
-    renderer: 'svg',
   };
 
   statsObservable$: Observable<any>;
@@ -219,7 +218,7 @@ export class BlockRewardsGraphComponent implements OnInit {
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,
       excludeComponents: ['dataZoom'],
-    }), `block-rewards-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
+    }), `block-rewards-${this.timespan}-${Math.round(now.getTime() / 1000)}.png`);
     // @ts-ignore
     this.chartOptions.grid.bottom = prevBottom;
     this.chartOptions.backgroundColor = 'none';

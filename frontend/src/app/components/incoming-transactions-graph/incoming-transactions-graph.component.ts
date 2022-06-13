@@ -31,7 +31,6 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
   isLoading = true;
   mempoolStatsChartOption: EChartsOption = {};
   mempoolStatsChartInitOption = {
-    renderer: 'svg'
   };
   windowPreference: string;
   chartInstance: any = undefined;
@@ -244,7 +243,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,
       excludeComponents: ['dataZoom'],
-    }), `incoming-vbytes-${timespan}-${Math.round(now.getTime() / 1000)}.svg`);
+    }), `incoming-vbytes-${timespan}-${Math.round(now.getTime() / 1000)}.png`);
     // @ts-ignore
     this.mempoolStatsChartOption.grid.height = prevHeight;
     this.mempoolStatsChartOption.backgroundColor = 'none';

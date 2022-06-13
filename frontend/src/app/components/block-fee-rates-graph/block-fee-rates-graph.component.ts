@@ -37,7 +37,6 @@ export class BlockFeeRatesGraphComponent implements OnInit {
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
-    renderer: 'svg',
   };
 
   statsObservable$: Observable<any>;
@@ -301,7 +300,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,
       excludeComponents: ['dataZoom'],
-    }), `block-fee-rates-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
+    }), `block-fee-rates-${this.timespan}-${Math.round(now.getTime() / 100)}.png`);
     // @ts-ignore
     this.chartOptions.grid.bottom = prevBottom;
     this.chartOptions.backgroundColor = 'none';

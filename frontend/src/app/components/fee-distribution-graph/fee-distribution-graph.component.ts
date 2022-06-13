@@ -15,7 +15,6 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges {
 
   mempoolVsizeFeesOptions: any;
   mempoolVsizeFeesInitOptions = {
-    renderer: 'svg'
   };
 
   constructor() { }

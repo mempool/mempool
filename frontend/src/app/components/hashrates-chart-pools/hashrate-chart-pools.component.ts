@@ -34,7 +34,6 @@ export class HashrateChartPoolsComponent implements OnInit {
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
-    renderer: 'svg',
   };
 
   @HostBinding('attr.dir') dir = 'ltr';
@@ -267,7 +266,7 @@ export class HashrateChartPoolsComponent implements OnInit {
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,
       excludeComponents: ['dataZoom'],
-    }), `pools-dominance-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
+    }), `pools-dominance-${this.timespan}-${Math.round(now.getTime() / 1000)}.png`);
     // @ts-ignore
     this.chartOptions.grid.bottom = prevBottom;
     this.chartOptions.backgroundColor = 'none';

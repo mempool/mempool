@@ -29,7 +29,6 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
 
   pegsChartOption: EChartsOption = {};
   pegsChartInitOption = {
-    renderer: 'svg'
   };
 
   constructor(
