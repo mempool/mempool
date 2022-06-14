@@ -7,6 +7,8 @@ export default class BlockScene {
   scene: { count: number, offset: { x: number, y: number}};
   vertexArray: FastVertexArray;
   txs: { [key: string]: TxView };
+  orientation: string;
+  flip: boolean;
   width: number;
   height: number;
   gridWidth: number;
@@ -19,10 +21,11 @@ export default class BlockScene {
   layout: BlockLayout;
   dirty: boolean;
 
-  constructor({ width, height, resolution, blockLimit, vertexArray }:
-      { width: number, height: number, resolution: number, blockLimit: number, vertexArray: FastVertexArray }
+  constructor({ width, height, resolution, blockLimit, orientation, flip, vertexArray }:
+      { width: number, height: number, resolution: number, blockLimit: number,
+        orientation: string, flip: boolean, vertexArray: FastVertexArray }
   ) {
-    this.init({ width, height, resolution, blockLimit, vertexArray });
+    this.init({ width, height, resolution, blockLimit, orientation, flip, vertexArray });
   }
 
   destroy(): void {
@@ -61,7 +64,7 @@ export default class BlockScene {
   }
 
   // Reset layout and replace with new set of transactions
-  replace(txs: TransactionStripped[], direction: string = 'left'): void {
+  replace(txs: TransactionStripped[], direction: string = 'left', sort: boolean = true): void {
     const startTime = performance.now();
     const nextIds = {};
     const remove = [];
@@ -90,9 +93,15 @@ export default class BlockScene {
 
     this.layout = new BlockLayout({ width: this.gridWidth, height: this.gridHeight });
 
-    Object.values(this.txs).sort(feeRateDescending).forEach(tx => {
-      this.place(tx);
-    });
+    if (sort) {
+      Object.values(this.txs).sort(feeRateDescending).forEach(tx => {
+        this.place(tx);
+      });
+    } else {
+      txs.forEach(tx => {
+        this.place(this.txs[tx.txid]);
+      });
+    }
 
     this.updateAll(startTime, direction);
   }
@@ -143,9 +152,12 @@ export default class BlockScene {
     }
   }
 
-  private init({ width, height, resolution, blockLimit, vertexArray }:
-      { width: number, height: number, resolution: number, blockLimit: number, vertexArray: FastVertexArray }
+  private init({ width, height, resolution, blockLimit, orientation, flip, vertexArray }:
+      { width: number, height: number, resolution: number, blockLimit: number,
+        orientation: string, flip: boolean, vertexArray: FastVertexArray }
   ): void {
+    this.orientation = orientation;
+    this.flip = flip;
     this.vertexArray = vertexArray;
 
     this.scene = {
@@ -188,8 +200,8 @@ export default class BlockScene {
       tx.update({
         display: {
           position: {
-            x: tx.screenPosition.x + (direction === 'right' ? -this.width : this.width) * 1.4,
-            y: tx.screenPosition.y,
+            x: tx.screenPosition.x + (direction === 'right' ? -this.width : (direction === 'left' ? this.width : 0)) * 1.4,
+            y: tx.screenPosition.y + (direction === 'up' ? -this.height : (direction === 'down' ? this.height : 0)) * 1.4,
             s: tx.screenPosition.s
           },
           color: txColor,
@@ -237,8 +249,8 @@ export default class BlockScene {
       tx.update({
         display: {
           position: {
-            x: tx.screenPosition.x + (direction === 'right' ? this.width : -this.width) * 1.4,
-            y: this.txs[id].screenPosition.y,
+            x: tx.screenPosition.x + (direction === 'right' ? this.width : (direction === 'left' ? -this.width : 0)) * 1.4,
+            y: tx.screenPosition.y + (direction === 'up' ? this.height : (direction === 'down' ? -this.height : 0)) * 1.4,
           }
         },
         duration: 1000,
@@ -264,18 +276,42 @@ export default class BlockScene {
       const slotSize = (position.s * this.gridSize);
       const squareSize = slotSize - (this.unitPadding * 2);
 
-      // The grid is laid out notionally left-to-right, bottom-to-top
-      // So we rotate 90deg counterclockwise then flip the y axis
+      // The grid is laid out notionally left-to-right, bottom-to-top,
+      // so we rotate and/or flip the y axis to match the target configuration.
+      //
+      // e.g. for flip = true, orientation = 'left':
       //
       //    grid                             screen
-      //  ________          ________        ________
-      // |        |        |       b|      |       a|
-      // |        | rotate |        | flip |     c  |
-      // |  c     |   -->  |      c |  --> |        |
-      // |a______b|        |_______a|      |_______b|
+      //  ________        ________          ________
+      // |        |      |        |        |       a|
+      // |        | flip |        | rotate |     c  |
+      // |  c     |  --> |     c  |  -->   |        |
+      // |a______b|      |b______a|        |_______b|
+
+      let x = (this.gridSize * position.x) + (slotSize / 2);
+      let y = (this.gridSize * position.y) + (slotSize / 2);
+      let t;
+      if (this.flip) {
+        x = this.width - x;
+      }
+      switch (this.orientation) {
+        case 'left':
+          t = x;
+          x = this.width - y;
+          y = t;
+          break;
+        case 'right':
+          t = x;
+          x = y;
+          y = t;
+          break;
+        case 'bottom':
+          y = this.height - y;
+          break;
+      }
       return {
-        x: this.width + (this.unitPadding * 2) - (this.gridSize * position.y) - slotSize,
-        y: this.height - ((this.gridSize * position.x) + (slotSize - this.unitPadding)),
+        x: x + this.unitPadding - (slotSize / 2),
+        y: y + this.unitPadding - (slotSize / 2),
         s: squareSize
       };
     } else {
@@ -284,11 +320,32 @@ export default class BlockScene {
   }
 
   screenToGrid(position: Position): Position {
-    const grid = {
-      x: Math.floor((position.y - this.unitPadding) / this.gridSize),
-      y: Math.floor((this.width + (this.unitPadding * 2) - position.x) / this.gridSize)
+    let x = position.x;
+    let y = this.height - position.y;
+    let t;
+
+    switch (this.orientation) {
+      case 'left':
+        t = x;
+        x = y;
+        y = this.width - t;
+        break;
+      case 'right':
+        t = x;
+        x = y;
+        y = t;
+        break;
+      case 'bottom':
+        y = this.height - y;
+        break;
+    }
+    if (this.flip) {
+      x = this.width - x;
+    }
+    return {
+      x: Math.floor(x / this.gridSize),
+      y: Math.floor(y / this.gridSize)
     };
-    return grid;
   }
 
   // calculates and returns the size of the tx in multiples of the grid size

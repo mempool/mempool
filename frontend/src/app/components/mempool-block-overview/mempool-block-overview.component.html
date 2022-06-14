@@ -3,5 +3,7 @@
   [isLoading]="isLoading$ | async"
   [resolution]="75"
   [blockLimit]="stateService.blockVSize"
-  (txPreviewEvent)="onTxPreview($event)">
-</app-block-overview-graph>
+  [orientation]="'left'"
+  [flip]="true"
+  (txPreviewEvent)="onTxPreview($event)"
+></app-block-overview-graph>
