@@ -216,7 +216,6 @@ export class BlockComponent implements OnInit, OnDestroy {
             return of([]);
           }),
           switchMap((transactions) => {
-            console.log('overview loaded: ', prevBlock && prevBlock.height, block.height);
             if (prevBlock) {
               return of({ transactions, direction: (prevBlock.height < block.height) ? 'right' : 'left' });
             } else {
