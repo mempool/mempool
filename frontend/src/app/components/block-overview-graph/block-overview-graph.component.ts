@@ -15,6 +15,8 @@ export class BlockOverviewGraphComponent implements AfterViewInit {
   @Input() isLoading: boolean;
   @Input() resolution: number;
   @Input() blockLimit: number;
+  @Input() orientation = 'left';
+  @Input() flip = true;
   @Output() txPreviewEvent = new EventEmitter<TransactionStripped | void>();
 
   @ViewChild('blockCanvas')
@@ -67,9 +69,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit {
     }
   }
 
-  replace(transactions: TransactionStripped[], direction: string): void {
+  replace(transactions: TransactionStripped[], direction: string, sort: boolean = true): void {
     if (this.scene) {
-      this.scene.replace(transactions, direction);
+      this.scene.replace(transactions || [], direction, sort);
     }
   }
 
@@ -139,8 +141,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit {
     if (this.scene) {
       this.scene.resize({ width: this.displayWidth, height: this.displayHeight });
     } else {
-      this.scene = this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: this.resolution,
-        blockLimit: this.blockLimit, vertexArray: this.vertexArray });
+      this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: this.resolution,
+        blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray });
+      this.start();
     }
   }
 

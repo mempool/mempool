@@ -128,6 +128,13 @@ export interface BlockExtended extends Block {
   extras?: BlockExtension;
 }
 
+export interface TransactionStripped {
+  txid: string;
+  fee: number;
+  vsize: number;
+  value: number;
+}
+
 export interface RewardStats {
   startBlock: number;
   endBlock: number;
