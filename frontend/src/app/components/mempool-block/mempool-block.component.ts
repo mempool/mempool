@@ -81,12 +81,12 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
   }
 
   setTxPreview(event: TransactionStripped | void): void {
-    this.previewTx = event
+    this.previewTx = event;
   }
 }
 
-function detectWebGL () {
-  const canvas = document.createElement("canvas");
-  const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-  return (gl && gl instanceof WebGLRenderingContext)
+function detectWebGL() {
+  const canvas = document.createElement('canvas');
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  return (gl && gl instanceof WebGLRenderingContext);
 }
