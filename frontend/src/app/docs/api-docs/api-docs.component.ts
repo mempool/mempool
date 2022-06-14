@@ -36,6 +36,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     const that = this;
+    this.faqTemplates.forEach((x) => this.dict[x.type] = x.template);
     setTimeout( () => {
       if( this.route.snapshot.fragment ) {
         this.openEndpointContainer( this.route.snapshot.fragment );
@@ -44,7 +45,6 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
       window.addEventListener('scroll', function() {
         that.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
       }, { passive: true} );
-      this.faqTemplates.forEach((x) => this.dict[x.type] = x.template);
     }, 1 );
   }
 
