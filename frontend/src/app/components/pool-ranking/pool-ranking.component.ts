@@ -200,6 +200,11 @@ export class PoolRankingComponent implements OnInit {
   }
 
   prepareChartOptions(miningStats) {
+    let pieSize = ['20%', '80%']; // Desktop
+    if (this.isMobile() && !this.widget) {
+      pieSize = ['15%', '60%'];
+    }
+
     this.chartOptions = {
       animation: false,
       color: chartColors,
@@ -215,7 +220,7 @@ export class PoolRankingComponent implements OnInit {
           minShowLabelAngle: 3.6,
           name: 'Mining pool',
           type: 'pie',
-          radius: ['20%', '80%'],
+          radius: pieSize,
           data: this.generatePoolsChartSerieData(miningStats),
           labelLine: {
             lineStyle: {
@@ -224,6 +229,7 @@ export class PoolRankingComponent implements OnInit {
           },
           label: {
             fontSize: 14,
+            formatter: (serie) => `${serie.name === 'Binance Pool' ? 'Binance\nPool' : serie.name}`,
           },
           itemStyle: {
             borderRadius: 1,
