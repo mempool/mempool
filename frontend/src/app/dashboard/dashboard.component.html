@@ -103,10 +103,14 @@
         </div>
       </div>
       <ng-template [ngIf]="collapseLevel === 'one'">
-      <div class="col">
+      <div class="col" style="max-height: 410px">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title" i18n="dashboard.latest-blocks">Latest blocks</h5>
+            <a class="title-link" href="" [routerLink]="['/blocks' | relativeUrl]">
+              <h5 class="card-title d-inline" i18n="dashboard.latest-blocks">Latest blocks</h5>
+              <span>&nbsp;</span>
+              <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: 'text-top'; font-size: 13px; color: '#4a68b9'"></fa-icon>
+            </a>
             <table class="table lastest-blocks-table">
               <thead>
                 <th class="table-cell-height" i18n="dashboard.latest-blocks.height">Height</th>
@@ -136,11 +140,10 @@
                 </tr>
               </tbody>
             </table>
-            <div class=""><a href="" [routerLink]="['/blocks' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
           </div>
         </div>
       </div>
-      <div class="col">
+      <div class="col" style="max-height: 410px">
         <div class="card">
           <div class="card-body">
             <h5 class="card-title" i18n="dashboard.latest-transactions">Latest transactions</h5>
@@ -160,7 +163,6 @@
                 </tr>
               </tbody>
             </table>
-            <div class="">&nbsp;</div>
           </div>
         </div>
       </div>
