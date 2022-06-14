@@ -5,24 +5,27 @@
   <div *ngIf="widget">
     <div class="pool-distribution" *ngIf="(miningStatsObservable$ | async) as miningStats; else loadingReward">
       <div class="item">
-        <h5 class="card-title" i18n="mining.miners-luck" i18n-ngbTooltip="mining.miners-luck"
-        ngbTooltip="Pools Luck (1w)" placement="bottom" #minersluck [disableTooltip]="!isEllipsisActive(minersluck)">Pools Luck (1w)</h5>
-        <p class="card-text">
+        <h5 class="card-title d-inline-block" i18n="mining.miners-luck" i18n-ngbTooltip="mining.miners-luck-1w"
+        ngbTooltip="Pools luck (1 week)" placement="bottom" #minersluck [disableTooltip]="!isEllipsisActive(minersluck)">Pools luck</h5>
+        <p class="card-text" i18n-ngbTooltip="mining.pools-luck-desc"
+        ngbTooltip="The overall luck of all mining pools over the past week. A luck bigger than 100% means the average block time for the current epoch is less than 10 minutes." placement="bottom">
           {{ miningStats['minersLuck'] }}%
         </p>
       </div>
       <div class="item">
-        <h5 class="card-title" i18n="master-page.blocks" i18n-ngbTooltip="master-page.blocks"
-        ngbTooltip="Blocks (1w)" placement="bottom" #blockscount [disableTooltip]="!isEllipsisActive(blockscount)">Blocks (1w)</h5>
-        <p class="card-text">
-          {{ miningStats.blockCount }}
+        <h5 class="card-title d-inline-block" i18n="mining.miners-count" i18n-ngbTooltip="mining.miners-count-1w"
+        ngbTooltip="Pools count (1w)" placement="bottom" #poolscount [disableTooltip]="!isEllipsisActive(poolscount)">Pools count</h5>
+        <p class="card-text" i18n-ngbTooltip="mining.pools-count-desc"
+        ngbTooltip="How many unique pools found at least one block over the past week." placement="bottom">
+          {{ miningStats.pools.length }}
         </p>
       </div>
       <div class="item">
-        <h5 class="card-title" i18n="mining.miners-count" i18n-ngbTooltip="mining.miners-count"
-        ngbTooltip="Pools Count (1w)" placement="bottom" #poolscount [disableTooltip]="!isEllipsisActive(poolscount)">Pools Count (1w)</h5>
-        <p class="card-text">
-          {{ miningStats.pools.length }}
+        <h5 class="card-title d-inline-block" i18n="master-page.blocks" i18n-ngbTooltip="master-page.blocks"
+        ngbTooltip="Blocks (1w)" placement="bottom" #blockscount [disableTooltip]="!isEllipsisActive(blockscount)">Blocks (1w)</h5>
+        <p class="card-text" i18n-ngbTooltip="mining.blocks-count-desc"
+        ngbTooltip="The number of blocks found over the past week." placement="bottom">
+          {{ miningStats.blockCount }}
         </p>
       </div>
     </div>
