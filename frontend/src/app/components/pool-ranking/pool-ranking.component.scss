@@ -89,7 +89,7 @@
     flex-direction: row;
   }
   h5 {
-    margin-bottom: 10px;
+    margin-bottom: 5px;
   }
   .item {
     max-width: 160px;
@@ -103,6 +103,7 @@
       }
     }
     &:nth-child(3) {
+      width: 50%;
       order: 3;
       @media (min-width: 485px) {
         order: 2;
