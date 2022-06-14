@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, HostListener, Input, Output, EventEmitter, NgZone, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, HostListener, Input, Output, EventEmitter, NgZone, AfterViewInit, OnDestroy } from '@angular/core';
 import { MempoolBlockDelta, TransactionStripped } from 'src/app/interfaces/websocket.interface';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { FastVertexArray } from './fast-vertex-array';
@@ -11,7 +11,7 @@ import TxView from './tx-view';
   templateUrl: './block-overview-graph.component.html',
   styleUrls: ['./block-overview-graph.component.scss'],
 })
-export class BlockOverviewGraphComponent implements AfterViewInit {
+export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy {
   @Input() isLoading: boolean;
   @Input() resolution: number;
   @Input() blockLimit: number;
@@ -24,6 +24,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit {
 
   gl: WebGLRenderingContext;
   animationFrameRequest: number;
+  animationHeartBeat: number;
   displayWidth: number;
   displayHeight: number;
   cssWidth: number;
@@ -50,34 +51,46 @@ export class BlockOverviewGraphComponent implements AfterViewInit {
     this.resizeCanvas();
   }
 
+  ngOnDestroy(): void {
+    if (this.animationFrameRequest) {
+      cancelAnimationFrame(this.animationFrameRequest);
+      clearTimeout(this.animationHeartBeat);
+    }
+  }
+
   clear(direction): void {
     this.exit(direction);
     this.hoverTx = null;
     this.selectedTx = null;
     this.txPreviewEvent.emit(null);
+    this.start();
   }
 
   enter(transactions: TransactionStripped[], direction: string): void {
     if (this.scene) {
       this.scene.enter(transactions, direction);
+      this.start();
     }
   }
 
   exit(direction: string): void {
     if (this.scene) {
       this.scene.exit(direction);
+      this.start();
     }
   }
 
   replace(transactions: TransactionStripped[], direction: string, sort: boolean = true): void {
     if (this.scene) {
       this.scene.replace(transactions || [], direction, sort);
+      this.start();
     }
   }
 
   update(add: TransactionStripped[], remove: string[], direction: string = 'left', resetLayout: boolean = false): void {
     if (this.scene) {
       this.scene.update(add, remove, direction, resetLayout);
+      this.start();
     }
   }
 
@@ -140,6 +153,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit {
     }
     if (this.scene) {
       this.scene.resize({ width: this.displayWidth, height: this.displayHeight });
+      this.start();
     } else {
       this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: this.resolution,
         blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray });
@@ -182,44 +196,64 @@ export class BlockOverviewGraphComponent implements AfterViewInit {
 
   start(): void {
     this.running = true;
-    this.ngZone.runOutsideAngular(() => this.run());
+    this.ngZone.runOutsideAngular(() => this.doRun());
+  }
+
+  doRun(): void {
+    if (this.animationFrameRequest) {
+      cancelAnimationFrame(this.animationFrameRequest);
+    }
+    this.animationFrameRequest = requestAnimationFrame(() => this.run());
   }
 
   run(now?: DOMHighResTimeStamp): void {
     if (!now) {
       now = performance.now();
     }
+    // skip re-render if there's no change to the scene
+    if (this.scene) {
+      /* SET UP SHADER UNIFORMS */
+      // screen dimensions
+      this.gl.uniform2f(this.gl.getUniformLocation(this.shaderProgram, 'screenSize'), this.displayWidth, this.displayHeight);
+      // frame timestamp
+      this.gl.uniform1f(this.gl.getUniformLocation(this.shaderProgram, 'now'), now);
 
-    /* SET UP SHADER UNIFORMS */
-    // screen dimensions
-    this.gl.uniform2f(this.gl.getUniformLocation(this.shaderProgram, 'screenSize'), this.displayWidth, this.displayHeight);
-    // frame timestamp
-    this.gl.uniform1f(this.gl.getUniformLocation(this.shaderProgram, 'now'), now);
+      if (this.vertexArray.dirty) {
+        /* SET UP SHADER ATTRIBUTES */
+        Object.keys(attribs).forEach((key, i) => {
+          this.gl.vertexAttribPointer(attribs[key].pointer,
+          attribs[key].count,  // number of primitives in this attribute
+          this.gl[attribs[key].type],  // type of primitive in this attribute (e.g. gl.FLOAT)
+          false, // never normalised
+          stride,   // distance between values of the same attribute
+          attribs[key].offset);  // offset of the first value
+        });
 
-    /* SET UP SHADER ATTRIBUTES */
-    Object.keys(attribs).forEach((key, i) => {
-      this.gl.vertexAttribPointer(attribs[key].pointer,
-      attribs[key].count,  // number of primitives in this attribute
-      this.gl[attribs[key].type],  // type of primitive in this attribute (e.g. gl.FLOAT)
-      false, // never normalised
-      stride,   // distance between values of the same attribute
-      attribs[key].offset);  // offset of the first value
-    });
+        const pointArray = this.vertexArray.getVertexData();
 
-    const pointArray = this.vertexArray.getVertexData();
-
-    if (pointArray.length) {
-      this.gl.bufferData(this.gl.ARRAY_BUFFER, pointArray, this.gl.DYNAMIC_DRAW);
-      this.gl.drawArrays(this.gl.TRIANGLES, 0, pointArray.length / TxSprite.vertexSize);
+        if (pointArray.length) {
+          this.gl.bufferData(this.gl.ARRAY_BUFFER, pointArray, this.gl.DYNAMIC_DRAW);
+          this.gl.drawArrays(this.gl.TRIANGLES, 0, pointArray.length / TxSprite.vertexSize);
+        }
+        this.vertexArray.dirty = false;
+      } else {
+        const pointArray = this.vertexArray.getVertexData();
+        if (pointArray.length) {
+          this.gl.drawArrays(this.gl.TRIANGLES, 0, pointArray.length / TxSprite.vertexSize);
+        }
+      }
     }
 
     /* LOOP */
-    if (this.running) {
-      if (this.animationFrameRequest) {
-        cancelAnimationFrame(this.animationFrameRequest);
-        this.animationFrameRequest = null;
+    if (this.running && this.scene && now <= (this.scene.animateUntil + 500)) {
+      this.doRun();
+    } else {
+      if (this.animationHeartBeat) {
+        clearTimeout(this.animationHeartBeat);
       }
-      this.animationFrameRequest = requestAnimationFrame(() => this.run());
+      this.animationHeartBeat = window.setTimeout(() => {
+        this.start();
+      }, 1000);
     }
   }
 
@@ -246,11 +280,15 @@ export class BlockOverviewGraphComponent implements AfterViewInit {
       const currentPreview = this.selectedTx || this.hoverTx;
 
       if (selected !== currentPreview) {
-        if (currentPreview) {
-          currentPreview.setHover(false);
+        if (currentPreview && this.scene) {
+          this.scene.setHover(currentPreview, false);
+          this.start();
         }
         if (selected) {
-          selected.setHover(true);
+          if (selected && this.scene) {
+            this.scene.setHover(selected, true);
+            this.start();
+          }
           this.txPreviewEvent.emit({
             txid: selected.txid,
             fee: selected.fee,

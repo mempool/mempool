@@ -1,7 +1,7 @@
 import { FastVertexArray } from './fast-vertex-array';
 import TxView from './tx-view';
 import { TransactionStripped } from 'src/app/interfaces/websocket.interface';
-import { Position, Square } from './sprite-types';
+import { Position, Square, ViewUpdateParams } from './sprite-types';
 
 export default class BlockScene {
   scene: { count: number, offset: { x: number, y: number}};
@@ -19,6 +19,7 @@ export default class BlockScene {
   unitWidth: number;
   initialised: boolean;
   layout: BlockLayout;
+  animateUntil = 0;
   dirty: boolean;
 
   constructor({ width, height, resolution, blockLimit, orientation, flip, vertexArray }:
@@ -41,7 +42,7 @@ export default class BlockScene {
 
     this.dirty = true;
     if (this.initialised && this.scene) {
-      this.updateAll(performance.now());
+      this.updateAll(performance.now(), 50);
     }
   }
 
@@ -103,7 +104,7 @@ export default class BlockScene {
       });
     }
 
-    this.updateAll(startTime, direction);
+    this.updateAll(startTime, 200, direction);
   }
 
   update(add: TransactionStripped[], remove: string[], direction: string = 'left', resetLayout: boolean = false): void {
@@ -139,7 +140,7 @@ export default class BlockScene {
       this.layout.applyGravity();
     }
 
-    this.updateAll(startTime, direction);
+    this.updateAll(startTime, 100, direction);
   }
 
   // return the tx at this screen position, if any
@@ -150,6 +151,10 @@ export default class BlockScene {
     } else {
       return null;
     }
+  }
+
+  setHover(tx: TxView, value: boolean): void {
+    this.animateUntil = Math.max(this.animateUntil, tx.setHover(value));
   }
 
   private init({ width, height, resolution, blockLimit, orientation, flip, vertexArray }:
@@ -169,7 +174,7 @@ export default class BlockScene {
     };
 
     // Set the scale of the visualization (with a 5% margin)
-    this.vbytesPerUnit = blockLimit / Math.pow(resolution / 1.05, 2);
+    this.vbytesPerUnit = blockLimit / Math.pow(resolution / 1.02, 2);
     this.gridWidth = resolution;
     this.gridHeight = resolution;
     this.resize({ width, height });
@@ -181,23 +186,21 @@ export default class BlockScene {
     this.dirty = true;
   }
 
-  private insert(tx: TxView, startTime: number, direction: string = 'left'): void {
-    this.txs[tx.txid] = tx;
-    this.place(tx);
-    this.updateTx(tx, startTime, direction);
+  private applyTxUpdate(tx: TxView, update: ViewUpdateParams): void {
+    this.animateUntil = Math.max(this.animateUntil, tx.update(update));
   }
 
-  private updateTx(tx: TxView, startTime: number, direction: string = 'left'): void {
+  private updateTx(tx: TxView, startTime: number, delay: number, direction: string = 'left'): void {
     if (tx.dirty || this.dirty) {
       this.saveGridToScreenPosition(tx);
-      this.setTxOnScreen(tx, startTime, direction);
+      this.setTxOnScreen(tx, startTime, delay, direction);
     }
   }
 
-  private setTxOnScreen(tx: TxView, startTime: number, direction: string = 'left'): void {
+  private setTxOnScreen(tx: TxView, startTime: number, delay: number = 50, direction: string = 'left'): void {
     if (!tx.initialised) {
       const txColor = tx.getColor();
-      tx.update({
+      this.applyTxUpdate(tx, {
         display: {
           position: {
             x: tx.screenPosition.x + (direction === 'right' ? -this.width : (direction === 'left' ? this.width : 0)) * 1.4,
@@ -209,35 +212,35 @@ export default class BlockScene {
         start: startTime,
         delay: 0,
       });
-      tx.update({
+      this.applyTxUpdate(tx, {
         display: {
           position: tx.screenPosition,
           color: txColor
         },
         duration: 1000,
         start: startTime,
-        delay: 50,
+        delay,
       });
     } else {
-      tx.update({
+      this.applyTxUpdate(tx, {
         display: {
           position: tx.screenPosition
         },
         duration: 1000,
         minDuration: 500,
         start: startTime,
-        delay: 50,
+        delay,
         adjust: true
       });
     }
   }
 
-  private updateAll(startTime: number, direction: string = 'left'): void {
+  private updateAll(startTime: number, delay: number = 50, direction: string = 'left'): void {
     this.scene.count = 0;
     const ids = this.getTxList();
     startTime = startTime || performance.now();
     for (const id of ids) {
-      this.updateTx(this.txs[id], startTime, direction);
+      this.updateTx(this.txs[id], startTime, delay, direction);
     }
     this.dirty = false;
   }
@@ -246,7 +249,7 @@ export default class BlockScene {
     const tx = this.txs[id];
     if (tx) {
       this.layout.remove(tx);
-      tx.update({
+      this.applyTxUpdate(tx, {
         display: {
           position: {
             x: tx.screenPosition.x + (direction === 'right' ? this.width : (direction === 'left' ? -this.width : 0)) * 1.4,
@@ -319,7 +322,7 @@ export default class BlockScene {
     }
   }
 
-  screenToGrid(position: Position): Position {
+  private screenToGrid(position: Position): Position {
     let x = position.x;
     let y = this.height - position.y;
     let t;

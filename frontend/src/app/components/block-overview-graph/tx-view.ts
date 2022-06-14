@@ -82,8 +82,10 @@ export default class TxView implements TransactionStripped {
     delay: additional milliseconds to wait before starting
     jitter: if set, adds a random amount to the delay,
     adjust: if true, modify an in-progress transition instead of replacing it
+
+    returns minimum transition end time
   */
-  update(params: ViewUpdateParams): void {
+  update(params: ViewUpdateParams): number {
     if (params.jitter) {
       params.delay += (Math.random() * params.jitter);
     }
@@ -96,6 +98,7 @@ export default class TxView implements TransactionStripped {
       );
       // apply any pending hover event
       if (this.hover) {
+        params.duration = Math.max(params.duration, hoverTransitionTime);
         this.sprite.update({
           ...this.hoverColor,
           duration: hoverTransitionTime,
@@ -109,10 +112,12 @@ export default class TxView implements TransactionStripped {
       );
     }
     this.dirty = false;
+    return (params.start || performance.now()) + (params.delay || 0) + (params.duration || 0);
   }
 
   // Temporarily override the tx color
-  setHover(hoverOn: boolean, color: Color | void = defaultHoverColor): void {
+  // returns minimum transition end time
+  setHover(hoverOn: boolean, color: Color | void = defaultHoverColor): number {
     if (hoverOn) {
       this.hover = true;
       this.hoverColor = color;
@@ -131,6 +136,7 @@ export default class TxView implements TransactionStripped {
       }
     }
     this.dirty = false;
+    return performance.now() + hoverTransitionTime;
   }
 
   getColor(): Color {
