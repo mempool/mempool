@@ -106,6 +106,11 @@ export interface BlockExtended extends IEsploraApi.Block {
   extras: BlockExtension;
 }
 
+export interface BlockSummary {
+  id: string;
+  transactions: TransactionStripped[];
+}
+
 export interface TransactionMinerInfo {
   vin: VinStrippedToScriptsig[];
   vout: VoutStrippedToScriptPubkey[];
