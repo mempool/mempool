@@ -5,6 +5,7 @@ import { FastVertexArray } from './fast-vertex-array';
 import BlockScene from './block-scene';
 import TxSprite from './tx-sprite';
 import TxView from './tx-view';
+import { Position } from './sprite-types';
 
 @Component({
   selector: 'app-block-overview-graph',
@@ -17,7 +18,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy {
   @Input() blockLimit: number;
   @Input() orientation = 'left';
   @Input() flip = true;
-  @Output() txPreviewEvent = new EventEmitter<TransactionStripped | void>();
+  @Output() txClickEvent = new EventEmitter<TransactionStripped>();
 
   @ViewChild('blockCanvas')
   canvas: ElementRef<HTMLCanvasElement>;
@@ -35,9 +36,11 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy {
   scene: BlockScene;
   hoverTx: TxView | void;
   selectedTx: TxView | void;
+  tooltipPosition: Position;
 
   constructor(
     readonly ngZone: NgZone,
+    readonly elRef: ElementRef,
   ) {
     this.vertexArray = new FastVertexArray(512, TxSprite.dataSize);
   }
@@ -62,7 +65,6 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy {
     this.exit(direction);
     this.hoverTx = null;
     this.selectedTx = null;
-    this.txPreviewEvent.emit(null);
     this.start();
   }
 
@@ -257,25 +259,50 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  @HostListener('click', ['$event'])
+  @HostListener('document:click', ['$event'])
+  clickAway(event) {
+    if (!this.elRef.nativeElement.contains(event.target)) {
+      const currentPreview = this.selectedTx || this.hoverTx;
+      if (currentPreview && this.scene) {
+        this.scene.setHover(currentPreview, false);
+        this.start();
+      }
+      this.hoverTx = null;
+      this.selectedTx = null;
+    }
+  }
+
+  @HostListener('pointerup', ['$event'])
   onClick(event) {
-    this.setPreviewTx(event.offsetX, event.offsetY, true);
+    if (event.target === this.canvas.nativeElement && event.pointerType === 'touch') {
+      this.setPreviewTx(event.offsetX, event.offsetY, true);
+    } else if (event.target === this.canvas.nativeElement) {
+      this.onTxClick(event.offsetX, event.offsetY);
+    }
   }
 
   @HostListener('pointermove', ['$event'])
   onPointerMove(event) {
-    this.setPreviewTx(event.offsetX, event.offsetY, false);
+    if (event.target === this.canvas.nativeElement) {
+      this.setPreviewTx(event.offsetX, event.offsetY, false);
+    }
   }
 
   @HostListener('pointerleave', ['$event'])
   onPointerLeave(event) {
-    this.setPreviewTx(-1, -1, false);
+    if (event.pointerType !== 'touch') {
+      this.setPreviewTx(-1, -1, true);
+    }
   }
 
   setPreviewTx(cssX: number, cssY: number, clicked: boolean = false) {
     const x = cssX * window.devicePixelRatio;
     const y = cssY * window.devicePixelRatio;
     if (this.scene && (!this.selectedTx || clicked)) {
+      this.tooltipPosition = {
+        x: cssX,
+        y: cssY
+      };
       const selected = this.scene.getTxAt({ x, y });
       const currentPreview = this.selectedTx || this.hoverTx;
 
@@ -289,12 +316,6 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy {
             this.scene.setHover(selected, true);
             this.start();
           }
-          this.txPreviewEvent.emit({
-            txid: selected.txid,
-            fee: selected.fee,
-            vsize: selected.vsize,
-            value: selected.value
-          });
           if (clicked) {
             this.selectedTx = selected;
           } else {
@@ -305,7 +326,6 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy {
             this.selectedTx = null;
           }
           this.hoverTx = null;
-          this.txPreviewEvent.emit(null);
         }
       } else if (clicked) {
         if (selected === this.selectedTx) {
@@ -315,6 +335,15 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy {
           this.selectedTx = selected;
         }
       }
+    }
+  }
+
+  onTxClick(cssX: number, cssY: number) {
+    const x = cssX * window.devicePixelRatio;
+    const y = cssY * window.devicePixelRatio;
+    const selected = this.scene.getTxAt({ x, y });
+    if (selected && selected.txid) {
+      this.txClickEvent.emit(selected);
     }
   }
 }

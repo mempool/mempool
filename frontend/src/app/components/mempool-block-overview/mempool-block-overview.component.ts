@@ -6,6 +6,8 @@ import { BlockOverviewGraphComponent } from 'src/app/components/block-overview-g
 import { Subscription, BehaviorSubject, merge, of } from 'rxjs';
 import { switchMap, filter } from 'rxjs/operators';
 import { WebsocketService } from 'src/app/services/websocket.service';
+import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-mempool-block-overview',
@@ -27,7 +29,8 @@ export class MempoolBlockOverviewComponent implements OnDestroy, OnChanges, Afte
 
   constructor(
     public stateService: StateService,
-    private websocketService: WebsocketService
+    private websocketService: WebsocketService,
+    private router: Router,
   ) { }
 
   ngAfterViewInit(): void {
@@ -89,7 +92,8 @@ export class MempoolBlockOverviewComponent implements OnDestroy, OnChanges, Afte
     this.isLoading$.next(false);
   }
 
-  onTxPreview(event: TransactionStripped | void): void {
-    this.txPreviewEvent.emit(event);
+  onTxClick(event: TransactionStripped): void {
+    const url = new RelativeUrlPipe(this.stateService).transform(`/tx/${event.txid}`);
+    this.router.navigate([url]);
   }
 }
