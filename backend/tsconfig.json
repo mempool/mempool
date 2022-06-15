@@ -2,7 +2,7 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "esnext",
-    "lib": ["es2019", "dom"],
+    "lib": ["es2021", "dom"],
     "strict": true,
     "noImplicitAny": false,
     "sourceMap": false,

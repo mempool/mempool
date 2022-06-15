@@ -37,6 +37,10 @@ interface IConfig {
     USERNAME: string;
     PASSWORD: string;
   };
+  CORE_ZMQ: {
+    ENABLED: boolean;
+    HOST: string;
+  };
   SECOND_CORE_RPC: {
     HOST: string;
     PORT: number;
@@ -126,6 +130,10 @@ const defaults: IConfig = {
     'USERNAME': 'mempool',
     'PASSWORD': 'mempool'
   },
+  'CORE_ZMQ': {
+    'ENABLED': true,
+    'HOST': 'tcp://127.0.0.1:8433'
+  },
   'SECOND_CORE_RPC': {
     'HOST': '127.0.0.1',
     'PORT': 8332,
@@ -183,6 +191,7 @@ class Config implements IConfig {
   ESPLORA: IConfig['ESPLORA'];
   ELECTRUM: IConfig['ELECTRUM'];
   CORE_RPC: IConfig['CORE_RPC'];
+  CORE_ZMQ: IConfig['CORE_ZMQ'];
   SECOND_CORE_RPC: IConfig['SECOND_CORE_RPC'];
   DATABASE: IConfig['DATABASE'];
   SYSLOG: IConfig['SYSLOG'];
@@ -198,6 +207,7 @@ class Config implements IConfig {
     this.ESPLORA = configs.ESPLORA;
     this.ELECTRUM = configs.ELECTRUM;
     this.CORE_RPC = configs.CORE_RPC;
+    this.CORE_ZMQ = configs.CORE_ZMQ;
     this.SECOND_CORE_RPC = configs.SECOND_CORE_RPC;
     this.DATABASE = configs.DATABASE;
     this.SYSLOG = configs.SYSLOG;

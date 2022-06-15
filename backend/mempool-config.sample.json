@@ -27,6 +27,10 @@
     "USERNAME": "mempool",
     "PASSWORD": "mempool"
   },
+  "CORE_ZMQ": {
+    "ENABLED": true,
+    "HOST": "tcp://127.0.0.1:8433"
+  },
   "ELECTRUM": {
     "HOST": "127.0.0.1",
     "PORT": 50002,

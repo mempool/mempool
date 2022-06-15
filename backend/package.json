@@ -37,7 +37,8 @@
     "node-worker-threads-pool": "^1.5.1",
     "socks-proxy-agent": "^6.2.0",
     "typescript": "~4.7.2",
-    "ws": "~8.7.0"
+    "ws": "~8.7.0",
+    "zeromq": "^6.0.0-beta.6"
   },
   "devDependencies": {
     "@types/compression": "^1.7.2",

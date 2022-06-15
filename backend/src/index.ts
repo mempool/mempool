@@ -4,6 +4,7 @@ import * as http from 'http';
 import * as WebSocket from 'ws';
 import * as cluster from 'cluster';
 import axios from 'axios';
+import { Subscriber } from 'zeromq';
 
 import DB from './database';
 import config from './config';
@@ -33,6 +34,7 @@ class Server {
   private server: http.Server | undefined;
   private app: Express;
   private currentBackendRetryInterval = 5;
+  private newBlockTrigger: (() => void) | undefined;
 
   constructor() {
     this.app = express();
@@ -119,6 +121,10 @@ class Server {
     fiatConversion.startService();
 
     this.setUpHttpApiRoutes();
+
+    if (config.CORE_ZMQ.ENABLED) {
+      this.startZMQ(config.CORE_ZMQ.HOST);
+    }
     this.runMainUpdateLoop();
 
     if (config.BISQ.ENABLED) {
@@ -134,6 +140,33 @@ class Server {
       } else {
         logger.notice(`Mempool Server is running on port ${config.MEMPOOL.HTTP_PORT}`);
       }
+    });
+  }
+
+  async startZMQ(address: string) {
+    try {
+      const subscr = new Subscriber;
+
+      subscr.connect(address);
+      subscr.subscribe('hashblock');
+
+      for await (const [ topic, msg ] of subscr) {
+        if (this.newBlockTrigger) {
+          this.newBlockTrigger();
+        }
+      }
+    } catch (e) {
+      logger.warn(`Bitcoin Core ZMQ error: ${(e instanceof Error ? e.message : e)}`);
+    }
+  }
+
+  scheduleNextUpdate(ms: number) {
+    Promise.any([
+      Common.sleep$(ms),
+      new Promise<void>(resolve => this.newBlockTrigger = resolve)
+    ]).then(() => {
+      this.newBlockTrigger = undefined;
+      this.runMainUpdateLoop();
     });
   }
 
@@ -154,7 +187,7 @@ class Server {
       await memPool.$updateMempool();
       indexer.$run();
 
-      setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
+      this.scheduleNextUpdate(config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;
     } catch (e) {
       const loggerMsg = `runMainLoop error: ${(e instanceof Error ? e.message : e)}. Retrying in ${this.currentBackendRetryInterval} sec.`;
@@ -165,7 +198,7 @@ class Server {
         logger.debug(loggerMsg);
       }
       logger.debug(JSON.stringify(e));
-      setTimeout(this.runMainUpdateLoop.bind(this), 1000 * this.currentBackendRetryInterval);
+      this.scheduleNextUpdate(1000 * this.currentBackendRetryInterval);
       this.currentBackendRetryInterval *= 2;
       this.currentBackendRetryInterval = Math.min(this.currentBackendRetryInterval, 60);
     }
