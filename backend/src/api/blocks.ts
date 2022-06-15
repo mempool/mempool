@@ -2,11 +2,12 @@ import config from '../config';
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
 import memPool from './mempool';
-import { BlockExtended, PoolTag, TransactionExtended, TransactionMinerInfo } from '../mempool.interfaces';
+import { BlockExtended, BlockSummary, PoolTag, TransactionExtended, TransactionStripped, TransactionMinerInfo } from '../mempool.interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
 import transactionUtils from './transaction-utils';
 import bitcoinClient from './bitcoin/bitcoin-client';
+import { IBitcoinApi } from './bitcoin/bitcoin-api.interface';
 import { IEsploraApi } from './bitcoin/esplora-api.interface';
 import poolsRepository from '../repositories/PoolsRepository';
 import blocksRepository from '../repositories/BlocksRepository';
@@ -22,6 +23,7 @@ import poolsParser from './pools-parser';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
+  private blockSummaries: BlockSummary[] = [];
   private currentBlockHeight = 0;
   private currentDifficulty = 0;
   private lastDifficultyAdjustmentTime = 0;
@@ -36,6 +38,14 @@ class Blocks {
 
   public setBlocks(blocks: BlockExtended[]) {
     this.blocks = blocks;
+  }
+
+  public getBlockSummaries(): BlockSummary[] {
+    return this.blockSummaries;
+  }
+
+  public setBlockSummaries(blockSummaries: BlockSummary[]) {
+    this.blockSummaries = blockSummaries;
   }
 
   public setNewBlockCallback(fn: (block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void) {
@@ -104,6 +114,27 @@ class Blocks {
     }
 
     return transactions;
+  }
+
+  /**
+   * Return a block summary (list of stripped transactions)
+   * @param block
+   * @returns BlockSummary
+   */
+  private summarizeBlock(block: IBitcoinApi.VerboseBlock): BlockSummary {
+    const stripped = block.tx.map((tx) => {
+      return {
+        txid: tx.txid,
+        vsize: tx.vsize,
+        fee: tx.fee ? Math.round(tx.fee * 100000000) : 0,
+        value: Math.round(tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0) * 100000000)
+      };
+    });
+
+    return {
+      id: block.hash,
+      transactions: stripped
+    };
   }
 
   /**
@@ -341,10 +372,12 @@ class Blocks {
       }
 
       const blockHash = await bitcoinApi.$getBlockHash(this.currentBlockHeight);
-      const block = BitcoinApi.convertBlock(await bitcoinClient.getBlock(blockHash));
+      const verboseBlock = await bitcoinClient.getBlock(blockHash, 2);
+      const block = BitcoinApi.convertBlock(verboseBlock);
       const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
       const transactions = await this.$getTransactionsExtended(blockHash, block.height, false);
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, transactions);
+      const blockSummary: BlockSummary = this.summarizeBlock(verboseBlock);
 
       if (Common.indexingEnabled()) {
         if (!fastForwarded) {
@@ -374,6 +407,10 @@ class Blocks {
       this.blocks.push(blockExtended);
       if (this.blocks.length > config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4) {
         this.blocks = this.blocks.slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4);
+      }
+      this.blockSummaries.push(blockSummary);
+      if (this.blockSummaries.length > config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4) {
+        this.blockSummaries = this.blockSummaries.slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4);
       }
 
       if (this.newBlockCallbacks.length) {
@@ -438,6 +475,17 @@ class Blocks {
     }
 
     return blockExtended;
+  }
+
+  public async $getStrippedBlockTransactions(hash: string): Promise<TransactionStripped[]> {
+    // Check the memory cache
+    const cachedSummary = this.getBlockSummaries().find((b) => b.id === hash);
+    if (cachedSummary) {
+      return cachedSummary.transactions;
+    }
+    const block = await bitcoinClient.getBlock(hash, 2);
+    const summary = this.summarizeBlock(block);
+    return summary.transactions;
   }
 
   public async $getBlocks(fromHeight?: number, limit: number = 15): Promise<BlockExtended[]> {
