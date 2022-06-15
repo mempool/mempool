@@ -367,6 +367,11 @@ export class BlockComponent implements OnInit, OnDestroy {
       }
     }
   }
+
+  onTxClick(event: TransactionStripped): void {
+    const url = new RelativeUrlPipe(this.stateService).transform(`/tx/${event.txid}`);
+    this.router.navigate([url]);
+  }
 }
 
 function detectWebGL() {

@@ -249,6 +249,7 @@
           [blockLimit]="stateService.blockVSize"
           [orientation]="'top'"
           [flip]="false"
+          (txClickEvent)="onTxClick($event)"
         ></app-block-overview-graph>
       </div>
     </div>
