@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding, NgZone } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
 import { EChartsOption} from 'echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
@@ -8,8 +8,7 @@ import { formatNumber } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { StorageService } from 'src/app/services/storage.service';
 import { MiningService } from 'src/app/services/mining.service';
-import { StateService } from 'src/app/services/state.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { download, formatterXAxis } from 'src/app/shared/graphs.utils';
 
 @Component({
@@ -53,9 +52,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
     private formBuilder: FormBuilder,
     private storageService: StorageService,
     private miningService: MiningService,
-    private stateService: StateService,
-    private router: Router,
-    private zone: NgZone,
+    private route: ActivatedRoute,
   ) {
   }
 
@@ -67,9 +64,17 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
+    this.route
+      .fragment
+      .subscribe((fragment) => {
+        if (['24h', '3d', '1w', '1m', '3m', '6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
+          this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: true });
+        }
+      });
+
     this.blockSizesWeightsObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
       .pipe(
-        startWith(this.miningWindowPreference),
+        startWith(this.radioGroupForm.controls.dateSpan.value),
         switchMap((timespan) => {
           this.timespan = timespan;
           if (!firstRun) {
