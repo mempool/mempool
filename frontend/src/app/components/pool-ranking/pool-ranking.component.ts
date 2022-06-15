@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, NgZone, OnInit, HostBinding } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from 'echarts';
 import { concat, Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
@@ -45,6 +45,7 @@ export class PoolRankingComponent implements OnInit {
     private seoService: SeoService,
     private router: Router,
     private zone: NgZone,
+    private route: ActivatedRoute,
   ) {
   }
 
@@ -58,10 +59,18 @@ export class PoolRankingComponent implements OnInit {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
+    this.route
+      .fragment
+      .subscribe((fragment) => {
+        if (['24h', '3d', '1w', '1m', '3m', '6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
+          this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: true });
+        }
+      });
+
     this.miningStatsObservable$ = concat(
       this.radioGroupForm.get('dateSpan').valueChanges
         .pipe(
-          startWith(this.miningWindowPreference), // (trigger when the page loads)
+          startWith(this.radioGroupForm.controls.dateSpan.value), // (trigger when the page loads)
           tap((value) => {
             this.timespan = value;
             if (!this.widget) {
