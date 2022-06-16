@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
 import { EChartsOption, graphic } from 'echarts';
 import { Observable } from 'rxjs';
-import { delay, map, retryWhen, share, startWith, switchMap, tap } from 'rxjs/operators';
+import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { formatNumber } from '@angular/common';
@@ -10,6 +10,7 @@ import { selectPowerOfTen } from 'src/app/bitcoin.utils';
 import { StorageService } from 'src/app/services/storage.service';
 import { MiningService } from 'src/app/services/mining.service';
 import { download } from 'src/app/shared/graphs.utils';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-hashrate-chart',
@@ -52,9 +53,9 @@ export class HashrateChartComponent implements OnInit {
     private seoService: SeoService,
     private apiService: ApiService,
     private formBuilder: FormBuilder,
-    private cd: ChangeDetectorRef,
     private storageService: StorageService,
-    private miningService: MiningService
+    private miningService: MiningService,
+    private route: ActivatedRoute,
   ) {
   }
 
@@ -70,9 +71,17 @@ export class HashrateChartComponent implements OnInit {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
+    this.route
+      .fragment
+      .subscribe((fragment) => {
+        if (['1m', '3m', '6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
+          this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: true });
+        }
+      });
+
     this.hashrateObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
       .pipe(
-        startWith(this.miningWindowPreference),
+        startWith(this.radioGroupForm.controls.dateSpan.value),
         switchMap((timespan) => {
           if (!this.widget && !firstRun) {
             this.storageService.setValue('miningWindowPreference', timespan);

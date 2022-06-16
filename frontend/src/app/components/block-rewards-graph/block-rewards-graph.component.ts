@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
 import { EChartsOption, graphic } from 'echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
@@ -9,6 +9,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { download, formatterXAxis, formatterXAxisLabel } from 'src/app/shared/graphs.utils';
 import { MiningService } from 'src/app/services/mining.service';
 import { StorageService } from 'src/app/services/storage.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-block-rewards-graph',
@@ -48,7 +49,8 @@ export class BlockRewardsGraphComponent implements OnInit {
     private apiService: ApiService,
     private formBuilder: FormBuilder,
     private miningService: MiningService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private route: ActivatedRoute,
   ) {
   }
 
@@ -58,9 +60,17 @@ export class BlockRewardsGraphComponent implements OnInit {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
+    this.route
+      .fragment
+      .subscribe((fragment) => {
+        if (['24h', '3d', '1w', '1m', '3m', '6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
+          this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: true });
+        }
+      });
+
     this.statsObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
       .pipe(
-        startWith(this.miningWindowPreference),
+        startWith(this.radioGroupForm.controls.dateSpan.value),
         switchMap((timespan) => {
           this.storageService.setValue('miningWindowPreference', timespan);
           this.timespan = timespan;
