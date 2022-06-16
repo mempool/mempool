@@ -4,6 +4,8 @@ This directory contains the Dockerfiles used to build and release the official i
 
 If you are looking to use these Docker images to deploy your own instance of Mempool, note that they only containerize Mempool's frontend and backend. You will still need to deploy and configure Bitcoin Core and an Electrum Server separately, along with any other utilities specific to your use case (e.g., a reverse proxy, etc). Such configuration is mostly beyond the scope of the Mempool project, so please only proceed if you know what you're doing.
 
+See a video guide of this installation method by k3tan [on BitcoinTV.com](https://bitcointv.com/w/8fpAx6rf5CQ16mMhospwjg).
+
 Jump to a section in this doc:
 - [Configure with Bitcoin Core Only](#configure-with-bitcoin-core-only)
 - [Configure with Bitcoin Core + Electrum Server](#configure-with-bitcoin-core--electrum-server)
