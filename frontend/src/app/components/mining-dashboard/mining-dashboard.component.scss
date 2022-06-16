@@ -97,3 +97,10 @@
 .card-text {
   font-size: 22px;
 }
+
+.title-link, .title-link:hover, .title-link:focus, .title-link:active {
+  display: block;
+  margin-bottom: 10px;
+  text-decoration: none;
+  color: inherit;
+}
