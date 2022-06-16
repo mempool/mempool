@@ -12,7 +12,7 @@ import { MiningService } from 'src/app/services/mining.service';
 import { selectPowerOfTen } from 'src/app/bitcoin.utils';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from 'src/app/services/state.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-block-fee-rates-graph',
@@ -56,6 +56,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
     private stateService: StateService,
     private router: Router,
     private zone: NgZone,
+    private route: ActivatedRoute,
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
@@ -67,9 +68,17 @@ export class BlockFeeRatesGraphComponent implements OnInit {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
+    this.route
+      .fragment
+      .subscribe((fragment) => {
+        if (['24h', '3d', '1w', '1m', '3m', '6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
+          this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: true });
+        }
+      });
+
     this.statsObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
       .pipe(
-        startWith(this.miningWindowPreference),
+        startWith(this.radioGroupForm.controls.dateSpan.value),
         switchMap((timespan) => {
           this.storageService.setValue('miningWindowPreference', timespan);
           this.timespan = timespan;

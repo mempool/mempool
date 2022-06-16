@@ -9,7 +9,7 @@ import { poolsColor } from 'src/app/app.constants';
 import { StorageService } from 'src/app/services/storage.service';
 import { MiningService } from 'src/app/services/mining.service';
 import { download } from 'src/app/shared/graphs.utils';
-import { time } from 'console';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-hashrate-chart-pools',
@@ -51,7 +51,8 @@ export class HashrateChartPoolsComponent implements OnInit {
     private formBuilder: FormBuilder,
     private cd: ChangeDetectorRef,
     private storageService: StorageService,
-    private miningService: MiningService
+    private miningService: MiningService,
+    private route: ActivatedRoute,
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
@@ -61,13 +62,21 @@ export class HashrateChartPoolsComponent implements OnInit {
     let firstRun = true;
 
     this.seoService.setTitle($localize`:@@mining.pools-historical-dominance:Pools Historical Dominance`);
-    this.miningWindowPreference = this.miningService.getDefaultTimespan('1m');
+    this.miningWindowPreference = this.miningService.getDefaultTimespan('6m');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
+    this.route
+      .fragment
+      .subscribe((fragment) => {
+        if (['6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
+          this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: true });
+        }
+      });
+
     this.hashrateObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
       .pipe(
-        startWith(this.miningWindowPreference),
+        startWith(this.radioGroupForm.controls.dateSpan.value),
         switchMap((timespan) => {
           if (!firstRun) {
             this.storageService.setValue('miningWindowPreference', timespan);
