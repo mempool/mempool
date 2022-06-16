@@ -57,7 +57,7 @@ export class MiningService {
 
     // I think it's fine to hardcode this since we don't have x1000 hashrate jump everyday
     // If we want to support the mining dashboard for testnet, we can hardcode it too
-    let selectedPower = 15;
+    let selectedPower = 18;
     if (this.stateService.network === 'testnet') {
       selectedPower = 12;
     }
