@@ -317,3 +317,10 @@
   vertical-align: text-top;
   padding-left: 10px;
 }
+
+.title-link, .title-link:hover, .title-link:focus, .title-link:active {
+  display: block;
+  margin-bottom: 10px;
+  text-decoration: none;
+  color: inherit;
+}
