@@ -47,6 +47,7 @@ export class HashrateChartComponent implements OnInit {
   formatNumber = formatNumber;
   timespan = '';
   chartInstance: any = undefined;
+  maResolution: number =  30;
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -122,9 +123,24 @@ export class HashrateChartComponent implements OnInit {
                   ++diffIndex;
                 }
 
+                this.maResolution = 30;
+                if (["3m", "6m"].includes(this.timespan)) {
+                  this.maResolution = 7;
+                }
+                const hashrateMa = [];
+                for (let i = this.maResolution - 1; i < data.hashrates.length; ++i) {
+                  let avg = 0;
+                  for (let y = this.maResolution - 1; y >= 0; --y) {
+                    avg += data.hashrates[i - y].avgHashrate;
+                  }
+                  avg /= this.maResolution;
+                  hashrateMa.push([data.hashrates[i].timestamp * 1000, avg]);
+                }
+
                 this.prepareChartOptions({
                   hashrates: data.hashrates.map(val => [val.timestamp * 1000, val.avgHashrate]),
                   difficulty: diffFixed.map(val => [val.timestamp * 1000, val.difficulty]),
+                  hashrateMa: hashrateMa,
                 });
                 this.isLoading = false;
               }),
@@ -161,16 +177,23 @@ export class HashrateChartComponent implements OnInit {
       animation: false,
       color: [
         new graphic.LinearGradient(0, 0, 0, 0.65, [
+          { offset: 0, color: '#F4511E99' },
+          { offset: 0.25, color: '#FB8C0099' },
+          { offset: 0.5, color: '#FFB30099' },
+          { offset: 0.75, color: '#FDD83599' },
+          { offset: 1, color: '#7CB34299' }
+        ]),
+        '#D81B60',
+        new graphic.LinearGradient(0, 0, 0, 0.65, [
           { offset: 0, color: '#F4511E' },
           { offset: 0.25, color: '#FB8C00' },
           { offset: 0.5, color: '#FFB300' },
           { offset: 0.75, color: '#FDD835' },
           { offset: 1, color: '#7CB342' }
         ]),
-        '#D81B60',
       ],
       grid: {
-        top: 20,
+        top: this.widget ? 20 : 40,
         bottom: this.widget ? 30 : 70,
         right: this.right,
         left: this.left,
@@ -192,6 +215,7 @@ export class HashrateChartComponent implements OnInit {
         formatter: (ticks) => {
           let hashrateString = '';
           let difficultyString = '';
+          let hashrateStringMA = '';
           let hashratePowerOfTen: any = selectPowerOfTen(1);
 
           for (const tick of ticks) {
@@ -201,7 +225,7 @@ export class HashrateChartComponent implements OnInit {
                 hashratePowerOfTen = selectPowerOfTen(tick.data[1]);
                 hashrate = Math.round(tick.data[1] / hashratePowerOfTen.divider);
               }
-              hashrateString = `${tick.marker} ${tick.seriesName}: ${formatNumber(hashrate, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s`;
+              hashrateString = `${tick.marker} ${tick.seriesName}: ${formatNumber(hashrate, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s<br>`;
             } else if (tick.seriesIndex === 1) { // Difficulty
               let difficultyPowerOfTen = hashratePowerOfTen;
               let difficulty = tick.data[1];
@@ -209,7 +233,14 @@ export class HashrateChartComponent implements OnInit {
                 difficultyPowerOfTen = selectPowerOfTen(tick.data[1]);
                 difficulty = Math.round(tick.data[1] / difficultyPowerOfTen.divider);
               }
-              difficultyString = `${tick.marker} ${tick.seriesName}: ${formatNumber(difficulty, this.locale, '1.2-2')} ${difficultyPowerOfTen.unit}`;
+              difficultyString = `${tick.marker} ${tick.seriesName}: ${formatNumber(difficulty, this.locale, '1.2-2')} ${difficultyPowerOfTen.unit}<br>`;
+            } else if (tick.seriesIndex === 2) { // Hashrate MA
+              let hashrate = tick.data[1];
+              if (this.isMobile()) {
+                hashratePowerOfTen = selectPowerOfTen(tick.data[1]);
+                hashrate = Math.round(tick.data[1] / hashratePowerOfTen.divider);
+              }
+              hashrateStringMA = `${tick.marker} ${tick.seriesName}: ${formatNumber(hashrate, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s`;
             }
           }
 
@@ -217,8 +248,9 @@ export class HashrateChartComponent implements OnInit {
 
           return `
             <b style="color: white; margin-left: 2px">${date}</b><br>
-            <span>${hashrateString}</span><br>
             <span>${difficultyString}</span>
+            <span>${hashrateString}</span>
+            <span>${hashrateStringMA}</span>
           `;
         }
       },
@@ -243,15 +275,23 @@ export class HashrateChartComponent implements OnInit {
             },
           },
           {
-            name: $localize`:@@25148835d92465353fc5fe8897c27d5369978e5a:Difficulty`,
+            name: $localize`::Difficulty`,
+            inactiveColor: 'rgb(110, 112, 121)',
+            textStyle: {  
+              color: 'white',
+            },
+            icon: 'roundRect',
+          },
+          {
+            name: $localize`Hashrate` + ` (MA${this.maResolution})`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {  
               color: 'white',
             },
             icon: 'roundRect',
             itemStyle: {
-              color: '#D81B60',
-            }
+              color: '#FFB300',
+            },
           },
         ],
       },
@@ -270,8 +310,12 @@ export class HashrateChartComponent implements OnInit {
             }
           },
           splitLine: {
-            show: false,
-          }
+            lineStyle: {
+              type: 'dotted',
+              color: '#ffffff66',
+              opacity: 0.25,
+            }
+          },
         },
         {
           min: (value) => {
@@ -288,12 +332,8 @@ export class HashrateChartComponent implements OnInit {
             }
           },
           splitLine: {
-            lineStyle: {
-              type: 'dotted',
-              color: '#ffffff66',
-              opacity: 0.25,
-            }
-          },
+            show: false,
+          }
         }
       ],
       series: data.hashrates.length === 0 ? [] : [
@@ -305,7 +345,7 @@ export class HashrateChartComponent implements OnInit {
           data: data.hashrates,
           type: 'line',
           lineStyle: {
-            width: 2,
+            width: 1,
           },
         },
         {
@@ -316,6 +356,18 @@ export class HashrateChartComponent implements OnInit {
           symbol: 'none',
           data: data.difficulty,
           type: 'line',
+          lineStyle: {
+            width: 3,
+          }
+        },
+        {
+          zlevel: 2,
+          name: $localize`Hashrate` + ` (MA${this.maResolution})`,
+          showSymbol: false,
+          symbol: 'none',
+          data: data.hashrateMa,
+          type: 'line',
+          smooth: true,
           lineStyle: {
             width: 3,
           }
