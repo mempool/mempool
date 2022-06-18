@@ -726,6 +726,16 @@ class Routes {
     }
   }
 
+  public async getStrippedBlockTransactions(req: Request, res: Response) {
+    try {
+      const transactions = await blocks.$getStrippedBlockTransactions(req.params.hash);
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 600).toUTCString());
+      res.json(transactions);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
   public async getBlocks(req: Request, res: Response) {
     try {
       if (['mainnet', 'testnet', 'signet', 'regtest'].includes(config.MEMPOOL.NETWORK)) { // Bitcoin
