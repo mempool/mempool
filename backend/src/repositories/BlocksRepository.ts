@@ -652,6 +652,19 @@ class BlocksRepository {
       throw e;
     }
   }
+
+  /**
+   * Get a list of blocks that have been indexed
+   */
+  public async $getIndexedBlocks(): Promise<any[]> {
+    try {
+      const [rows]: any = await DB.query(`SELECT height, hash FROM blocks ORDER BY height DESC`);
+      return rows;
+    } catch (e) {
+      logger.err('Cannot generate block size and weight history. Reason: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
 }
 
 export default new BlocksRepository();

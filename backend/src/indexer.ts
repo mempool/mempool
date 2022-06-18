@@ -33,6 +33,7 @@ class Indexer {
       await this.$resetHashratesIndexingState();
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();
+      await blocks.$generateBlocksSummariesDatabase();
     } catch (e) {
       this.reindex();
       logger.err(`Indexer failed, trying again later. Reason: ` + (e instanceof Error ? e.message : e));
