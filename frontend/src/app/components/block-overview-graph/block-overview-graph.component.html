@@ -1,0 +1,12 @@
+<div class="block-overview-graph">
+  <canvas class="block-overview-canvas" [class.clickable]="!!hoverTx" #blockCanvas></canvas>
+  <div class="loader-wrapper" [class.hidden]="!isLoading">
+    <div class="spinner-border ml-3 loading" role="status"></div>
+  </div>
+
+  <app-block-overview-tooltip
+    [tx]="selectedTx || hoverTx"
+    [cursorPosition]="tooltipPosition"
+    [clickable]="!!selectedTx"
+  ></app-block-overview-tooltip>
+</div>

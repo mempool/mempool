@@ -73,6 +73,14 @@ export namespace IBitcoinApi {
     time: number;                    //  (numeric) Same as blocktime
   }
 
+  export interface VerboseBlock extends Block {
+    tx: VerboseTransaction[];        // The transactions in the format of the getrawtransaction RPC. Different from verbosity = 1 "tx" result
+  }
+
+  export interface VerboseTransaction extends Transaction {
+    fee?: number;                   //  (numeric) The transaction fee in BTC, omitted if block undo data is not available
+  }
+
   export interface Vin {
     txid?: string;                   //  (string) The transaction id
     vout?: number;                   //  (string)
