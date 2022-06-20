@@ -40,6 +40,19 @@ class BlocksSummariesRepository {
 
     return [];
   }
+
+  /**
+   * Delete blocks from the database from blockHeight
+   */
+   public async $deleteBlocksFrom(blockHeight: number) {
+    logger.info(`Delete newer blocks summary from height ${blockHeight} from the database`);
+
+    try {
+      await DB.query(`DELETE FROM blocks_summaries where height >= ${blockHeight}`);
+    } catch (e) {
+      logger.err('Cannot delete indexed blocks summaries. Reason: ' + (e instanceof Error ? e.message : e));
+    }
+  }
 }
 
 export default new BlocksSummariesRepository();

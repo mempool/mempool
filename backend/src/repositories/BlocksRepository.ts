@@ -6,6 +6,7 @@ import { prepareBlock } from '../utils/blocks-utils';
 import PoolsRepository from './PoolsRepository';
 import HashratesRepository from './HashratesRepository';
 import { escape } from 'mysql2';
+import BlocksSummariesRepository from './BlocksSummariesRepository';
 
 class BlocksRepository {
   /**
@@ -495,6 +496,7 @@ class BlocksRepository {
         if (blocks[idx].previous_block_hash !== blocks[idx - 1].hash) {
           logger.warn(`Chain divergence detected at block ${blocks[idx - 1].height}, re-indexing newer blocks and hashrates`);
           await this.$deleteBlocksFrom(blocks[idx - 1].height);
+          await BlocksSummariesRepository.$deleteBlocksFrom(blocks[idx - 1].height);
           await HashratesRepository.$deleteHashratesFromTimestamp(blocks[idx - 1].timestamp - 604800);
           return false;
         }
