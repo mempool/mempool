@@ -521,8 +521,9 @@ class DatabaseMigration {
       height int(10) unsigned NOT NULL,
       id varchar(65) NOT NULL,
       transactions JSON NOT NULL,
-      PRIMARY KEY (id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`; 
+      PRIMARY KEY (id),
+      INDEX (height)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
   public async $truncateIndexedData(tables: string[]) {

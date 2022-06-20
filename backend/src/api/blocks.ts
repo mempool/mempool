@@ -254,16 +254,22 @@ class Blocks {
     try {
       // Get all indexed block hash
       const indexedBlocks = await blocksRepository.$getIndexedBlocks();
-      const indexedBlockSummariesHashes = await BlocksSummariesRepository.$getIndexedSummariesId();
+      const indexedBlockSummariesHashesArray = await BlocksSummariesRepository.$getIndexedSummariesId();
+
+      const indexedBlockSummariesHashes = {}; // Use a map for faster seek during the indexing loop
+      for (const hash of indexedBlockSummariesHashesArray) {
+        indexedBlockSummariesHashes[hash] = true;
+      }
 
       // Logging
-      let totalIndexed = indexedBlockSummariesHashes.length;
+      let newlyIndexed = 0;
+      let totalIndexed = indexedBlockSummariesHashesArray.length;
       let indexedThisRun = 0;
       let timer = new Date().getTime() / 1000;
       const startedAt = new Date().getTime() / 1000;
 
       for (const block of indexedBlocks) {
-        if (indexedBlockSummariesHashes.includes(block.hash)) {
+        if (indexedBlockSummariesHashes[block.hash] === true) {
           continue;
         }
 
@@ -284,7 +290,9 @@ class Blocks {
         // Logging
         indexedThisRun++;
         totalIndexed++;
+        newlyIndexed++;
       }
+      logger.notice(`Blocks summaries indexing completed: indexed ${newlyIndexed} blocks`);
     } catch (e) {
       logger.err(`Blocks summaries indexing failed. Reason: ${(e instanceof Error ? e.message : e)}`);
     }
@@ -293,10 +301,10 @@ class Blocks {
   /**
    * [INDEXING] Index all blocks metadata for the mining dashboard
    */
-  public async $generateBlockDatabase() {
+  public async $generateBlockDatabase(): Promise<boolean> {
     const blockchainInfo = await bitcoinClient.getBlockchainInfo();
     if (blockchainInfo.blocks !== blockchainInfo.headers) { // Wait for node to sync
-      return;
+      return false;
     }
 
     try {
@@ -364,13 +372,16 @@ class Blocks {
     } catch (e) {
       logger.err('Block indexing failed. Trying again later. Reason: ' + (e instanceof Error ? e.message : e));
       loadingIndicators.setProgress('block-indexing', 100);
-      return;
+      return false;
     }
 
     const chainValid = await BlocksRepository.$validateChain();
     if (!chainValid) {
       indexer.reindex();
+      return false;
     }
+
+    return true;
   }
 
   public async $updateBlocks() {
@@ -435,9 +446,12 @@ class Blocks {
             // We assume there won't be a reorg with more than 10 block depth
             await BlocksRepository.$deleteBlocksFrom(lastBlock['height'] - 10);
             await HashratesRepository.$deleteLastEntries();
+            await BlocksSummariesRepository.$deleteBlocksFrom(lastBlock['height'] - 10);
             for (let i = 10; i >= 0; --i) {
-              await this.$indexBlock(lastBlock['height'] - i);
+              const newBlock = await this.$indexBlock(lastBlock['height'] - i);
+              await this.$getStrippedBlockTransactions(newBlock.id, true, true);
             }
+            logger.info(`Re-indexed 10 blocks and summaries`);
           }
           await blocksRepository.$saveBlockInDatabase(blockExtended);
 
@@ -530,7 +544,9 @@ class Blocks {
     return blockExtended;
   }
 
-  public async $getStrippedBlockTransactions(hash: string, skipMemoryCache: boolean = false, skipDBLookup: boolean = false): Promise<TransactionStripped[]> {
+  public async $getStrippedBlockTransactions(hash: string, skipMemoryCache: boolean = false,
+    skipDBLookup: boolean = false): Promise<TransactionStripped[]>
+  {
     if (skipMemoryCache === false) {
       // Check the memory cache
       const cachedSummary = this.getBlockSummaries().find((b) => b.id === hash);

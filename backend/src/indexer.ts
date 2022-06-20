@@ -29,7 +29,13 @@ class Indexer {
     this.indexerRunning = true;
 
     try {
-      await blocks.$generateBlockDatabase();
+      const chainValid = await blocks.$generateBlockDatabase();
+      if (chainValid === false) {
+        // Chain of block hash was invalid, so we need to reindex. Stop here and continue at the next iteration
+        this.indexerRunning = false;
+        return;
+      }
+
       await this.$resetHashratesIndexingState();
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();
