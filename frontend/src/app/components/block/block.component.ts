@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { Location } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
-import { switchMap, tap, debounceTime, catchError, map, shareReplay, startWith, pairwise } from 'rxjs/operators';
+import { switchMap, tap, catchError, map, shareReplay, startWith, pairwise } from 'rxjs/operators';
 import { Transaction, Vout } from '../../interfaces/electrs.interface';
 import { Observable, of, Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
@@ -176,7 +176,6 @@ export class BlockComponent implements OnInit, OnDestroy {
           this.blockGraph.exit(direction);
         }
       }),
-      debounceTime(300),
       shareReplay(1)
     );
     this.transactionSubscription = block$.pipe(
