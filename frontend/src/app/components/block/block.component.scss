@@ -148,3 +148,10 @@ h1 {
     }
   }
 }
+
+.chart-container{
+  margin: 20px auto;
+  @media (min-width: 768px) {
+    margin: auto;
+  }
+}
