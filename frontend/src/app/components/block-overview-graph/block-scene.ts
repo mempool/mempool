@@ -29,10 +29,6 @@ export default class BlockScene {
     this.init({ width, height, resolution, blockLimit, orientation, flip, vertexArray });
   }
 
-  destroy(): void {
-    Object.values(this.txs).forEach(tx => tx.destroy());
-  }
-
   resize({ width = this.width, height = this.height }: { width?: number, height?: number}): void {
     this.width = width;
     this.height = height;
@@ -44,6 +40,36 @@ export default class BlockScene {
     if (this.initialised && this.scene) {
       this.updateAll(performance.now(), 50);
     }
+  }
+
+  // Destroy the current layout and clean up graphics sprites without any exit animation
+  destroy(): void {
+    Object.values(this.txs).forEach(tx => tx.destroy());
+    this.txs = {};
+    this.layout = null;
+  }
+
+  // set up the scene with an initial set of transactions, without any transition animation
+  setup(txs: TransactionStripped[]) {
+    // clean up any old transactions
+    Object.values(this.txs).forEach(tx => {
+      tx.destroy();
+      delete this.txs[tx.txid];
+    });
+    this.layout = new BlockLayout({ width: this.gridWidth, height: this.gridHeight });
+    txs.forEach(tx => {
+      const txView = new TxView(tx, this.vertexArray);
+      this.txs[tx.txid] = txView;
+      this.place(txView);
+      this.saveGridToScreenPosition(txView);
+      this.applyTxUpdate(txView, {
+        display: {
+          position: txView.screenPosition,
+          color: txView.getColor()
+        },
+        duration: 0
+      });
+    });
   }
 
   // Animate new block entering scene
