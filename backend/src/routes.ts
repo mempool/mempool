@@ -729,7 +729,7 @@ class Routes {
   public async getStrippedBlockTransactions(req: Request, res: Response) {
     try {
       const transactions = await blocks.$getStrippedBlockTransactions(req.params.hash);
-      res.setHeader('Expires', new Date(Date.now() + 1000 * 600).toUTCString());
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24 * 30).toUTCString());
       res.json(transactions);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
