@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 19;
+  private static currentVersion = 20;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -216,6 +216,10 @@ class DatabaseMigration {
 
       if (databaseSchemaVersion < 19) {
         await this.$executeQuery(this.getCreateRatesTableQuery(), await this.$checkIfTableExists('rates'));
+      }
+
+      if (databaseSchemaVersion < 20 && isBitcoin === true) {
+        await this.$executeQuery(this.getCreateBlocksSummariesTableQuery(), await this.$checkIfTableExists('blocks_summaries'));
       }
     } catch (e) {
       throw e;
@@ -509,6 +513,16 @@ class DatabaseMigration {
       height int(10) unsigned NOT NULL,
       bisq_rates JSON NOT NULL,
       PRIMARY KEY (height)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateBlocksSummariesTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS blocks_summaries (
+      height int(10) unsigned NOT NULL,
+      id varchar(65) NOT NULL,
+      transactions JSON NOT NULL,
+      PRIMARY KEY (id),
+      INDEX (height)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
