@@ -4,6 +4,7 @@
 *.json
 !tsconfig.build.json
 !mempool-config.sample.json
+!mempool-config.template.json
 
 icons.json
 
