@@ -18,6 +18,7 @@ export class FastVertexArray {
   data: Float32Array;
   freeSlots: number[];
   lastSlot: number;
+  dirty = false;
 
   constructor(length, stride) {
     this.length = length;
@@ -27,6 +28,7 @@ export class FastVertexArray {
     this.data = new Float32Array(this.length * this.stride);
     this.freeSlots = [];
     this.lastSlot = 0;
+    this.dirty = true;
   }
 
   insert(sprite: TxSprite): number {
@@ -44,6 +46,7 @@ export class FastVertexArray {
     }
     this.sprites[position] = sprite;
     return position;
+    this.dirty = true;
   }
 
   remove(index: number): void {
@@ -54,14 +57,17 @@ export class FastVertexArray {
     if (this.length > 2048 && this.count < (this.length * 0.4)) {
       this.compact();
     }
+    this.dirty = true;
   }
 
   setData(index: number, dataChunk: number[]): void {
     this.data.set(dataChunk, (index * this.stride));
+    this.dirty = true;
   }
 
   clearData(index: number): void {
     this.data.fill(0, (index * this.stride), ((index + 1) * this.stride));
+    this.dirty = true;
   }
 
   getData(index: number): Float32Array {
@@ -73,6 +79,7 @@ export class FastVertexArray {
     const newData = new Float32Array(this.length * this.stride);
     newData.set(this.data);
     this.data = newData;
+    this.dirty = true;
   }
 
   compact(): void {
@@ -97,6 +104,7 @@ export class FastVertexArray {
       this.freeSlots = [];
       this.lastSlot = i;
     }
+    this.dirty = true;
   }
 
   getVertexData(): Float32Array {

@@ -1,0 +1,37 @@
+<div
+  #tooltip
+  class="block-overview-tooltip"
+  [class.clickable]="clickable"
+  [style.visibility]="tx ? 'visible' : 'hidden'"
+  [style.left]="tooltipPosition.x + 'px'"
+  [style.top]="tooltipPosition.y + 'px'"
+>
+  <table>
+    <tbody>
+      <tr>
+        <td i18n="shared.transaction">Transaction</td>
+        <td>
+          <a [routerLink]="['/tx/' | relativeUrl, txid]">{{ txid | shortenString : 16}}</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="td-width" i18n="transaction.value|Transaction value">Value</td>
+        <td><app-amount [satoshis]="value"></app-amount></td>
+      </tr>
+      <tr>
+        <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
+        <td>{{ fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> &nbsp; <span class="fiat"><app-fiat [value]="fee"></app-fiat></span></td>
+      </tr>
+      <tr>
+        <td i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
+        <td>
+          {{ feeRate | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+        </td>
+      </tr>
+      <tr>
+        <td i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
+        <td [innerHTML]="'&lrm;' + (vsize | vbytes: 2)"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -43,6 +43,7 @@ class DiskCache {
       await fsPromises.writeFile(DiskCache.FILE_NAME, JSON.stringify({
         cacheSchemaVersion: this.cacheSchemaVersion,
         blocks: blocks.getBlocks(),
+        blockSummaries: blocks.getBlockSummaries(),
         mempool: {},
         mempoolArray: mempoolArray.splice(0, chunkSize),
       }), {flag: 'w'});
@@ -109,6 +110,7 @@ class DiskCache {
 
       memPool.setMempool(data.mempool);
       blocks.setBlocks(data.blocks);
+      blocks.setBlockSummaries(data.blockSummaries || []);
     } catch (e) {
       logger.warn('Failed to parse mempoool and blocks cache. Skipping. Reason: ' + (e instanceof Error ? e.message : e));
     }

@@ -2,15 +2,16 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { Location } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
-import { switchMap, tap, debounceTime, catchError, map } from 'rxjs/operators';
+import { switchMap, tap, debounceTime, catchError, map, shareReplay, startWith, pairwise } from 'rxjs/operators';
 import { Transaction, Vout } from '../../interfaces/electrs.interface';
 import { Observable, of, Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
-import { BlockExtended } from 'src/app/interfaces/node-api.interface';
+import { BlockExtended, TransactionStripped } from 'src/app/interfaces/node-api.interface';
 import { ApiService } from 'src/app/services/api.service';
+import { BlockOverviewGraphComponent } from 'src/app/components/block-overview-graph/block-overview-graph.component';
 
 @Component({
   selector: 'app-block',
@@ -21,6 +22,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   network = '';
   block: BlockExtended;
   blockHeight: number;
+  lastBlockHeight: number;
   nextBlockHeight: number;
   blockHash: string;
   isLoadingBlock = true;
@@ -28,6 +30,10 @@ export class BlockComponent implements OnInit, OnDestroy {
   latestBlocks: BlockExtended[] = [];
   transactions: Transaction[];
   isLoadingTransactions = true;
+  strippedTransactions: TransactionStripped[];
+  overviewTransitionDirection: string;
+  isLoadingOverview = true;
+  isAwaitingOverview = true;
   error: any;
   blockSubsidy: number;
   fees: number;
@@ -39,12 +45,17 @@ export class BlockComponent implements OnInit, OnDestroy {
   showPreviousBlocklink = true;
   showNextBlocklink = true;
   transactionsError: any = null;
+  overviewError: any = null;
+  webGlEnabled = true;
 
-  subscription: Subscription;
+  transactionSubscription: Subscription;
+  overviewSubscription: Subscription;
   keyNavigationSubscription: Subscription;
   blocksSubscription: Subscription;
   networkChangedSubscription: Subscription;
   queryParamsSubscription: Subscription;
+
+  @ViewChild('blockGraph') blockGraph: BlockOverviewGraphComponent;
 
   constructor(
     private route: ActivatedRoute,
@@ -56,7 +67,9 @@ export class BlockComponent implements OnInit, OnDestroy {
     private websocketService: WebsocketService,
     private relativeUrlPipe: RelativeUrlPipe,
     private apiService: ApiService
-  ) { }
+  ) {
+    this.webGlEnabled = detectWebGL();
+  }
 
   ngOnInit() {
     this.websocketService.want(['blocks', 'mempool-blocks']);
@@ -85,7 +98,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.subscription = this.route.paramMap.pipe(
+    const block$ = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         const blockHash: string = params.get('id') || '';
         this.block = undefined;
@@ -141,6 +154,8 @@ export class BlockComponent implements OnInit, OnDestroy {
       tap((block: BlockExtended) => {
         this.block = block;
         this.blockHeight = block.height;
+        const direction = (this.lastBlockHeight < this.blockHeight) ? 'right' : 'left';
+        this.lastBlockHeight = this.blockHeight;
         this.nextBlockHeight = block.height + 1;
         this.setNextAndPreviousBlockLink();
 
@@ -154,8 +169,17 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.isLoadingTransactions = true;
         this.transactions = null;
         this.transactionsError = null;
+        this.isLoadingOverview = true;
+        this.isAwaitingOverview = true;
+        this.overviewError = true;
+        if (this.blockGraph) {
+          this.blockGraph.exit(direction);
+        }
       }),
       debounceTime(300),
+      shareReplay(1)
+    );
+    this.transactionSubscription = block$.pipe(
       switchMap((block) => this.electrsApiService.getBlockTransactions$(block.id)
         .pipe(
           catchError((err) => {
@@ -170,10 +194,50 @@ export class BlockComponent implements OnInit, OnDestroy {
       }
       this.transactions = transactions;
       this.isLoadingTransactions = false;
+
+      if (!this.isAwaitingOverview && this.blockGraph && this.strippedTransactions && this.overviewTransitionDirection) {
+        this.isLoadingOverview = false;
+        this.blockGraph.replace(this.strippedTransactions, this.overviewTransitionDirection, false);
+      }
     },
     (error) => {
       this.error = error;
       this.isLoadingBlock = false;
+      this.isLoadingOverview = false;
+    });
+
+    this.overviewSubscription = block$.pipe(
+      startWith(null),
+      pairwise(),
+      switchMap(([prevBlock, block]) => this.apiService.getStrippedBlockTransactions$(block.id)
+        .pipe(
+          catchError((err) => {
+            this.overviewError = err;
+            return of([]);
+          }),
+          switchMap((transactions) => {
+            if (prevBlock) {
+              return of({ transactions, direction: (prevBlock.height < block.height) ? 'right' : 'left' });
+            } else {
+              return of({ transactions, direction: 'down' });
+            }
+          })
+        )
+      ),
+    )
+    .subscribe(({transactions, direction}: {transactions: TransactionStripped[], direction: string}) => {
+      this.isAwaitingOverview = false;
+      this.strippedTransactions = transactions;
+      this.overviewTransitionDirection = direction;
+      if (!this.isLoadingTransactions && this.blockGraph) {
+        this.isLoadingOverview = false;
+        this.blockGraph.replace(this.strippedTransactions, this.overviewTransitionDirection, false);
+      }
+    },
+    (error) => {
+      this.error = error;
+      this.isLoadingOverview = false;
+      this.isAwaitingOverview = false;
     });
 
     this.networkChangedSubscription = this.stateService.networkChanged$
@@ -203,7 +267,8 @@ export class BlockComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.stateService.markBlock$.next({});
-    this.subscription.unsubscribe();
+    this.transactionSubscription.unsubscribe();
+    this.overviewSubscription.unsubscribe();
     this.keyNavigationSubscription.unsubscribe();
     this.blocksSubscription.unsubscribe();
     this.networkChangedSubscription.unsubscribe();
@@ -302,4 +367,15 @@ export class BlockComponent implements OnInit, OnDestroy {
       }
     }
   }
+
+  onTxClick(event: TransactionStripped): void {
+    const url = new RelativeUrlPipe(this.stateService).transform(`/tx/${event.txid}`);
+    this.router.navigate([url]);
+  }
+}
+
+function detectWebGL() {
+  const canvas = document.createElement('canvas');
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  return (gl && gl instanceof WebGLRenderingContext);
 }
