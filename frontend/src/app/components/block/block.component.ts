@@ -54,6 +54,9 @@ export class BlockComponent implements OnInit, OnDestroy {
   blocksSubscription: Subscription;
   networkChangedSubscription: Subscription;
   queryParamsSubscription: Subscription;
+  nextBlockSubscription: Subscription = undefined;
+  nextBlockSummarySubscription: Subscription = undefined;
+  nextBlockTxListSubscription: Subscription = undefined;
 
   @ViewChild('blockGraph') blockGraph: BlockOverviewGraphComponent;
 
@@ -152,6 +155,14 @@ export class BlockComponent implements OnInit, OnDestroy {
         }
       }),
       tap((block: BlockExtended) => {
+        // Preload previous block summary (execute the http query so the response will be cached)
+        this.unsubscribeNextBlockSubscriptions();
+        setTimeout(() => {
+          this.nextBlockSubscription = this.apiService.getBlock$(block.previousblockhash).subscribe();
+          this.nextBlockTxListSubscription = this.electrsApiService.getBlockTransactions$(block.previousblockhash).subscribe();
+          this.nextBlockSummarySubscription = this.apiService.getStrippedBlockTransactions$(block.previousblockhash).subscribe();
+        }, 100);
+
         this.block = block;
         this.blockHeight = block.height;
         const direction = (this.lastBlockHeight < this.blockHeight) ? 'right' : 'left';
@@ -176,7 +187,6 @@ export class BlockComponent implements OnInit, OnDestroy {
           this.blockGraph.exit(direction);
         }
       }),
-      debounceTime(300),
       shareReplay(1)
     );
     this.transactionSubscription = block$.pipe(
@@ -273,6 +283,19 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.blocksSubscription.unsubscribe();
     this.networkChangedSubscription.unsubscribe();
     this.queryParamsSubscription.unsubscribe();
+    this.unsubscribeNextBlockSubscriptions();
+  }
+
+  unsubscribeNextBlockSubscriptions() {
+    if (this.nextBlockSubscription !== undefined) {
+      this.nextBlockSubscription.unsubscribe();
+    }
+    if (this.nextBlockSummarySubscription !== undefined) {
+      this.nextBlockSummarySubscription.unsubscribe();
+    }
+    if (this.nextBlockTxListSubscription !== undefined) {
+      this.nextBlockTxListSubscription.unsubscribe();
+    }
   }
 
   // TODO - Refactor this.fees/this.reward for liquid because it is not
