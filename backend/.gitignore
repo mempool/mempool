@@ -2,6 +2,7 @@
 
 # production config and external assets
 *.json
+!tsconfig.build.json
 !mempool-config.sample.json
 
 icons.json

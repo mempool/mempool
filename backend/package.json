@@ -21,11 +21,11 @@
   "main": "index.ts",
   "scripts": {
     "ng": "./node_modules/@angular/cli/bin/ng",
-    "tsc": "./node_modules/typescript/bin/tsc",
+    "tsc": "./node_modules/typescript/bin/tsc -p tsconfig.build.json",
     "build": "npm run tsc",
     "start": "node --max-old-space-size=2048 dist/index.js",
     "start-production": "node --max-old-space-size=4096 dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --coverage"
   },
   "dependencies": {
     "@mempool/electrum-client": "^1.1.7",
