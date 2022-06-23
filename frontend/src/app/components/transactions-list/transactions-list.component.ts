@@ -5,8 +5,9 @@ import { Outspend, Transaction, Vin, Vout } from '../../interfaces/electrs.inter
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { environment } from 'src/environments/environment';
 import { AssetsService } from 'src/app/services/assets.service';
-import { map, switchMap } from 'rxjs/operators';
+import { map, tap, switchMap } from 'rxjs/operators';
 import { BlockExtended } from 'src/app/interfaces/node-api.interface';
+import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-transactions-list',
@@ -30,7 +31,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
   latestBlock$: Observable<BlockExtended>;
   outspendsSubscription: Subscription;
-  refreshOutspends$: ReplaySubject<{ [str: string]: Observable<Outspend[]>}> = new ReplaySubject();
+  refreshOutspends$: ReplaySubject<string[]> = new ReplaySubject();
   showDetails$ = new BehaviorSubject<boolean>(false);
   outspends: Outspend[][] = [];
   assetsMinimal: any;
@@ -38,6 +39,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   constructor(
     public stateService: StateService,
     private electrsApiService: ElectrsApiService,
+    private apiService: ApiService,
     private assetsService: AssetsService,
     private ref: ChangeDetectorRef,
   ) { }
@@ -55,20 +57,14 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     this.outspendsSubscription = merge(
       this.refreshOutspends$
         .pipe(
-          switchMap((observableObject) => forkJoin(observableObject)),
-          map((outspends: any) => {
-            const newOutspends: Outspend[] = [];
-            for (const i in outspends) {
-              if (outspends.hasOwnProperty(i)) {
-                newOutspends.push(outspends[i]);
-              }
-            }
-            this.outspends = this.outspends.concat(newOutspends);
+          switchMap((txIds) => this.apiService.getOutspendsBatched$(txIds)),
+          tap((outspends: Outspend[][]) => {
+            this.outspends = this.outspends.concat(outspends);
           }),
         ),
       this.stateService.utxoSpent$
         .pipe(
-          map((utxoSpent) => {
+          tap((utxoSpent) => {
             for (const i in utxoSpent) {
               this.outspends[0][i] = {
                 spent: true,
@@ -96,7 +92,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         }
       }, 10);
     }
-    const observableObject = {};
+
     this.transactions.forEach((tx, i) => {
       tx['@voutLimit'] = true;
       tx['@vinLimit'] = true;
@@ -117,10 +113,9 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
         tx['addressValue'] = addressIn - addressOut;
       }
-
-      observableObject[i] = this.electrsApiService.getOutspends$(tx.txid);
     });
-    this.refreshOutspends$.next(observableObject);
+
+    this.refreshOutspends$.next(this.transactions.map((tx) => tx.txid));
   }
 
   onScroll() {
