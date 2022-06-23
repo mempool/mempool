@@ -62,7 +62,7 @@ class ElectrsApi implements AbstractBitcoinApi {
   }
 
   $getOutspends(txId: string): Promise<IEsploraApi.Outspend[]> {
-    return axios.get<IEsploraApi.Outspend[]>(config.ESPLORA.REST_API_URL + '/tx/' + txId, this.axiosConfig)
+    return axios.get<IEsploraApi.Outspend[]>(config.ESPLORA.REST_API_URL + '/tx/' + txId + '/outspends', this.axiosConfig)
       .then((response) => response.data);
   }
 
