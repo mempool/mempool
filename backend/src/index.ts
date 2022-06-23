@@ -195,6 +195,7 @@ class Server {
   setUpHttpApiRoutes() {
     this.app
       .get(config.MEMPOOL.API_URL_PREFIX + 'transaction-times', routes.getTransactionTimes)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'outspends', routes.$getBatchedOutspends)
       .get(config.MEMPOOL.API_URL_PREFIX + 'cpfp/:txId', routes.getCpfpInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'difficulty-adjustment', routes.getDifficultyChange)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/recommended', routes.getRecommendedFees)
