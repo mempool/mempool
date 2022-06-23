@@ -155,13 +155,15 @@ export class BlockComponent implements OnInit, OnDestroy {
         }
       }),
       tap((block: BlockExtended) => {
-        // Preload previous block summary (execute the http query so the response will be cached)
-        this.unsubscribeNextBlockSubscriptions();
-        setTimeout(() => {
-          this.nextBlockSubscription = this.apiService.getBlock$(block.previousblockhash).subscribe();
-          this.nextBlockTxListSubscription = this.electrsApiService.getBlockTransactions$(block.previousblockhash).subscribe();
-          this.nextBlockSummarySubscription = this.apiService.getStrippedBlockTransactions$(block.previousblockhash).subscribe();
-        }, 100);
+        if (block.height > 0) {
+          // Preload previous block summary (execute the http query so the response will be cached)
+          this.unsubscribeNextBlockSubscriptions();
+          setTimeout(() => {
+            this.nextBlockSubscription = this.apiService.getBlock$(block.previousblockhash).subscribe();
+            this.nextBlockTxListSubscription = this.electrsApiService.getBlockTransactions$(block.previousblockhash).subscribe();
+            this.nextBlockSummarySubscription = this.apiService.getStrippedBlockTransactions$(block.previousblockhash).subscribe();
+          }, 100);
+        }
 
         this.block = block;
         this.blockHeight = block.height;
