@@ -68,6 +68,21 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy {
     this.start();
   }
 
+  destroy(): void {
+    if (this.scene) {
+      this.scene.destroy();
+      this.start();
+    }
+  }
+
+  // initialize the scene without any entry transition
+  setup(transactions: TransactionStripped[]): void {
+    if (this.scene) {
+      this.scene.setup(transactions);
+      this.start();
+    }
+  }
+
   enter(transactions: TransactionStripped[], direction: string): void {
     if (this.scene) {
       this.scene.enter(transactions, direction);
