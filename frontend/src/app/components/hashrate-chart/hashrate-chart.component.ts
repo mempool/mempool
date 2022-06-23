@@ -76,7 +76,7 @@ export class HashrateChartComponent implements OnInit {
       .fragment
       .subscribe((fragment) => {
         if (['1m', '3m', '6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
-          this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: true });
+          this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
         }
       });
 
