@@ -177,4 +177,11 @@ export class Common {
       config.MEMPOOL.INDEXING_BLOCKS_AMOUNT !== 0
     );
   }
+
+  static blocksSummariesIndexingEnabled(): boolean {
+    return (
+      Common.indexingEnabled() &&
+      config.MEMPOOL.BLOCKS_SUMMARIES_INDEXING === true
+    );
+  }
 }
