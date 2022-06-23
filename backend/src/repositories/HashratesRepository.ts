@@ -30,6 +30,14 @@ class HashratesRepository {
   }
 
   public async $getNetworkDailyHashrate(interval: string | null): Promise<any[]> {
+    let daysResolution: number = 1;
+    switch (interval) {
+      case 'all': daysResolution = 7; break;
+      case '3y': daysResolution = 3; break;
+      case '2y': daysResolution = 2; break;
+      default: break;
+    }
+
     interval = Common.getSqlInterval(interval);
 
     let query = `SELECT UNIX_TIMESTAMP(hashrate_timestamp) as timestamp, avg_hashrate as avgHashrate
@@ -42,6 +50,7 @@ class HashratesRepository {
       query += ` WHERE hashrates.type = 'daily'`;
     }
 
+    query += ` GROUP BY UNIX_TIMESTAMP(hashrate_timestamp) DIV ${daysResolution * 86400}`;
     query += ` ORDER by hashrate_timestamp`;
 
     try {
