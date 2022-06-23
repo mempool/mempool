@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators,
-         PoolsStats, PoolStat, BlockExtended, TransactionStripped, RewardStats } from '../interfaces/node-api.interface';
+  PoolStat, BlockExtended, TransactionStripped, RewardStats } from '../interfaces/node-api.interface';
 import { Observable } from 'rxjs';
 import { StateService } from './state.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
+import { Outspend } from '../interfaces/electrs.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -72,6 +73,14 @@ export class ApiService {
       params = params.append('txId[]', txId);
     });
     return this.httpClient.get<number[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/transaction-times', { params });
+  }
+
+  getOutspendsBatched$(txIds: string[]): Observable<Outspend[][]> {
+    let params = new HttpParams();
+    txIds.forEach((txId: string) => {
+      params = params.append('txId[]', txId);
+    });
+    return this.httpClient.get<Outspend[][]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/outspends', { params });
   }
 
   requestDonation$(amount: number, orderId: string): Observable<any> {
