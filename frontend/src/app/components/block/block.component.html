@@ -43,10 +43,9 @@
 
 
   <div class="box" *ngIf="!error">
-    <div class="row">
+    <div class="row no-stretch">
       <ng-template [ngIf]="!isLoadingBlock">
-        <div class="col-sm">
-          <table class="table table-borderless table-striped">
+          <table class="col-sm col-table table table-borderless table-striped">
             <tbody>
               <tr>
                 <td class="td-width" i18n="block.hash">Hash</td>
@@ -128,7 +127,6 @@
               </ng-template>
             </tbody>
           </table>
-        </div>
       </ng-template>
       <ng-template [ngIf]="isLoadingBlock">
         <div class="col-sm">

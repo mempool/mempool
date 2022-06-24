@@ -64,6 +64,9 @@ h1 {
 	flex-direction: column;
 	@media (min-width: 768px) {
 		flex-direction: row;
+		&.no-stretch {
+			align-items: flex-start;
+		}
 	}
 }
 @media (max-width: 767.98px) {
@@ -149,9 +152,19 @@ h1 {
   }
 }
 
-.chart-container{
-  margin: 20px auto;
+.chart-container {
+  margin: 20px auto 0;
   @media (min-width: 768px) {
-    margin: auto;
+    margin: 0 auto;
+    min-width: 330px;
+    max-width: calc(24rem + 30px);
+  }
+}
+
+.col-table {
+  width: calc(100% - 30px);
+  margin: 0 15px;
+  @media (min-width: 768px) {
+    width: 0;
   }
 }
