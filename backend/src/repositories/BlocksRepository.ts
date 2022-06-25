@@ -7,6 +7,7 @@ import PoolsRepository from './PoolsRepository';
 import HashratesRepository from './HashratesRepository';
 import { escape } from 'mysql2';
 import BlocksSummariesRepository from './BlocksSummariesRepository';
+import DifficultyAdjustmentsRepository from './DifficultyAdjustmentsRepository';
 
 class BlocksRepository {
   /**
@@ -381,48 +382,9 @@ class BlocksRepository {
   /**
    * Return blocks difficulty
    */
-  public async $getBlocksDifficulty(interval: string | null): Promise<object[]> {
-    interval = Common.getSqlInterval(interval);
-
-    // :D ... Yeah don't ask me about this one https://stackoverflow.com/a/40303162
-    // Basically, using temporary user defined fields, we are able to extract all
-    // difficulty adjustments from the blocks tables.
-    // This allow use to avoid indexing it in another table.
-    let query = `
-      SELECT
-      *
-      FROM
-      (
-        SELECT
-        UNIX_TIMESTAMP(blockTimestamp) as timestamp, difficulty, height,
-        IF(@prevStatus = YT.difficulty, @rn := @rn + 1,
-          IF(@prevStatus := YT.difficulty, @rn := 1, @rn := 1)
-        ) AS rn
-        FROM blocks YT
-        CROSS JOIN
-        (
-          SELECT @prevStatus := -1, @rn := 1
-        ) AS var
-    `;
-
-    if (interval) {
-      query += ` WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
-    }
-
-    query += `
-        ORDER BY YT.height
-      ) AS t
-      WHERE t.rn = 1
-      ORDER BY t.height
-    `;
-
+  public async $getBlocksDifficulty(): Promise<object[]> {
     try {
-      const [rows]: any[] = await DB.query(query);
-
-      for (const row of rows) {
-        delete row['rn'];
-      }
-
+      const [rows]: any[] = await DB.query(`SELECT UNIX_TIMESTAMP(blockTimestamp) as time, height, difficulty FROM blocks`);
       return rows;
     } catch (e) {
       logger.err('Cannot generate difficulty history. Reason: ' + (e instanceof Error ? e.message : e));
@@ -452,26 +414,6 @@ class BlocksRepository {
     }
   }
 
-  /*
-   * Check if the last 10 blocks chain is valid
-   */
-  public async $validateRecentBlocks(): Promise<boolean> {
-    try {
-      const [lastBlocks]: any[] = await DB.query(`SELECT height, hash, previous_block_hash FROM blocks ORDER BY height DESC LIMIT 10`);
-
-      for (let i = 0; i < lastBlocks.length - 1; ++i) {
-        if (lastBlocks[i].previous_block_hash !== lastBlocks[i + 1].hash) {
-          logger.warn(`Chain divergence detected at block ${lastBlocks[i].height}, re-indexing most recent data`);
-          return false;
-        }
-      }
-
-      return true;
-    } catch (e) {
-      return true; // Don't do anything if there is a db error
-    }
-  }
-
   /**
    * Check if the chain of block hash is valid and delete data from the stale branch if needed
    */
@@ -498,6 +440,7 @@ class BlocksRepository {
           await this.$deleteBlocksFrom(blocks[idx - 1].height);
           await BlocksSummariesRepository.$deleteBlocksFrom(blocks[idx - 1].height);
           await HashratesRepository.$deleteHashratesFromTimestamp(blocks[idx - 1].timestamp - 604800);
+          await DifficultyAdjustmentsRepository.$deleteAdjustementsFromHeight(blocks[idx - 1].height);
           return false;
         }
         ++idx;

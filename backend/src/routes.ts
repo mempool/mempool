@@ -26,6 +26,7 @@ import mining from './api/mining';
 import BlocksRepository from './repositories/BlocksRepository';
 import HashratesRepository from './repositories/HashratesRepository';
 import difficultyAdjustment from './api/difficulty-adjustment';
+import DifficultyAdjustmentsRepository from './repositories/DifficultyAdjustmentsRepository';
 
 class Routes {
   constructor() {}
@@ -653,7 +654,7 @@ class Routes {
 
     try {
       const hashrates = await HashratesRepository.$getNetworkDailyHashrate(req.params.interval);
-      const difficulty = await BlocksRepository.$getBlocksDifficulty(req.params.interval);
+      const difficulty = await DifficultyAdjustmentsRepository.$getAdjustments(req.params.interval, false);
       const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
@@ -725,6 +726,18 @@ class Routes {
         sizes: blockSizes,
         weights: blockWeights
       });
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  public async $getDifficultyAdjustments(req: Request, res: Response) {
+    try {
+      const difficulty = await DifficultyAdjustmentsRepository.$getAdjustments(req.params.interval, true);
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.json(difficulty.map(adj => [adj.time, adj.height, adj.difficulty, adj.adjustment]));
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
