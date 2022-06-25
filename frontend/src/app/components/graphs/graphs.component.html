@@ -1,4 +1,4 @@
-<div *ngIf="stateService.env.MINING_DASHBOARD" class="mb-3 d-flex menu" style="padding: 0px 35px;">
+<div *ngIf="stateService.env.MINING_DASHBOARD" class="mb-3 d-inline-flex menu" style="padding: 0px 35px;">
   <a routerLinkActive="active" class="btn btn-primary w-50 mr-1"
     [routerLink]="['/graphs/mempool' | relativeUrl]">Mempool</a>
   <div ngbDropdown class="w-50">
