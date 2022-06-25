@@ -36,6 +36,7 @@ class Indexer {
         return;
       }
 
+      await mining.$indexDifficultyAdjustments();
       await this.$resetHashratesIndexingState();
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();

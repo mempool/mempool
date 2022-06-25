@@ -290,6 +290,7 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/rewards/:interval', routes.$getHistoricalBlockRewards)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fee-rates/:interval', routes.$getHistoricalBlockFeeRates)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/sizes-weights/:interval', routes.$getHistoricalBlockSizeAndWeight)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty-adjustments/:interval', routes.$getDifficultyAdjustments)
         ;
     }
 

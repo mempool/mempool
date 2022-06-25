@@ -224,6 +224,13 @@ export interface IDifficultyAdjustment {
   timeOffset: number;
 }
 
+export interface IndexedDifficultyAdjustment {
+  time: number; // UNIX timestamp
+  height: number; // Block height
+  difficulty: number;
+  adjustment: number;
+}
+
 export interface RewardStats {
   totalReward: number;
   totalFee: number;
