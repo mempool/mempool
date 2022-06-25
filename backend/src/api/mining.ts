@@ -7,6 +7,7 @@ import logger from '../logger';
 import { Common } from './common';
 import loadingIndicators from './loading-indicators';
 import { escape } from 'mysql2';
+import indexer from '../indexer';
 import DifficultyAdjustmentsRepository from '../repositories/DifficultyAdjustmentsRepository';
 
 class Mining {
@@ -263,6 +264,7 @@ class Mining {
       loadingIndicators.setProgress('weekly-hashrate-indexing', 100);
     } catch (e) {
       loadingIndicators.setProgress('weekly-hashrate-indexing', 100);
+      logger.err(`Weekly mining pools hashrates indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`);
       throw e;
     }
   }
@@ -374,6 +376,7 @@ class Mining {
       loadingIndicators.setProgress('daily-hashrate-indexing', 100);
     } catch (e) {
       loadingIndicators.setProgress('daily-hashrate-indexing', 100);
+      logger.err(`Daily network hashrate indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`);
       throw e;
     }
   }
