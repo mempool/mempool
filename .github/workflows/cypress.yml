@@ -1,6 +1,8 @@
 name: Cypress Tests
 
-on: [push, pull_request]
+on:
+  pull_request:
+    types: [ opened, review_requested, synchronize ]
 jobs:
   cypress:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops')"
