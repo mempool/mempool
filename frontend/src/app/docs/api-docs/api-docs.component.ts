@@ -37,6 +37,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     const that = this;
     this.faqTemplates.forEach((x) => this.dict[x.type] = x.template);
+    this.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
     setTimeout( () => {
       if( this.route.snapshot.fragment ) {
         this.openEndpointContainer( this.route.snapshot.fragment );
