@@ -47,7 +47,7 @@ class PoolsUpdater {
       }
 
       if (config.DATABASE.ENABLED === true) {
-        this.currentSha = await this.getShaFromDb();      
+        this.currentSha = await this.getShaFromDb();
       }
 
       logger.debug(`Pools.json sha | Current: ${this.currentSha} | Github: ${githubSha}`);
@@ -70,7 +70,7 @@ class PoolsUpdater {
 
     } catch (e) {
       this.lastRun = now - (oneWeek - oneDay); // Try again in 24h instead of waiting next week
-      logger.err('PoolsUpdater failed. Will try again in 24h. Reason: '  + (e instanceof Error ? e.message : e));
+      logger.err('PoolsUpdater failed. Will try again in 24h. Reason: ' + (e instanceof Error ? e.message : e));
     }
   }
 
@@ -84,7 +84,7 @@ class PoolsUpdater {
         await DB.query('DELETE FROM state where name="pools_json_sha"');
         await DB.query(`INSERT INTO state VALUES('pools_json_sha', NULL, '${githubSha}')`);
       } catch (e) {
-        logger.err('Cannot save github pools.json sha into the db. Reason: '  + (e instanceof Error ? e.message : e));
+        logger.err('Cannot save github pools.json sha into the db. Reason: ' + (e instanceof Error ? e.message : e));
       }
     }
   }
@@ -97,7 +97,7 @@ class PoolsUpdater {
       const [rows]: any[] = await DB.query('SELECT string FROM state WHERE name="pools_json_sha"');
       return (rows.length > 0 ? rows[0].string : undefined);
     } catch (e) {
-      logger.err('Cannot fetch pools.json sha from db. Reason: '  + (e instanceof Error ? e.message : e));
+      logger.err('Cannot fetch pools.json sha from db. Reason: ' + (e instanceof Error ? e.message : e));
       return undefined;
     }
   }
@@ -130,7 +130,7 @@ class PoolsUpdater {
       };
       timeout: number;
       httpsAgent?: https.Agent;
-    }
+    };
     const setDelay = (secs: number = 1): Promise<void> => new Promise(resolve => setTimeout(() => resolve(), secs * 1000));
     const axiosOptions: axiosOptions = {
       headers: {
@@ -140,7 +140,7 @@ class PoolsUpdater {
     };
     let retry = 0;
 
-    while(retry < config.MEMPOOL.EXTERNAL_MAX_RETRY) {
+    while (retry < config.MEMPOOL.EXTERNAL_MAX_RETRY) {
       try {
         if (config.SOCKS5PROXY.ENABLED) {
           const socksOptions: any = {
@@ -161,14 +161,14 @@ class PoolsUpdater {
 
           axiosOptions.httpsAgent = new SocksProxyAgent(socksOptions);
         }
-        
+
         const data: AxiosResponse = await axios.get(path, axiosOptions);
         if (data.statusText === 'error' || !data.data) {
           throw new Error(`Could not fetch data from ${path}, Error: ${data.status}`);
         }
         return data.data;
       } catch (e) {
-        logger.err('Could not connect to Github. Reason: '  + (e instanceof Error ? e.message : e));
+        logger.err('Could not connect to Github. Reason: ' + (e instanceof Error ? e.message : e));
         retry++;
       }
       await setDelay(config.MEMPOOL.EXTERNAL_RETRY_INTERVAL);

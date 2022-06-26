@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 20;
+  private static currentVersion = 21;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -220,6 +220,11 @@ class DatabaseMigration {
 
       if (databaseSchemaVersion < 20 && isBitcoin === true) {
         await this.$executeQuery(this.getCreateBlocksSummariesTableQuery(), await this.$checkIfTableExists('blocks_summaries'));
+      }
+
+      if (databaseSchemaVersion < 21) {
+        await this.$executeQuery('DROP TABLE IF EXISTS `rates`');
+        await this.$executeQuery(this.getCreatePricesTableQuery(), await this.$checkIfTableExists('prices'));
       }
     } catch (e) {
       throw e;
@@ -526,8 +531,16 @@ class DatabaseMigration {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
+  private getCreatePricesTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS prices (
+      time timestamp NOT NULL,
+      avg_prices JSON NOT NULL,
+      PRIMARY KEY (time)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
   public async $truncateIndexedData(tables: string[]) {
-    const allowedTables = ['blocks', 'hashrates'];
+    const allowedTables = ['blocks', 'hashrates', 'prices'];
 
     try {
       for (const table of tables) {

@@ -29,7 +29,7 @@ update_repo()
     cd "$HOME/${site}" || exit 1
 
     git fetch origin || exit 1
-    for remote in origin knorrium emzy nymkappa hunicus;do
+    for remote in origin hunicus mononaut;do
         git remote add "${remote}" "https://github.com/${remote}/mempool" >/dev/null 2>&1
         git fetch "${remote}" || exit 1
     done

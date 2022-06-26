@@ -70,7 +70,7 @@ export class HashrateChartPoolsComponent implements OnInit {
       .fragment
       .subscribe((fragment) => {
         if (['6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
-          this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: true });
+          this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
         }
       });
 
