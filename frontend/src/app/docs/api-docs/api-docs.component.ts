@@ -34,13 +34,21 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
   ) { }
 
+  ngAfterContentChecked() {
+    if (this.faqTemplates) {
+      this.faqTemplates.forEach((x) => this.dict[x.type] = x.template);
+    }
+    this.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
+  }
+
   ngAfterViewInit() {
     const that = this;
-    this.faqTemplates.forEach((x) => this.dict[x.type] = x.template);
     setTimeout( () => {
       if( this.route.snapshot.fragment ) {
         this.openEndpointContainer( this.route.snapshot.fragment );
-        document.getElementById( this.route.snapshot.fragment ).scrollIntoView();
+        if (document.getElementById( this.route.snapshot.fragment )) {
+          document.getElementById( this.route.snapshot.fragment ).scrollIntoView();
+        }
       }
       window.addEventListener('scroll', function() {
         that.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
@@ -90,14 +98,17 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
       }
       targetId = element.hash.substring(1);
     }
-    if( this.route.snapshot.fragment === targetId ) {
+    if( this.route.snapshot.fragment === targetId && document.getElementById( targetId )) {
       document.getElementById( targetId ).scrollIntoView();
     }
     this.openEndpointContainer( targetId );
   }
 
   openEndpointContainer( targetId ) {
-    const tabHeaderHeight = document.getElementById( targetId + "-tab-header" ).scrollHeight;
+    let tabHeaderHeight = 0;
+    if (document.getElementById( targetId + "-tab-header" )) {
+      tabHeaderHeight = document.getElementById( targetId + "-tab-header" ).scrollHeight;
+    }
     if( ( window.innerWidth <= 992 ) && ( ( this.whichTab === 'rest' ) || ( this.whichTab === 'faq' ) ) && targetId ) {
       const endpointContainerEl = document.querySelector<HTMLElement>( "#" + targetId );
       const endpointContentEl = document.querySelector<HTMLElement>( "#" + targetId + " .endpoint-content" );
