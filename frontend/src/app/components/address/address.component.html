@@ -130,7 +130,7 @@
       <span i18n="address.error.loading-address-data">Error loading address data.</span>
       <br>
       <ng-template #displayServerError><i class="small">({{ error.error }})</i></ng-template>
-      <ng-template [ngIf]="error.status === 413 || error.status === 405" [ngIfElse]="displayServerError">
+      <ng-template [ngIf]="error.status === 413 || error.status === 405 || error.status === 504" [ngIfElse]="displayServerError">
         <ng-container i18n="Electrum server limit exceeded error">
           <i>There many transactions on this address, more than your backend can handle. See more on <a href="/docs/faq#address-lookup-issues">setting up a stronger backend</a>.</i>
           <br><br>
