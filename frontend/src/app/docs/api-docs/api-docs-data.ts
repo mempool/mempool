@@ -6021,6 +6021,13 @@ export const faqData = [
     type: "endpoint",
     category: "basics",
     showConditions: bitcoinNetworks,
+    fragment: "what-are-vb-wu",
+    title: "What are virtual bytes (vB) and weight units (WU)?",
+  },
+  {
+    type: "endpoint",
+    category: "basics",
+    showConditions: bitcoinNetworks,
     fragment: "what-is-full-mempool",
     title: "What does it mean for the mempool to be \"full\"?",
   },
