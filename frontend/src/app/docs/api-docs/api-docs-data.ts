@@ -6028,6 +6028,13 @@ export const faqData = [
     type: "endpoint",
     category: "basics",
     showConditions: bitcoinNetworks,
+    fragment: "what-is-svb",
+    title: "What is sat/vB?",
+  },
+  {
+    type: "endpoint",
+    category: "basics",
+    showConditions: bitcoinNetworks,
     fragment: "what-is-full-mempool",
     title: "What does it mean for the mempool to be \"full\"?",
   },
