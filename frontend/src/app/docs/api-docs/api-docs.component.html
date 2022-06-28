@@ -136,9 +136,15 @@
 
 <ng-template type="what-are-vb-wu">
   <p>Virtual bytes (vB) and weight units (WU) are used to measure the size of transactions and blocks on the Bitcoin network.</p>
-  <p>A Bitcoin transaction's size in the blockchain is <i>not</i> determined how much bitcoin it transfers—instead, a transaction's size is determined by technical factors such how many inputs and outputs it has, how many signatures it has, and the format it uses (legacy, SegWit, etc). Since space in the Bitcoin blockchain is limited, a transaction's size directly impacts <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="what-is-svb">how much you pay</a> in mining fees to get it confirmed into a block.</p>
+  <p>A Bitcoin transaction's size in the blockchain is <i>not</i> determined how much bitcoin it transfers—instead, a transaction's size is determined by technical factors such how many inputs and outputs it has, how many signatures it has, and the format it uses (legacy, SegWit, etc). Since space in the Bitcoin blockchain is limited, bigger transactions pay more in mining fees than smaller transactions.</p>
   <p>Block sizes are limited to 4,000,000 WU (or 1,000,000 vB since 1 vB = 4 WU).</p>
   <p>Transaction sizes and block sizes used to be measured in plain bytes, but virtual bytes and weight units were devised to maintain backward compatibility after the SegWit upgrade in 2017. See <a href="https://programmingbitcoin.com/understanding-segwit-block-size" target="_blank">this post</a> for more details.</p>
+</ng-template>
+
+<ng-template type="what-is-svb">
+  <p>The priority of a pending Bitcoin transaction is determined by its feerate. Feerates are measured in sat/vB.</p>
+  <p>Using a higher sat/vB feerate for a Bitcoin transaction will generally result in quicker confirmation than using a lower feerate. But feerates change all the time, so it's important to check suggested feerates right before making a transaction to <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="why-is-transaction-stuck-in-mempool">avoid it from getting stuck</a>.</p>
+  <p>There are feerate estimates on the top of <a [routerLink]="['/' | relativeUrl]">the main dashboard</a> you can use as a guide. See <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="looking-up-fee-estimates">this FAQ</a> for more on picking the right feerate.</p>
 </ng-template>
 
 <ng-template type="what-is-full-mempool">
