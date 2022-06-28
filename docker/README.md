@@ -235,7 +235,7 @@ Corresponding `docker-compose.yml` overrides:
       DATABASE_HOST: ""
       DATABASE_PORT: ""
       DATABASE_DATABASE: ""
-      DATABASE_USERAME: ""
+      DATABASE_USERNAME: ""
       DATABASE_PASSWORD: ""
       ...
 ```
