@@ -152,7 +152,12 @@
             "assets": [
               "src/favicon.ico",
               "src/resources",
-              "src/robots.txt"
+              "src/robots.txt",
+              {
+                "glob": "**.js",
+                "input": "./mempooljs",
+                "output": "/"
+              }
             ],
             "styles": [
               "src/styles.scss",
