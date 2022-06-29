@@ -36,7 +36,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   showDetails$ = new BehaviorSubject<boolean>(false);
   outspends: Outspend[][] = [];
   assetsMinimal: any;
-  channels: any[];
+  channels: { inputs: any[], outputs: any[] };
 
   constructor(
     public stateService: StateService,

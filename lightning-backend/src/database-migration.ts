@@ -236,7 +236,8 @@ class DatabaseMigration {
       KEY node2_public_key (node2_public_key),
       KEY status (status),
       KEY short_id (short_id),
-      KEY transaction_id (transaction_id)
+      KEY transaction_id (transaction_id),
+      KEY closing_transaction_id (closing_transaction_id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
