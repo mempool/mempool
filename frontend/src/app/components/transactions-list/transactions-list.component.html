@@ -77,7 +77,7 @@
                           {{ vin.prevout.scriptpubkey_type?.toUpperCase() }}
                         </ng-template>
                         <div>
-                          <app-address-labels [vin]="vin"></app-address-labels>
+                          <app-address-labels [vin]="vin" [channel]="channels && channels.inputs[i] || null"></app-address-labels>
                         </div>
                       </ng-template>
                     </ng-container>
@@ -172,7 +172,7 @@
                     </span>
                   </a>
                   <div>
-                    <app-address-labels [vout]="vout" [channel]="channels && channels[i] && channels[i].transaction_vout === vindex ? channels[i] : null"></app-address-labels>
+                    <app-address-labels [vout]="vout" [channel]="channels && channels.outputs[i] && channels.outputs[i].transaction_vout === vindex ? channels.outputs[i] : null"></app-address-labels>
                   </div>
                   <ng-template #scriptpubkey_type>
                     <ng-template [ngIf]="vout.pegout" [ngIfElse]="defaultscriptpubkey_type">
