@@ -67,17 +67,27 @@ class ChannelsRoutes {
         }
       }
       const channels = await channelsApi.$getChannelsByTransactionId(txIds);
-      const result: any[] = [];
+      const inputs: any[] = [];
+      const outputs: any[] = [];
       for (const txid of txIds) {
-        const foundChannel = channels.find((channel) => channel.transaction_id === txid);
-        if (foundChannel) {
-          result.push(foundChannel);
+        const foundChannelInputs = channels.find((channel) => channel.closing_transaction_id === txid);
+        if (foundChannelInputs) {
+          inputs.push(foundChannelInputs);
         } else {
-          result.push(null);
+          inputs.push(null);
+        }
+        const foundChannelOutputs = channels.find((channel) => channel.transaction_id === txid);
+        if (foundChannelOutputs) {
+          outputs.push(foundChannelOutputs);
+        } else {
+          outputs.push(null);
         }
       }
 
-      res.json(result);
+      res.json({
+        inputs: inputs,
+        outputs: outputs,
+      });
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

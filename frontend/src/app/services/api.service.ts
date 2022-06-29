@@ -232,12 +232,12 @@ export class ApiService {
     return this.httpClient.get<RewardStats>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/reward-stats/${blockCount}`);
   }
 
-  getChannelByTxIds$(txIds: string[]): Observable<any[]> {
+  getChannelByTxIds$(txIds: string[]): Observable<{ inputs: any[], outputs: any[] }> {
     let params = new HttpParams();
     txIds.forEach((txId: string) => {
       params = params.append('txId[]', txId);
     });
-    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/lightning/api/v1/channels/txids/', { params });
+    return this.httpClient.get<{ inputs: any[], outputs: any[] }>(this.apiBaseUrl + this.apiBasePath + '/lightning/api/v1/channels/txids/', { params });
   }
 
   lightningSearch$(searchText: string): Observable<any[]> {
