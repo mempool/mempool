@@ -12,6 +12,7 @@ import { ChannelsListComponent } from './channels-list/channels-list.component';
 import { ChannelComponent } from './channel/channel.component';
 import { LightningWrapperComponent } from './lightning-wrapper/lightning-wrapper.component';
 import { ChannelBoxComponent } from './channel/channel-box/channel-box.component';
+import { ClosingTypeComponent } from './channel/closing-type/closing-type.component';
 @NgModule({
   declarations: [
     LightningDashboardComponent,
@@ -22,6 +23,7 @@ import { ChannelBoxComponent } from './channel/channel-box/channel-box.component
     ChannelComponent,
     LightningWrapperComponent,
     ChannelBoxComponent,
+    ClosingTypeComponent,
   ],
   imports: [
     CommonModule,

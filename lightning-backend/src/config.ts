@@ -8,6 +8,9 @@ interface IConfig {
     API_URL_PREFIX: string;
     STDOUT_LOG_MIN_PRIORITY: 'emerg' | 'alert' | 'crit' | 'err' | 'warn' | 'notice' | 'info' | 'debug';
   };
+  ESPLORA: {
+    REST_API_URL: string;
+  };
   SYSLOG: {
     ENABLED: boolean;
     HOST: string;
@@ -43,6 +46,9 @@ const defaults: IConfig = {
     'API_URL_PREFIX': '/api/v1/',
     'STDOUT_LOG_MIN_PRIORITY': 'debug',
   },
+  'ESPLORA': {
+    'REST_API_URL': 'http://127.0.0.1:3000',
+  },
   'SYSLOG': {
     'ENABLED': true,
     'HOST': '127.0.0.1',
@@ -72,6 +78,7 @@ const defaults: IConfig = {
 
 class Config implements IConfig {
   MEMPOOL: IConfig['MEMPOOL'];
+  ESPLORA: IConfig['ESPLORA'];
   SYSLOG: IConfig['SYSLOG'];
   LN_NODE_AUTH: IConfig['LN_NODE_AUTH'];
   CORE_RPC: IConfig['CORE_RPC'];
@@ -80,6 +87,7 @@ class Config implements IConfig {
   constructor() {
     const configs = this.merge(configFile, defaults);
     this.MEMPOOL = configs.MEMPOOL;
+    this.ESPLORA = configs.ESPLORA;
     this.SYSLOG = configs.SYSLOG;
     this.LN_NODE_AUTH = configs.LN_NODE_AUTH;
     this.CORE_RPC = configs.CORE_RPC;

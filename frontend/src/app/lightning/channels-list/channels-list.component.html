@@ -52,7 +52,12 @@
   <td class="d-none d-md-table-cell">
     <span class="badge rounded-pill badge-secondary" *ngIf="channel.status === 0">Inactive</span>
     <span class="badge rounded-pill badge-success" *ngIf="channel.status === 1">Active</span>
-    <span class="badge rounded-pill badge-danger" *ngIf="channel.status === 2">Closed</span>
+    <ng-template [ngIf]="channel.status === 2">
+      <span class="badge rounded-pill badge-secondary" *ngIf="!channel.closing_reason; else closingReason">Closed</span>
+      <ng-template #closingReason>
+        <app-closing-type [type]="channel.closing_reason"></app-closing-type>
+      </ng-template>
+    </ng-template>
   </td>
   <td class="capacity text-left d-none d-md-table-cell">
     {{ node.fee_rate }} <span class="symbol">ppm ({{ node.fee_rate / 10000 | number }}%)</span>

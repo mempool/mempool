@@ -29,7 +29,7 @@
                 <td><app-time-since [dateString]="channel.updated_at"></app-time-since></td>
               </tr>
               <tr>
-                <td i18n="address.total-sent">Transaction ID</td>
+                <td i18n="address.total-sent">Opening transaction</td>
                 <td>
                   <a [routerLink]="['/tx' | relativeUrl, channel.transaction_id + ':' + channel.transaction_vout]" >
                     <span>{{ channel.transaction_id | shortenString : 10 }}</span>
@@ -37,6 +37,23 @@
                   <app-clipboard [text]="channel.transaction_id"></app-clipboard>
                 </td>
               </tr>
+              <ng-template [ngIf]="channel.closing_transaction_id">
+                <tr *ngIf="channel.closing_transaction_id">
+                  <td i18n="address.total-sent">Closing transaction</td>
+                  <td>
+                    <a [routerLink]="['/tx' | relativeUrl, channel.closing_transaction_id]" >
+                      <span>{{ channel.closing_transaction_id | shortenString : 10 }}</span>
+                    </a>
+                    <app-clipboard [text]="channel.closing_transaction_id"></app-clipboard>
+                  </td>
+                </tr>
+                <tr>
+                  <td i18n="address.total-sent">Closing type</td>
+                  <td>
+                    <app-closing-type [type]="channel.closing_reason"></app-closing-type>
+                  </td>
+                </tr>
+              </ng-template>
             </tbody>
           </table>
         </div>
@@ -69,3 +86,11 @@
 </div>
 
 <br>
+
+<ng-template [ngIf]="error">
+  <div class="text-center">
+    <span i18n="error.general-loading-data">Error loading data.</span>
+    <br><br>
+    <i>{{ error.status }}: {{ error.error }}</i>
+  </div>
+</ng-template>
