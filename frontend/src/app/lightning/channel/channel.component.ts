@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 import { SeoService } from 'src/app/services/seo.service';
 import { LightningApiService } from '../lightning-api.service';
 
@@ -13,6 +13,7 @@ import { LightningApiService } from '../lightning-api.service';
 })
 export class ChannelComponent implements OnInit {
   channel$: Observable<any>;
+  error: any = null;
 
   constructor(
     private lightningApiService: LightningApiService,
@@ -24,8 +25,16 @@ export class ChannelComponent implements OnInit {
     this.channel$ = this.activatedRoute.paramMap
       .pipe(
         switchMap((params: ParamMap) => {
+          this.error = null;
           this.seoService.setTitle(`Channel: ${params.get('short_id')}`);
-          return this.lightningApiService.getChannel$(params.get('short_id'));
+          return this.lightningApiService.getChannel$(params.get('short_id'))
+            .pipe(
+              catchError((err) => {
+                this.error = err;
+                console.log(this.error);
+                return of(null);
+              })
+            );
         })
       );
   }
