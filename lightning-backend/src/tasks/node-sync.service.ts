@@ -5,6 +5,10 @@ import lightningApi from '../api/lightning/lightning-api-factory';
 import { ILightningApi } from '../api/lightning/lightning-api.interface';
 import channelsApi from '../api/explorer/channels.api';
 import bitcoinClient from '../api/bitcoin/bitcoin-client';
+import bitcoinApi from '../api/bitcoin/bitcoin-api-factory';
+import config from '../config';
+import { IEsploraApi } from '../api/bitcoin/esplora-api.interface';
+import e from 'express';
 
 class NodeSyncService {
   constructor() {}
@@ -38,14 +42,17 @@ class NodeSyncService {
       await this.$findInactiveNodesAndChannels();
       logger.debug(`Inactive channels scan complete`);
 
-      await this.$scanForClosedChannels();
-      logger.debug(`Closed channels scan complete`);
-
       await this.$lookUpCreationDateFromChain();
       logger.debug(`Channel creation dates scan complete`);
 
       await this.$updateNodeFirstSeen();
       logger.debug(`Node first seen dates scan complete`);
+
+      await this.$scanForClosedChannels();
+      logger.debug(`Closed channels scan complete`);
+
+      await this.$runClosedChannelsForensics();
+      logger.debug(`Closed channels forensics scan complete`);
 
     } catch (e) {
       logger.err('$updateNodes() error: ' + (e instanceof Error ? e.message : e));
@@ -109,15 +116,127 @@ class NodeSyncService {
     try {
       const channels = await channelsApi.$getChannelsByStatus(0);
       for (const channel of channels) {
-        const outspends = await bitcoinClient.getTxOut(channel.transaction_id, channel.transaction_vout);
-        if (outspends === null) {
+        const spendingTx = await bitcoinApi.$getOutspend(channel.transaction_id, channel.transaction_vout);
+        if (spendingTx.spent === true && spendingTx.status?.confirmed === true) {
           logger.debug('Marking channel: ' + channel.id + ' as closed.');
           await DB.query(`UPDATE channels SET status = 2 WHERE id = ?`, [channel.id]);
+          if (spendingTx.txid && !channel.closing_transaction_id) {
+            await DB.query(`UPDATE channels SET closing_transaction_id = ? WHERE id = ?`, [spendingTx.txid, channel.id]);
+          }
         }
       }
     } catch (e) {
-      logger.err('$updateNodes() error: ' + (e instanceof Error ? e.message : e));
+      logger.err('$scanForClosedChannels() error: ' + (e instanceof Error ? e.message : e));
     }
+  }
+
+  /*
+    1. Mutually closed
+    2. Forced closed
+    3. Forced closed with penalty
+  */
+
+  private async $runClosedChannelsForensics(): Promise<void> {
+    if (!config.ESPLORA.REST_API_URL) {
+      return;
+    }
+
+    try {
+      const channels = await channelsApi.$getClosedChannelsWithoutReason();
+      for (const channel of channels) {
+        let reason = 0;
+        // Only Esplora backend can retrieve spent transaction outputs
+        const outspends = await bitcoinApi.$getOutspends(channel.closing_transaction_id);
+        const lightningScriptReasons: number[] = [];
+        for (const outspend of outspends) {
+          if (outspend.spent && outspend.txid) {
+            const spendingTx = await bitcoinApi.$getRawTransaction(outspend.txid);
+            const lightningScript = this.findLightningScript(spendingTx.vin[outspend.vin || 0]);
+            lightningScriptReasons.push(lightningScript);
+          }
+        }
+        if (lightningScriptReasons.length === outspends.length
+          && lightningScriptReasons.filter((r) => r === 1).length === outspends.length) {
+          reason = 1;
+        } else {
+          const filteredReasons = lightningScriptReasons.filter((r) => r !== 1);
+          if (filteredReasons.length) {
+            if (filteredReasons.some((r) => r === 2 || r === 4)) {
+              reason = 3;
+            } else {
+              reason = 2;
+            }
+          } else {
+            /*
+              We can detect a commitment transaction (force close) by reading Sequence and Locktime
+              https://github.com/lightning/bolts/blob/master/03-transactions.md#commitment-transaction
+            */
+            const closingTx = await bitcoinApi.$getRawTransaction(channel.closing_transaction_id);
+            const sequenceHex: string = closingTx.vin[0].sequence.toString(16);
+            const locktimeHex: string = closingTx.locktime.toString(16);
+            if (sequenceHex.substring(0, 2) === '80' && locktimeHex.substring(0, 2) === '20') {
+              reason = 2; // Here we can't be sure if it's a penalty or not
+            } else {
+              reason = 1;
+            }
+          }
+        }
+        if (reason) {
+          logger.debug('Setting closing reason ' + reason + ' for channel: ' + channel.id + '.');
+          await DB.query(`UPDATE channels SET closing_reason = ? WHERE id = ?`, [reason, channel.id]);
+        }
+      }
+    } catch (e) {
+      logger.err('$runClosedChannelsForensics() error: ' + (e instanceof Error ? e.message : e));
+    }
+  }
+
+  private findLightningScript(vin: IEsploraApi.Vin): number {
+    const topElement = vin.witness[vin.witness.length - 2];
+      if (/^OP_IF OP_PUSHBYTES_33 \w{66} OP_ELSE OP_PUSH(NUM_\d+|BYTES_(1 \w{2}|2 \w{4})) OP_CSV OP_DROP OP_PUSHBYTES_33 \w{66} OP_ENDIF OP_CHECKSIG$/.test(vin.inner_witnessscript_asm)) {
+        // https://github.com/lightning/bolts/blob/master/03-transactions.md#commitment-transaction-outputs
+        if (topElement === '01') {
+          // top element is '01' to get in the revocation path
+          // 'Revoked Lightning Force Close';
+          // Penalty force closed
+          return 2;
+        } else {
+          // top element is '', this is a delayed to_local output
+          // 'Lightning Force Close';
+          return 3;
+        }
+      } else if (
+        /^OP_DUP OP_HASH160 OP_PUSHBYTES_20 \w{40} OP_EQUAL OP_IF OP_CHECKSIG OP_ELSE OP_PUSHBYTES_33 \w{66} OP_SWAP OP_SIZE OP_PUSHBYTES_1 20 OP_EQUAL OP_NOTIF OP_DROP OP_PUSHNUM_2 OP_SWAP OP_PUSHBYTES_33 \w{66} OP_PUSHNUM_2 OP_CHECKMULTISIG OP_ELSE OP_HASH160 OP_PUSHBYTES_20 \w{40} OP_EQUALVERIFY OP_CHECKSIG OP_ENDIF (OP_PUSHNUM_1 OP_CSV OP_DROP |)OP_ENDIF$/.test(vin.inner_witnessscript_asm) ||
+        /^OP_DUP OP_HASH160 OP_PUSHBYTES_20 \w{40} OP_EQUAL OP_IF OP_CHECKSIG OP_ELSE OP_PUSHBYTES_33 \w{66} OP_SWAP OP_SIZE OP_PUSHBYTES_1 20 OP_EQUAL OP_IF OP_HASH160 OP_PUSHBYTES_20 \w{40} OP_EQUALVERIFY OP_PUSHNUM_2 OP_SWAP OP_PUSHBYTES_33 \w{66} OP_PUSHNUM_2 OP_CHECKMULTISIG OP_ELSE OP_DROP OP_PUSHBYTES_3 \w{6} OP_CLTV OP_DROP OP_CHECKSIG OP_ENDIF (OP_PUSHNUM_1 OP_CSV OP_DROP |)OP_ENDIF$/.test(vin.inner_witnessscript_asm)
+      ) {
+        // https://github.com/lightning/bolts/blob/master/03-transactions.md#offered-htlc-outputs
+        // https://github.com/lightning/bolts/blob/master/03-transactions.md#received-htlc-outputs
+        if (topElement.length === 66) {
+          // top element is a public key
+          // 'Revoked Lightning HTLC'; Penalty force closed
+          return 4;
+        } else if (topElement) {
+          // top element is a preimage
+          // 'Lightning HTLC';
+          return 5;
+        } else {
+          // top element is '' to get in the expiry of the script
+          // 'Expired Lightning HTLC';
+          return 6;
+        }
+      } else if (/^OP_PUSHBYTES_33 \w{66} OP_CHECKSIG OP_IFDUP OP_NOTIF OP_PUSHNUM_16 OP_CSV OP_ENDIF$/.test(vin.inner_witnessscript_asm)) {
+        // https://github.com/lightning/bolts/blob/master/03-transactions.md#to_local_anchor-and-to_remote_anchor-output-option_anchors
+        if (topElement) {
+          // top element is a signature
+          // 'Lightning Anchor';
+          return 7;
+        } else {
+          // top element is '', it has been swept after 16 blocks
+          // 'Swept Lightning Anchor';
+          return 8;
+        }
+      }
+      return 1;
   }
 
   private async $saveChannel(channel: ILightningApi.Channel): Promise<void> {

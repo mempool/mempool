@@ -6,6 +6,9 @@
     "API_URL_PREFIX": "/api/v1/",
     "STDOUT_LOG_MIN_PRIORITY": "debug"
   },
+  "ESPLORA": {
+    "REST_API_URL": ""
+  },
   "SYSLOG": {
     "ENABLED": false,
     "HOST": "127.0.0.1",

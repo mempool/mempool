@@ -36,6 +36,17 @@ class ChannelsApi {
     }
   }
 
+  public async $getClosedChannelsWithoutReason(): Promise<any[]> {
+    try {
+      const query = `SELECT * FROM channels WHERE status = 2 AND closing_reason IS NULL`;
+      const [rows]: any = await DB.query(query);
+      return rows;
+    } catch (e) {
+      logger.err('$getClosedChannelsWithoutReason error: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
   public async $getChannelsWithoutCreatedDate(): Promise<any[]> {
     try {
       const query = `SELECT * FROM channels WHERE created IS NULL`;
@@ -115,6 +126,8 @@ class ChannelsApi {
       'capacity': channel.capacity,
       'transaction_id': channel.transaction_id,
       'transaction_vout': channel.transaction_vout,
+      'closing_transaction_id': channel.closing_transaction_id,
+      'closing_reason': channel.closing_reason,
       'updated_at': channel.updated_at,
       'created': channel.created,
       'status': channel.status,
