@@ -40,7 +40,15 @@
             <app-sats [satoshis]="channel.max_htlc_mtokens / 1000"></app-sats>
           </td>
         </tr>
+        <tr>
+          <td i18n="address.total-sent">Timelock delta</td>
+          <td>
+            <ng-container *ngTemplateOutlet="blocksPlural; context: {$implicit: channel.cltv_delta }"></ng-container>
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
 </div>
+
+<ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
