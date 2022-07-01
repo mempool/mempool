@@ -13,6 +13,8 @@ import { ChannelComponent } from './channel/channel.component';
 import { LightningWrapperComponent } from './lightning-wrapper/lightning-wrapper.component';
 import { ChannelBoxComponent } from './channel/channel-box/channel-box.component';
 import { ClosingTypeComponent } from './channel/closing-type/closing-type.component';
+import { LightningStatisticsChartComponent } from './statistics-chart/lightning-statistics-chart.component';
+import { NgxEchartsModule } from 'ngx-echarts';
 @NgModule({
   declarations: [
     LightningDashboardComponent,
@@ -24,12 +26,16 @@ import { ClosingTypeComponent } from './channel/closing-type/closing-type.compon
     LightningWrapperComponent,
     ChannelBoxComponent,
     ClosingTypeComponent,
+    LightningStatisticsChartComponent,
   ],
   imports: [
     CommonModule,
     SharedModule,
     RouterModule,
     LightningRoutingModule,
+    NgxEchartsModule.forRoot({
+      echarts: () => import('echarts')
+    })
   ],
   providers: [
     LightningApiService,
