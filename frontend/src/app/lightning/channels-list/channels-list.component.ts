@@ -40,6 +40,8 @@ export class ChannelsListComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(): void {
+    this.channelStatusForm.get('status').setValue(this.defaultStatus, { emitEvent: false })
+
     this.channels$ = combineLatest([
       this.channelsPage$,
       this.channelStatusForm.get('status').valueChanges.pipe(startWith(this.defaultStatus))

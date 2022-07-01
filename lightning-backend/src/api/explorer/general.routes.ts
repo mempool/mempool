@@ -2,12 +2,14 @@ import config from '../../config';
 import { Express, Request, Response } from 'express';
 import nodesApi from './nodes.api';
 import channelsApi from './channels.api';
+import statisticsApi from './statistics.api';
 class GeneralRoutes {
   constructor() { }
 
   public initRoutes(app: Express) {
     app
     .get(config.MEMPOOL.API_URL_PREFIX + 'search', this.$searchNodesAndChannels)
+    .get(config.MEMPOOL.API_URL_PREFIX + 'statistics', this.$getStatistics)
   ;
   }
 
@@ -23,6 +25,15 @@ class GeneralRoutes {
         nodes: nodes,
         channels: channels,
       });
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getStatistics(req: Request, res: Response) {
+    try {
+      const statistics = await statisticsApi.$getStatistics();
+      res.json(statistics);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

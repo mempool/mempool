@@ -27,6 +27,20 @@
     <div class="col">
       <div class="card">
         <div class="card-body">
+          <app-lightning-statistics-chart [widget]=true></app-lightning-statistics-chart>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card-wrapper">
+        
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
           <h5 class="card-title">Top Capacity Nodes</h5>
           <app-nodes-list [nodes$]="nodesByCapacity$"></app-nodes-list>
           <div><a [routerLink]="['/lightning/nodes' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
