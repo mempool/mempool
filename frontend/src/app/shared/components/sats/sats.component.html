@@ -1,4 +1,4 @@
-&lrm;{{ addPlus && satoshis >= 0 ? '+' : '' }}{{ satoshis | number : '1.0-0' }}
+&lrm;{{ addPlus && satoshis >= 0 ? '+' : '' }}{{ satoshis | number : digitsInfo }}
 <span class="symbol"><ng-template [ngIf]="network === 'liquid'">L-</ng-template>
 <ng-template [ngIf]="network === 'liquidtestnet'">tL-</ng-template>
 <ng-template [ngIf]="network === 'testnet'">t-</ng-template>
