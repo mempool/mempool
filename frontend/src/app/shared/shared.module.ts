@@ -76,6 +76,7 @@ import { SvgImagesComponent } from '../components/svg-images/svg-images.componen
 import { ChangeComponent } from '../components/change/change.component';
 import { SatsComponent } from './components/sats/sats.component';
 import { SearchResultsComponent } from '../components/search-form/search-results/search-results.component';
+import { TimestampComponent } from './components/timestamp/timestamp.component';
 
 @NgModule({
   declarations: [
@@ -146,6 +147,7 @@ import { SearchResultsComponent } from '../components/search-form/search-results
     ChangeComponent,
     SatsComponent,
     SearchResultsComponent,
+    TimestampComponent,
   ],
   imports: [
     CommonModule,
@@ -244,6 +246,7 @@ import { SearchResultsComponent } from '../components/search-form/search-results
     ChangeComponent,
     SatsComponent,
     SearchResultsComponent,
+    TimestampComponent,
   ]
 })
 export class SharedModule {
