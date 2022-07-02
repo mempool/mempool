@@ -15,7 +15,7 @@ class NodesApi {
 
   public async $getNodeStats(public_key: string): Promise<any> {
     try {
-      const query = `SELECT * FROM node_stats WHERE public_key = ? ORDER BY added DESC`;
+      const query = `SELECT UNIX_TIMESTAMP(added) AS added, capacity, channels FROM node_stats WHERE public_key = ? ORDER BY added DESC`;
       const [rows]: any = await DB.query(query, [public_key]);
       return rows;
     } catch (e) {

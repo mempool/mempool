@@ -1,19 +1,18 @@
 import { Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
-import { EChartsOption, graphic } from 'echarts';
+import { EChartsOption } from 'echarts';
 import { Observable } from 'rxjs';
-import { startWith, switchMap, tap } from 'rxjs/operators';
-import { SeoService } from 'src/app/services/seo.service';
+import { switchMap, tap } from 'rxjs/operators';
 import { formatNumber } from '@angular/common';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { StorageService } from 'src/app/services/storage.service';
-import { MiningService } from 'src/app/services/mining.service';
 import { download } from 'src/app/shared/graphs.utils';
 import { LightningApiService } from '../lightning-api.service';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 
 @Component({
-  selector: 'app-lightning-statistics-chart',
-  templateUrl: './lightning-statistics-chart.component.html',
-  styleUrls: ['./lightning-statistics-chart.component.scss'],
+  selector: 'app-node-statistics-chart',
+  templateUrl: './node-statistics-chart.component.html',
+  styleUrls: ['./node-statistics-chart.component.scss'],
   styles: [`
     .loadingGraphs {
       position: absolute;
@@ -23,7 +22,8 @@ import { LightningApiService } from '../lightning-api.service';
     }
   `],
 })
-export class LightningStatisticsChartComponent implements OnInit {
+export class NodeStatisticsChartComponent implements OnInit {
+  @Input() publicKey: string;
   @Input() right: number | string = 65;
   @Input() left: number | string = 55;
   @Input() widget = false;
@@ -46,39 +46,24 @@ export class LightningStatisticsChartComponent implements OnInit {
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
-    private seoService: SeoService,
     private lightningApiService: LightningApiService,
-    private formBuilder: FormBuilder,
     private storageService: StorageService,
-    private miningService: MiningService,
+    private activatedRoute: ActivatedRoute,
   ) {
   }
 
   ngOnInit(): void {
-    let firstRun = true;
 
-    this.seoService.setTitle($localize`:@@mining.hashrate-difficulty:Hashrate and Weight`);
-    this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
-    this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
-    this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
-
-    this.radioGroupForm.get('dateSpan').valueChanges
+    this.activatedRoute.paramMap
       .pipe(
-        startWith(this.miningWindowPreference),
-        switchMap((timespan) => {
-          this.timespan = timespan;
-          if (!firstRun) {
-            this.storageService.setValue('miningWindowPreference', timespan);
-          }
-          firstRun = false;
-          this.miningWindowPreference = timespan;
+        switchMap((params: ParamMap) => {
           this.isLoading = true;
-          return this.lightningApiService.listStatistics$()
+          return this.lightningApiService.listNodeStats$(params.get('public_key'))
             .pipe(
               tap((data) => {
                 this.prepareChartOptions({
-                  nodes: data.map(val => [val.added * 1000, val.node_count]),
-                  capacity: data.map(val => [val.added * 1000, val.total_capacity]),
+                  channels: data.map(val => [val.added * 1000, val.channels]),
+                  capacity: data.map(val => [val.added * 1000, val.capacity]),
                 });
                 this.isLoading = false;
               }),
@@ -90,13 +75,13 @@ export class LightningStatisticsChartComponent implements OnInit {
 
   prepareChartOptions(data) {
     let title: object;
-    if (data.nodes.length === 0) {
+    if (data.channels.length === 0) {
       title = {
         textStyle: {
           color: 'grey',
           fontSize: 15
         },
-        text: `Indexing in progess`,
+        text: `Loading`,
         left: 'center',
         top: 'center'
       };
@@ -134,7 +119,7 @@ export class LightningStatisticsChartComponent implements OnInit {
           let weightString = '';
 
           for (const tick of ticks) {
-            if (tick.seriesIndex === 0) { // Nodes
+            if (tick.seriesIndex === 0) { // Channels
               sizeString = `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')}`;
             } else if (tick.seriesIndex === 1) { // Capacity
               weightString = `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1] / 100000000, this.locale, '1.0-0')} BTC`;
@@ -143,25 +128,25 @@ export class LightningStatisticsChartComponent implements OnInit {
 
           const date = new Date(ticks[0].data[0]).toLocaleDateString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
 
-          let tooltip = `<b style="color: white; margin-left: 18px">${date}</b><br>
+          const tooltip = `<b style="color: white; margin-left: 18px">${date}</b><br>
             <span>${sizeString}</span><br>
             <span>${weightString}</span>`;
 
           return tooltip;
         }
       },
-      xAxis: data.nodes.length === 0 ? undefined : {
+      xAxis: data.channels.length === 0 ? undefined : {
         type: 'time',
         splitNumber: this.isMobile() ? 5 : 10,
         axisLabel: {
           hideOverlap: true,
         }
       },
-      legend: data.nodes.length === 0 ? undefined : {
+      legend: data.channels.length === 0 ? undefined : {
         padding: 10,
         data: [
           {
-            name: 'Nodes',
+            name: 'Channels',
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -178,11 +163,11 @@ export class LightningStatisticsChartComponent implements OnInit {
           },
         ],
         selected: JSON.parse(this.storageService.getValue('sizes_ln_legend'))  ?? {
-          'Nodes': true,
+          'Channels': true,
           'Capacity': true,
         }
       },
-      yAxis: data.nodes.length === 0 ? undefined : [
+      yAxis: data.channels.length === 0 ? undefined : [
         {
           min: (value) => {
             return value.min * 0.9;
@@ -219,14 +204,15 @@ export class LightningStatisticsChartComponent implements OnInit {
           }
         }
       ],
-      series: data.nodes.length === 0 ? [] : [
+      series: data.channels.length === 0 ? [] : [
         {
           zlevel: 1,
-          name: 'Nodes',
+          name: 'Channels',
           showSymbol: false,
           symbol: 'none',
-          data: data.nodes,
+          data: data.channels,
           type: 'line',
+          step: 'middle',
           lineStyle: {
             width: 2,
           },
@@ -260,6 +246,7 @@ export class LightningStatisticsChartComponent implements OnInit {
           data: data.capacity,
           areaStyle: {},
           type: 'line',
+          step: 'middle',
         }
       ],
     };
