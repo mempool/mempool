@@ -14,12 +14,14 @@ import { LightningWrapperComponent } from './lightning-wrapper/lightning-wrapper
 import { ChannelBoxComponent } from './channel/channel-box/channel-box.component';
 import { ClosingTypeComponent } from './channel/closing-type/closing-type.component';
 import { LightningStatisticsChartComponent } from './statistics-chart/lightning-statistics-chart.component';
+import { NodeStatisticsChartComponent } from './node-statistics-chart/node-statistics-chart.component';
 import { NgxEchartsModule } from 'ngx-echarts';
 @NgModule({
   declarations: [
     LightningDashboardComponent,
     NodesListComponent,
     NodeStatisticsComponent,
+    NodeStatisticsChartComponent,
     NodeComponent,
     ChannelsListComponent,
     ChannelComponent,
