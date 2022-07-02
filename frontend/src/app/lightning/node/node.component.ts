@@ -55,13 +55,6 @@ export class NodeComponent implements OnInit {
           return node;
         }),
       );
-
-    this.statistics$ = this.activatedRoute.paramMap
-      .pipe(
-        switchMap((params: ParamMap) => {
-          return this.lightningApiService.listNodeStats$(params.get('public_key'));
-        })
-      );
   }
 
   changeSocket(index: number) {

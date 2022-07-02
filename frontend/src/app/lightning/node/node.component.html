@@ -86,6 +86,10 @@
         <app-clipboard [text]="node.socketsObject[selectedSocketIndex].socket"></app-clipboard>
       </button>
     </div>
+
+    <br>
+
+    <app-node-statistics-chart [publicKey]="node.public_key"></app-node-statistics-chart>
     
     <br>
 
