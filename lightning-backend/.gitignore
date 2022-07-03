@@ -3,6 +3,10 @@
 # production config and external assets
 *.json
 !mempool-config.sample.json
+!package.json
+!package-lock.json
+!tslint.json
+!tsconfig.json
 
 # compiled output
 /dist
