@@ -21,6 +21,7 @@ interface IConfig {
   LN_NODE_AUTH: {
     TLS_CERT_PATH: string;
     MACAROON_PATH: string;
+    SOCKET: string;
   };
   CORE_RPC: {
     HOST: string;
@@ -59,6 +60,7 @@ const defaults: IConfig = {
   'LN_NODE_AUTH': {
     'TLS_CERT_PATH': '',
     'MACAROON_PATH': '',
+    'SOCKET': 'localhost:10009',
   },
   'CORE_RPC': {
     'HOST': '127.0.0.1',

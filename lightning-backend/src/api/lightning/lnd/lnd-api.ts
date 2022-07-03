@@ -15,7 +15,7 @@ class LndApi implements AbstractLightningApi {
       const { lnd } = lnService.authenticatedLndGrpc({
         cert: tls,
         macaroon: macaroon,
-        socket: 'localhost:10009',
+        socket: config.LN_NODE_AUTH.SOCKET,
       });
 
       this.lnd = lnd;
