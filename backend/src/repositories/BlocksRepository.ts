@@ -6,6 +6,7 @@ import { prepareBlock } from '../utils/blocks-utils';
 import PoolsRepository from './PoolsRepository';
 import HashratesRepository from './HashratesRepository';
 import { escape } from 'mysql2';
+import BlocksSummariesRepository from './BlocksSummariesRepository';
 
 class BlocksRepository {
   /**
@@ -495,6 +496,7 @@ class BlocksRepository {
         if (blocks[idx].previous_block_hash !== blocks[idx - 1].hash) {
           logger.warn(`Chain divergence detected at block ${blocks[idx - 1].height}, re-indexing newer blocks and hashrates`);
           await this.$deleteBlocksFrom(blocks[idx - 1].height);
+          await BlocksSummariesRepository.$deleteBlocksFrom(blocks[idx - 1].height);
           await HashratesRepository.$deleteHashratesFromTimestamp(blocks[idx - 1].timestamp - 604800);
           return false;
         }
@@ -646,6 +648,19 @@ class BlocksRepository {
       query += ` GROUP BY UNIX_TIMESTAMP(blockTimestamp) DIV ${div}`;
 
       const [rows]: any = await DB.query(query);
+      return rows;
+    } catch (e) {
+      logger.err('Cannot generate block size and weight history. Reason: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Get a list of blocks that have been indexed
+   */
+  public async $getIndexedBlocks(): Promise<any[]> {
+    try {
+      const [rows]: any = await DB.query(`SELECT height, hash FROM blocks ORDER BY height DESC`);
       return rows;
     } catch (e) {
       logger.err('Cannot generate block size and weight history. Reason: ' + (e instanceof Error ? e.message : e));

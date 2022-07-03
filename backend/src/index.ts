@@ -27,6 +27,7 @@ import icons from './api/liquid/icons';
 import { Common } from './api/common';
 import poolsUpdater from './tasks/pools-updater';
 import indexer from './indexer';
+import priceUpdater from './tasks/price-updater';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -153,6 +154,7 @@ class Server {
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
       indexer.$run();
+      priceUpdater.$run();
 
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;
@@ -195,6 +197,7 @@ class Server {
   setUpHttpApiRoutes() {
     this.app
       .get(config.MEMPOOL.API_URL_PREFIX + 'transaction-times', routes.getTransactionTimes)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'outspends', routes.$getBatchedOutspends)
       .get(config.MEMPOOL.API_URL_PREFIX + 'cpfp/:txId', routes.getCpfpInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'difficulty-adjustment', routes.getDifficultyChange)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/recommended', routes.getRecommendedFees)
