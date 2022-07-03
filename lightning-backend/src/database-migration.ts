@@ -215,6 +215,7 @@ class DatabaseMigration {
       created datetime DEFAULT NULL,
       status int(11) NOT NULL DEFAULT 0,
       closing_transaction_id varchar(64) DEFAULT NULL,
+      closing_date datetime DEFAULT NULL,
       closing_reason int(11) DEFAULT NULL,
       node1_public_key varchar(66) NOT NULL,
       node1_base_fee_mtokens bigint(20) unsigned DEFAULT NULL,

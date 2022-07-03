@@ -119,7 +119,8 @@ class NodeSyncService {
         const spendingTx = await bitcoinApi.$getOutspend(channel.transaction_id, channel.transaction_vout);
         if (spendingTx.spent === true && spendingTx.status?.confirmed === true) {
           logger.debug('Marking channel: ' + channel.id + ' as closed.');
-          await DB.query(`UPDATE channels SET status = 2 WHERE id = ?`, [channel.id]);
+          await DB.query(`UPDATE channels SET status = 2, closing_date = FROM_UNIXTIME(?) WHERE id = ?`,
+            [spendingTx.status.block_time, channel.id]);
           if (spendingTx.txid && !channel.closing_transaction_id) {
             await DB.query(`UPDATE channels SET closing_transaction_id = ? WHERE id = ?`, [spendingTx.txid, channel.id]);
           }
