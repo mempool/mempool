@@ -19,7 +19,7 @@ interface IConfig {
     FACILITY: string;
   };
   LN_NODE_AUTH: {
-    TSL_CERT_PATH: string;
+    TLS_CERT_PATH: string;
     MACAROON_PATH: string;
   };
   CORE_RPC: {
@@ -57,7 +57,7 @@ const defaults: IConfig = {
     'FACILITY': 'local7'
   },
   'LN_NODE_AUTH': {
-    'TSL_CERT_PATH': '',
+    'TLS_CERT_PATH': '',
     'MACAROON_PATH': '',
   },
   'CORE_RPC': {
