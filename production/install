@@ -282,7 +282,7 @@ BITCOIN_REPO_URL=https://github.com/bitcoin/bitcoin
 BITCOIN_REPO_NAME=bitcoin
 BITCOIN_REPO_BRANCH=master
 #BITCOIN_LATEST_RELEASE=$(curl -s https://api.github.com/repos/bitcoin/bitcoin/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
-BITCOIN_LATEST_RELEASE=v22.0
+BITCOIN_LATEST_RELEASE=v23.0
 echo -n '.'
 
 BISQ_REPO_URL=https://github.com/bisq-network/bisq
@@ -921,7 +921,7 @@ if [ "${BITCOIN_INSTALL}" = ON ];then
 
     echo "[*] Building Bitcoin from source repo"
     osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && ./autogen.sh --quiet"
-    osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && MAKE=gmake CC=cc CXX=c++ CPPFLAGS=-I/usr/local/include ./configure --with-gui=no --disable-wallet --disable-tests"
+    osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && MAKE=gmake CPPFLAGS=-I/usr/local/include ./configure --with-gui=no --disable-wallet --disable-tests"
     osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && gmake -j48"
 
     echo "[*] Installing Bitcoin binaries into OS"
