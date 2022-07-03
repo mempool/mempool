@@ -140,9 +140,8 @@ export default class TxView implements TransactionStripped {
   }
 
   getColor(): Color {
-    let feeLevelIndex = feeLevels.slice().reverse().findIndex((feeLvl) => (this.feerate || 1) >= feeLvl);
-    feeLevelIndex = feeLevelIndex >= 0 ? feeLevels.length - feeLevelIndex : feeLevelIndex;
-    return hexToColor(mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
+    const feeLevelIndex = feeLevels.findIndex((feeLvl) => Math.max(1, this.feerate) < feeLvl) - 1;
+    return hexToColor(mempoolFeeColors[feeLevelIndex] || mempoolFeeColors[mempoolFeeColors.length - 1]);
   }
 }
 
