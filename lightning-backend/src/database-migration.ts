@@ -199,7 +199,8 @@ class DatabaseMigration {
       alias varchar(200) CHARACTER SET utf8mb4 NOT NULL,
       color varchar(200) NOT NULL,
       sockets text DEFAULT NULL,
-      PRIMARY KEY (public_key)
+      PRIMARY KEY (public_key),
+      KEY alias (alias(10))
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
