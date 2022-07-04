@@ -330,7 +330,7 @@ DEBIAN_PKG+=(nodejs npm mariadb-server nginx-core python-certbot-nginx rsync ufw
 # packages needed for mempool ecosystem
 FREEBSD_PKG=()
 FREEBSD_PKG+=(zsh sudo git screen curl wget calc neovim)
-FREEBSD_PKG+=(openssh-portable py38-pip rust llvm90 jq base64)
+FREEBSD_PKG+=(openssh-portable py38-pip rust llvm90 jq base64 libzmq4)
 FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc libevent libtool pkgconf)
 FREEBSD_PKG+=(nginx rsync py38-certbot-nginx mariadb105-server keybase)
 
@@ -864,7 +864,7 @@ if [ "${BITCOIN_INSTALL}" = ON ];then
 
     echo "[*] Building Bitcoin from source repo"
     osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && ./autogen.sh --quiet"
-    osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && MAKE=gmake CPPFLAGS=-I/usr/local/include ./configure --with-gui=no --disable-wallet --disable-tests"
+    osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && MAKE=gmake CC=cc CXX=c++ CPPFLAGS=-I/usr/local/include ./configure --with-gui=no --disable-wallet --disable-tests"
     osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && gmake -j48"
 
     echo "[*] Installing Bitcoin binaries into OS"

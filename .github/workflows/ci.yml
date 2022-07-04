@@ -1,0 +1,48 @@
+name: CI Pipeline for the Backend and Frontend
+on:
+  push:
+env:
+  NODE_VERSION: 16.15.0
+jobs:
+  build_backend:
+    name: Build backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install 
+        run: npm install --prod
+        working-directory: backend
+    #  - name: Lint 
+    #    run: npm run lint
+    #  - name: Test 
+    #    run: npm run test
+      - name: Build
+        run: npm run build
+        working-directory: backend
+  build_frontend:
+    name: Build frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install 
+        run: npm install --prod
+        working-directory: frontend
+      # - name: Lint 
+      #   run: npm run lint
+      # - name: Test 
+      #   run: npm run test
+      - name: Build
+        run: npm run build
+        working-directory: frontend
