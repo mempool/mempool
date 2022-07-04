@@ -1,7 +1,9 @@
 import logger from '../logger';
 import * as WebSocket from 'ws';
-import { BlockExtended, TransactionExtended, WebsocketResponse, MempoolBlock, MempoolBlockDelta,
-  OptimizedStatistic, ILoadingIndicators, IConversionRates } from '../mempool.interfaces';
+import {
+  BlockExtended, TransactionExtended, WebsocketResponse, MempoolBlock, MempoolBlockDelta,
+  OptimizedStatistic, ILoadingIndicators, IConversionRates
+} from '../mempool.interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
 import backendInfo from './backend-info';
@@ -164,7 +166,7 @@ class WebsocketHandler {
       throw new Error('WebSocket.Server is not set');
     }
 
-    this.wss.clients.forEach((client: WebSocket) => {
+    this.wss.clients.forEach((client) => {
       if (client.readyState !== WebSocket.OPEN) {
         return;
       }
@@ -179,7 +181,7 @@ class WebsocketHandler {
       throw new Error('WebSocket.Server is not set');
     }
 
-    this.wss.clients.forEach((client: WebSocket) => {
+    this.wss.clients.forEach((client) => {
       if (client.readyState !== WebSocket.OPEN) {
         return;
       }
@@ -192,7 +194,7 @@ class WebsocketHandler {
       throw new Error('WebSocket.Server is not set');
     }
 
-    this.wss.clients.forEach((client: WebSocket) => {
+    this.wss.clients.forEach((client) => {
       if (client.readyState !== WebSocket.OPEN) {
         return;
       }
@@ -224,7 +226,7 @@ class WebsocketHandler {
       throw new Error('WebSocket.Server is not set');
     }
 
-    this.wss.clients.forEach((client: WebSocket) => {
+    this.wss.clients.forEach((client) => {
       if (client.readyState !== WebSocket.OPEN) {
         return;
       }
@@ -255,7 +257,7 @@ class WebsocketHandler {
     memPool.handleRbfTransactions(rbfTransactions);
     const recommendedFees = feeApi.getRecommendedFee();
 
-    this.wss.clients.forEach(async (client: WebSocket) => {
+    this.wss.clients.forEach(async (client) => {
       if (client.readyState !== WebSocket.OPEN) {
         return;
       }
