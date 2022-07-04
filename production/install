@@ -320,7 +320,7 @@ LIQUIDTESTNET_ASSET_REGISTRY_DB_NAME=asset_registry_testnet_db
 
 # packages needed for mempool ecosystem
 DEBIAN_PKG=()
-DEBIAN_PKG+=(zsh vim curl screen openssl python3)
+DEBIAN_PKG+=(zsh vim curl screen openssl python3 dialog)
 DEBIAN_PKG+=(build-essential git git-lfs clang cmake jq)
 DEBIAN_PKG+=(autotools-dev autoconf automake pkg-config bsdmainutils)
 DEBIAN_PKG+=(libevent-dev libdb-dev libssl-dev libtool-dev autotools-dev)
@@ -683,99 +683,42 @@ HOSTNAME=$(cat $tempfile)
 
 $DIALOG --ok-label "Submit" \
     --backtitle "$backtitle" "$@" \
-    --form "Your fullnode will be installed as follows:" 30 70 0 \
-    "BISQ_BLOCKNOTIFY_PORT"             1 1 "${BISQ_BLOCKNOTIFY_PORT}"              1 35 35 0 \
-    "BISQ_GROUP"                        2 1 "${BISQ_GROUP}"                         2 35 35 0 \
-    "BISQ_HOME"                         3 1 "${BISQ_HOME}"                          3 35 35 0 \
-    "BISQ_INSTALL"                      4 1 "${BISQ_INSTALL}"                       4 35 35 0 \
-    "BISQ_LATEST_RELEASE"               5 1 "${BISQ_LATEST_RELEASE}"                5 35 35 0 \
-    "BISQ_MAINNET_ENABLE"               6 1 "${BISQ_MAINNET_ENABLE}"                6 35 35 0 \
-    "BISQ_REPO_BRANCH"                  7 1 "${BISQ_REPO_BRANCH}"                   7 35 35 0 \
-    "BISQ_REPO_NAME"                    8 1 "${BISQ_REPO_NAME}"                     8 35 35 0 \
-    "BISQ_REPO_URL"                     9 1 "${BISQ_REPO_URL}"                      9 35 35 0 \
-    "BISQ_USER"                         10 1 "${BISQ_USER}"                         10 35 35 0 \
-    "BITCOIN_ELECTRS_COMPACTION"        11 1 "${BITCOIN_ELECTRS_COMPACTION}"        11 35 35 0 \
-    "BITCOIN_ELECTRS_HOME"              12 1 "${BITCOIN_ELECTRS_HOME}"              12 35 35 0 \
-    "BITCOIN_ELECTRS_LATEST_RELEASE"    13 1 "${BITCOIN_ELECTRS_LATEST_RELEASE}"    13 35 35 0 \
-    "BITCOIN_ELECTRS_LIGHT_MODE"        14 1 "${BITCOIN_ELECTRS_LIGHT_MODE}"        14 35 35 0 \
-    "BITCOIN_ELECTRS_REPO_BRANCH"       15 1 "${BITCOIN_ELECTRS_REPO_BRANCH}"       15 35 35 0 \
-    "BITCOIN_ELECTRS_REPO_NAME"         16 1 "${BITCOIN_ELECTRS_REPO_NAME}"         16 35 35 0 \
-    "BITCOIN_ELECTRS_REPO_URL"          17 1 "${BITCOIN_ELECTRS_REPO_URL}"          17 35 35 0 \
-    "BITCOIN_GROUP"                     18 1 "${BITCOIN_GROUP}"                     18 35 35 0 \
-    "BITCOIN_HOME"                      19 1 "${BITCOIN_HOME}"                      19 35 35 0 \
-    "BITCOIN_INSTALL"                   20 1 "${BITCOIN_INSTALL}"                   20 35 35 0 \
-    "BITCOIN_LATEST_RELEASE"            21 1 "${BITCOIN_LATEST_RELEASE}"            21 35 35 0 \
-    "BITCOIN_MAINNET_ENABLE"            22 1 "${BITCOIN_MAINNET_ENABLE}"            22 35 35 0 \
-    "BITCOIN_MAINNET_P2P_HOST"          23 1 "${BITCOIN_MAINNET_P2P_HOST}"          23 35 35 0 \
-    "BITCOIN_MAINNET_P2P_PORT"          24 1 "${BITCOIN_MAINNET_P2P_PORT}"          24 35 35 0 \
-    "BITCOIN_MAINNET_RPC_HOST"          25 1 "${BITCOIN_MAINNET_RPC_HOST}"          25 35 35 0 \
-    "BITCOIN_MAINNET_RPC_PORT"          26 1 "${BITCOIN_MAINNET_RPC_PORT}"          26 35 35 0 \
-    "BITCOIN_RPC_PASS"                  27 1 "${BITCOIN_RPC_PASS}"                  27 35 35 0 \
-    "BITCOIN_RPC_USER"                  28 1 "${BITCOIN_RPC_USER}"                  28 35 35 0 \
-    "BITCOIN_REPO_BRANCH"               29 1 "${BITCOIN_REPO_BRANCH}"               29 35 35 0 \
-    "BITCOIN_REPO_NAME"                 30 1 "${BITCOIN_REPO_NAME}"                 30 35 35 0 \
-    "BITCOIN_REPO_URL"                  31 1 "${BITCOIN_REPO_URL}"                  31 35 35 0 \
-    "BITCOIN_TESTNET_DATA"              32 1 "${BITCOIN_TESTNET_DATA}"              32 35 35 0 \
-    "BITCOIN_TESTNET_ENABLE"            33 1 "${BITCOIN_TESTNET_ENABLE}"            33 35 35 0 \
-    "BITCOIN_TESTNET_P2P_HOST"          34 1 "${BITCOIN_TESTNET_P2P_HOST}"          34 35 35 0 \
-    "BITCOIN_TESTNET_P2P_PORT"          35 1 "${BITCOIN_TESTNET_P2P_PORT}"          35 35 35 0 \
-    "BITCOIN_TESTNET_RPC_HOST"          36 1 "${BITCOIN_TESTNET_RPC_HOST}"          36 35 35 0 \
-    "BITCOIN_TESTNET_RPC_PORT"          38 1 "${BITCOIN_TESTNET_RPC_PORT}"          38 35 35 0 \
-    "BITCOIN_USER"                      40 1 "${BITCOIN_USER}"                      40 35 35 0 \
-    "ELECTRS_DATA_ROOT"                 41 1 "${ELECTRS_DATA_ROOT}"                 41 35 35 0 \
-    "ELECTRS_LIQUID_DATA"               42 1 "${ELECTRS_LIQUID_DATA}"               42 35 35 0 \
-    "ELECTRS_LIQUID_HTTP_HOST"          43 1 "${ELECTRS_LIQUID_HTTP_HOST}"          43 35 35 0 \
-    "ELECTRS_LIQUID_HTTP_PORT"          44 1 "${ELECTRS_LIQUID_HTTP_PORT}"          44 35 35 0 \
-    "ELECTRS_LIQUID_ZPOOL"              45 1 "${ELECTRS_LIQUID_ZPOOL}"              45 35 35 0 \
-    "ELECTRS_MAINNET_DATA"              46 1 "${ELECTRS_MAINNET_DATA}"              46 35 35 0 \
-    "ELECTRS_MAINNET_HTTP_HOST"         47 1 "${ELECTRS_MAINNET_HTTP_HOST}"         47 35 35 0 \
-    "ELECTRS_MAINNET_HTTP_PORT"         48 1 "${ELECTRS_MAINNET_HTTP_PORT}"         48 35 35 0 \
-    "ELECTRS_MAINNET_ZPOOL"             49 1 "${ELECTRS_MAINNET_ZPOOL}"             49 35 35 0 \
-    "ELECTRS_TESTNET_DATA"              50 1 "${ELECTRS_TESTNET_DATA}"              50 35 35 0 \
-    "ELECTRS_TESTNET_HTTP_HOST"         51 1 "${ELECTRS_TESTNET_HTTP_HOST}"         51 35 35 0 \
-    "ELECTRS_TESTNET_HTTP_PORT"         52 1 "${ELECTRS_TESTNET_HTTP_PORT}"         52 35 35 0 \
-    "ELECTRS_TESTNET_ZPOOL"             53 1 "${ELECTRS_TESTNET_ZPOOL}"             53 35 35 0 \
-    "ELEMENTS_ELECTRS_COMPACTION"       54 1 "${ELEMENTS_ELECTRS_COMPACTION}"       54 35 35 0 \
-    "ELEMENTS_ELECTRS_HOME"             55 1 "${ELEMENTS_ELECTRS_HOME}"             55 35 35 0 \
-    "ELEMENTS_ELECTRS_LATEST_RELEASE"   56 1 "${ELEMENTS_ELECTRS_LATEST_RELEASE}"   56 35 35 0 \
-    "ELEMENTS_ELECTRS_LIGHT_MODE"       57 1 "${ELEMENTS_ELECTRS_LIGHT_MODE}"       57 35 35 0 \
-    "ELEMENTS_ELECTRS_REPO_BRANCH"      58 1 "${ELEMENTS_ELECTRS_REPO_BRANCH}"      58 35 35 0 \
-    "ELEMENTS_ELECTRS_REPO_NAME"        59 1 "${ELEMENTS_ELECTRS_REPO_NAME}"        59 35 35 0 \
-    "ELEMENTS_ELECTRS_REPO_URL"         60 1 "${ELEMENTS_ELECTRS_REPO_URL}"         60 35 35 0 \
-    "ELEMENTS_GROUP"                    61 1 "${ELEMENTS_GROUP}"                    61 35 35 0 \
-    "ELEMENTS_HOME"                     62 1 "${ELEMENTS_HOME}"                     62 35 35 0 \
-    "ELEMENTS_INSTALL"                  63 1 "${ELEMENTS_INSTALL}"                  63 35 35 0 \
-    "ELEMENTS_LATEST_RELEASE"           64 1 "${ELEMENTS_LATEST_RELEASE}"           64 35 35 0 \
-    "ELEMENTS_LIQUID_ENABLE"            65 1 "${ELEMENTS_LIQUID_ENABLE}"            65 35 35 0 \
-    "ELEMENTS_LIQUID_P2P_HOST"          66 1 "${ELEMENTS_LIQUID_P2P_HOST}"          66 35 35 0 \
-    "ELEMENTS_LIQUID_P2P_PORT"          67 1 "${ELEMENTS_LIQUID_P2P_PORT}"          67 35 35 0 \
-    "ELEMENTS_LIQUID_RPC_HOST"          68 1 "${ELEMENTS_LIQUID_RPC_HOST}"          68 35 35 0 \
-    "ELEMENTS_RPC_PASS"                 69 1 "${ELEMENTS_RPC_PASS}"                 69 35 35 0 \
-    "ELEMENTS_LIQUID_RPC_PORT"          70 1 "${ELEMENTS_LIQUID_RPC_PORT}"          70 35 35 0 \
-    "ELEMENTS_RPC_USER"                 71 1 "${ELEMENTS_RPC_USER}"                 71 35 35 0 \
-    "ELEMENTS_REPO_BRANCH"              72 1 "${ELEMENTS_REPO_BRANCH}"              72 35 35 0 \
-    "ELEMENTS_REPO_NAME"                73 1 "${ELEMENTS_REPO_NAME}"                73 35 35 0 \
-    "ELEMENTS_REPO_URL"                 74 1 "${ELEMENTS_REPO_URL}"                 74 35 35 0 \
-    "ELEMENTS_USER"                     75 1 "${ELEMENTS_USER}"                     75 35 35 0 \
-    "MEMPOOL_BISQ_HTTP_HOST"            76 1 "${MEMPOOL_BISQ_HTTP_HOST}"            76 35 35 0 \
-    "MEMPOOL_BISQ_HTTP_PORT"            77 1 "${MEMPOOL_BISQ_HTTP_PORT}"            77 35 35 0 \
-    "MEMPOOL_GROUP"                     78 1 "${MEMPOOL_GROUP}"                     78 35 35 0 \
-    "MEMPOOL_HOME"                      79 1 "${MEMPOOL_HOME}"                      79 35 35 0 \
-    "MEMPOOL_LATEST_RELEASE"            80 1 "${MEMPOOL_LATEST_RELEASE}"            80 35 35 0 \
-    "MEMPOOL_LIQUID_HTTP_HOST"          81 1 "${MEMPOOL_LIQUID_HTTP_HOST}"          81 35 35 0 \
-    "MEMPOOL_LIQUID_HTTP_PORT"          82 1 "${MEMPOOL_LIQUID_HTTP_PORT}"          82 35 35 0 \
-    "MEMPOOL_MAINNET_HTTP_HOST"         83 1 "${MEMPOOL_MAINNET_HTTP_HOST}"         83 35 35 0 \
-    "MEMPOOL_MAINNET_HTTP_PORT"         84 1 "${MEMPOOL_MAINNET_HTTP_PORT}"         84 35 35 0 \
-    "MEMPOOL_REPO_BRANCH"               85 1 "${MEMPOOL_REPO_BRANCH}"               85 35 35 0 \
-    "MEMPOOL_REPO_NAME"                 86 1 "${MEMPOOL_REPO_NAME}"                 86 35 35 0 \
-    "MEMPOOL_REPO_URL"                  87 1 "${MEMPOOL_REPO_URL}"                  87 35 35 0 \
-    "MEMPOOL_TESTNET_HTTP_HOST"         88 1 "${MEMPOOL_TESTNET_HTTP_HOST}"         88 35 35 0 \
-    "MEMPOOL_TESTNET_HTTP_PORT"         89 1 "${MEMPOOL_TESTNET_HTTP_PORT}"         89 35 35 0 \
-    "MEMPOOL_TOR_HS"                    90 1 "${MEMPOOL_TOR_HS}"                    90 35 35 0 \
-    "MEMPOOL_USER"                      91 1 "${MEMPOOL_USER}"                      91 35 35 0 \
-    "HOSTNAME"                          92 1 "${HOSTNAME}"                          92 35 35 0 \
-    "TOR_INSTALL"                       93 1 "${TOR_INSTALL}"                       93 35 35 0 \
-    "CERTBOT_INSTALL"                   94 1 "${CERTBOT_INSTALL}"                   94 35 35 0 \
+    --form "Your fullnode will be installed as follows:" 0 0 0 \
+    "BISQ_LATEST_RELEASE"               1 1 "${BISQ_LATEST_RELEASE}"                1 35 35 0 \
+    "BISQ_REPO_BRANCH"                  2 1 "${BISQ_REPO_BRANCH}"                   2 35 35 0 \
+    "BISQ_REPO_NAME"                    3 1 "${BISQ_REPO_NAME}"                     3 35 35 0 \
+    "BISQ_REPO_URL"                     4 1 "${BISQ_REPO_URL}"                      4 35 35 0 \
+    "BITCOIN_ELECTRS_LATEST_RELEASE"    5 1 "${BITCOIN_ELECTRS_LATEST_RELEASE}"    5 35 35 0 \
+    "BITCOIN_ELECTRS_LIGHT_MODE"        6 1 "${BITCOIN_ELECTRS_LIGHT_MODE}"        6 35 35 0 \
+    "BITCOIN_ELECTRS_REPO_BRANCH"       7 1 "${BITCOIN_ELECTRS_REPO_BRANCH}"       7 35 35 0 \
+    "BITCOIN_ELECTRS_REPO_NAME"         8 1 "${BITCOIN_ELECTRS_REPO_NAME}"         8 35 35 0 \
+    "BITCOIN_ELECTRS_REPO_URL"          9 1 "${BITCOIN_ELECTRS_REPO_URL}"          9 35 35 0 \
+    "BITCOIN_LATEST_RELEASE"            10 1 "${BITCOIN_LATEST_RELEASE}"            10 35 35 0 \
+    "BITCOIN_MAINNET_ENABLE"            11 1 "${BITCOIN_MAINNET_ENABLE}"            11 35 35 0 \
+    "BITCOIN_REPO_BRANCH"               12 1 "${BITCOIN_REPO_BRANCH}"               12 35 35 0 \
+    "BITCOIN_REPO_NAME"                 13 1 "${BITCOIN_REPO_NAME}"                 13 35 35 0 \
+    "BITCOIN_REPO_URL"                  14 1 "${BITCOIN_REPO_URL}"                  14 35 35 0 \
+    "BITCOIN_TESTNET_ENABLE"            15 1 "${BITCOIN_TESTNET_ENABLE}"            15 35 35 0 \
+    "ELEMENTS_INSTALL"                  16 1 "${ELEMENTS_INSTALL}"                  16 35 35 0 \
+    "ELEMENTS_LATEST_RELEASE"           17 1 "${ELEMENTS_LATEST_RELEASE}"           17 35 35 0 \
+    "ELEMENTS_LIQUID_ENABLE"            18 1 "${ELEMENTS_LIQUID_ENABLE}"            18 35 35 0 \
+    "ELEMENTS_REPO_BRANCH"              19 1 "${ELEMENTS_REPO_BRANCH}"              19 35 35 0 \
+    "ELEMENTS_REPO_NAME"                20 1 "${ELEMENTS_REPO_NAME}"                20 35 35 0 \
+    "ELEMENTS_REPO_URL"                 21 1 "${ELEMENTS_REPO_URL}"                 21 35 35 0 \
+    "MEMPOOL_LATEST_RELEASE"            22 1 "${MEMPOOL_LATEST_RELEASE}"            22 35 35 0 \
+    "MEMPOOL_LIQUID_HTTP_HOST"          23 1 "${MEMPOOL_LIQUID_HTTP_HOST}"          23 35 35 0 \
+    "MEMPOOL_LIQUID_HTTP_PORT"          24 1 "${MEMPOOL_LIQUID_HTTP_PORT}"          24 35 35 0 \
+    "MEMPOOL_MAINNET_HTTP_HOST"         25 1 "${MEMPOOL_MAINNET_HTTP_HOST}"         25 35 35 0 \
+    "MEMPOOL_MAINNET_HTTP_PORT"         26 1 "${MEMPOOL_MAINNET_HTTP_PORT}"         26 35 35 0 \
+    "MEMPOOL_REPO_BRANCH"               27 1 "${MEMPOOL_REPO_BRANCH}"               27 35 35 0 \
+    "MEMPOOL_REPO_NAME"                 28 1 "${MEMPOOL_REPO_NAME}"                 28 35 35 0 \
+    "MEMPOOL_REPO_URL"                  29 1 "${MEMPOOL_REPO_URL}"                  29 35 35 0 \
+    "MEMPOOL_TESTNET_HTTP_HOST"         30 1 "${MEMPOOL_TESTNET_HTTP_HOST}"         30 35 35 0 \
+    "MEMPOOL_TESTNET_HTTP_PORT"         31 1 "${MEMPOOL_TESTNET_HTTP_PORT}"         31 35 35 0 \
+    "MEMPOOL_TOR_HS"                    32 1 "${MEMPOOL_TOR_HS}"                    32 35 35 0 \
+    "HOSTNAME"                          33 1 "${HOSTNAME}"                          33 35 35 0 \
+    "TOR_INSTALL"                       34 1 "${TOR_INSTALL}"                       34 35 35 0 \
+    "CERTBOT_INSTALL"                   35 1 "${CERTBOT_INSTALL}"                   35 35 35 0 \
 2> $tempfile
 
 retval=$?
