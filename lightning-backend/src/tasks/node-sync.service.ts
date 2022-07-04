@@ -8,15 +8,14 @@ import bitcoinClient from '../api/bitcoin/bitcoin-client';
 import bitcoinApi from '../api/bitcoin/bitcoin-api-factory';
 import config from '../config';
 import { IEsploraApi } from '../api/bitcoin/esplora-api.interface';
-import e from 'express';
 
 class NodeSyncService {
   constructor() {}
 
-  public async startService() {
+  public async $startService() {
     logger.info('Starting node sync service');
 
-    this.$updateNodes();
+    await this.$updateNodes();
 
     setInterval(async () => {
       await this.$updateNodes();
