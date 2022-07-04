@@ -187,6 +187,9 @@ class DatabaseMigration {
       channel_count int(11) NOT NULL,
       node_count int(11) NOT NULL,
       total_capacity double unsigned NOT NULL,
+      tor_nodes int(11) NOT NULL,
+      clearnet_nodes int(11) NOT NULL,
+      unannounced_nodes int(11) NOT NULL,
       PRIMARY KEY (id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }

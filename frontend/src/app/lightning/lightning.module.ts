@@ -15,6 +15,7 @@ import { ChannelBoxComponent } from './channel/channel-box/channel-box.component
 import { ClosingTypeComponent } from './channel/closing-type/closing-type.component';
 import { LightningStatisticsChartComponent } from './statistics-chart/lightning-statistics-chart.component';
 import { NodeStatisticsChartComponent } from './node-statistics-chart/node-statistics-chart.component';
+import { NodesNetworksChartComponent } from './nodes-networks-chart/nodes-networks-chart.component';
 import { NgxEchartsModule } from 'ngx-echarts';
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { NgxEchartsModule } from 'ngx-echarts';
     ChannelBoxComponent,
     ClosingTypeComponent,
     LightningStatisticsChartComponent,
+    NodesNetworksChartComponent,
   ],
   imports: [
     CommonModule,
