@@ -403,15 +403,31 @@ osPackageInstallAll()
     esac
 }
 
+# osUserCreate username home_directory main_groupname [additional_group]
 osUserCreate()
 {
     case $OS in
         FreeBSD)
-            # pw useradd -d /mempool -g mempool -n mempool
-            osSudo "${ROOT_USER}" pw useradd $*
+            # pw useradd -d /mempool -g mempool [-G additional_group] -n mampool
+            if [ $# -eq 3 ] ; then
+                osSudo "${ROOT_USER}" pw useradd -d "$2" -g "$3" -n "$1"
+            elif [ $# -eq 4 ]; then
+                osSudo "${ROOT_USER}" pw useradd -d "$2" -g "$3" -G "$4" -n "$1"
+            else
+                echo "Illegal number of parameters"
+                exit 1
+           fi
         ;;
         Debian)
-            osSudo "${ROOT_USER}" useradd $*
+            # useradd -d /mempool -g mempool [-G additional_group] mempool
+            if [ $# -eq 3 ] ; then
+                osSudo "${ROOT_USER}" useradd -d "$2" -g "$3" "$1"
+            elif [ $# -eq 4 ]; then
+                osSudo "${ROOT_USER}" useradd -d "$2" -g "$3" -G "$4" "$1"
+            else
+                echo "Illegal number of parameters"
+                exit 1
+           fi
         ;;
     esac
 }
@@ -761,7 +777,7 @@ osPackageInstallAll
 
 echo "[*] Creating Mempool user with Tor access"
 osGroupCreate "${MEMPOOL_GROUP}"
-osUserCreate -d "${MEMPOOL_HOME}" -g "${MEMPOOL_GROUP}" -n "${MEMPOOL_USER}"
+osUserCreate "${MEMPOOL_USER}" "${MEMPOOL_HOME}" "${MEMPOOL_GROUP}"
 osSudo "${ROOT_USER}" chsh -s `which zsh` "${MEMPOOL_USER}"
 id "${MEMPOOL_USER}"
 
@@ -838,12 +854,12 @@ if [ "${BITCOIN_INSTALL}" = ON ];then
 
     echo "[*] Creating Bitcoin user with Tor access"
     osGroupCreate "${BITCOIN_GROUP}"
-    osUserCreate -d "${BITCOIN_HOME}" -g "${BITCOIN_GROUP}" -G "${TOR_GROUP}" -n "${BITCOIN_USER}"
+    osUserCreate "${BITCOIN_USER}" "${BITCOIN_HOME}" "${BITCOIN_GROUP}" "${TOR_GROUP}"
     osSudo "${ROOT_USER}" chsh -s `which zsh` "${BITCOIN_USER}"
 
     echo "[*] Creating Bitcoin minfee user with Tor access"
     osGroupCreate "${MINFEE_GROUP}"
-    osUserCreate -d "${MINFEE_HOME}" -g "${MINFEE_GROUP}" -G "${TOR_GROUP}" -n "${MINFEE_USER}"
+    osUserCreate "${MINFEE_USER}" "${MINFEE_HOME}" "${MINFEE_GROUP}" "${TOR_GROUP}"
     osSudo "${ROOT_USER}" chown -R "${MINFEE_USER}:${MINFEE_GROUP}" "${MINFEE_HOME}"
     osSudo "${ROOT_USER}" chsh -s `which zsh` "${MINFEE_USER}"
     osSudo "${MINFEE_USER}" touch "${MINFEE_HOME}/.zshrc"
@@ -891,7 +907,7 @@ if [ "${ELEMENTS_INSTALL}" = ON ];then
 
     echo "[*] Creating Elements user with Tor access"
     osGroupCreate "${ELEMENTS_GROUP}"
-    osUserCreate -d "${ELEMENTS_HOME}" -g "${ELEMENTS_GROUP}" -G "${TOR_GROUP}" -n "${ELEMENTS_USER}"
+    osUserCreate "${ELEMENTS_USER}" "${ELEMENTS_HOME}" "${ELEMENTS_GROUP}" "${TOR_GROUP}"
     osSudo "${ROOT_USER}" chsh -s `which zsh` "${ELEMENTS_USER}"
 
     echo "[*] Creating Elements data folder"
@@ -1016,7 +1032,7 @@ if [ "${BISQ_INSTALL}" = ON ];then
 
     echo "[*] Creating Bisq user with Tor access"
     osGroupCreate "${BISQ_GROUP}"
-    osUserCreate -d "${BISQ_HOME}" -g "${BISQ_GROUP}" -G "${TOR_GROUP}" -n "${BISQ_USER}"
+    osUserCreate "${BISQ_USER}" "${BISQ_HOME}" "${BISQ_GROUP}" "${TOR_GROUP}"
     osSudo "${ROOT_USER}" chsh -s `which zsh` "${BISQ_USER}"
 
     echo "[*] Creating Bisq data folder"
