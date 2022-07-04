@@ -6,22 +6,26 @@ import lightningApi from '../api/lightning/lightning-api-factory';
 class LightningStatsUpdater {
   constructor() {}
 
-  public async startService() {
+  public async $startService() {
     logger.info('Starting Stats service');
 
     const now = new Date();
     const nextHourInterval = new Date(now.getFullYear(), now.getMonth(), now.getDate(), Math.floor(now.getHours() / 1) + 1, 0, 0, 0);
     const difference = nextHourInterval.getTime() - now.getTime();
 
-    setTimeout(() => {
-      this.$logLightningStats();
-      setInterval(() => {
-        this.$logLightningStats();
-        this.$logNodeStatsDaily();
+    // setTimeout(() => {
+      setInterval(async () => {
+        await this.$runTasks();
       }, 1000 * 60 * 60);
-    }, difference);
+    //}, difference);
 
-    this.$logNodeStatsDaily();
+    await this.$runTasks();
+  }
+
+  private async $runTasks() {
+    await this.$populateHistoricalData();
+    await this.$logLightningStatsDaily();
+    await this.$logNodeStatsDaily();
   }
 
   private async $logNodeStatsDaily() {
@@ -54,8 +58,91 @@ class LightningStatsUpdater {
     }
   }
 
-  private async $logLightningStats() {
+  // We only run this on first launch
+  private async $populateHistoricalData() {
+    const startTime = '2018-01-13';
     try {
+      const [rows]: any = await DB.query(`SELECT COUNT(*) FROM statistics`);
+      // Only store once per day
+      if (rows[0]['COUNT(*)'] > 0) {
+        return;
+      }
+      const [channels]: any = await DB.query(`SELECT capacity, created, closing_date FROM channels ORDER BY created ASC`);
+
+      let date: Date = new Date(startTime);
+      const currentDate = new Date();
+
+      while (date < currentDate) {
+        let totalCapacity = 0;
+        let channelsCount = 0;
+        for (const channel of channels) {
+          if (new Date(channel.created) > date) {
+            break;
+          }
+          if (channel.closing_date !== null && new Date(channel.closing_date) < date) {
+            continue;
+          }
+          totalCapacity += channel.capacity;
+          channelsCount++;
+        }
+
+        const query = `INSERT INTO statistics(
+          added,
+          channel_count,
+          node_count,
+          total_capacity
+        )
+        VALUES (FROM_UNIXTIME(?), ?, ?, ?)`;
+
+      await DB.query(query, [
+        date.getTime() / 1000,
+        channelsCount,
+        0,
+        totalCapacity,
+      ]);
+
+        // Add one day and continue
+        date.setDate(date.getDate() + 1);
+      }
+
+      const [nodes]: any = await DB.query(`SELECT first_seen FROM nodes ORDER BY first_seen ASC`);
+      date = new Date(startTime);
+
+      while (date < currentDate) {
+        let nodeCount = 0;
+        for (const node of nodes) {
+          if (new Date(node.first_seen) > date) {
+            break;
+          }
+          nodeCount++;
+        }
+
+        const query = `UPDATE statistics SET node_count = ? WHERE added = FROM_UNIXTIME(?)`;
+
+        await DB.query(query, [
+          nodeCount,
+          date.getTime() / 1000,
+        ]);
+
+        // Add one day and continue
+        date.setDate(date.getDate() + 1);
+      }
+
+      logger.debug('Historical stats populated.');
+    } catch (e) {
+      logger.err('$populateHistoricalData() error: ' + (e instanceof Error ? e.message : e));
+    }
+  }
+
+  private async $logLightningStatsDaily() {
+    const currentDate = new Date().toISOString().split('T')[0];
+    try {
+      const [state]: any = await DB.query(`SELECT string FROM state WHERE name = 'last_node_stats'`);
+      // Only store once per day
+      if (state[0].string === currentDate) {
+        return;
+      }
+
       const networkGraph = await lightningApi.$getNetworkGraph();
       let total_capacity = 0;
       for (const channel of networkGraph.channels) {
