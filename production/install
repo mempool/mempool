@@ -552,6 +552,87 @@ zfsCreateFilesystems()
     fi
 }
 
+ext4CreateDir()
+{
+    mkdir -p "/backup" "${ELEMENTS_HOME}" "${BITCOIN_HOME}" "${MINFEE_HOME}" "${ELECTRS_HOME}" "${MEMPOOL_HOME}" "${MYSQL_HOME}" "${BITCOIN_ELECTRS_HOME}" "${ELEMENTS_HOME}/liquidv1" "${ELEMENTS_ELECTRS_HOME}"
+exit
+    # Bitcoin Mainnet
+    if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
+        for folder in chainstate indexes blocks
+        do
+            mkdir -p "${BITCOIN_HOME}/${folder}"
+        done
+    fi
+
+    # Bitcoin Testnet
+    if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
+        mkdir -p "${BITCOIN_TESTNET_DATA}"
+        for folder in chainstate indexes blocks
+        do
+            mkdir -p "${BITCOIN_TESTNET_DATA}/${folder}"
+        done
+    fi
+
+    # Bitcoin Signet
+    if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
+        mkdir -p "${BITCOIN_SIGNET_DATA}"
+        for folder in chainstate indexes blocks
+        do
+            mkdir -p "${BITCOIN_SIGNET_DATA}/${folder}"
+        done
+    fi
+
+    # electrs mainnet data
+    if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
+        mkdir -p "${ELECTRS_MAINNET_DATA}"
+        for folder in cache history txstore
+        do
+            mkdir -p "${ELECTRS_MAINNET_DATA}/newindex/${folder}"
+        done
+    fi
+
+    # electrs testnet data
+    if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
+        mkdir -p "${ELECTRS_TESTNET_DATA}"
+        for folder in cache history txstore
+        do
+            mkdir -p "${ELECTRS_TESTNET_DATA}/newindex/${folder}"
+        done
+    fi
+
+    # electrs signet data
+    if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
+        mkdir -p "${ELECTRS_SIGNET_DATA}"
+        for folder in cache history txstore
+        do
+            mkdir -p "${ELECTRS_SIGNET_DATA}/newindex/${folder}"
+        done
+    fi
+
+    # electrs liquid data
+    if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
+        mkdir -p "${ELECTRS_LIQUID_DATA}"
+        for folder in cache history txstore
+        do
+            mkdir -p "${ELECTRS_LIQUID_DATA}/newindex/${folder}"
+        done
+    fi
+
+    # electrs liquidtestnet data
+    if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
+        mkdir -p "${ELECTRS_LIQUIDTESTNET_DATA}"
+        for folder in cache history txstore
+        do
+            mkdir -p "${ELECTRS_LIQUIDTESTNET_DATA}/newindex/${folder}"
+        done
+    fi
+
+    if [ "${BISQ_INSTALL}" = ON ];then
+        mkdir -p "${BISQ_HOME}"
+    fi
+}
+
+
 ##### Perform sanity checks before trying anything
 
 # what OS running, what FS partitions, etc.
@@ -760,6 +841,9 @@ set -x
 case $OS in
     FreeBSD)
         zfsCreateFilesystems
+    ;;
+    Debian)
+        ext4CreateDir
     ;;
 esac
 
