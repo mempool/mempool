@@ -18,8 +18,8 @@ jobs:
       - name: Install 
         run: npm install --prod
         working-directory: backend
-    #  - name: Lint 
-    #    run: npm run lint
+      - name: Lint 
+        run: npm run lint
     #  - name: Test 
     #    run: npm run test
       - name: Build
@@ -39,8 +39,8 @@ jobs:
       - name: Install 
         run: npm install --prod
         working-directory: frontend
-      # - name: Lint 
-      #   run: npm run lint
+      - name: Lint 
+        run: npm run lint
       # - name: Test 
       #   run: npm run test
       - name: Build
