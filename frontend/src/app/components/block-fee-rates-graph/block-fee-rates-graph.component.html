@@ -35,7 +35,7 @@
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.blockCount >= 157680">
           <input ngbButton type="radio" [value]="'3y'" fragment="3y" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]"> 3Y
         </label>
-        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.blockCount > 157680">
+        <label ngbButtonLabel class="btn-primary btn-sm">
           <input ngbButton type="radio" [value]="'all'" fragment="all" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]"> ALL
         </label>
       </div>
