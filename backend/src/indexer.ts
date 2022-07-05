@@ -4,6 +4,7 @@ import mempool from './api/mempool';
 import mining from './api/mining';
 import logger from './logger';
 import HashratesRepository from './repositories/HashratesRepository';
+import bitcoinClient from './api/bitcoin/bitcoin-client';
 
 class Indexer {
   runIndexer = true;
@@ -22,6 +23,12 @@ class Indexer {
     if (!Common.indexingEnabled() || this.runIndexer === false ||
       this.indexerRunning === true || mempool.hasPriority()
     ) {
+      return;
+    }
+
+    // Do not attempt to index anything unless Bitcoin Core is fully synced
+    const blockchainInfo = await bitcoinClient.getBlockchainInfo();
+    if (blockchainInfo.blocks !== blockchainInfo.headers) {
       return;
     }
 
