@@ -1206,7 +1206,7 @@ fi
 # Bitcoin instance for Testnet #
 ################################
 
-if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
+if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
     echo "[*] Installing Bitcoin Testnet service"
     case $OS in
 
