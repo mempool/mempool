@@ -1224,7 +1224,7 @@ fi
 # Bitcoin instance for Signet #
 ###############################
 
-if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
+if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
     echo "[*] Installing Bitcoin Signet service"
     case $OS in
 
