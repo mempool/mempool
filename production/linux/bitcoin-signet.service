@@ -1,0 +1,22 @@
+[Unit]
+Description=Bitcoind-signet
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/bitcoind -conf=bitcoin-signet.conf -daemon -signet -printtoconsole -pid=/bitcoin/bitcoind-signet.pid
+ExecStop=/usr/local/bin/bitcoin-cli -signet stop
+
+Type=forking
+PIDFile=/bitcoin/bitcoind-signet.pid
+Restart=on-failure
+
+User=bitcoin
+Group=bitcoin
+
+PrivateTmp=true
+ProtectSystem=full
+NoNewPrivileges=true
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target

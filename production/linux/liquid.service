@@ -1,0 +1,22 @@
+[Unit]
+Description=Liquid
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/elementsd -daemon -printtoconsole -pid=/liquid/liquid.pid
+ExecStop=/usr/local/bin/elements-cli stop
+
+Type=forking
+PIDFile=/liquid/liquid.pid
+Restart=on-failure
+
+User=liquid
+Group=liquid
+
+PrivateTmp=true
+ProtectSystem=full
+NoNewPrivileges=true
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target
