@@ -64,6 +64,13 @@ class BitcoinApi implements AbstractBitcoinApi {
       });
   }
 
+  $getBlockHashTip(): Promise<string> {
+    return this.bitcoindClient.getChainTips()
+      .then((result: IBitcoinApi.ChainTips[]) => {
+        return result.find(tip => tip.status === 'active')!.hash;
+      });
+  }
+
   $getTxIdsForBlock(hash: string): Promise<string[]> {
     return this.bitcoindClient.getBlock(hash, 1)
       .then((rpcBlock: IBitcoinApi.Block) => rpcBlock.tx);
