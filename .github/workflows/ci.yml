@@ -1,92 +1,88 @@
 name: CI Pipeline for the Backend and Frontend
+
 on:
   push:
 env:
   NODE_VERSION: 16.15.0
+
 jobs:
-  build_backend_dev:
-    name: Build backend (Development)
-    runs-on: ubuntu-latest
+  backend:
+    strategy:
+      matrix:
+        flavor: ['dev', 'prod']
+    runs-on: 'ubuntu-latest'
+
+    name: Backend (${{ matrix.flavor }})
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          path: dev
+          path: ${{ matrix.flavor }}
+
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: 'https://registry.npmjs.org'
-      - name: Install 
+
+      - name: Install
+        if: ${{ matrix.flavor == 'dev'}}
         run: npm install
-        working-directory: dev/backend
+        working-directory: ${{ matrix.flavor }}/backend
+
+      - name: Install (Prod dependencies only)
+        if: ${{ matrix.flavor == 'prod'}}
+        run: npm install --prod
+        working-directory: ${{ matrix.flavor }}/backend
+
       - name: Lint 
+        if: ${{ matrix.flavor == 'dev'}}
         run: npm run lint
-        working-directory: dev/backend
+        working-directory: ${{ matrix.flavor }}/backend
+
     #  - name: Test 
     #    run: npm run test
+
       - name: Build
         run: npm run build
-        working-directory: dev/backend
-  build_frontend_dev:
-    name: Build frontend (Development)
-    runs-on: ubuntu-latest
+        working-directory: ${{ matrix.flavor }}/backend
+
+  frontend:
+    strategy:
+      matrix:
+        flavor: ['dev', 'prod']
+    runs-on: 'ubuntu-latest'
+
+    name: Frontend (${{ matrix.flavor }})
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          path: dev
+          path: ${{ matrix.flavor }}
+
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: 'https://registry.npmjs.org'
-      - name: Install 
+
+      - name: Install (Prod dependencies only)
         run: npm install
-        working-directory: dev/frontend
+        if: ${{ matrix.flavor == 'prod'}}
+        working-directory: ${{ matrix.flavor }}/frontend
+
+      - name: Install
+        if: ${{ matrix.flavor == 'dev'}}
+        run: npm install
+        working-directory: ${{ matrix.flavor }}/frontend
+
       - name: Lint 
         run: npm run lint
-        working-directory: dev/frontend
+        working-directory: ${{ matrix.flavor }}/frontend
+
       # - name: Test 
       #   run: npm run test
+
       - name: Build
         run: npm run build
-        working-directory: dev/frontend
-  build_backend_prod:
-    name: Build backend (Prod Dependencies)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          path: prod
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          registry-url: 'https://registry.npmjs.org'
-      - name: Install 
-        run: npm install --prod
-        working-directory: prod/backend
-      - name: Build
-        run: npm run build
-        working-directory: prod/backend
-  build_frontend_prod:
-    name: Build frontend (Prod Dependencies)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          path: prod
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          registry-url: 'https://registry.npmjs.org'
-      - name: Install 
-        run: npm install --prod
-        working-directory: prod/frontend
-      - name: Build
-        run: npm run build
-        working-directory: prod/frontend
+        working-directory: ${{ matrix.flavor }}/frontend
