@@ -4,34 +4,36 @@ on:
 env:
   NODE_VERSION: 16.15.0
 jobs:
-  build_backend:
-    name: Build backend
+  build_backend_dev:
+    name: Build backend (Development)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        path: dev
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: 'https://registry.npmjs.org'
       - name: Install 
-        run: npm install --prod
-        working-directory: backend
+        run: npm install
+        working-directory: dev/backend
       - name: Lint 
         run: npm run lint
-        working-directory: backend
+        working-directory: dev/backend
     #  - name: Test 
     #    run: npm run test
       - name: Build
         run: npm run build
-        working-directory: backend
-  build_frontend:
-    name: Build frontend
+        working-directory: dev/backend
+  build_frontend_dev:
+    name: Build frontend (Development)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        path: dev
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -39,12 +41,53 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - name: Install 
         run: npm install --prod
-        working-directory: frontend
+        working-directory: dev/frontend
       - name: Lint 
         run: npm run lint
-        working-directory: frontend
+        working-directory: dev/frontend
       # - name: Test 
       #   run: npm run test
       - name: Build
         run: npm run build
-        working-directory: frontend
+        working-directory: dev/frontend
+ build_backend_prod:
+    name: Build backend (Prod Dependencies)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        path: prod
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install 
+        run: npm install --prod
+        working-directory: prod/backend
+      - name: Build
+        run: npm run build
+        working-directory: prod/backend
+  build_frontend_prod:
+    name: Build frontend (Prod Dependencies)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        path: prod
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install 
+        run: npm install --prod
+        working-directory: prod/frontend
+      - name: Lint 
+        run: npm run lint
+        working-directory: prod/frontend
+      # - name: Test 
+      #   run: npm run test
+      - name: Build
+        run: npm run build
+        working-directory: prod/frontend
