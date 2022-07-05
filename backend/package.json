@@ -25,8 +25,8 @@
     "start": "node --max-old-space-size=2048 dist/index.js",
     "start-production": "node --max-old-space-size=4096 dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix"
+    "lint": "./node_modules/.bin/eslint . --ext .ts",
+    "lint:fix": "./node_modules/.bin/eslint . --ext .ts --fix"
   },
   "dependencies": {
     "@mempool/electrum-client": "^1.1.7",
