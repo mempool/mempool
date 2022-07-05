@@ -3,8 +3,6 @@ Description=Liquid
 After=network.target
 
 [Service]
-#ExecStart=/usr/local/bin/bitcoind -daemon -printtoconsole -pid=/bitcoin/bitcoind.pid
-# torv2 active
 ExecStart=/usr/local/bin/elementsd -daemon -printtoconsole -pid=/liquid/liquid.pid
 ExecStop=/usr/local/bin/elements-cli stop
 

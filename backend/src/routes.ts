@@ -925,6 +925,16 @@ class Routes {
     }
   }
 
+  public async getBlockTipHash(req: Request, res: Response) {
+    try {
+      const result = await bitcoinApi.$getBlockHashTip();
+      res.setHeader('content-type', 'text/plain');
+      res.send(result);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
   public async getTxIdsForBlock(req: Request, res: Response) {
     try {
       const result = await bitcoinApi.$getTxIdsForBlock(req.params.hash);

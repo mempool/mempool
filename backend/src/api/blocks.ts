@@ -300,12 +300,8 @@ class Blocks {
    * [INDEXING] Index all blocks metadata for the mining dashboard
    */
   public async $generateBlockDatabase(): Promise<boolean> {
-    const blockchainInfo = await bitcoinClient.getBlockchainInfo();
-    if (blockchainInfo.blocks !== blockchainInfo.headers) { // Wait for node to sync
-      return false;
-    }
-
     try {
+      const blockchainInfo = await bitcoinClient.getBlockchainInfo();
       let currentBlockHeight = blockchainInfo.blocks;
 
       let indexingBlockAmount = Math.min(config.MEMPOOL.INDEXING_BLOCKS_AMOUNT, blockchainInfo.blocks);
