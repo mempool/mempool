@@ -976,10 +976,10 @@ if [ "${BITCOIN_INSTALL}" = ON ];then
     osSudo "${ROOT_USER}" install -c -o "${MINFEE_USER}" -g "${MINFEE_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.minfee.conf" "${MINFEE_HOME}/bitcoin.conf"
 
     echo "[*] Installing Bitcoin RPC credentials"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_HOME}/bitcoin.conf"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_HOME}/bitcoin.conf"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${MINFEE_HOME}/bitcoin.conf"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${MINFEE_HOME}/bitcoin.conf"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_HOME}/bitcoin.conf"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_HOME}/bitcoin.conf"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${MINFEE_HOME}/bitcoin.conf"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${MINFEE_HOME}/bitcoin.conf"
 fi
 
 #########################
@@ -1018,10 +1018,10 @@ if [ "${ELEMENTS_INSTALL}" = ON ];then
     osSudo "${ROOT_USER}" install -c -o "${ELEMENTS_USER}" -g "${ELEMENTS_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/elements.conf" "${ELEMENTS_HOME}/elements.conf"
 
     echo "[*] Configuring Elements Liquid RPC credentials in elements.conf"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${ELEMENTS_HOME}/elements.conf"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_HOME}/elements.conf"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${ELEMENTS_HOME}/elements.conf"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_HOME}/elements.conf"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
 fi
 
 ###################################
@@ -1170,26 +1170,26 @@ if [ "${BISQ_INSTALL}" = ON ];then
 
         Debian)
             osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${BISQ_HOME}/${BISQ_REPO_NAME}/seednode/bisq.service" "${DEBIAN_SERVICE_HOME}/bisq.service"
-            osSudo "${ROOT_USER}" sed -i .orig "s/#Requires=bitcoin.service/Requires=bitcoin.service/" "${DEBIAN_SERVICE_HOME}/bisq.service"
-            osSudo "${ROOT_USER}" sed -i .orig "s/#BindsTo=bitcoin.service/BindsTo=bitcoin.service/" "${DEBIAN_SERVICE_HOME}/bisq.service"
-            osSudo "${ROOT_USER}" sed -i .orig "s/__BISQ_REPO_NAME__/${BISQ_REPO_NAME}/" "${DEBIAN_SERVICE_HOME}/bisq.service"
-            osSudo "${ROOT_USER}" sed -i .orig "s!__BISQ_HOME__!${BISQ_HOME}!" "${DEBIAN_SERVICE_HOME}/bisq.service"
+            osSudo "${ROOT_USER}" sed -i.orig "s/#Requires=bitcoin.service/Requires=bitcoin.service/" "${DEBIAN_SERVICE_HOME}/bisq.service"
+            osSudo "${ROOT_USER}" sed -i.orig "s/#BindsTo=bitcoin.service/BindsTo=bitcoin.service/" "${DEBIAN_SERVICE_HOME}/bisq.service"
+            osSudo "${ROOT_USER}" sed -i.orig "s/__BISQ_REPO_NAME__/${BISQ_REPO_NAME}/" "${DEBIAN_SERVICE_HOME}/bisq.service"
+            osSudo "${ROOT_USER}" sed -i.orig "s!__BISQ_HOME__!${BISQ_HOME}!" "${DEBIAN_SERVICE_HOME}/bisq.service"
 
             echo "[*] Installing Bisq environment file"
             osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${BISQ_HOME}/${BISQ_REPO_NAME}/seednode/bisq.env" "${DEBIAN_ENV_HOME}/bisq.env"
-            osSudo "${ROOT_USER}" sed -i .orig "s!__BISQ_APP_NAME__!${BISQ_APP_NAME}!" "${DEBIAN_ENV_HOME}/bisq.env"
-            osSudo "${ROOT_USER}" sed -i .orig "s!__BISQ_HOME__!${BISQ_HOME}!" "${DEBIAN_ENV_HOME}/bisq.env"
+            osSudo "${ROOT_USER}" sed -i.orig "s!__BISQ_APP_NAME__!${BISQ_APP_NAME}!" "${DEBIAN_ENV_HOME}/bisq.env"
+            osSudo "${ROOT_USER}" sed -i.orig "s!__BISQ_HOME__!${BISQ_HOME}!" "${DEBIAN_ENV_HOME}/bisq.env"
 
             echo "[*] Configuring Bisq environment file with Bitcoin RPC credentials"
-            osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_P2P_HOST__/${BITCOIN_MAINNET_P2P_HOST}/" "${DEBIAN_ENV_HOME}/bisq.env"
-            osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_P2P_PORT__/${BITCOIN_MAINNET_P2P_PORT}/" "${DEBIAN_ENV_HOME}/bisq.env"
-            osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_HOST__/${BITCOIN_MAINNET_RPC_HOST}/" "${DEBIAN_ENV_HOME}/bisq.env"
-            osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PORT__/${BITCOIN_MAINNET_RPC_PORT}/" "${DEBIAN_ENV_HOME}/bisq.env"
-            osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${DEBIAN_ENV_HOME}/bisq.env"
-            osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${DEBIAN_ENV_HOME}/bisq.env"
+            osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_P2P_HOST__/${BITCOIN_MAINNET_P2P_HOST}/" "${DEBIAN_ENV_HOME}/bisq.env"
+            osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_P2P_PORT__/${BITCOIN_MAINNET_P2P_PORT}/" "${DEBIAN_ENV_HOME}/bisq.env"
+            osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_HOST__/${BITCOIN_MAINNET_RPC_HOST}/" "${DEBIAN_ENV_HOME}/bisq.env"
+            osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PORT__/${BITCOIN_MAINNET_RPC_PORT}/" "${DEBIAN_ENV_HOME}/bisq.env"
+            osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${DEBIAN_ENV_HOME}/bisq.env"
+            osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${DEBIAN_ENV_HOME}/bisq.env"
 
             #echo "[*] Updating Bitcoin configuration for Bisq"
-            #osSudo "${ROOT_USER}" sed -i .orig "s/#blocknotify/blocknotify/" "${BITCOIN_HOME}/bitcoin.conf"
+            #osSudo "${ROOT_USER}" sed -i.orig "s/#blocknotify/blocknotify/" "${BITCOIN_HOME}/bitcoin.conf"
             #osSudo "${BITCOIN_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${BISQ_HOME}/${BISQ_REPO_NAME}/seednode/blocknotify.sh" "${BITCOIN_HOME}/blocknotify.sh"
         ;;
 
@@ -1218,7 +1218,7 @@ fi
 # Bitcoin instance for Testnet #
 ################################
 
-if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
+if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
     echo "[*] Installing Bitcoin Testnet service"
     case $OS in
 
@@ -1236,7 +1236,7 @@ fi
 # Bitcoin instance for Signet #
 ###############################
 
-if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
+if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
     echo "[*] Installing Bitcoin Signet service"
     case $OS in
 
@@ -1254,7 +1254,7 @@ fi
 # Bitcoin instance for Liquid #
 ###############################
 
-if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
+if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
     echo "[*] Installing Bitcoin Liquid service"
     case $OS in
 
@@ -1282,9 +1282,9 @@ if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
     osSudo "${ROOT_USER}" crontab -u "${MINFEE_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/minfee.crontab"
 
     echo "[*] Configuring Bitcoin Mainnet RPC credentials in electrs start script"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-mainnet"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-mainnet"
-    osSudo "${ROOT_USER}" sed -i .orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${BITCOIN_ELECTRS_HOME}/electrs-start-mainnet"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-mainnet"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-mainnet"
+    osSudo "${ROOT_USER}" sed -i.orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${BITCOIN_ELECTRS_HOME}/electrs-start-mainnet"
 fi
 
 ########################################
@@ -1296,9 +1296,9 @@ if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
     osSudo "${ROOT_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-testnet" "${BITCOIN_ELECTRS_HOME}"
 
     echo "[*] Configuring Bitcoin Testnet RPC credentials in electrs start script"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-testnet"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-testnet"
-    osSudo "${ROOT_USER}" sed -i .orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${BITCOIN_ELECTRS_HOME}/electrs-start-testnet"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-testnet"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-testnet"
+    osSudo "${ROOT_USER}" sed -i.orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${BITCOIN_ELECTRS_HOME}/electrs-start-testnet"
 fi
 
 #######################################
@@ -1310,9 +1310,9 @@ if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
     osSudo "${ROOT_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-signet" "${BITCOIN_ELECTRS_HOME}"
 
     echo "[*] Configuring Bitcoin Signet RPC credentials in electrs start script"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-signet"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-signet"
-    osSudo "${ROOT_USER}" sed -i .orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${BITCOIN_ELECTRS_HOME}/electrs-start-signet"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-signet"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-signet"
+    osSudo "${ROOT_USER}" sed -i.orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${BITCOIN_ELECTRS_HOME}/electrs-start-signet"
 fi
 
 ########################################
@@ -1328,9 +1328,9 @@ if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
     osSudo "${ROOT_USER}" crontab -u "${ELEMENTS_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/elements.crontab"
 
     echo "[*] Configuring Elements Liquid RPC credentials in electrs start script"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquid"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquid"
-    osSudo "${ROOT_USER}" sed -i .orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquid"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquid"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquid"
+    osSudo "${ROOT_USER}" sed -i.orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquid"
 fi
 
 ################################################
@@ -1342,15 +1342,15 @@ if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
     osSudo "${ROOT_USER}" install -c -o "${ELEMENTS_USER}" -g "${ELEMENTS_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-liquidtestnet" "${ELEMENTS_ELECTRS_HOME}"
 
     echo "[*] Installing Elements Liquid Testnet RPC credentials"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${ELEMENTS_HOME}/elements.conf"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_HOME}/elements.conf"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${ELEMENTS_HOME}/elements.conf"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_HOME}/elements.conf"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
 
     echo "[*] Configuring Elements LiquidTestnet RPC credentials in electrs start script"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquidtestnet"
-    osSudo "${ROOT_USER}" sed -i .orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquidtestnet"
-    osSudo "${ROOT_USER}" sed -i .orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquidtestnet"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquidtestnet"
+    osSudo "${ROOT_USER}" sed -i.orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquidtestnet"
+    osSudo "${ROOT_USER}" sed -i.orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquidtestnet"
 fi
 
 #####################################
