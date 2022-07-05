@@ -1242,7 +1242,7 @@ fi
 # Bitcoin instance for Liquid #
 ###############################
 
-if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
+if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
     echo "[*] Installing Bitcoin Liquid service"
     case $OS in
 
