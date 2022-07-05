@@ -42,7 +42,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: 'https://registry.npmjs.org'
       - name: Install 
-        run: npm install --prod
+        run: npm install
         working-directory: dev/frontend
       - name: Lint 
         run: npm run lint
@@ -87,11 +87,6 @@ jobs:
       - name: Install 
         run: npm install --prod
         working-directory: prod/frontend
-      - name: Lint 
-        run: npm run lint
-        working-directory: prod/frontend
-      # - name: Test 
-      #   run: npm run test
       - name: Build
         run: npm run build
         working-directory: prod/frontend
