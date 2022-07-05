@@ -10,7 +10,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        path: dev
+        with:
+          path: dev
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -33,7 +34,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        path: dev
+        with:
+          path: dev
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -50,13 +52,14 @@ jobs:
       - name: Build
         run: npm run build
         working-directory: dev/frontend
- build_backend_prod:
+  build_backend_prod:
     name: Build backend (Prod Dependencies)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        path: prod
+        with:
+          path: prod
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -74,7 +77,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        path: prod
+        with:
+          path: prod
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
