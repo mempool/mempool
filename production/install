@@ -191,9 +191,9 @@ case $OS in
         TOR_CONFIGURATION=/etc/tor/torrc
         TOR_RESOURCES=/var/lib/tor
         TOR_PKG=tor
-        TOR_USER=tor-debian
-        TOR_GROUP=tor-debian
-        CERTBOT_PKG=python-certbot
+        TOR_USER=debian-tor
+        TOR_GROUP=debian-tor
+        CERTBOT_PKG=python3-certbot-nginx
         NGINX_CONFIGURATION=/etc/nginx/nginx.conf
     ;;
 esac
@@ -320,12 +320,12 @@ LIQUIDTESTNET_ASSET_REGISTRY_DB_NAME=asset_registry_testnet_db
 
 # packages needed for mempool ecosystem
 DEBIAN_PKG=()
-DEBIAN_PKG+=(zsh vim curl screen openssl python3 dialog)
+DEBIAN_PKG+=(zsh vim curl screen openssl python3 dialog cron)
 DEBIAN_PKG+=(build-essential git git-lfs clang cmake jq)
 DEBIAN_PKG+=(autotools-dev autoconf automake pkg-config bsdmainutils)
-DEBIAN_PKG+=(libevent-dev libdb-dev libssl-dev libtool-dev autotools-dev)
+DEBIAN_PKG+=(libevent-dev libdb-dev libssl-dev libtool autotools-dev)
 DEBIAN_PKG+=(libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-test-dev libboost-thread-dev)
-DEBIAN_PKG+=(nodejs npm mariadb-server nginx-core python-certbot-nginx rsync ufw)
+DEBIAN_PKG+=(nodejs npm mariadb-server nginx-core python3-certbot-nginx rsync ufw)
 
 # packages needed for mempool ecosystem
 FREEBSD_PKG=()
@@ -555,7 +555,6 @@ zfsCreateFilesystems()
 ext4CreateDir()
 {
     mkdir -p "/backup" "${ELEMENTS_HOME}" "${BITCOIN_HOME}" "${MINFEE_HOME}" "${ELECTRS_HOME}" "${MEMPOOL_HOME}" "${MYSQL_HOME}" "${BITCOIN_ELECTRS_HOME}" "${ELEMENTS_HOME}/liquidv1" "${ELEMENTS_ELECTRS_HOME}"
-exit
     # Bitcoin Mainnet
     if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
         for folder in chainstate indexes blocks
@@ -1394,7 +1393,7 @@ case $OS in
     ;;
 
     Debian)
-        osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/nginx.conf" "${NGINX_CONFIGURATION}"
+        osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/nginx/nginx.conf" "${NGINX_CONFIGURATION}"
 #echo "[*] Restarting Nginx"
 #osSudo "${ROOT_USER}" service nginx restart
     ;;
