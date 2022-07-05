@@ -20,6 +20,7 @@ jobs:
         working-directory: backend
       - name: Lint 
         run: npm run lint
+        working-directory: backend
     #  - name: Test 
     #    run: npm run test
       - name: Build
@@ -41,6 +42,7 @@ jobs:
         working-directory: frontend
       - name: Lint 
         run: npm run lint
+        working-directory: frontend
       # - name: Test 
       #   run: npm run test
       - name: Build
