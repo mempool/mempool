@@ -19,6 +19,9 @@ import HashratesRepository from '../repositories/HashratesRepository';
 import indexer from '../indexer';
 import poolsParser from './pools-parser';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
+import mining from './mining';
+import DifficultyAdjustmentsRepository from '../repositories/DifficultyAdjustmentsRepository';
+import difficultyAdjustment from './difficulty-adjustment';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -300,12 +303,8 @@ class Blocks {
    * [INDEXING] Index all blocks metadata for the mining dashboard
    */
   public async $generateBlockDatabase(): Promise<boolean> {
-    const blockchainInfo = await bitcoinClient.getBlockchainInfo();
-    if (blockchainInfo.blocks !== blockchainInfo.headers) { // Wait for node to sync
-      return false;
-    }
-
     try {
+      const blockchainInfo = await bitcoinClient.getBlockchainInfo();
       let currentBlockHeight = blockchainInfo.blocks;
 
       let indexingBlockAmount = Math.min(config.MEMPOOL.INDEXING_BLOCKS_AMOUNT, blockchainInfo.blocks);
@@ -449,7 +448,10 @@ class Blocks {
               const newBlock = await this.$indexBlock(lastBlock['height'] - i);
               await this.$getStrippedBlockTransactions(newBlock.id, true, true);
             }
-            logger.info(`Re-indexed 10 blocks and summaries`);
+            await mining.$indexDifficultyAdjustments();
+            await DifficultyAdjustmentsRepository.$deleteLastAdjustment();
+            logger.info(`Re-indexed 10 blocks and summaries. Also re-indexed the last difficulty adjustments. Will re-index latest hashrates in a few seconds.`);
+            indexer.reindex();
           }
           await blocksRepository.$saveBlockInDatabase(blockExtended);
 
@@ -461,6 +463,15 @@ class Blocks {
       }
 
       if (block.height % 2016 === 0) {
+        if (Common.indexingEnabled()) {
+          await DifficultyAdjustmentsRepository.$saveAdjustments({
+            time: block.timestamp,
+            height: block.height,
+            difficulty: block.difficulty,
+            adjustment: Math.round((block.difficulty / this.currentDifficulty) * 1000000) / 1000000, // Remove float point noise
+          });
+        }
+
         this.previousDifficultyRetarget = (block.difficulty - this.currentDifficulty) / this.currentDifficulty * 100;
         this.lastDifficultyAdjustmentTime = block.timestamp;
         this.currentDifficulty = block.difficulty;

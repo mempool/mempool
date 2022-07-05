@@ -4,6 +4,7 @@ import mempool from './api/mempool';
 import mining from './api/mining';
 import logger from './logger';
 import HashratesRepository from './repositories/HashratesRepository';
+import bitcoinClient from './api/bitcoin/bitcoin-client';
 
 class Indexer {
   runIndexer = true;
@@ -25,6 +26,12 @@ class Indexer {
       return;
     }
 
+    // Do not attempt to index anything unless Bitcoin Core is fully synced
+    const blockchainInfo = await bitcoinClient.getBlockchainInfo();
+    if (blockchainInfo.blocks !== blockchainInfo.headers) {
+      return;
+    }
+
     this.runIndexer = false;
     this.indexerRunning = true;
 
@@ -36,6 +43,7 @@ class Indexer {
         return;
       }
 
+      await mining.$indexDifficultyAdjustments();
       await this.$resetHashratesIndexingState();
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();
