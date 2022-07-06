@@ -1,6 +1,8 @@
-import logger from "../../logger";
-import DB from "../../database";
-import lightningApi from "../../api/lightning/lightning-api-factory";
+
+import DB from '../../database';
+import logger from '../../logger';
+import lightningApi from '../../api/lightning/lightning-api-factory';
+import * as net from 'net';
 
 class LightningStatsUpdater {
   constructor() {}
@@ -115,37 +117,67 @@ class LightningStatsUpdater {
           added,
           channel_count,
           node_count,
-          total_capacity
+          total_capacity,
+          tor_nodes,
+          clearnet_nodes,
+          unannounced_nodes
         )
-        VALUES (FROM_UNIXTIME(?), ?, ?, ?)`;
+        VALUES (FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?)`;
 
       await DB.query(query, [
         date.getTime() / 1000,
         channelsCount,
         0,
         totalCapacity,
+        0,
+        0,
+        0
       ]);
 
         // Add one day and continue
         date.setDate(date.getDate() + 1);
       }
 
-      const [nodes]: any = await DB.query(`SELECT first_seen FROM nodes ORDER BY first_seen ASC`);
+      const [nodes]: any = await DB.query(`SELECT first_seen, sockets FROM nodes ORDER BY first_seen ASC`);
       date = new Date(startTime);
 
       while (date < currentDate) {
         let nodeCount = 0;
+        let clearnetNodes = 0;
+        let torNodes = 0;
+        let unannouncedNodes = 0;
         for (const node of nodes) {
           if (new Date(node.first_seen) > date) {
             break;
           }
           nodeCount++;
+
+          const sockets = node.sockets.split(',');
+          let isUnnanounced = true;
+          for (const socket of sockets) {
+            const hasOnion = socket.indexOf('.onion') !== -1;
+            if (hasOnion) {
+              torNodes++;
+              isUnnanounced = false;
+            }
+            const hasClearnet = [4, 6].includes(net.isIP(socket.split(':')[0]));
+            if (hasClearnet) {
+              clearnetNodes++;
+              isUnnanounced = false;
+            }
+          }
+          if (isUnnanounced) {
+            unannouncedNodes++;
+          }
         }
 
-        const query = `UPDATE lightning_stats SET node_count = ? WHERE added = FROM_UNIXTIME(?)`;
+        const query = `UPDATE lightning_stats SET node_count = ?, tor_nodes = ?, clearnet_nodes = ?, unannounced_nodes = ? WHERE added = FROM_UNIXTIME(?)`;
 
         await DB.query(query, [
           nodeCount,
+          torNodes,
+          clearnetNodes,
+          unannouncedNodes,
           date.getTime() / 1000,
         ]);
 
@@ -178,18 +210,46 @@ class LightningStatsUpdater {
         }
       }
 
+      let clearnetNodes = 0;
+      let torNodes = 0;
+      let unannouncedNodes = 0;
+      for (const node of networkGraph.nodes) {
+        let isUnnanounced = true;
+        for (const socket of node.sockets) {
+          const hasOnion = socket.indexOf('.onion') !== -1;
+          if (hasOnion) {
+            torNodes++;
+            isUnnanounced = false;
+          }
+          const hasClearnet = [4, 6].includes(net.isIP(socket.split(':')[0]));
+          if (hasClearnet) {
+            clearnetNodes++;
+            isUnnanounced = false;
+          }
+        }
+        if (isUnnanounced) {
+          unannouncedNodes++;
+        }
+      }
+
       const query = `INSERT INTO lightning_stats(
           added,
           channel_count,
           node_count,
-          total_capacity
+          total_capacity,
+          tor_nodes,
+          clearnet_nodes,
+          unannounced_nodes
         )
-        VALUES (NOW(), ?, ?, ?)`;
+        VALUES (NOW(), ?, ?, ?, ?, ?, ?)`;
 
       await DB.query(query, [
         networkGraph.channels.length,
         networkGraph.nodes.length,
         total_capacity,
+        torNodes,
+        clearnetNodes,
+        unannouncedNodes
       ]);
       logger.info(`Lightning daily stats done.`);
     } catch (e) {
