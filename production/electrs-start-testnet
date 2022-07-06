@@ -1,4 +1,4 @@
-#!/usr/local/bin/zsh
+#!/usr/bin/env zsh
 cd "${HOME}/electrs"
 #source $HOME/.cargo/env
 #export PATH=$HOME/.cargo/bin:$PATH
