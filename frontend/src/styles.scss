@@ -852,6 +852,40 @@ th {
     }
   }
 
+  .fee-progress-bar {
+    @extend .fee-progress-bar;
+    &.priority {
+      @media (767px < width < 992px), (width < 576px) {
+        width: 100%;
+      }
+      width: 75%;
+      border-radius: 10px 0px 0px 10px !important;
+    }
+  }
+
+  .fees-wrapper-tooltip-chart {
+    @extend .fees-wrapper-tooltip-chart;
+    .title {
+      direction: rtl;
+    }
+  }
+
+  .btn-link {
+    padding: 0.1rem 0.5rem 0.25rem 0 !important;
+  }
+
+  .shortable-address {
+    direction: ltr;
+  }
+
+  .lastest-blocks-table {
+    @extend .lastest-blocks-table;
+    .table-cell-mined {
+      @extend .table-cell-mined;
+      text-align: right !important;
+    }
+  }
+
   .mempool-graph {
     @extend .mempool-graph;
     direction: ltr;

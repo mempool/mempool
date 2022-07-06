@@ -1,5 +1,6 @@
 import { escape } from 'mysql2';
 import { Common } from '../api/common';
+import config from '../config';
 import DB from '../database';
 import logger from '../logger';
 import PoolsRepository from './PoolsRepository';
@@ -32,7 +33,9 @@ class HashratesRepository {
   public async $getNetworkDailyHashrate(interval: string | null): Promise<any[]> {
     interval = Common.getSqlInterval(interval);
 
-    let query = `SELECT UNIX_TIMESTAMP(hashrate_timestamp) as timestamp, avg_hashrate as avgHashrate
+    let query = `SELECT
+      CAST(AVG(UNIX_TIMESTAMP(hashrate_timestamp)) as INT) as timestamp,
+      CAST(AVG(avg_hashrate) as DOUBLE) as avgHashrate
       FROM hashrates`;
 
     if (interval) {
@@ -42,6 +45,7 @@ class HashratesRepository {
       query += ` WHERE hashrates.type = 'daily'`;
     }
 
+    query += ` GROUP BY UNIX_TIMESTAMP(hashrate_timestamp) DIV ${86400}`;
     query += ` ORDER by hashrate_timestamp`;
 
     try {
