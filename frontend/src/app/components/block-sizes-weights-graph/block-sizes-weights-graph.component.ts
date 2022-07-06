@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding, NgZone } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
 import { EChartsOption} from 'echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
@@ -8,9 +8,8 @@ import { formatNumber } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { StorageService } from 'src/app/services/storage.service';
 import { MiningService } from 'src/app/services/mining.service';
-import { StateService } from 'src/app/services/state.service';
-import { Router } from '@angular/router';
-import { download } from 'src/app/shared/graphs.utils';
+import { ActivatedRoute } from '@angular/router';
+import { download, formatterXAxis } from 'src/app/shared/graphs.utils';
 
 @Component({
   selector: 'app-block-sizes-weights-graph',
@@ -53,9 +52,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
     private formBuilder: FormBuilder,
     private storageService: StorageService,
     private miningService: MiningService,
-    private stateService: StateService,
-    private router: Router,
-    private zone: NgZone,
+    private route: ActivatedRoute,
   ) {
   }
 
@@ -67,9 +64,17 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
+    this.route
+      .fragment
+      .subscribe((fragment) => {
+        if (['24h', '3d', '1w', '1m', '3m', '6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
+          this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
+        }
+      });
+
     this.blockSizesWeightsObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
       .pipe(
-        startWith(this.miningWindowPreference),
+        startWith(this.radioGroupForm.controls.dateSpan.value),
         switchMap((timespan) => {
           this.timespan = timespan;
           if (!firstRun) {
@@ -107,7 +112,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
           color: 'grey',
           fontSize: 15
         },
-        text: `Indexing in progess`,
+        text: $localize`:@@23555386d8af1ff73f297e89dd4af3f4689fb9dd:Indexing blocks`,
         left: 'center',
         top: 'center'
       };
@@ -141,27 +146,21 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
         },
         borderColor: '#000',
         formatter: (ticks) => {
-          let sizeString = '';
-          let weightString = '';
+          let tooltip = `<b style="color: white; margin-left: 2px">${formatterXAxis(this.locale, this.timespan, parseInt(ticks[0].axisValue, 10))}</b><br>`;
 
           for (const tick of ticks) {
             if (tick.seriesIndex === 0) { // Size
-              sizeString = `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.2-2')} MB`;
+              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.2-2')} MB`;
             } else if (tick.seriesIndex === 1) { // Weight
-              weightString = `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.2-2')} MWU`;
+              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.2-2')} MWU`;
             }
+            tooltip += `<br>`;
           }
 
-          const date = new Date(ticks[0].data[0]).toLocaleDateString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
-
-          let tooltip = `<b style="color: white; margin-left: 18px">${date}</b><br>
-            <span>${sizeString}</span><br>
-            <span>${weightString}</span>`;
-
           if (['24h', '3d'].includes(this.timespan)) {
-            tooltip += `<br><small>At block: ${ticks[0].data[2]}</small>`;
+            tooltip += `<small>` + $localize`At block: ${ticks[0].data[2]}` + `</small>`;
           } else {
-            tooltip += `<br><small>Around block ${ticks[0].data[2]}</small>`;
+            tooltip += `<small>` + $localize`Around block: ${ticks[0].data[2]}` + `</small>`;
           }
 
           return tooltip;

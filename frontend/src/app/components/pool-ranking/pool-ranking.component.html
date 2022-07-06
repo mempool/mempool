@@ -5,21 +5,27 @@
   <div *ngIf="widget">
     <div class="pool-distribution" *ngIf="(miningStatsObservable$ | async) as miningStats; else loadingReward">
       <div class="item">
-        <h5 class="card-title" i18n="mining.miners-luck">Pools Luck (1w)</h5>
-        <p class="card-text">
+        <h5 class="card-title d-inline-block" i18n="mining.miners-luck" i18n-ngbTooltip="mining.miners-luck-1w"
+        ngbTooltip="Pools luck (1 week)" placement="bottom" #minersluck [disableTooltip]="!isEllipsisActive(minersluck)">Pools luck</h5>
+        <p class="card-text" i18n-ngbTooltip="mining.pools-luck-desc"
+        ngbTooltip="The overall luck of all mining pools over the past week. A luck bigger than 100% means the average block time for the current epoch is less than 10 minutes." placement="bottom">
           {{ miningStats['minersLuck'] }}%
         </p>
       </div>
       <div class="item">
-        <h5 class="card-title" i18n="master-page.blocks">Blocks (1w)</h5>
-        <p class="card-text">
-          {{ miningStats.blockCount }}
+        <h5 class="card-title d-inline-block" i18n="mining.miners-count" i18n-ngbTooltip="mining.miners-count-1w"
+        ngbTooltip="Pools count (1w)" placement="bottom" #poolscount [disableTooltip]="!isEllipsisActive(poolscount)">Pools count</h5>
+        <p class="card-text" i18n-ngbTooltip="mining.pools-count-desc"
+        ngbTooltip="How many unique pools found at least one block over the past week." placement="bottom">
+          {{ miningStats.pools.length }}
         </p>
       </div>
       <div class="item">
-        <h5 class="card-title" i18n="mining.miners-count">Pools Count (1w)</h5>
-        <p class="card-text">
-          {{ miningStats.pools.length }}
+        <h5 class="card-title d-inline-block" i18n="master-page.blocks" i18n-ngbTooltip="master-page.blocks"
+        ngbTooltip="Blocks (1w)" placement="bottom" #blockscount [disableTooltip]="!isEllipsisActive(blockscount)">Blocks (1w)</h5>
+        <p class="card-text" i18n-ngbTooltip="mining.blocks-count-desc"
+        ngbTooltip="The number of blocks found over the past week." placement="bottom">
+          {{ miningStats.blockCount }}
         </p>
       </div>
     </div>
@@ -34,34 +40,34 @@
       *ngIf="!widget && (miningStatsObservable$ | async) as stats">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.totalBlockCount >= 144">
-          <input ngbButton type="radio" [value]="'24h'" fragment="24h"> 24h
+          <input ngbButton type="radio" [value]="'24h'" fragment="24h" [routerLink]="['/graphs/mining/pools' | relativeUrl]"> 24h
         </label>
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.totalBlockCount >= 432">
-          <input ngbButton type="radio" [value]="'3d'" fragment="3d"> 3D
+          <input ngbButton type="radio" [value]="'3d'" fragment="3d" [routerLink]="['/graphs/mining/pools' | relativeUrl]"> 3D
         </label>
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.totalBlockCount >= 1008">
-          <input ngbButton type="radio" [value]="'1w'" fragment="1w"> 1W
+          <input ngbButton type="radio" [value]="'1w'" fragment="1w" [routerLink]="['/graphs/mining/pools' | relativeUrl]"> 1W
         </label>
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.totalBlockCount >= 4320">
-          <input ngbButton type="radio" [value]="'1m'" fragment="1m"> 1M
+          <input ngbButton type="radio" [value]="'1m'" fragment="1m" [routerLink]="['/graphs/mining/pools' | relativeUrl]"> 1M
         </label>
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.totalBlockCount >= 12960">
-          <input ngbButton type="radio" [value]="'3m'" fragment="3m"> 3M
+          <input ngbButton type="radio" [value]="'3m'" fragment="3m" [routerLink]="['/graphs/mining/pools' | relativeUrl]"> 3M
         </label>
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.totalBlockCount >= 25920">
-          <input ngbButton type="radio" [value]="'6m'" fragment="6m"> 6M
+          <input ngbButton type="radio" [value]="'6m'" fragment="6m" [routerLink]="['/graphs/mining/pools' | relativeUrl]"> 6M
         </label>
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.totalBlockCount >= 52560">
-          <input ngbButton type="radio" [value]="'1y'" fragment="1y"> 1Y
+          <input ngbButton type="radio" [value]="'1y'" fragment="1y" [routerLink]="['/graphs/mining/pools' | relativeUrl]"> 1Y
         </label>
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.totalBlockCount >= 105120">
-          <input ngbButton type="radio" [value]="'2y'" fragment="2y"> 2Y
+          <input ngbButton type="radio" [value]="'2y'" fragment="2y" [routerLink]="['/graphs/mining/pools' | relativeUrl]"> 2Y
         </label>
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.totalBlockCount >= 157680">
-          <input ngbButton type="radio" [value]="'3y'" fragment="3y"> 3Y
+          <input ngbButton type="radio" [value]="'3y'" fragment="3y" [routerLink]="['/graphs/mining/pools' | relativeUrl]"> 3Y
         </label>
-        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.totalBlockCount > 157680">
-          <input ngbButton type="radio" [value]="'all'" fragment="all"><span i18n>All</span>
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'all'" fragment="all" [routerLink]="['/graphs/mining/pools' | relativeUrl]"><span i18n>All</span>
         </label>
       </div>
     </form>

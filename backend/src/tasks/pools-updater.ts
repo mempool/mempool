@@ -1,7 +1,8 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import poolsParser from '../api/pools-parser';
 import config from '../config';
 import DB from '../database';
+import backendInfo from '../api/backend-info';
 import logger from '../logger';
 import { SocksProxyAgent } from 'socks-proxy-agent';
 import * as https from 'https';
@@ -11,12 +12,15 @@ import * as https from 'https';
  */
 class PoolsUpdater {
   lastRun: number = 0;
+  currentSha: any = undefined;
+  poolsUrl: string = 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json';
+  treeUrl: string = 'https://api.github.com/repos/mempool/mining-pools/git/trees/master';
 
   constructor() {
   }
 
   public async updatePoolsJson() {
-    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false || config.DATABASE.ENABLED === false) {
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
       return;
     }
 
@@ -30,27 +34,33 @@ class PoolsUpdater {
 
     this.lastRun = now;
 
-    logger.info('Updating latest mining pools from Github');
     if (config.SOCKS5PROXY.ENABLED) {
-      logger.info('List of public pools will be queried over the Tor network');
+      logger.info(`Updating latest mining pools from ${this.poolsUrl} over the Tor network`);
     } else {
-      logger.info('List of public pools will be queried over clearnet');
+      logger.info(`Updating latest mining pools from ${this.poolsUrl} over clearnet`);
     }
 
     try {
-      const dbSha = await this.getShaFromDb();
       const githubSha = await this.fetchPoolsSha(); // Fetch pools.json sha from github
       if (githubSha === undefined) {
         return;
       }
 
-      logger.debug(`Pools.json sha | Current: ${dbSha} | Github: ${githubSha}`);
-      if (dbSha !== undefined && dbSha === githubSha) {
+      if (config.DATABASE.ENABLED === true) {
+        this.currentSha = await this.getShaFromDb();
+      }
+
+      logger.debug(`Pools.json sha | Current: ${this.currentSha} | Github: ${githubSha}`);
+      if (this.currentSha !== undefined && this.currentSha === githubSha) {
         return;
       }
 
-      logger.warn('Pools.json is outdated, fetch latest from github');
-      const poolsJson = await this.query('https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json');
+      if (this.currentSha === undefined) {
+        logger.info(`Downloading pools.json for the first time from ${this.poolsUrl}`);
+      } else {
+        logger.warn(`Pools.json is outdated, fetch latest from ${this.poolsUrl}`);
+      }
+      const poolsJson = await this.query(this.poolsUrl);
       if (poolsJson === undefined) {
         return;
       }
@@ -60,7 +70,7 @@ class PoolsUpdater {
 
     } catch (e) {
       this.lastRun = now - (oneWeek - oneDay); // Try again in 24h instead of waiting next week
-      logger.err('PoolsUpdater failed. Will try again in 24h. Reason: '  + (e instanceof Error ? e.message : e));
+      logger.err('PoolsUpdater failed. Will try again in 24h. Reason: ' + (e instanceof Error ? e.message : e));
     }
   }
 
@@ -68,12 +78,14 @@ class PoolsUpdater {
    * Fetch our latest pools.json sha from the db
    */
   private async updateDBSha(githubSha: string) {
-    try {
-      await DB.query('DELETE FROM state where name="pools_json_sha"');
-      await DB.query(`INSERT INTO state VALUES('pools_json_sha', NULL, '${githubSha}')`);
-    } catch (e) {
-      logger.err('Cannot save github pools.json sha into the db. Reason: '  + (e instanceof Error ? e.message : e));
-      return undefined;
+    this.currentSha = githubSha;
+    if (config.DATABASE.ENABLED === true) {
+      try {
+        await DB.query('DELETE FROM state where name="pools_json_sha"');
+        await DB.query(`INSERT INTO state VALUES('pools_json_sha', NULL, '${githubSha}')`);
+      } catch (e) {
+        logger.err('Cannot save github pools.json sha into the db. Reason: ' + (e instanceof Error ? e.message : e));
+      }
     }
   }
 
@@ -85,7 +97,7 @@ class PoolsUpdater {
       const [rows]: any[] = await DB.query('SELECT string FROM state WHERE name="pools_json_sha"');
       return (rows.length > 0 ? rows[0].string : undefined);
     } catch (e) {
-      logger.err('Cannot fetch pools.json sha from db. Reason: '  + (e instanceof Error ? e.message : e));
+      logger.err('Cannot fetch pools.json sha from db. Reason: ' + (e instanceof Error ? e.message : e));
       return undefined;
     }
   }
@@ -94,7 +106,7 @@ class PoolsUpdater {
    * Fetch our latest pools.json sha from github
    */
   private async fetchPoolsSha(): Promise<string | undefined> {
-    const response = await this.query('https://api.github.com/repos/mempool/mining-pools/git/trees/master');
+    const response = await this.query(this.treeUrl);
 
     if (response !== undefined) {
       for (const file of response['tree']) {
@@ -104,7 +116,7 @@ class PoolsUpdater {
       }
     }
 
-    logger.err('Cannot to find latest pools.json sha from github api response');
+    logger.err(`Cannot find "pools.json" in git tree (${this.treeUrl})`);
     return undefined;
   }
 
@@ -113,41 +125,53 @@ class PoolsUpdater {
    */
   private async query(path): Promise<object | undefined> {
     type axiosOptions = {
+      headers: {
+        'User-Agent': string
+      };
+      timeout: number;
       httpsAgent?: https.Agent;
-    }
+    };
     const setDelay = (secs: number = 1): Promise<void> => new Promise(resolve => setTimeout(() => resolve(), secs * 1000));
-    const axiosOptions: axiosOptions = {};
+    const axiosOptions: axiosOptions = {
+      headers: {
+        'User-Agent': (config.MEMPOOL.USER_AGENT === 'mempool') ? `mempool/v${backendInfo.getBackendInfo().version}` : `${config.MEMPOOL.USER_AGENT}`
+      },
+      timeout: config.SOCKS5PROXY.ENABLED ? 30000 : 10000
+    };
     let retry = 0;
 
-    if (config.SOCKS5PROXY.ENABLED) {
-      const socksOptions: any = {
-        agentOptions: {
-          keepAlive: true,
-        },
-        hostname: config.SOCKS5PROXY.HOST,
-        port: config.SOCKS5PROXY.PORT
-      };
-
-      if (config.SOCKS5PROXY.USERNAME && config.SOCKS5PROXY.PASSWORD) {
-        socksOptions.username = config.SOCKS5PROXY.USERNAME;
-        socksOptions.password = config.SOCKS5PROXY.PASSWORD;
-      }
-
-      axiosOptions.httpsAgent = new SocksProxyAgent(socksOptions);
-    }
-
-    while(retry < 5) {
+    while (retry < config.MEMPOOL.EXTERNAL_MAX_RETRY) {
       try {
-        const data = await axios.get(path, axiosOptions);
-        if (data.statusText !== 'OK' || !data.data) {
-          throw new Error(`Could not fetch data from Github, Error: ${data.status}`);
+        if (config.SOCKS5PROXY.ENABLED) {
+          const socksOptions: any = {
+            agentOptions: {
+              keepAlive: true,
+            },
+            hostname: config.SOCKS5PROXY.HOST,
+            port: config.SOCKS5PROXY.PORT
+          };
+
+          if (config.SOCKS5PROXY.USERNAME && config.SOCKS5PROXY.PASSWORD) {
+            socksOptions.username = config.SOCKS5PROXY.USERNAME;
+            socksOptions.password = config.SOCKS5PROXY.PASSWORD;
+          } else {
+            // Retry with different tor circuits https://stackoverflow.com/a/64960234
+            socksOptions.username = `circuit${retry}`;
+          }
+
+          axiosOptions.httpsAgent = new SocksProxyAgent(socksOptions);
+        }
+
+        const data: AxiosResponse = await axios.get(path, axiosOptions);
+        if (data.statusText === 'error' || !data.data) {
+          throw new Error(`Could not fetch data from ${path}, Error: ${data.status}`);
         }
         return data.data;
       } catch (e) {
-        logger.err('Could not connect to Github. Reason: '  + (e instanceof Error ? e.message : e));
+        logger.err('Could not connect to Github. Reason: ' + (e instanceof Error ? e.message : e));
         retry++;
       }
-      await setDelay();
+      await setDelay(config.MEMPOOL.EXTERNAL_RETRY_INTERVAL);
     }
     return undefined;
   }

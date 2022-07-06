@@ -3,7 +3,7 @@
 
     <h2 i18n="documentation.title">Documentation</h2>
 
-    <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav-tabs" role="tablist">
+    <ul ngbNav #nav="ngbNav" [animation]="false" [(activeId)]="activeTab" class="nav-tabs" role="tablist">
 
       <li [ngbNavItem]="0" *ngIf="showFaqTab" role="presentation">
         <a ngbNavLink [routerLink]="['/docs/faq' | relativeUrl]" role="tab">FAQ</a>
@@ -34,7 +34,7 @@
 
     </ul>
 
-    <div id="main-tab-content" [ngbNavOutlet]="nav" class="mt-2"></div>
+    <div id="main-tab-content" [ngbNavOutlet]="nav"></div>
 
     <br>
 

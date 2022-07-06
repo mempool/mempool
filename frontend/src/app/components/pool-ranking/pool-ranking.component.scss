@@ -89,9 +89,10 @@
     flex-direction: row;
   }
   h5 {
-    margin-bottom: 10px;
+    margin-bottom: 5px;
   }
   .item {
+    max-width: 160px;
     width: 50%;
     display: inline-block;
     margin: 0px auto 20px;
@@ -102,6 +103,7 @@
       }
     }
     &:nth-child(3) {
+      width: 50%;
       order: 3;
       @media (min-width: 485px) {
         order: 2;
@@ -117,6 +119,9 @@
     .card-title {
       font-size: 1rem;
       color: #4a68b9;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .card-text {
       font-size: 18px;

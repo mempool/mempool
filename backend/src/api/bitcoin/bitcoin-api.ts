@@ -64,6 +64,13 @@ class BitcoinApi implements AbstractBitcoinApi {
       });
   }
 
+  $getBlockHashTip(): Promise<string> {
+    return this.bitcoindClient.getChainTips()
+      .then((result: IBitcoinApi.ChainTips[]) => {
+        return result.find(tip => tip.status === 'active')!.hash;
+      });
+  }
+
   $getTxIdsForBlock(hash: string): Promise<string[]> {
     return this.bitcoindClient.getBlock(hash, 1)
       .then((rpcBlock: IBitcoinApi.Block) => rpcBlock.tx);
@@ -139,6 +146,15 @@ class BitcoinApi implements AbstractBitcoinApi {
       }
     }
     return outSpends;
+  }
+
+  async $getBatchedOutspends(txId: string[]): Promise<IEsploraApi.Outspend[][]> {
+    const outspends: IEsploraApi.Outspend[][] = [];
+    for (const tx of txId) {
+      const outspend = await this.$getOutspends(tx);
+      outspends.push(outspend);
+    }
+    return outspends;
   }
 
   $getEstimatedHashrate(blockHeight: number): Promise<number> {

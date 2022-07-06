@@ -319,7 +319,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       },
       xAxis: [
         {
-          name: formatterXAxisLabel(this.locale, this.windowPreference),
+          name: this.template === 'widget' ? '' : formatterXAxisLabel(this.locale, this.windowPreference),
           nameLocation: 'middle',
           nameTextStyle: {
             padding: [20, 0, 0, 0],

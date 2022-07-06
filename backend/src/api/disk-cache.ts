@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 const fsPromises = fs.promises;
-import * as cluster from 'cluster';
+import cluster from 'cluster';
 import memPool from './mempool';
 import blocks from './blocks';
 import logger from '../logger';
@@ -19,7 +19,7 @@ class DiskCache {
   constructor() { }
 
   async $saveCacheToDisk(): Promise<void> {
-    if (!cluster.isMaster) {
+    if (!cluster.isPrimary) {
       return;
     }
     if (this.isWritingCache) {
@@ -43,14 +43,15 @@ class DiskCache {
       await fsPromises.writeFile(DiskCache.FILE_NAME, JSON.stringify({
         cacheSchemaVersion: this.cacheSchemaVersion,
         blocks: blocks.getBlocks(),
+        blockSummaries: blocks.getBlockSummaries(),
         mempool: {},
         mempoolArray: mempoolArray.splice(0, chunkSize),
-      }), {flag: 'w'});
+      }), { flag: 'w' });
       for (let i = 1; i < DiskCache.CHUNK_FILES; i++) {
         await fsPromises.writeFile(DiskCache.FILE_NAMES.replace('{number}', i.toString()), JSON.stringify({
           mempool: {},
           mempoolArray: mempoolArray.splice(0, chunkSize),
-        }), {flag: 'w'});
+        }), { flag: 'w' });
       }
       logger.debug('Mempool and blocks data saved to disk cache');
       this.isWritingCache = false;
@@ -66,7 +67,7 @@ class DiskCache {
       fs.unlinkSync(DiskCache.FILE_NAMES.replace('{number}', i.toString()));
     }
   }
-  
+
   loadMempoolCache() {
     if (!fs.existsSync(DiskCache.FILE_NAME)) {
       return;
@@ -109,6 +110,7 @@ class DiskCache {
 
       memPool.setMempool(data.mempool);
       blocks.setBlocks(data.blocks);
+      blocks.setBlockSummaries(data.blockSummaries || []);
     } catch (e) {
       logger.warn('Failed to parse mempoool and blocks cache. Skipping. Reason: ' + (e instanceof Error ? e.message : e));
     }

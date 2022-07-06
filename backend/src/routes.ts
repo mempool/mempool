@@ -26,6 +26,7 @@ import mining from './api/mining';
 import BlocksRepository from './repositories/BlocksRepository';
 import HashratesRepository from './repositories/HashratesRepository';
 import difficultyAdjustment from './api/difficulty-adjustment';
+import DifficultyAdjustmentsRepository from './repositories/DifficultyAdjustmentsRepository';
 
 class Routes {
   constructor() {}
@@ -118,6 +119,30 @@ class Routes {
 
     const times = mempool.getFirstSeenForTransactions(txIds);
     res.json(times);
+  }
+
+  public async $getBatchedOutspends(req: Request, res: Response) {
+    if (!Array.isArray(req.query.txId)) {
+      res.status(500).send('Not an array');
+      return;
+    }
+    if (req.query.txId.length > 50) {
+      res.status(400).send('Too many txids requested');
+      return;
+    }
+    const txIds: string[] = [];
+    for (const _txId in req.query.txId) {
+      if (typeof req.query.txId[_txId] === 'string') {
+        txIds.push(req.query.txId[_txId].toString());
+      }
+    }
+
+    try {
+      const batchedOutspends = await bitcoinApi.$getBatchedOutspends(txIds);
+      res.json(batchedOutspends);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
   }
 
   public getCpfpInfo(req: Request, res: Response) {
@@ -629,7 +654,7 @@ class Routes {
 
     try {
       const hashrates = await HashratesRepository.$getNetworkDailyHashrate(req.params.interval);
-      const difficulty = await BlocksRepository.$getBlocksDifficulty(req.params.interval);
+      const difficulty = await DifficultyAdjustmentsRepository.$getAdjustments(req.params.interval, false);
       const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
@@ -706,6 +731,18 @@ class Routes {
     }
   }
 
+  public async $getDifficultyAdjustments(req: Request, res: Response) {
+    try {
+      const difficulty = await DifficultyAdjustmentsRepository.$getAdjustments(req.params.interval, true);
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.json(difficulty.map(adj => [adj.time, adj.height, adj.difficulty, adj.adjustment]));
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
   public async getBlock(req: Request, res: Response) {
     try {
       const block = await blocks.$getBlock(req.params.hash);
@@ -721,6 +758,16 @@ class Routes {
       const blockHeader = await bitcoinApi.$getBlockHeader(req.params.hash);
       res.setHeader('content-type', 'text/plain');
       res.send(blockHeader);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  public async getStrippedBlockTransactions(req: Request, res: Response) {
+    try {
+      const transactions = await blocks.$getStrippedBlockTransactions(req.params.hash);
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24 * 30).toUTCString());
+      res.json(transactions);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
@@ -891,6 +938,16 @@ class Routes {
     }
   }
 
+  public async getBlockTipHash(req: Request, res: Response) {
+    try {
+      const result = await bitcoinApi.$getBlockHashTip();
+      res.setHeader('content-type', 'text/plain');
+      res.send(result);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
   public async getTxIdsForBlock(req: Request, res: Response) {
     try {
       const result = await bitcoinApi.$getTxIdsForBlock(req.params.hash);
@@ -990,7 +1047,7 @@ class Routes {
 
   public async $getAllFeaturedLiquidAssets(req: Request, res: Response) {
     try {
-      const response = await axios.get('https://liquid.network/api/v1/assets/featured', { responseType: 'stream', timeout: 10000 });
+      const response = await axios.get(`${config.EXTERNAL_DATA_SERVER.LIQUID_API}/assets/featured`, { responseType: 'stream', timeout: 10000 });
       response.data.pipe(res);
     } catch (e) {
       res.status(500).end();
@@ -999,7 +1056,7 @@ class Routes {
 
   public async $getAssetGroup(req: Request, res: Response) {
     try {
-      const response = await axios.get('https://liquid.network/api/v1/assets/group/' + parseInt(req.params.id, 10),
+      const response = await axios.get(`${config.EXTERNAL_DATA_SERVER.LIQUID_API}/assets/group/${parseInt(req.params.id, 10)}`,
         { responseType: 'stream', timeout: 10000 });
       response.data.pipe(res);
     } catch (e) {

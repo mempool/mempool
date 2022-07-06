@@ -48,4 +48,8 @@ export class RewardStatsComponent implements OnInit {
         })
       );
   }
+
+  isEllipsisActive(e) {
+    return (e.offsetWidth < e.scrollWidth);
+  }
 }

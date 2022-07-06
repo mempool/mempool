@@ -1,6 +1,6 @@
 # Mempool Backend
 
-These instructions are mostly intended for developers, but can be used as a basis for personal or small-scale production setups. 
+These instructions are mostly intended for developers. 
 
 If you choose to use these instructions for a production setup, be aware that you will still probably need to do additional configuration for your specific OS, environment, use-case, etc. We do our best here to provide a good starting point, but only proceed if you know what you're doing. Mempool does not provide support for custom setups.
 
@@ -77,13 +77,13 @@ Query OK, 0 rows affected (0.00 sec)
 
 #### Build
 
-_Make sure to use Node.js 16.15 and npm 7._
+_Make sure to use Node.js 16.10 and npm 7._
 
 Install dependencies with `npm` and build the backend:
 
 ```
 cd backend
-npm install # add --prod for production
+npm install
 npm run build
 ```
 
@@ -159,3 +159,57 @@ nodemon src/index.ts --ignore cache/ --ignore pools.json
 ```
 
 `nodemon` should be in npm's global binary folder. If needed, you can determine where that is with `npm -g bin`.
+
+### Useful Regtest Commands
+
+Helpful link: https://gist.github.com/System-Glitch/cb4e87bf1ae3fec9925725bb3ebe223a
+
+Run bitcoind on regtest:
+   ```
+   bitcoind -regtest -rpcport=8332
+   ```
+
+Create a new wallet, if needed:
+   ```
+   bitcoin-cli -regtest -rpcport=8332 createwallet test
+   ```
+
+Load wallet (this command may take a while if you have lot of UTXOs):
+   ```
+   bitcoin-cli -regtest -rpcport=8332 loadwallet test
+   ```
+
+Get a new address:
+   ```
+   address=$(./src/bitcoin-cli -regtest -rpcport=8332 getnewaddress)
+   ```
+
+Mine blocks to the previously generated address. You need at least 101 blocks before you can spend. This will take some time to execute (~1 min):
+   ```
+   bitcoin-cli -regtest -rpcport=8332 generatetoaddress 101 $address
+   ```
+
+Send 0.1 BTC at 5 sat/vB to another address:
+   ```
+   ./src/bitcoin-cli -named -regtest -rpcport=8332 sendtoaddress address=$(./src/bitcoin-cli -regtest -rpcport=8332 getnewaddress) amount=0.1 fee_rate=5
+   ```
+
+See more example of `sendtoaddress`:
+   ```
+   ./src/bitcoin-cli sendtoaddress # will print the help
+   ```
+
+Mini script to generate transactions with random TX fee-rate (between 1 to 100 sat/vB). It's slow so don't expect to use this to test mempool spam, except if you let it run for a long time, or maybe with multiple regtest nodes connected to each other.
+   ```
+   #!/bin/bash
+   address=$(./src/bitcoin-cli -regtest -rpcport=8332 getnewaddress)
+   for i in {1..1000000}
+   do
+     ./src/bitcoin-cli -regtest -rpcport=8332 -named sendtoaddress address=$address amount=0.01 fee_rate=$(jot -r 1  1 100)
+   done
+   ```
+
+Generate block at regular interval (every 10 seconds in this example):
+   ```
+   watch -n 10 "./src/bitcoin-cli -regtest -rpcport=8332 generatetoaddress 1 $address"
+   ```

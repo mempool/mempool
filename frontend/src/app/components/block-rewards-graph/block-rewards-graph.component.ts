@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
 import { EChartsOption, graphic } from 'echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
@@ -6,9 +6,10 @@ import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { formatNumber } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { download, formatterXAxisLabel } from 'src/app/shared/graphs.utils';
+import { download, formatterXAxis, formatterXAxisLabel } from 'src/app/shared/graphs.utils';
 import { MiningService } from 'src/app/services/mining.service';
 import { StorageService } from 'src/app/services/storage.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-block-rewards-graph',
@@ -48,7 +49,8 @@ export class BlockRewardsGraphComponent implements OnInit {
     private apiService: ApiService,
     private formBuilder: FormBuilder,
     private miningService: MiningService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private route: ActivatedRoute,
   ) {
   }
 
@@ -58,9 +60,17 @@ export class BlockRewardsGraphComponent implements OnInit {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
+    this.route
+      .fragment
+      .subscribe((fragment) => {
+        if (['24h', '3d', '1w', '1m', '3m', '6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
+          this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
+        }
+      });
+
     this.statsObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
       .pipe(
-        startWith(this.miningWindowPreference),
+        startWith(this.radioGroupForm.controls.dateSpan.value),
         switchMap((timespan) => {
           this.storageService.setValue('miningWindowPreference', timespan);
           this.timespan = timespan;
@@ -69,7 +79,7 @@ export class BlockRewardsGraphComponent implements OnInit {
             .pipe(
               tap((response) => {
                 this.prepareChartOptions({
-                  blockRewards: response.body.map(val => [val.timestamp * 1000, val.avgRewards / 100000000]),
+                  blockRewards: response.body.map(val => [val.timestamp * 1000, val.avgRewards / 100000000, val.avgHeight]),
                 });
                 this.isLoading = false;
               }),
@@ -117,12 +127,17 @@ export class BlockRewardsGraphComponent implements OnInit {
         },
         borderColor: '#000',
         formatter: (ticks) => {
-          const tick = ticks[0];
-          const rewardsString = `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.3-3')} BTC`;
-          return `
-            <b style="color: white; margin-left: 18px">${tick.axisValueLabel}</b><br>
-            <span>${rewardsString}</span>
-          `;
+          let tooltip = `<b style="color: white; margin-left: 2px">${formatterXAxis(this.locale, this.timespan, parseInt(ticks[0].axisValue, 10))}</b><br>`;
+          tooltip += `${ticks[0].marker} ${ticks[0].seriesName}: ${formatNumber(ticks[0].data[1], this.locale, '1.3-3')} BTC`;
+          tooltip += `<br>`;
+
+          if (['24h', '3d'].includes(this.timespan)) {
+            tooltip += `<small>` + $localize`At block: ${ticks[0].data[2]}` + `</small>`;
+          } else {
+            tooltip += `<small>` + $localize`Around block: ${ticks[0].data[2]}` + `</small>`;
+          }
+
+          return tooltip;
         }
       },
       xAxis: {

@@ -2,11 +2,12 @@ import config from '../config';
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
 import memPool from './mempool';
-import { BlockExtended, PoolTag, TransactionExtended, TransactionMinerInfo } from '../mempool.interfaces';
+import { BlockExtended, BlockSummary, PoolTag, TransactionExtended, TransactionStripped, TransactionMinerInfo } from '../mempool.interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
 import transactionUtils from './transaction-utils';
 import bitcoinClient from './bitcoin/bitcoin-client';
+import { IBitcoinApi } from './bitcoin/bitcoin-api.interface';
 import { IEsploraApi } from './bitcoin/esplora-api.interface';
 import poolsRepository from '../repositories/PoolsRepository';
 import blocksRepository from '../repositories/BlocksRepository';
@@ -16,11 +17,15 @@ import { prepareBlock } from '../utils/blocks-utils';
 import BlocksRepository from '../repositories/BlocksRepository';
 import HashratesRepository from '../repositories/HashratesRepository';
 import indexer from '../indexer';
-import fiatConversion from './fiat-conversion';
-import RatesRepository from '../repositories/RatesRepository';
+import poolsParser from './pools-parser';
+import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
+import mining from './mining';
+import DifficultyAdjustmentsRepository from '../repositories/DifficultyAdjustmentsRepository';
+import difficultyAdjustment from './difficulty-adjustment';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
+  private blockSummaries: BlockSummary[] = [];
   private currentBlockHeight = 0;
   private currentDifficulty = 0;
   private lastDifficultyAdjustmentTime = 0;
@@ -35,6 +40,14 @@ class Blocks {
 
   public setBlocks(blocks: BlockExtended[]) {
     this.blocks = blocks;
+  }
+
+  public getBlockSummaries(): BlockSummary[] {
+    return this.blockSummaries;
+  }
+
+  public setBlockSummaries(blockSummaries: BlockSummary[]) {
+    this.blockSummaries = blockSummaries;
   }
 
   public setNewBlockCallback(fn: (block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void) {
@@ -106,6 +119,27 @@ class Blocks {
   }
 
   /**
+   * Return a block summary (list of stripped transactions)
+   * @param block
+   * @returns BlockSummary
+   */
+  private summarizeBlock(block: IBitcoinApi.VerboseBlock): BlockSummary {
+    const stripped = block.tx.map((tx) => {
+      return {
+        txid: tx.txid,
+        vsize: tx.vsize,
+        fee: tx.fee ? Math.round(tx.fee * 100000000) : 0,
+        value: Math.round(tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0) * 100000000)
+      };
+    });
+
+    return {
+      id: block.hash,
+      transactions: stripped
+    };
+  }
+
+  /**
    * Return a block with additional data (reward, coinbase, fees...)
    * @param block
    * @param transactions
@@ -139,7 +173,11 @@ class Blocks {
       if (blockExtended.extras?.coinbaseTx !== undefined) {
         pool = await this.$findBlockMiner(blockExtended.extras?.coinbaseTx);
       } else {
-        pool = await poolsRepository.$getUnknownPool();
+        if (config.DATABASE.ENABLED === true) {
+          pool = await poolsRepository.$getUnknownPool();
+        } else {
+          pool = poolsParser.unknownPool;
+        }
       }
 
       if (!pool) { // We should never have this situation in practise
@@ -165,13 +203,22 @@ class Blocks {
    */
   private async $findBlockMiner(txMinerInfo: TransactionMinerInfo | undefined): Promise<PoolTag> {
     if (txMinerInfo === undefined || txMinerInfo.vout.length < 1) {
-      return await poolsRepository.$getUnknownPool();
+      if (config.DATABASE.ENABLED === true) {
+        return await poolsRepository.$getUnknownPool();
+      } else {
+        return poolsParser.unknownPool;
+      }
     }
 
     const asciiScriptSig = transactionUtils.hex2ascii(txMinerInfo.vin[0].scriptsig);
     const address = txMinerInfo.vout[0].scriptpubkey_address;
 
-    const pools: PoolTag[] = await poolsRepository.$getPools();
+    let pools: PoolTag[] = [];
+    if (config.DATABASE.ENABLED === true) {
+      pools = await poolsRepository.$getPools();
+    } else {
+      pools = poolsParser.miningPools;
+    }
     for (let i = 0; i < pools.length; ++i) {
       if (address !== undefined) {
         const addresses: string[] = JSON.parse(pools[i].addresses);
@@ -190,19 +237,75 @@ class Blocks {
       }
     }
 
-    return await poolsRepository.$getUnknownPool();
+    if (config.DATABASE.ENABLED === true) {
+      return await poolsRepository.$getUnknownPool();
+    } else {
+      return poolsParser.unknownPool;
+    }
+  }
+
+  /**
+   * [INDEXING] Index all blocks summaries for the block txs visualization
+   */
+  public async $generateBlocksSummariesDatabase() {
+    if (Common.blocksSummariesIndexingEnabled() === false) {
+      return;
+    }
+
+    try {
+      // Get all indexed block hash
+      const indexedBlocks = await blocksRepository.$getIndexedBlocks();
+      const indexedBlockSummariesHashesArray = await BlocksSummariesRepository.$getIndexedSummariesId();
+
+      const indexedBlockSummariesHashes = {}; // Use a map for faster seek during the indexing loop
+      for (const hash of indexedBlockSummariesHashesArray) {
+        indexedBlockSummariesHashes[hash] = true;
+      }
+
+      // Logging
+      let newlyIndexed = 0;
+      let totalIndexed = indexedBlockSummariesHashesArray.length;
+      let indexedThisRun = 0;
+      let timer = new Date().getTime() / 1000;
+      const startedAt = new Date().getTime() / 1000;
+
+      for (const block of indexedBlocks) {
+        if (indexedBlockSummariesHashes[block.hash] === true) {
+          continue;
+        }
+
+        // Logging
+        const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - timer));
+        if (elapsedSeconds > 5) {
+          const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
+          const blockPerSeconds = Math.max(1, indexedThisRun / elapsedSeconds);
+          const progress = Math.round(totalIndexed / indexedBlocks.length * 10000) / 100;
+          const timeLeft = Math.round((indexedBlocks.length - totalIndexed) / blockPerSeconds);
+          logger.debug(`Indexing block summary for #${block.height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexedBlocks.length} (${progress}%) | elapsed: ${runningFor} seconds | left: ~${timeLeft} seconds`);
+          timer = new Date().getTime() / 1000;
+          indexedThisRun = 0;
+        }
+
+        await this.$getStrippedBlockTransactions(block.hash, true, true); // This will index the block summary
+
+        // Logging
+        indexedThisRun++;
+        totalIndexed++;
+        newlyIndexed++;
+      }
+      logger.notice(`Blocks summaries indexing completed: indexed ${newlyIndexed} blocks`);
+    } catch (e) {
+      logger.err(`Blocks summaries indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`);
+      throw e;
+    }
   }
 
   /**
    * [INDEXING] Index all blocks metadata for the mining dashboard
    */
-  public async $generateBlockDatabase() {
-    const blockchainInfo = await bitcoinClient.getBlockchainInfo();
-    if (blockchainInfo.blocks !== blockchainInfo.headers) { // Wait for node to sync
-      return;
-    }
-
+  public async $generateBlockDatabase(): Promise<boolean> {
     try {
+      const blockchainInfo = await bitcoinClient.getBlockchainInfo();
       let currentBlockHeight = blockchainInfo.blocks;
 
       let indexingBlockAmount = Math.min(config.MEMPOOL.INDEXING_BLOCKS_AMOUNT, blockchainInfo.blocks);
@@ -243,7 +346,7 @@ class Blocks {
           const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - timer));
           if (elapsedSeconds > 5 || blockHeight === lastBlockToIndex) {
             const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
-            const blockPerSeconds = Math.max(1, Math.round(indexedThisRun / elapsedSeconds));
+            const blockPerSeconds = Math.max(1, indexedThisRun / elapsedSeconds);
             const progress = Math.round(totalIndexed / indexingBlockAmount * 10000) / 100;
             const timeLeft = Math.round((indexingBlockAmount - totalIndexed) / blockPerSeconds);
             logger.debug(`Indexing block #${blockHeight} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexingBlockAmount} (${progress}%) | elapsed: ${runningFor} seconds | left: ~${timeLeft} seconds`);
@@ -262,18 +365,15 @@ class Blocks {
 
         currentBlockHeight -= chunkSize;
       }
-      logger.info(`Indexed ${newlyIndexed} blocks`);
+      logger.notice(`Block indexing completed: indexed ${newlyIndexed} blocks`);
       loadingIndicators.setProgress('block-indexing', 100);
     } catch (e) {
-      logger.err('Block indexing failed. Trying again later. Reason: ' + (e instanceof Error ? e.message : e));
+      logger.err('Block indexing failed. Trying again in 10 seconds. Reason: ' + (e instanceof Error ? e.message : e));
       loadingIndicators.setProgress('block-indexing', 100);
-      return;
+      throw e;
     }
 
-    const chainValid = await BlocksRepository.$validateChain();
-    if (!chainValid) {
-      indexer.reindex();
-    }
+    return await BlocksRepository.$validateChain();
   }
 
   public async $updateBlocks() {
@@ -323,10 +423,12 @@ class Blocks {
       }
 
       const blockHash = await bitcoinApi.$getBlockHash(this.currentBlockHeight);
-      const block = BitcoinApi.convertBlock(await bitcoinClient.getBlock(blockHash));
+      const verboseBlock = await bitcoinClient.getBlock(blockHash, 2);
+      const block = BitcoinApi.convertBlock(verboseBlock);
       const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
       const transactions = await this.$getTransactionsExtended(blockHash, block.height, false);
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, transactions);
+      const blockSummary: BlockSummary = this.summarizeBlock(verboseBlock);
 
       if (Common.indexingEnabled()) {
         if (!fastForwarded) {
@@ -336,18 +438,35 @@ class Blocks {
             // We assume there won't be a reorg with more than 10 block depth
             await BlocksRepository.$deleteBlocksFrom(lastBlock['height'] - 10);
             await HashratesRepository.$deleteLastEntries();
+            await BlocksSummariesRepository.$deleteBlocksFrom(lastBlock['height'] - 10);
             for (let i = 10; i >= 0; --i) {
-              await this.$indexBlock(lastBlock['height'] - i);
+              const newBlock = await this.$indexBlock(lastBlock['height'] - i);
+              await this.$getStrippedBlockTransactions(newBlock.id, true, true);
             }
+            await mining.$indexDifficultyAdjustments();
+            await DifficultyAdjustmentsRepository.$deleteLastAdjustment();
+            logger.info(`Re-indexed 10 blocks and summaries. Also re-indexed the last difficulty adjustments. Will re-index latest hashrates in a few seconds.`);
+            indexer.reindex();
           }
           await blocksRepository.$saveBlockInDatabase(blockExtended);
+
+          // Save blocks summary for visualization if it's enabled
+          if (Common.blocksSummariesIndexingEnabled() === true) {
+            await this.$getStrippedBlockTransactions(blockExtended.id, true);
+          }
         }
-      }
-      if (fiatConversion.ratesInitialized === true && config.DATABASE.ENABLED === true) {
-        await RatesRepository.$saveRate(blockExtended.height, fiatConversion.getConversionRates());
       }
 
       if (block.height % 2016 === 0) {
+        if (Common.indexingEnabled()) {
+          await DifficultyAdjustmentsRepository.$saveAdjustments({
+            time: block.timestamp,
+            height: block.height,
+            difficulty: block.difficulty,
+            adjustment: Math.round((block.difficulty / this.currentDifficulty) * 1000000) / 1000000, // Remove float point noise
+          });
+        }
+
         this.previousDifficultyRetarget = (block.difficulty - this.currentDifficulty) / this.currentDifficulty * 100;
         this.lastDifficultyAdjustmentTime = block.timestamp;
         this.currentDifficulty = block.difficulty;
@@ -356,6 +475,10 @@ class Blocks {
       this.blocks.push(blockExtended);
       if (this.blocks.length > config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4) {
         this.blocks = this.blocks.slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4);
+      }
+      this.blockSummaries.push(blockSummary);
+      if (this.blockSummaries.length > config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4) {
+        this.blockSummaries = this.blockSummaries.slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4);
       }
 
       if (this.newBlockCallbacks.length) {
@@ -420,6 +543,37 @@ class Blocks {
     }
 
     return blockExtended;
+  }
+
+  public async $getStrippedBlockTransactions(hash: string, skipMemoryCache: boolean = false,
+    skipDBLookup: boolean = false): Promise<TransactionStripped[]>
+  {
+    if (skipMemoryCache === false) {
+      // Check the memory cache
+      const cachedSummary = this.getBlockSummaries().find((b) => b.id === hash);
+      if (cachedSummary) {
+        return cachedSummary.transactions;
+      }
+    }
+
+    // Check if it's indexed in db
+    if (skipDBLookup === false && Common.blocksSummariesIndexingEnabled() === true) {
+      const indexedSummary = await BlocksSummariesRepository.$getByBlockId(hash);
+      if (indexedSummary !== undefined) {
+        return indexedSummary.transactions;
+      }
+    }
+
+    // Call Core RPC
+    const block = await bitcoinClient.getBlock(hash, 2);
+    const summary = this.summarizeBlock(block);
+
+    // Index the response if needed
+    if (Common.blocksSummariesIndexingEnabled() === true) {
+      await BlocksSummariesRepository.$saveSummary(block.height, summary);
+    }
+
+    return summary.transactions;
   }
 
   public async $getBlocks(fromHeight?: number, limit: number = 15): Promise<BlockExtended[]> {

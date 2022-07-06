@@ -4,6 +4,7 @@ export interface AbstractBitcoinApi {
   $getRawMempool(): Promise<IEsploraApi.Transaction['txid'][]>;
   $getRawTransaction(txId: string, skipConversion?: boolean, addPrevout?: boolean, lazyPrevouts?: boolean): Promise<IEsploraApi.Transaction>;
   $getBlockHeightTip(): Promise<number>;
+  $getBlockHashTip(): Promise<string>;
   $getTxIdsForBlock(hash: string): Promise<string[]>;
   $getBlockHash(height: number): Promise<string>;
   $getBlockHeader(hash: string): Promise<string>;
@@ -13,6 +14,7 @@ export interface AbstractBitcoinApi {
   $getAddressPrefix(prefix: string): string[];
   $sendRawTransaction(rawTransaction: string): Promise<string>;
   $getOutspends(txId: string): Promise<IEsploraApi.Outspend[]>;
+  $getBatchedOutspends(txId: string[]): Promise<IEsploraApi.Outspend[][]>;
 }
 export interface BitcoinRpcCredentials {
   host: string;

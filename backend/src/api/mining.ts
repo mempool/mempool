@@ -1,4 +1,4 @@
-import { PoolInfo, PoolStats, RewardStats } from '../mempool.interfaces';
+import { IndexedDifficultyAdjustment, PoolInfo, PoolStats, RewardStats } from '../mempool.interfaces';
 import BlocksRepository from '../repositories/BlocksRepository';
 import PoolsRepository from '../repositories/PoolsRepository';
 import HashratesRepository from '../repositories/HashratesRepository';
@@ -7,6 +7,8 @@ import logger from '../logger';
 import { Common } from './common';
 import loadingIndicators from './loading-indicators';
 import { escape } from 'mysql2';
+import indexer from '../indexer';
+import DifficultyAdjustmentsRepository from '../repositories/DifficultyAdjustmentsRepository';
 
 class Mining {
   constructor() {
@@ -257,11 +259,12 @@ class Mining {
       }
       await HashratesRepository.$setLatestRun('last_weekly_hashrates_indexing', new Date().getUTCDate());
       if (newlyIndexed > 0) {
-        logger.info(`Indexed ${newlyIndexed} pools weekly hashrate`);
+        logger.notice(`Weekly mining pools hashrates indexing completed: indexed ${newlyIndexed}`);
       }
       loadingIndicators.setProgress('weekly-hashrate-indexing', 100);
     } catch (e) {
       loadingIndicators.setProgress('weekly-hashrate-indexing', 100);
+      logger.err(`Weekly mining pools hashrates indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`);
       throw e;
     }
   }
@@ -368,12 +371,55 @@ class Mining {
 
       await HashratesRepository.$setLatestRun('last_hashrates_indexing', new Date().getUTCDate());
       if (newlyIndexed > 0) {
-        logger.info(`Indexed ${newlyIndexed} day of network hashrate`);
+        logger.notice(`Daily network hashrate indexing completed: indexed ${newlyIndexed} days`);
       }
       loadingIndicators.setProgress('daily-hashrate-indexing', 100);
     } catch (e) {
       loadingIndicators.setProgress('daily-hashrate-indexing', 100);
+      logger.err(`Daily network hashrate indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`);
       throw e;
+    }
+  }
+
+  /**
+   * Index difficulty adjustments
+   */
+  public async $indexDifficultyAdjustments(): Promise<void> {
+    const indexedHeightsArray = await DifficultyAdjustmentsRepository.$getAdjustmentsHeights();
+    const indexedHeights = {};
+    for (const height of indexedHeightsArray) {
+      indexedHeights[height] = true;
+    }
+
+    const blocks: any = await BlocksRepository.$getBlocksDifficulty();
+
+    let currentDifficulty = 0;
+    let totalIndexed = 0;
+
+    for (const block of blocks) {
+      if (block.difficulty !== currentDifficulty) {
+        if (block.height === 0 || indexedHeights[block.height] === true) { // Already indexed
+          currentDifficulty = block.difficulty;
+          continue;          
+        }
+
+        let adjustment = block.difficulty / Math.max(1, currentDifficulty);
+        adjustment = Math.round(adjustment * 1000000) / 1000000; // Remove float point noise
+
+        await DifficultyAdjustmentsRepository.$saveAdjustments({
+          time: block.time,
+          height: block.height,
+          difficulty: block.difficulty,
+          adjustment: adjustment,
+        });
+
+        totalIndexed++;
+        currentDifficulty = block.difficulty;
+      }
+    }
+
+    if (totalIndexed > 0) {
+      logger.notice(`Indexed ${totalIndexed} difficulty adjustments`);
     }
   }
 

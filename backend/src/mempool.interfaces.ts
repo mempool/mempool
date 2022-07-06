@@ -106,6 +106,11 @@ export interface BlockExtended extends IEsploraApi.Block {
   extras: BlockExtension;
 }
 
+export interface BlockSummary {
+  id: string;
+  transactions: TransactionStripped[];
+}
+
 export interface TransactionMinerInfo {
   vin: VinStrippedToScriptsig[];
   vout: VoutStrippedToScriptPubkey[];
@@ -217,6 +222,13 @@ export interface IDifficultyAdjustment {
   nextRetargetHeight: number;
   timeAvg: number;
   timeOffset: number;
+}
+
+export interface IndexedDifficultyAdjustment {
+  time: number; // UNIX timestamp
+  height: number; // Block height
+  difficulty: number;
+  adjustment: number;
 }
 
 export interface RewardStats {

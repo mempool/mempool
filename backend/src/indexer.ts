@@ -4,6 +4,7 @@ import mempool from './api/mempool';
 import mining from './api/mining';
 import logger from './logger';
 import HashratesRepository from './repositories/HashratesRepository';
+import bitcoinClient from './api/bitcoin/bitcoin-client';
 
 class Indexer {
   runIndexer = true;
@@ -13,7 +14,9 @@ class Indexer {
   }
 
   public reindex() {
-    this.runIndexer = true;
+    if (Common.indexingEnabled()) {
+      this.runIndexer = true;
+    }
   }
 
   public async $run() {
@@ -23,17 +26,34 @@ class Indexer {
       return;
     }
 
+    // Do not attempt to index anything unless Bitcoin Core is fully synced
+    const blockchainInfo = await bitcoinClient.getBlockchainInfo();
+    if (blockchainInfo.blocks !== blockchainInfo.headers) {
+      return;
+    }
+
     this.runIndexer = false;
     this.indexerRunning = true;
 
     try {
-      await blocks.$generateBlockDatabase();
+      const chainValid = await blocks.$generateBlockDatabase();
+      if (chainValid === false) {
+        // Chain of block hash was invalid, so we need to reindex. Stop here and continue at the next iteration
+        logger.warn(`The chain of block hash is invalid, re-indexing invalid data in 10 seconds.`);
+        setTimeout(() => this.reindex(), 10000);
+        this.indexerRunning = false;
+        return;
+      }
+
+      await mining.$indexDifficultyAdjustments();
       await this.$resetHashratesIndexingState();
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();
+      await blocks.$generateBlocksSummariesDatabase();
     } catch (e) {
-      this.reindex();
-      logger.err(`Indexer failed, trying again later. Reason: ` + (e instanceof Error ? e.message : e));
+      this.indexerRunning = false;
+      logger.err(`Indexer failed, trying again in 10 seconds. Reason: ` + (e instanceof Error ? e.message : e));
+      setTimeout(() => this.reindex(), 10000);
     }
 
     this.indexerRunning = false;
@@ -45,6 +65,7 @@ class Indexer {
       await HashratesRepository.$setLatestRun('last_weekly_hashrates_indexing', 0);
     } catch (e) {
       logger.err(`Cannot reset hashrate indexing timestamps. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
     }
   }
 }
