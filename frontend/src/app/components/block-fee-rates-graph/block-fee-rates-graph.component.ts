@@ -174,7 +174,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
           align: 'left',
         },
         borderColor: '#000',
-        formatter: function (data) {
+        formatter: function(data) {
           if (data.length <= 0) {
             return '';
           }

@@ -140,7 +140,7 @@ export class ApiService {
       this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pools` +
       (interval !== undefined ? `/${interval}` : ''), { observe: 'response' }
     );
-  }
+  }  
 
   getPoolStats$(slug: string): Observable<PoolStat> {
     return this.httpClient.get<PoolStat>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${slug}`);
@@ -170,6 +170,13 @@ export class ApiService {
 
   getStrippedBlockTransactions$(hash: string): Observable<TransactionStripped[]> {
     return this.httpClient.get<TransactionStripped[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/block/' + hash + '/summary');
+  }
+
+  getDifficultyAdjustments$(interval: string | undefined): Observable<any> {
+    return this.httpClient.get<any[]>(
+        this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/difficulty-adjustments` +
+        (interval !== undefined ? `/${interval}` : ''), { observe: 'response' }
+      );
   }
 
   getHistoricalHashrate$(interval: string | undefined): Observable<any> {
@@ -210,6 +217,13 @@ export class ApiService {
   getHistoricalBlockSizesAndWeights$(interval: string | undefined) : Observable<any> {
     return this.httpClient.get<any[]>(
       this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/sizes-weights` +
+      (interval !== undefined ? `/${interval}` : ''), { observe: 'response' }
+    );
+  }
+
+  getHistoricalBlockPrediction$(interval: string | undefined) : Observable<any> {
+    return this.httpClient.get<any[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/predictions` +
       (interval !== undefined ? `/${interval}` : ''), { observe: 'response' }
     );
   }

@@ -22,6 +22,15 @@ export interface PoolStats extends PoolInfo {
   emptyBlocks: number;
 }
 
+export interface BlockAudit {
+  time: number,
+  height: number,
+  hash: string,
+  missingTxs: string[],
+  addedTxs: string[],
+  matchRate: number,
+}
+
 export interface MempoolBlock {
   blockSize: number;
   blockVSize: number;
@@ -222,6 +231,13 @@ export interface IDifficultyAdjustment {
   nextRetargetHeight: number;
   timeAvg: number;
   timeOffset: number;
+}
+
+export interface IndexedDifficultyAdjustment {
+  time: number; // UNIX timestamp
+  height: number; // Block height
+  difficulty: number;
+  adjustment: number;
 }
 
 export interface RewardStats {
