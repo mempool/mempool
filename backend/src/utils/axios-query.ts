@@ -50,10 +50,14 @@ export async function query(path): Promise<object | undefined> {
      }
      return data.data;
    } catch (e) {
-     logger.err(`Could not connect to ${path}. Reason: ` + (e instanceof Error ? e.message : e));
+     logger.warn(`Could not connect to ${path} (Attempt ${retry + 1}/${config.MEMPOOL.EXTERNAL_MAX_RETRY}). Reason: ` + (e instanceof Error ? e.message : e));
      retry++;
    }
-   await setDelay(config.MEMPOOL.EXTERNAL_RETRY_INTERVAL);
+   if (retry < config.MEMPOOL.EXTERNAL_MAX_RETRY) {
+     await setDelay(config.MEMPOOL.EXTERNAL_RETRY_INTERVAL);
+   }
  }
+
+ logger.err(`Could not connect to ${path}. All ${config.MEMPOOL.EXTERNAL_MAX_RETRY} attempts failed`);
  return undefined;
 }
