@@ -176,7 +176,7 @@ class PriceUpdater {
       ++insertedCount;
     }
     if (insertedCount > 0) {
-      logger.info(`Inserted ${insertedCount} MtGox USD weekly price history into db`);
+      logger.notice(`Inserted ${insertedCount} MtGox USD weekly price history into db`);
     }
 
     // Insert Kraken weekly prices
@@ -205,23 +205,23 @@ class PriceUpdater {
       try {
         historicalPrices.push(await feed.$fetchRecentHourlyPrice(this.currencies));
       } catch (e) {
-        logger.info(`Cannot fetch hourly historical price from ${feed.name}. Ignoring this feed. Reason: ${e instanceof Error ? e.message : e}`);
+        logger.err(`Cannot fetch hourly historical price from ${feed.name}. Ignoring this feed. Reason: ${e instanceof Error ? e.message : e}`);
       }
     }
 
     // Group them by timestamp and currency, for example
     // grouped[123456789]['USD'] = [1, 2, 3, 4];
-    let grouped: Object = {};
+    const grouped: Object = {};
     for (const historicalEntry of historicalPrices) {
       for (const time in historicalEntry) {
         if (existingPriceTimes.includes(parseInt(time, 10))) {
           continue;
         }
 
-        if (grouped[time] == undefined) {
+        if (grouped[time] === undefined) {
           grouped[time] = {
             USD: [], EUR: [], GBP: [], CAD: [], CHF: [], AUD: [], JPY: []
-          }
+          };
         }
 
         for (const currency of this.currencies) {
@@ -238,13 +238,20 @@ class PriceUpdater {
     for (const time in grouped) {
       const prices: Prices = this.getEmptyPricesObj();
       for (const currency in grouped[time]) {
-        prices[currency] = Math.round((grouped[time][currency].reduce((partialSum, a) => partialSum + a, 0)) / grouped[time][currency].length);
+        if (grouped[time][currency].length === 0) {
+          continue;
+        }
+        prices[currency] = Math.round((grouped[time][currency].reduce(
+          (partialSum, a) => partialSum + a, 0)
+        ) / grouped[time][currency].length);
       }
       await PricesRepository.$savePrices(parseInt(time, 10), prices);
       ++totalInserted;
     }
 
-    logger.info(`Inserted ${totalInserted} hourly historical prices into the db`);
+    if (totalInserted > 0) {
+      logger.notice(`Inserted ${totalInserted} hourly historical prices into the db`);
+    }
   }
 }
 
