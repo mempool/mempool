@@ -71,6 +71,69 @@ class ChannelsApi {
     }
   }
 
+  public async $getChannelsStats(): Promise<any> {
+    try {
+      // Feedback from zerofeerouting:
+      // "I would argue > 5000ppm can be ignored. Channels charging more than .5% fee are ignored by CLN for example."
+      const ignoredFeeRateThreshold = 5000;
+      const ignoredBaseFeeThreshold = 5000;
+
+      // Capacity
+      let query = `SELECT AVG(capacity) AS avgCapacity FROM channels WHERE status = 1 ORDER BY capacity`;
+      const [avgCapacity]: any = await DB.query(query);
+
+      query = `SELECT capacity FROM channels WHERE status = 1 ORDER BY capacity`;
+      let [capacity]: any = await DB.query(query);
+      capacity = capacity.map(capacity => capacity.capacity);
+      const medianCapacity = capacity[Math.floor(capacity.length / 2)];
+
+      // Fee rates
+      query = `SELECT node1_fee_rate FROM channels WHERE node1_fee_rate < ${ignoredFeeRateThreshold} AND status = 1`;
+      let [feeRates1]: any = await DB.query(query);
+      feeRates1 = feeRates1.map(rate => rate.node1_fee_rate);
+      query = `SELECT node2_fee_rate FROM channels WHERE node2_fee_rate < ${ignoredFeeRateThreshold} AND status = 1`;
+      let [feeRates2]: any = await DB.query(query);
+      feeRates2 = feeRates2.map(rate => rate.node2_fee_rate);
+
+      let feeRates = (feeRates1.concat(feeRates2)).sort((a, b) => a - b);
+      let avgFeeRate = 0;
+      for (const rate of feeRates) {
+        avgFeeRate += rate; 
+      }
+      avgFeeRate /= feeRates.length;
+      const medianFeeRate = feeRates[Math.floor(feeRates.length / 2)];
+
+      // Base fees
+      query = `SELECT node1_base_fee_mtokens FROM channels WHERE node1_base_fee_mtokens < ${ignoredBaseFeeThreshold} AND status = 1`;
+      let [baseFees1]: any = await DB.query(query);
+      baseFees1 = baseFees1.map(rate => rate.node1_base_fee_mtokens);
+      query = `SELECT node2_base_fee_mtokens FROM channels WHERE node2_base_fee_mtokens < ${ignoredBaseFeeThreshold} AND status = 1`;
+      let [baseFees2]: any = await DB.query(query);
+      baseFees2 = baseFees2.map(rate => rate.node2_base_fee_mtokens);
+
+      let baseFees = (baseFees1.concat(baseFees2)).sort((a, b) => a - b);
+      let avgBaseFee = 0;
+      for (const fee of baseFees) {
+        avgBaseFee += fee; 
+      }
+      avgBaseFee /= baseFees.length;
+      const medianBaseFee = feeRates[Math.floor(baseFees.length / 2)];
+      
+      return {
+        avgCapacity: parseInt(avgCapacity[0].avgCapacity, 10),
+        avgFeeRate: avgFeeRate,
+        avgBaseFee: avgBaseFee,
+        medianCapacity: medianCapacity,
+        medianFeeRate: medianFeeRate,
+        medianBaseFee: medianBaseFee,
+      }
+
+    } catch (e) {
+      logger.err(`Cannot calculate channels statistics. Reason: ${e instanceof Error ? e.message : e}`);
+      throw e;
+    }
+  }
+
   public async $getChannelsByTransactionId(transactionIds: string[]): Promise<any[]> {
     try {
       transactionIds = transactionIds.map((id) => '\'' + id + '\'');
