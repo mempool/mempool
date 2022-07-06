@@ -4,7 +4,7 @@ import DB from '../../database';
 class StatisticsApi {
   public async $getStatistics(): Promise<any> {
     try {
-      const query = `SELECT UNIX_TIMESTAMP(added) AS added, channel_count, node_count, total_capacity FROM lightning_stats ORDER BY id DESC`;
+      const query = `SELECT UNIX_TIMESTAMP(added) AS added, channel_count, node_count, total_capacity, tor_nodes, clearnet_nodes, unannounced_nodes FROM lightning_stats ORDER BY id DESC`;
       const [rows]: any = await DB.query(query);
       return rows;
     } catch (e) {
