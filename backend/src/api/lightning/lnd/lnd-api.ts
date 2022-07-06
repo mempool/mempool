@@ -12,13 +12,13 @@ class LndApi implements AbstractLightningApi {
       return;
     }
     try {
-      const tls = fs.readFileSync(config.LND_NODE_AUTH.TLS_CERT_PATH).toString('base64');
-      const macaroon = fs.readFileSync(config.LND_NODE_AUTH.MACAROON_PATH).toString('base64');
+      const tls = fs.readFileSync(config.LND.TLS_CERT_PATH).toString('base64');
+      const macaroon = fs.readFileSync(config.LND.MACAROON_PATH).toString('base64');
 
       const { lnd } = lnService.authenticatedLndGrpc({
         cert: tls,
         macaroon: macaroon,
-        socket: config.LND_NODE_AUTH.SOCKET,
+        socket: config.LND.SOCKET,
       });
 
       this.lnd = lnd;
