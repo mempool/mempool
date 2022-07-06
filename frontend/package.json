@@ -119,5 +119,8 @@
     "cypress-wait-until": "^1.7.1",
     "mock-socket": "~9.1.4",
     "start-server-and-test": "~1.14.0"
+  },
+  "scarfSettings": {
+    "enabled": false
   }
 }
