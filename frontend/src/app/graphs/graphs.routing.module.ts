@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { BlockPredictionsGraphComponent } from '../components/block-predictions-graph/block-predictions-graph.component';
 import { BlockFeeRatesGraphComponent } from '../components/block-fee-rates-graph/block-fee-rates-graph.component';
 import { BlockFeesGraphComponent } from '../components/block-fees-graph/block-fees-graph.component';
 import { BlockRewardsGraphComponent } from '../components/block-rewards-graph/block-rewards-graph.component';
@@ -91,6 +92,10 @@ const routes: Routes = [
           {
             path: '',
             redirectTo: 'mempool',
+          },
+          {
+            path: 'mining/block-predictions',
+            component: BlockPredictionsGraphComponent,
           },
         ]
       },
