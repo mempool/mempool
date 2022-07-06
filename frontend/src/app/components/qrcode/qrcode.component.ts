@@ -24,7 +24,7 @@ export class QrcodeComponent implements AfterViewInit {
       return;
     }
     const opts: QRCode.QRCodeRenderersOptions = {
-      errorCorrectionLevel: 'H',
+      errorCorrectionLevel: 'L',
       margin: 0,
       color: {
         dark: '#000',
@@ -38,7 +38,11 @@ export class QrcodeComponent implements AfterViewInit {
     }
 
     const address = this.data;
-    if (this.data.indexOf('bc1') === 0 || this.data.indexOf('tb1') === 0) {
+    if (
+      this.data.indexOf('bc1') === 0 ||
+      this.data.indexOf('tb1') === 0 ||
+      this.data.indexOf('bcrt1') === 0
+    ) {
       address.toUpperCase();
     }
 
