@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 21;
+  private static currentVersion = 22;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -225,6 +225,11 @@ class DatabaseMigration {
       if (databaseSchemaVersion < 21) {
         await this.$executeQuery('DROP TABLE IF EXISTS `rates`');
         await this.$executeQuery(this.getCreatePricesTableQuery(), await this.$checkIfTableExists('prices'));
+      }
+
+      if (databaseSchemaVersion < 22 && isBitcoin === true) {
+        await this.$executeQuery('DROP TABLE IF EXISTS `difficulty_adjustments`');
+        await this.$executeQuery(this.getCreateDifficultyAdjustmentsTableQuery(), await this.$checkIfTableExists('difficulty_adjustments'));
       }
     } catch (e) {
       throw e;
@@ -513,7 +518,7 @@ class DatabaseMigration {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
-  private getCreateRatesTableQuery(): string {
+  private getCreateRatesTableQuery(): string { // This table has been replaced by the prices table
     return `CREATE TABLE IF NOT EXISTS rates (
       height int(10) unsigned NOT NULL,
       bisq_rates JSON NOT NULL,
@@ -536,6 +541,17 @@ class DatabaseMigration {
       time timestamp NOT NULL,
       avg_prices JSON NOT NULL,
       PRIMARY KEY (time)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateDifficultyAdjustmentsTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS difficulty_adjustments (
+      time timestamp NOT NULL,
+      height int(10) unsigned NOT NULL,
+      difficulty double unsigned NOT NULL,
+      adjustment float NOT NULL,
+      PRIMARY KEY (height),
+      INDEX (time)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 

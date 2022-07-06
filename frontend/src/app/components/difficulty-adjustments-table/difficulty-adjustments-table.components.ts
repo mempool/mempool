@@ -30,27 +30,24 @@ export class DifficultyAdjustmentsTable implements OnInit {
   }
 
   ngOnInit(): void {
-    this.hashrateObservable$ = this.apiService.getHistoricalHashrate$('1y')
+    this.hashrateObservable$ = this.apiService.getDifficultyAdjustments$('3m')
       .pipe(
         map((response) => {
           const data = response.body;
           const tableData = [];
-          for (let i = data.difficulty.length - 1; i > 0; --i) {
-            const selectedPowerOfTen: any = selectPowerOfTen(data.difficulty[i].difficulty);
-            const change = (data.difficulty[i].difficulty / data.difficulty[i - 1].difficulty - 1) * 100;
-
-            tableData.push(Object.assign(data.difficulty[i], {
-              change: Math.round(change * 100) / 100,
+          for (const adjustment of data) {
+            const selectedPowerOfTen: any = selectPowerOfTen(adjustment[2]);
+            tableData.push({
+              height: adjustment[1],
+              timestamp: adjustment[0],
+              change: (adjustment[3] - 1) * 100,
               difficultyShorten: formatNumber(
-                data.difficulty[i].difficulty / selectedPowerOfTen.divider,
+                adjustment[2] / selectedPowerOfTen.divider,
                 this.locale, '1.2-2') + selectedPowerOfTen.unit
-            }));
+            });
           }
           this.isLoading = false;
-
-          return {
-            difficulty: tableData.slice(0, 6),
-          };
+          return tableData.slice(0, 6);
         }),
       );
   }
