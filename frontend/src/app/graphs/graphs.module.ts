@@ -22,6 +22,7 @@ import { DashboardComponent } from '../dashboard/dashboard.component';
 import { MiningDashboardComponent } from '../components/mining-dashboard/mining-dashboard.component';
 import { HashrateChartComponent } from '../components/hashrate-chart/hashrate-chart.component';
 import { HashrateChartPoolsComponent } from '../components/hashrates-chart-pools/hashrate-chart-pools.component';
+import { BlockPredictionsGraphComponent } from '../components/block-predictions-graph/block-predictions-graph.component';
 import { CommonModule } from '@angular/common';
 
 @NgModule({
@@ -47,6 +48,7 @@ import { CommonModule } from '@angular/common';
     LbtcPegsGraphComponent,
     HashrateChartComponent,
     HashrateChartPoolsComponent,
+    BlockPredictionsGraphComponent,
   ],
   imports: [
     CommonModule,
