@@ -37,9 +37,9 @@
     "express": "^4.18.0",
     "mysql2": "2.3.3",
     "node-worker-threads-pool": "^1.5.1",
-    "socks-proxy-agent": "^6.2.0",
-    "typescript": "~4.7.2",
-    "ws": "~8.7.0"
+    "socks-proxy-agent": "~7.0.0",
+    "typescript": "~4.7.4",
+    "ws": "~8.8.0"
   },
   "devDependencies": {
     "@types/compression": "^1.7.2",

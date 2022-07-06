@@ -78,7 +78,6 @@
     "@fortawesome/fontawesome-common-types": "~6.1.1",
     "@fortawesome/fontawesome-svg-core": "~6.1.1",
     "@fortawesome/free-solid-svg-icons": "~6.1.1",
-    "@juggle/resize-observer": "^3.3.1",
     "@mempool/mempool.js": "2.3.0",
     "@ng-bootstrap/ng-bootstrap": "^11.0.0",
     "@nguniversal/express-engine": "~13.1.1",
@@ -89,7 +88,7 @@
     "domino": "^2.1.6",
     "echarts": "~5.3.2",
     "express": "^4.17.1",
-    "lightweight-charts": "^3.3.0",
+    "lightweight-charts": "~3.8.0",
     "ngx-bootrap-multiselect": "^2.0.0",
     "ngx-echarts": "8.0.1",
     "ngx-infinite-scroll": "^10.0.1",
@@ -105,31 +104,23 @@
     "@angular/language-service": "~13.3.10",
     "@nguniversal/builders": "~13.1.1",
     "@types/express": "^4.17.0",
-    "@types/jasmine": "~4.0.3",
-    "@types/jasminewd2": "~2.0.10",
     "@types/node": "^12.11.1",
     "@typescript-eslint/eslint-plugin": "^5.30.5",
     "@typescript-eslint/parser": "^5.30.5",
-    "codelyzer": "~6.0.2",
     "eslint": "^8.19.0",
-    "http-proxy-middleware": "^1.0.5",
-    "jasmine-core": "~4.1.0",
-    "jasmine-spec-reporter": "~7.0.0",
-    "karma": "~6.3.19",
-    "karma-chrome-launcher": "~3.1.0",
-    "karma-coverage": "~2.0.3",
-    "karma-jasmine": "~5.0.0",
-    "karma-jasmine-html-reporter": "^1.5.0",
-    "ts-node": "~8.3.0",
-    "tslint": "~6.1.0",
+    "http-proxy-middleware": "~2.0.6",
+    "ts-node": "~10.8.1",
     "typescript": "~4.6.4"
   },
   "optionalDependencies": {
-    "@cypress/schematic": "^1.3.0",
+    "@cypress/schematic": "~2.0.0",
     "cypress": "^10.0.2",
-    "cypress-fail-on-console-error": "^2.1.3",
+    "cypress-fail-on-console-error": "~2.1.4",
     "cypress-wait-until": "^1.7.1",
-    "mock-socket": "^9.0.3",
-    "start-server-and-test": "^1.12.6"
+    "mock-socket": "~9.1.4",
+    "start-server-and-test": "~1.14.0"
+  },
+  "scarfSettings": {
+    "enabled": false
   }
 }

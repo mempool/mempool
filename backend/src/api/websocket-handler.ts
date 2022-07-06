@@ -16,6 +16,7 @@ import transactionUtils from './transaction-utils';
 import rbfCache from './rbf-cache';
 import difficultyAdjustment from './difficulty-adjustment';
 import feeApi from './fee-api';
+import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
@@ -416,17 +417,40 @@ class WebsocketHandler {
 
     if (_mempoolBlocks[0]) {
       const matches: string[] = [];
+      const added: string[] = [];
+      const missing: string[] = [];
+
       for (const txId of txIds) {
         if (_mempoolBlocks[0].transactionIds.indexOf(txId) > -1) {
           matches.push(txId);
+        } else {
+          added.push(txId);
         }
         delete _memPool[txId];
       }
 
-      matchRate = Math.round((matches.length / (txIds.length - 1)) * 100);
+      for (const txId of _mempoolBlocks[0].transactionIds) {
+        if (matches.includes(txId) || added.includes(txId)) {
+          continue;
+        }
+        missing.push(txId);
+      }
+
+      matchRate = Math.round((Math.max(0, matches.length - missing.length - added.length) / txIds.length * 100) * 100) / 100;
       mempoolBlocks.updateMempoolBlocks(_memPool);
       mBlocks = mempoolBlocks.getMempoolBlocks();
       mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
+
+      if (Common.indexingEnabled()) {
+        BlocksAuditsRepository.$saveAudit({
+          time: block.timestamp,
+          height: block.height,
+          hash: block.id,
+          addedTxs: added,
+          missingTxs: missing,
+          matchRate: matchRate,
+        });
+      }
     }
 
     if (block.extras) {

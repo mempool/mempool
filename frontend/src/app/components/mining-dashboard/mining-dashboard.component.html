@@ -40,7 +40,7 @@
       <div class="card">
         <div class="card-body pl-lg-3 pr-lg-3 pl-2 pr-2">
           <app-hashrate-chart [attr.data-cy]="'hashrate-graph'" [widget]="true"></app-hashrate-chart>
-          <div class="mt-1"><a [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
+          <div class="mt-1"><a [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" fragment="1y" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>
       </div>
     </div>
