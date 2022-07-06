@@ -27,12 +27,12 @@ jobs:
 
       - name: Install
         if: ${{ matrix.flavor == 'dev'}}
-        run: npm install
+        run: npm ci
         working-directory: ${{ matrix.flavor }}/backend
 
       - name: Install (Prod dependencies only)
         if: ${{ matrix.flavor == 'prod'}}
-        run: npm install --prod
+        run: npm ci --prod --no-optional
         working-directory: ${{ matrix.flavor }}/backend
 
       - name: Lint 
@@ -67,16 +67,17 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install (Prod dependencies only)
-        run: npm install
+        run: npm ci --prod --no-optional
         if: ${{ matrix.flavor == 'prod'}}
         working-directory: ${{ matrix.flavor }}/frontend
 
       - name: Install
         if: ${{ matrix.flavor == 'dev'}}
-        run: npm install
+        run: npm ci
         working-directory: ${{ matrix.flavor }}/frontend
 
-      - name: Lint 
+      - name: Lint
+        if: ${{ matrix.flavor == 'dev'}}
         run: npm run lint
         working-directory: ${{ matrix.flavor }}/frontend
 
