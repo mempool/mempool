@@ -8,16 +8,14 @@ import { formatNumber } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { download, formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from 'src/app/shared/graphs.utils';
 import { StorageService } from 'src/app/services/storage.service';
-import { MiningService } from 'src/app/services/mining.service';
-import { selectPowerOfTen } from 'src/app/bitcoin.utils';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from 'src/app/services/state.service';
-import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-  selector: 'app-block-fee-rates-graph',
-  templateUrl: './block-fee-rates-graph.component.html',
-  styleUrls: ['./block-fee-rates-graph.component.scss'],
+  selector: 'app-block-predictions-graph',
+  templateUrl: './block-predictions-graph.component.html',
+  styleUrls: ['./block-predictions-graph.component.scss'],
   styles: [`
     .loadingGraphs {
       position: absolute;
@@ -28,7 +26,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BlockFeeRatesGraphComponent implements OnInit {
+export class BlockPredictionsGraphComponent implements OnInit {
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
 
@@ -52,19 +50,18 @@ export class BlockFeeRatesGraphComponent implements OnInit {
     private apiService: ApiService,
     private formBuilder: FormBuilder,
     private storageService: StorageService,
-    private miningService: MiningService,
-    private stateService: StateService,
-    private router: Router,
     private zone: NgZone,
     private route: ActivatedRoute,
+    private stateService: StateService,
+    private router: Router,
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
   }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`:@@ed8e33059967f554ff06b4f5b6049c465b92d9b3:Block Fee Rates`);
-    this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
+    this.seoService.setTitle($localize`Block predictions accuracy`);
+    this.miningWindowPreference = '24h';//this.miningService.getDefaultTimespan('24h');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
@@ -83,60 +80,10 @@ export class BlockFeeRatesGraphComponent implements OnInit {
           this.storageService.setValue('miningWindowPreference', timespan);
           this.timespan = timespan;
           this.isLoading = true;
-          return this.apiService.getHistoricalBlockFeeRates$(timespan)
+          return this.apiService.getHistoricalBlockPrediction$(timespan)
             .pipe(
               tap((response) => {
-                // Group by percentile
-                const seriesData = {
-                  'Min': [],
-                  '10th': [],
-                  '25th': [],
-                  'Median': [],
-                  '75th': [],
-                  '90th': [],
-                  'Max': []
-                };
-                for (const rate of response.body) {
-                  const timestamp = rate.timestamp * 1000;
-                  seriesData['Min'].push([timestamp, rate.avgFee_0, rate.avgHeight]);
-                  seriesData['10th'].push([timestamp, rate.avgFee_10, rate.avgHeight]);
-                  seriesData['25th'].push([timestamp, rate.avgFee_25, rate.avgHeight]);
-                  seriesData['Median'].push([timestamp, rate.avgFee_50, rate.avgHeight]);
-                  seriesData['75th'].push([timestamp, rate.avgFee_75, rate.avgHeight]);
-                  seriesData['90th'].push([timestamp, rate.avgFee_90, rate.avgHeight]);
-                  seriesData['Max'].push([timestamp, rate.avgFee_100, rate.avgHeight]);
-                }
-
-                // Prepare chart
-                const series = [];
-                const legends = [];
-                for (const percentile in seriesData) {
-                  series.push({
-                    zlevel: 0,
-                    stack: 'Total',
-                    name: percentile,
-                    data: seriesData[percentile],
-                    type: 'bar',
-                    barWidth: '100%',
-                    large: true,
-                  });
-
-                  legends.push({
-                    name: percentile,
-                    inactiveColor: 'rgb(110, 112, 121)',
-                    textStyle: {
-                      color: 'white',
-                    },
-                    icon: 'roundRect',
-                    enabled: false,
-                    selected: false,
-                  });
-                }
-
-                this.prepareChartOptions({
-                  legends: legends,
-                  series: series,
-                });
+                this.prepareChartOptions(response.body);
                 this.isLoading = false;
               }),
               map((response) => {
@@ -152,13 +99,12 @@ export class BlockFeeRatesGraphComponent implements OnInit {
 
   prepareChartOptions(data) {
     this.chartOptions = {
-      color: ['#D81B60', '#8E24AA', '#1E88E5', '#7CB342', '#FDD835', '#6D4C41', '#546E7A'],
       animation: false,
       grid: {
+        top: 30,
+        bottom: 80,
         right: this.right,
         left: this.left,
-        bottom: 80,
-        top: this.isMobile() ? 10 : 50,
       },
       tooltip: {
         show: !this.isMobile(),
@@ -174,27 +120,20 @@ export class BlockFeeRatesGraphComponent implements OnInit {
           align: 'left',
         },
         borderColor: '#000',
-        formatter: function(data) {
-          if (data.length <= 0) {
-            return '';
-          }
-          let tooltip = `<b style="color: white; margin-left: 2px">${formatterXAxis(this.locale, this.timespan, parseInt(data[0].axisValue, 10))}</b><br>`;
-
-          for (const pool of data.reverse()) {
-            tooltip += `${pool.marker} ${pool.seriesName}: ${pool.data[1]} sats/vByte<br>`;
-          }
+        formatter: (ticks) => {
+          let tooltip = `<b style="color: white; margin-left: 2px">${formatterXAxis(this.locale, this.timespan, parseInt(ticks[0].axisValue, 10) * 1000)}</b><br>`;
+          tooltip += `${ticks[0].marker} ${ticks[0].seriesName}: ${formatNumber(ticks[0].data.value, this.locale, '1.2-2')}%<br>`;
 
           if (['24h', '3d'].includes(this.timespan)) {
-            tooltip += `<small>` + $localize`At block: ${data[0].data[2]}` + `</small>`;
+            tooltip += `<small>` + $localize`At block: ${ticks[0].data.block}` + `</small>`;
           } else {
-            tooltip += `<small>` + $localize`Around block: ${data[0].data[2]}` + `</small>`;
+            tooltip += `<small>` + $localize`Around block: ${ticks[0].data.block}` + `</small>`;
           }
 
           return tooltip;
-        }.bind(this)
+        }
       },
-      xAxis: data.series.length === 0 ? undefined :
-      {
+      xAxis: {
         name: formatterXAxisLabel(this.locale, this.timespan),
         nameLocation: 'middle',
         nameTextStyle: {
@@ -211,41 +150,41 @@ export class BlockFeeRatesGraphComponent implements OnInit {
           hideOverlap: true,
           padding: [0, 5],
         },
+        data: data.map(prediction => prediction[0])
       },
-      legend: (data.series.length === 0) ? undefined : {
-        data: data.legends,
-        selected: JSON.parse(this.storageService.getValue('fee_rates_legend')) ?? {
-          'Min': true,
-          '10th': true,
-          '25th': true,
-          'Median': true,
-          '75th': true,
-          '90th': true,
-          'Max': false,
-        },
-        id: 4242,
-      },
-      yAxis: data.series.length === 0 ? undefined : {
-        position: 'left',
-        axisLabel: {
-          color: 'rgb(110, 112, 121)',
-          formatter: (val) => {
-            const selectedPowerOfTen: any = selectPowerOfTen(val);
-            const newVal = Math.round(val / selectedPowerOfTen.divider);
-            return `${newVal}${selectedPowerOfTen.unit} s/vB`;
+      yAxis: [
+        {
+          type: 'value',
+          axisLabel: {
+            color: 'rgb(110, 112, 121)',
+            formatter: (val) => {
+              return `${val}%`;
+            }
+          },
+          splitLine: {
+            lineStyle: {
+              type: 'dotted',
+              color: '#ffffff66',
+              opacity: 0.25,
+            }
           },
         },
-        splitLine: {
-          lineStyle: {
-            type: 'dotted',
-            color: '#ffffff66',
-            opacity: 0.25,
-          }
+      ],
+      series: [
+        {
+          zlevel: 0,
+          name: $localize`Match rate`,
+          data: data.map(prediction => ({
+            value: prediction[2],
+            block: prediction[1],
+            itemStyle: {
+              color: this.getPredictionColor(prediction[2])
+            }
+          })),
+          type: 'bar',
+          barWidth: '90%',
         },
-        type: 'value',
-        max: (val) => this.timespan === 'all' ? Math.min(val.max, 5000) : undefined,
-      },
-      series: data.series,
+      ],
       dataZoom: [{
         type: 'inside',
         realtime: true,
@@ -274,24 +213,55 @@ export class BlockFeeRatesGraphComponent implements OnInit {
     };
   }
 
-  onChartInit(ec) {
-    if (this.chartInstance !== undefined) {
-      return;
+  colorGradient(fadeFraction, rgbColor1, rgbColor2, rgbColor3) {
+    let color1 = rgbColor1;
+    let color2 = rgbColor2;
+    let fade = fadeFraction;
+
+    // Do we have 3 colors for the gradient? Need to adjust the params.
+    if (rgbColor3) {
+      fade = fade * 2;
+
+      // Find which interval to use and adjust the fade percentage
+      if (fade >= 1) {
+        fade -= 1;
+        color1 = rgbColor2;
+        color2 = rgbColor3;
+      }
     }
 
+    const diffRed = color2.red - color1.red;
+    const diffGreen = color2.green - color1.green;
+    const diffBlue = color2.blue - color1.blue;
+
+    const gradient = {
+      red: Math.floor(color1.red + (diffRed * fade)),
+      green: Math.floor(color1.green + (diffGreen * fade)),
+      blue: Math.floor(color1.blue + (diffBlue * fade)),
+    };
+
+    return 'rgb(' + gradient.red + ',' + gradient.green + ',' + gradient.blue + ')';
+  }
+
+  getPredictionColor(matchRate) {
+    return this.colorGradient(
+      Math.pow((100 - matchRate) / 100, 0.5),
+      {red: 67, green: 171, blue: 71},
+      {red: 253, green: 216, blue: 53},
+      {red: 244, green: 0, blue: 0},
+    );
+  }
+
+  onChartInit(ec) {
     this.chartInstance = ec;
 
     this.chartInstance.on('click', (e) => {
       this.zone.run(() => {
         if (['24h', '3d'].includes(this.timespan)) {
-          const url = new RelativeUrlPipe(this.stateService).transform(`/block/${e.data[2]}`);
+          const url = new RelativeUrlPipe(this.stateService).transform(`/block/${e.data.block}`);
           this.router.navigate([url]);
         }
       });
-    });
-
-    this.chartInstance.on('legendselectchanged', (e) => {
-      this.storageService.setValue('fee_rates_legend', JSON.stringify(e.selected));
     });
   }
 
@@ -310,7 +280,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,
       excludeComponents: ['dataZoom'],
-    }), `block-fee-rates-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
+    }), `block-fees-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
     // @ts-ignore
     this.chartOptions.grid.bottom = prevBottom;
     this.chartOptions.backgroundColor = 'none';
