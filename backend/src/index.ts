@@ -29,6 +29,11 @@ import poolsUpdater from './tasks/pools-updater';
 import indexer from './indexer';
 import priceUpdater from './tasks/price-updater';
 import BlocksAuditsRepository from './repositories/BlocksAuditsRepository';
+import nodeSyncService from './tasks/lightning/node-sync.service';
+import lightningStatsUpdater from './tasks/lightning/stats-updater.service';
+import nodesRoutes from './api/explorer/nodes.routes';
+import channelsRoutes from './api/explorer/channels.routes';
+import generalLightningRoutes from './api/explorer/general.routes';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -128,6 +133,13 @@ class Server {
       bisq.setPriceCallbackFunction((price) => websocketHandler.setExtraInitProperties('bsq-price', price));
       blocks.setNewBlockCallback(bisq.handleNewBitcoinBlock.bind(bisq));
       bisqMarkets.startBisqService();
+    }
+
+    if (config.LIGHTNING.ENABLED) {
+      nodeSyncService.$startService()
+        .then(() => {
+          lightningStatsUpdater.$startService();
+        });
     }
 
     this.server.listen(config.MEMPOOL.HTTP_PORT, () => {
@@ -361,6 +373,12 @@ class Server {
       this.app
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/month', routes.$getElementsPegsByMonth)
         ;
+    }
+
+    if (config.LIGHTNING.ENABLED) {
+      generalLightningRoutes.initRoutes(this.app);
+      nodesRoutes.initRoutes(this.app);
+      channelsRoutes.initRoutes(this.app);
     }
   }
 }

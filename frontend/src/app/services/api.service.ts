@@ -237,12 +237,12 @@ export class ApiService {
     txIds.forEach((txId: string) => {
       params = params.append('txId[]', txId);
     });
-    return this.httpClient.get<{ inputs: any[], outputs: any[] }>(this.apiBaseUrl + this.apiBasePath + '/lightning/api/v1/channels/txids/', { params });
+    return this.httpClient.get<{ inputs: any[], outputs: any[] }>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/channels/txids/', { params });
   }
 
   lightningSearch$(searchText: string): Observable<any[]> {
     let params = new HttpParams().set('searchText', searchText);
-    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/lightning/api/v1/search', { params });
+    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/search', { params });
   }
 
 }

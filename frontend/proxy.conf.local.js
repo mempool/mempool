@@ -103,13 +103,13 @@ if (configContent && configContent.BASE_MODULE === 'bisq') {
 
 PROXY_CONFIG.push(...[
   {
-    context: ['/lightning/api/v1/**'],
-    target: `http://localhost:8899`,
+    context: ['/testnet/api/v1/lightning/**'],
+    target: `http://localhost:8999`,
     secure: false,
     changeOrigin: true,
     proxyTimeout: 30000,
     pathRewrite: {
-        "^/lightning/api": "/api"
+        "^/testnet": ""
     },
   },
   {

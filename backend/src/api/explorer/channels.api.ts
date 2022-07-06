@@ -38,7 +38,7 @@ class ChannelsApi {
 
   public async $getClosedChannelsWithoutReason(): Promise<any[]> {
     try {
-      const query = `SELECT * FROM channels WHERE status = 2 AND closing_reason IS NULL`;
+      const query = `SELECT * FROM channels WHERE status = 2 AND closing_reason IS NULL AND closing_transaction_id != ''`;
       const [rows]: any = await DB.query(query);
       return rows;
     } catch (e) {
