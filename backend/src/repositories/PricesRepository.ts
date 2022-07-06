@@ -5,7 +5,11 @@ import { Prices } from '../tasks/price-updater';
 class PricesRepository {
   public async $savePrices(time: number, prices: Prices): Promise<void> {
     try {
-      await DB.query(`INSERT INTO prices(time, avg_prices) VALUE (FROM_UNIXTIME(?), ?)`, [time, JSON.stringify(prices)]);
+      await DB.query(`
+        INSERT INTO prices(time,             USD, EUR, GBP, CAD, CHF, AUD, JPY)
+        VALUE             (FROM_UNIXTIME(?), ?,   ?,   ?,   ?,   ?,   ?,   ?  )`,
+        [time, prices.USD, prices.EUR, prices.GBP, prices.CAD, prices.CHF, prices.AUD, prices.JPY]
+      );
     } catch (e: any) {
       logger.err(`Cannot save exchange rate into db. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
