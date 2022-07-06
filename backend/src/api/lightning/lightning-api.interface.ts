@@ -21,17 +21,17 @@ export namespace ILightningApi {
     policies: Policy[];
     transaction_id: string;
     transaction_vout: number;
-    updated_at: string;
+    updated_at?: string;
   }
 
   interface Policy {
     public_key: string;
-    base_fee_mtokens?: number;
+    base_fee_mtokens?: string;
     cltv_delta?: number;
     fee_rate?: number;
     is_disabled?: boolean;
-    max_htlc_mtokens?: number;
-    min_htlc_mtokens?: number;
+    max_htlc_mtokens?: string;
+    min_htlc_mtokens?: string;
     updated_at?: string;
   }
 
@@ -41,13 +41,31 @@ export namespace ILightningApi {
     features: Feature[];
     public_key: string;
     sockets: string[];
-    updated_at: string;
+    updated_at?: string;
   }
 
-  interface Feature {
+  export interface Info {
+    chains: string[];
+    color: string;
+    active_channels_count: number;
+    alias: string;
+    current_block_hash: string;
+    current_block_height: number;
+    features: Feature[];
+    is_synced_to_chain: boolean;
+    is_synced_to_graph: boolean;
+    latest_block_at: string;
+    peers_count: number;
+    pending_channels_count: number;
+    public_key: string;
+    uris: any[];
+    version: string;
+  }
+  
+  export interface Feature {
     bit: number;
     is_known: boolean;
     is_required: boolean;
-    type: string;
+    type?: string;
   }
 }

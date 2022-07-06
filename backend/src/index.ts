@@ -1,5 +1,5 @@
 import express from "express";
-import { Application, Request, Response, NextFunction, Express } from 'express';
+import { Application, Request, Response, NextFunction } from 'express';
 import * as http from 'http';
 import * as WebSocket from 'ws';
 import cluster from 'cluster';
@@ -28,12 +28,12 @@ import { Common } from './api/common';
 import poolsUpdater from './tasks/pools-updater';
 import indexer from './indexer';
 import priceUpdater from './tasks/price-updater';
-import BlocksAuditsRepository from './repositories/BlocksAuditsRepository';
-import nodeSyncService from './tasks/lightning/node-sync.service';
-import lightningStatsUpdater from './tasks/lightning/stats-updater.service';
 import nodesRoutes from './api/explorer/nodes.routes';
 import channelsRoutes from './api/explorer/channels.routes';
 import generalLightningRoutes from './api/explorer/general.routes';
+import lightningStatsUpdater from './tasks/lightning/stats-updater.service';
+import nodeSyncService from './tasks/lightning/node-sync.service';
+import BlocksAuditsRepository from './repositories/BlocksAuditsRepository';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -137,9 +137,7 @@ class Server {
 
     if (config.LIGHTNING.ENABLED) {
       nodeSyncService.$startService()
-        .then(() => {
-          lightningStatsUpdater.$startService();
-        });
+        .then(() => lightningStatsUpdater.$startService());
     }
 
     this.server.listen(config.MEMPOOL.HTTP_PORT, () => {

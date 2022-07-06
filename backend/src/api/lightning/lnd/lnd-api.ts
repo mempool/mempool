@@ -1,7 +1,7 @@
 import { AbstractLightningApi } from '../lightning-api-abstract-factory';
 import { ILightningApi } from '../lightning-api.interface';
 import * as fs from 'fs';
-import * as lnService from 'ln-service';
+import { authenticatedLndGrpc, getWalletInfo, getNetworkGraph, getNetworkInfo } from 'lightning';
 import config from '../../../config';
 import logger from '../../../logger';
 
@@ -15,7 +15,7 @@ class LndApi implements AbstractLightningApi {
       const tls = fs.readFileSync(config.LND.TLS_CERT_PATH).toString('base64');
       const macaroon = fs.readFileSync(config.LND.MACAROON_PATH).toString('base64');
 
-      const { lnd } = lnService.authenticatedLndGrpc({
+      const { lnd } = authenticatedLndGrpc({
         cert: tls,
         macaroon: macaroon,
         socket: config.LND.SOCKET,
@@ -29,15 +29,16 @@ class LndApi implements AbstractLightningApi {
   }
 
   async $getNetworkInfo(): Promise<ILightningApi.NetworkInfo> {
-    return await lnService.getNetworkInfo({ lnd: this.lnd });
+    return await getNetworkInfo({ lnd: this.lnd });
+  }
+
+  async $getInfo(): Promise<ILightningApi.Info> {
+    // @ts-ignore
+    return await getWalletInfo({ lnd: this.lnd });
   }
 
   async $getNetworkGraph(): Promise<ILightningApi.NetworkGraph> {
-    return await lnService.getNetworkGraph({ lnd: this.lnd });
-  }
-
-  async $getChanInfo(id: string): Promise<ILightningApi.Channel> {
-    return await lnService.getChannel({ lnd: this.lnd, id });
+    return await getNetworkGraph({ lnd: this.lnd });
   }
 }
 

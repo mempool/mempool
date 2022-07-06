@@ -6,19 +6,41 @@ class LightningStatsUpdater {
   constructor() {}
 
   public async $startService() {
-    logger.info('Starting Stats service');
+    logger.info('Starting Lightning Stats service');
+    let isInSync = false;
+    let error: any;
+    try {
+      error = null;
+      isInSync = await this.$lightningIsSynced();
+    } catch (e) {
+      error = e;
+    }
+    if (!isInSync) {
+      if (error) {
+        logger.warn('Was not able to fetch Lightning Node status: ' + (error instanceof Error ? error.message : error) + '. Retrying in 1 minute...');
+      } else {
+        logger.notice('The Lightning graph is not yet in sync. Retrying in 1 minute...');
+      }
+      setTimeout(() => this.$startService(), 60 * 1000);
+      return;
+    }
 
     const now = new Date();
     const nextHourInterval = new Date(now.getFullYear(), now.getMonth(), now.getDate(), Math.floor(now.getHours() / 1) + 1, 0, 0, 0);
     const difference = nextHourInterval.getTime() - now.getTime();
 
-    // setTimeout(() => {
+    setTimeout(() => {
       setInterval(async () => {
         await this.$runTasks();
       }, 1000 * 60 * 60);
-    //}, difference);
+    }, difference);
 
     await this.$runTasks();
+  }
+
+  private async $lightningIsSynced(): Promise<boolean> {
+    const nodeInfo = await lightningApi.$getInfo();
+    return nodeInfo.is_synced_to_chain && nodeInfo.is_synced_to_graph;
   }
 
   private async $runTasks() {
@@ -28,8 +50,6 @@ class LightningStatsUpdater {
   }
 
   private async $logNodeStatsDaily() {
-    logger.info(`Running daily node stats update...`);
-
     const currentDate = new Date().toISOString().split('T')[0];
     try {
       const [state]: any = await DB.query(`SELECT string FROM state WHERE name = 'last_node_stats'`);
@@ -37,6 +57,8 @@ class LightningStatsUpdater {
       if (state[0].string === currentDate) {
         return;
       }
+
+      logger.info(`Running daily node stats update...`);
 
       const query = `SELECT nodes.public_key, c1.channels_count_left, c2.channels_count_right, c1.channels_capacity_left, c2.channels_capacity_right FROM nodes LEFT JOIN (SELECT node1_public_key, COUNT(id) AS channels_count_left, SUM(capacity) AS channels_capacity_left FROM channels WHERE channels.status < 2 GROUP BY node1_public_key) c1 ON c1.node1_public_key = nodes.public_key LEFT JOIN (SELECT node2_public_key, COUNT(id) AS channels_count_right, SUM(capacity) AS channels_capacity_right FROM channels WHERE channels.status < 2 GROUP BY node2_public_key) c2 ON c2.node2_public_key = nodes.public_key`;
       const [nodes]: any = await DB.query(query);
@@ -61,8 +83,6 @@ class LightningStatsUpdater {
 
   // We only run this on first launch
   private async $populateHistoricalData() {
-    logger.info(`Running historical stats population...`);
-
     const startTime = '2018-01-13';
     try {
       const [rows]: any = await DB.query(`SELECT COUNT(*) FROM lightning_stats`);
@@ -70,6 +90,8 @@ class LightningStatsUpdater {
       if (rows[0]['COUNT(*)'] > 0) {
         return;
       }
+      logger.info(`Running historical stats population...`);
+
       const [channels]: any = await DB.query(`SELECT capacity, created, closing_date FROM channels ORDER BY created ASC`);
 
       let date: Date = new Date(startTime);
@@ -138,8 +160,6 @@ class LightningStatsUpdater {
   }
 
   private async $logLightningStatsDaily() {
-    logger.info(`Running lightning daily stats log...`);
-
     const currentDate = new Date().toISOString().split('T')[0];
     try {
       const [state]: any = await DB.query(`SELECT string FROM state WHERE name = 'last_node_stats'`);
@@ -147,6 +167,8 @@ class LightningStatsUpdater {
       if (state[0].string === currentDate) {
         return;
       }
+
+      logger.info(`Running lightning daily stats log...`);  
 
       const networkGraph = await lightningApi.$getNetworkGraph();
       let total_capacity = 0;
