@@ -1,4 +1,5 @@
 import { Common } from '../api/common';
+import config from '../config';
 import DB from '../database';
 import logger from '../logger';
 import { IndexedDifficultyAdjustment } from '../mempool.interfaces';
@@ -31,12 +32,18 @@ class DifficultyAdjustmentsRepository {
   public async $getAdjustments(interval: string | null, descOrder: boolean = false): Promise<IndexedDifficultyAdjustment[]> {
     interval = Common.getSqlInterval(interval);
 
-    let query = `SELECT UNIX_TIMESTAMP(time) as time, height, difficulty, adjustment
+    let query = `SELECT 
+      CAST(AVG(UNIX_TIMESTAMP(time)) as INT) as time,
+      CAST(AVG(height) AS INT) as height,
+      CAST(AVG(difficulty) as DOUBLE) as difficulty,
+      CAST(AVG(adjustment) as DOUBLE) as adjustment
       FROM difficulty_adjustments`;
 
     if (interval) {
       query += ` WHERE time BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
     }
+
+    query += ` GROUP BY UNIX_TIMESTAMP(time) DIV ${86400}`;
 
     if (descOrder === true) {
       query += ` ORDER BY time DESC`;
