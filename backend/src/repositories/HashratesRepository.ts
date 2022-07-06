@@ -79,6 +79,9 @@ class HashratesRepository {
     interval = Common.getSqlInterval(interval);
 
     const topPoolsId = (await PoolsRepository.$getPoolsInfo('1w')).map((pool) => pool.poolId);
+    if (topPoolsId.length === 0) {
+      return [];
+    }
 
     let query = `SELECT UNIX_TIMESTAMP(hashrate_timestamp) as timestamp, avg_hashrate as avgHashrate, share, pools.name as poolName
       FROM hashrates
