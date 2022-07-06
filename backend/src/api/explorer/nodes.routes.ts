@@ -1,17 +1,16 @@
 import config from '../../config';
-import { Express, Request, Response } from 'express';
+import { Application, Request, Response } from 'express';
 import nodesApi from './nodes.api';
 class NodesRoutes {
   constructor() { }
 
-  public initRoutes(app: Express) {
+  public initRoutes(app: Application) {
     app
-    .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/latest', this.$getGeneralStats)
-    .get(config.MEMPOOL.API_URL_PREFIX + 'nodes/search/:search', this.$searchNode)
-    .get(config.MEMPOOL.API_URL_PREFIX + 'nodes/top', this.$getTopNodes)
-    .get(config.MEMPOOL.API_URL_PREFIX + 'nodes/:public_key/statistics', this.$getHistoricalNodeStats)
-    .get(config.MEMPOOL.API_URL_PREFIX + 'nodes/:public_key', this.$getNode)
-  ;
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/search/:search', this.$searchNode)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/top', this.$getTopNodes)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/:public_key/statistics', this.$getHistoricalNodeStats)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/:public_key', this.$getNode)
+    ;
   }
 
   private async $searchNode(req: Request, res: Response) {
@@ -39,15 +38,6 @@ class NodesRoutes {
   private async $getHistoricalNodeStats(req: Request, res: Response) {
     try {
       const statistics = await nodesApi.$getNodeStats(req.params.public_key);
-      res.json(statistics);
-    } catch (e) {
-      res.status(500).send(e instanceof Error ? e.message : e);
-    }
-  }
-
-  private async $getGeneralStats(req: Request, res: Response) {
-    try {
-      const statistics = await nodesApi.$getLatestStatistics();
       res.json(statistics);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);

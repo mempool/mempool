@@ -1,13 +1,13 @@
 import { chanNumber } from 'bolt07';
-import DB from '../database';
-import logger from '../logger';
-import lightningApi from '../api/lightning/lightning-api-factory';
-import { ILightningApi } from '../api/lightning/lightning-api.interface';
-import channelsApi from '../api/explorer/channels.api';
-import bitcoinClient from '../api/bitcoin/bitcoin-client';
-import bitcoinApi from '../api/bitcoin/bitcoin-api-factory';
-import config from '../config';
-import { IEsploraApi } from '../api/bitcoin/esplora-api.interface';
+import DB from '../../database';
+import logger from '../../logger';
+import channelsApi from '../../api/explorer/channels.api';
+import bitcoinClient from '../../api/bitcoin/bitcoin-client';
+import bitcoinApi from '../../api/bitcoin/bitcoin-api-factory';
+import config from '../../config';
+import { IEsploraApi } from '../../api/bitcoin/esplora-api.interface';
+import lightningApi from '../../api/lightning/lightning-api-factory';
+import { ILightningApi } from '../../api/lightning/lightning-api.interface';
 
 class NodeSyncService {
   constructor() {}
@@ -15,43 +15,36 @@ class NodeSyncService {
   public async $startService() {
     logger.info('Starting node sync service');
 
-    await this.$updateNodes();
+    await this.$runUpdater();
 
     setInterval(async () => {
-      await this.$updateNodes();
+      await this.$runUpdater();
     }, 1000 * 60 * 60);
   }
 
-  private async $updateNodes() {
+  private async $runUpdater() {
     try {
+      logger.info(`Updating nodes and channels...`);
+
       const networkGraph = await lightningApi.$getNetworkGraph();
 
       for (const node of networkGraph.nodes) {
         await this.$saveNode(node);
       }
-      logger.debug(`Nodes updated`);
+      logger.info(`Nodes updated.`);
 
       await this.$setChannelsInactive();
 
       for (const channel of networkGraph.channels) {
         await this.$saveChannel(channel);
       }
-      logger.debug(`Channels updated`);
+      logger.info(`Channels updated.`);
 
       await this.$findInactiveNodesAndChannels();
-      logger.debug(`Inactive channels scan complete`);
-
       await this.$lookUpCreationDateFromChain();
-      logger.debug(`Channel creation dates scan complete`);
-
       await this.$updateNodeFirstSeen();
-      logger.debug(`Node first seen dates scan complete`);
-
       await this.$scanForClosedChannels();
-      logger.debug(`Closed channels scan complete`);
-
       await this.$runClosedChannelsForensics();
-      logger.debug(`Closed channels forensics scan complete`);
 
     } catch (e) {
       logger.err('$updateNodes() error: ' + (e instanceof Error ? e.message : e));
@@ -80,18 +73,21 @@ class NodeSyncService {
           await DB.query(query, params);
         }
       }
+      logger.info(`Node first seen dates scan complete.`);
     } catch (e) {
       logger.err('$updateNodeFirstSeen() error: ' + (e instanceof Error ? e.message : e));
     }
   }
 
   private async $lookUpCreationDateFromChain() {
+    logger.info(`Running channel creation date lookup...`);
     try {
       const channels = await channelsApi.$getChannelsWithoutCreatedDate();
       for (const channel of channels) {
         const transaction = await bitcoinClient.getRawTransaction(channel.transaction_id, 1);
         await DB.query(`UPDATE channels SET created = FROM_UNIXTIME(?) WHERE channels.id = ?`, [transaction.blocktime, channel.id]);
       }
+      logger.info(`Channel creation dates scan complete.`);
     } catch (e) {
       logger.err('$setCreationDateFromChain() error: ' + (e instanceof Error ? e.message : e));
     }
@@ -99,6 +95,8 @@ class NodeSyncService {
 
   // Looking for channels whos nodes are inactive
   private async $findInactiveNodesAndChannels(): Promise<void> {
+    logger.info(`Running inactive channels scan...`);
+
     try {
       // @ts-ignore
       const [channels]: [ILightningApi.Channel[]] = await DB.query(`SELECT channels.id FROM channels WHERE channels.status = 1 AND ((SELECT COUNT(*) FROM nodes WHERE nodes.public_key = channels.node1_public_key) = 0 OR (SELECT COUNT(*) FROM nodes WHERE nodes.public_key = channels.node2_public_key) = 0)`);
@@ -106,6 +104,7 @@ class NodeSyncService {
       for (const channel of channels) {
         await this.$updateChannelStatus(channel.id, 0);
       }
+      logger.info(`Inactive channels scan complete.`);
     } catch (e) {
       logger.err('$findInactiveNodesAndChannels() error: ' + (e instanceof Error ? e.message : e));
     }
@@ -113,6 +112,7 @@ class NodeSyncService {
 
   private async $scanForClosedChannels(): Promise<void> {
     try {
+      logger.info(`Starting closed channels scan...`);
       const channels = await channelsApi.$getChannelsByStatus(0);
       for (const channel of channels) {
         const spendingTx = await bitcoinApi.$getOutspend(channel.transaction_id, channel.transaction_vout);
@@ -125,6 +125,7 @@ class NodeSyncService {
           }
         }
       }
+      logger.info(`Closed channels scan complete.`);
     } catch (e) {
       logger.err('$scanForClosedChannels() error: ' + (e instanceof Error ? e.message : e));
     }
@@ -140,8 +141,8 @@ class NodeSyncService {
     if (!config.ESPLORA.REST_API_URL) {
       return;
     }
-
     try {
+      logger.info(`Started running closed channel forensics...`);
       const channels = await channelsApi.$getClosedChannelsWithoutReason();
       for (const channel of channels) {
         let reason = 0;
@@ -186,6 +187,7 @@ class NodeSyncService {
           await DB.query(`UPDATE channels SET closing_reason = ? WHERE id = ?`, [reason, channel.id]);
         }
       }
+      logger.info(`Closed channels forensics scan complete.`);
     } catch (e) {
       logger.err('$runClosedChannelsForensics() error: ' + (e instanceof Error ? e.message : e));
     }

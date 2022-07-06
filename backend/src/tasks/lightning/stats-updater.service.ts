@@ -1,7 +1,6 @@
-
-import DB from '../database';
-import logger from '../logger';
-import lightningApi from '../api/lightning/lightning-api-factory';
+import logger from "../../logger";
+import DB from "../../database";
+import lightningApi from "../../api/lightning/lightning-api-factory";
 
 class LightningStatsUpdater {
   constructor() {}
@@ -29,6 +28,8 @@ class LightningStatsUpdater {
   }
 
   private async $logNodeStatsDaily() {
+    logger.info(`Running daily node stats update...`);
+
     const currentDate = new Date().toISOString().split('T')[0];
     try {
       const [state]: any = await DB.query(`SELECT string FROM state WHERE name = 'last_node_stats'`);
@@ -52,7 +53,7 @@ class LightningStatsUpdater {
             node.channels_count_left + node.channels_count_right]);
       }
       await DB.query(`UPDATE state SET string = ? WHERE name = 'last_node_stats'`, [currentDate]);
-      logger.debug('Daily node stats has updated.');
+      logger.info('Daily node stats has updated.');
     } catch (e) {
       logger.err('$logNodeStatsDaily() error: ' + (e instanceof Error ? e.message : e));
     }
@@ -60,9 +61,11 @@ class LightningStatsUpdater {
 
   // We only run this on first launch
   private async $populateHistoricalData() {
+    logger.info(`Running historical stats population...`);
+
     const startTime = '2018-01-13';
     try {
-      const [rows]: any = await DB.query(`SELECT COUNT(*) FROM statistics`);
+      const [rows]: any = await DB.query(`SELECT COUNT(*) FROM lightning_stats`);
       // Only store once per day
       if (rows[0]['COUNT(*)'] > 0) {
         return;
@@ -86,7 +89,7 @@ class LightningStatsUpdater {
           channelsCount++;
         }
 
-        const query = `INSERT INTO statistics(
+        const query = `INSERT INTO lightning_stats(
           added,
           channel_count,
           node_count,
@@ -117,7 +120,7 @@ class LightningStatsUpdater {
           nodeCount++;
         }
 
-        const query = `UPDATE statistics SET node_count = ? WHERE added = FROM_UNIXTIME(?)`;
+        const query = `UPDATE lightning_stats SET node_count = ? WHERE added = FROM_UNIXTIME(?)`;
 
         await DB.query(query, [
           nodeCount,
@@ -128,13 +131,15 @@ class LightningStatsUpdater {
         date.setDate(date.getDate() + 1);
       }
 
-      logger.debug('Historical stats populated.');
+      logger.info('Historical stats populated.');
     } catch (e) {
       logger.err('$populateHistoricalData() error: ' + (e instanceof Error ? e.message : e));
     }
   }
 
   private async $logLightningStatsDaily() {
+    logger.info(`Running lightning daily stats log...`);
+
     const currentDate = new Date().toISOString().split('T')[0];
     try {
       const [state]: any = await DB.query(`SELECT string FROM state WHERE name = 'last_node_stats'`);
@@ -151,7 +156,7 @@ class LightningStatsUpdater {
         }
       }
 
-      const query = `INSERT INTO statistics(
+      const query = `INSERT INTO lightning_stats(
           added,
           channel_count,
           node_count,
@@ -164,8 +169,9 @@ class LightningStatsUpdater {
         networkGraph.nodes.length,
         total_capacity,
       ]);
+      logger.info(`Lightning daily stats done.`);
     } catch (e) {
-      logger.err('$logLightningStats() error: ' + (e instanceof Error ? e.message : e));
+      logger.err('$logLightningStatsDaily() error: ' + (e instanceof Error ? e.message : e));
     }
   }
 }

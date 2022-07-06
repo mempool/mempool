@@ -3,7 +3,7 @@ import { AbstractLightningApi } from './lightning-api-abstract-factory';
 import LndApi from './lnd/lnd-api';
 
 function lightningApiFactory(): AbstractLightningApi {
-  switch (config.MEMPOOL.BACKEND) {
+  switch (config.LIGHTNING.BACKEND) {
     case 'lnd':
     default:
       return new LndApi();

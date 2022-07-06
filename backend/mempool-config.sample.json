@@ -66,6 +66,15 @@
     "ENABLED": false,
     "DATA_PATH": "/bisq/statsnode-data/btc_mainnet/db"
   },
+  "LIGHTNING": {
+    "ENABLED": false,
+    "BACKEND": "lnd"
+  },
+  "LND_NODE_AUTH": {
+    "TLS_CERT_PATH": "tls.cert",
+    "MACAROON_PATH": "admin.macaroon",
+    "SOCKET": "localhost:10009"
+  },
   "SOCKS5PROXY": {
     "ENABLED": false,
     "USE_ONION": true,
