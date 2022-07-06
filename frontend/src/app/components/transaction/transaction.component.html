@@ -47,7 +47,7 @@
               <tbody>
                 <tr>
                   <td i18n="block.timestamp">Timestamp</td>
-                  <td class="text-right">
+                  <td>
                     &lrm;{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}
                     <div class="lg-inline">
                       <i class="symbol">(<app-time-since [time]="tx.status.block_time" [fastRender]="true"></app-time-since>)</i>
@@ -55,7 +55,7 @@
                   </td>
                 </tr>
                 <tr *ngIf="latestBlock && tx.status.block_height <= latestBlock.height - 8">
-                  <td class="td-width text-right" i18n="transaction.included-in-block|Transaction included in block">Included in block</td>
+                  <td class="td-width" i18n="transaction.included-in-block|Transaction included in block">Included in block</td>
                   <td>
                     <a [routerLink]="['/block/' | relativeUrl, tx.status.block_hash]" [state]="{ data: { blockHeight: tx.status.block_height } }">{{ tx.status.block_height }}</a>
                   </td>
@@ -63,12 +63,12 @@
                 <ng-template [ngIf]="transactionTime > 0">
                   <tr>
                     <td i18n="transaction.confirmed|Transaction Confirmed state">Confirmed</td>
-                    <td class="text-right"><app-time-span [time]="tx.status.block_time - transactionTime" [fastRender]="true"></app-time-span></td>
+                    <td><app-time-span [time]="tx.status.block_time - transactionTime" [fastRender]="true"></app-time-span></td>
                   </tr>
                 </ng-template>
                 <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
                   <td class="td-width" i18n="transaction.features|Transaction features">Features</td>
-                  <td class="text-right">
+                  <td>
                     <app-tx-features [tx]="tx"></app-tx-features>
                   </td>
                 </tr>
@@ -99,13 +99,13 @@
                   <ng-template #firstSeenTmpl>
                     <tr>
                       <td i18n="transaction.first-seen|Transaction first seen">First seen</td>
-                      <td class="text-right"><i><app-time-since [time]="transactionTime" [fastRender]="true"></app-time-since></i></td>
+                      <td><i><app-time-since [time]="transactionTime" [fastRender]="true"></app-time-since></i></td>
                     </tr>
                   </ng-template>
                 </ng-template>
                 <tr>
                   <td class="td-width" i18n="transaction.eta|Transaction ETA">ETA</td>
-                  <td class="text-right">
+                  <td>
                     <ng-template [ngIf]="txInBlockIndex === undefined" [ngIfElse]="estimationTmpl">
                       <span class="skeleton-loader"></span>
                     </ng-template>
@@ -126,7 +126,7 @@
                 </tr>
                 <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
                   <td class="td-width" i18n="transaction.features|Transaction Features">Features</td>
-                  <td class="text-right">
+                  <td>
                     <app-tx-features [tx]="tx"></app-tx-features>
                   </td>
                 </tr>
@@ -159,7 +159,7 @@
             <ng-template [ngIf]="cpfpInfo.bestDescendant">
               <tr>
                 <td><span class="badge badge-success" i18n="transaction.descendant|Descendant">Descendant</span></td>
-                <td class="text-right">
+                <td>
                   <a [routerLink]="['/tx' | relativeUrl, cpfpInfo.bestDescendant.txid]">
                     <span class="d-inline d-lg-none">{{ cpfpInfo.bestDescendant.txid | shortenString : 8 }}</span>
                     <span class="d-none d-lg-inline">{{ cpfpInfo.bestDescendant.txid }}</span>
@@ -173,7 +173,7 @@
             <ng-template [ngIf]="cpfpInfo.ancestors.length">
               <tr *ngFor="let cpfpTx of cpfpInfo.ancestors">
                 <td><span class="badge badge-primary" i18n="transaction.ancestor|Transaction Ancestor">Ancestor</span></td>
-                  <td class="text-right"><a [routerLink]="['/tx' | relativeUrl, cpfpTx.txid]">
+                  <td><a [routerLink]="['/tx' | relativeUrl, cpfpTx.txid]">
                     <span class="d-inline d-lg-none">{{ cpfpTx.txid | shortenString : 8 }}</span>
                     <span class="d-none d-lg-inline">{{ cpfpTx.txid }}</span>
                   </a>
@@ -210,15 +210,15 @@
             <tbody>
               <tr>
                 <td i18n="block.size">Size</td>
-                <td class="text-right" [innerHTML]="'&lrm;' + (tx.size | bytes: 2)"></td>
+                <td [innerHTML]="'&lrm;' + (tx.size | bytes: 2)"></td>
               </tr>
               <tr>
                 <td i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
-                <td class="text-right" [innerHTML]="'&lrm;' + (tx.weight / 4 | vbytes: 2)"></td>
+                <td [innerHTML]="'&lrm;' + (tx.weight / 4 | vbytes: 2)"></td>
               </tr>
               <tr>
                 <td i18n="block.weight">Weight</td>
-                <td class="text-right" [innerHTML]="'&lrm;' + (tx.weight | wuBytes: 2)"></td>
+                <td [innerHTML]="'&lrm;' + (tx.weight | wuBytes: 2)"></td>
               </tr>
             </tbody>
           </table>
@@ -228,15 +228,15 @@
             <tbody>
               <tr>
                 <td i18n="transaction.version">Version</td>
-                <td class="text-right" [innerHTML]="'&lrm;' + (tx.version | number)"></td>
+                <td [innerHTML]="'&lrm;' + (tx.version | number)"></td>
               </tr>
               <tr>
                 <td i18n="transaction.locktime">Locktime</td>
-                <td class="text-right" [innerHTML]="'&lrm;' + (tx.locktime | number)"></td>
+                <td [innerHTML]="'&lrm;' + (tx.locktime | number)"></td>
               </tr>
               <tr>
                 <td i18n="transaction.hex">Transaction hex</td>
-                <td class="text-right"><a target="_blank" href="{{ network === '' ? '' : '/' + network }}/api/tx/{{ txId }}/hex"><fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true"></fa-icon></a></td>
+                <td><a target="_blank" href="{{ network === '' ? '' : '/' + network }}/api/tx/{{ txId }}/hex"><fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true"></fa-icon></a></td>
               </tr>
             </tbody>
           </table>
@@ -383,11 +383,11 @@
     <tbody>
       <tr>
         <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
-        <td class="text-right">{{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [value]="tx.fee"></app-fiat></span></td>
+        <td>{{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [value]="tx.fee"></app-fiat></span></td>
       </tr>
       <tr>
         <td i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
-        <td class="text-right">
+        <td>
           {{ tx.feePerVsize | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
           <ng-template [ngIf]="tx.status.confirmed">
             &nbsp;
@@ -397,7 +397,7 @@
       </tr>
       <tr *ngIf="cpfpInfo && (cpfpInfo.bestDescendant || cpfpInfo.ancestors.length)">
         <td i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
-        <td class="text-right">
+        <td>
           <div class="effective-fee-container">
             {{ tx.effectiveFeePerVsize | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
             <ng-template [ngIf]="tx.status.confirmed">
