@@ -171,7 +171,7 @@ let routes: Routes = [
           {
             path: 'block',
             component: StartComponent,
-              children: [
+            children: [
               {
                 path: ':id',
                 component: BlockComponent
@@ -258,7 +258,7 @@ let routes: Routes = [
       {
         path: 'block',
         component: StartComponent,
-          children: [
+        children: [
           {
             path: ':id',
             component: BlockComponent
@@ -361,7 +361,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
             {
               path: 'block',
               component: StartComponent,
-                children: [
+              children: [
                 {
                   path: ':id',
                   component: BlockComponent
@@ -465,7 +465,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
         {
           path: 'block',
           component: StartComponent,
-            children: [
+          children: [
             {
               path: ':id',
               component: BlockComponent
