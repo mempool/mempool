@@ -245,7 +245,6 @@ class NodeSyncService {
     const fromChannel = chanNumber({ channel: channel.id }).number;
 
     try {
-      const d = new Date(Date.parse(channel.updated_at));
       const query = `INSERT INTO channels
         (
           id,
@@ -360,7 +359,7 @@ class NodeSyncService {
 
   private async $saveNode(node: ILightningApi.Node): Promise<void> {
     try {
-      const updatedAt = this.utcDateToMysql(node.updated_at);
+      const updatedAt = node.updated_at ? this.utcDateToMysql(node.updated_at) : '0000-00-00 00:00:00';
       const sockets = node.sockets.join(',');
       const query = `INSERT INTO nodes(
           public_key,
