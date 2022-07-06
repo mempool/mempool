@@ -9,6 +9,7 @@ import loadingIndicators from './loading-indicators';
 import { escape } from 'mysql2';
 import indexer from '../indexer';
 import DifficultyAdjustmentsRepository from '../repositories/DifficultyAdjustmentsRepository';
+import config from '../config';
 
 class Mining {
   constructor() {
@@ -304,7 +305,7 @@ class Mining {
       while (toTimestamp > genesisTimestamp) {
         const fromTimestamp = toTimestamp - 86400000;
 
-        // Skip already indexed weeks
+        // Skip already indexed days
         if (indexedTimestamp.includes(toTimestamp / 1000)) {
           toTimestamp -= 86400000;
           ++totalIndexed;
@@ -315,7 +316,7 @@ class Mining {
         // we are currently indexing has complete data)
         const blockStatsPreviousDay: any = await BlocksRepository.$blockCountBetweenTimestamp(
           null, (fromTimestamp - 86400000) / 1000, (toTimestamp - 86400000) / 1000);
-        if (blockStatsPreviousDay.blockCount === 0) { // We are done indexing
+        if (blockStatsPreviousDay.blockCount === 0 && config.MEMPOOL.NETWORK === 'mainnet') { // We are done indexing
           break;
         }
 
@@ -359,9 +360,10 @@ class Mining {
       // Add genesis block manually
       if (toTimestamp <= genesisTimestamp && !indexedTimestamp.includes(genesisTimestamp)) {
         hashrates.push({
-          hashrateTimestamp: genesisTimestamp,
+          hashrateTimestamp: genesisTimestamp / 1000,
           avgHashrate: await bitcoinClient.getNetworkHashPs(1, 1),
-          poolId: null,
+          poolId: 0,
+          share: 1,
           type: 'daily',
         });
       }
@@ -395,6 +397,15 @@ class Mining {
 
     let currentDifficulty = 0;
     let totalIndexed = 0;
+
+    if (indexedHeights[0] === false) {
+      await DifficultyAdjustmentsRepository.$saveAdjustments({
+        time: 1231006505,
+        height: 0,
+        difficulty: 1.0,
+        adjustment: 0.0,
+      });
+    }
 
     for (const block of blocks) {
       if (block.difficulty !== currentDifficulty) {
