@@ -1,8 +1,8 @@
-#!/usr/local/bin/zsh
+#!/usr/bin/env zsh
 export NVM_DIR="$HOME/.nvm"
 source "$NVM_DIR/nvm.sh"
-for site in mainnet liquid testnet bisq signet liquidtestnet
-do
+
+for site in mainnet mainnet-lightning testnet testnet-lightning signet signet-lightning bisq liquid liquidtestnet;do
     cd "${HOME}/${site}/backend/" && \
     screen -dmS "${site}" sh -c 'while true;do npm run start-production;sleep 1;done'
 done

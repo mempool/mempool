@@ -39,6 +39,8 @@ class Indexer {
       const chainValid = await blocks.$generateBlockDatabase();
       if (chainValid === false) {
         // Chain of block hash was invalid, so we need to reindex. Stop here and continue at the next iteration
+        logger.warn(`The chain of block hash is invalid, re-indexing invalid data in 10 seconds.`);
+        setTimeout(() => this.reindex(), 10000);
         this.indexerRunning = false;
         return;
       }
@@ -49,8 +51,9 @@ class Indexer {
       await mining.$generatePoolHashrateHistory();
       await blocks.$generateBlocksSummariesDatabase();
     } catch (e) {
-      this.reindex();
-      logger.err(`Indexer failed, trying again later. Reason: ` + (e instanceof Error ? e.message : e));
+      this.indexerRunning = false;
+      logger.err(`Indexer failed, trying again in 10 seconds. Reason: ` + (e instanceof Error ? e.message : e));
+      setTimeout(() => this.reindex(), 10000);
     }
 
     this.indexerRunning = false;
@@ -62,6 +65,7 @@ class Indexer {
       await HashratesRepository.$setLatestRun('last_weekly_hashrates_indexing', 0);
     } catch (e) {
       logger.err(`Cannot reset hashrate indexing timestamps. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
     }
   }
 }
