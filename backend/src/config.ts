@@ -27,6 +27,15 @@ interface IConfig {
   ESPLORA: {
     REST_API_URL: string;
   };
+  LIGHTNING: {
+    ENABLED: boolean;
+    BACKEND: 'lnd' | 'cln' | 'ldk';
+  };
+  LND_NODE_AUTH: {
+    TLS_CERT_PATH: string;
+    MACAROON_PATH: string;
+    SOCKET: string;
+  };
   ELECTRUM: {
     HOST: string;
     PORT: number;
@@ -158,6 +167,15 @@ const defaults: IConfig = {
     'ENABLED': false,
     'DATA_PATH': '/bisq/statsnode-data/btc_mainnet/db'
   },
+  'LIGHTNING': {
+    'ENABLED': false,
+    'BACKEND': 'lnd'
+  },
+  'LND_NODE_AUTH': {
+    'TLS_CERT_PATH': '',
+    'MACAROON_PATH': '',
+    'SOCKET': 'localhost:10009',
+  },
   'SOCKS5PROXY': {
     'ENABLED': false,
     'USE_ONION': true,
@@ -166,11 +184,11 @@ const defaults: IConfig = {
     'USERNAME': '',
     'PASSWORD': ''
   },
-  "PRICE_DATA_SERVER": {
+  'PRICE_DATA_SERVER': {
     'TOR_URL': 'http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices',
     'CLEARNET_URL': 'https://price.bisq.wiz.biz/getAllMarketPrices'
   },
-  "EXTERNAL_DATA_SERVER": {
+  'EXTERNAL_DATA_SERVER': {
     'MEMPOOL_API': 'https://mempool.space/api/v1',
     'MEMPOOL_ONION': 'http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/api/v1',
     'LIQUID_API': 'https://liquid.network/api/v1',
@@ -190,6 +208,8 @@ class Config implements IConfig {
   SYSLOG: IConfig['SYSLOG'];
   STATISTICS: IConfig['STATISTICS'];
   BISQ: IConfig['BISQ'];
+  LIGHTNING: IConfig['LIGHTNING'];
+  LND_NODE_AUTH: IConfig['LND_NODE_AUTH'];
   SOCKS5PROXY: IConfig['SOCKS5PROXY'];
   PRICE_DATA_SERVER: IConfig['PRICE_DATA_SERVER'];
   EXTERNAL_DATA_SERVER: IConfig['EXTERNAL_DATA_SERVER'];
@@ -205,6 +225,8 @@ class Config implements IConfig {
     this.SYSLOG = configs.SYSLOG;
     this.STATISTICS = configs.STATISTICS;
     this.BISQ = configs.BISQ;
+    this.LIGHTNING = configs.LIGHTNING;
+    this.LND_NODE_AUTH = configs.LND_NODE_AUTH;
     this.SOCKS5PROXY = configs.SOCKS5PROXY;
     this.PRICE_DATA_SERVER = configs.PRICE_DATA_SERVER;
     this.EXTERNAL_DATA_SERVER = configs.EXTERNAL_DATA_SERVER;

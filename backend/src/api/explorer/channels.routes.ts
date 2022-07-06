@@ -1,16 +1,16 @@
 import config from '../../config';
-import { Express, Request, Response } from 'express';
+import { Application, Request, Response } from 'express';
 import channelsApi from './channels.api';
 
 class ChannelsRoutes {
   constructor() { }
 
-  public initRoutes(app: Express) {
+  public initRoutes(app: Application) {
     app
-      .get(config.MEMPOOL.API_URL_PREFIX + 'channels/txids', this.$getChannelsByTransactionIds)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'channels/search/:search', this.$searchChannelsById)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'channels/:short_id', this.$getChannel)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'channels', this.$getChannelsForNode)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/channels/txids', this.$getChannelsByTransactionIds)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/channels/search/:search', this.$searchChannelsById)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/channels/:short_id', this.$getChannel)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/channels', this.$getChannelsForNode)
     ;
   }
 

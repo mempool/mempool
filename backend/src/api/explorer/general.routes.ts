@@ -1,16 +1,17 @@
 import config from '../../config';
-import { Express, Request, Response } from 'express';
+import { Application, Request, Response } from 'express';
 import nodesApi from './nodes.api';
 import channelsApi from './channels.api';
 import statisticsApi from './statistics.api';
-class GeneralRoutes {
+class GeneralLightningRoutes {
   constructor() { }
 
-  public initRoutes(app: Express) {
+  public initRoutes(app: Application) {
     app
-    .get(config.MEMPOOL.API_URL_PREFIX + 'search', this.$searchNodesAndChannels)
-    .get(config.MEMPOOL.API_URL_PREFIX + 'statistics', this.$getStatistics)
-  ;
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/search', this.$searchNodesAndChannels)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/statistics/latest', this.$getGeneralStats)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/statistics', this.$getStatistics)
+    ;
   }
 
   private async $searchNodesAndChannels(req: Request, res: Response) {
@@ -38,6 +39,15 @@ class GeneralRoutes {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
+
+  private async $getGeneralStats(req: Request, res: Response) {
+    try {
+      const statistics = await statisticsApi.$getLatestStatistics();
+      res.json(statistics);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
 }
 
-export default new GeneralRoutes();
+export default new GeneralLightningRoutes();
