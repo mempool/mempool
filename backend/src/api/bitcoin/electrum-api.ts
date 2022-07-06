@@ -5,8 +5,7 @@ import { IEsploraApi } from './esplora-api.interface';
 import { IElectrumApi } from './electrum-api.interface';
 import BitcoinApi from './bitcoin-api';
 import logger from '../../logger';
-import * as sha256 from 'crypto-js/sha256';
-import * as hexEnc from 'crypto-js/enc-hex';
+import crypto from "crypto-js";
 import loadingIndicators from '../loading-indicators';
 import memoryCache from '../memory-cache';
 
@@ -144,8 +143,8 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
   }
 
   private encodeScriptHash(scriptPubKey: string): string {
-    const addrScripthash = hexEnc.stringify(sha256(hexEnc.parse(scriptPubKey)));
-    return addrScripthash.match(/.{2}/g).reverse().join('');
+    const addrScripthash = crypto.enc.Hex.stringify(crypto.SHA256(crypto.enc.Hex.parse(scriptPubKey)));
+    return addrScripthash!.match(/.{2}/g)!.reverse().join('');
   }
 
 }
