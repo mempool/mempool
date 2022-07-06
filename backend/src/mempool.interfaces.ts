@@ -22,6 +22,15 @@ export interface PoolStats extends PoolInfo {
   emptyBlocks: number;
 }
 
+export interface BlockAudit {
+  time: number,
+  height: number,
+  hash: string,
+  missingTxs: string[],
+  addedTxs: string[],
+  matchRate: number,
+}
+
 export interface MempoolBlock {
   blockSize: number;
   blockVSize: number;
