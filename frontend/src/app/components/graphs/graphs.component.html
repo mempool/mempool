@@ -1,4 +1,4 @@
-<div *ngIf="stateService.env.MINING_DASHBOARD" class="mb-3 d-flex menu" style="padding: 0px 35px;">
+<div *ngIf="stateService.env.MINING_DASHBOARD" class="mb-3 d-inline-flex menu" style="padding: 0px 35px;">
   <a routerLinkActive="active" class="btn btn-primary w-50 mr-1"
     [routerLink]="['/graphs/mempool' | relativeUrl]">Mempool</a>
   <div ngbDropdown class="w-50">
@@ -18,6 +18,8 @@
         [routerLink]="['/graphs/mining/block-rewards' | relativeUrl]" i18n="mining.block-rewards">Block Rewards</a>
       <a class="dropdown-item" routerLinkActive="active"
         [routerLink]="['/graphs/mining/block-sizes-weights' | relativeUrl]" i18n="mining.block-sizes-weights">Block Sizes and Weights</a>
+      <a class="dropdown-item" routerLinkActive="active"
+        [routerLink]="['/graphs/mining/block-predictions' | relativeUrl]" i18n="mining.block-prediction-accuracy">Blocks Predictions Accuracy</a>
     </div>
   </div>
 </div>

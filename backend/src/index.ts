@@ -28,6 +28,7 @@ import { Common } from './api/common';
 import poolsUpdater from './tasks/pools-updater';
 import indexer from './indexer';
 import priceUpdater from './tasks/price-updater';
+import BlocksAuditsRepository from './repositories/BlocksAuditsRepository';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -285,11 +286,14 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:slug', routes.$getPool)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/hashrate/pools/:interval', routes.$getPoolsHistoricalHashrate)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/hashrate/:interval', routes.$getHistoricalHashrate)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty-adjustments', routes.$getDifficultyAdjustments)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/reward-stats/:blockCount', routes.$getRewardStats)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fees/:interval', routes.$getHistoricalBlockFees)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/rewards/:interval', routes.$getHistoricalBlockRewards)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fee-rates/:interval', routes.$getHistoricalBlockFeeRates)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/sizes-weights/:interval', routes.$getHistoricalBlockSizeAndWeight)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty-adjustments/:interval', routes.$getDifficultyAdjustments)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/predictions/:interval', routes.$getHistoricalBlockPrediction)
         ;
     }
 
@@ -332,6 +336,7 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/outspends', routes.getTransactionOutspends)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/header', routes.getBlockHeader)
         .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/height', routes.getBlockTipHeight)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/hash', routes.getBlockTipHash)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txs', routes.getBlockTransactions)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txs/:index', routes.getBlockTransactions)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txids', routes.getTxIdsForBlock)
