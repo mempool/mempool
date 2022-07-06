@@ -17,9 +17,11 @@ import { prepareBlock } from '../utils/blocks-utils';
 import BlocksRepository from '../repositories/BlocksRepository';
 import HashratesRepository from '../repositories/HashratesRepository';
 import indexer from '../indexer';
-import fiatConversion from './fiat-conversion';
-import RatesRepository from '../repositories/RatesRepository';
 import poolsParser from './pools-parser';
+import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
+import mining from './mining';
+import DifficultyAdjustmentsRepository from '../repositories/DifficultyAdjustmentsRepository';
+import difficultyAdjustment from './difficulty-adjustment';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -243,15 +245,66 @@ class Blocks {
   }
 
   /**
-   * [INDEXING] Index all blocks metadata for the mining dashboard
+   * [INDEXING] Index all blocks summaries for the block txs visualization
    */
-  public async $generateBlockDatabase() {
-    const blockchainInfo = await bitcoinClient.getBlockchainInfo();
-    if (blockchainInfo.blocks !== blockchainInfo.headers) { // Wait for node to sync
+  public async $generateBlocksSummariesDatabase() {
+    if (Common.blocksSummariesIndexingEnabled() === false) {
       return;
     }
 
     try {
+      // Get all indexed block hash
+      const indexedBlocks = await blocksRepository.$getIndexedBlocks();
+      const indexedBlockSummariesHashesArray = await BlocksSummariesRepository.$getIndexedSummariesId();
+
+      const indexedBlockSummariesHashes = {}; // Use a map for faster seek during the indexing loop
+      for (const hash of indexedBlockSummariesHashesArray) {
+        indexedBlockSummariesHashes[hash] = true;
+      }
+
+      // Logging
+      let newlyIndexed = 0;
+      let totalIndexed = indexedBlockSummariesHashesArray.length;
+      let indexedThisRun = 0;
+      let timer = new Date().getTime() / 1000;
+      const startedAt = new Date().getTime() / 1000;
+
+      for (const block of indexedBlocks) {
+        if (indexedBlockSummariesHashes[block.hash] === true) {
+          continue;
+        }
+
+        // Logging
+        const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - timer));
+        if (elapsedSeconds > 5) {
+          const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
+          const blockPerSeconds = Math.max(1, indexedThisRun / elapsedSeconds);
+          const progress = Math.round(totalIndexed / indexedBlocks.length * 10000) / 100;
+          const timeLeft = Math.round((indexedBlocks.length - totalIndexed) / blockPerSeconds);
+          logger.debug(`Indexing block summary for #${block.height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexedBlocks.length} (${progress}%) | elapsed: ${runningFor} seconds | left: ~${timeLeft} seconds`);
+          timer = new Date().getTime() / 1000;
+          indexedThisRun = 0;
+        }
+
+        await this.$getStrippedBlockTransactions(block.hash, true, true); // This will index the block summary
+
+        // Logging
+        indexedThisRun++;
+        totalIndexed++;
+        newlyIndexed++;
+      }
+      logger.notice(`Blocks summaries indexing completed: indexed ${newlyIndexed} blocks`);
+    } catch (e) {
+      logger.err(`Blocks summaries indexing failed. Reason: ${(e instanceof Error ? e.message : e)}`);
+    }
+  }
+
+  /**
+   * [INDEXING] Index all blocks metadata for the mining dashboard
+   */
+  public async $generateBlockDatabase(): Promise<boolean> {
+    try {
+      const blockchainInfo = await bitcoinClient.getBlockchainInfo();
       let currentBlockHeight = blockchainInfo.blocks;
 
       let indexingBlockAmount = Math.min(config.MEMPOOL.INDEXING_BLOCKS_AMOUNT, blockchainInfo.blocks);
@@ -292,7 +345,7 @@ class Blocks {
           const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - timer));
           if (elapsedSeconds > 5 || blockHeight === lastBlockToIndex) {
             const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
-            const blockPerSeconds = Math.max(1, Math.round(indexedThisRun / elapsedSeconds));
+            const blockPerSeconds = Math.max(1, indexedThisRun / elapsedSeconds);
             const progress = Math.round(totalIndexed / indexingBlockAmount * 10000) / 100;
             const timeLeft = Math.round((indexingBlockAmount - totalIndexed) / blockPerSeconds);
             logger.debug(`Indexing block #${blockHeight} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexingBlockAmount} (${progress}%) | elapsed: ${runningFor} seconds | left: ~${timeLeft} seconds`);
@@ -316,13 +369,16 @@ class Blocks {
     } catch (e) {
       logger.err('Block indexing failed. Trying again later. Reason: ' + (e instanceof Error ? e.message : e));
       loadingIndicators.setProgress('block-indexing', 100);
-      return;
+      return false;
     }
 
     const chainValid = await BlocksRepository.$validateChain();
     if (!chainValid) {
       indexer.reindex();
+      return false;
     }
+
+    return true;
   }
 
   public async $updateBlocks() {
@@ -387,18 +443,35 @@ class Blocks {
             // We assume there won't be a reorg with more than 10 block depth
             await BlocksRepository.$deleteBlocksFrom(lastBlock['height'] - 10);
             await HashratesRepository.$deleteLastEntries();
+            await BlocksSummariesRepository.$deleteBlocksFrom(lastBlock['height'] - 10);
             for (let i = 10; i >= 0; --i) {
-              await this.$indexBlock(lastBlock['height'] - i);
+              const newBlock = await this.$indexBlock(lastBlock['height'] - i);
+              await this.$getStrippedBlockTransactions(newBlock.id, true, true);
             }
+            await mining.$indexDifficultyAdjustments();
+            await DifficultyAdjustmentsRepository.$deleteLastAdjustment();
+            logger.info(`Re-indexed 10 blocks and summaries. Also re-indexed the last difficulty adjustments. Will re-index latest hashrates in a few seconds.`);
+            indexer.reindex();
           }
           await blocksRepository.$saveBlockInDatabase(blockExtended);
+
+          // Save blocks summary for visualization if it's enabled
+          if (Common.blocksSummariesIndexingEnabled() === true) {
+            await this.$getStrippedBlockTransactions(blockExtended.id, true);
+          }
         }
-      }
-      if (fiatConversion.ratesInitialized === true && config.DATABASE.ENABLED === true) {
-        await RatesRepository.$saveRate(blockExtended.height, fiatConversion.getConversionRates());
       }
 
       if (block.height % 2016 === 0) {
+        if (Common.indexingEnabled()) {
+          await DifficultyAdjustmentsRepository.$saveAdjustments({
+            time: block.timestamp,
+            height: block.height,
+            difficulty: block.difficulty,
+            adjustment: Math.round((block.difficulty / this.currentDifficulty) * 1000000) / 1000000, // Remove float point noise
+          });
+        }
+
         this.previousDifficultyRetarget = (block.difficulty - this.currentDifficulty) / this.currentDifficulty * 100;
         this.lastDifficultyAdjustmentTime = block.timestamp;
         this.currentDifficulty = block.difficulty;
@@ -477,14 +550,34 @@ class Blocks {
     return blockExtended;
   }
 
-  public async $getStrippedBlockTransactions(hash: string): Promise<TransactionStripped[]> {
-    // Check the memory cache
-    const cachedSummary = this.getBlockSummaries().find((b) => b.id === hash);
-    if (cachedSummary) {
-      return cachedSummary.transactions;
+  public async $getStrippedBlockTransactions(hash: string, skipMemoryCache: boolean = false,
+    skipDBLookup: boolean = false): Promise<TransactionStripped[]>
+  {
+    if (skipMemoryCache === false) {
+      // Check the memory cache
+      const cachedSummary = this.getBlockSummaries().find((b) => b.id === hash);
+      if (cachedSummary) {
+        return cachedSummary.transactions;
+      }
     }
+
+    // Check if it's indexed in db
+    if (skipDBLookup === false && Common.blocksSummariesIndexingEnabled() === true) {
+      const indexedSummary = await BlocksSummariesRepository.$getByBlockId(hash);
+      if (indexedSummary !== undefined) {
+        return indexedSummary.transactions;
+      }
+    }
+
+    // Call Core RPC
     const block = await bitcoinClient.getBlock(hash, 2);
     const summary = this.summarizeBlock(block);
+
+    // Index the response if needed
+    if (Common.blocksSummariesIndexingEnabled() === true) {
+      await BlocksSummariesRepository.$saveSummary(block.height, summary);
+    }
+
     return summary.transactions;
   }
 

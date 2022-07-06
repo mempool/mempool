@@ -1,8 +1,8 @@
-import { Express, Request, Response, NextFunction } from 'express';
-import * as express from 'express';
+import express from "express";
+import { Application, Request, Response, NextFunction, Express } from 'express';
 import * as http from 'http';
 import * as WebSocket from 'ws';
-import * as cluster from 'cluster';
+import cluster from 'cluster';
 import axios from 'axios';
 
 import DB from './database';
@@ -27,11 +27,12 @@ import icons from './api/liquid/icons';
 import { Common } from './api/common';
 import poolsUpdater from './tasks/pools-updater';
 import indexer from './indexer';
+import priceUpdater from './tasks/price-updater';
 
 class Server {
   private wss: WebSocket.Server | undefined;
   private server: http.Server | undefined;
-  private app: Express;
+  private app: Application;
   private currentBackendRetryInterval = 5;
 
   constructor() {
@@ -42,7 +43,7 @@ class Server {
       return;
     }
 
-    if (cluster.isMaster) {
+    if (cluster.isPrimary) {
       logger.notice(`Mempool Server (Master) is running on port ${config.MEMPOOL.HTTP_PORT} (${backendInfo.getShortCommitHash()})`);
 
       const numCPUs = config.MEMPOOL.SPAWN_CLUSTER_PROCS;
@@ -76,7 +77,7 @@ class Server {
       })
       .use(express.urlencoded({ extended: true }))
       .use(express.text())
-    ;
+      ;
 
     this.server = http.createServer(this.app);
     this.wss = new WebSocket.Server({ server: this.server });
@@ -104,7 +105,7 @@ class Server {
       }
     }
 
-    if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && cluster.isMaster) {
+    if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && cluster.isPrimary) {
       statistics.startStatistics();
     }
 
@@ -153,6 +154,7 @@ class Server {
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
       indexer.$run();
+      priceUpdater.$run();
 
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;
@@ -195,6 +197,7 @@ class Server {
   setUpHttpApiRoutes() {
     this.app
       .get(config.MEMPOOL.API_URL_PREFIX + 'transaction-times', routes.getTransactionTimes)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'outspends', routes.$getBatchedOutspends)
       .get(config.MEMPOOL.API_URL_PREFIX + 'cpfp/:txId', routes.getCpfpInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'difficulty-adjustment', routes.getDifficultyChange)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/recommended', routes.getRecommendedFees)
@@ -257,7 +260,7 @@ class Server {
           res.status(500).end();
         }
       })
-    ;
+      ;
 
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
       this.app
@@ -287,7 +290,8 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/rewards/:interval', routes.$getHistoricalBlockRewards)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fee-rates/:interval', routes.$getHistoricalBlockFeeRates)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/sizes-weights/:interval', routes.$getHistoricalBlockSizeAndWeight)
-      ;
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty-adjustments/:interval', routes.$getDifficultyAdjustments)
+        ;
     }
 
     if (config.BISQ.ENABLED) {
@@ -329,6 +333,7 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/outspends', routes.getTransactionOutspends)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/header', routes.getBlockHeader)
         .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/height', routes.getBlockTipHeight)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/hash', routes.getBlockTipHash)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txs', routes.getBlockTransactions)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txs/:index', routes.getBlockTransactions)
         .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txids', routes.getTxIdsForBlock)
@@ -337,7 +342,7 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs', routes.getAddressTransactions)
         .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs/chain/:txId', routes.getAddressTransactions)
         .get(config.MEMPOOL.API_URL_PREFIX + 'address-prefix/:prefix', routes.getAddressPrefix)
-      ;
+        ;
     }
 
     if (Common.isLiquid()) {
@@ -346,13 +351,13 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'assets/featured', routes.$getAllFeaturedLiquidAssets)
         .get(config.MEMPOOL.API_URL_PREFIX + 'asset/:assetId/icon', routes.getLiquidIcon)
         .get(config.MEMPOOL.API_URL_PREFIX + 'assets/group/:id', routes.$getAssetGroup)
-      ;
+        ;
     }
 
     if (Common.isLiquid() && config.DATABASE.ENABLED) {
       this.app
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/month', routes.$getElementsPegsByMonth)
-      ;
+        ;
     }
   }
 }

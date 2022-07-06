@@ -27,9 +27,6 @@
 
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(hashrateObservable$ | async) as stats">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
-        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.blockCount >= 4320">
-          <input ngbButton type="radio" [value]="'1m'" fragment="1m" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]"> 1M
-        </label>
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.blockCount >= 12960">
           <input ngbButton type="radio" [value]="'3m'" fragment="3m" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]"> 3M
         </label>
@@ -45,7 +42,7 @@
         <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.blockCount >= 157680">
           <input ngbButton type="radio" [value]="'3y'" fragment="3y" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]"> 3Y
         </label>
-        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.blockCount > 157680">
+        <label ngbButtonLabel class="btn-primary btn-sm">
           <input ngbButton type="radio" [value]="'all'" fragment="all" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]"> ALL
         </label>
       </div>

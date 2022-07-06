@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators,
-         PoolsStats, PoolStat, BlockExtended, TransactionStripped, RewardStats } from '../interfaces/node-api.interface';
+  PoolStat, BlockExtended, TransactionStripped, RewardStats } from '../interfaces/node-api.interface';
 import { Observable } from 'rxjs';
 import { StateService } from './state.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
+import { Outspend } from '../interfaces/electrs.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -74,6 +75,14 @@ export class ApiService {
     return this.httpClient.get<number[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/transaction-times', { params });
   }
 
+  getOutspendsBatched$(txIds: string[]): Observable<Outspend[][]> {
+    let params = new HttpParams();
+    txIds.forEach((txId: string) => {
+      params = params.append('txId[]', txId);
+    });
+    return this.httpClient.get<Outspend[][]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/outspends', { params });
+  }
+
   requestDonation$(amount: number, orderId: string): Observable<any> {
     const params = {
       amount: amount,
@@ -131,7 +140,7 @@ export class ApiService {
       this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pools` +
       (interval !== undefined ? `/${interval}` : ''), { observe: 'response' }
     );
-  }
+  }  
 
   getPoolStats$(slug: string): Observable<PoolStat> {
     return this.httpClient.get<PoolStat>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${slug}`);
@@ -161,6 +170,13 @@ export class ApiService {
 
   getStrippedBlockTransactions$(hash: string): Observable<TransactionStripped[]> {
     return this.httpClient.get<TransactionStripped[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/block/' + hash + '/summary');
+  }
+
+  getDifficultyAdjustments$(interval: string | undefined): Observable<any> {
+    return this.httpClient.get<any[]>(
+        this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/difficulty-adjustments` +
+        (interval !== undefined ? `/${interval}` : ''), { observe: 'response' }
+      );
   }
 
   getHistoricalHashrate$(interval: string | undefined): Observable<any> {

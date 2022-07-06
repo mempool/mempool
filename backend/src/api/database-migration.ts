@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 19;
+  private static currentVersion = 22;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -216,6 +216,20 @@ class DatabaseMigration {
 
       if (databaseSchemaVersion < 19) {
         await this.$executeQuery(this.getCreateRatesTableQuery(), await this.$checkIfTableExists('rates'));
+      }
+
+      if (databaseSchemaVersion < 20 && isBitcoin === true) {
+        await this.$executeQuery(this.getCreateBlocksSummariesTableQuery(), await this.$checkIfTableExists('blocks_summaries'));
+      }
+
+      if (databaseSchemaVersion < 21) {
+        await this.$executeQuery('DROP TABLE IF EXISTS `rates`');
+        await this.$executeQuery(this.getCreatePricesTableQuery(), await this.$checkIfTableExists('prices'));
+      }
+
+      if (databaseSchemaVersion < 22 && isBitcoin === true) {
+        await this.$executeQuery('DROP TABLE IF EXISTS `difficulty_adjustments`');
+        await this.$executeQuery(this.getCreateDifficultyAdjustmentsTableQuery(), await this.$checkIfTableExists('difficulty_adjustments'));
       }
     } catch (e) {
       throw e;
@@ -504,7 +518,7 @@ class DatabaseMigration {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
-  private getCreateRatesTableQuery(): string {
+  private getCreateRatesTableQuery(): string { // This table has been replaced by the prices table
     return `CREATE TABLE IF NOT EXISTS rates (
       height int(10) unsigned NOT NULL,
       bisq_rates JSON NOT NULL,
@@ -512,8 +526,37 @@ class DatabaseMigration {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
+  private getCreateBlocksSummariesTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS blocks_summaries (
+      height int(10) unsigned NOT NULL,
+      id varchar(65) NOT NULL,
+      transactions JSON NOT NULL,
+      PRIMARY KEY (id),
+      INDEX (height)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreatePricesTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS prices (
+      time timestamp NOT NULL,
+      avg_prices JSON NOT NULL,
+      PRIMARY KEY (time)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateDifficultyAdjustmentsTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS difficulty_adjustments (
+      time timestamp NOT NULL,
+      height int(10) unsigned NOT NULL,
+      difficulty double unsigned NOT NULL,
+      adjustment float NOT NULL,
+      PRIMARY KEY (height),
+      INDEX (time)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
   public async $truncateIndexedData(tables: string[]) {
-    const allowedTables = ['blocks', 'hashrates'];
+    const allowedTables = ['blocks', 'hashrates', 'prices'];
 
     try {
       for (const table of tables) {

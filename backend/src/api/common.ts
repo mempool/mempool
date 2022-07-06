@@ -114,7 +114,7 @@ export class Common {
       totalFees += tx.bestDescendant.fee;
     }
 
-    tx.effectiveFeePerVsize = Math.max(Common.isLiquid() ? 0.1 : 1, totalFees / (totalWeight / 4));
+    tx.effectiveFeePerVsize = Math.max(0, totalFees / (totalWeight / 4));
     tx.cpfpChecked = true;
 
     return {
@@ -175,6 +175,13 @@ export class Common {
       ['mainnet', 'testnet', 'signet', 'regtest'].includes(config.MEMPOOL.NETWORK) &&
       config.DATABASE.ENABLED === true &&
       config.MEMPOOL.INDEXING_BLOCKS_AMOUNT !== 0
+    );
+  }
+
+  static blocksSummariesIndexingEnabled(): boolean {
+    return (
+      Common.indexingEnabled() &&
+      config.MEMPOOL.BLOCKS_SUMMARIES_INDEXING === true
     );
   }
 }
