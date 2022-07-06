@@ -70,7 +70,7 @@
     "ENABLED": false,
     "BACKEND": "lnd"
   },
-  "LND_NODE_AUTH": {
+  "LND": {
     "TLS_CERT_PATH": "tls.cert",
     "MACAROON_PATH": "admin.macaroon",
     "SOCKET": "localhost:10009"
