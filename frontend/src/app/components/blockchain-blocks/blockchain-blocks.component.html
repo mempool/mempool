@@ -1,31 +1,31 @@
 <div class="blocks-container blockchain-blocks-container" *ngIf="(loadingBlocks$ | async) === false; else loadingBlocksTemplate">
   <div *ngFor="let block of blocks; let i = index; trackBy: trackByBlocksFn" >
-    <div class="text-center bitcoin-block mined-block blockchain-blocks-{{ i }}" id="bitcoin-block-{{ block.height }}" [ngStyle]="blockStyles[i]" [class.blink-bg]="(specialBlocks[block.height] !== undefined)">
-      <a draggable="false" [routerLink]="['/block/' | relativeUrl, block.id]" [state]="{ data: { block: block } }" 
+    <div [attr.data-cy]="'bitcoin-block-' + i" class="text-center bitcoin-block mined-block blockchain-blocks-{{ i }}" id="bitcoin-block-{{ block.height }}" [ngStyle]="blockStyles[i]" [class.blink-bg]="(specialBlocks[block.height] !== undefined)">
+      <a draggable="false" [routerLink]="['/block/' | relativeUrl, block.id]" [state]="{ data: { block: block } }"
         class="blockLink" [ngClass]="{'disabled': (this.stateService.blockScrolling$ | async)}">&nbsp;</a>
-      <div class="block-height">
+      <div [attr.data-cy]="'bitcoin-block-' + i + '-height'" class="block-height">
         <a [routerLink]="['/block/' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a>
       </div>
       <div class="block-body">
-        <div class="fees">
+        <div [attr.data-cy]="'bitcoin-block-' + i + '-fees'" class="fees">
           ~{{ block?.extras?.medianFee | number:feeRounding }} <ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
         </div>
-        <div class="fee-span">
+        <div [attr.data-cy]="'bitcoin-block-' + i + '-fee-span'" class="fee-span">
           {{ block?.extras?.feeRange[1] | number:feeRounding }} - {{ block?.extras?.feeRange[block?.extras?.feeRange.length - 1] | number:feeRounding }} <ng-container i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
         </div>
-        <div *ngIf="showMiningInfo" class="block-size">
+        <div [attr.data-cy]="'bitcoin-block-' + i + '-total-fees'" *ngIf="showMiningInfo" class="block-size">
           <app-amount [satoshis]="block.extras?.totalFees ?? 0" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
         </div>
-        <div *ngIf="!showMiningInfo" class="block-size" [innerHTML]="'&lrm;' + (block.size | bytes: 2)"></div>
-        <div class="transaction-count">
+        <div [attr.data-cy]="'bitcoin-block-' + i + 'block-size'" *ngIf="!showMiningInfo" class="block-size" [innerHTML]="'&lrm;' + (block.size | bytes: 2)"></div>
+        <div [attr.data-cy]="'bitcoin-block-' + i + '-transactions'" class="transaction-count">
           <ng-container *ngTemplateOutlet="block.tx_count === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: block.tx_count | number}"></ng-container>
           <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
           <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
         </div>
-        <div class="time-difference"><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since></div>
+        <div [attr.data-cy]="'bitcoin-block-' + i + '-time'" class="time-difference"><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since></div>
       </div>
       <div class="animated" [class]="showMiningInfo ? 'show' : 'hide'" *ngIf="block.extras?.pool != undefined">
-        <a class="badge badge-primary" [routerLink]="[('/mining/pool/' + block.extras.pool.slug) | relativeUrl]">
+        <a [attr.data-cy]="'bitcoin-block-' + i + '-pool'" class="badge badge-primary" [routerLink]="[('/mining/pool/' + block.extras.pool.slug) | relativeUrl]">
           {{ block.extras.pool.name}}</a>
       </div>
     </div>
