@@ -31,7 +31,7 @@ interface IConfig {
     ENABLED: boolean;
     BACKEND: 'lnd' | 'cln' | 'ldk';
   };
-  LND_NODE_AUTH: {
+  LND: {
     TLS_CERT_PATH: string;
     MACAROON_PATH: string;
     SOCKET: string;
@@ -171,7 +171,7 @@ const defaults: IConfig = {
     'ENABLED': false,
     'BACKEND': 'lnd'
   },
-  'LND_NODE_AUTH': {
+  'LND': {
     'TLS_CERT_PATH': '',
     'MACAROON_PATH': '',
     'SOCKET': 'localhost:10009',
@@ -209,7 +209,7 @@ class Config implements IConfig {
   STATISTICS: IConfig['STATISTICS'];
   BISQ: IConfig['BISQ'];
   LIGHTNING: IConfig['LIGHTNING'];
-  LND_NODE_AUTH: IConfig['LND_NODE_AUTH'];
+  LND: IConfig['LND'];
   SOCKS5PROXY: IConfig['SOCKS5PROXY'];
   PRICE_DATA_SERVER: IConfig['PRICE_DATA_SERVER'];
   EXTERNAL_DATA_SERVER: IConfig['EXTERNAL_DATA_SERVER'];
@@ -226,7 +226,7 @@ class Config implements IConfig {
     this.STATISTICS = configs.STATISTICS;
     this.BISQ = configs.BISQ;
     this.LIGHTNING = configs.LIGHTNING;
-    this.LND_NODE_AUTH = configs.LND_NODE_AUTH;
+    this.LND = configs.LND;
     this.SOCKS5PROXY = configs.SOCKS5PROXY;
     this.PRICE_DATA_SERVER = configs.PRICE_DATA_SERVER;
     this.EXTERNAL_DATA_SERVER = configs.EXTERNAL_DATA_SERVER;
