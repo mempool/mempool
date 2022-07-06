@@ -71,7 +71,7 @@ export class HashrateChartComponent implements OnInit {
       this.miningWindowPreference = '1y';
     } else {
       this.seoService.setTitle($localize`:@@3510fc6daa1d975f331e3a717bdf1a34efa06dff:Hashrate & Difficulty`);
-      this.miningWindowPreference = this.miningService.getDefaultTimespan('1m');
+      this.miningWindowPreference = this.miningService.getDefaultTimespan('3m');
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
