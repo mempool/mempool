@@ -27,6 +27,7 @@ import BlocksRepository from './repositories/BlocksRepository';
 import HashratesRepository from './repositories/HashratesRepository';
 import difficultyAdjustment from './api/difficulty-adjustment';
 import DifficultyAdjustmentsRepository from './repositories/DifficultyAdjustmentsRepository';
+import BlocksAuditsRepository from './repositories/BlocksAuditsRepository';
 
 class Routes {
   constructor() {}
@@ -738,6 +739,20 @@ class Routes {
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
       res.json(difficulty.map(adj => [adj.time, adj.height, adj.difficulty, adj.adjustment]));
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  public async $getHistoricalBlockPrediction(req: Request, res: Response) {
+    try {
+      const blockPredictions = await mining.$getBlockPredictionsHistory(req.params.interval);
+      const blockCount = await BlocksAuditsRepository.$getPredictionsCount();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.header('X-total-count', blockCount.toString());
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      res.json(blockPredictions.map(prediction => [prediction.time, prediction.height, prediction.match_rate]));
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

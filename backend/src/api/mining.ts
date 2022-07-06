@@ -10,9 +10,20 @@ import { escape } from 'mysql2';
 import indexer from '../indexer';
 import DifficultyAdjustmentsRepository from '../repositories/DifficultyAdjustmentsRepository';
 import config from '../config';
+import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
 
 class Mining {
   constructor() {
+  }
+
+  /**
+   * Get historical block predictions match rate
+   */
+   public async $getBlockPredictionsHistory(interval: string | null = null): Promise<any> {
+    return await BlocksAuditsRepository.$getBlockPredictionsHistory(
+      this.getTimeRange(interval),
+      Common.getSqlInterval(interval)
+    );
   }
 
   /**
