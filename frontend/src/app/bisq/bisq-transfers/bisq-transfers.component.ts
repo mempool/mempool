@@ -31,7 +31,7 @@ export class BisqTransfersComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
-    this.totalOutput = this.tx.outputs.filter((output) => output.isVerified).reduce((acc, output) => acc + output.bsqAmount, 0);;
+    this.totalOutput = this.tx.outputs.filter((output) => output.isVerified).reduce((acc, output) => acc + output.bsqAmount, 0);
   }
 
   switchCurrency() {

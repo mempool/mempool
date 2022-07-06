@@ -95,6 +95,7 @@ export class HashrateChartComponent implements OnInit {
             .pipe(
               tap((response) => {
                 const data = response.body;
+
                 // We generate duplicated data point so the tooltip works nicely
                 const diffFixed = [];
                 let diffIndex = 1;
@@ -112,7 +113,7 @@ export class HashrateChartComponent implements OnInit {
                   }
 
                   while (hashIndex < data.hashrates.length && diffIndex < data.difficulty.length &&
-                    data.hashrates[hashIndex].timestamp <= data.difficulty[diffIndex].timestamp
+                    data.hashrates[hashIndex].timestamp <= data.difficulty[diffIndex].time
                   ) {
                     diffFixed.push({
                       timestamp: data.hashrates[hashIndex].timestamp,

@@ -17,15 +17,15 @@ export class ApiDocsNavComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    if( this.whichTab === 'rest' ) {
+    if (this.whichTab === 'rest') {
       this.tabData = restApiDocsData;
-    } else if( this.whichTab = 'faq' ) {
+    } else if (this.whichTab === 'faq') {
       this.tabData = faqData;
     }
   }
-  
-  navLinkClick( event ) {
-    this.navLinkClickEvent.emit( event );
+
+  navLinkClick(event) {
+    this.navLinkClickEvent.emit(event);
   }
 
 }
