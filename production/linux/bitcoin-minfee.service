@@ -1,0 +1,22 @@
+[Unit]
+Description=Bitcoind-minfee
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/bitcoind -daemon -printtoconsole -pid=/minfee/bitcoind-minfee.pid
+ExecStop=/usr/local/bin/bitcoin-cli stop
+
+Type=forking
+PIDFile=/minfee/bitcoind.pid
+Restart=on-failure
+
+User=minfee
+Group=minfee
+
+PrivateTmp=true
+ProtectSystem=full
+NoNewPrivileges=true
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target
