@@ -307,7 +307,6 @@ export class HashrateChartComponent implements OnInit {
           min: (value) => {
             const selectedPowerOfTen: any = selectPowerOfTen(value.min);
             const newMin = Math.floor(value.min / selectedPowerOfTen.divider / 10);
-            console.log(newMin);
             return newMin * selectedPowerOfTen.divider * 10;
           },
           type: 'value',
