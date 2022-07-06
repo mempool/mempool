@@ -295,7 +295,8 @@ class Blocks {
       }
       logger.notice(`Blocks summaries indexing completed: indexed ${newlyIndexed} blocks`);
     } catch (e) {
-      logger.err(`Blocks summaries indexing failed. Reason: ${(e instanceof Error ? e.message : e)}`);
+      logger.err(`Blocks summaries indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`);
+      throw e;
     }
   }
 
@@ -367,18 +368,12 @@ class Blocks {
       logger.notice(`Block indexing completed: indexed ${newlyIndexed} blocks`);
       loadingIndicators.setProgress('block-indexing', 100);
     } catch (e) {
-      logger.err('Block indexing failed. Trying again later. Reason: ' + (e instanceof Error ? e.message : e));
+      logger.err('Block indexing failed. Trying again in 10 seconds. Reason: ' + (e instanceof Error ? e.message : e));
       loadingIndicators.setProgress('block-indexing', 100);
-      return false;
+      throw e;
     }
 
-    const chainValid = await BlocksRepository.$validateChain();
-    if (!chainValid) {
-      indexer.reindex();
-      return false;
-    }
-
-    return true;
+    return await BlocksRepository.$validateChain();
   }
 
   public async $updateBlocks() {
