@@ -16,7 +16,7 @@ class StatisticsApi {
   public async $getLatestStatistics(): Promise<any> {
     try {
       const [rows]: any = await DB.query(`SELECT * FROM lightning_stats ORDER BY id DESC LIMIT 1`);
-      const [rows2]: any = await DB.query(`SELECT * FROM lightning_stats ORDER BY id DESC LIMIT 1 OFFSET 72`);
+      const [rows2]: any = await DB.query(`SELECT * FROM lightning_stats ORDER BY id DESC LIMIT 1 OFFSET 7`);
       return {
         latest: rows[0],
         previous: rows2[0],
