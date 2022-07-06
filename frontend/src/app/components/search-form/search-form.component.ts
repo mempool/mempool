@@ -111,7 +111,7 @@ export class SearchFormComponent implements OnInit {
 
   selectedResult(result: any) {
     if (typeof result === 'string') {
-      this.search();
+      this.search(result);
     } else if (result.alias) {
       this.navigate('/lightning/node/', result.public_key);
     } else if (result.short_id) {
@@ -119,8 +119,8 @@ export class SearchFormComponent implements OnInit {
     }
   }
 
-  search() {
-    const searchText = this.searchForm.value.searchText.trim();
+  search(result?: string) {
+    const searchText = result || this.searchForm.value.searchText.trim();
     if (searchText) {
       this.isSearching = true;
       if (this.regexAddress.test(searchText)) {
