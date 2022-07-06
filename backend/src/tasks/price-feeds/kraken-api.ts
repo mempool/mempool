@@ -87,7 +87,7 @@ class KrakenApi implements PriceFeed {
     }
 
     if (Object.keys(priceHistory).length > 0) {
-      logger.info(`Inserted ${Object.keys(priceHistory).length} Kraken EUR, USD, GBP, JPY, CAD, CHF and AUD weekly price history into db`);
+      logger.notice(`Inserted ${Object.keys(priceHistory).length} Kraken EUR, USD, GBP, JPY, CAD, CHF and AUD weekly price history into db`);
     }
   }
 }
