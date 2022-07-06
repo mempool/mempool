@@ -1048,7 +1048,7 @@ case $OS in
     ;;
     Debian)
        echo "[*] Installing Rust from rustup.rs"
-       osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_ELECTRS_HOME} && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+       osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_ELECTRS_HOME} && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y"
     ;;
 esac
 
@@ -1094,15 +1094,6 @@ osSudo "${ELEMENTS_USER}" git clone "${LIQUID_ASSET_REGISTRY_DB_URL}" "${ELEMENT
 echo "[*] Cloning Liquid Asset Registry testnet repo from ${LIQUIDTESTNET_ASSET_REGISTRY_DB_URL}"
 osSudo "${ELEMENTS_USER}" git config --global advice.detachedHead false
 osSudo "${ELEMENTS_USER}" git clone "${LIQUIDTESTNET_ASSET_REGISTRY_DB_URL}" "${ELEMENTS_HOME}/${LIQUIDTESTNET_ASSET_REGISTRY_DB_NAME}"
-
-case $OS in
-    FreeBSD)
-    ;;
-    Debian)
-       echo "[*] Installing Rust from rustup.rs"
-       osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_ELECTRS_HOME} && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
-    ;;
-esac
 
 echo "[*] Building Liquid Electrs release binary"
 osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_ELECTRS_HOME} && cargo run --release --features liquid --bin electrs -- --network liquid --version" || true
