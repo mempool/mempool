@@ -80,6 +80,12 @@ export class SearchFormComponent implements OnInit {
               }
             ]);
           }
+          if (!this.stateService.env.LIGHTNING) {
+            return zip(
+              this.electrsApiService.getAddressesByPrefix$(text).pipe(catchError(() => of([]))),
+              [{ nodes: [], channels: [] }]
+            );
+          }
           return zip(
             this.electrsApiService.getAddressesByPrefix$(text).pipe(catchError(() => of([]))),
             this.apiService.lightningSearch$(text).pipe(catchError(() => of({

@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { StateService } from 'src/app/services/state.service';
 
 @Component({
   selector: 'app-search-results',
@@ -15,7 +16,7 @@ export class SearchResultsComponent implements OnChanges {
   activeIdx = 0;
   focusFirst = true;
 
-  constructor() { }
+  constructor(public stateService: StateService) { }
 
   ngOnChanges() {
     this.activeIdx = 0;
