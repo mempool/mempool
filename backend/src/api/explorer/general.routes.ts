@@ -10,7 +10,7 @@ class GeneralLightningRoutes {
     app
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/search', this.$searchNodesAndChannels)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/statistics/latest', this.$getGeneralStats)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/statistics', this.$getStatistics)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/statistics/:interval', this.$getStatistics)
     ;
   }
 
@@ -33,7 +33,12 @@ class GeneralLightningRoutes {
 
   private async $getStatistics(req: Request, res: Response) {
     try {
-      const statistics = await statisticsApi.$getStatistics();
+      const statistics = await statisticsApi.$getStatistics(req.params.interval);
+      const statisticsCount = await statisticsApi.$getStatisticsCount();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.header('X-total-count', statisticsCount.toString());
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(statistics);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);

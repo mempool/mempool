@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
 import { EChartsOption} from 'echarts';
 import { Observable } from 'rxjs';
-import { startWith, switchMap, tap } from 'rxjs/operators';
+import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { formatNumber } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { StorageService } from 'src/app/services/storage.service';
 import { MiningService } from 'src/app/services/mining.service';
-import { download, formatterXAxis } from 'src/app/shared/graphs.utils';
+import { download } from 'src/app/shared/graphs.utils';
 import { SeoService } from 'src/app/services/seo.service';
 import { LightningApiService } from '../lightning-api.service';
 
@@ -62,7 +62,7 @@ export class NodesNetworksChartComponent implements OnInit {
       this.miningWindowPreference = '1y';
     } else {
       this.seoService.setTitle($localize`Nodes per network`);
-      this.miningWindowPreference = this.miningService.getDefaultTimespan('1m');
+      this.miningWindowPreference = this.miningService.getDefaultTimespan('all');
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
@@ -73,14 +73,15 @@ export class NodesNetworksChartComponent implements OnInit {
         switchMap((timespan) => {
           this.timespan = timespan;
           if (!this.widget && !firstRun) {
-            this.storageService.setValue('miningWindowPreference', timespan);
+            this.storageService.setValue('lightningWindowPreference', timespan);
           }
           firstRun = false;
           this.miningWindowPreference = timespan;
           this.isLoading = true;
-          return this.lightningApiService.listStatistics$()
+          return this.lightningApiService.listStatistics$(timespan)
             .pipe(
-              tap((data) => {
+              tap((response) => {
+                const data = response.body;
                 this.prepareChartOptions({
                   node_count: data.map(val => [val.added * 1000, val.node_count]), 
                   tor_nodes: data.map(val => [val.added * 1000, val.tor_nodes]),
@@ -89,9 +90,15 @@ export class NodesNetworksChartComponent implements OnInit {
                 });
                 this.isLoading = false;
               }),
+              map((response) => {
+                return {
+                  days: parseInt(response.headers.get('x-total-count'), 10),
+                };
+              }),
             );
         }),
-      )
+        share()
+      );
   }
 
   prepareChartOptions(data) {

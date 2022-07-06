@@ -5,9 +5,43 @@
     <button class="btn" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
       <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
     </button>
+
+    <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(capacityObservable$ | async) as stats">
+      <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.days >= 30">
+          <input ngbButton type="radio" [value]="'1m'" fragment="1m"
+            [routerLink]="['/graphs/lightning/capacity' | relativeUrl]"> 1M
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.days >= 90">
+          <input ngbButton type="radio" [value]="'3m'" fragment="3m"
+            [routerLink]="['/graphs/lightning/capacity' | relativeUrl]"> 3M
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.days >= 180">
+          <input ngbButton type="radio" [value]="'6m'" fragment="6m"
+            [routerLink]="['/graphs/lightning/capacity' | relativeUrl]"> 6M
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.days >= 365">
+          <input ngbButton type="radio" [value]="'1y'" fragment="1y"
+            [routerLink]="['/graphs/lightning/capacity' | relativeUrl]"> 1Y
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.days >= 730">
+          <input ngbButton type="radio" [value]="'2y'" fragment="2y"
+            [routerLink]="['/graphs/lightning/capacity' | relativeUrl]"> 2Y
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm" *ngIf="stats.days >= 1095">
+          <input ngbButton type="radio" [value]="'3y'" fragment="3y"
+            [routerLink]="['/graphs/lightning/capacity' | relativeUrl]"> 3Y
+        </label>
+        <label ngbButtonLabel class="btn-primary btn-sm">
+          <input ngbButton type="radio" [value]="'all'" fragment="all"
+            [routerLink]="['/graphs/lightning/capacity' | relativeUrl]"> ALL
+        </label>
+      </div>
+    </form>
   </div>
 
-  <div [class]="!widget ? 'chart' : 'chart-widget'" echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartInit)="onChartInit($event)"></div>
+  <div [class]="!widget ? 'chart' : 'chart-widget'" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+    (chartInit)="onChartInit($event)"></div>
   <div class="text-center loadingGraphs" *ngIf="isLoading">
     <div class="spinner-border text-light"></div>
   </div>
