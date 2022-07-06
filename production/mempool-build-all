@@ -1,4 +1,4 @@
-#!/usr/local/bin/zsh
+#!/usr/bin/env zsh
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:$HOME/bin
 HOSTNAME=$(hostname)
 LOCATION=$(hostname|cut -d . -f2)
@@ -16,10 +16,13 @@ if [ -f "${LOCKFILE}" ];then
     exit 1
 fi
 
-trap "rv=\$?; rm -rf "${LOCKFILE}"; exit \$rv" INT TERM EXIT
+# on exit, remove lockfile but preserve exit code
+trap "rv=\$?; rm -f "${LOCKFILE}"; exit \$rv" INT TERM EXIT
 
+# create lockfile
 touch "${LOCKFILE}"
 
+# notify logged in users
 echo "Upgrading mempool to ${REF}" | wall
 
 update_repo()
@@ -84,25 +87,48 @@ ship_frontend()
     rsync -av "./dist/mempool/browser/" "${HOME}/public_html/${site}/" || exit 1
 }
 
+# load nvm if necessary
 export NVM_DIR="${HOME}/.nvm"
 source "${NVM_DIR}/nvm.sh"
 
-for target in mainnet testnet signet liquid liquidtestnet bisq;do
-    update_repo "${target}"
+# what to look for
+frontends=(mainnet liquid bisq)
+backends=(mainnet testnet signet liquid liquidtestnet bisq)
+frontend_repos=()
+backend_repos=()
+
+# find which frontend repos we have
+for repo in $frontends;do
+    [ -d "${repo}" ] && frontend_repos+="${repo}"
 done
 
-for target in mainnet testnet signet liquid liquidtestnet bisq;do
-    build_backend "${target}"
+# find which backend repos we have
+for repo in $backends;do
+    [ -d "${repo}" ] && backend_repos+="${repo}"
+    [ -d "${repo}-lightning" ] && backend_repos+="${repo}-lightning"
 done
 
-for target in mainnet liquid bisq;do
-    build_frontend "${target}"
+# update all repos
+for repo in $backend_repos;do
+    update_repo "${repo}"
 done
 
+# build backends
+for repo in $backend_repos;do
+    build_backend "${repo}"
+done
+
+# build frontends
+for repo in $frontend_repos;do
+    build_frontend "${repo}"
+done
+
+# ship frontend dist folders to public_html
 for target in mainnet liquid bisq;do
     ship_frontend "${target}"
 done
 
+# notify everyone
 echo "${HOSTNAME} updated to \`${REF}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel general mempool.dev
 echo "${HOSTNAME} updated to \`${REF}\` @ \`${HASH}\`" | /usr/local/bin/keybase chat send --nonblock --channel general "mempool.ops.${LOCATION}"
 
