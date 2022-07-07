@@ -1295,18 +1295,6 @@ if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
     echo "[*] Installing Bitcoin Mainnet electrs start script"
     osSudo "${ROOT_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-mainnet" "${BITCOIN_ELECTRS_HOME}"
 
-    echo "[*] Installing Bitcoin crontab"
-    case $OS in
-        FreeBSD)
-            echo [*] FIXME: must only crontab enabled daemons
-            osSudo "${ROOT_USER}" crontab -u "${BITCOIN_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.crontab"
-            osSudo "${ROOT_USER}" crontab -u "${MINFEE_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/minfee.crontab"
-        ;;
-        Debian)
-            (crontab -l ; echo "@reboot sleep 30 ; screen -dmS mainnet /bitcoin/electrs/electrs-start-mainnet") | osSudo "${ROOT_USER}" crontab -u "${BITCOIN_USER}" -
-        ;;
-    esac
-
     echo "[*] Configuring Bitcoin Mainnet RPC credentials in electrs start script"
     osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-mainnet"
     osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-mainnet"
@@ -1321,13 +1309,6 @@ if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
     echo "[*] Installing Bitcoin Testnet electrs start script"
     osSudo "${ROOT_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-testnet" "${BITCOIN_ELECTRS_HOME}"
 
-    case $OS in
-        Debian)
-            echo "[*] Installing Bitcoin-testnet crontab"
-            (crontab -l ; echo "@reboot sleep 70 ; screen -dmS testnet /bitcoin/electrs/electrs-start-testnet") | osSudo "${ROOT_USER}" crontab -u "${BITCOIN_USER}" -
-        ;;
-    esac
-
     echo "[*] Configuring Bitcoin Testnet RPC credentials in electrs start script"
     osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-testnet"
     osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-testnet"
@@ -1341,13 +1322,6 @@ fi
 if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
     echo "[*] Installing Bitcoin Signet electrs start script"
     osSudo "${ROOT_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-signet" "${BITCOIN_ELECTRS_HOME}"
-
-    case $OS in
-        Debian)
-            echo "[*] Installing Bitcoin-signet crontab"
-            (crontab -l ; echo "@reboot sleep 90 ; screen -dmS signet /bitcoin/electrs/electrs-start-signet") | osSudo "${ROOT_USER}" crontab -u "${BITCOIN_USER}" -
-        ;;
-    esac
 
     echo "[*] Configuring Bitcoin Signet RPC credentials in electrs start script"
     osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-signet"
@@ -1369,9 +1343,6 @@ if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
             echo [*] FIXME: must only crontab enabled daemons
             osSudo "${ROOT_USER}" crontab -u "${ELEMENTS_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/elements.crontab"
         ;;
-        Debian)
-            (crontab -l ; echo "6 * * * * cd $HOME/asset_registry_db && git pull origin master >/dev/null 2>&1") | osSudo "${ROOT_USER}" crontab -u "${ELEMENTS_USER}" -
-        ;;
     esac
 
     echo "[*] Configuring Elements Liquid RPC credentials in electrs start script"
@@ -1388,13 +1359,6 @@ if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
     echo "[*] Installing Elements Liquid Testnet electrs start script"
     osSudo "${ROOT_USER}" install -c -o "${ELEMENTS_USER}" -g "${ELEMENTS_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-liquidtestnet" "${ELEMENTS_ELECTRS_HOME}"
 
-    case $OS in
-        Debian)
-            echo "[*] Installing Elements-testnet crontab"
-            (crontab -l ; echo "6 * * * * cd $HOME/asset_registry_testnet_db && git pull origin master >/dev/null 2>&1") | osSudo "${ROOT_USER}" crontab -u "${ELEMENTS_USER}" -
-        ;;
-    esac
-
     echo "[*] Installing Elements Liquid Testnet RPC credentials"
     osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${ELEMENTS_HOME}/elements.conf"
     osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
@@ -1406,6 +1370,45 @@ if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
     osSudo "${ROOT_USER}" sed -i.orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquidtestnet"
     osSudo "${ROOT_USER}" sed -i.orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquidtestnet"
 fi
+
+################################
+# Install all Electrs Cronjobs #
+################################
+echo "[*] Installing crontabs"
+case $OS in
+    FreeBSD)
+        echo [*] FIXME: must only crontab enabled daemons
+        osSudo "${ROOT_USER}" crontab -u "${BITCOIN_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.crontab"
+        osSudo "${ROOT_USER}" crontab -u "${MINFEE_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/minfee.crontab"
+    ;;
+    Debian)
+        crontab_bitcoin=()
+        if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
+            echo [*] Installing Electrs Mainnet Cronjob
+            crontab_bitcoin+="@reboot sleep 30 ; screen -dmS mainnet /bitcoin/electrs/electrs-start-mainnet\n"
+        fi
+        if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
+            echo [*] Installing Electrs Testnet Cronjob
+            crontab_bitcoin+="@reboot sleep 70 ; screen -dmS testnet /bitcoin/electrs/electrs-start-testnet\n"
+        fi
+        if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
+            echo [*] Installing Electrs Signet Cronjob
+            crontab_bitcoin+="@reboot sleep 90 ; screen -dmS signet /bitcoin/electrs/electrs-start-signet\n"
+        fi
+        echo "${crontab_bitcoin}" | crontab -u "${BITCOIN_USER}" -
+
+        crontab_elements=()
+        if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
+            echo [*] Installing Liquid Asset Mainnet Cronjob
+            crontab_elements+="6 * * * * cd $HOME/asset_registry_db && git pull origin master >/dev/null 2>&1\n"
+        fi
+        if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
+            echo [*] Installing Liquid Asset Testnet Cronjob
+            crontab_elements+="6 * * * * cd $HOME/asset_registry_testnet_db && git pull origin master >/dev/null 2>&1\n"
+        fi
+        echo "${crontab_elements}" | crontab -u "${ELEMENTS_USER}" -
+    ;;
+esac
 
 #####################################
 # Bisq instance for Bitcoin Mainnet #
@@ -1553,6 +1556,29 @@ case $OS in
     ;;
 esac
 
+##### OS set Linux user ulimits
+
+echo "[*] Setting ulimits for users"
+case $OS in
+
+    FreeBSD)
+    ;;
+
+    Debian)
+        cat >> /etc/security/limits.conf <<EOF
+*        soft     nproc          200000
+*        hard     nproc          200000
+*        soft     nofile         200000
+*        hard     nofile         200000
+EOF
+        echo "session required pam_limits.so" >> /etc/pam.d/common-session
+    ;;
+esac
+
+
+
+
+
 ##### OS services
 
 #if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
@@ -1627,6 +1653,8 @@ esac
 #esac
 
 ##### finish
+
+echo 'Please reboot to start all the services.'
 
 echo '[*] Done!'
 

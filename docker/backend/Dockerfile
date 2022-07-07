@@ -8,7 +8,7 @@ COPY . .
 
 RUN apt-get update
 RUN apt-get install -y build-essential python3 pkg-config
-RUN npm install
+RUN npm install --omit=dev --omit=optional
 RUN npm run build
 
 FROM node:16.15.0-buster-slim

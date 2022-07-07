@@ -7,7 +7,7 @@ import { BisqApiService } from '../bisq-api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { IMultiSelectOption, IMultiSelectSettings, IMultiSelectTexts } from 'ngx-bootrap-multiselect';
+import { IMultiSelectOption, IMultiSelectSettings, IMultiSelectTexts } from 'src/app/components/ngx-bootstrap-multiselect/types'
 import { WebsocketService } from 'src/app/services/websocket.service';
 
 @Component({
