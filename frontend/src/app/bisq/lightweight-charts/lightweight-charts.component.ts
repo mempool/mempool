@@ -1,5 +1,5 @@
 import { createChart, CrosshairMode } from 'lightweight-charts';
-import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-lightweight-charts',
@@ -20,6 +20,14 @@ export class LightweightChartsComponent implements OnInit, OnChanges, OnDestroy 
   constructor(
     private element: ElementRef,
   ) { }
+
+  @HostListener('window:resize', ['$event'])
+  resizeCanvas(): void {
+    this.chart.applyOptions({
+      width: this.element.nativeElement.parentElement.offsetWidth,
+      height: this.height,
+    });
+  }
 
   ngOnInit() {
     this.chart = createChart(this.element.nativeElement, {
