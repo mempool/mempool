@@ -1,12 +1,14 @@
 name: CI Pipeline for the Backend and Frontend
 
 on:
-  push:
+  pull_request:
+    types: [ opened, review_requested, synchronize ]
 env:
   NODE_VERSION: 16.15.0
 
 jobs:
   backend:
+    if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
     strategy:
       matrix:
         flavor: ['dev', 'prod']
@@ -27,12 +29,12 @@ jobs:
 
       - name: Install
         if: ${{ matrix.flavor == 'dev'}}
-        run: npm install
+        run: npm ci
         working-directory: ${{ matrix.flavor }}/backend
 
       - name: Install (Prod dependencies only)
         if: ${{ matrix.flavor == 'prod'}}
-        run: npm install --prod
+        run: npm ci --prod --no-optional
         working-directory: ${{ matrix.flavor }}/backend
 
       - name: Lint 
@@ -48,6 +50,7 @@ jobs:
         working-directory: ${{ matrix.flavor }}/backend
 
   frontend:
+    if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
     strategy:
       matrix:
         flavor: ['dev', 'prod']
@@ -67,16 +70,17 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install (Prod dependencies only)
-        run: npm install
+        run: npm ci --prod --no-optional
         if: ${{ matrix.flavor == 'prod'}}
         working-directory: ${{ matrix.flavor }}/frontend
 
       - name: Install
         if: ${{ matrix.flavor == 'dev'}}
-        run: npm install
+        run: npm ci
         working-directory: ${{ matrix.flavor }}/frontend
 
-      - name: Lint 
+      - name: Lint
+        if: ${{ matrix.flavor == 'dev'}}
         run: npm run lint
         working-directory: ${{ matrix.flavor }}/frontend
 
