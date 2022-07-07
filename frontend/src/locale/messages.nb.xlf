@@ -1993,6 +1993,7 @@
       </trans-unit>
       <trans-unit id="4793828002882320882" datatype="html">
         <source>At block: <x id="PH" equiv-text="data[0].data[2]"/></source>
+        <target>I blokk: <x id="PH" equiv-text="data[0].data[2]"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fee-rates-graph/block-fee-rates-graph.component.ts</context>
           <context context-type="linenumber">188</context>
@@ -2016,6 +2017,7 @@
       </trans-unit>
       <trans-unit id="8918254921747459635" datatype="html">
         <source>Around block: <x id="PH" equiv-text="data[0].data[2]"/></source>
+        <target>Rundt blokk: <x id="PH" equiv-text="data[0].data[2]"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fee-rates-graph/block-fee-rates-graph.component.ts</context>
           <context context-type="linenumber">190</context>
@@ -2240,6 +2242,7 @@
       </trans-unit>
       <trans-unit id="d7d5fcf50179ad70c938491c517efb82de2c8146" datatype="html">
         <source>Block Prediction Accuracy</source>
+        <target>Blokkprediksjonsnøyaktighet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.html</context>
           <context context-type="linenumber">5,7</context>
@@ -2256,6 +2259,7 @@
       </trans-unit>
       <trans-unit id="829186404427796443" datatype="html">
         <source>Match rate</source>
+        <target>Samsvarsfrekvens</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.ts</context>
           <context context-type="linenumber">176,174</context>
@@ -2873,6 +2877,7 @@
       </trans-unit>
       <trans-unit id="49bba8e970aa3b1bec6fcff7228ef95ceb335f59" datatype="html">
         <source>Usually places your transaction in between the second and third mempool blocks</source>
+        <target>Plasserer vanligvis transaksjonen din mellom andre og tredje mempool-blokken</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -2894,6 +2899,7 @@
       </trans-unit>
       <trans-unit id="eeeeabc97373285d75acf0f013f68434a6f1935b" datatype="html">
         <source>Usually places your transaction in between the first and second mempool blocks</source>
+        <target>Plasserer vanligvis transaksjonen mellom den første og andre mempool-blokken</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">9,10</context>
@@ -3078,6 +3084,7 @@
       </trans-unit>
       <trans-unit id="8105839921891777281" datatype="html">
         <source>Hashrate (MA)</source>
+        <target>Hashrate (MA)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
           <context context-type="linenumber">288,287</context>
@@ -3250,6 +3257,7 @@
       </trans-unit>
       <trans-unit id="2711844b4304254e88358d1761f9c732e5aefc69" datatype="html">
         <source>Pools luck (1 week)</source>
+        <target>Pools-flaks (1 uke)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">9</context>
@@ -3258,6 +3266,7 @@
       </trans-unit>
       <trans-unit id="ea1a87734b5cc78ea8b268343497d92136855cd1" datatype="html">
         <source>Pools luck</source>
+        <target>Pools-flaks</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -3266,6 +3275,7 @@
       </trans-unit>
       <trans-unit id="e910ea39a964514d51802d34cad96c75b14947d1" datatype="html">
         <source>The overall luck of all mining pools over the past week. A luck bigger than 100% means the average block time for the current epoch is less than 10 minutes.</source>
+        <target>Den generelle flaksen til alle utvinningspools den siste uken. En flaks større enn 100 % betyr at den gjennomsnittlige blokktiden for gjeldende epoke er mindre enn 10 minutter.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">11,15</context>
@@ -3274,6 +3284,7 @@
       </trans-unit>
       <trans-unit id="9740454c3c55ca2cfa437ff9ec07374c9b9d25b5" datatype="html">
         <source>Pools count (1w)</source>
+        <target>Antall pools (1uke)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">17</context>
@@ -3282,6 +3293,7 @@
       </trans-unit>
       <trans-unit id="1107f1b39cd8474087d438971892967a331a6c7d" datatype="html">
         <source>Pools count</source>
+        <target>Antall pools</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">17,19</context>
@@ -3290,6 +3302,7 @@
       </trans-unit>
       <trans-unit id="500e13dffc7300bf7e4822a6bbf29a71a55d7b75" datatype="html">
         <source>How many unique pools found at least one block over the past week.</source>
+        <target>Antall unike pools som har funnet minst én blokk i løpet av den siste uken.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">19,23</context>
@@ -3315,6 +3328,7 @@
       </trans-unit>
       <trans-unit id="c9e8defa185fa8e342548958bf206de97afc97a6" datatype="html">
         <source>The number of blocks found over the past week.</source>
+        <target>Antall blokker funnet den siste uken.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">27,31</context>
@@ -4471,6 +4485,7 @@
       </trans-unit>
       <trans-unit id="cd2330c7e9c74256f6a91e83bccf10e2905f8556" datatype="html">
         <source>REST API service</source>
+        <target>REST API-tjeneste</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">34,35</context>
