@@ -8,7 +8,7 @@ WORKDIR /build
 COPY . .
 RUN apt-get update
 RUN apt-get install -y build-essential rsync
-RUN npm i
+RUN npm install --omit=dev --omit=optional
 RUN npm run build
 
 FROM nginx:1.17.8-alpine
