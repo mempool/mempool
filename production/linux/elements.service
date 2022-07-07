@@ -1,17 +1,17 @@
 [Unit]
-Description=Liquid
+Description=Elementsd
 After=network.target
 
 [Service]
-ExecStart=/usr/local/bin/elementsd -daemon -printtoconsole -pid=/liquid/liquid.pid
+ExecStart=/usr/local/bin/elementsd -daemon -printtoconsole -chain=liquidv1 -pid=/elements/elements.pid
 ExecStop=/usr/local/bin/elements-cli stop
 
 Type=forking
-PIDFile=/liquid/liquid.pid
+PIDFile=/elements/elements.pid
 Restart=on-failure
 
-User=liquid
-Group=liquid
+User=elements
+Group=elements
 
 PrivateTmp=true
 ProtectSystem=full
