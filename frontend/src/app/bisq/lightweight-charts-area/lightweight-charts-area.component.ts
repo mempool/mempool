@@ -1,5 +1,5 @@
 import { createChart, CrosshairMode, isBusinessDay } from 'lightweight-charts';
-import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-lightweight-charts-area',
@@ -24,6 +24,15 @@ export class LightweightChartsAreaComponent implements OnInit, OnChanges, OnDest
   constructor(
     private element: ElementRef,
   ) { }
+
+  @HostListener('window:resize', ['$event'])
+  resizeCanvas(): void {
+    this.width = this.element.nativeElement.parentElement.offsetWidth;
+    this.chart.applyOptions({
+      width: this.width,
+      height: this.height,
+    });
+  }
 
   ngOnInit() {
     this.width = this.element.nativeElement.parentElement.offsetWidth;
