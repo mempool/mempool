@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BisqRoutingModule } from './bisq.routing.module';
 import { SharedModule } from '../shared/shared.module';
-import { NgxBootstrapMultiselectModule } from 'ngx-bootrap-multiselect';
 
 import { LightweightChartsComponent } from './lightweight-charts/lightweight-charts.component';
 import { LightweightChartsAreaComponent } from './lightweight-charts-area/lightweight-charts-area.component';
@@ -24,6 +23,10 @@ import { BisqStatsComponent } from './bisq-stats/bisq-stats.component';
 import { BsqAmountComponent } from './bsq-amount/bsq-amount.component';
 import { BisqTradesComponent } from './bisq-trades/bisq-trades.component';
 import { CommonModule } from '@angular/common';
+import { AutofocusDirective } from '../components/ngx-bootstrap-multiselect/autofocus.directive';
+import { MultiSelectSearchFilter } from '../components/ngx-bootstrap-multiselect/search-filter.pipe';
+import { OffClickDirective } from '../components/ngx-bootstrap-multiselect/off-click.directive';
+import { NgxDropdownMultiselectComponent } from '../components/ngx-bootstrap-multiselect/ngx-bootstrap-multiselect.component';
 
 @NgModule({
   declarations: [
@@ -44,16 +47,21 @@ import { CommonModule } from '@angular/common';
     BisqMarketComponent,
     BisqTradesComponent,
     BisqMainDashboardComponent,
+    NgxDropdownMultiselectComponent,
+    AutofocusDirective,
+    OffClickDirective,
   ],
   imports: [
     CommonModule,
     BisqRoutingModule,
     SharedModule,
     FontAwesomeModule,
-    NgxBootstrapMultiselectModule,
   ],
   providers: [
     BisqApiService,
+    MultiSelectSearchFilter,
+    AutofocusDirective,
+    OffClickDirective,
   ]
 })
 export class BisqModule {
