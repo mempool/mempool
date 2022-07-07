@@ -17,6 +17,7 @@ import rbfCache from './rbf-cache';
 import difficultyAdjustment from './difficulty-adjustment';
 import feeApi from './fee-api';
 import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
+import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
@@ -442,6 +443,19 @@ class WebsocketHandler {
       mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
 
       if (Common.indexingEnabled()) {
+        const stripped = _mempoolBlocks[0].transactions.map((tx) => {
+          return {
+            txid: tx.txid,
+            vsize: tx.vsize,
+            fee: tx.fee ? Math.round(tx.fee) : 0,
+            value: tx.value,
+          };
+        });  
+        BlocksSummariesRepository.$saveSummary(block.height, null, {
+          id: block.id,
+          transactions: stripped
+        });
+
         BlocksAuditsRepository.$saveAudit({
           time: block.timestamp,
           height: block.height,
