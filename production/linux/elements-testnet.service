@@ -1,0 +1,22 @@
+[Unit]
+Description=Elementsd
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/elementsd -daemon -printtoconsole -chain=liquidtestnet -pid=/elements/elements-testnet.pid
+ExecStop=/usr/local/bin/elements-cli stop
+
+Type=forking
+PIDFile=/elements/elements-testnet.pid
+Restart=on-failure
+
+User=elements
+Group=elements
+
+PrivateTmp=true
+ProtectSystem=full
+NoNewPrivileges=true
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target
