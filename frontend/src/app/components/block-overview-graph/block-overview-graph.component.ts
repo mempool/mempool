@@ -1,6 +1,5 @@
 import { Component, ElementRef, ViewChild, HostListener, Input, Output, EventEmitter, NgZone, AfterViewInit, OnDestroy } from '@angular/core';
-import { MempoolBlockDelta, TransactionStripped } from 'src/app/interfaces/websocket.interface';
-import { WebsocketService } from 'src/app/services/websocket.service';
+import { TransactionStripped } from 'src/app/interfaces/websocket.interface';
 import { FastVertexArray } from './fast-vertex-array';
 import BlockScene from './block-scene';
 import TxSprite from './tx-sprite';
