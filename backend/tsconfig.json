@@ -3,6 +3,7 @@
     "types": ["node"],
     "module": "commonjs",
     "target": "esnext",
+    "types": ["node", "jest"],
     "lib": ["es2019", "dom"],
     "strict": true,
     "noImplicitAny": false,
