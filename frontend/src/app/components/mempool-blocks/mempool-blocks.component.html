@@ -2,26 +2,26 @@
   <div class="mempool-blocks-container" *ngIf="(difficultyAdjustments$ | async) as da;">
     <div class="flashing">
       <ng-template ngFor let-projectedBlock [ngForOf]="mempoolBlocks$ | async" let-i="index" [ngForTrackBy]="trackByFn">
-        <div class="bitcoin-block text-center mempool-block" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]" [class.blink-bg]="projectedBlock.blink">
+        <div [attr.data-cy]="'mempool-block-' + i" class="bitcoin-block text-center mempool-block" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]" [class.blink-bg]="projectedBlock.blink">
           <a draggable="false" [routerLink]="['/mempool-block/' | relativeUrl, i]"
             class="blockLink" [ngClass]="{'disabled': (this.stateService.blockScrolling$ | async)}">&nbsp;</a>
           <div class="block-body">
-            <div class="fees">
+            <div [attr.data-cy]="'mempool-block-' + i + '-fees'" class="fees">
               ~{{ projectedBlock.medianFee | number:feeRounding }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
             </div>
-            <div class="fee-span">
+            <div [attr.data-cy]="'mempool-block-' + i + '-fee-span'" class="fee-span">
               {{ projectedBlock.feeRange[0] | number:feeRounding }} - {{ projectedBlock.feeRange[projectedBlock.feeRange.length - 1] | number:feeRounding }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
             </div>
             <div *ngIf="showMiningInfo" class="block-size">
-              <app-amount [satoshis]="projectedBlock.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
+              <app-amount [attr.data-cy]="'mempool-block-' + i + '-total-fees'" [satoshis]="projectedBlock.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
             </div>
             <div *ngIf="!showMiningInfo" class="block-size" [innerHTML]="'&lrm;' + (projectedBlock.blockSize | bytes: 2)"></div>
-            <div class="transaction-count">
+            <div [attr.data-cy]="'mempool-block-' + i + '-transaction-count'" class="transaction-count">
               <ng-container *ngTemplateOutlet="projectedBlock.nTx === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: projectedBlock.nTx | number}"></ng-container>
               <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
               <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
             </div>
-            <div class="time-difference" *ngIf="projectedBlock.blockVSize <= stateService.blockVSize; else mergedBlock">
+            <div [attr.data-cy]="'mempool-block-' + i + '-time'" class="time-difference" *ngIf="projectedBlock.blockVSize <= stateService.blockVSize; else mergedBlock">
               <ng-template [ngIf]="network === 'liquid' || network === 'liquidtestnet'" [ngIfElse]="timeDiffMainnet">
                 <app-time-until [time]="(1 * i) + now + 61000" [fastRender]="false" [fixedRender]="true"></app-time-until>
               </ng-template>
@@ -30,7 +30,7 @@
               </ng-template>
             </div>
             <ng-template #mergedBlock>
-              <div class="time-difference">
+              <div [attr.data-cy]="'mempool-block-' + i + '-blocks'" class="time-difference">
                 <b>(<ng-container *ngTemplateOutlet="blocksPlural; context: {$implicit: projectedBlock.blockVSize / stateService.blockVSize | ceil }"></ng-container>)</b>
                 <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
               </div>
