@@ -113,13 +113,13 @@
                 <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
                   <td i18n="block.miner">Miner</td>
                   <td *ngIf="stateService.env.MINING_DASHBOARD">
-                    <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]" class="badge"
+                    <a [attr.data-cy]="'block-details-miner-badge'" placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]" class="badge"
                       [class]="block.extras.pool.name === 'Unknown' ? 'badge-secondary' : 'badge-primary'">
                       {{ block.extras.pool.name }}
                     </a>
                   </td>
                   <td *ngIf="!stateService.env.MINING_DASHBOARD && stateService.env.BASE_MODULE === 'mempool'">
-                    <span placement="bottom" class="badge"
+                    <span [attr.data-cy]="'block-details-miner-badge'" placement="bottom" class="badge"
                       [class]="block.extras.pool.name === 'Unknown' ? 'badge-secondary' : 'badge-primary'">
                       {{ block.extras.pool.name }}
                   </span>
