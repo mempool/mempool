@@ -60,7 +60,7 @@ export class BlockPredictionsGraphComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`Block predictions accuracy`);
+    this.seoService.setTitle($localize`:@@05ef9d4e17049ce55e505637a99653770bf7fff9:Block Predictions Accuracy`);
     this.miningWindowPreference = '24h';//this.miningService.getDefaultTimespan('24h');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);

@@ -1990,11 +1990,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
-          <context context-type="linenumber">11,14</context>
+          <context context-type="linenumber">11,13</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
-          <context context-type="linenumber">14,17</context>
+          <context context-type="linenumber">14,16</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
@@ -2022,7 +2022,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
-          <context context-type="linenumber">10,13</context>
+          <context context-type="linenumber">10,12</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
@@ -2082,14 +2082,15 @@
           <context context-type="sourcefile">src/app/components/block-predictions-graph/block-predictions-graph.component.html</context>
           <context context-type="linenumber">5,7</context>
         </context-group>
-        <note priority="1" from="description">mining.block-prediction-accuracy</note>
-      </trans-unit>
-      <trans-unit id="53140114748953624" datatype="html">
-        <source>Block predictions accuracy</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-predictions-graph/block-predictions-graph.component.ts</context>
           <context context-type="linenumber">63</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+        <note priority="1" from="description">mining.block-prediction-accuracy</note>
       </trans-unit>
       <trans-unit id="829186404427796443" datatype="html">
         <source>Match rate</source>
@@ -2839,14 +2840,6 @@
           <context context-type="linenumber">73</context>
         </context-group>
         <note priority="1" from="description">mining.hashrate-difficulty</note>
-      </trans-unit>
-      <trans-unit id="356f45911e55996d64963b33199d3aa115ea203a" datatype="html">
-        <source>Blocks Predictions Accuracy</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">22</context>
-        </context-group>
-        <note priority="1" from="description">mining.block-prediction-accuracy</note>
       </trans-unit>
       <trans-unit id="79a9dc5b1caca3cbeb1733a19515edacc5fc7920" datatype="html">
         <source>Hashrate</source>
