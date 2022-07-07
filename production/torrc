@@ -3,21 +3,21 @@ SOCKSPort 9050
 ControlPort 9051
 Log notice syslog
 
-DataDirectory /var/db/tor
+DataDirectory __TOR_RESOURCES__
 DataDirectoryGroupReadable 1
 
 CookieAuthentication 1
-CookieAuthFile /var/db/tor/control_auth_cookie
+CookieAuthFile __TOR_RESOURCES__/control_auth_cookie
 CookieAuthFileGroupReadable 1
 
-HiddenServiceDir /var/db/tor/mempool
+HiddenServiceDir __TOR_RESOURCES__/mempool
 HiddenServicePort 80 127.0.0.1:81
 HiddenServiceVersion 3
 
-HiddenServiceDir /var/db/tor/bisq
+HiddenServiceDir __TOR_RESOURCES__/bisq
 HiddenServicePort 80 127.0.0.1:82
 HiddenServiceVersion 3
 
-HiddenServiceDir /var/db/tor/liquid
+HiddenServiceDir __TOR_RESOURCES__/liquid
 HiddenServicePort 80 127.0.0.1:83
 HiddenServiceVersion 3

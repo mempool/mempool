@@ -197,6 +197,7 @@ case $OS in
         TOR_USER=debian-tor
         TOR_GROUP=debian-tor
         CERTBOT_PKG=python3-certbot-nginx
+        NGINX_ETC_FOLDER=/etc/nginx
         NGINX_CONFIGURATION=/etc/nginx/nginx.conf
     ;;
 esac
@@ -925,6 +926,8 @@ if [ "${TOR_INSTALL}" = ON ];then
         osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServiceDir ${TOR_RESOURCES}/${MEMPOOL_TOR_HS}/ >> ${TOR_CONFIGURATION}"
         osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServicePort 80 127.0.0.1:81 >> ${TOR_CONFIGURATION}"
         osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServiceVersion 3 >> ${TOR_CONFIGURATION}"
+    else
+        osSudo "${ROOT_USER}" sed -i.orig "s!__TOR_RESOURCES__!${TOR_RESOURCES}!" "${TOR_CONFIGURATION}"
     fi
 
     case $OS in
@@ -936,7 +939,7 @@ if [ "${TOR_INSTALL}" = ON ];then
 
     # start tor now so it can bootstrap in time for bitcoin starting a few mins later
     echo "[*] Starting Tor service"
-    osSudo "${ROOT_USER}" service tor start
+    osSudo "${ROOT_USER}" service tor restart
 fi
 
 ########################
@@ -1508,6 +1511,12 @@ _EOF_
 
 ##### nginx
 
+
+echo "[*] Read tor v3 onion hostnames"
+NGINX_MEMPOOL_ONION=$(cat "${TOR_RESOURCES}/mempool/hostname")
+NGINX_BISQ_ONION=$(cat "${TOR_RESOURCES}/bisq/hostname")
+NGINX_LIQUID_ONION=$(cat "${TOR_RESOURCES}/liquid/hostname")
+
 echo "[*] Adding Nginx configuration"
 case $OS in
 
@@ -1517,8 +1526,16 @@ case $OS in
 
     Debian)
         osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/nginx/nginx.conf" "${NGINX_CONFIGURATION}"
-#echo "[*] Restarting Nginx"
-#osSudo "${ROOT_USER}" service nginx restart
+        mkdir -p /var/cache/nginx/services /var/cache/nginx/api
+        chown www-data: /var/cache/nginx/services /var/cache/nginx/api
+        ln -s /mempool/mempool /etc/nginx/mempool
+        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_USER__!www-data!" "${NGINX_CONFIGURATION}"
+        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_ETC_FOLDER__!${NGINX_ETC_FOLDER}!" "${NGINX_CONFIGURATION}"
+        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_MEMPOOL_ONION__!${NGINX_MEMPOOL_ONION%.onion}!" "${NGINX_CONFIGURATION}"
+        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_BISQ_ONION__!${NGINX_BISQ_ONION%.onion}!" "${NGINX_CONFIGURATION}"
+        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_LIQUID_ONION__!${NGINX_LIQUID_ONIONi%.onion}!" "${NGINX_CONFIGURATION}"
+        echo "[*] Restarting Nginx"
+        osSudo "${ROOT_USER}" service nginx restart
     ;;
 esac
 
