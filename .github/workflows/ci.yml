@@ -42,8 +42,10 @@ jobs:
         run: npm run lint
         working-directory: ${{ matrix.flavor }}/backend
 
-    #  - name: Test 
-    #    run: npm run test
+      - name: Test
+        if: ${{ matrix.flavor == 'dev'}}
+        run: npm run test
+        working-directory: ${{ matrix.flavor }}/backend
 
       - name: Build
         run: npm run build
