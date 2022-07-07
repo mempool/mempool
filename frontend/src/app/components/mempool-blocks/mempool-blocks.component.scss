@@ -17,7 +17,11 @@
 }
 
 .flashing {
-  animation: opacityPulse 2s ease-out;
+  /* force compositing */
+  will-change: opacity;
+  transform: translateZ(0);
+  /* effective max frame rate = (#keyframes - 1) x steps / duration */
+  animation: opacityPulse 2s steps(30, end);
   animation-iteration-count: infinite;
   opacity: 1;
 }
