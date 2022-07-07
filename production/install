@@ -1556,6 +1556,29 @@ case $OS in
     ;;
 esac
 
+##### OS set Linux user ulimits
+
+echo "[*] Setting ulimits for users"
+case $OS in
+
+    FreeBSD)
+    ;;
+
+    Debian)
+        cat >> /etc/security/limits.conf <<EOF
+*        soft     nproc          200000
+*        hard     nproc          200000
+*        soft     nofile         200000
+*        hard     nofile         200000
+EOF
+        echo "session required pam_limits.so" >> /etc/pam.d/common-session
+    ;;
+esac
+
+
+
+
+
 ##### OS services
 
 #if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
@@ -1630,6 +1653,8 @@ esac
 #esac
 
 ##### finish
+
+echo 'Please reboot to start all the services.'
 
 echo '[*] Done!'
 
