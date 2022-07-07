@@ -13,9 +13,9 @@ import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.
 import { StateService } from 'src/app/services/state.service';
 
 @Component({
-  selector: 'app-block-predictions-graph',
-  templateUrl: './block-predictions-graph.component.html',
-  styleUrls: ['./block-predictions-graph.component.scss'],
+  selector: 'app-block-prediction-graph',
+  templateUrl: './block-prediction-graph.component.html',
+  styleUrls: ['./block-prediction-graph.component.scss'],
   styles: [`
     .loadingGraphs {
       position: absolute;
@@ -26,7 +26,7 @@ import { StateService } from 'src/app/services/state.service';
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BlockPredictionsGraphComponent implements OnInit {
+export class BlockPredictionGraphComponent implements OnInit {
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
 
@@ -60,7 +60,7 @@ export class BlockPredictionsGraphComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`:@@05ef9d4e17049ce55e505637a99653770bf7fff9:Block Predictions Accuracy`);
+    this.seoService.setTitle($localize`:@@d7d5fcf50179ad70c938491c517efb82de2c8146:Block Prediction Accuracy`);
     this.miningWindowPreference = '24h';//this.miningService.getDefaultTimespan('24h');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);

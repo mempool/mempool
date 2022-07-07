@@ -1848,7 +1848,7 @@
           <context context-type="linenumber">137</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block-predictions-graph/block-predictions-graph.component.ts</context>
+          <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.ts</context>
           <context context-type="linenumber">128</context>
         </context-group>
         <context-group purpose="location">
@@ -1871,7 +1871,7 @@
           <context context-type="linenumber">139</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block-predictions-graph/block-predictions-graph.component.ts</context>
+          <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.ts</context>
           <context context-type="linenumber">130</context>
         </context-group>
         <context-group purpose="location">
@@ -2076,14 +2076,14 @@
         <note priority="1" from="description">Transaction Virtual Size</note>
         <note priority="1" from="meaning">transaction.vsize</note>
       </trans-unit>
-      <trans-unit id="05ef9d4e17049ce55e505637a99653770bf7fff9" datatype="html">
-        <source>Block Predictions Accuracy</source>
+      <trans-unit id="d7d5fcf50179ad70c938491c517efb82de2c8146" datatype="html">
+        <source>Block Prediction Accuracy</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block-predictions-graph/block-predictions-graph.component.html</context>
+          <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.html</context>
           <context context-type="linenumber">5,7</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block-predictions-graph/block-predictions-graph.component.ts</context>
+          <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.ts</context>
           <context context-type="linenumber">63</context>
         </context-group>
         <context-group purpose="location">
@@ -2095,7 +2095,7 @@
       <trans-unit id="829186404427796443" datatype="html">
         <source>Match rate</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block-predictions-graph/block-predictions-graph.component.ts</context>
+          <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.ts</context>
           <context context-type="linenumber">176,174</context>
         </context-group>
       </trans-unit>
