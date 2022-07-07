@@ -56,7 +56,7 @@ build_frontend()
     if [ ! -e "mempool-frontend-config.json" ];then
         cp "${HOME}/mempool/production/mempool-frontend-config.${site}.json" "mempool-frontend-config.json"
     fi
-    npm install --prod --no-optional || exit 1
+    npm install --omit=dev --omit=optional || exit 1
     npm run build || exit 1
 }
 
@@ -75,7 +75,7 @@ build_backend()
 	-e "s!__ELEMENTS_RPC_PASS__!${ELEMENTS_RPC_PASS}!" \
 	"mempool-config.json"
     fi
-    npm install --prod --no-optional || exit 1
+    npm install --omit=dev --omit=optional || exit 1
     npm run build || exit 1
 }
 
