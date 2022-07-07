@@ -304,6 +304,7 @@ class Server {
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/sizes-weights/:interval', routes.$getHistoricalBlockSizeAndWeight)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty-adjustments/:interval', routes.$getDifficultyAdjustments)
         .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/predictions/:interval', routes.$getHistoricalBlockPrediction)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/audit/:hash', routes.$getBlockAudit)
         ;
     }
 

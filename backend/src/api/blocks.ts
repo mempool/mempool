@@ -21,7 +21,6 @@ import poolsParser from './pools-parser';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import mining from './mining';
 import DifficultyAdjustmentsRepository from '../repositories/DifficultyAdjustmentsRepository';
-import difficultyAdjustment from './difficulty-adjustment';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -572,7 +571,7 @@ class Blocks {
 
     // Index the response if needed
     if (Common.blocksSummariesIndexingEnabled() === true) {
-      await BlocksSummariesRepository.$saveSummary(block.height, summary);
+      await BlocksSummariesRepository.$saveSummary(block.height, summary, null);
     }
 
     return summary.transactions;

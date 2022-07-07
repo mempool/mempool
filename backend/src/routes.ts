@@ -758,6 +758,18 @@ class Routes {
     }
   }
 
+  public async $getBlockAudit(req: Request, res: Response) {
+    try {
+      const audit = await BlocksAuditsRepository.$getBlockAudit(req.params.hash);
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24).toUTCString());
+      res.json(audit);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
   public async getBlock(req: Request, res: Response) {
     try {
       const block = await blocks.$getBlock(req.params.hash);
