@@ -25,7 +25,7 @@ PROXY_CONFIG = [
         '!/bisq', '!/bisq/**', '!/bisq/',
         '!/liquid', '!/liquid/**', '!/liquid/',
         '!/liquidtestnet', '!/liquidtestnet/**', '!/liquidtestnet/',
-        '/testnet/api/**', '/signet/api/**'
+        '/testnet/api/**', '/signet/api/**', '!/api/v1/asset/**', '!/api/asset/**'
         ],
         target: "https://mempool.space",
         ws: true,
@@ -59,6 +59,12 @@ PROXY_CONFIG = [
         secure: false,
         changeOrigin: true
     },
+    {
+      context: ['/api/v1/asset/**/icon', '/api/asset/**'],
+      target: "https://liquid.network",
+      secure: false,
+      changeOrigin: true
+  },
     {
         context: ['/api/liquidtestnet**', '/liquidtestnet/api/**'],
         target: "https://liquid.network",
