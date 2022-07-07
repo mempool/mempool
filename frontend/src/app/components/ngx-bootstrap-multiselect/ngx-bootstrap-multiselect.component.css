@@ -1,0 +1,48 @@
+a {
+  outline: none !important;
+}
+
+.dropdown-inline {
+  display: inline-block;
+}
+
+.dropdown-toggle .caret {
+  margin-left: 4px;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.chunkydropdown-menu {
+  min-width: 20em;
+}
+
+.chunkyrow {
+  line-height: 2;
+  margin-left: 1em;
+  font-size: 2em;
+}
+
+.slider {
+  width:3.8em;
+  height:3.8em;
+  display:block;
+  -webkit-transition: all 0.125s linear;
+  -moz-transition: all 0.125s linear;
+  -o-transition: all 0.125s linear;
+  transition: all 0.125s linear;
+  margin-left: 0.125em;
+  margin-top: auto;
+}
+
+.slideron {
+  margin-left: 1.35em;
+}
+
+.content_wrapper{
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.search-container {
+  padding: 0px 5px 5px 5px;
+}
