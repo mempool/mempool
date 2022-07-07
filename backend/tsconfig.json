@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "types": ["node"],
     "module": "commonjs",
     "target": "esnext",
     "types": ["node", "jest"],
