@@ -26,7 +26,8 @@
     "start-production": "node --max-old-space-size=4096 dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "./node_modules/.bin/eslint . --ext .ts",
-    "lint:fix": "./node_modules/.bin/eslint . --ext .ts --fix"
+    "lint:fix": "./node_modules/.bin/eslint . --ext .ts --fix",
+    "prettier": "./node_modules/.bin/prettier --write \"src/**/*.{js,ts}\""
   },
   "dependencies": {
     "@mempool/electrum-client": "^1.1.7",
@@ -49,6 +50,8 @@
     "@typescript-eslint/eslint-plugin": "^5.30.5",
     "@typescript-eslint/parser": "^5.30.5",
     "eslint": "^8.19.0",
+    "eslint-config-prettier": "^8.5.0",
+    "prettier": "^2.7.1",
     "tslint": "^6.1.0"
   }
 }

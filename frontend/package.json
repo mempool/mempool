@@ -44,6 +44,7 @@
     "test": "npm run ng -- test",
     "lint": "./node_modules/.bin/eslint . --ext .ts",
     "lint:fix": "./node_modules/.bin/eslint . --ext .ts --fix",
+    "prettier": "prettier --write \"src/app/**/*.{js,json,css,scss,less,md,ts,html,component.html}\"",
     "e2e": "npm run generate-config && npm run ng -- e2e",
     "e2e:ci": "npm run cypress:run:ci",
     "config:defaults:mempool": "node update-config.js TESTNET_ENABLED=true SIGNET_ENABLED=true LIQUID_ENABLED=true LIQUID_TESTNET_ENABLED=true BISQ_ENABLED=true ITEMS_PER_PAGE=25 BASE_MODULE=mempool BLOCK_WEIGHT_UNITS=4000000 && npm run generate-config",
@@ -109,6 +110,7 @@
     "@typescript-eslint/parser": "^5.30.5",
     "eslint": "^8.19.0",
     "http-proxy-middleware": "~2.0.6",
+    "prettier": "^2.7.1",
     "ts-node": "~10.8.1",
     "typescript": "~4.6.4"
   },
