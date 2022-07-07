@@ -1,12 +1,14 @@
 name: CI Pipeline for the Backend and Frontend
 
 on:
-  push:
+  pull_request:
+    types: [ opened, review_requested, synchronize ]
 env:
   NODE_VERSION: 16.15.0
 
 jobs:
   backend:
+    if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
     strategy:
       matrix:
         flavor: ['dev', 'prod']
@@ -48,6 +50,7 @@ jobs:
         working-directory: ${{ matrix.flavor }}/backend
 
   frontend:
+    if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
     strategy:
       matrix:
         flavor: ['dev', 'prod']
