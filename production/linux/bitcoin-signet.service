@@ -3,7 +3,7 @@ Description=Bitcoind-signet
 After=network.target
 
 [Service]
-ExecStart=/usr/local/bin/bitcoind -conf=bitcoin-signet.conf -daemon -signet -printtoconsole -pid=/bitcoin/bitcoind-signet.pid
+ExecStart=/usr/local/bin/bitcoind -conf=bitcoin.conf -daemon -signet -printtoconsole -pid=/bitcoin/bitcoind-signet.pid
 ExecStop=/usr/local/bin/bitcoin-cli -signet stop
 
 Type=forking

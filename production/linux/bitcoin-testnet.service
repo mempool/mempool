@@ -3,7 +3,7 @@ Description=Bitcoind-testnet
 After=network.target
 
 [Service]
-ExecStart=/usr/local/bin/bitcoind -conf=bitcoin-testnet.conf -daemon -testnet -printtoconsole -pid=/bitcoin/bitcoind-testnet.pid
+ExecStart=/usr/local/bin/bitcoind -conf=bitcoin.conf -daemon -testnet -printtoconsole -pid=/bitcoin/bitcoind-testnet.pid
 ExecStop=/usr/local/bin/bitcoin-cli -testnet stop
 
 Type=forking
