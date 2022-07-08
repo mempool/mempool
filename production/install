@@ -1702,7 +1702,9 @@ case $OS in
 
     Debian)
         echo "This are the generated Tor addresses:"
-        echo "${NGINX_MEMPOOL_ONION} ${NGINX_BISQ_ONION} ${NGINX_LIQUID_ONION}"
+        echo "${NGINX_MEMPOOL_ONION}"
+        echo "${NGINX_BISQ_ONION}"
+        echo "${NGINX_LIQUID_ONION}"
     ;;
 esac
 
