@@ -1285,7 +1285,25 @@ if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
         ;;
 
         Debian)
-            osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/linux/liquid.service" "${DEBIAN_SERVICE_HOME}"
+            osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/linux/elements-liquid.service" "${DEBIAN_SERVICE_HOME}"
+        ;;
+    esac
+fi
+
+#######################################
+# Bitcoin instance for Liquid Testnet #
+#######################################
+
+if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
+    echo "[*] Installing Bitcoin Liquid service"
+    case $OS in
+
+        FreeBSD)
+            echo "[*] FIXME: Bitcoin Liquid service must be installed manually on FreeBSD"
+        ;;
+
+        Debian)
+            osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/linux/elements-liquidtestnet.service" "${DEBIAN_SERVICE_HOME}"
         ;;
     esac
 fi
@@ -1568,7 +1586,10 @@ case $OS in
             osSudo "${ROOT_USER}" systemctl enable bisq.service
         fi
         if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
-            osSudo "${ROOT_USER}" systemctl enable liquid.service
+            osSudo "${ROOT_USER}" systemctl enable elements-liquid.service
+        fi
+        if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
+            osSudo "${ROOT_USER}" systemctl enable elements-liquidtestnet.service
         fi
     ;;
 esac
