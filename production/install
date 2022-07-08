@@ -1343,7 +1343,7 @@ if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
     echo "[*] Installing Elements crontab"
     case $OS in
         FreeBSD)
-            echo [*] FIXME: must only crontab enabled daemons
+            echo "[*] FIXME: must only crontab enabled daemons"
             osSudo "${ROOT_USER}" crontab -u "${ELEMENTS_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/elements.crontab"
         ;;
     esac
@@ -1380,33 +1380,33 @@ fi
 echo "[*] Installing crontabs"
 case $OS in
     FreeBSD)
-        echo [*] FIXME: must only crontab enabled daemons
+        echo "[*] FIXME: must only crontab enabled daemons"
         osSudo "${ROOT_USER}" crontab -u "${BITCOIN_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.crontab"
         osSudo "${ROOT_USER}" crontab -u "${MINFEE_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/minfee.crontab"
     ;;
     Debian)
         crontab_bitcoin=()
         if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
-            echo [*] Installing Electrs Mainnet Cronjob
+            echo "[*] Installing Electrs Mainnet Cronjob"
             crontab_bitcoin+="@reboot sleep 30 ; screen -dmS mainnet /bitcoin/electrs/electrs-start-mainnet\n"
         fi
         if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
-            echo [*] Installing Electrs Testnet Cronjob
+            echo "[*] Installing Electrs Testnet Cronjob"
             crontab_bitcoin+="@reboot sleep 70 ; screen -dmS testnet /bitcoin/electrs/electrs-start-testnet\n"
         fi
         if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
-            echo [*] Installing Electrs Signet Cronjob
+            echo "[*] Installing Electrs Signet Cronjob"
             crontab_bitcoin+="@reboot sleep 90 ; screen -dmS signet /bitcoin/electrs/electrs-start-signet\n"
         fi
         echo "${crontab_bitcoin}" | crontab -u "${BITCOIN_USER}" -
 
         crontab_elements=()
         if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
-            echo [*] Installing Liquid Asset Mainnet Cronjob
+            echo "[*] Installing Liquid Asset Mainnet Cronjob"
             crontab_elements+="6 * * * * cd $HOME/asset_registry_db && git pull origin master >/dev/null 2>&1\n"
         fi
         if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
-            echo [*] Installing Liquid Asset Testnet Cronjob
+            echo "[*] Installing Liquid Asset Testnet Cronjob"
             crontab_elements+="6 * * * * cd $HOME/asset_registry_testnet_db && git pull origin master >/dev/null 2>&1\n"
         fi
         echo "${crontab_elements}" | crontab -u "${ELEMENTS_USER}" -
