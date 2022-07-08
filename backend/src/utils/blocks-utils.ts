@@ -3,14 +3,14 @@ import { BlockExtended } from '../mempool.interfaces';
 export function prepareBlock(block: any): BlockExtended {
   return <BlockExtended>{
     id: block.id ?? block.hash, // hash for indexed block
-    timestamp: block.timestamp ?? block.blockTimestamp, // blockTimestamp for indexed block
+    timestamp: block.timestamp ?? block.time ?? block.blockTimestamp, // blockTimestamp for indexed block
     height: block.height,
     version: block.version,
-    bits: block.bits,
+    bits: (typeof block.bits === 'string' ? parseInt(block.bits, 16): block.bits),
     nonce: block.nonce,
     difficulty: block.difficulty,
-    merkle_root: block.merkle_root,
-    tx_count: block.tx_count,
+    merkle_root: block.merkle_root ?? block.merkleroot,
+    tx_count: block.tx_count ?? block.nTx,
     size: block.size,
     weight: block.weight,
     previousblockhash: block.previousblockhash,
