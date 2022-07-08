@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgbCollapse, NgbCollapseModule, NgbRadioGroup, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbCollapseModule, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
@@ -28,7 +28,7 @@ import { TimeUntilComponent } from '../components/time-until/time-until.componen
 import { ClipboardComponent } from '../components/clipboard/clipboard.component';
 import { QrcodeComponent } from '../components/qrcode/qrcode.component';
 import { FiatComponent } from '../fiat/fiat.component';
-import { NgbNavModule, NgbTooltipModule, NgbButtonsModule, NgbPaginationModule, NgbDropdownModule, NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbNavModule, NgbTooltipModule, NgbPaginationModule, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { TxFeaturesComponent } from '../components/tx-features/tx-features.component';
 import { TxFeeRatingComponent } from '../components/tx-fee-rating/tx-fee-rating.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -149,7 +149,6 @@ import { SvgImagesComponent } from '../components/svg-images/svg-images.componen
     ReactiveFormsModule,
     NgbNavModule,
     NgbTooltipModule,
-    NgbButtonsModule,
     NgbPaginationModule,
     NgbTypeaheadModule,
     NgbDropdownModule,
@@ -169,7 +168,6 @@ import { SvgImagesComponent } from '../components/svg-images/svg-images.componen
     ReactiveFormsModule,
     NgbNavModule,
     NgbTooltipModule,
-    NgbButtonsModule,
     NgbPaginationModule,
     NgbTypeaheadModule,
     NgbDropdownModule,

@@ -80,7 +80,7 @@
     "@fortawesome/fontawesome-svg-core": "~6.1.1",
     "@fortawesome/free-solid-svg-icons": "~6.1.1",
     "@mempool/mempool.js": "2.3.0",
-    "@ng-bootstrap/ng-bootstrap": "~12.1.2",
+    "@ng-bootstrap/ng-bootstrap": "~13.0.0-beta.1",
     "@nguniversal/express-engine": "~13.1.1",
     "@types/qrcode": "~1.4.2",
     "bootstrap": "~4.6.1",
